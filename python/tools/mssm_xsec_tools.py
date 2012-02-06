@@ -76,7 +76,7 @@ class mssm_xsec_tools():
             0 : 0,
             1 : mssm_xsec_tools.santander_error_matching(
                 mass_of_this_type, mu_up_4f, mu_up_5f),
-            -1 : -1.*mssm_xsec_tools.santander_error_matching(
+            -1 : mssm_xsec_tools.santander_error_matching(
                 mass_of_this_type, mu_down_4f, mu_down_5f),
         }
 
