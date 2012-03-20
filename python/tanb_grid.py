@@ -1,0 +1,1170 @@
+#!/usr/bin/env python
+
+from optparse import OptionParser
+       
+parser = OptionParser(usage="usage: %prog [options] datacatd.txt",
+                      description="Main script to create individual a modified datacard for given mass and tanb value.")
+parser.add_option("-m", "--mA",    dest="mA",       default=120.,  type="float",   help="Value of mA. [Default: 120.]")
+parser.add_option("-t", "--tanb",  dest="tanb",     default='20.',   type="string",   help="Values of tanb. [Default: 20.]")
+parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode")
+parser.add_option("--sm-like", dest="sm_like", default=False, action="store_true", help="Do not divide by the value of tanb, but only scale to MSSM xsec according to tanb value. (Will result in typical SM limit on signal strength for given value of tanb). Used for debugging. [Default: False]")
+(options, args) = parser.parse_args()
+
+import re
+import os
+import math
+import sys
+import shutil
+import ROOT
+
+ROOT.gSystem.Load('$CMSSW_BASE/lib/slc5_amd64_gcc434/libHiggsAnalysisCombinedLimit.so')
+from ROOT import th1fmorph
+from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools
+
+#CMSSW_BASE=os.environ['CMSSW_BASE']
+#_FILE_NAME = "{CMSSW_BASE}/src/MitLimits/Higgs2Tau/python/out.mhmax_7_nnlo.root".format(CMSSW_BASE=CMSSW_BASE)
+
+
+class MakeDatacard :
+       def __init__(self, tanb, mA, sm_like=False) :
+              ## full path for the input file for the htt xsec tools, expected in the data directory of the package
+              self.mssm_xsec_tools_input_path = "HiggsAnalysis/HiggsToTauTau/data/out.mhmax-7-nnlo.root"
+              ## do not divide yields by value of tanb but only rescale by xsec for given value of tanb
+              self.sm_like = sm_like
+              ## tanb as float
+              self.tanb = tanb
+              ## mA as float
+              self.mA = mA
+              ## mH as float (filled from htt tools)
+              self.mH = 0.
+              ## mh as float (filled from htt tools)
+              self.mh = 0.
+              ## cross point in mA from where on for hww the contribution from h dominates over the contribution from H
+              self.hww_cross_point = 250
+              ## mapping of unique (standardized) production process names to all possible kinds of production processes (=histograms)
+              self.standardized_production_processes = {
+                      "ggH":["Higgs_gg_mssm", "Higgs_gf_sm", "SM", "GGH", "ggH"]
+                     ,"bbH":["Higgs_bb_mssm", "BBH", "bbH"]
+                     ,"qqH":["Higgs_vbf_sm" , "VBF", "qqH", "vbf"]
+                     ,"ZH" :["ZH"]
+                     ,"WH" :["WH"]
+                     }
+              ## mapping of unique (standardized) decay channel names to all possible decay channels
+              self.standardized_decay_channels = {
+                     "htt"    : ["htt_em_0", "htt_em_1", "htt_em_2", "htt_em_x",
+                                 "htt_et_0", "htt_et_1", "htt_et_2", "htt_et_x",
+                                 "htt_mt_0", "htt_mt_1", "htt_mt_2", "htt_mt_x",
+                                 "htt_mm_0", "htt_mm_1", "htt_mm_2"
+                                 ],
+                     "hww"    : ["hwwof_0j_shape", "hwwof_1j_shape",
+                                 "hwwsf_0j_shape", "hwwsf_1j_shape",
+                                 "hww_2j_cut"
+                                 ],
+                     "vhtt"   : ["vhtt_mmt_mumu_final_MuTauMass",
+                                 "vhtt_emt_emu_final_SubleadingMass"
+                                 ]
+                     }
+              ## list of signal indexes in input datacard
+              self.signal_indexes = []
+              ## list of all(!) available decay channels in the input datacard
+              self.decay_channels_ = []
+              ## list of innitial datacards that went into combineCards.py from first line of input datacard
+              self.initial_datacards = []
+              ## list of all(!) available production processes (=histograms) in the input datacard
+              self.production_processes = []
+              ## mapping of shape uncertainties to signal_indexes in the production_processes list (=histograms)
+              self.uncertainty_to_signal_indexes = {}
+              ## names of output histfiles
+              self.output_histfiles = []
+              ## list of decay channels that have separated
+              self.hists_in_separate_files = [
+                     "htt_mm_0", "htt_mm_1", "htt_mm_2",
+                     "hwwof_0j_shape", "hwwof_1j_shape",
+                     "hwwsf_0j_shape", "hwwsf_1j_shape"
+                     ]
+              ## histogram prefixes per decay channel
+              self.decay_channel_to_hist_prefixes = {
+                      "hwwof_0j_shape" : "histo_"
+                     ,"hwwof_1j_shape" : "histo_"
+                     ,"hwwsf_0j_shape" : "histo_"
+                     ,"hwwsf_1j_shape" : "histo_"
+                     #,"htt_mm_0" : "$MASS",
+                     #,"htt_mm_1" : "$MASS"
+                     }
+              ## mapping of decay channel to interpolation method. Available methods are
+              ## 1) non-degenerate-masses-light
+              ## 2) degenerate-masses
+              ## the default is non-degenerate-masses; only deviations from the default
+              ## need to be added to this dictionary
+              self.decay_channel_to_interpolation_method = {
+                      "htt_mm_0"       : "non-degenerate-masses-light"
+                     ,"htt_mm_1"       : "non-degenerate-masses-light"
+                     ,"htt_em_0"       : "non-degenerate-masses"
+                     ,"htt_em_1"       : "non-degenerate-masses"
+                     ,"htt_mt_0"       : "non-degenerate-masses"
+                     ,"htt_mt_1"       : "non-degenerate-masses"
+                     ,"htt_et_0"       : "non-degenerate-masses"
+                     ,"htt_et_1"       : "non-degenerate-masses"
+                     ,"hwwof_0j_shape" : "single-mass"
+                     ,"hwwof_1j_shape" : "single-mass"
+                     ,"hwwsf_0j_shape" : "single-mass"
+                     ,"hwwsf_1j_shape" : "single-mass"
+                     ,"hww_2j_cut"     : "single-mass"
+                     }
+              ## mapping of output histfiles to output directories in that histfiles
+              self.histfile_to_directories = {}
+              ## mapping of output histfiles to decay the channels that these histfiles are used for
+              self.histfile_to_decay_channels = {}
+              ## mapping of the production channel times the decay channel to the effective cross section
+              self.signal_channel_to_cross_section = {}
+              ## mapping of the production channel times the decay channel to the cross section uncertainties
+              self.signal_channel_to_uncertainties = {}
+              ## list of all possible line-heads to start the uncertainty lines with (per signal channel)
+              self.standardized_signal_process_to_uncertainty_heads = {
+                     "ggH":["ggHScale", "ggHPDF"],
+                     "bbH":["bbHScale", "bbHPDF"],
+                     "qqH":["qqHScale", "qqHPDF"],
+                     "VH" :["VHScale" , "VHPDF" ]
+                     }
+              ## mapping of production channels to uncertainty lines in the output datacard
+              self.signal_channel_to_uncertainty_lines = {}
+
+       def init(self) :
+              self.load_masses()
+       
+       def decay_channels(self, words) :
+              """
+              Determine the number and names of decay channels involved in this combination, as determined
+              by the individual datacards that went into the combination when using combineCards.py. Input
+              is the first line of the input datacard.
+              """
+              decay_channels = []
+              for word in words :
+                     if word.find("=")>-1 :
+                            decay_channels.append(word[:word.find("=")])
+              return decay_channels
+
+       def find_decay_channel(self, word) :
+              """
+              Determine the channel that a directory in a given file belongs to. This is determined from
+              the third word of the 'shape' line, which is expected to be composed of the channel and a
+              potential directory in the input histfile, if there is more than one directory in the file
+              Expected input is any line of the input datacard that starts with the key word 'shapes'.
+              The return value corresponds to the words in the 'bin' line of the input datacard.
+              """
+              decay_channel = "NONE"
+              for channel in self.initial_datacards :
+                     if word.find(channel)>-1 :
+                            decay_channel = channel
+              return decay_channel
+
+       def find_directories_in_histfile(self, words) :
+              """
+              Determine the list of all directories in a given input histfile, determined from any line
+              of the input datacard that starts with the key word 'shape'. In principle the directories
+              for shape uncertainties can be different from directories for the central values. Apart
+              from the fact that this function will be able to cope with this matter this is not taken
+              into account any further until a first use case occures.
+              """
+              histfile_directories = []
+              for word in words :
+                     directory = ""
+                     if not word.find(".root")>-1 :
+                            if word.find("/")>-1 :
+                                   directory = word[:word.find("/")]
+                            histfile_directories.append(directory)
+              return histfile_directories
+
+       def append_unique_value(self, dict, key, value) :
+              """
+              Append a value to a list belonging to a given key in a dictionary. Take care that each
+              value in the list appears only once. If value is "" it will not be added to the list.
+              This function is used to fill the mappings from histfiles to decay channels and to
+              directories.
+              """
+              if not key in dict :
+                     if value == "" :
+                            dict[key] = []
+                     else :
+                            dict[key] = [value]
+              else :
+                     if value!="" and not dict[key].count(value)>0 :
+                            dict[key].append(value)
+
+       def standardized_signal_process(self, word) :
+              """
+              Determine a standardized signal process for a given word as it has been introduced
+              in the datacards of each individual channel. The word corresponds to the actual
+              histogram name in each corresponding input histfile, which is important for internal
+              looping. The standardized signal process name is of importance, when determining
+              the scale and pdf uncertainties for the effective production (production process x
+              BR for the corresponding decay channel), which are the same for each sub-channel
+              that corresponds to the same decay channel like htt_em_0, htt_em_1, htt_em_2, aso.
+              Standardized signal processes are defined in self.standardized_production_processes.
+              """
+              signal_process = "NONE"
+              for key, value in self.standardized_production_processes.iteritems() :
+                     for type in value :
+                            if word.find(type)>-1 :
+                                   signal_process = key  
+              return signal_process
+
+       def standardized_decay_channel(self, word) :
+              """
+              Determine a standardized decay channel for a given decay channel word as it appears
+              in self.decay_channels_. The word corresponds to the actual decay (sub-)channel as
+              it has been introduced by the combination of the individual datacards for each (sub-)
+              channel. It is important for internal looping. The standardized decay channel is of
+              importance when determining the scale and pdf uncertainties for the effective
+              production (production process x BR for the corresponding decay channel), which are
+              the same for each sub-channel that corresponds to the same decay channel like
+              htt_em_0, htt_em_1, htt_em_2, aso. Standardized decay channels are defined in
+              self.standardized_decay_channels.
+              """
+              decay_channel = "NONE"
+              for key, value in self.standardized_decay_channels.iteritems() :
+                     for type in value :
+                            if word.find(type)>-1 :
+                                   decay_channel = key
+              if decay_channel == "NONE" :
+                     print "ERROR in standardized_decay_channel: did not find channel : ", word, " in list of objects"
+              return decay_channel
+
+       def load_masses(self) :
+              """
+              Fill mh and mH depending on mA. These values are calculated from the htt tools.
+              """
+              ## read cross section results for htt
+              scan = mssm_xsec_tools("{CMSSW_BASE}/src/{path}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], path=self.mssm_xsec_tools_input_path))
+              htt_query = scan.query(self.mA, self.tanb)
+              self.mh = htt_query['higgses']['h']['mass']
+              self.mH = htt_query['higgses']['H']['mass']      
+
+       def cross_sections_hww(self, production_channel) :
+              """
+              Fill cross section results for different production channels for hww depending on mass
+              and tanb vaoue. The variable 'production_channel' can have the values:
+              
+              - 'gg[A,H,h]'  for gluon gluon fusion,
+              - 'qq[A,H,h]'  for VBF and
+              - 'W/Z[A,H,h]' for assicoated higgs production.
+              
+              The values in '[]' will be completed automatically. The function returns the dictionary
+              of production cross sections mapped to the individual Higgs bosons 'A', 'H' and 'h'.
+              """
+              cross_sections = {"A" : 0., "H" : 0., "h" : 0.}
+              ## read cross section results for hww, the cross section is returned in fb
+              for key in cross_sections : 
+                     xs = float(os.popen("feyn-higg-mssm xs mssm {channel}{higgs} {mA} {tanb} | grep value".format(
+                            channel=production_channel, higgs=key, mA=self.mA, tanb=self.tanb)).read().split()[2])/1000.
+                     br = float(os.popen("feyn-higg-mssm br mssm {higgs}WW {mA} {tanb} | grep value".format(
+                            higgs=key, mA=self.mA, tanb=self.tanb)).read().split()[2])
+                     cross_sections[key] = xs*br
+                     if cross_sections[key] < 0 :
+                            ## non-existing cross sections * branching ratios are set to 0.
+                            cross_sections[key] = 0
+              return cross_sections
+
+       def cross_sections_htt(self, production_channel) :
+              """
+              Fill cross section results for different production channels for htt depending on mass
+              and tanb. The variable 'production_channel' can have the values:
+              
+              - 'ggF' for gluon gluon fusion and
+              - 'santander' for higgs production in association with b quarks.
+              
+              The function returns the dictionary of production cross sections mapped to the individual
+              higgses 'A', 'H' and 'h'.
+              """
+              cross_sections = {"A" : 0., "H" : 0., "h" : 0.}
+              ## read cross section results for htt
+              scan = mssm_xsec_tools("{CMSSW_BASE}/src/{path}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], path=self.mssm_xsec_tools_input_path))
+              htt_query = scan.query(self.mA, self.tanb)
+              ## fill cross section (central values)
+              for key in cross_sections :
+                     cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR"]
+              return cross_sections
+
+       def load_cross_sections_map(self) :
+              """
+              Fill signal process to cross section dictionary for all involved production processes and
+              decay channels. At the moment this function calls htt and hww cross sections only. To
+              extend it add a function self.cross_sections_XYZ(self, production_channel) and modify this
+              function accordingly.
+              """
+              filled_htt  = False
+              filled_vhtt = False
+              filled_hww  = False
+              for decay_channel in self.decay_channels_ :
+                     if not filled_htt :
+                            if self.standardized_decay_channel(decay_channel) == "htt" :
+                                   filled_htt = True
+                                   self.signal_channel_to_cross_section["ggH_htt"] = self.cross_sections_htt("ggF")
+                                   self.signal_channel_to_cross_section["bbH_htt"] = self.cross_sections_htt("santander")
+                                   self.signal_channel_to_cross_section["qqH_htt"] = {"A" : 1., "H" : 1., "h" : 1.}
+                                   self.signal_channel_to_cross_section["VH_htt" ] = {"A" : 1., "H" : 1., "h" : 1.}
+                     if not filled_vhtt :
+                            if self.standardized_decay_channel(decay_channel) == "vhtt" :
+                                   filled_htt = True
+                                   self.signal_channel_to_cross_section["ggH_vhtt"] = {"A" : 1., "H" : 1., "h" : 1.}
+                                   self.signal_channel_to_cross_section["bbH_vhtt"] = {"A" : 1., "H" : 1., "h" : 1.}
+                                   self.signal_channel_to_cross_section["qqH_vhtt"] = {"A" : 1., "H" : 1., "h" : 1.}
+                                   self.signal_channel_to_cross_section["VH_vhtt" ] = {"A" : 1., "H" : 1., "h" : 1.}                                   
+                     if not filled_hww :
+                            if self.standardized_decay_channel(decay_channel) == "hww" :
+                                   filled_hww = True
+                                   self.signal_channel_to_cross_section["ggH_hww"] = self.cross_sections_hww("gg")
+                                   self.signal_channel_to_cross_section["qqH_hww"] = self.cross_sections_hww("qq")
+                                   self.signal_channel_to_cross_section["WH_hww" ] = self.cross_sections_hww("W" )
+                                   self.signal_channel_to_cross_section["ZH_hww" ] = self.cross_sections_hww("Z" )
+
+       def uncertainties_htt(self, production_channel, uncertainty_type, uncertainty_direction):
+              """
+              Fill cross section uncertainties for different production channels for htt depending on
+              mass and tanb. The variable 'production_channel' can have the values:
+              
+              - 'ggF' for gluon gluon fusion and
+              - 'santander' for higgs production in association with b quarks.
+              
+              The variable 'uncertainty_type' can have the values 'mu' and 'pdf' for the different
+              uncertainty types (scale or pdf). The variable 'uncertainty_direction' can be -1 or
+              +1 for the minus or plus variation of the uncertainty. The function returns the
+              dictionary of production cross sections mapped to the individual higgses, 'A', 'H'
+              and 'h'. NOTE: The uncertainties are returned as absolute shifts to the central value.
+              """
+              cross_sections = {"A" : 0., "H" : 0., "h" : 0.}
+              ## read cross section results for htt
+              inputFileName="{CMSSW_BASE}/src/{path}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], path=self.mssm_xsec_tools_input_path)
+              print inputFileName
+              scan = mssm_xsec_tools(inputFileName)
+              htt_query = scan.query(self.mA, self.tanb)
+              ## fill uncertainties of Up/Down type
+              for key in cross_sections :
+                     cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR"]
+              return cross_sections
+
+       def contracted_cross_section(self, standardized_production_process, standardized_decay_channel, mode=0) :
+              """
+              Conracted cross section for A, H, h for a given production process and decay channel. The 
+              contracted cross section is provided in three modes:
+              mode 0 : cross sections for all Higgses added
+              mode 1 : cross sections added for degenerate mass mode (depending on mA only two or all
+                       higgses contribute)
+              mode 2 : cross section for single mass mode (depending on mA only one Higgs contributes)
+              """
+              contracted_cross_section = 0.
+              channel = standardized_production_process+"_"+standardized_decay_channel
+              if mode == 2 :
+                     ## determine cross section for single-mass mode
+                     if self.mA<self.hww_cross_point :
+                            contracted_cross_section = self.signal_channel_to_cross_section[channel]["H"]
+                     else :
+                            contracted_cross_section = self.signal_channel_to_cross_section[channel]["h"]
+              elif mode == 1 :
+                     ## determine cross section for degenerate-masses mode
+                     if abs(self.mA-self.mh) < abs(self.mA-self.mH) :
+                            contracted_cross_section = self.signal_channel_to_cross_section[channel]["A"]
+                            contracted_cross_section+= self.signal_channel_to_cross_section[channel]["h"]
+                     else:
+                            contracted_cross_section = self.signal_channel_to_cross_section[channel]["A"]
+                            contracted_cross_section+= self.signal_channel_to_cross_section[channel]["H"]
+                     if self.mA == 130. :
+                            contracted_cross_section = self.signal_channel_to_cross_section[channel]["A"]
+                            contracted_cross_section+= self.signal_channel_to_cross_section[channel]["H"]
+                            contracted_cross_section+= self.signal_channel_to_cross_section[channel]["h"]
+              else :
+                     ## determine cross section for non-degenerate-masses mode
+                     for higgs in self.signal_channel_to_cross_section[channel] :
+                            contracted_cross_section += self.signal_channel_to_cross_section[channel][higgs]
+              return contracted_cross_section
+                     
+       def contracted_uncertainty(self, standardized_production_process, standardized_decay_channel, uncertainty_type, uncertainty_direction) :
+              """
+              Contract the uncertainties for A, H, h into a single uncertainty for a given production process
+              times decay channel. Scale uncertainties are added linearly, PDF uncertainties are added in
+              quadrature.
+              """
+              contracted_uncertainty = 0.
+              channel = standardized_production_process+"_"+standardized_decay_channel+"_"+uncertainty_type+uncertainty_direction
+              for higgs in self.signal_channel_to_uncertainties[channel] :
+                     if uncertainty_type == "mu" :
+                            contracted_uncertainty += self.signal_channel_to_uncertainties[channel][higgs]
+                     if uncertainty_type == "pdf" :
+                            contracted_uncertainty += self.signal_channel_to_uncertainties[channel][higgs]*self.signal_channel_to_uncertainties[channel][higgs]
+              if uncertainty_type == "pdf" :
+                     contracted_uncertainty = math.sqrt(contracted_uncertainty)
+              return contracted_uncertainty
+                     
+       def load_uncertainties_map(self) :
+              """
+              Fill signal process to uncertainties dictionary for scale and pdf uncertainties for all involved
+              production cross sections and decay channels. At the moment thisis only implemented for htt.
+              """
+              filled_htt  = False
+              filled_vhtt = False
+              filled_hww  = False
+              for decay_channel in self.decay_channels_ :
+                     if not filled_htt :
+                            if self.standardized_decay_channel(decay_channel) == "htt" :
+                                   filled_htt = True
+                                   self.signal_channel_to_uncertainties["ggH_htt_mu+" ] = self.uncertainties_htt("ggF"      , "mu" ,  1)
+                                   self.signal_channel_to_uncertainties["ggH_htt_mu-" ] = self.uncertainties_htt("ggF"      , "mu" , -1)
+                                   self.signal_channel_to_uncertainties["bbH_htt_mu+" ] = self.uncertainties_htt("santander", "mu" ,  1)
+                                   self.signal_channel_to_uncertainties["bbH_htt_mu-" ] = self.uncertainties_htt("santander", "mu" , -1)
+                                   self.signal_channel_to_uncertainties["qqH_htt_mu+" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["qqH_htt_mu-" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["VH_htt_mu+"  ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["VH_htt_mu-"  ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["ggH_htt_pdf+"] = self.uncertainties_htt("ggF"      , "pdf",  1)
+                                   self.signal_channel_to_uncertainties["ggH_htt_pdf-"] = self.uncertainties_htt("ggF"      , "pdf", -1)
+                                   self.signal_channel_to_uncertainties["bbH_htt_pdf+"] = self.uncertainties_htt("santander", "pdf",  1)
+                                   self.signal_channel_to_uncertainties["bbH_htt_pdf-"] = self.uncertainties_htt("santander", "pdf", -1)
+                                   self.signal_channel_to_uncertainties["qqH_htt_pdf+"] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["qqH_htt_pdf-"] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["VH_htt_pdf+" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["VH_htt_pdf-" ] = {"A" : .1, "H" : .1, "h" : .1}
+                     if not filled_vhtt :
+                            if self.standardized_decay_channel(decay_channel) == "vhtt" :
+                                   filled_vhtt = True
+                                   self.signal_channel_to_uncertainties["ggH_vhtt_mu+" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["ggH_vhtt_mu-" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["bbH_vhtt_mu+" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["bbH_vhtt_mu-" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["qqH_vhtt_mu+" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["qqH_vhtt_mu-" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["VH_vhtt_mu+"  ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["VH_vhtt_mu-"  ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["ggH_vhtt_pdf+"] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["ggH_vhtt_pdf-"] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["bbH_vhtt_pdf+"] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["bbH_vhtt_pdf-"] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["qqH_vhtt_pdf+"] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["qqH_vhtt_pdf-"] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["VH_vhtt_pdf+" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["VH_vhtt_pdf-" ] = {"A" : .1, "H" : .1, "h" : .1}
+                     if not filled_hww :
+                            if self.standardized_decay_channel(decay_channel) == "hww" :
+                                   filled_hww = True
+                                   self.signal_channel_to_uncertainties["ggH_hww_mu+" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["ggH_hww_mu-" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["bbH_hww_mu+" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["bbH_hww_mu-" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["qqH_hww_mu+" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["qqH_hww_mu-" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["VH_hww_mu+"  ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["VH_hww_mu-"  ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["ggH_hww_pdf+"] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["ggH_hww_pdf-"] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["bbH_hww_pdf+"] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["bbH_hww_pdf-"] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["qqH_hww_pdf+"] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["qqH_hww_pdf-"] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["VH_hww_pdf+" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   self.signal_channel_to_uncertainties["VH_hww_pdf-" ] = {"A" : .1, "H" : .1, "h" : .1}
+                            
+       def load_available_masses(self, decay_channel) :
+              """
+              Read all available masses for a given decay channel. The values are read from a file masses.vals,
+              which is expected to be located in the same directory, in which the script is executed. If the
+              file is not found it is looked for in a directory with name 'common' next to the current directory.
+              The variable 'decay_channel' is expected to be of type of self.decay_channel (='htt_em_0',
+              'htt_em_1', 'htt_em_2', ...).
+              """
+              masses = []
+              if os.path.exists("masses.vals") :
+                     file = open("masses.vals", 'r')
+              else :
+                     file = open("%s/../common/masses.vals" % os.getcwd(), 'r')
+              for line in file :
+                     words = line.split()
+                     if words[0] == decay_channel :
+                            for word in words :
+                                   if re.search(r"^\d+\.?\d+?$", word.strip()) :
+                                          masses.append(float(word))
+              file.close()
+              return masses
+
+       def embracing_masses(self, mass, masses) :
+              """
+              Determine the closest lower and upper mass value to 'mass' in the list of 'masses'. The return
+              value of this function is a tuple of a boolean to indicate whether 'mass' was out of range or
+              not and of the closest lower and upper mass value. In case that the mass was out of range the
+              closest lower and upper mass values are -1. At the moment a warning is issued in this case.
+              """
+              lower  = -1.
+              upper  = -1.
+              failed = False
+              for idx in range(len(masses)-1) :
+                     if idx == (len(masses)-2) and lower<0:
+                            print 'mass out of range: m=%.3f'% mass
+                            failed = True
+                     elif masses[idx]<mass and mass<=masses[idx+1] :
+                            lower = masses[idx  ]
+                            upper = masses[idx+1]
+              #print "embracing masses: ", lower, " -- ", mass, " -- ", upper
+              return (failed, lower, upper)
+
+       def scale(self, hist_lower, hist_upper, m_lower, m_upper, mass) :
+              """
+              Determine the residual scale due to potential differences in reconstruction and
+              selection efficiencies for the interpolated mass histogram from the embacing
+              mass histograms.
+              """
+              scale = 1.
+              if m_upper>m_lower:
+                     scale = hist_lower.Integral()+abs(hist_upper.Integral()-hist_lower.Integral())/abs(m_upper-m_lower)*(mass-m_lower)
+              return scale
+
+       def expand_filename(self, filename, mass=-1) :
+              """
+              Determine the proper filename for the loading of histograms for the rescaling of
+              the histograms for the central value and for the embracing masses for h an H. If
+              the histogram name contains the keyword $MASS (i.e. signal histograms for all mass
+              points not all contained in the same file), this keyword will be replaced by the 
+              value of mass. In this case the embracing histograms will be looked up from the
+              input histfiles in other directories of the setup. If mass is -1, the keyword will
+              be ignored. This is the case for the central value, which has already the proper
+              filename and is located in the current directory. In this case the keyword is erased
+              from the filename.
+              """
+              expanded_filename = filename
+              if filename.find("$MASS")>-1 :
+                     if mass>0 :
+                            expanded_filename = filename.replace("$MASS", "%.0f" % mass).replace("_%.0f_%.2f.root" % (self.mA, self.tanb), ".root")
+                     else :
+                            expanded_filename =  filename.replace("../$MASS", ".")
+              #print "mass: ", mass, " -- opening file: ", expanded_filename
+              return expanded_filename
+
+       def rescale_histogram(self, filename, dir, process, masses, cross_sections, interpolation_method="") :
+              """
+              Rescale a histogram with name 'process' according to the non-degenerate-masses scheme.
+              The histogram for mA is scaled as is. For mH and mh the closest available histograms
+              to the corresponding value of mH/mh are searched in the list of all available masses
+              for the given (sub-)decay channel, between these two histograms a histogram according
+              to the actual value of mH/mh is derived by horizontal template morphing and the
+              resulting histogram is scaled according to the corresponding cross section/tanb
+              times a linearly interpolated scale factor for the efficiency of the event selection
+              and mass reconstruction. In a light version the histograms for mH/mh are not determined
+              by horizontal template morphing but the histogram closest to mH/mh is chosen. NOTE:
+              this function has the results of self.load_cross_sections_map and self.load_available_masses
+              as input. 
+              """
+              ## cross check whether more then one histfile is needed or not
+              single_file = not (filename.find("$MASS")>-1)                     
+              ## open root file and get original histograms
+              hist_name = process
+              path_name = self.path(dir)+process
+              
+              ## prepare mA hist
+              new_filename  = self.expand_filename(filename)
+              file_mA_value = ROOT.TFile(new_filename, "UPDATE")
+              buff_mA_value = self.load_hist(file_mA_value, path_name)
+              hist_mA_value = buff_mA_value.Clone(hist_name)
+              #print "RESCALING OF HIST STARTING: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
+
+              hist_mA_value.Scale(cross_sections["A"]/self.tanb)
+              ## determine upper and lower mass edges for mh
+              (mh_failed, mh_lower, mh_upper) = self.embracing_masses(self.mh, masses)
+              if not mh_failed :
+                     if not single_file :
+                            new_filename  = self.expand_filename(filename, mh_lower)
+                            file_mh_lower = ROOT.TFile(new_filename, "READ")
+                     buff_mh_lower = self.load_hist(
+                            file_mA_value if single_file else file_mh_lower, path_name.replace("%.0f" % self.mA, "%.0f" % mh_lower) if self.mA!=mh_lower else path_name
+                            )
+                     hist_mh_lower = buff_mh_lower.Clone(hist_name.replace(str(self.mA), "%.0f" % mh_lower))
+                     if not single_file :
+                            new_filename  = self.expand_filename(filename, mh_upper)
+                            file_mh_upper = ROOT.TFile(new_filename, "READ")
+                     buff_mh_upper = self.load_hist(
+                            file_mA_value if single_file else file_mh_upper, path_name.replace("%.0f" % self.mA, "%.0f" % mh_upper) if mh_upper!=self.mA else path_name
+                            )
+                     hist_mh_upper = buff_mh_upper.Clone(hist_name.replace(str(self.mA), "%.0f" % mh_upper))
+                     if interpolation_method == "light" :
+                            if (self.mh-mh_lower)<(mh_upper-self.mh) :
+                                   hist_mh_value = hist_mh_lower
+                            else :
+                                   hist_mh_value = hist_mh_upper
+                            if hist_mh_value.Integral()>0 :
+                                   norm_mh_value = cross_sections["h"]/self.tanb*self.scale(hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh)
+                                   hist_mh_value.Scale(norm_mh_value)
+                     else:
+                            norm_mh_value = cross_sections["h"]/self.tanb*self.scale(hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh)
+                            hist_mh_value = th1fmorph("I","",hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh, norm_mh_value, 0)
+              else :
+                     hist_mh_value = hist_mA_value.Clone(hist_name)
+                     hist_mh_value.Scale(cross_sections["h"]/self.tanb)
+              ## catch cases where the morphing failed. Fallback to mA
+              ## in this case and scale according to cross section of mh
+              if not hist_mA_value.GetNbinsX() == hist_mh_value.GetNbinsX() :
+                     hist_mh_value = hist_mA_value.Clone(hist_name)
+                     hist_mh_value.Scale(cross_sections["h"]/self.tanb)
+              else :
+                     hist_mA_value.Add(hist_mh_value)
+                     
+              ## determine upper and lower mass edges for mH
+              (mH_failed, mH_lower, mH_upper) = self.embracing_masses(self.mH, masses)
+              if not mH_failed :
+                     if not single_file :
+                            new_filename  = self.expand_filename(filename, mH_lower)
+                            file_mH_lower = ROOT.TFile(new_filename, "READ")
+                     buff_mH_lower = self.load_hist(
+                            file_mA_value if single_file else file_mH_lower, path_name.replace("%0.f" % self.mA, "%.0f" % mH_lower)  if self.mA!=mH_lower else path_name
+                            )
+                     hist_mH_lower = buff_mH_lower.Clone(hist_name.replace(str(self.mA), "%.0f" % mH_lower))
+                     if not single_file :
+                            new_filename  = self.expand_filename(filename, mH_upper)
+                            file_mH_upper = ROOT.TFile(new_filename, "READ")
+                     buff_mH_upper = self.load_hist(
+                            file_mA_value if single_file else file_mH_upper, path_name.replace("%0.f" % self.mA, "%.0f" % mH_upper)  if mH_upper!=self.mA else path_name
+                            )
+                     hist_mH_upper = buff_mH_upper.Clone(hist_name.replace(str(self.mA), "%.0f" % mH_upper))
+                     if interpolation_method == "light" :
+                            if (self.mH-mH_lower)<(mH_upper-self.mH) :
+                                   hist_mH_value = hist_mH_lower
+                            else :
+                                   hist_mH_value = hist_mH_upper
+                            if hist_mH_value.Integral()>0 :
+                                   norm_mH_value = cross_sections["H"]/self.tanb*self.scale(hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH)
+                                   hist_mH_value.Scale(norm_mH_value)
+                     else :
+                            norm_mH_value = cross_sections["H"]/self.tanb*self.scale(hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH)
+                            hist_mH_value = th1fmorph("I","",hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH, norm_mH_value, 0)
+              else :
+                     hist_mH_value = hist_mA_value.Clone(hist_name)
+                     hist_mH_value.Scale(cross_sections["H"]/self.tanb)
+              ## catch cases where the morphing failed. Fallback to mA
+              ## in this case and scale according to cross section of mH
+              if not hist_mA_value.GetNbinsX() == hist_mH_value.GetNbinsX() :
+                     hist_mH_value = hist_mA_value.Clone(hist_name)
+                     hist_mH_value.Scale(cross_sections["H"]/self.tanb)
+              else :
+                     hist_mA_value.Add(hist_mH_value)
+              #print "RESCALING OF HIST FINISHED: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
+              
+              ## write modified histogram to file
+              if self.path(dir)=="" :
+                     file_mA_value.cd()
+              else :
+                     file_mA_value.cd(dir)
+              hist_mA_value.Write(hist_name, ROOT.TObject.kOverwrite)
+              file_mA_value.Close()
+              if not single_file :
+                     if not mh_failed :
+                            file_mh_upper.Close()
+                            file_mh_lower.Close()
+                     if not mH_failed :
+                            file_mH_upper.Close()
+                            file_mH_lower.Close()
+
+       def rescale_histogram_degenerate(self, filename, dir, hist_name, cross_sections) :
+              """
+              Rescale a histogram with name 'process' according to the degenerate-masses scheme.  
+              """
+              ## open root file and get original histograms
+              hist_name = hist_name
+              path_name = self.path(dir)+hist_name              
+              ## prepare mA hist
+              new_filename  = self.expand_filename(filename)
+              file_mA_value = ROOT.TFile(new_filename, "UPDATE")
+              hist_mA_value = self.load_hist(file_mA_value, path_name)
+              ## determine cross section for degenerate mass assumption
+              if abs(self.mA-self.mh) < abs(self.mA-self.mH) :
+                     cross_section = cross_sections["A"]+cross_sections["h"]
+              else:
+                     cross_section = cross_sections["A"]+cross_sections["H"]
+              if self.mA == 130. :
+                     cross_section = cross_sections["A"]+cross_sections["H"]+cross_sections["h"]
+              ## rescale histogram
+              hist_mA_value.Scale(cross_section/self.tanb)
+              ## write modified histogram to file
+              if self.path(dir)=="" :
+                     file_mA_value.cd()
+              else :
+                     file_mA_value.cd(dir)
+              ## this is not yet sharp whil it is stillin test mode
+              hist_mA_value.Write(hist_name, ROOT.TObject.kOverwrite)
+              file_mA_value.Close()
+
+
+       def rescale_histogram_single_mass(self, filename, dir, process, masses, cross_sections) :
+              """
+              Rescale a histogram with name 'process' according to the single-mass scheme. This scheme
+              is used for limits based on the limit on the SM Higgs boson search in the hww channel,
+              where the limit comes either from the absence of mh or mH. It can be viewed as a special
+              case of the degenerate-masses mode, where mA does actually not contribute due to the
+              zero coupling. For mA<250 GeV H is the contributing part (with masses ~130 GeV) leading
+              to a potential exclusion for low tanb values. For mA>250 GeV h is the contributing part
+              (also with masses ~130 GeV) leading to a potential exclusion for large tanb values. The
+              contribution by A is set to zero by construction. Of H/h only the corresponding leading
+              contributions is taken into account. This is a conservative approach. The better solution
+              would be to have the MVA discriminant for each mass value for the selection of each
+              corresponding mass point. In this case both contribution from H and h could be taken
+              into account. Still the choice would be to choose the selection optimized for the mass
+              point of the dominating contribution.
+              """
+              ## cross check whether more then one histfile is needed or not
+              single_file = not (filename.find("$MASS")>-1)                     
+              ## open root file and get original histograms
+              hist_name = process
+              path_name = self.path(dir)+process
+              
+              ## prepare mA hist
+              new_filename  = self.expand_filename(filename)
+              file_mA_value = ROOT.TFile(new_filename, "UPDATE")
+              hist_mA_value = self.load_hist(file_mA_value, path_name)
+              #print "RESCALING OF HIST STARTING: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
+              if self.mA<self.hww_cross_point :
+                     hist_mA_value.Scale(cross_sections["H"]/(1. if self.sm_like else self.tanb))
+              else :
+                     hist_mA_value.Scale(cross_sections["h"]/(1. if self.sm_like else self.tanb))
+              #print "RESCALING OF HIST FINISHED: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
+              
+              ## write modified histogram to file
+              if self.path(dir)=="" :
+                     file_mA_value.cd()
+              else :
+                     file_mA_value.cd(dir)
+              hist_mA_value.Write(hist_name, ROOT.TObject.kOverwrite)
+                           
+       def rescale_value_histograms(self) :
+              """
+              Rescale all histograms for central values
+              """       
+              ## extend empty lists by empty strings to allow looping
+              for key, value in self.histfile_to_directories.iteritems() :
+                     if len(value)==0 :
+                            value.append("")
+              ## loop files, directories and signal histograms and rescale all apropriate hists
+              for histfile in self.output_histfiles :
+                     for jdx in range(len(self.histfile_to_directories[histfile])) :
+                            directory = self.histfile_to_directories[histfile][jdx]
+                            decay_channel = self.histfile_to_decay_channels[histfile][jdx]
+                            for idx in self.signal_indexes :
+                                   if self.decay_channels_[idx] == decay_channel :
+                                          ## standardized production key for cross section mapping
+                                          std_prod  = self.standardized_signal_process(self.production_processes[idx])
+                                          ## standardized decay key for cross section mapping
+                                          std_decay = self.standardized_decay_channel(decay_channel)
+                                          ## list of all available masses for this decay channel
+                                          masses = self.load_available_masses(decay_channel)
+                                          ## modify path to hist file for such decay channels that do not keep
+                                          ## signal hists for all masses in one file 
+                                          for in_separate_files in self.hists_in_separate_files :
+                                                 if self.decay_channels_[idx] == in_separate_files :
+                                                        if not histfile.find("$MASS")>-1:
+                                                               histfile = "../$MASS/"+histfile
+                                          ## add prefix to histogram name where needed 
+                                          hist_name = self.production_processes[idx]
+                                          for prefix_channel in self.decay_channel_to_hist_prefixes :
+                                                 if self.decay_channels_[idx] == prefix_channel :
+                                                        prefix = self.decay_channel_to_hist_prefixes[prefix_channel]
+                                                        if prefix.find("$MASS")>-1 :
+                                                               prefix = "%.0f_" % self.mA
+                                                        hist_name = prefix+hist_name
+                                          ## rescale central value histograms
+                                          if self.decay_channel_to_interpolation_method.has_key(self.decay_channels_[idx]) :
+                                                 if self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "non-degenerate-masses-light" :
+                                                        print "using non-degenerate-masses-light mode for decay channel: ", self.decay_channels_[idx]
+                                                        self.rescale_histogram(
+                                                               histfile,
+                                                               directory,
+                                                               hist_name,
+                                                               masses,
+                                                               self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                               "light"
+                                                               )
+                                                 elif self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "degenerate-masses" :
+                                                        print "using degenerate-masses mode for decay channel: ", self.decay_channels_[idx]
+                                                        self.rescale_histogram_degenerate(
+                                                               histfile,
+                                                               directory,
+                                                               hist_name,
+                                                               self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                               )
+                                                 elif self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "single-mass" :
+                                                        print "using single-mass mode for decay channel: ", self.decay_channels_[idx]
+                                                        self.rescale_histogram_single_mass(
+                                                               histfile,
+                                                               directory,
+                                                               hist_name,
+                                                               masses,
+                                                               self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                               )                                                        
+                                                 else :
+                                                        ## fall back to the default
+                                                        self.rescale_histogram(
+                                                               histfile,
+                                                               directory,
+                                                               hist_name,
+                                                               masses,
+                                                               self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                               )
+                                          else :
+                                                 self.rescale_histogram(
+                                                        histfile,
+                                                        directory,
+                                                        hist_name,
+                                                        masses,
+                                                        self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                        )
+
+       def rescale_shift_histograms(self) :
+              """
+              Rescale all histograms for upper/lower boundaries of shift histograms
+              """       
+              ## extend empty lists by empty strings to allow looping
+              for key, value in self.histfile_to_directories.iteritems() :
+                     if len(value)==0 :
+                            value.append("")
+              ## loop files, directories and signal histograms and rescale all apropriate hists
+              for histfile in self.output_histfiles :
+                     for jdx in range(len(self.histfile_to_directories[histfile])) :
+                            directory = self.histfile_to_directories[histfile][jdx]
+                            decay_channel = self.histfile_to_decay_channels[histfile][jdx]
+                            for idx in self.signal_indexes :
+                                   if self.decay_channels_[idx] == decay_channel :
+                                          ## standardized production key for cross section mapping
+                                          std_prod  = self.standardized_signal_process(self.production_processes[idx])
+                                          ## standardized decay key for cross section mapping
+                                          std_decay = self.standardized_decay_channel(decay_channel)
+                                          ## list of all available masses for this decay channel
+                                          masses = self.load_available_masses(decay_channel)
+                                          ## modify path to hist file for such decay channels that do not keep
+                                          ## signal hists for all masses in one file 
+                                          for in_separate_files in self.hists_in_separate_files :
+                                                 if self.decay_channels_[idx] == in_separate_files :
+                                                        if not histfile.find("$MASS")>-1:
+                                                               histfile = "../$MASS/"+histfile
+                                          ## add prefix to histogram name where needed 
+                                          hist_name = self.production_processes[idx]
+                                          for prefix_channel in self.decay_channel_to_hist_prefixes :
+                                                 if self.decay_channels_[idx] == prefix_channel :
+                                                        prefix = self.decay_channel_to_hist_prefixes[prefix_channel]
+                                                        if prefix.find("$MASS")>-1 :
+                                                               prefix = "%.0f_" % self.mA
+                                                        hist_name = prefix+hist_name
+                                          ## rescal histograms for "Up"/"Down" shape uncertainties
+                                          for uncertainty, indexes in self.uncertainty_to_signal_indexes.iteritems() :
+                                                 for jdx in indexes :
+                                                        if jdx == idx :
+                                                               if self.decay_channel_to_interpolation_method.has_key(self.decay_channels_[idx]) :
+                                                                      if self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "non-degenerate-masses-light" :
+                                                                             print "using non-degenerate-masses-light mode for decay channel: ", self.decay_channels_[idx]
+                                                                             self.rescale_histogram(
+                                                                                    histfile,
+                                                                                    directory,
+                                                                                    hist_name+"_"+uncertainty+"Up",
+                                                                                    masses,
+                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                                    "light"
+                                                                                    )
+                                                                             self.rescale_histogram(
+                                                                                    histfile,
+                                                                                    directory,
+                                                                                    hist_name+"_"+uncertainty+"Down",
+                                                                                    masses,
+                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                                    "light"
+                                                                                    )
+                                                                      elif self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "degenerate-masses" :
+                                                                             print "using degenerate-masses mode for decay channel: ", self.decay_channels_[idx]
+                                                                             self.rescale_histogram_degenerate(
+                                                                                    histfile,
+                                                                                    directory,
+                                                                                    hist_name+"_"+uncertainty+"Up",
+                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                                                    )
+                                                                             self.rescale_histogram_degenerate(
+                                                                                    histfile,
+                                                                                    directory,
+                                                                                    hist_name+"_"+uncertainty+"Down",
+                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                                                    )
+                                                                      if self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "single-mass" :
+                                                                             print "using single-mass mode for decay channel: ", self.decay_channels_[idx]
+                                                                             self.rescale_histogram_single_mass(
+                                                                                    histfile,
+                                                                                    directory,
+                                                                                    hist_name+"_"+uncertainty+"Up",
+                                                                                    masses,
+                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                                                    )
+                                                                             self.rescale_histogram_single_mass(
+                                                                                    histfile,
+                                                                                    directory,
+                                                                                    hist_name+"_"+uncertainty+"Down",
+                                                                                    masses,
+                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                                                    )
+                                                                      else :
+                                                                             ## fall back to the default
+                                                                             self.rescale_histogram(
+                                                                                    histfile,
+                                                                                    directory,
+                                                                                    hist_name+"_"+uncertainty+"Up",
+                                                                                    masses,
+                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                                                    )
+                                                                             self.rescale_histogram(
+                                                                                    histfile,
+                                                                                    directory,
+                                                                                    hist_name+"_"+uncertainty+"Down",
+                                                                                    masses,
+                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                                                    )
+                                                               else :
+                                                                      self.rescale_histogram(
+                                                                             histfile,
+                                                                             directory,hist_name+"_"+uncertainty+"Up",
+                                                                             masses,
+                                                                             self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                                             )
+                                                                      self.rescale_histogram(
+                                                                             histfile,
+                                                                             directory,
+                                                                             hist_name+"_"+uncertainty+"Down",
+                                                                             masses,
+                                                                             self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                                             )
+
+       def path(self, directory):
+              """
+              Add '/' to directory in case it is non-empty.
+              """
+              path=""
+              if not directory=="" :
+                     path=directory+"/"
+              return path
+
+       def load_hist(self, file, name) :
+              """
+              Load a histogram with name from input histfile. Issue a warning in case the histogram
+              is not available.
+              """
+              hist = file.Get(name)
+              if type(hist) == ROOT.TObject :
+                     print "hist not found: ", file.GetName(), ":", name
+              return hist
+
+       def rate_from_hist(self, file, directory, hist) :
+              """
+              Return rate from histogram in output histfile. 
+              """
+              file = ROOT.TFile(file,"READ")
+              rate=0.0
+              hist=self.load_hist(file, self.path(directory)+hist)
+              rate=hist.Integral()
+              return rate
+
+       def map_shape_uncertainties(self, words) :
+              """
+              Add a list of signal indexes to a map of uncertainties
+              """
+              for idx in range(len(self.production_processes)) :
+                     if not words[idx+2] == "-" :
+                            if not words[0] in self.uncertainty_to_signal_indexes :
+                                   self.uncertainty_to_signal_indexes[words[0]] = [idx]
+                            else :
+                                   self.uncertainty_to_signal_indexes[words[0]].append(idx)
+
+       def modify_shapes_line(self, words, output_line) :
+              """
+              Find the output histfile for shape analyses from the list of words. Modify the output histfile name
+              to include the values of mA and tanb accordingly. Modify the output_line. Copy the original output
+              histfile to a new one with the new output name. Append the new name of the output file as a unique
+              value to the list of self.output_histfiles.
+              
+              A single output histfile can serve more than one channel: Append the channel, which corresponds to
+              this hist output file to the dictionary of self.histfile_to_decay_channels.
+              
+              A output histfile can contain one or more directories to indicate sub-channels or the histograms can
+              be safed directly in the root file. Determine the number of directories in the corresponding input
+              file and add it to the dictionary of self.hisrfile_to_directories. If no directories exist in the
+              given file an empty list is stored for the given key.
+              """
+              for (idx, word) in enumerate(words):
+                     if word.find(".root")>-1 :
+                            output_histfile=word.replace(".root", "_%.0f_%.2f.root" % (self.mA, self.tanb))
+                            output_line = output_line.replace(word, output_histfile)
+                            if not self.output_histfiles.count(output_histfile)>0 :
+                                   self.output_histfiles.append(output_histfile)
+                                   shutil.copy(word, output_histfile)
+                            ## one file can belong to more than one channel; map
+                            ## each file to its corresponding channels
+                            channel = self.find_decay_channel(words[2])
+                            self.append_unique_value(self.histfile_to_decay_channels, output_histfile, channel)
+                            ## figure out which directories exist in which files
+                            directories = self.find_directories_in_histfile(words)
+                            for directory in directories :
+                                   self.append_unique_value(self.histfile_to_directories, output_histfile, directory)
+              return output_line
+
+       def modify_rates_line(self, words, output_line) :
+              """
+              Modify the rates in the 'rates' output line in the output datacard. The new rate is
+              read out from the rescaled histograms for the central values.
+              """
+              self.load_uncertainties_map()
+              self.load_cross_sections_map()
+              self.rescale_value_histograms()
+              for idx in self.signal_indexes :
+                     cut_and_count = True
+                     ## first deal with signals with shapes
+                     for histfile in self.output_histfiles :
+                            for jdx in range(len(self.histfile_to_directories[histfile])) :
+                                   directory = self.histfile_to_directories[histfile][jdx]
+                                   decay_channel = self.histfile_to_decay_channels[histfile][jdx]
+                                   if self.decay_channels_[idx] == decay_channel :
+                                          cut_and_count = False
+                                          hist_name = self.production_processes[idx]
+                                          for prefix_channel in self.decay_channel_to_hist_prefixes :
+                                                 if self.decay_channels_[idx] == prefix_channel :
+                                                        prefix = self.decay_channel_to_hist_prefixes[prefix_channel]
+                                                        if prefix.find("$MASS")>-1 :
+                                                               prefix = "%.0f_" % self.mA
+                                                        hist_name = prefix+hist_name
+                                          output_list = output_line.split()
+                                          output_list[idx+1] = str(self.rate_from_hist(histfile, directory, hist_name))
+                                          output_line = '\t   '.join(output_list)+'\n'
+                     ## cut and count channels
+                     if cut_and_count :
+                            contracted_cross_section_mode = 0
+                            if self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "degenerate-masses" :
+                                   contracted_cross_section_mode = 1
+                            if self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "single-mass" :
+                                   contracted_cross_section_mode = 2
+                            xsec = self.contracted_cross_section(
+                                   self.standardized_signal_process(self.production_processes[idx]),
+                                   self.standardized_decay_channel(self.decay_channels_[idx]),
+                                   contracted_cross_section_mode
+                                   )
+                            output_list = output_line.split()
+                            new_rate = float(output_list[idx+1])*xsec/(1. if self.sm_like else self.tanb)
+                            output_list[idx+1] = str(new_rate)
+                            output_line = '\t   '.join(output_list)+'\n'
+              return output_line
+       
+       def add_uncertainty_lines(self) :
+              """
+              Determine additional lines that are needed for the uncertainties. For each signal
+              process type (ggH, qqH, bbH, VH) two additional uncertainties are added for Scale
+              and for PDF to the datacard. In this function all signal processes are looped and
+              at first occurence of each process a line is prepared for the corresponding
+              uncertainty. This line starts with the word $PROCESSScale or $PROCESSPDF and has
+              the uncertainty at the position of the given process and a '-' for all all other
+              processes.
+              """
+              for idx in self.signal_indexes :       
+                     signal = self.standardized_signal_process(self.production_processes[idx])
+                     for key in self.standardized_signal_process_to_uncertainty_heads :
+                            if key == signal :
+                                   for uncertainty in self.standardized_signal_process_to_uncertainty_heads[key] :
+                                          if not self.signal_channel_to_uncertainty_lines.has_key(uncertainty) :
+                                                 ## add entry to dictionary if it does not yet exist
+                                                 ## initialize line with line head for uncertainties
+                                                 self.signal_channel_to_uncertainty_lines[uncertainty] = uncertainty+" \t\t lnN \t\t"
+                                                 for jdx in range(len(self.production_processes)) :
+                                                        if self.standardized_signal_process(self.production_processes[jdx]) == key :
+                                                               prod = self.standardized_signal_process(self.production_processes[jdx])
+                                                               decay = self.standardized_decay_channel(self.decay_channels_[jdx])
+                                                               contracted_cross_section_mode = 0
+                                                               if self.decay_channel_to_interpolation_method[self.decay_channels_[jdx]] == "degenerate-masses" :
+                                                                      contracted_cross_section_mode = 1
+                                                               if self.decay_channel_to_interpolation_method[self.decay_channels_[jdx]] == "single-mass" :
+                                                                      contracted_cross_section_mode = 2
+                                                               ## add uncertainties for given process
+                                                               if uncertainty.find("Scale")>-1 :
+                                                                      cross_section = self.contracted_cross_section(prod, decay, contracted_cross_section_mode)
+                                                                      uncert_upper  = self.contracted_uncertainty(prod, decay, "mu" , "+")
+                                                                      uncert_lower  = self.contracted_uncertainty(prod, decay, "mu" , "-")
+                                                                      if cross_section>0. and uncert_lower/cross_section!=1 :
+                                                                             uncert = (1./(1.-uncert_lower/cross_section))/(1.+uncert_upper/cross_section)
+                                                                             self.signal_channel_to_uncertainty_lines[uncertainty] += " \t\t %.3f " % uncert
+                                                                      else :
+                                                                             self.signal_channel_to_uncertainty_lines[uncertainty] += " \t\t  0.1 "
+                                                               if uncertainty.find("PDF"  )>-1 :
+                                                                      cross_section = self.contracted_cross_section(prod, decay, contracted_cross_section_mode)
+                                                                      uncert_upper  = self.contracted_uncertainty(prod, decay, "pdf", "+")
+                                                                      uncert_lower  = self.contracted_uncertainty(prod, decay, "pdf", "-")
+                                                                      if cross_section>0. :
+                                                                             uncert = (1./(1.+uncert_lower/cross_section))/(1.+uncert_upper/cross_section)
+                                                                             self.signal_channel_to_uncertainty_lines[uncertainty] += " \t\t %.3f " % uncert
+                                                                      else :
+                                                                             self.signal_channel_to_uncertainty_lines[uncertainty] += " \t\t  0.1 "
+                                                        else :
+                                                               ## add dash for all other processes
+                                                               self.signal_channel_to_uncertainty_lines[uncertainty] += " \t\t - "
+
+
+if len(args) < 1 :
+       parser.print_help()
+       exit(1)
+       
+## skip first pass of 'bin'
+first_pass_on_bin = True
+## name of the input datacard
+input_name = args[0]
+## datacard creator
+print "creating datacard for mA=%s, tanb=%s" % (options.mA, options.tanb)
+datacard_creator = MakeDatacard(float(options.tanb), float(options.mA))
+datacard_creator.init()
+
+## first file parsing
+input_file = open(input_name,'r')
+output_file = open(input_name.replace(".txt", "_%.2f.txt" % float(options.tanb)), 'w')
+for input_line in input_file :
+       words = input_line.split()
+       output_line = input_line
+       if len(words) < 1: continue
+       ## determine a list of unique decay channels
+       if words[0] == "Combination" :
+              datacard_creator.initial_datacards = datacard_creator.decay_channels(words)
+       ## need to fix kmax in the head of the file here
+       if words[0] == "kmax" :
+              output_line = output_line.replace(words[1], " *")
+       ## determine which file and directory structures to take care of for this combination
+       if words[0] == "shapes":
+              output_line = datacard_creator.modify_shapes_line(words, output_line)
+       ## determine the list of all single channels (in standardized format, multiple occurences possible)
+       if words[0] == "bin" :
+              if not first_pass_on_bin :
+                     for (idx, word) in enumerate(words) :
+                            if idx==0 :
+                                   continue
+                            datacard_creator.decay_channels_.append(word)
+              first_pass_on_bin = False
+       ## determine which processes are actually signal (processes correspond to the shape histograms in case of shape analyses)
+       ## the way to determine signal processes is by the process id smaller equal 0. The indexes of all signal processes are
+       ## kept in signal_indexes. These can be used to look up the signals in signal_processes and the according channel these
+       ## belong to in signal_channels
+       if words[0] == "process" :
+              for (idx, word) in enumerate(words) :
+                     if idx==0 :
+                            continue
+                     if word.isdigit() or word.lstrip("-").isdigit() :
+                            if int(word) <=0 :
+                                   datacard_creator.signal_indexes.append(idx-1)
+                     else :
+                            datacard_creator.production_processes.append(word)
+       ## modify rates for central values
+       if words[0] == "rate" :
+              ## manipulate histograms
+              output_line = datacard_creator.modify_rates_line(words, output_line)
+       ## ...
+       if len(words)>1 and words[1] == "shape" :
+              ## map out the shape uncertainties for later rescaling of hists              
+              datacard_creator.map_shape_uncertainties(words)
+       ## write output line to output file
+       output_file.write(output_line)
+
+## rescale the shape uncertainty histograms
+datacard_creator.rescale_shift_histograms()
+## map out the uncertainty lines for scale and pdf uncertainties 
+datacard_creator.add_uncertainty_lines()
+## add new scale and pdf uncertinaties for new datacard
+for signal_channel, uncertainy_lines in datacard_creator.signal_channel_to_uncertainty_lines.iteritems() :
+       output_file.write(datacard_creator.signal_channel_to_uncertainty_lines[signal_channel]+"\n")
+
+print "done"
