@@ -1,0 +1,12 @@
+###########################################################################
+# unc.vals: specification of uncertainty values by category, sample, and uncertainty name
+emu_X     			signal,EWK              	lumi            		1.045
+emu_X 				signal,background 		CMS_eff_e 			1.02
+emu_X 				signal	 			CMS_res_e 			1.00
+emu_X 				signal,background 		CMS_eff_m 			1.02
+emu_X  		      	        signal,background		CMS_scale_j			0.99
+emu_X    			signal,background      		CMS_scale_met			1.05
+emu_X				Ztt				CMS_htt_zttNorm 		1.033
+emu_X				ttbar				CMS_htt_ttbarNorm		1.075
+emu_X				EWK				CMS_htt_DiBosonNorm		1.15
+emu_X				Fakes				CMS_hww_fakes_em		1.30

@@ -1,0 +1,29 @@
+###########################################################################
+# unc.vals: specification of uncertainty values by category, sample, and uncertainty name
+muTau_SM1,muTau_SM2		signal		             	lumi            			1.045
+muTau_SM1,muTau_SM2 		signal,ZLL,TT,VV 		CMS_eff_m 				1.01
+muTau_SM1,muTau_SM2 		signal,TT,VV    		CMS_eff_t 				1.062
+muTau_SM1,muTau_SM2		signal   			CMS_scale_t 				1.00
+muTau_SM1                       TT				CMS_scale_j				1.03
+muTau_SM1                       VV				CMS_scale_j				1.08
+muTau_SM2         	        TT				CMS_scale_j				1.15
+muTau_SM2         	        VV				CMS_scale_j				1.10
+muTau_SM1,muTau_SM2   		signal,ZLL	    		CMS_scale_met				1.05
+muTau_SM1	   		TT		    		CMS_scale_met				1.07
+muTau_SM1	   		VV		    		CMS_scale_met				1.06
+muTau_SM2	   		TT,VV		    		CMS_scale_met				1.10
+muTau_SM1                       ZTT,ZLL				CMS_htt_ztt_extrap_boost		1.025
+muTau_SM2		        ZTT				CMS_htt_ztt_extrap_vbf			1.075
+muTau_SM2		        ZLL				CMS_htt_ztt_extrap_vbf			1.028
+muTau_SM1                       W				CMS_htt_W_extrap_boost			1.032
+muTau_SM2		        W				CMS_htt_W_extrap_vbf			1.044
+muTau_SM1                       QCD				CMS_htt_muTau_SM1_QCDSyst		1.083
+muTau_SM2		        QCD				CMS_htt_muTau_SM2_QCDSyst		1.174
+muTau_SM1,muTau_SM2		ZTT,ZLL				CMS_htt_zttNorm 			1.033
+muTau_SM1			TT				CMS_htt_ttbarNorm			1.095
+muTau_SM1			VV				CMS_htt_DiBosonNorm			1.447
+muTau_SM2			TT				CMS_htt_ttbarNorm			1.232
+muTau_SM2			VV				CMS_htt_DiBosonNorm			1.990
+muTau_SM1,muTau_SM2		W				CMS_htt_muTau_WNorm			1.066
+muTau_SM1,muTau_SM2		ZLL				CMS_htt_ZLLNorm				1.147
+

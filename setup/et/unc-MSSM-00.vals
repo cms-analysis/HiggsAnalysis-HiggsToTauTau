@@ -1,0 +1,22 @@
+###########################################################################
+# unc.vals: specification of uncertainty values by category, sample, and uncertainty name
+eleTau_NoB		signal            		lumi            		1.045
+eleTau_NoB 		signal,ZTT,ZJ,ZL,TT,VV  	CMS_eff_e			1.01
+eleTau_NoB 		signal,ZTT,TT,VV  		CMS_eff_t 			1.064
+eleTau_NoB 		BBHBJet,TT            		CMS_eff_b 			0.894
+eleTau_NoB 		BBHJet,GGHJet          		CMS_fake_b 			0.86
+eleTau_NoB  	     	signal,ZTT			CMS_scale_t   	        	1.00
+eleTau_NoB     	 	signal		  		CMS_scale_j 			0.98
+eleTau_NoB     	 	TT      	  		CMS_scale_j 			0.93
+eleTau_NoB     	 	VV      	  		CMS_scale_j 			0.97
+eleTau_NoB     	 	TT		  		CMS_scale_met			1.03
+eleTau_NoB     	 	VV		  		CMS_scale_met			1.04		
+eleTau_NoB	       	ZTT	         		CMS_htt_ztt_extrap_nob		1.00
+eleTau_NoB     		ZTT,ZL,ZJ        		CMS_htt_zttNorm 		1.033
+eleTau_NoB     		TT     		  		CMS_htt_ttbarNorm 		1.107
+eleTau_NoB     		VV	          		CMS_htt_DiBosonNorm 		1.204
+eleTau_NoB	        QCD          			CMS_htt_eleTau_QCDSyst 		1.047
+eleTau_NoB	        W	          		CMS_htt_eleTau_NoB_WNorm 	1.068
+eleTau_NoB             	ZJ	          		CMS_htt_eleTau_NoB_ZJFTNorm	1.102
+eleTau_NoB             	ZL	          		CMS_htt_eleTau_NoB_ZLFTNorm	1.101
+eleTau_NoB	       	QCD	          		CMS_htt_eleTau_NoB_QCDNorm	1.070
