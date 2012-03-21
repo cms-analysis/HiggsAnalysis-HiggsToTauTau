@@ -214,12 +214,12 @@ for directory in args :
         ## clean up directory from former run
         os.system("rm higgsCombineTest.HybridNew*")
         if not options.expectedOnly :
-            os.system(r"root -l -b -q {cmssw_base}/src/MitLimits/Higgs2Tau/macros/singlePointAsymptotic.C+\(\"higgsCombineTest.HybridNew.mH{mass}.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-        os.system(r"root -l -b -q {cmssw_base}/src/MitLimits/Higgs2Tau/macros/singlePointAsymptotic.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.027.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-        os.system(r"root -l -b -q {cmssw_base}/src/MitLimits/Higgs2Tau/macros/singlePointAsymptotic.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.160.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-        os.system(r"root -l -b -q {cmssw_base}/src/MitLimits/Higgs2Tau/macros/singlePointAsymptotic.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.500.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-        os.system(r"root -l -b -q {cmssw_base}/src/MitLimits/Higgs2Tau/macros/singlePointAsymptotic.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.840.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-        os.system(r"root -l -b -q {cmssw_base}/src/MitLimits/Higgs2Tau/macros/singlePointAsymptotic.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.975.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+            os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.027.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.160.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.500.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.840.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.975.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
     if options.prepBayesian :
         ifile=0
         directoryList = os.listdir(".")
