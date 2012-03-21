@@ -8,7 +8,7 @@ parser.add_option("-m", "--mA",    dest="mA",       default=120.,  type="float",
 parser.add_option("-t", "--tanb",  dest="tanb",     default='20.',   type="string",   help="Values of tanb. [Default: 20.]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode")
 parser.add_option("--sm-like", dest="sm_like", default=False, action="store_true", help="Do not divide by the value of tanb, but only scale to MSSM xsec according to tanb value. (Will result in typical SM limit on signal strength for given value of tanb). Used for debugging. [Default: False]")
-parser.add_option("--model", dest="model", default='HiggsAnalysis/HiggsToTauTau/data/out.mhmax-7-nnlo.root', type="string", help="Model to be applied for the limit calculation. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-7-nnlo.root']")
+parser.add_option("--model", dest="model", default='HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-7-nnlo.root', type="string", help="Model to be applied for the limit calculation. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-7-nnlo.root']")
 (options, args) = parser.parse_args()
 
 import re
@@ -24,7 +24,7 @@ from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools
 
 
 class MakeDatacard :
-       def __init__(self, tanb, mA, model="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-7-nnlo.root", sm_like=False) :
+       def __init__(self, tanb, mA, model="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-7-nnlo.root", sm_like=False) :
               ## full path for the input file for the htt xsec tools, expected in the data directory of the package
               self.mssm_xsec_tools_input_path = model
               ## do not divide yields by value of tanb but only rescale by xsec for given value of tanb
@@ -494,12 +494,12 @@ class MakeDatacard :
               upper  = -1.
               failed = False
               for idx in range(len(masses)-1) :
+                     if masses[idx]<mass and mass<=masses[idx+1] :
+                            lower = masses[idx  ]
+                            upper = masses[idx+1]
                      if idx == (len(masses)-2) and lower<0:
                             print 'mass out of range: m=%.3f'% mass
                             failed = True
-                     elif masses[idx]<mass and mass<=masses[idx+1] :
-                            lower = masses[idx  ]
-                            upper = masses[idx+1]
               #print "embracing masses: ", lower, " -- ", mass, " -- ", upper
               return (failed, lower, upper)
 
