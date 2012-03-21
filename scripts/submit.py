@@ -3,11 +3,11 @@ from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...",
-                      description="Script for comprehensive crabjob submission for htt MSSM and SM limits and for the combination of all Higgs channels. ARG1, ARG2, ARG3, ... correspond to the job directories for the submission. These directories should contain the all datacards and input files needed for the limit calculation.")
+                      description="Script for comprehensive crabjob submission for htt MSSM and SM limits and for the combination of all Higgs channels. ARG1, ARG2, ARG3, ... correspond to the job directories for the submission. These directories should contain the all datacards and input files needed for the limit calculation. Dedicated options can be fed through to the submit-slave.py via the option --options, enbraced by '...'.")
 parser.add_option("-n", "--cycles", dest="cycles", default=1, type="int", help="Number of submission cycles (one submission cycle consists of 50 crabjobs). [Default: 1]")
 parser.add_option("-s", "--setup", dest="setup", default="htt-mssm", type="choice", help="Limit calculation setup [Default: htt-mssm]", choices=["hww-mssm", "htt-mssm", "htt-sm", "cmb"])
 parser.add_option("-m", "--method", dest="method", default="CLs", type="choice", help="Limit calculation method [Default: CLs]", choices=["Bayesian", "CLs", "tanb", "tanb+", "single"])
-parser.add_option("--opt", dest="opt", default="", type="string", help="String for additional options for testing (enclosed by \"...\"). [Default: \"\"]")
+parser.add_option("--options", dest="opt", default="", type="string", help="String for additional options for testing (enclosed by \"...\"). [Default: \"\"]")
 mgroup = OptionGroup(parser, "HIGGS COMBINATION COMMAND OPTIONS", "Command options for the use with --setup cmb.")
 mgroup.add_option("-b", "--boundaries", dest="bound", default="cmb", type="choice", help="Optimized CLs grid boundaries for a given channel (to be used for submissions together with option --setup \"cmb\") [Default: cmb]", choices=["cmb", "htt", "hgg", "hbb", "hww", "hzz4l", "hzz2l2q", "hzz2l2nu", "hzz2l2t"])
 parser.add_option_group(mgroup)

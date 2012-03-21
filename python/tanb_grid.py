@@ -8,6 +8,7 @@ parser.add_option("-m", "--mA",    dest="mA",       default=120.,  type="float",
 parser.add_option("-t", "--tanb",  dest="tanb",     default='20.',   type="string",   help="Values of tanb. [Default: 20.]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode")
 parser.add_option("--sm-like", dest="sm_like", default=False, action="store_true", help="Do not divide by the value of tanb, but only scale to MSSM xsec according to tanb value. (Will result in typical SM limit on signal strength for given value of tanb). Used for debugging. [Default: False]")
+parser.add_option("--model", dest="model", default='HiggsAnalysis/HiggsToTauTau/data/out.mhmax-7-nnlo.root', type="string", help="Model to be applied for the limit calculation. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-7-nnlo.root']")
 (options, args) = parser.parse_args()
 
 import re
@@ -23,9 +24,9 @@ from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools
 
 
 class MakeDatacard :
-       def __init__(self, tanb, mA, sm_like=False) :
+       def __init__(self, tanb, mA, model="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-7-nnlo.root", sm_like=False) :
               ## full path for the input file for the htt xsec tools, expected in the data directory of the package
-              self.mssm_xsec_tools_input_path = "HiggsAnalysis/HiggsToTauTau/data/out.mhmax-7-nnlo.root"
+              self.mssm_xsec_tools_input_path = model
               ## do not divide yields by value of tanb but only rescale by xsec for given value of tanb
               self.sm_like = sm_like
               ## tanb as float
@@ -129,6 +130,7 @@ class MakeDatacard :
 
        def init(self) :
               self.load_masses()
+              print "preparing limit calculation for model input:", self.mssm_xsec_tools_input_path 
        
        def decay_channels(self, words) :
               """
@@ -333,7 +335,6 @@ class MakeDatacard :
               cross_sections = {"A" : 0., "H" : 0., "h" : 0.}
               ## read cross section results for htt
               inputFileName="{CMSSW_BASE}/src/{path}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], path=self.mssm_xsec_tools_input_path)
-              print inputFileName
               scan = mssm_xsec_tools(inputFileName)
               htt_query = scan.query(self.mA, self.tanb)
               ## fill uncertainties of Up/Down type
@@ -1106,7 +1107,7 @@ first_pass_on_bin = True
 input_name = args[0]
 ## datacard creator
 print "creating datacard for mA=%s, tanb=%s" % (options.mA, options.tanb)
-datacard_creator = MakeDatacard(float(options.tanb), float(options.mA))
+datacard_creator = MakeDatacard(float(options.tanb), float(options.mA), options.model)
 datacard_creator.init()
 
 ## first file parsing

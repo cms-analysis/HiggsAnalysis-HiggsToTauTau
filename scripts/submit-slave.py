@@ -7,12 +7,13 @@ parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...",
 ## direct options
 parser.add_option("-o", "--out", dest="out", default="batch", type="string", help="Name of the output files (.sh and .cfg). [Default: batch]")
 parser.add_option("-v", "--verbose", dest="v", default=0, type="int", help="Verbosity level of lands or combine. [Default: 0]")
-parser.add_option("--random", dest="random", default=False, action="store_true", help="Use random seeds. [Default: False]")
-parser.add_option("--bin", dest="binary", default="combine", type="choice", help="Binary file to be used [Default: combine]",  choices=["lands", "combine"])
+parser.add_option("--binary", dest="binary", default="combine", type="choice", help="Binary file to be used [Default: combine]",  choices=["lands", "combine"])
 parser.add_option("--method", dest="method", default="CLs", type="choice", help="Statistical method to be used [Default: CLs]",  choices=["bayesian", "CLs", "tanb", "single"])
 parser.add_option("--shape",           dest="shape",           default="shape2",  type="string",             help="Choose dedicated algorithm for shape uncertainties. [Default: 'shape2']")
-parser.add_option("--noSystematics", dest="nosys", default=False, action="store_true", help="Use statistical uncertainties only (currently only implemented for combine). [Default: False]")
+parser.add_option("--random", dest="random", default=False, action="store_true", help="Use random seeds. [Default: False]")
+parser.add_option("--model", dest="model", default="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-7-nnlo.root", type="string", help="The model that should be applied for limits on tanb (only applicable for --method tanb, for other methods this option will have no effect). The model should be given as the absolute path to the mssm_xsec_tool input file starting from CMSSW_BASE/src/. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-7-nnlo.root']")
 parser.add_option("--interactive", dest="interactive",default=False, action="store_true", help="Set to true to run interactive, otherwise the script will submit the job to the grid directly [Default: False]")
+parser.add_option("--noSystematics", dest="nosys", default=False, action="store_true", help="Use statistical uncertainties only (currently only implemented for combine). [Default: False]")
 ## lands options for Bayesian
 lgroup = OptionGroup(parser, "LANDS (Bayesian) COMMAND OPTIONS", "Command options for the use of lands with method -M bayesian.")
 lgroup.add_option("-b", "--bands", dest="bands", default=1, type="int", help="--doExpectation 1; this has to be 0 or 1. [Default: 1]")
@@ -182,7 +183,7 @@ for directory in args :
                 points = [ float(options.min) + dx*i for i in range(options.points) ]
                 ## create additional workspaces
                 for tanb in points :
-                    os.system("python tanb_grid.py -m {mass} -t {tanb} tmp.txt".format(mass=masspoint, tanb=tanb))
+                    os.system("python tanb_grid.py -m {mass} -t {tanb} --model {model} tmp.txt".format(mass=masspoint, tanb=tanb, model=options.model))
                 ## setup the batchjob creation for combine -M CLs with tanb grid points instead of cross section grid points
                 opts = "-o {out} -n {points} -m {mass} -O {options} -T {toysH} -t {toys} -j {jobs} -q {queue}".format(
                     out=options.out, points=options.points, mass=masspoint, options=options.options, toysH=options.T,
@@ -210,7 +211,8 @@ for directory in args :
                     print "> creating batch job for combine -M CLs"
                 ## create the job
                 os.system("combine-tanb.py %s --shape %s tmp.txt %s %s" % (opts, options.shape, options.min, options.max))
-                os.system("mkdir debug")
+                if not os.path.exists("debug") :
+                    os.system("mkdir debug")
                 os.system("cp tmp*.txt debug")
             if options.method == "single" :
                 ## -----------------------------------------------------------------------------------------
