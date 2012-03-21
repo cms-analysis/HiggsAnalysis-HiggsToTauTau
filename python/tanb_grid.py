@@ -21,9 +21,6 @@ ROOT.gSystem.Load('$CMSSW_BASE/lib/slc5_amd64_gcc434/libHiggsAnalysisCombinedLim
 from ROOT import th1fmorph
 from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools
 
-#CMSSW_BASE=os.environ['CMSSW_BASE']
-#_FILE_NAME = "{CMSSW_BASE}/src/MitLimits/Higgs2Tau/python/out.mhmax_7_nnlo.root".format(CMSSW_BASE=CMSSW_BASE)
-
 
 class MakeDatacard :
        def __init__(self, tanb, mA, sm_like=False) :
@@ -92,13 +89,14 @@ class MakeDatacard :
                      #,"htt_mm_1" : "$MASS"
                      }
               ## mapping of decay channel to interpolation method. Available methods are
-              ## 1) non-degenerate-masses-light
-              ## 2) degenerate-masses
-              ## the default is non-degenerate-masses; only deviations from the default
-              ## need to be added to this dictionary
+              ## - non-degenerate-masses        : w/  template morphing
+              ## - non-degenerate-masses-light  : w/o template morphing
+              ## - degenerate-masses            : degenerate masses assumption
+              ## - single-mass                  : depending on hww_cross_point only mh or
+              ##                                  only mH is considered (for hww limits)
               self.decay_channel_to_interpolation_method = {
-                      "htt_mm_0"       : "non-degenerate-masses-light"
-                     ,"htt_mm_1"       : "non-degenerate-masses-light"
+                      "htt_mm_0"       : "degenerate-masses"
+                     ,"htt_mm_1"       : "degenerate-masses"
                      ,"htt_em_0"       : "non-degenerate-masses"
                      ,"htt_em_1"       : "non-degenerate-masses"
                      ,"htt_mt_0"       : "non-degenerate-masses"
