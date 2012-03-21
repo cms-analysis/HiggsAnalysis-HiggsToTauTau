@@ -17,6 +17,7 @@ parser.add_option("--single", dest="prepSingle",      default=False,     action=
 parser.add_option("--bayesian", dest="prepBayesian",    default=False,     action="store_true",       help="Prepare Bayesian limits (expected and obeserved). [Default: False]")
 parser.add_option("--asymptotic", dest="prepAsym",        default=False,     action="store_true",       help="Prepare Asymptotic limits (expected and obeserved). [Default: False]")
 parser.add_option("--max-likelihood", dest="prepMLFit",       default=False,     action="store_true",       help="Prepare Maximum Likelihood Fit (also used for postfit plots). [Default: False]")
+parser.add_option("--refit", dest="refit",         default=False,     action="store_true",       help="Do not run the asymptotic limits again, but only run the last step, the fit for the limit determination. (Only valid for option --tanb+, for all other options will have no effect.)  [Default: False]")
 parser.add_option("--cleanup", dest="cleanup",         default=False,     action="store_true",       help="Remove all crab remainders from previous submissions. [Default: False]")
 parser.add_option("--kill", dest="kill",            default=False,     action="store_true",       help="Kill all crab jobs in case of emergencies. [Default: False]")
 parser.add_option("--expectedOnly", dest="expectedOnly",    default=False,     action="store_true",       help="Calculate the expected limit only. [Default: False]")
@@ -203,9 +204,10 @@ for directory in args :
             if re.match(r"batch_\d+(.\d\d)?.root", wsp) :
                 tanb_inputfiles += wsp.replace("batch", "point")+","
                 tanb_string = wsp[wsp.rfind("_")+1:]
-                ## run expected & combined limits in one go
-                os.system("./combine -M Asymptotic --run both -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} {mass} {user} {wsp}".format(CL=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt,strategy=options.strategy,mass=massopt, wsp=wsp, user=options.userOpt))
-                os.system("mv higgsCombineTest.Asymptotic.mH{mass}.root point_{tanb}".format(mass=mass_value, tanb=tanb_string))
+                if not options.refit : 
+                    ## run expected & observed limits in one go
+                    os.system("./combine -M Asymptotic --run both -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} {mass} {user} {wsp}".format(CL=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt,strategy=options.strategy,mass=massopt, wsp=wsp, user=options.userOpt))
+                    os.system("mv higgsCombineTest.Asymptotic.mH{mass}.root point_{tanb}".format(mass=mass_value, tanb=tanb_string))
         ## strip last ','
         tanb_inputfiles = tanb_inputfiles.rstrip(",")
         ## combine limits of individual tanb point to a single file equivalent to the standard output of --prepCLs
