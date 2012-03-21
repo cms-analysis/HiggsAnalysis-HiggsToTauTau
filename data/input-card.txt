@@ -1,0 +1,14 @@
+## ------------------------------------------------------------------------------------------------------
+## This is the input card to copy all necessary input root files to calculate htt limits for SM and MSSM 
+## into the local copy of the cvs HiggsAnalysis/HiggsToTauTau package. These files can not be stored in
+## the repository directly due to size limitations in official CMSSW cvs repositories. To be able to use 
+## any MSSM or SM cross section related operation in this package this inputcard should be checked and 
+## modified accordingly (if necessary) or the inputfiles should be copied into the corresponding sub-
+## directory in setup by hand. Note though that the input files should obey the naming convention given 
+## in the lines below.
+## ------------------------------------------------------------------------------------------------------
+
+feynHiggs-sm-scan.root     mssm_scan/sm_scan.root   
+feynHiggs-mssm-scan.root   mssm_scan/mssm_scan.root   
+out.mhmax_7_nnlo.root      MitLimits/Higgs2Tau/python/out.mhmax_7_nnlo.root
+out.nomix_7_nnlo.root      MitLimits/Higgs2Tau/python/out.nomix_7_nnlo.root

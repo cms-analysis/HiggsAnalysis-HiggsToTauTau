@@ -1,0 +1,29 @@
+## ------------------------------------------------------------------------------------------------------
+## This is the input card to copy all necessary input root files to calculate htt limits for SM and MSSM 
+## into the local copy of the cvs HiggsAnalysis/HiggsToTauTau package. These files can not be stored in
+## the repository directly due to size limitations in official CMSSW cvs repositories. To be able to use 
+## the automatic datacard creation described in the README file of the setup directory in this package 
+## this inputcard should be checked and modified accordingly (if necessary) or the inputfiles should be 
+## copied into the corresponding sub-directory in setup by hand.
+## ------------------------------------------------------------------------------------------------------
+
+## inputs for em datacard creation (em corresponds to the target directory (relative from setup), mssm/sm
+## ztt corresponds to the analysis type that the file should be input to (choose between mssm/sm/ztt)). 
+## Finally the source file should be given (full path from CMSSW_BASE on) 
+em     mssm     MitLimits/Higgs2Tau/setup/emu/mssm/emu-limit-inputs-MSSM-002.root
+em     sm       MitLimits/Higgs2Tau/setup/emu/mssm/emu-limit-inputs-SM-002.root  
+em     ztt      MitLimits/Higgs2Tau/setup/emu/mssm/emu-limit-inputs-Ztt-002.root 
+
+## inputs for em datacard creation (et corresponds to the target directory (relative from setup), mssm/sm
+## ztt corresponds to the analysis type that the file should be input to (choose between mssm/sm/ztt)). 
+## Finally the source file should be given (full path from CMSSW_BASE on) 
+et     mssm     MitLimits/Higgs2Tau/setup/etau/mssm/etau-limit-inputs-MSSM-002.root
+et     sm       MitLimits/Higgs2Tau/setup/etau/mssm/etau-limit-inputs-SM-002.root  
+et     ztt      MitLimits/Higgs2Tau/setup/etau/mssm/etau-limit-inputs-Ztt-002.root 
+
+## inputs for em datacard creation (mt corresponds to the target directory (relative from setup), mssm/sm
+## ztt corresponds to the analysis type that the file should be input to (choose between mssm/sm/ztt)). 
+## Finally the source file should be given (full path from CMSSW_BASE on) 
+mt     mssm     MitLimits/Higgs2Tau/setup/etau/mssm/mutau-limit-inputs-MSSM-002.root
+mt     sm       MitLimits/Higgs2Tau/setup/etau/mssm/mutau-limit-inputs-SM-002.root  
+mt     ztt      MitLimits/Higgs2Tau/setup/etau/mssm/mutau-limit-inputs-Ztt-002.root 
