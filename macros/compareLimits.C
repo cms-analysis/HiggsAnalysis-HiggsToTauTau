@@ -30,6 +30,10 @@ channel(std::string& label){
 	  label==std::string("hww")        ||
 	  label==std::string("ggH")        ||
 	  label==std::string("bbH")        ||
+	  label==std::string("nomix+200")  ||
+	  label==std::string("nomix-200")  ||
+	  label==std::string("mhmax+200")  ||
+	  label==std::string("mhmax-200")  ||
 	  label==std::string("HIG-11-020") ||
 	  label==std::string("HIG-11-029")
 	  );
@@ -51,12 +55,16 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("hww"       )) title = std::string("H#rightarrowWW#rightarrow 2lep 2#nu");
   if(channel==std::string("ggH"       )) title = std::string("gg#rightarrowH");
   if(channel==std::string("bbH"       )) title = std::string("bb#rightarrowHbb");
+  if(channel==std::string("nomix+200" )) title = std::string("no mixing (#mu=+200 GeV)");
+  if(channel==std::string("nomix-200" )) title = std::string("no mixing (#mu=-200 GeV)");
+  if(channel==std::string("mhmax+200" )) title = std::string("m_{h, max} (#mu=+200 GeV)");
+  if(channel==std::string("mhmax-200" )) title = std::string("m_{h, max} (#mu=-200 GeV)");
   if(channel==std::string("HIG-11-020")) title = std::string("Combined");
   if(channel==std::string("HIG-11-029")) title = std::string("Combined");
   return title;
 }
 
-void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, bool mssm, double maximum=20.)
+void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double maximum=20.)
 {
   SetStyle();
 
@@ -75,22 +83,27 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["hww"       ] = kGreen;
   colors["ggH"       ] = kRed;
   colors["bbH"       ] = kBlue;
+  colors["nomix+200" ] = kBlue;
+  colors["nomix-200" ] = kBlue-10;
+  colors["mhmax+200" ] = kBlack;
+  colors["mhmax-200" ] = kGray+1;
   colors["HIG-11-020"] = kBlack;
   colors["HIG-11-029"] = kBlack;
 
   std::cout << " ****************************************************************************************************\n"
 	    << " * Usage     : root -l                                                                               \n"
-	    << " *             .x MitLimits/Higgs2Tau/macros/singleChannels.C++(file, chn, exp, obs, mssm, max)      \n"
+	    << " *             .x MitLimits/Higgs2Tau/macros/compareLimits.C+(file, chn, exp, obs, type, max)        \n"
 	    << " *                                                                                                   \n"
 	    << " * Arguments :  + file     const char*      full path to the input file                              \n"
 	    << " *              + chn      const char*      list of channels; choose between: 'cmb', 'htt', 'emu',   \n"
 	    << " *                                          'etau', 'mutau', 'mumu', 'vhtt', 'hgg', 'hww', 'ggH',    \n"
-	    << " *                                          'bbH'                                                    \n"
+	    << " *                                          'bbH', 'nomix+/-200', 'mhmax+/-200'                      \n"
 	    << " *                                          The list should be comma separated and may contain       \n"
 	    << " *                                          whitespaces                                              \n"
 	    << " *              + exp       bool            compare expected limits                                  \n"
 	    << " *              + obs       bool            compare observed limits                                  \n"
-	    << " *              + mssm      bool            these are mssm or sm plots?                              \n"
+	    << " *              + mssm      const char*     type of plot; choose between 'sm-xsec', 'mssm-xsec' and  \n"
+	    << " *                                          'mssm-tanb'                                              \n"
 	    << " *              + max       double          maximumof the plot (default is 20.)                      \n"
 	    << " *                                                                                                   \n"
 	    << " ****************************************************************************************************\n";
@@ -118,7 +131,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   bool firstPlot=true;
   for(unsigned int i=0; i<hexp.size(); ++i){
     if(firstPlot){
-      if(mssm){
+      if(std::string(type) == std::string("mssm-xsec")){
 	canv1->SetLogy(1);
 	hexp[i]->SetMaximum(maximum);
 	hexp[i]->SetMinimum(0.05);
@@ -129,14 +142,31 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       }
       
       // format x-axis
-      hexp[i]->GetXaxis()->SetTitle(mssm ? std::string("m_{A} [GeV]").c_str() : std::string("m_{H} [GeV]").c_str());
+      std::string x_title;
+      if(std::string(type).find("mssm")!=std::string::npos){
+	x_title = std::string("m_{A} [GeV]");
+      }
+      else{
+	x_title = std::string("m_{H} [GeV]");
+      }
+      hexp[i]->GetXaxis()->SetTitle(x_title.c_str());
       hexp[i]->GetXaxis()->SetLabelFont(62);
       hexp[i]->GetXaxis()->SetTitleFont(62);
       hexp[i]->GetXaxis()->SetTitleColor(1);
       hexp[i]->GetXaxis()->SetTitleOffset(1.05);
       
       // format y-axis
-      hexp[i]->GetYaxis()->SetTitle(mssm ? std::string("#sigma(#phi#rightarrow#tau#tau)_{95% CL} [pb]").c_str() : std::string("#sigma(H#rightarrow#tau#tau)_{95% CL} / #sigma(H#rightarrow#tau#tau)_{SM}").c_str());
+      std::string y_title;
+      if( std::string(type) == std::string("mssm-xsec") ){
+	y_title = std::string("#sigma(#phi#rightarrow#tau#tau)_{95% CL} [pb]");
+      }
+      else if(  std::string(type) == std::string("mssm-tanb")  ){
+	y_title = std::string("#bf{tan#beta}");
+      }
+      else{
+	y_title = std::string("#sigma(H#rightarrow#tau#tau)_{95% CL} / #sigma(H#rightarrow#tau#tau)_{SM}");
+      }
+      hexp[i]->GetYaxis()->SetTitle(y_title.c_str());
       hexp[i]->GetYaxis()->SetLabelFont(62);
       hexp[i]->GetYaxis()->SetTitleOffset(1.05);
       hexp[i]->GetYaxis()->SetLabelSize(0.03);
@@ -153,7 +183,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   }
   for(unsigned int i=0; i<hobs.size(); ++i){
     if(firstPlot){
-      if(mssm){
+      if(std::string(type) == std::string("mssm-xsec")){
 	canv1->SetLogy(1);
 	hobs[i]->SetMaximum(maximum);
 	hobs[i]->SetMinimum(0.05);
@@ -164,14 +194,31 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       }
       
       // format x-axis
-      hobs[i]->GetXaxis()->SetTitle(mssm ? std::string("m_{A} [GeV]").c_str() : std::string("m_{H} [GeV]").c_str());
+      std::string x_title;
+      if(std::string(type).find("mssm")!=std::string::npos){
+	x_title = std::string("m_{A} [GeV]");
+      }
+      else{
+	x_title = std::string("m_{H} [GeV]");
+      }
+      hobs[i]->GetXaxis()->SetTitle(x_title.c_str());
       hobs[i]->GetXaxis()->SetLabelFont(62);
       hobs[i]->GetXaxis()->SetTitleFont(62);
       hobs[i]->GetXaxis()->SetTitleColor(1);
       hobs[i]->GetXaxis()->SetTitleOffset(1.05);
       
       // format y-axis
-      hobs[i]->GetYaxis()->SetTitle(mssm ? std::string("#sigma(#phi#rightarrow#tau#tau)_{95% CL} [pb]").c_str() : std::string("#sigma(H#rightarrow#tau#tau)_{95% CL} / #sigma(H#rightarrow#tau#tau)_{SM}").c_str());
+      std::string y_title;
+      if( std::string(type) == std::string("mssm-xsec") ){
+	y_title = std::string("#sigma(#phi#rightarrow#tau#tau)_{95% CL} [pb]");
+      }
+      else if(  std::string(type) == std::string("mssm-tanb")  ){
+	y_title = std::string("#bf{tan#beta}");
+      }
+      else{
+	y_title = std::string("#sigma(H#rightarrow#tau#tau)_{95% CL} / #sigma(H#rightarrow#tau#tau)_{SM}");
+      }
+      hobs[i]->GetYaxis()->SetTitle(y_title.c_str());
       hobs[i]->GetYaxis()->SetLabelFont(62);
       hobs[i]->GetYaxis()->SetTitleOffset(1.05);
       hobs[i]->GetYaxis()->SetLabelSize(0.03);
@@ -192,18 +239,19 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     TLegend* leg1;
     if(expected && observed){
       /// setup the CMS Preliminary
-      if (firstLeg) CMSPrelim("", 0.15, 0.835);
+      if (firstLeg) CMSPrelim(" Preliminary #sqrt{s} = 7 TeV, L = 4.6 fb^{-1}", "", 0.15, 0.835);
       leg1 = new TLegend(firstLeg ? 0.60 : 0.20, hobs.size()<5 ? 0.90-0.06*hobs.size() : 0.6, firstLeg ? 0.93 : 0.60, 0.90);
     }
     else{
       /// setup the CMS Preliminary
-      CMSPrelim("", 0.15, 0.835);
+      CMSPrelim(" Preliminary #sqrt{s} = 7 TeV, L = 4.6 fb^{-1}", "", 0.15, 0.835);
       leg1 = new TLegend(0.50, hobs.size()<5 ? 0.90-0.06*hobs.size() : 0.6, 0.93, 0.90);
     }
     leg1->SetBorderSize( 0 );
     leg1->SetFillStyle ( 0 );
     leg1->SetFillColor ( 0 );
     leg1->SetFillColor (kWhite);
+    leg1->SetHeader( "Observed Limit" );
     for(unsigned int i=0; i<hobs.size(); ++i){
       leg1->AddEntry( hobs[i] , channel(channels[i]) ? legendEntry(channels[i]).c_str() : legendEntry(channels[i]).append("-Channel").c_str(),  "PL" );
     }
@@ -214,12 +262,12 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     TLegend* leg0;
     if(expected && observed){
       /// setup the CMS Preliminary
-      if (firstLeg) CMSPrelim("", 0.15, 0.835);
+      if (firstLeg) CMSPrelim(" Preliminary #sqrt{s} = 7 TeV, L = 4.6 fb^{-1}", "", 0.15, 0.835);
       leg0 = new TLegend(firstLeg ? 0.60 : 0.20, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.8, firstLeg ? 0.94 : 0.60, 0.90);
     }
     else{
       /// setup the CMS Preliminary
-      CMSPrelim("", 0.15, 0.835);
+      CMSPrelim(" Preliminary #sqrt{s} = 7 TeV, L = 4.6 fb^{-1}", "", 0.15, 0.835);
       leg0 = new TLegend(0.50, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.6, 0.94, 0.90);
     }
     leg0->SetBorderSize( 0 );
@@ -232,7 +280,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     leg0->Draw("same");
     firstLeg=false;
   }
-  canv1->Print(std::string("singleLimits").append(expected ? "_expected" : "").append(observed ? "_observed" : "").append(mssm ? "_mssm.png" : "_sm.png").c_str());
-  canv1->Print(std::string("singleLimits").append(expected ? "_expected" : "").append(observed ? "_observed" : "").append(mssm ? "_mssm.pdf" : "_sm.pdf").c_str());
+  canv1->Print(std::string("singleLimits").append(expected ? "_expected" : "").append(observed ? "_observed" : "").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.png" : "_sm.png").c_str());
+  canv1->Print(std::string("singleLimits").append(expected ? "_expected" : "").append(observed ? "_observed" : "").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.pdf" : "_sm.pdf").c_str());
   return;
 }
