@@ -145,8 +145,9 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
   std::vector<CrossPoint> points = crossPoints(graph);
   for(std::vector<CrossPoint>::const_iterator point = points.begin(); point!=points.end(); ++point){
     TString fnc("fnc_"); fnc+=point->first;
-    double min = (point->first-2)>0 ? graph->GetX()[point->first-2] : graph->GetX()[0]; 
-    double max = (point->first+2)<graph->GetN() ? graph->GetX()[point->first+2] : graph->GetX()[graph->GetN()-1];
+    int dist = 2;
+    double min = (point->first-dist)>0 ? graph->GetX()[point->first-dist] : graph->GetX()[0]; 
+    double max = (point->first+dist)<graph->GetN() ? graph->GetX()[point->first+dist] : graph->GetX()[graph->GetN()-1];
     if(point->second){
       if( !convex(graph, *point) ){
 	std::cout << "falling convex - applied model: [0]*1/([1]+x)^[2]" << std::endl;
@@ -183,29 +184,36 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
     }
     else{
       if( !convex(graph, *point) ){
-	std::cout << "rising convex - applied model: [0]*1/([1]+x)^[2]" << std::endl;
+	std::cout << "rising convex - applied model: [0]+[1]*1/([2]+x)^[3]" << std::endl;
 	//interpol = new TF1(fnc, "[0]*exp([1]*(x-[2]))", 1., 70.);
 	//graph->Fit(fnc, "EM+", "", min, max);
 	//float p0 = graph->GetFunction(fnc)->GetParameter(0);
 	//float p1 = graph->GetFunction(fnc)->GetParameter(1);
 	//float p2 = graph->GetFunction(fnc)->GetParameter(2);
 	//limit = (p0<=0 || p1==0) ? -999 : -TMath::Log(p0)/p1+p2;
-	interpol = new TF1(fnc, "[0]*1/([1]+x)^[2]", 3., 70.);
+	interpol = new TF1(fnc, "[0]+[1]*1/([2]+x)^[3]", 3., 70.);
 	graph->Fit(fnc, "EM+", "", min, max);
 	float p0 = graph->GetFunction(fnc)->GetParameter(0);
 	float p1 = graph->GetFunction(fnc)->GetParameter(1);
 	float p2 = graph->GetFunction(fnc)->GetParameter(2);
-	limit = (p2==0) ? -999. : TMath::Power(p0,1./p2)-p1;
+	float p3 = graph->GetFunction(fnc)->GetParameter(3);
+	limit = (p0 == 1 || p3 == 0) ? -999. : TMath::Power(p1/(1.-p0),1./p3)-p2;
       }
       else{
-	std::cout << "rising concav - applied model: [2]+[1]*x+[0]*x*x" << std::endl;
-	interpol = new TF1(fnc, "[2]+[1]*x+[0]*x*x", 1., 70.);
+	std::cout << "rising concav - applied model: [0]+[1]*exp([2]+[3]*x)" << std::endl;
+	//interpol = new TF1(fnc, "[2]+[1]*x+[0]*x*x", 1., 70.);
+	//graph->Fit(fnc, "EM+", "", min, max);
+	//float p0 = graph->GetFunction(fnc)->GetParameter(0);
+	//float p1 = graph->GetFunction(fnc)->GetParameter(1);
+	//float p2 = graph->GetFunction(fnc)->GetParameter(2)-1.;
+	//float p3 = TMath::Sqrt(p1*p1-4*p0*p2);
+	interpol = new TF1(fnc, "[0]+[1]*exp([2]+[3]*x)", 1., 70.);
 	graph->Fit(fnc, "EM+", "", min, max);
 	float p0 = graph->GetFunction(fnc)->GetParameter(0);
 	float p1 = graph->GetFunction(fnc)->GetParameter(1);
-	float p2 = graph->GetFunction(fnc)->GetParameter(2)-1.;
-	float p3 = TMath::Sqrt(p1*p1-4*p0*p2);
-	limit = fabs((-p1-p3)/(2*p0)-point->first)<fabs((-p1+p3)/(2*p0)-point->first) ? (-p1-p3)/(2*p0) : (-p1+p3)/(2*p0); 
+	float p2 = graph->GetFunction(fnc)->GetParameter(2);
+	float p3 = graph->GetFunction(fnc)->GetParameter(3);
+	limit = (p0 == 1 || p2 == 0 || p3 == 0) ? -999. : (TMath::Log(1.-p0) - TMath::Log(p1) - p2)/p3; 
       }
       std::cout << "*************************************************"   << std::endl;
       std::cout << "* asymptotic limit(type " << itype << ") :" << limit;
