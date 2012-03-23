@@ -8,7 +8,7 @@
 ## in the lines below.
 ## ------------------------------------------------------------------------------------------------------
 
-feynHiggs-sm-scan.root     mssm_scan/sm_scan.root   
-feynHiggs-mssm-scan.root   mssm_scan/mssm_scan.root   
+feyn-higgs-sm-scan.root    mssm_scan/sm_scan.root   
+feyn-higgs-mssm-scan.root  mssm_scan/mssm_scan.root   
 out.mhmax_7_nnlo.root      MitLimits/Higgs2Tau/python/out.mhmax_7_nnlo.root
 out.nomix_7_nnlo.root      MitLimits/Higgs2Tau/python/out.nomix_7_nnlo.root
