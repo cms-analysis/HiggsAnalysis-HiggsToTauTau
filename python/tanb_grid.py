@@ -255,9 +255,9 @@ class MakeDatacard :
               cross_sections = {"A" : 0., "H" : 0., "h" : 0.}
               ## read cross section results for hww, the cross section is returned in fb
               for key in cross_sections : 
-                     xs = float(os.popen("feyn-higg-mssm xs mssm {channel}{higgs} {mA} {tanb} | grep value".format(
+                     xs = float(os.popen("feyn-higgs-mssm xs mssm {channel}{higgs} {mA} {tanb} | grep value".format(
                             channel=production_channel, higgs=key, mA=self.mA, tanb=self.tanb)).read().split()[2])/1000.
-                     br = float(os.popen("feyn-higg-mssm br mssm {higgs}WW {mA} {tanb} | grep value".format(
+                     br = float(os.popen("feyn-higgs-mssm br mssm {higgs}WW {mA} {tanb} | grep value".format(
                             higgs=key, mA=self.mA, tanb=self.tanb)).read().split()[2])
                      cross_sections[key] = xs*br
                      if cross_sections[key] < 0 :
