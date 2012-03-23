@@ -544,76 +544,6 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   hr->GetYaxis()->SetLabelSize(0.05);
   if(log_){ canv.SetLogy(1); }
 
-  /*
-  //
-  // --- 90% CL Limits from H->WW moriond12 combination
-  //
-  TGraph* HWWmH = new TGraph();
-  HWWmH->SetPoint(0,  109., 0.   );
-  HWWmH->SetPoint(1,  110., 3.29);
-  HWWmH->SetPoint(2,  120., 3.25);
-  HWWmH->SetPoint(3,  130., 3.56);
-  HWWmH->SetPoint(4,  140., 3.98);
-  HWWmH->SetPoint(5,  160., 4.48);
-  HWWmH->SetPoint(6,  180., 3.09);
-  HWWmH->SetPoint(7,  200., 1.33);
-  HWWmH->SetPoint(8,  201., 0.  );
-
-  TGraph* HWWmh = new TGraph();
-  HWWmh->SetPoint(0,  349., 90.  );
-  HWWmh->SetPoint(1,  350., 62.92);
-  HWWmh->SetPoint(2,  400., 20.80);
-  HWWmh->SetPoint(3,  450., 11.92);
-  HWWmh->SetPoint(4,  500., 11.57);
-  HWWmh->SetPoint(5,  501., 90.  );
-  */
-
-  // create LEP exclusion plot
-  TGraph* LEP = new TGraph();
-  LEP->SetPoint( 0, 80      ,   0.    );
-  LEP->SetPoint( 1, 91      , 100.    );
-  LEP->SetPoint( 2, 91.8    , 30.02624);
-  LEP->SetPoint( 3, 91.845  , 22.07032);
-  LEP->SetPoint( 4, 91.845  , 17.12491);
-  LEP->SetPoint( 5, 91.84523, 13.64727);
-  LEP->SetPoint( 6, 92.61388, 11.94143);
-  LEP->SetPoint( 7, 93.38253, 10.03852);
-  LEP->SetPoint( 8, 94.91982, 9.021481);
-  LEP->SetPoint( 9, 95.68846, 8.107481);
-  LEP->SetPoint(10, 97.22578, 7.141608);
-  LEP->SetPoint(11, 99.5317 , 6.680381);
-  LEP->SetPoint(12, 103.375 , 7.189448);
-  LEP->SetPoint(13, 104.1436, 7.841313);
-  LEP->SetPoint(14, 106.4496, 8.326916);
-  LEP->SetPoint(15, 109.5242, 8.609568);
-  LEP->SetPoint(16, 112.5988, 8.438845);
-  LEP->SetPoint(17, 115.6733, 8.107481);
-  LEP->SetPoint(18, 118.748 , 7.384029);
-  LEP->SetPoint(19, 122.5912, 6.547911);
-  LEP->SetPoint(20, 126.4344, 5.963618);
-  LEP->SetPoint(21, 131.815 , 5.359424);
-  LEP->SetPoint(22, 138.7328, 4.752558);
-  LEP->SetPoint(23, 144.1134, 4.445624);
-  LEP->SetPoint(24, 149.4939, 4.186368);
-  LEP->SetPoint(25, 156.4118, 3.968637);
-  LEP->SetPoint(26, 164.8669, 3.687628);
-  LEP->SetPoint(27, 177.1653, 3.472575);
-  LEP->SetPoint(28, 187.9264, 3.29197 );
-  LEP->SetPoint(29, 203.2994, 3.141663);
-  LEP->SetPoint(30, 221.7469, 2.978266);
-  LEP->SetPoint(31, 241.7318, 2.861322);
-  LEP->SetPoint(32, 261.7167, 2.767383);
-  LEP->SetPoint(33, 283.2388, 2.676528);
-  LEP->SetPoint(34, 304.761 , 2.641027);
-  LEP->SetPoint(35, 334.7383, 2.554322);
-  LEP->SetPoint(36, 357.0292, 2.50367 );
-  LEP->SetPoint(37, 383.9319, 2.48701 );
-  LEP->SetPoint(38, 420.8271, 2.454023);
-  LEP->SetPoint(39, 452.3417, 2.421473);
-  LEP->SetPoint(40, 487.6996, 2.405361);
-  LEP->SetPoint(41, 550     , 2.405361);
-  LEP->SetPoint(42, 600     , 0.      );
-  
   // create plain background
   TGraph* plain = new TGraph();
   plain->SetPoint(0, 80., 100.);
@@ -624,6 +554,9 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   }
   plain->SetPoint(bins_.size()+1, 550, 100.);
 
+  // create LEP exclusion plot
+  TGraph* LEP = new TGraph(); 
+  limitsLEP(LEP); 
   LEP->SetFillStyle(1001.);
   LEP->SetFillColor(lep->GetNumber());
   LEP->SetLineColor(lep->GetNumber());
@@ -631,7 +564,11 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   LEP->SetLineWidth(4.);
   LEP->Draw("F");
 
-  /*
+  //
+  // --- 80% ggH CL Limits from H->WW moriond12 combination
+  //
+  TGraph* HWWmH = new TGraph(); 
+  limitsHWW(HWWmH, "mH-calc-observed");
   HWWmH->SetFillStyle( 3010);
   HWWmH->SetFillColor(kBlue);
   HWWmH->SetLineColor(kBlue);
@@ -641,6 +578,14 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   HWWmH->Draw("Fsame");
   HWWmH->Draw("Lsame");
 
+  TGraph* HWWmH_ = new TGraph(); 
+  limitsHWW(HWWmH_, "mH-card-observed");
+  HWWmH_->SetMarkerStyle(20.);
+  HWWmH_->SetMarkerColor(kBlack);
+  HWWmH_->Draw("psame");
+
+  TGraph* HWWmh = new TGraph();
+  limitsHWW(HWWmh, "mh-calc-observed");
   HWWmh->SetFillStyle( 3010);
   HWWmh->SetFillColor(kBlue);
   HWWmh->SetLineColor(kBlue);
@@ -649,7 +594,12 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   //HWW->SetLineWidth( -903);
   HWWmh->Draw("Fsame");
   HWWmh->Draw("Lsame");
-  */
+
+  TGraph* HWWmh_ = new TGraph(); 
+  limitsHWW(HWWmh_, "mh-card-observed");
+  HWWmh_->SetMarkerStyle(20.);
+  HWWmh_->SetMarkerColor(kBlack);
+  HWWmh_->Draw("psame");
 
   plain->SetFillStyle(1001.);
   plain->SetFillColor(obs->GetNumber());
@@ -749,7 +699,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   leg->AddEntry( expected , "expected"               ,  "L" );
   leg->AddEntry( innerHigh, "#pm 1#sigma expected"   ,  "L" );
   leg->AddEntry( outerHigh, "#pm 2#sigma expected"   ,  "L" );
-  //leg->AddEntry( HWWmH    , "H#rightarrowWW (90% CL)",  "LF");
+  leg->AddEntry( HWWmH    , "H#rightarrowWW (80% CL)",  "LF");
   leg->AddEntry( LEP      , "LEP"                    ,  "F" );
   leg->Draw("same");
   //canv.RedrawAxis("g");

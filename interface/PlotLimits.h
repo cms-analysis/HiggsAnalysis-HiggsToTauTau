@@ -27,7 +27,36 @@
 
    \brief   Class to draw official plots for HiggsToTauTau limits
 
-   To follow soon 
+   This is a class for drawing the official plots for HiggsToTauTau limits. It is instantiated from 
+   the tool plot that can be found in the bin directory of this package. The class requires a layout 
+   file in the style of CMSSW cfi python files to pick up certain layout parameters and a particular 
+   directory structure containing the limit output files (as provided by combine) as input to pick 
+   up the limit results from there. The input directory should point to the head directory containing
+   all mass points as subdirectories. In the subdirectories the limits ouptut files from combine 
+   looked for. This structure can be achieved automatically when using the other (wrapper) tools 
+   for limit calculation provided in the same package. Pre-defined layout files can be found in the 
+   python/layout sub-directory of this package.
+
+   Depending on the layout the class provides plots for SM limits (on signal strength), on the MSSM
+   cross section (in pb) or on the MSSM parameter tanb. The output consists of:
+
+    - a plot in png format
+    - a plot in pdf format
+    - a machiene readable txt file containing the observed and expected limit and the uncertainty 
+      bands
+    - a tex file containing the observed and expected limit and the uncertainty bands
+    - a root output file with name limit_mssm/sm.root containing the observed and expected limit
+      ans uncertainty bands in TGraph format.
+
+    in the directory in which the tool plot has been executed. The names of the png/pdf/txt/tex output 
+    files will be derived from the laypout and from the input directory. The output in the 
+    limits_mssm/sm.root file will be updated in case a file with similar file is already present in 
+    the directory where the tool plot has been executed or the file will be created otherwise. In the
+    limits_mssm/sm.root the limits for a given input directory will be safed in a directory 
+    corresponding to the name of the input directory. The file is suited for further processing with 
+    the macro compareLimits.C in the macros directory of the same package. For more details on how 
+    to run the tool plot have a look in the bin dorectory of this package or just execute the tool 
+    w/o any aditional arguments given.
 */
 
 class PlotLimits {
@@ -66,7 +95,7 @@ class PlotLimits {
   void prepareCLs(const char* directory, std::vector<double>& values, const char* type) { 
     prepareSimple(directory, values, std::string("higgsCombineTest.HybridNew.$MASS").append(type).c_str()); 
   };
-  // fill a single vector of values from a file filename; ; in case files do not exists 
+  /// fill a single vector of values from a file filename; ; in case files do not exists 
   /// or were corrupted for a given mass point the initial value of -1. will be filled 
   /// the member functions fillCentral and fillBand should check for values of -1. and 
   /// take these mass points out of consideration
@@ -75,7 +104,17 @@ class PlotLimits {
   void prepareHIG_11_020(std::vector<double>& values, const char* type);
   /// fill officially approved limits for HIG-11-029 paper (NOTE: these are direct limits on tanb for MSSM)
   void prepareHIG_11_029(std::vector<double>& values, const char* type);
-  
+
+  /*
+    Limits for comparison
+  */
+  /// fill the LEP exclusion plot
+  void limitsLEP(TGraph* graph);
+  /// fill the limits from the CMS hww SM Higgs search
+  void limitsHWW(TGraph* graph, const char* type);
+  /// fill the limits from the CMS hgg SM Higgs search
+  void limitsHGG(TGraph* graph, const char* type);
+ 
  private:
   /// output name and directory 
   /// name in root file
@@ -457,6 +496,182 @@ PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type)
     }
   }
   return;
+}
+
+inline void
+PlotLimits::limitsLEP(TGraph* graph)
+{
+  graph->SetPoint( 0, 80      ,   0.    );
+  graph->SetPoint( 1, 91      , 100.    );
+  graph->SetPoint( 2, 91.8    , 30.02624);
+  graph->SetPoint( 3, 91.845  , 22.07032);
+  graph->SetPoint( 4, 91.845  , 17.12491);
+  graph->SetPoint( 5, 91.84523, 13.64727);
+  graph->SetPoint( 6, 92.61388, 11.94143);
+  graph->SetPoint( 7, 93.38253, 10.03852);
+  graph->SetPoint( 8, 94.91982, 9.021481);
+  graph->SetPoint( 9, 95.68846, 8.107481);
+  graph->SetPoint(10, 97.22578, 7.141608);
+  graph->SetPoint(11, 99.5317 , 6.680381);
+  graph->SetPoint(12, 103.375 , 7.189448);
+  graph->SetPoint(13, 104.1436, 7.841313);
+  graph->SetPoint(14, 106.4496, 8.326916);
+  graph->SetPoint(15, 109.5242, 8.609568);
+  graph->SetPoint(16, 112.5988, 8.438845);
+  graph->SetPoint(17, 115.6733, 8.107481);
+  graph->SetPoint(18, 118.748 , 7.384029);
+  graph->SetPoint(19, 122.5912, 6.547911);
+  graph->SetPoint(20, 126.4344, 5.963618);
+  graph->SetPoint(21, 131.815 , 5.359424);
+  graph->SetPoint(22, 138.7328, 4.752558);
+  graph->SetPoint(23, 144.1134, 4.445624);
+  graph->SetPoint(24, 149.4939, 4.186368);
+  graph->SetPoint(25, 156.4118, 3.968637);
+  graph->SetPoint(26, 164.8669, 3.687628);
+  graph->SetPoint(27, 177.1653, 3.472575);
+  graph->SetPoint(28, 187.9264, 3.29197 );
+  graph->SetPoint(29, 203.2994, 3.141663);
+  graph->SetPoint(30, 221.7469, 2.978266);
+  graph->SetPoint(31, 241.7318, 2.861322);
+  graph->SetPoint(32, 261.7167, 2.767383);
+  graph->SetPoint(33, 283.2388, 2.676528);
+  graph->SetPoint(34, 304.761 , 2.641027);
+  graph->SetPoint(35, 334.7383, 2.554322);
+  graph->SetPoint(36, 357.0292, 2.50367 );
+  graph->SetPoint(37, 383.9319, 2.48701 );
+  graph->SetPoint(38, 420.8271, 2.454023);
+  graph->SetPoint(39, 452.3417, 2.421473);
+  graph->SetPoint(40, 487.6996, 2.405361);
+  graph->SetPoint(41, 550     , 2.405361);
+  graph->SetPoint(42, 600     , 0.      );
+}
+
+inline void
+PlotLimits::limitsHWW(TGraph* graph, const char* type)
+{
+  // SM limits from mssm_scan/limits/hww-ggH-80_cmb.txt
+  if(std::string(type) == std::string("mH-calc-observed")){
+    graph->SetPoint( 0,    109.,  0.);
+    graph->SetPoint( 1,    110.,  3.38225);
+    graph->SetPoint( 2,    120.,  3.33689);
+    graph->SetPoint( 3,    130.,  3.60196);
+    graph->SetPoint( 4,    140.,  4.02634);
+    graph->SetPoint( 5,    150.,  4.72674);
+    graph->SetPoint( 6,    160.,  4.55731);
+    graph->SetPoint( 7,    170.,  3.83059);
+    graph->SetPoint( 8,    180.,  1.75057);
+    graph->SetPoint( 9,    190.,  1.50956);
+    graph->SetPoint(10,    200.,  1.40033);
+    graph->SetPoint(11,    210.,  1.18681);
+    graph->SetPoint(12,    220.,  0.);
+  }
+  if(std::string(type) == std::string("mh-calc-observed")){
+    graph->SetPoint( 0,    299.,  100.);
+    graph->SetPoint( 1,    300.,  68.2543);
+    graph->SetPoint( 2,    310.,  51.8195);
+    graph->SetPoint( 3,    320.,  36.6748);
+    graph->SetPoint( 4,    330.,  29.4003);
+    graph->SetPoint( 5,    340.,  20.5134);
+    graph->SetPoint( 6,    350.,  15.5764);
+    graph->SetPoint( 7,    360.,  12.826 );
+    graph->SetPoint( 8,    370.,  11.8543);
+    graph->SetPoint( 9,    380.,  11.6148);
+    graph->SetPoint(10,    390.,  11.3927);
+    graph->SetPoint(11,    400.,  11.1863);
+    graph->SetPoint(12,    420.,  10.138 );
+    graph->SetPoint(13,    440.,  8.97407);
+    graph->SetPoint(14,    460.,  8.40751);
+    graph->SetPoint(15,    480.,  7.74917);
+    graph->SetPoint(16,    500.,  7.41296);
+    graph->SetPoint(17,    600.,  100.);
+  }
+  if(std::string(type) == std::string("mH-calc-expected")){
+    graph->SetPoint( 0,    109.,  0.);
+    graph->SetPoint( 1,    110.,  4.43408);
+    graph->SetPoint( 2,    120.,  4.19092);
+    graph->SetPoint( 3,    130.,  4.03061);
+    graph->SetPoint( 4,    140.,  4.5167 );
+    graph->SetPoint( 5,    150.,  5.51353);
+    graph->SetPoint( 6,    160.,  5.96611);
+    graph->SetPoint( 7,    170.,  4.75407);
+    graph->SetPoint( 8,    180.,  1.80079);
+    graph->SetPoint( 9,    190.,  1.49742);
+    graph->SetPoint(10,    200.,  1.20681);
+    graph->SetPoint(11,    201.,  0.);    
+  }
+  if(std::string(type) == std::string("mh-calc-expected")){
+    graph->SetPoint( 0,    229.,  100.);
+    graph->SetPoint( 1,    230.,  69.6779);
+    graph->SetPoint( 2,    240.,  38.3278);
+    graph->SetPoint( 3,    250.,  18.6929);
+    graph->SetPoint( 4,    260.,  12.906 );
+    graph->SetPoint( 5,    270.,  12.6501);
+    graph->SetPoint( 6,    280.,  12.4176);
+    graph->SetPoint( 7,    290.,  12.2052);
+    graph->SetPoint( 8,    300.,  12.013 );
+    graph->SetPoint( 9,    310.,  9.94112);
+    graph->SetPoint(10,    320.,  8.71568);
+    graph->SetPoint(11,    330.,  7.94683);
+    graph->SetPoint(12,    340.,  7.33191);
+    graph->SetPoint(13,    350.,  6.85379);
+    graph->SetPoint(14,    360.,  6.52922);
+    graph->SetPoint(15,    370.,  6.23077);
+    graph->SetPoint(16,    380.,  5.98355);
+    graph->SetPoint(17,    390.,  5.88916);
+    graph->SetPoint(18,    400.,  5.8017 );
+    graph->SetPoint(19,    420.,  5.64466);
+    graph->SetPoint(20,    440.,  5.17429);
+    graph->SetPoint(21,    460.,  4.99136);
+    graph->SetPoint(22,    480.,  4.93035);
+    graph->SetPoint(23,    500.,  4.87645);
+    graph->SetPoint(24,    600.,  4.87645);
+  }
+  if(std::string(type) == std::string("mH-card-observed")){
+    //graph->SetPoint( 0,    109.,  0.);
+    graph->SetPoint( 0,    110.,  3.03841);
+    graph->SetPoint( 1,    130.,  3.1014);
+    graph->SetPoint( 2,    140.,  3.3715);
+    graph->SetPoint( 3,    160.,  4.4757);
+    graph->SetPoint( 4,    180.,  2.5000);
+    //graph->SetPoint( 6,    181.,  0.);
+  }
+  if(std::string(type) == std::string("mh-card-observed")){
+    graph->SetPoint( 0,    249.,  100.);
+    graph->SetPoint( 1,    350.,  18.9019);
+    graph->SetPoint( 2,    400.,  9.95543);
+    graph->SetPoint( 3,    420.,  8.78951);
+    graph->SetPoint( 4,    440.,  8.11802);
+    graph->SetPoint( 5,    460.,  7.60743);
+    graph->SetPoint( 6,    480.,  7.20204);
+    graph->SetPoint( 7,    500.,  6.87757);
+    graph->SetPoint( 8,    600.,  6.87757);
+  }
+  if(std::string(type) == std::string("mH-card-expected")){
+    graph->SetPoint( 0,    109.,  0.);
+    graph->SetPoint( 1,    110.,  3.94633);
+    graph->SetPoint( 2,    130.,  3.73262);
+    graph->SetPoint( 3,    140.,  4.08404);
+    graph->SetPoint( 4,    160.,  5.78038);
+    graph->SetPoint( 5,    180.,  3.67754);
+    graph->SetPoint( 6,    181.,  0.);
+  }
+  if(std::string(type) == std::string("mh-card-expected")){
+    graph->SetPoint( 0,    249.,  100.);
+    graph->SetPoint( 1,    350.,  5.22267);
+    graph->SetPoint( 2,    400.,  4.5463 );
+    graph->SetPoint( 3,    420.,  4.3583);
+    graph->SetPoint( 4,    440.,  4.20262);
+    graph->SetPoint( 5,    460.,  4.15352);
+    graph->SetPoint( 6,    480.,  4.10953);
+    graph->SetPoint( 7,    500.,  4.06225);
+    graph->SetPoint( 8,    600.,  4.06225);
+  }
+}
+
+inline void
+PlotLimits::limitsHGG(TGraph* graph, const char* type)
+{
+
 }
 
 #endif
