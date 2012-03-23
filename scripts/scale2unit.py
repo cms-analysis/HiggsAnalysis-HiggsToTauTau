@@ -30,7 +30,9 @@ class RescaleDatacards:
             "ggH" : "ggA",
             "qqH" : "qqA",
             "ZH"  : "ZA" ,
-            "WH"  : "WA"
+            "WH"  : "WA" ,
+            "VH"  : "WA" ,
+            "ttH" : "ttA"
             }
         ## dictionary for decay channels to FeynHiggs convention
         self.decay_channels_to_feynHiggs = {
@@ -120,7 +122,7 @@ class RescaleDatacards:
     def run(self, no_rescale=False) :
         old_rates_line = ""
         histpath =self.datacard[:self.datacard.rfind("/")+1]
-        ## loop datacard in first go an collect information needed for rescaling
+        ## loop datacard in first go and collect information needed for rescaling
         old_datacard = open(self.datacard,'r')
         for line in old_datacard:
             wordarr = line.lstrip().split();
@@ -140,9 +142,8 @@ class RescaleDatacards:
                     if element.isdigit() or element.lstrip("-").isdigit() :
                         if int(element) <=0:
                             self.indexes.append(i-1)
-                    if element.isalpha() :
-                        if not self.processes.count(element)>0 :
-                            self.processes.append(element)
+                    else :
+                        self.processes.append(element)
             ## find actual rates for rescaling
             if wordarr[0].lower() == "rate":
                 #print "found rate line: ", wordarr[0]
@@ -196,7 +197,10 @@ for mass in parseArgs(args) :
     if len(basket)<1 :
         continue
     for piece in basket :
-        datacard_regex = r"hww_?\w*.txt"
+        if options.channel == "hww" :
+            datacard_regex = r"hww_?\w*.txt"
+        if options.channel == "hgg" :
+            datacard_regex = r"test.txt"
         datacard_match = re.compile(datacard_regex)
         if datacard_match.search(piece) :
             datacards.append(piece)
