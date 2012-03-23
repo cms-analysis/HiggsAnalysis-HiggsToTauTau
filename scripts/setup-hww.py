@@ -17,7 +17,7 @@ if len(args) < 1 :
 
 import re
 import os
-from MitLimits.Higgs2Tau.mssm_xsec import query
+from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools
 
 
 def load_available_masses(decay_channel) :
@@ -67,7 +67,8 @@ def load_masses(mA, tanb) :
     Fill mh and mH depending on mA. These values are calculated from the htt tools.
     """
     ## read cross section results for htt
-    htt_query = query(mA, tanb)
+    scan = mssm_xsec_tools("{CMSSW_BASE}/src/{path}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], path="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-7-nnlo.root"))
+    htt_query = scan.query(mA, tanb)
     mh = htt_query['higgses']['h']['mass']
     mH = htt_query['higgses']['H']['mass']
     return (mh, mH)

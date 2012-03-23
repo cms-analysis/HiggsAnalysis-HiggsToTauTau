@@ -59,21 +59,21 @@ class RescaleDatacards:
         Loads SM cross sections needed to rescale the input yields. NOTE that the SM cross section
         is obtained from A in FeynHiggs and NOT from H or h. 
         """
-        return float(os.popen("smScan xs {channel} {mA} | grep value".format(channel=self.production_processes_to_feynHiggs[production_channel], mA=mass)).read().split()[2])/1000.
+        return float(os.popen("feyn-higgs-sm xs {channel} {mA} | grep value".format(channel=self.production_processes_to_feynHiggs[production_channel], mA=mass)).read().split()[2])/1000.
 
     def BR(self, decay_channel, mass) :
         """
         Loads SM branching ratios needed to rescale the input yields. NOTE that the SM branching
         ratio is obtained from A in FeynHiggs and NOT from H or h.
         """
-        return float(os.popen("smScan br {channel} {mA} | grep value".format(channel=self.decay_channels_to_feynHiggs[decay_channel], mA=mass)).read().split()[2])
+        return float(os.popen("feyn-higgs-sm br {channel} {mA} | grep value".format(channel=self.decay_channels_to_feynHiggs[decay_channel], mA=mass)).read().split()[2])
     
     def rescale(self, no_rescale=False) :
         """
         Rescales a SM datacard by 1/xsec(SM) for each signal sample. For shape analyses all related histograms
         including shapes are rescaled accordingly. The latter is done by calling the rescaleSignal.C macro in
-        the MitLimits/Higgs2Tau package. A list of rates is returned in which the old signal rates have been
-        replaced by new ones if appropriate. The function acts on the following class members:
+        the HiggsAnalysis/HiggstoTauTau package. A list of rates is returned in which the old signal rates have
+        been replaced by new ones if appropriate. The function acts on the following class members:
         
         mass      : the actual mass point (needed for the look up of the SM xsec and BR for the correction)
         histfiles : list of full paths of the root files that contain the shape histograms
@@ -102,7 +102,7 @@ class RescaleDatacards:
                 #print "old rate: ", self.old_rates[idx], " new rate: ", new_rate, " scale: ", scale
                 for histfile in self.histfiles :
                     ## do the scale replacement in all histfile accordingly
-                    os.system(r"root -l -b -q {env}/src/MitLimits/Higgs2Tau/macros/rescaleSignal.C+\(true,{scale},\"{inputfile}\",\"{process}\",0\)".format(
+                    os.system(r"root -l -b -q {env}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{scale},\"{inputfile}\",\"{process}\",0\)".format(
                         env=os.environ.get("CMSSW_BASE"), scale=scale, inputfile=histfile, process=self.processes[idx]))
             new_rates[idx] = "%f" % new_rate
         return new_rates
@@ -204,4 +204,4 @@ for mass in parseArgs(args) :
         rescaleDatacard = RescaleDatacards("%.1f" % float(mass), "%s/%s" % (path, datacard), options.channel)
         rescaleDatacard.run(options.no_rescale)
 
-#print "return value? -- ", os.popen("mssmScan xs sm ggH 110 15 | grep value").read()
+#print "return value? -- ", os.popen("feyn-higgs-mssm xs sm ggH 110 15 | grep value").read()
