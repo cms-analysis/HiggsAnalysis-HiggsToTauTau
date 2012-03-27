@@ -19,11 +19,22 @@ int main(int argc, char* argv[])
   /*
     Implementation
   */
-  std::string path(getenv("CMSSW_BASE")+std::string("/src/HiggsAnalysis/HiggsToTauTau/data/feyn-higgs-mssm-scan.root"));
-  FeynHiggsScan scan(path.c_str(), TString::Format("mssm_scan%s", uncertainty.c_str()), 70, 1., 71., 96., 50., 1010.);
-  std::cout << "mA     = " << argv[4] << std::endl;
-  std::cout << "tanb   = " << argv[5] << std::endl;
-  std::cout << "var    = " << argv[1] << "_" << argv[2] << "_" << argv[3] << std::endl;
-  std::cout << "value  = " << scan.get(argv[3], argv[2], argv[1], atof(argv[4]), atof(argv[5])) << std::endl;
-  return scan.get(argv[3], argv[2], argv[1], atof(argv[4]), atof(argv[5]));
+  if(atof(argv[5])<10){
+    std::string path(getenv("CMSSW_BASE")+std::string("/src/HiggsAnalysis/HiggsToTauTau/data/feyn-higgs-mssm-scan-mhmax-fine.root"));
+    FeynHiggsScan scan(path.c_str(), TString::Format("mssm_scan%s", uncertainty.c_str()), 90, 1., 10., 96., 50., 1010.);
+    std::cout << "mA     = " << argv[4] << std::endl;
+    std::cout << "tanb   = " << argv[5] << std::endl;
+    std::cout << "var    = " << argv[1] << "_" << argv[2] << "_" << argv[3] << std::endl;
+    std::cout << "value  = " << scan.get(argv[3], argv[2], argv[1], atof(argv[4]), atof(argv[5])) << std::endl;
+    return scan.get(argv[3], argv[2], argv[1], atof(argv[4]), atof(argv[5]));
+  }
+  else{
+    std::string path(getenv("CMSSW_BASE")+std::string("/src/HiggsAnalysis/HiggsToTauTau/data/feyn-higgs-mssm-scan-mhmax.root"));
+    FeynHiggsScan scan(path.c_str(), TString::Format("mssm_scan%s", uncertainty.c_str()), 70, 1., 71., 96., 50., 1010.);
+    std::cout << "mA     = " << argv[4] << std::endl;
+    std::cout << "tanb   = " << argv[5] << std::endl;
+    std::cout << "var    = " << argv[1] << "_" << argv[2] << "_" << argv[3] << std::endl;
+    std::cout << "value  = " << scan.get(argv[3], argv[2], argv[1], atof(argv[4]), atof(argv[5])) << std::endl;
+    return scan.get(argv[3], argv[2], argv[1], atof(argv[4]), atof(argv[5]));
+  }
 }
