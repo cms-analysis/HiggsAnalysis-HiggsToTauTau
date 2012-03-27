@@ -166,11 +166,14 @@ if options.setup == "cmb" :
         print " %s cycle(s) to finish" % cycle
         print "***********************************************************"            
         for directory in args :
+            if directory.find("common")>-1 :
+                print "> skipping directory common"
+                continue 
             mass = int(directory[directory.rfind("/")+1:])
             ## search for limit boundaries corresponding to mass point and submit
             found = False
             CMSSW_BASE = os.environ["CMSSW_BASE"]                
-            f = open("%s/src/HiggsAnalysis/HiggsToTauTau/setup/limits/%s.bnd" % (CMSSW_BASE, options.bound))
+            f = open("%s/src/datacards/bounds/%s.bnd" % (CMSSW_BASE, options.bound))
             for line in f:
                 line = line.strip().split("\n")[0].strip()
                 if line == "" or line.startswith("#") or line.startswith("%"):
@@ -179,13 +182,16 @@ if options.setup == "cmb" :
                 if mass == int(wordarr[0]) :
                     found = True
                     if options.method == "CLs" :
-                        ## submit on a grid with three different granularities
-                        os.system("submit-slave.py --bin combine --method CLs -n 11 --min %s --max %s --toysH 50 -t 100 -j 50 --random --server --priority %s %s" %
-                                  (wordarr[1], wordarr[2], options.opt, directory))
-                        os.system("submit-slave.py --bin combine --method CLs -n 11 --min %s --max %s --toysH 50 -t 100 -j 50 --random --server --priority %s %s" %
-                                  (wordarr[3], wordarr[4], options.opt, directory))
-                        os.system("submit-slave.py --bin combine --method CLs -n 11 --min %s --max %s --toysH 50 -t 100 -j 50 --random --server --priority %s %s" %
-                                  (wordarr[5], wordarr[6], options.opt, directory))
+                        ## submit on a grid with three different granularities if configures such
+                        if float(wordarr[1])>0 and float(wordarr[2])>0 :
+                            os.system("submit-slave.py --bin combine --method CLs -n 11 --min %s --max %s --toysH 50 -t 100 -j 50 --random --server --priority %s %s" %
+                                      (wordarr[1], wordarr[2], options.opt, directory))
+                        if float(wordarr[3])>0 and float(wordarr[4])>0 :
+                            os.system("submit-slave.py --bin combine --method CLs -n 11 --min %s --max %s --toysH 50 -t 100 -j 50 --random --server --priority %s %s" %
+                                      (wordarr[3], wordarr[4], options.opt, directory))
+                        if float(wordarr[5])>0 and float(wordarr[6])>0 :
+                            os.system("submit-slave.py --bin combine --method CLs -n 11 --min %s --max %s --toysH 50 -t 100 -j 50 --random --server --priority %s %s" %
+                                      (wordarr[5], wordarr[6], options.opt, directory))
                     if options.method == "Bayesian" :
                         os.system("submit-slave.py --bin combine --method Bayesian -H None --rMin %s --rMax %s -t 250 -j 50 --server --random --priority %s %s %s" %
                                   ((float(wordarr[1])+float(wordarr[2]))/2, (float(wordarr[5])+float(wordarr[6]))/2, ("--observed" if cycle==1 else ""), options.opt, directory))
