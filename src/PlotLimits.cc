@@ -250,10 +250,10 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
     prepareAsymptotic(directory, central, "median");
   }
   else if(std::string(filename)==std::string("HIG-11-020-observed")){
-    prepareHIG_11_020(central, "observed");
+    prepareHIG_11_020(central, "observed", false);
   }
   else if(std::string(filename)==std::string("HIG-11-020-expected")){
-    prepareHIG_11_020(central, "expected");
+    prepareHIG_11_020(central, "expected", false);
   }
   else if(std::string(filename)==std::string("HIG-11-029-observed")){
     prepareHIG_11_029(central, "observed");
@@ -298,9 +298,10 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
     prepareCLs(directory, lower, innerBand ? ".quant0.160" : ".quant0.027");
   }
   else if(std::string(method) == std::string("HIG-11-020")){
-    prepareHIG_11_020(expected, "expected");
-    prepareHIG_11_020(upper, innerBand ? "+1sigma" : "+2sigma");
-    prepareHIG_11_020(lower, innerBand ? "-1sigma" : "-2sigma");
+    bool xsec = false;
+    prepareHIG_11_020(expected, "expected", xsec);
+    prepareHIG_11_020(upper, innerBand ? "+1sigma" : "+2sigma", xsec);
+    prepareHIG_11_020(lower, innerBand ? "-1sigma" : "-2sigma", xsec);
   }
   else if(std::string(method) == std::string("HIG-11-029")){
     prepareHIG_11_029(expected, "expected");
@@ -408,7 +409,6 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
   canv.SetGridx(1);
   canv.SetGridy(1);
 
-
   // draw a frame to define the range
   TH1F* hr = canv.DrawFrame(outerBand->GetX()[0]-.01, min_, outerBand->GetX()[outerBand->GetN()-1]+.01, max_);
   hr->SetXTitle(xaxis_.c_str());
@@ -421,7 +421,7 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
   hr->SetYTitle(yaxis_.c_str());
   hr->GetYaxis()->SetLabelFont(62);
   hr->GetYaxis()->SetTitleSize(0.05);
-  hr->GetYaxis()->SetTitleOffset(1.12);
+  hr->GetYaxis()->SetTitleOffset(1.30);
   hr->GetYaxis()->SetLabelSize(0.045);
   if(log_){ canv.SetLogy(1); }
 
@@ -496,6 +496,7 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
   if(png_){
     canv.Print(std::string(output_).append("_").append(outputLabel_).append(".png").c_str());
     canv.Print(std::string(output_).append("_").append(outputLabel_).append(".pdf").c_str());
+    canv.Print(std::string(output_).append("_").append(outputLabel_).append(".eps").c_str());
   }
   if(txt_){
     print(std::string(output_).append("_").append(outputLabel_).c_str(), outerBand, innerBand, expected, observed, "txt");
@@ -567,6 +568,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   //
   // --- 80% ggH CL Limits from H->WW moriond12 combination
   //
+  /*
   TGraph* HWWmH = new TGraph(); 
   limitsHWW(HWWmH, "mH-calc-observed");
   HWWmH->SetFillStyle( 3010);
@@ -600,6 +602,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   HWWmh_->SetMarkerStyle(20.);
   HWWmh_->SetMarkerColor(kBlack);
   HWWmh_->Draw("psame");
+  */
 
   plain->SetFillStyle(1001.);
   plain->SetFillColor(obs->GetNumber());
@@ -630,7 +633,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
       if(innerBand->GetX()[ipoint]>350){
 	innerAuxH->SetPoint(jpoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]+innerBand->GetEYhigh()[ipoint]); 
 	innerAuxL->SetPoint(jpoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]-innerBand->GetEYlow ()[ipoint]); 
-	std::cout << jpoint << " " << innerBand->GetX()[ipoint] << " " << innerBand->GetY()[ipoint]-innerBand->GetEYlow ()[ipoint] << std::endl;
+	//std::cout << jpoint << " " << innerBand->GetX()[ipoint] << " " << innerBand->GetY()[ipoint]-innerBand->GetEYlow ()[ipoint] << std::endl;
 	++jpoint;
       }
     }
@@ -699,7 +702,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   leg->AddEntry( expected , "expected"               ,  "L" );
   leg->AddEntry( innerHigh, "#pm 1#sigma expected"   ,  "L" );
   leg->AddEntry( outerHigh, "#pm 2#sigma expected"   ,  "L" );
-  leg->AddEntry( HWWmH    , "H#rightarrowWW (80% CL)",  "LF");
+  //leg->AddEntry( HWWmH    , "H#rightarrowWW (80% CL)",  "LF");
   leg->AddEntry( LEP      , "LEP"                    ,  "F" );
   leg->Draw("same");
   //canv.RedrawAxis("g");
@@ -708,6 +711,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   if(png_){
     canv.Print(std::string(output_).append("_").append(outputLabel_).append(".png").c_str());
     canv.Print(std::string(output_).append("_").append(outputLabel_).append(".pdf").c_str());
+    canv.Print(std::string(output_).append("_").append(outputLabel_).append(".eps").c_str());
   }
   if(txt_){
     print(std::string(output_).append("_").append(outputLabel_).c_str(), outerBand, innerBand, expected, observed, "txt");

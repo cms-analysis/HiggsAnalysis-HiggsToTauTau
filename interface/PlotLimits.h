@@ -101,7 +101,7 @@ class PlotLimits {
   /// take these mass points out of consideration
   void prepareSimple(const char* directory, std::vector<double>& values, const char* filename);
   /// fill officially approved limits for LP2011 (NOTE: these are cross section also for MSSM)
-  void prepareHIG_11_020(std::vector<double>& values, const char* type);
+  void prepareHIG_11_020(std::vector<double>& values, const char* type, bool xsec=true);
   /// fill officially approved limits for HIG-11-029 paper (NOTE: these are direct limits on tanb for MSSM)
   void prepareHIG_11_029(std::vector<double>& values, const char* type);
 
@@ -153,98 +153,212 @@ class PlotLimits {
 };
 
 inline void
-PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type)
+PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, bool xsec)
 {
   if(mssm_){
     if(std::string(type)==std::string("observed")){
-      values.push_back(14.076);
-      values.push_back( 7.995);
-      values.push_back( 4.501);
-      values.push_back( 4.095);
-      values.push_back( 3.834);
-      values.push_back( 3.103);
-      values.push_back( 2.296);
-      values.push_back( 2.353);
-      values.push_back( 1.700);
-      values.push_back( 1.227);
-      values.push_back( 0.600);
-      values.push_back( 0.416);
-      values.push_back( 0.335);
+      if(xsec){
+	// xsec limits
+	values.push_back(14.076);
+	values.push_back( 7.995);
+	values.push_back( 4.501);
+	values.push_back( 4.095);
+	values.push_back( 3.834);
+	values.push_back( 3.103);
+	values.push_back( 2.296);
+	values.push_back( 2.353);
+	values.push_back( 1.700);
+	values.push_back( 1.227);
+	values.push_back( 0.600);
+	values.push_back( 0.416);
+	values.push_back( 0.335);
+      }
+      else{
+	// tanb limits
+	values.push_back(8.50 );
+	values.push_back(7.92 );
+	values.push_back(8.67 );
+	values.push_back(7.78 );
+	values.push_back(10.99);
+	values.push_back(12.69);
+	values.push_back(14.00);
+	values.push_back(17.66);
+	values.push_back(24.46);
+	values.push_back(31.68);
+	values.push_back(44.82);
+	values.push_back(50.62);
+	values.push_back(59.53);
+      }
     }
     else if (std::string(type)==std::string("+2sigma")){
-      values.push_back(34.598);
-      values.push_back(24.746);
-      values.push_back(11.224);
-      values.push_back( 9.260);
-      values.push_back( 6.884);
-      values.push_back( 5.011);
-      values.push_back( 3.504);
-      values.push_back( 2.916);
-      values.push_back( 1.848);
-      values.push_back( 1.279);
-      values.push_back( 0.736);
-      values.push_back( 0.579);
-      values.push_back( 0.457);
+      if(xsec){
+	// xsec limits
+	values.push_back(34.598);
+	values.push_back(24.746);
+	values.push_back(11.224);
+	values.push_back( 9.260);
+	values.push_back( 6.884);
+	values.push_back( 5.011);
+	values.push_back( 3.504);
+	values.push_back( 2.916);
+	values.push_back( 1.848);
+	values.push_back( 1.279);
+	values.push_back( 0.736);
+	values.push_back( 0.579);
+	values.push_back( 0.457);
+      }
+      else{
+	// tanb limits
+	values.push_back(13.33);
+	values.push_back(13.90);
+	values.push_back(13.86);
+	values.push_back(13.16);
+	values.push_back(14.81);
+	values.push_back(16.13);
+	values.push_back(17.20);
+	values.push_back(19.64);
+	values.push_back(25.48);
+	values.push_back(32.29);
+	values.push_back(49.22);
+	values.push_back(58.79);
+	values.push_back(69.25);
+      }
     }
     else if (std::string(type)==std::string("+1sigma")){
-      values.push_back(24.864);
-      values.push_back(18.287);
-      values.push_back( 8.397);
-      values.push_back( 6.899);
-      values.push_back( 5.134);
-      values.push_back( 3.718);
-      values.push_back( 2.616);
-      values.push_back( 2.190);
-      values.push_back( 1.351);
-      values.push_back( 0.955);
-      values.push_back( 0.538);
-      values.push_back( 0.416);
-      values.push_back( 0.335);
+      if(xsec){
+	/// xsec limits
+	values.push_back(24.864);
+	values.push_back(18.287);
+	values.push_back( 8.397);
+	values.push_back( 6.899);
+	values.push_back( 5.134);
+	values.push_back( 3.718);
+	values.push_back( 2.616);
+	values.push_back( 2.190);
+	values.push_back( 1.351);
+	values.push_back( 0.955);
+	values.push_back( 0.538);
+	values.push_back( 0.416);
+	values.push_back( 0.335);
+      }
+      else{
+	// tanb limits
+	values.push_back(11.31);
+	values.push_back(11.99);
+	values.push_back(12.02);
+	values.push_back(11.05);
+	values.push_back(12.77);
+	values.push_back(13.91);
+	values.push_back(14.92);
+	values.push_back(17.06);
+	values.push_back(21.88);
+	values.push_back(28.14);
+	values.push_back(42.65);
+	values.push_back(50.62);
+	values.push_back(59.53);
+      }
     }
     else if(std::string(type)==std::string("expected")){
-      values.push_back(17.802);
-      values.push_back(12.569);
-      values.push_back( 6.001);
-      values.push_back( 4.823);
-      values.push_back( 3.655);
-      values.push_back( 2.630);
-      values.push_back( 1.883);
-      values.push_back( 1.543);
-      values.push_back( 0.957);
-      values.push_back( 0.661);
-      values.push_back( 0.376);
-      values.push_back( 0.294);
-      values.push_back( 0.254);
+      if(xsec){
+	// xsec limits
+	values.push_back(17.802);
+	values.push_back(12.569);
+	values.push_back( 6.001);
+	values.push_back( 4.823);
+	values.push_back( 3.655);
+	values.push_back( 2.630);
+	values.push_back( 1.883);
+	values.push_back( 1.543);
+	values.push_back( 0.957);
+	values.push_back( 0.661);
+	values.push_back( 0.376);
+	values.push_back( 0.294);
+	values.push_back( 0.254);
+      }
+      else{
+	// tanb limtis
+	values.push_back(9.56 );
+	values.push_back(9.96 );
+	values.push_back(10.12);
+	values.push_back(8.75 );
+	values.push_back(10.71);
+	values.push_back(11.69);
+	values.push_back(12.67);
+	values.push_back(14.37);
+	values.push_back(18.56);
+	values.push_back(23.75);
+	values.push_back(36.32);
+	values.push_back(43.41);
+	values.push_back(52.65);
+      }
     }
     else if (std::string(type)==std::string("-1sigma")){
-      values.push_back(12.360);
-      values.push_back( 8.644);
-      values.push_back( 4.062);
-      values.push_back( 3.381);
-      values.push_back( 2.619);
-      values.push_back( 1.877);
-      values.push_back( 1.323);
-      values.push_back( 1.119);
-      values.push_back( 0.701);
-      values.push_back( 0.470);
-      values.push_back( 0.264);
-      values.push_back( 0.213);
-      values.push_back( 0.213);
+      if(xsec){
+	// xsec limits
+	values.push_back(12.360);
+	values.push_back( 8.644);
+	values.push_back( 4.062);
+	values.push_back( 3.381);
+	values.push_back( 2.619);
+	values.push_back( 1.877);
+	values.push_back( 1.323);
+	values.push_back( 1.119);
+	values.push_back( 0.701);
+	values.push_back( 0.470);
+	values.push_back( 0.264);
+	values.push_back( 0.213);
+	values.push_back( 0.213);
+      }
+      else{
+	// tanb limits
+	values.push_back(7.98 );
+	values.push_back(8.23 );
+	values.push_back(8.19 );
+	values.push_back(6.68 );
+	values.push_back(8.95 );
+	values.push_back(9.87 );
+	values.push_back(10.66);
+	values.push_back(12.31);
+	values.push_back(16.03);
+	values.push_back(20.37);
+	values.push_back(31.13);
+	values.push_back(37.77);
+	values.push_back(48.74);
+      }
     }
     else if (std::string(type)==std::string("-2sigma")){
-      values.push_back( 9.211);
-      values.push_back( 6.216);
-      values.push_back( 2.891);
-      values.push_back( 2.579);
-      values.push_back( 1.912);
-      values.push_back( 1.450);
-      values.push_back( 0.945);
-      values.push_back( 0.703);
-      values.push_back( 0.518);
-      values.push_back( 0.368);
-      values.push_back( 0.213);
-      values.push_back( 0.132);
-      values.push_back( 0.172);
+      if(xsec){
+	// xsec limits
+	values.push_back( 9.211);
+	values.push_back( 6.216);
+	values.push_back( 2.891);
+	values.push_back( 2.579);
+	values.push_back( 1.912);
+	values.push_back( 1.450);
+	values.push_back( 0.945);
+	values.push_back( 0.703);
+	values.push_back( 0.518);
+	values.push_back( 0.368);
+	values.push_back( 0.213);
+	values.push_back( 0.132);
+	values.push_back( 0.172);
+      }
+      else{
+	// tanb limits
+	values.push_back(6.85 );
+	values.push_back(6.95 );
+	values.push_back(6.65 );
+	values.push_back(5.14 );
+	values.push_back(7.43 );
+	values.push_back(8.64 );
+	values.push_back(9.07 );
+	values.push_back(9.84 );
+	values.push_back(13.92);
+	values.push_back(18.30);
+	values.push_back(28.40);
+	values.push_back(30.95);
+	values.push_back(44.45);
+      }
     }
     else{
       std::cout << "ERROR: picked wrong type. Available types are: +2sigma, +1sigma, mean, median, -1sigma, -2sigma" << std::endl

@@ -142,7 +142,8 @@ int main(int argc, char* argv[])
     /// make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
-    plot.plot(*canv, inner, outer, expected, observed);  
+    //plot.plot(*canv, inner, outer, expected, observed);  
+    plot.plotTanb(*canv, inner, outer, expected, observed);  
   }
   if( std::string(argv[1]) == std::string("HIG-11-029") ){
     /// observed limit 
