@@ -140,6 +140,7 @@ rb               = CERN
 proxy_server     = myproxy.cern.ch
 role             = priorityuser
 retry_count      = 0
+maxtarballsize   = 250
 
 ce_white_list    = T2, T3_US_UCD
 ce_black_list    = T2_CN_Beijing, T2_RU, T2_SU, T2_UA, T2_PK, T2_PL_Cracow, T2_UK_SGrid_Bristol

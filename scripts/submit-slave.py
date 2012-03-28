@@ -146,7 +146,6 @@ for directory in args :
             ## single. For the latter the combined datacards are produced for each signal strength point
             ## locally
             if not options.method == "single" :
-                print "combineCards.py -S %s > tmp.txt" % optcards
                 os.system("combineCards.py -S %s > tmp.txt" % optcards)
             ## if it does not exist already, create link to executable
             if not os.path.exists("combine") :
@@ -183,7 +182,6 @@ for directory in args :
                 if options.v != 0 :
                     print "> creating batch job for combine -M CLs"
                 ## create the job
-                print "combine-cls.py %s --shape %s tmp.txt %s %s" % (opts, options.shape, options.min, options.max)
                 os.system("combine-cls.py %s --shape %s tmp.txt %s %s" % (opts, options.shape, options.min, options.max))
             if options.method == "tanb" :
                 ## -----------------------------------------------------------------------------------------
