@@ -94,14 +94,11 @@ for directory in args :
             if card.find("mA")>1 :
                 optcards += card[:card.find("_mA")]
             elif card.find("hggmva")>-1 :
-                optcards += ""
+                optcards += "hgg"
             else :
                 optcards += card[:card.find(".txt")]
             ## add '=' sign
-            if card.find("hggmva")>-1 :
-                optcards += ""
-            else :
-                optcards += "="
+            optcards += "="
         ## add datacard for combination
         optcards += card
         optcards += " "
