@@ -30,10 +30,16 @@ channel(std::string& label){
 	  label==std::string("hww")        ||
 	  label==std::string("ggH")        ||
 	  label==std::string("bbH")        ||
-	  label==std::string("nomix+200")  ||
+	  label==std::string("test-0")     ||
+	  label==std::string("test-1")     ||
 	  label==std::string("nomix-200")  ||
-	  label==std::string("mhmax+200")  ||
+	  label==std::string("nomix+200")  ||
+	  label==std::string("mhmax-400")  ||
 	  label==std::string("mhmax-200")  ||
+	  label==std::string("mhmax+200")  ||
+	  label==std::string("mhmax+400")  ||
+	  label==std::string("mhmax+600")  ||
+	  label==std::string("mhmax+800")  ||
 	  label==std::string("HIG-11-020") ||
 	  label==std::string("HIG-11-029")
 	  );
@@ -55,10 +61,16 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("hww"       )) title = std::string("H#rightarrowWW#rightarrow 2lep 2#nu");
   if(channel==std::string("ggH"       )) title = std::string("gg#rightarrowH");
   if(channel==std::string("bbH"       )) title = std::string("bb#rightarrowHbb");
-  if(channel==std::string("nomix+200" )) title = std::string("no mixing (#mu=+200 GeV)");
+  if(channel==std::string("test-0"    )) title = std::string("Test-0");
+  if(channel==std::string("test-1"    )) title = std::string("Test-1");
   if(channel==std::string("nomix-200" )) title = std::string("no mixing (#mu=-200 GeV)");
-  if(channel==std::string("mhmax+200" )) title = std::string("m_{h, max} (#mu=+200 GeV)");
+  if(channel==std::string("nomix+200" )) title = std::string("no mixing (#mu=+200 GeV)");
+  if(channel==std::string("mhmax-400" )) title = std::string("m_{h, max} (#mu=-400 GeV)");
   if(channel==std::string("mhmax-200" )) title = std::string("m_{h, max} (#mu=-200 GeV)");
+  if(channel==std::string("mhmax+200" )) title = std::string("m_{h, max} (#mu=+200 GeV)");
+  if(channel==std::string("mhmax+400" )) title = std::string("m_{h, max} (#mu=+400 GeV)");
+  if(channel==std::string("mhmax+600" )) title = std::string("m_{h, max} (#mu=+600 GeV)");
+  if(channel==std::string("mhmax+800" )) title = std::string("m_{h, max} (#mu=+800 GeV)");
   if(channel==std::string("HIG-11-020")) title = std::string("Combined");
   if(channel==std::string("HIG-11-029")) title = std::string("Combined");
   return title;
@@ -83,10 +95,16 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["hww"       ] = kGreen;
   colors["ggH"       ] = kRed;
   colors["bbH"       ] = kBlue;
-  colors["nomix+200" ] = kBlue;
+  colors["test-0"    ] = kBlue;
+  colors["test-1"    ] = kRed;
   colors["nomix-200" ] = kBlue-10;
-  colors["mhmax+200" ] = kBlack;
-  colors["mhmax-200" ] = kGray+1;
+  colors["nomix+200" ] = kBlue +2;
+  colors["mhmax-400" ] = kGray +2;
+  colors["mhmax-200" ] = kGray +1;
+  colors["mhmax+200" ] = kMagenta+ 4;
+  colors["mhmax+400" ] = kMagenta+ 3;
+  colors["mhmax+600" ] = kMagenta- 2;
+  colors["mhmax+800" ] = kMagenta-10;
   colors["HIG-11-020"] = kBlack;
   colors["HIG-11-029"] = kBlack;
 
@@ -97,12 +115,13 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 	    << " * Arguments :  + file     const char*      full path to the input file                              \n"
 	    << " *              + chn      const char*      list of channels; choose between: 'cmb', 'htt', 'emu',   \n"
 	    << " *                                          'etau', 'mutau', 'mumu', 'vhtt', 'hgg', 'hww', 'ggH',    \n"
-	    << " *                                          'bbH', 'nomix+/-200', 'mhmax+/-200'                      \n"
+	    << " *                                          'bbH', 'nomix[-200, +200]', 'mhmax[-400, -200, +200]'    \n"
+	    << " *                                          'mhmax[+400, +600, +800]'                                \n"
 	    << " *                                          The list should be comma separated and may contain       \n"
 	    << " *                                          whitespaces                                              \n"
 	    << " *              + exp       bool            compare expected limits                                  \n"
 	    << " *              + obs       bool            compare observed limits                                  \n"
-	    << " *              + mssm      const char*     type of plot; choose between 'sm-xsec', 'mssm-xsec' and  \n"
+	    << " *              + type      const char*     type of plot; choose between 'sm-xsec', 'mssm-xsec' and  \n"
 	    << " *                                          'mssm-tanb'                                              \n"
 	    << " *              + max       double          maximumof the plot (default is 20.)                      \n"
 	    << " *                                                                                                   \n"
