@@ -9,6 +9,7 @@ parser.add_option("-t", "--tanb",  dest="tanb",     default='20.',   type="strin
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode")
 parser.add_option("--sm-like", dest="sm_like", default=False, action="store_true", help="Do not divide by the value of tanb, but only scale to MSSM xsec according to tanb value. (Will result in typical SM limit on signal strength for given value of tanb). Used for debugging. [Default: False]")
 parser.add_option("--model", dest="model", default='HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-7-nnlo.root', type="string", help="Model to be applied for the limit calculation. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-7-nnlo.root']")
+parser.add_option("--interpolation", dest="interpolation_mode", default='mode-2', type="choice", help="Mode for mass interpolation for direct tanb limits. Choices are: mode-0 -- non-degenerate-masses for all htt channels, mode-1 -- non-degenerate-masses for classic htt channels non-degenerate-masses-light for htt_mm, mode-2 -- non-degenerate-masses for classic htt channels degenerate-masses for htt_mm, mode-3 -- non-degenerate-masses-light for all htt channels, mode-4 -- non-degenerate-masses-light for classic htt channels degenerate-masses for htt_mm, mode-5 -- degenerate-masses for all htt channels [Default: mode-2]", choices=["mode-0", "mode-1", "mode-2", "mode-3", "mode-4", "mode-5"])
 (options, args) = parser.parse_args()
 
 import re
@@ -102,21 +103,8 @@ class MakeDatacard :
               ## - degenerate-masses            : degenerate masses assumption
               ## - single-mass                  : depending on hww_cross_point only mh or
               ##                                  only mH is considered (for hww limits)
-              self.decay_channel_to_interpolation_method = {
-                      "htt_mm_0"       : "degenerate-masses"
-                     ,"htt_mm_1"       : "degenerate-masses"
-                     ,"htt_em_0"       : "non-degenerate-masses"
-                     ,"htt_em_1"       : "non-degenerate-masses"
-                     ,"htt_mt_0"       : "non-degenerate-masses"
-                     ,"htt_mt_1"       : "non-degenerate-masses"
-                     ,"htt_et_0"       : "non-degenerate-masses"
-                     ,"htt_et_1"       : "non-degenerate-masses"
-                     ,"hwwof_0j_shape" : "single-mass"
-                     ,"hwwof_1j_shape" : "single-mass"
-                     ,"hwwsf_0j_shape" : "single-mass"
-                     ,"hwwsf_1j_shape" : "single-mass"
-                     ,"hww_2j_cut"     : "single-mass"
-                     }
+              ## the mapping is initialized in self.interpolation_mode(self, mode)
+              self.decay_channel_to_interpolation_method = {}
               ## mapping of output histfiles to output directories in that histfiles
               self.histfile_to_directories = {}
               ## mapping of output histfiles to decay the channels that these histfiles are used for
@@ -135,13 +123,127 @@ class MakeDatacard :
               ## mapping of production channels to uncertainty lines in the output datacard
               self.signal_channel_to_uncertainty_lines = {}
 
-       def init(self) :
+       def interpolation_mode(self, mode="mode-2") :
+              """
+              Configure interpolation mode for htt limits. Considered modes are:
+              
+                        classic htt channels (htt_em, htt_et, htt_mt)           htt_mm
+              mode-0 :            non-degenerate-masses                 non-degenerate-masses
+              mode-1 :            non-degenerate-masses                 non-degenerate-masses-light
+              mode-2 :            non-degenerate-masses                 degenerate-masses
+              mode-3 :            non-degenerate-masses-light           non-degenerate-masses-light
+              mode-4 :            non-degenerate-masses-light           non-degenerate-masses
+              mode-5 :            degenerate-masses                     degenerate-masses
+              """
+              if mode == "mode-0" :
+                     self.decay_channel_to_interpolation_method = {
+                             "htt_mm_0"       : "non-degenerate-masses"
+                            ,"htt_mm_1"       : "non-degenerate-masses"
+                            ,"htt_em_0"       : "non-degenerate-masses"
+                            ,"htt_em_1"       : "non-degenerate-masses"
+                            ,"htt_mt_0"       : "non-degenerate-masses"
+                            ,"htt_mt_1"       : "non-degenerate-masses"
+                            ,"htt_et_0"       : "non-degenerate-masses"
+                            ,"htt_et_1"       : "non-degenerate-masses"
+                            ,"hwwof_0j_shape" : "single-mass"
+                            ,"hwwof_1j_shape" : "single-mass"
+                            ,"hwwsf_0j_shape" : "single-mass"
+                            ,"hwwsf_1j_shape" : "single-mass"
+                            ,"hww_2j_cut"     : "single-mass"
+                            }
+              if mode == "mode-1" :
+                     self.decay_channel_to_interpolation_method = {
+                             "htt_mm_0"       : "non-degenerate-masses-light"
+                            ,"htt_mm_1"       : "non-degenerate-masses-light"
+                            ,"htt_em_0"       : "non-degenerate-masses"
+                            ,"htt_em_1"       : "non-degenerate-masses"
+                            ,"htt_mt_0"       : "non-degenerate-masses"
+                            ,"htt_mt_1"       : "non-degenerate-masses"
+                            ,"htt_et_0"       : "non-degenerate-masses"
+                            ,"htt_et_1"       : "non-degenerate-masses"
+                            ,"hwwof_0j_shape" : "single-mass"
+                            ,"hwwof_1j_shape" : "single-mass"
+                            ,"hwwsf_0j_shape" : "single-mass"
+                            ,"hwwsf_1j_shape" : "single-mass"
+                            ,"hww_2j_cut"     : "single-mass"
+                            }
+              if mode == "mode-2" :
+                     self.decay_channel_to_interpolation_method = {
+                             "htt_mm_0"       : "degenerate-masses"
+                            ,"htt_mm_1"       : "degenerate-masses"
+                            ,"htt_em_0"       : "non-degenerate-masses"
+                            ,"htt_em_1"       : "non-degenerate-masses"
+                            ,"htt_mt_0"       : "non-degenerate-masses"
+                            ,"htt_mt_1"       : "non-degenerate-masses"
+                            ,"htt_et_0"       : "non-degenerate-masses"
+                            ,"htt_et_1"       : "non-degenerate-masses"
+                            ,"hwwof_0j_shape" : "single-mass"
+                            ,"hwwof_1j_shape" : "single-mass"
+                            ,"hwwsf_0j_shape" : "single-mass"
+                            ,"hwwsf_1j_shape" : "single-mass"
+                            ,"hww_2j_cut"     : "single-mass"
+                            }
+              if mode == "mode-3" :
+                     self.decay_channel_to_interpolation_method = {
+                             "htt_mm_0"       : "non-degenerate-masses-light"
+                            ,"htt_mm_1"       : "non-degenerate-masses-light"
+                            ,"htt_em_0"       : "non-degenerate-masses-light"
+                            ,"htt_em_1"       : "non-degenerate-masses-light"
+                            ,"htt_mt_0"       : "non-degenerate-masses-light"
+                            ,"htt_mt_1"       : "non-degenerate-masses-light"
+                            ,"htt_et_0"       : "non-degenerate-masses-light"
+                            ,"htt_et_1"       : "non-degenerate-masses-light"
+                            ,"hwwof_0j_shape" : "single-mass"
+                            ,"hwwof_1j_shape" : "single-mass"
+                            ,"hwwsf_0j_shape" : "single-mass"
+                            ,"hwwsf_1j_shape" : "single-mass"
+                            ,"hww_2j_cut"     : "single-mass"
+                            }
+              if mode == "mode-4" :
+                     self.decay_channel_to_interpolation_method = {
+                             "htt_mm_0"       : "degenerate-masses"
+                            ,"htt_mm_1"       : "degenerate-masses"
+                            ,"htt_em_0"       : "non-degenerate-masses-light"
+                            ,"htt_em_1"       : "non-degenerate-masses-light"
+                            ,"htt_mt_0"       : "non-degenerate-masses-light"
+                            ,"htt_mt_1"       : "non-degenerate-masses-light"
+                            ,"htt_et_0"       : "non-degenerate-masses-light"
+                            ,"htt_et_1"       : "non-degenerate-masses-light"
+                            ,"hwwof_0j_shape" : "single-mass"
+                            ,"hwwof_1j_shape" : "single-mass"
+                            ,"hwwsf_0j_shape" : "single-mass"
+                            ,"hwwsf_1j_shape" : "single-mass"
+                            ,"hww_2j_cut"     : "single-mass"
+                            }
+              if mode == "mode-5" :
+                     self.decay_channel_to_interpolation_method = {
+                             "htt_mm_0"       : "degenerate-masses"
+                            ,"htt_mm_1"       : "degenerate-masses"
+                            ,"htt_em_0"       : "degenerate-masses"
+                            ,"htt_em_1"       : "degenerate-masses"
+                            ,"htt_mt_0"       : "degenerate-masses"
+                            ,"htt_mt_1"       : "degenerate-masses"
+                            ,"htt_et_0"       : "degenerate-masses"
+                            ,"htt_et_1"       : "degenerate-masses"
+                            ,"hwwof_0j_shape" : "single-mass"
+                            ,"hwwof_1j_shape" : "single-mass"
+                            ,"hwwsf_0j_shape" : "single-mass"
+                            ,"hwwsf_1j_shape" : "single-mass"
+                            ,"hww_2j_cut"     : "single-mass"
+                            }                     
+              print "using mass interpolation", mode, "for htt limits"
+              
+       def init(self, interpolation_mode="mode-2") :
+              ## load masses
               self.load_masses()
+              ## setup interpolation mode for htt
+              self.interpolation_mode(interpolation_mode)
+              ## announce model 
               if self.feyn_higgs_model != "" :
                      print "preparing limit calculation for model input: feyn-higgs model="+self.feyn_higgs_model
               else :
                      print "preparing limit calculation for model input:", self.mssm_xsec_tools_input_path 
-       
+
        def decay_channels(self, words) :
               """
               Determine the number and names of decay channels involved in this combination, as determined
@@ -1147,7 +1249,7 @@ if options.model.find("feyn-higgs")>-1:
        datacard_creator = MakeDatacard(tanb=float(options.tanb), mA=float(options.mA), feyn_higgs_model=options.model[options.model.find("::")+2:])
 else:
        datacard_creator = MakeDatacard(tanb=float(options.tanb), mA=float(options.mA), model=options.model)
-datacard_creator.init()
+datacard_creator.init(options.interpolation_mode)
 
 ## first file parsing
 input_file = open(input_name,'r')
