@@ -24,9 +24,16 @@ from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools
 
 
 class MakeDatacard :
-       def __init__(self, tanb, mA, model="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-7-nnlo.root", sm_like=False) :
+       def __init__(self, tanb, mA, model="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-7-nnlo.root", feyn_higgs_model="", sm_like=False) :
               ## full path for the input file for the htt xsec tools, expected in the data directory of the package
+              ## This file is used to determine the cross sections and uncertainties for calculations for htt, as
+              ## as for determining the masses for htt and hww
               self.mssm_xsec_tools_input_path = model
+              ## model to be used exploiting the feyn-higgs calculations also for htt. This is the case for model,
+              ## which have not been provided by the MSSM cross section group. In this cases the cross sections
+              ## are calculated from feyn-higgs, while the uncertainties are stil taken from the MSSM cross section
+              ## group on the basis of the default mhmax scenario
+              self.feyn_higgs_model = feyn_higgs_model
               ## do not divide yields by value of tanb but only rescale by xsec for given value of tanb
               self.sm_like = sm_like
               ## tanb as float
@@ -130,7 +137,10 @@ class MakeDatacard :
 
        def init(self) :
               self.load_masses()
-              print "preparing limit calculation for model input:", self.mssm_xsec_tools_input_path 
+              if self.feyn_higgs_model != "" :
+                     print "preparing limit calculation for model input: feyn-higgs model="+self.feyn_higgs_model
+              else :
+                     print "preparing limit calculation for model input:", self.mssm_xsec_tools_input_path 
        
        def decay_channels(self, words) :
               """
@@ -277,12 +287,28 @@ class MakeDatacard :
               higgses 'A', 'H' and 'h'.
               """
               cross_sections = {"A" : 0., "H" : 0., "h" : 0.}
-              ## read cross section results for htt
-              scan = mssm_xsec_tools("{CMSSW_BASE}/src/{path}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], path=self.mssm_xsec_tools_input_path))
-              htt_query = scan.query(self.mA, self.tanb)
-              ## fill cross section (central values)
-              for key in cross_sections :
-                     cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR"]
+              if self.feyn_higgs_model != "":
+                     ## map production channel channel back to feyn-higgs compatible inputs
+                     if production_channel == "ggF" :
+                            channel = "gg"
+                     if production_channel == "santander" :
+                            channel = "bb"
+                     for key in cross_sections : 
+                            xs = float(os.popen("feyn-higgs-mssm xs mssm {channel}{higgs} {mA} {tanb} model={model} | grep value".format(
+                                   channel=channel, higgs=key, mA=self.mA, tanb=self.tanb, model=self.feyn_higgs_model)).read().split()[2])/1000.
+                            br = float(os.popen("feyn-higgs-mssm br mssm {higgs}tt {mA} {tanb} model={model}| grep value".format(
+                                   higgs=key, mA=self.mA, tanb=self.tanb, model=self.feyn_higgs_model)).read().split()[2])
+                            cross_sections[key] = xs*br
+                            if cross_sections[key] < 0 :
+                                   ## non-existing cross sections * branching ratios are set to 0.
+                                   cross_sections[key] = 0
+              else:
+                     ## read cross section results for htt
+                     scan = mssm_xsec_tools("{CMSSW_BASE}/src/{path}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], path=self.mssm_xsec_tools_input_path))
+                     htt_query = scan.query(self.mA, self.tanb)
+                     ## fill cross section (central values)
+                     for key in cross_sections :
+                            cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR"]
               return cross_sections
 
        def load_cross_sections_map(self) :
@@ -1105,9 +1131,13 @@ if len(args) < 1 :
 first_pass_on_bin = True
 ## name of the input datacard
 input_name = args[0]
-## datacard creator
+## setup datacard creator
 print "creating datacard for mA=%s, tanb=%s" % (options.mA, options.tanb)
-datacard_creator = MakeDatacard(float(options.tanb), float(options.mA), options.model)
+if options.model.find("feyn-higgs")>-1:
+       model = options.model[options.model.find("::")+2:]
+       datacard_creator = MakeDatacard(tanb=float(options.tanb), mA=float(options.mA), feyn_higgs_model=options.model[options.model.find("::")+2:])
+else:
+       datacard_creator = MakeDatacard(tanb=float(options.tanb), mA=float(options.mA), model=options.model)
 datacard_creator.init()
 
 ## first file parsing
