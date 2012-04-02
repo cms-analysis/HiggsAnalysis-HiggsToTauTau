@@ -11,7 +11,8 @@ parser.add_option("--binary", dest="binary", default="combine", type="choice", h
 parser.add_option("--method", dest="method", default="CLs", type="choice", help="Statistical method to be used [Default: CLs]",  choices=["bayesian", "CLs", "tanb", "single"])
 parser.add_option("--shape",           dest="shape",           default="shape2",  type="string",             help="Choose dedicated algorithm for shape uncertainties. [Default: 'shape2']")
 parser.add_option("--random", dest="random", default=False, action="store_true", help="Use random seeds. [Default: False]")
-parser.add_option("--model", dest="model", default="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-7-nnlo.root", type="string", help="The model that should be applied for limits on tanb (only applicable for --method tanb, for other methods this option will have no effect). The model should be given as the absolute path to the mssm_xsec_tool input file starting from CMSSW_BASE/src/. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-7-nnlo.root']")
+parser.add_option("--model", dest="model", default="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-7-nnlo.root", type="string", help="The model that should be applied for direct limits on tanb (only applicable for --method tanb, for other methods this option will have no effect). The model should be given as the absolute path to the mssm_xsec_tool input file starting from CMSSW_BASE/src/. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-7-nnlo.root']")
+parser.add_option("--interpolation", dest="interpolation_mode", default='mode-2', type="choice", help="Mode for mass interpolation for direct limits tanb (only applicable for --method tanb, for other methods this option will have no effect). [Default: mode-2]", choices=["mode-0", "mode-1", "mode-2", "mode-3", "mode-4", "mode-5"])
 parser.add_option("--interactive", dest="interactive",default=False, action="store_true", help="Set to true to run interactive, otherwise the script will submit the job to the grid directly [Default: False]")
 parser.add_option("--noSystematics", dest="nosys", default=False, action="store_true", help="Use statistical uncertainties only (currently only implemented for combine). [Default: False]")
 ## lands options for Bayesian
@@ -193,7 +194,8 @@ for directory in args :
                 points = [ float(options.min) + dx*i for i in range(options.points) ]
                 ## create additional workspaces
                 for tanb in points :
-                    os.system("python tanb_grid.py -m {mass} -t {tanb} --model {model} tmp.txt".format(mass=masspoint, tanb=tanb, model=options.model))
+                    os.system("python tanb_grid.py -m {mass} -t {tanb} --model {model} --interpolation {interpolation} tmp.txt".format(
+                        mass=masspoint, tanb=tanb, model=options.model, interpolation=options.interpolation_mode))
                 ## setup the batchjob creation for combine -M CLs with tanb grid points instead of cross section grid points
                 opts = "-o {out} -n {points} -m {mass} -O {options} -T {toysH} -t {toys} -j {jobs} -q {queue}".format(
                     out=options.out, points=options.points, mass=masspoint, options=options.options, toysH=options.T,
