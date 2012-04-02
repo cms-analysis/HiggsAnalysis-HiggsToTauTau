@@ -32,6 +32,12 @@ channel(std::string& label){
 	  label==std::string("bbH")        ||
 	  label==std::string("test-0")     ||
 	  label==std::string("test-1")     ||
+	  label==std::string("test-2")     ||
+	  label==std::string("test-3")     ||
+	  label==std::string("test-4")     ||
+	  label==std::string("test-5")     ||
+	  label==std::string("saeff")      ||
+	  label==std::string("gluph")      ||
 	  label==std::string("nomix-200")  ||
 	  label==std::string("nomix+200")  ||
 	  label==std::string("mhmax-400")  ||
@@ -63,6 +69,12 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("bbH"       )) title = std::string("bb#rightarrowHbb");
   if(channel==std::string("test-0"    )) title = std::string("Test-0");
   if(channel==std::string("test-1"    )) title = std::string("Test-1");
+  if(channel==std::string("test-2"    )) title = std::string("Test-2");
+  if(channel==std::string("test-3"    )) title = std::string("Test-3");
+  if(channel==std::string("test-4"    )) title = std::string("Test-4");
+  if(channel==std::string("test-5"    )) title = std::string("Test-5");
+  if(channel==std::string("saeff"     )) title = std::string("small #alpha_{eff}");
+  if(channel==std::string("gluph"     )) title = std::string("gluo-phobic");
   if(channel==std::string("nomix-200" )) title = std::string("no mixing (#mu=-200 GeV)");
   if(channel==std::string("nomix+200" )) title = std::string("no mixing (#mu=+200 GeV)");
   if(channel==std::string("mhmax-400" )) title = std::string("m_{h, max} (#mu=-400 GeV)");
@@ -97,6 +109,12 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["bbH"       ] = kBlue;
   colors["test-0"    ] = kBlue;
   colors["test-1"    ] = kRed;
+  colors["test-2"    ] = kGreen;
+  colors["test-3"    ] = kOrange;
+  colors["test-4"    ] = kMagenta;
+  colors["test-5"    ] = kViolet-6;
+  colors["saeff"     ] = kGreen;
+  colors["gluph"     ] = kOrange-3;
   colors["nomix-200" ] = kBlue-10;
   colors["nomix+200" ] = kBlue +2;
   colors["mhmax-400" ] = kGray +2;
@@ -116,7 +134,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 	    << " *              + chn      const char*      list of channels; choose between: 'cmb', 'htt', 'emu',   \n"
 	    << " *                                          'etau', 'mutau', 'mumu', 'vhtt', 'hgg', 'hww', 'ggH',    \n"
 	    << " *                                          'bbH', 'nomix[-200, +200]', 'mhmax[-400, -200, +200]'    \n"
-	    << " *                                          'mhmax[+400, +600, +800]'                                \n"
+	    << " *                                          'mhmax[+400, +600, +800]', 'test-0...5', 'saeff', 'gluph'\n"
 	    << " *                                          The list should be comma separated and may contain       \n"
 	    << " *                                          whitespaces                                              \n"
 	    << " *              + exp       bool            compare expected limits                                  \n"
