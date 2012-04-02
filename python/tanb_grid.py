@@ -724,7 +724,7 @@ class MakeDatacard :
                                    hist_mh_value = hist_mh_upper
                             if hist_mh_value.Integral()>0 :
                                    norm_mh_value = cross_sections["h"]/self.tanb*self.scale(hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh)
-                                   hist_mh_value.Scale(norm_mh_value)
+                                   hist_mh_value.Scale(norm_mh_value/hist_mh_value.Integral())
                      else:
                             norm_mh_value = cross_sections["h"]/self.tanb*self.scale(hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh)
                             hist_mh_value = th1fmorph("I","",hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh, norm_mh_value, 0)
@@ -763,7 +763,7 @@ class MakeDatacard :
                                    hist_mH_value = hist_mH_upper
                             if hist_mH_value.Integral()>0 :
                                    norm_mH_value = cross_sections["H"]/self.tanb*self.scale(hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH)
-                                   hist_mH_value.Scale(norm_mH_value)
+                                   hist_mH_value.Scale(norm_mH_value/hist_mH_value.Integral())
                      else :
                             norm_mH_value = cross_sections["H"]/self.tanb*self.scale(hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH)
                             hist_mH_value = th1fmorph("I","",hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH, norm_mH_value, 0)
