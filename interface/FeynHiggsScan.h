@@ -37,11 +37,11 @@ class FeynHiggsScan {
   /// branching ratio for mH for given mA and tanb 
   float br(const char* variable, const char* model, double mA, double tanb) { return get(variable, model, "br", mA, tanb); };
   /// mass of given type for a given value of mA and tanb
-  float mass(const std::string& variable, double mA, double tanb);
+  float mass(const std::string& variable, float mA, float tanb);
   /// mH for a given value of mA and tanb
-  float mH(double mA, double tanb) { return mass(std::string("mH"), mA, tanb); };
+  float mH(float mA, float tanb) { return mass(std::string("mH"), mA, tanb); };
   /// mh for a given value of mA and tanb
-  float mh(double mA, double tanb) { return mass(std::string("mh"), mA, tanb); };
+  float mh(float mA, float tanb) { return mass(std::string("mh"), mA, tanb); };
  
  private:
   /// book branches for all variables or a subset of them
