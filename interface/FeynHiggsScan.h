@@ -33,10 +33,16 @@ class FeynHiggsScan {
   /// get cross section ot br from tree for given value of mA and tanb
   float get(const char* variable, const char* model, const char* type, float mA, float tanb);
   /// production cross section for mH for given mA and tanb 
-  float xsec(const char* variable, const char* model, double mA, double tanb) {return get(variable, model, "xs", mA, tanb); };
-  /// production cross section for mH for given mA and tanb 
-  float br(const char* variable, const char* model, double mA, double tanb) {return get(variable, model, "br", mA, tanb); };
-
+  float xsec(const char* variable, const char* model, double mA, double tanb) { return get(variable, model, "xs", mA, tanb); };
+  /// branching ratio for mH for given mA and tanb 
+  float br(const char* variable, const char* model, double mA, double tanb) { return get(variable, model, "br", mA, tanb); };
+  /// mass of given type for a given value of mA and tanb
+  float mass(const std::string& variable, double mA, double tanb);
+  /// mH for a given value of mA and tanb
+  float mH(double mA, double tanb) { return mass(std::string("mH"), mA, tanb); };
+  /// mh for a given value of mA and tanb
+  float mh(double mA, double tanb) { return mass(std::string("mh"), mA, tanb); };
+ 
  private:
   /// book branches for all variables or a subset of them
   void book(const std::string& var);

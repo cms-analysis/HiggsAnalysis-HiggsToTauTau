@@ -244,11 +244,20 @@ class MakeDatacard :
               """
               Fill mh and mH depending on mA. These values are calculated from the htt tools.
               """
-              ## read cross section results for htt
-              scan = mssm_xsec_tools("{CMSSW_BASE}/src/{path}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], path=self.mssm_xsec_tools_input_path))
-              htt_query = scan.query(self.mA, self.tanb)
-              self.mh = htt_query['higgses']['h']['mass']
-              self.mH = htt_query['higgses']['H']['mass']      
+              if self.feyn_higgs_model != "":
+                     ## read masses from feyn-higgs foro models that are not available from the
+                     ## htt mssm cross section tools. Here the cross section is not of interest,
+                     ## instead just mh and mH are grep'ed
+                     self.mh = float(os.popen("feyn-higgs-mssm xs mssm ggA {mA} {tanb} model={model} | grep mh".format(
+                            mA=self.mA, tanb=self.tanb, model=self.feyn_higgs_model)).read().split()[2])
+                     self.mH = float(os.popen("feyn-higgs-mssm xs mssm ggA {mA} {tanb} model={model} | grep mH".format(
+                            mA=self.mA, tanb=self.tanb, model=self.feyn_higgs_model)).read().split()[2])
+              else :
+                     ## read masses from htt mssm cross section tools (default behavior)
+                     scan = mssm_xsec_tools("{CMSSW_BASE}/src/{path}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], path=self.mssm_xsec_tools_input_path))
+                     htt_query = scan.query(self.mA, self.tanb)
+                     self.mh = htt_query['higgses']['h']['mass']
+                     self.mH = htt_query['higgses']['H']['mass']      
 
        def cross_sections_hww(self, production_channel) :
               """

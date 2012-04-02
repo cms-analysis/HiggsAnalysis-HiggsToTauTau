@@ -20,6 +20,24 @@ FeynHiggsScan::~FeynHiggsScan()
   file_->Close();  
 }
 
+float
+FeynHiggsScan::mass(const std::string& variable, double mA, double tanb)
+{
+  read(variable); 
+  float mass=0.;
+  unsigned int nevent = tree_->GetEntries();
+  if(verbose_){ std::cout << "tree size = " << nevent << std::endl; }
+  for(unsigned int idx=0; idx<nevent; ++idx){
+    tree_->GetEvent(idx);
+    if(mA_==mA and tanb_==tanb){
+      if(verbose_){ std::cout << "tanb = " << tanb_ << "  |  mA = " << mA_ << std::endl; }
+      mass = var_;
+      break;
+    }
+  }
+  return mass;
+}
+
 TH2F* 
 FeynHiggsScan::project(const std::string& var)
 {
