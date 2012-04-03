@@ -695,6 +695,11 @@ class MakeDatacard :
               ## prepare mA hist
               new_filename  = self.expand_filename(filename)
               file_mA_value = ROOT.TFile(new_filename, "UPDATE")
+              ## check whether the requested histogram does exist or not: in
+              ## the case of shape uncertainties of type shape? this has to
+              ## be determined from the existence of a shape uncertainty hist
+              if not self.exists(file_mA_value, path_name) :
+                     return
               buff_mA_value = self.load_hist(file_mA_value, path_name)
               hist_mA_value = buff_mA_value.Clone(hist_name)
               #print "RESCALING OF HIST STARTING: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
@@ -804,6 +809,11 @@ class MakeDatacard :
               ## prepare mA hist
               new_filename  = self.expand_filename(filename)
               file_mA_value = ROOT.TFile(new_filename, "UPDATE")
+              ## check whether the requested histogram does exist or not: in
+              ## the case of shape uncertainties of type shape? this has to
+              ## be determined from the existence of a shape uncertainty hist
+              if not self.exists(file_mA_value, path_name) :
+                     return
               hist_mA_value = self.load_hist(file_mA_value, path_name)
               ## determine cross section for degenerate mass assumption
               if abs(self.mA-self.mh) < abs(self.mA-self.mH) :
@@ -849,6 +859,11 @@ class MakeDatacard :
               ## prepare mA hist
               new_filename  = self.expand_filename(filename)
               file_mA_value = ROOT.TFile(new_filename, "UPDATE")
+              ## check whether the requested histogram does exist or not: in
+              ## the case of shape uncertainties of type shape? this has to
+              ## be determined from the existence of a shape uncertainty hist
+              if not self.exists(file_mA_value, path_name) :
+                     return
               hist_mA_value = self.load_hist(file_mA_value, path_name)
               #print "RESCALING OF HIST STARTING: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
               if self.mA<self.hww_cross_point :
@@ -902,7 +917,7 @@ class MakeDatacard :
                                           ## rescale central value histograms
                                           if self.decay_channel_to_interpolation_method.has_key(self.decay_channels_[idx]) :
                                                  if self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "non-degenerate-masses-light" :
-                                                        print "using non-degenerate-masses-light mode for decay channel: ", self.decay_channels_[idx]
+                                                        print "using non-degenerate-masses-light mode for value histograms for decay channel: ", self.decay_channels_[idx]
                                                         self.rescale_histogram(
                                                                histfile,
                                                                directory,
@@ -912,7 +927,7 @@ class MakeDatacard :
                                                                "light"
                                                                )
                                                  elif self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "degenerate-masses" :
-                                                        print "using degenerate-masses mode for decay channel: ", self.decay_channels_[idx]
+                                                        print "using degenerate-masses mode for value histograms for decay channel: ", self.decay_channels_[idx]
                                                         self.rescale_histogram_degenerate(
                                                                histfile,
                                                                directory,
@@ -920,7 +935,7 @@ class MakeDatacard :
                                                                self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
                                                                )
                                                  elif self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "single-mass" :
-                                                        print "using single-mass mode for decay channel: ", self.decay_channels_[idx]
+                                                        print "using single-mass mode for value histograms for decay channel: ", self.decay_channels_[idx]
                                                         self.rescale_histogram_single_mass(
                                                                histfile,
                                                                directory,
@@ -987,7 +1002,7 @@ class MakeDatacard :
                                                         if jdx == idx :
                                                                if self.decay_channel_to_interpolation_method.has_key(self.decay_channels_[idx]) :
                                                                       if self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "non-degenerate-masses-light" :
-                                                                             print "using non-degenerate-masses-light mode for decay channel: ", self.decay_channels_[idx]
+                                                                             print "using non-degenerate-masses-light mode for shift histograms for decay channel: ", self.decay_channels_[idx]
                                                                              self.rescale_histogram(
                                                                                     histfile,
                                                                                     directory,
@@ -1005,7 +1020,7 @@ class MakeDatacard :
                                                                                     "light"
                                                                                     )
                                                                       elif self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "degenerate-masses" :
-                                                                             print "using degenerate-masses mode for decay channel: ", self.decay_channels_[idx]
+                                                                             print "using degenerate-masses mode for shift histograms for decay channel: ", self.decay_channels_[idx]
                                                                              self.rescale_histogram_degenerate(
                                                                                     histfile,
                                                                                     directory,
@@ -1018,8 +1033,8 @@ class MakeDatacard :
                                                                                     hist_name+"_"+uncertainty+"Down",
                                                                                     self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
                                                                                     )
-                                                                      if self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "single-mass" :
-                                                                             print "using single-mass mode for decay channel: ", self.decay_channels_[idx]
+                                                                      elif self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "single-mass" :
+                                                                             print "using single-mass mode for shift histograms for decay channel: ", self.decay_channels_[idx]
                                                                              self.rescale_histogram_single_mass(
                                                                                     histfile,
                                                                                     directory,
@@ -1073,6 +1088,16 @@ class MakeDatacard :
               if not directory=="" :
                      path=directory+"/"
               return path
+
+       def exists(self, file, name) :
+              """
+              Check whether a given histogram exists in a given file. This is needed to test whether
+              shape histograms do exist for shape uncertainties, which can be of type shape?, which
+              means that the given uncertainty can be of type shape for some channels, while for
+              others it is not.
+              """
+              hist = file.Get(name)
+              return not (type(hist) == ROOT.TObject)
 
        def load_hist(self, file, name) :
               """
@@ -1292,8 +1317,12 @@ for input_line in input_file :
        if words[0] == "rate" :
               ## manipulate histograms
               output_line = datacard_creator.modify_rates_line(words, output_line)
-       ## ...
-       if len(words)>1 and words[1] == "shape" :
+       ## map shape uncertainties to individual signal channels, for uncertainties,
+       ## which are of type shape only for a subset of channels the keyword is
+       ## shape?. In this case datacard_creator.rescale_histograms(...) has to find
+       ## out on its own, whether really a histogram exists for a given uncertainty
+       ## or not
+       if len(words)>1 and words[1].find("shape")>-1 :
               ## map out the shape uncertainties for later rescaling of hists              
               datacard_creator.map_shape_uncertainties(words)
        ## write output line to output file
