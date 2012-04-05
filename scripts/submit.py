@@ -62,14 +62,14 @@ if options.setup == "hww-mssm" :
         if options.method == "tanb+" :
             ## three submits depending on the mass
             if len(subvec(args,  90, 249))>0 :
-                os.system("submit-slave.py --bin combine --method tanb -n 10 --min  1.0  --max  3.0 --interactive %s %s" % (options.opt, vec2str(subvec(args,  90, 249))))
-                os.system("submit-slave.py --bin combine --method tanb -n 10 --min  3.2  --max  5.4 --interactive %s %s" % (options.opt, vec2str(subvec(args,  90, 249))))
+                os.system("submit-slave.py --bin combine --method tanb -n 10 --min  1.0  --max  2.8 --interactive %s %s" % (options.opt, vec2str(subvec(args,  90, 249))))
+                os.system("submit-slave.py --bin combine --method tanb -n 11 --min  3.0  --max  5.0 --interactive %s %s" % (options.opt, vec2str(subvec(args,  90, 249))))
                 os.system("submit-slave.py --bin combine --method tanb -n  2 --min  6.0  --max  7.0 --interactive %s %s" % (options.opt, vec2str(subvec(args,  90, 249))))
             if len(subvec(args, 250, 299))>0 :
-                os.system("submit-slave.py --bin combine --method tanb -n 10 --min 10.0  --max 66.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 250, 299))))
+                os.system("submit-slave.py --bin combine --method tanb -n 10 --min 10.0  --max 65.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 250, 299))))
             if len(subvec(args, 300, 550))>0 :
-                os.system("submit-slave.py --bin combine --method tanb -n 10 --min  2.0  --max 22.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 350, 550))))
-                os.system("submit-slave.py --bin combine --method tanb -n  5 --min 26.0  --max 66.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 350, 550))))                
+                os.system("submit-slave.py --bin combine --method tanb -n 11 --min  2.0  --max 22.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 350, 550))))
+                os.system("submit-slave.py --bin combine --method tanb -n  6 --min 26.0  --max 66.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 350, 550))))                
         cycle = cycle-1
         
 if options.setup == "htt-mssm" :
