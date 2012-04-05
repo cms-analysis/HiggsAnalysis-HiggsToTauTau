@@ -54,7 +54,7 @@ if workspace.endswith(".txt"):
     for point in points:
         inputname  = workspace.replace(".txt", "_%.2f.txt" % point)
         outputname = "%s_%.2f.root" % (options.out, point)
-        os.system("text2workspace.py --default-morphing=%s -b %s -o %s" % (options.shape, inputname, outputname))
+        os.system("text2workspace.py --default-morphing=%s -m %s -b %s -o %s" % (options.shape, options.mass, inputname, outputname))
         workspaces.append(outputname)
     print "Converted workspaces to binary",workspaces
 

@@ -206,7 +206,7 @@ for directory in args :
                 tanb_string = wsp[wsp.rfind("_")+1:]
                 if not options.refit : 
                     ## run expected & observed limits in one go
-                    os.system("./combine -M Asymptotic --run both -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} {mass} {user} {wsp}".format(CL=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt,strategy=options.strategy,mass=massopt, wsp=wsp, user=options.userOpt))
+                    os.system("combine -M Asymptotic --run both -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} {mass} {user} {wsp}".format(CL=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt,strategy=options.strategy,mass=massopt, wsp=wsp, user=options.userOpt))
                     os.system("mv higgsCombineTest.Asymptotic.mH{mass}.root point_{tanb}".format(mass=mass_value, tanb=tanb_string))
         ## strip last ','
         tanb_inputfiles = tanb_inputfiles.rstrip(",")
@@ -248,13 +248,21 @@ for directory in args :
             if not options.expectedOnly :
                 os.system("cp observed/crab_0_*/res/higgsCombineTest.MarkovChainMC.mH{mass}*.root ./higgsCombineTest.MarkovChainMC.mH{mass}.root".format(mass=masspoint))
         else :
-            os.system("./combine -M MarkovChainMC -H {hint} --rMin {rMin} --rMax {rMax} -i {iter} --tries {tries} --mass {mass} {user} -d batch.root".format(
+            os.system("combine -M MarkovChainMC -H {hint} --rMin {rMin} --rMax {rMax} -i {iter} --tries {tries} --mass {mass} {user} -d batch.root".format(
                 hint=options.hint, rMin=options.rMin, rMax=options.rMax, tries=options.tries, mass=masspoint, user=options.userOpt, iter=options.iter))
     if options.prepAsym :
+        ## prepare mass argument for limit calculation if configured such
+        idx = directory.rfind("/") 
+        if idx == (len(directory) - 1):
+            idx = directory[:idx - 1].rfind("/")
+        mass_string  = directory[idx + 1:]
+        mass_regex   = r"(?P<mass>[\+\-0-9\s]+)[a-zA-Z0-9]*"
+        mass_matcher = re.compile(mass_regex)
+        mass_value   = mass_matcher.match(mass_string).group('mass')
         ## combine datacard from all datacards in this directory
         os.system("combineCards.py -S *.txt > tmp.txt")
         ## prepare binary workspace
-        os.system("text2workspace.py --default-morphing=%s -b tmp.txt -o tmp.root"% options.shape)
+        os.system("text2workspace.py --default-morphing=%s -m %s -b tmp.txt -o tmp.root"% (options.shape, mass_value))
         ## if it does not exist already, create link to executable
         if not os.path.exists("combine") :
             os.system("cp -s $(which combine) .")
@@ -269,20 +277,15 @@ for directory in args :
         qtildeopt = ""
         if options.qtilde :
             qtildeopt = "--qtilde 0"
-        ## prepare mass argument for limit calculation if configured such
-        idx = directory.rfind("/") 
-        if idx == (len(directory) - 1):
-            idx = directory[:idx - 1].rfind("/")
-        mass_string  = directory[idx + 1:]
-        mass_regex   = r"(?P<mass>[\+\-0-9\s]+)[a-zA-Z0-9]*"
-        mass_matcher = re.compile(mass_regex)
-        mass_value   = mass_matcher.match(mass_string).group('mass')
+        ## prepare mass options
         massopt = "-m %i " % int(mass_value)
         ## run expected limits
-        os.system("./combine -M Asymptotic --run expected -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} -n '-exp' {mass} {user} tmp.root".format(CL=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt, strategy=options.strategy, mass=massopt, user=options.userOpt))
+        os.system("combine -M Asymptotic --run expected -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} -n '-exp' {mass} {user} tmp.root".format(
+            CL=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt, strategy=options.strategy, mass=massopt, user=options.userOpt))
         ## run observed limit
         if not options.expectedOnly :
-            os.system("./combine -M Asymptotic --run observed -C {CL} {minuit} --minimizerStrategy {strategy} -n '-obs' {qtilde} {mass} {user} tmp.root".format(CL=options.confidenceLevel, minuit=minuitopt, qtilde=qtildeopt, strategy=options.strategy, mass=massopt, user=options.userOpt))
+            os.system("combine -M Asymptotic --run observed -C {CL} {minuit} --minimizerStrategy {strategy} -n '-obs' {qtilde} {mass} {user} tmp.root".format(
+                CL=options.confidenceLevel, minuit=minuitopt, qtilde=qtildeopt, strategy=options.strategy, mass=massopt, user=options.userOpt))
     if options.prepMLFit :
         ## combine datacard from all datacards in this directory
         ## if not done so already
@@ -301,7 +304,7 @@ for directory in args :
             minuitopt = "--minimizerAlgo minuit"
         qtildeopt = ""
         ## run expected limits
-        os.system("./combine -M MaxLikelihoodFit {minuit} {user} tmp.txt --out=out".format(minuit=minuitopt, user=options.userOpt))
+        os.system("combine -M MaxLikelihoodFit {minuit} {user} tmp.txt --out=out".format(minuit=minuitopt, user=options.userOpt))
         ## change to sub-directory out and prepare formated output
         os.chdir(os.path.join(subdirectory, "out"))
         os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f text mlfit.root > mlfit.txt")

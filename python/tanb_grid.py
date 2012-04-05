@@ -74,7 +74,7 @@ class MakeDatacard :
               self.signal_indexes = []
               ## list of all(!) available decay channels in the input datacard
               self.decay_channels_ = []
-              ## list of innitial datacards that went into combineCards.py from first line of input datacard
+              ## list of initial datacards that went into combineCards.py from first line of input datacard
               self.initial_datacards = []
               ## list of all(!) available production processes (=histograms) in the input datacard
               self.production_processes = []
@@ -88,15 +88,10 @@ class MakeDatacard :
                      "hwwof_0j_shape", "hwwof_1j_shape",
                      "hwwsf_0j_shape", "hwwsf_1j_shape"
                      ]
-              ## histogram prefixes per decay channel
-              self.decay_channel_to_hist_prefixes = {
-                      "hwwof_0j_shape" : "histo_"
-                     ,"hwwof_1j_shape" : "histo_"
-                     ,"hwwsf_0j_shape" : "histo_"
-                     ,"hwwsf_1j_shape" : "histo_"
-                     #,"htt_mm_0" : "$MASS",
-                     #,"htt_mm_1" : "$MASS"
-                     }
+              ## histogram extensions for value histograms
+              self.value_hist_extensions = {}
+              ## histogram extentions for shift histograms
+              self.shift_hist_extensions = {}
               ## mapping of decay channel to interpolation method. Available methods are
               ## - non-degenerate-masses        : w/  template morphing
               ## - non-degenerate-masses-light  : w/o template morphing
@@ -672,7 +667,30 @@ class MakeDatacard :
               #print "mass: ", mass, " -- opening file: ", expanded_filename
               return expanded_filename
 
-       def rescale_histogram(self, filename, dir, process, masses, cross_sections, interpolation_method="") :
+       def expand_histname(self, channel, process, uncertainty="") :
+              """
+              Map signal or background process to histogram name in case of shape analyses.
+              The modification string is taken from the lines starting with keyword 'shape'
+              in the datacard. 
+              """
+              expanded_histname = process
+              if uncertainty == "" :
+                     ## apply modifications which are common for all inputs
+                     if channel+"/*" in self.value_hist_extensions :
+                            expanded_histname = self.value_hist_extensions[channel+"/*"].replace("$PROCESS", process).replace("$MASS", "%.0f" % self.mA)
+                     ## apply modifications which are common for special inputs
+                     if channel+"/"+process in self.value_hist_extensions :
+                            expanded_histname = self.value_hist_extensions[channel+"/"+process].replace("$PROCESS", process).replace("$MASS", "%.0f" % self.mA)
+              else :
+                     ## apply modifications which are common for all inputs
+                     if channel+"/*" in self.shift_hist_extensions :
+                            expanded_histname = self.shift_hist_extensions[channel+"/*"].replace("$PROCESS", process).replace("$MASS", "%.0f" % self.mA).replace("$SYSTEMATIC", uncertainty)
+                     ## apply modifications which are common for special inputs
+                     if channel+"/"+process in self.shift_hist_extensions :
+                            expanded_histname = self.shift_hist_extensions[channel+"/"+process].replace("$PROCESS", process).replace("$MASS", "%.0f" % self.mA).replace("$SYSTEMATIC", uncertainty)
+              return expanded_histname             
+
+       def rescale_histogram(self, filename, dir, process, masses, cross_sections, channel, uncertainty="", interpolation_method="") :
               """
               Rescale a histogram with name 'process' according to the non-degenerate-masses scheme.
               The histogram for mA is scaled as is. For mH and mh the closest available histograms
@@ -689,9 +707,8 @@ class MakeDatacard :
               ## cross check whether more then one histfile is needed or not
               single_file = not (filename.find("$MASS")>-1)                     
               ## open root file and get original histograms
-              hist_name = process
-              path_name = self.path(dir)+process
-              
+              path_name = self.expand_histname(channel, process, uncertainty)
+              hist_name = path_name[path_name.rfind("/")+1:]
               ## prepare mA hist
               new_filename  = self.expand_filename(filename)
               file_mA_value = ROOT.TFile(new_filename, "UPDATE")
@@ -799,13 +816,13 @@ class MakeDatacard :
                             file_mH_upper.Close()
                             file_mH_lower.Close()
 
-       def rescale_histogram_degenerate(self, filename, dir, hist_name, cross_sections) :
+       def rescale_histogram_degenerate(self, filename, dir, process, cross_sections, channel, uncertainty="") :
               """
               Rescale a histogram with name 'process' according to the degenerate-masses scheme.  
               """
               ## open root file and get original histograms
-              hist_name = hist_name
-              path_name = self.path(dir)+hist_name              
+              path_name = self.expand_histname(channel, process, uncertainty)
+              hist_name = path_name[path_name.rfind("/")+1:]
               ## prepare mA hist
               new_filename  = self.expand_filename(filename)
               file_mA_value = ROOT.TFile(new_filename, "UPDATE")
@@ -833,8 +850,7 @@ class MakeDatacard :
               hist_mA_value.Write(hist_name, ROOT.TObject.kOverwrite)
               file_mA_value.Close()
 
-
-       def rescale_histogram_single_mass(self, filename, dir, process, masses, cross_sections) :
+       def rescale_histogram_single_mass(self, filename, dir, process, masses, cross_sections, channel, uncertainty="") :
               """
               Rescale a histogram with name 'process' according to the single-mass scheme. This scheme
               is used for limits based on the limit on the SM Higgs boson search in the hww channel,
@@ -853,9 +869,8 @@ class MakeDatacard :
               ## cross check whether more then one histfile is needed or not
               single_file = not (filename.find("$MASS")>-1)                     
               ## open root file and get original histograms
-              hist_name = process
-              path_name = self.path(dir)+process
-              
+              path_name = self.expand_histname(channel, process, uncertainty)
+              hist_name = path_name[path_name.rfind("/")+1:]
               ## prepare mA hist
               new_filename  = self.expand_filename(filename)
               file_mA_value = ROOT.TFile(new_filename, "UPDATE")
@@ -905,15 +920,9 @@ class MakeDatacard :
                                           for in_separate_files in self.hists_in_separate_files :
                                                  if self.decay_channels_[idx] == in_separate_files :
                                                         if not histfile.find("$MASS")>-1:
-                                                               histfile = "../$MASS/"+histfile
+                                                               histfile = "../$MASS/"+histfile                                                               
                                           ## add prefix to histogram name where needed 
                                           hist_name = self.production_processes[idx]
-                                          for prefix_channel in self.decay_channel_to_hist_prefixes :
-                                                 if self.decay_channels_[idx] == prefix_channel :
-                                                        prefix = self.decay_channel_to_hist_prefixes[prefix_channel]
-                                                        if prefix.find("$MASS")>-1 :
-                                                               prefix = "%.0f_" % self.mA
-                                                        hist_name = prefix+hist_name
                                           ## rescale central value histograms
                                           if self.decay_channel_to_interpolation_method.has_key(self.decay_channels_[idx]) :
                                                  if self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "non-degenerate-masses-light" :
@@ -924,6 +933,8 @@ class MakeDatacard :
                                                                hist_name,
                                                                masses,
                                                                self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                               self.decay_channels_[idx],
+                                                               ""
                                                                "light"
                                                                )
                                                  elif self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "degenerate-masses" :
@@ -932,7 +943,8 @@ class MakeDatacard :
                                                                histfile,
                                                                directory,
                                                                hist_name,
-                                                               self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                               self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                               self.decay_channels_[idx]
                                                                )
                                                  elif self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "single-mass" :
                                                         print "using single-mass mode for value histograms for decay channel: ", self.decay_channels_[idx]
@@ -941,7 +953,8 @@ class MakeDatacard :
                                                                directory,
                                                                hist_name,
                                                                masses,
-                                                               self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                               self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                               self.decay_channels_[idx]
                                                                )                                                        
                                                  else :
                                                         ## fall back to the default
@@ -950,7 +963,8 @@ class MakeDatacard :
                                                                directory,
                                                                hist_name,
                                                                masses,
-                                                               self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                               self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                               self.decay_channels_[idx]
                                                                )
                                           else :
                                                  self.rescale_histogram(
@@ -958,7 +972,8 @@ class MakeDatacard :
                                                         directory,
                                                         hist_name,
                                                         masses,
-                                                        self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                        self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                        self.decay_channels_[idx]
                                                         )
 
        def rescale_shift_histograms(self) :
@@ -990,12 +1005,6 @@ class MakeDatacard :
                                                                histfile = "../$MASS/"+histfile
                                           ## add prefix to histogram name where needed 
                                           hist_name = self.production_processes[idx]
-                                          for prefix_channel in self.decay_channel_to_hist_prefixes :
-                                                 if self.decay_channels_[idx] == prefix_channel :
-                                                        prefix = self.decay_channel_to_hist_prefixes[prefix_channel]
-                                                        if prefix.find("$MASS")>-1 :
-                                                               prefix = "%.0f_" % self.mA
-                                                        hist_name = prefix+hist_name
                                           ## rescal histograms for "Up"/"Down" shape uncertainties
                                           for uncertainty, indexes in self.uncertainty_to_signal_indexes.iteritems() :
                                                  for jdx in indexes :
@@ -1006,17 +1015,21 @@ class MakeDatacard :
                                                                              self.rescale_histogram(
                                                                                     histfile,
                                                                                     directory,
-                                                                                    hist_name+"_"+uncertainty+"Up",
+                                                                                    hist_name,
                                                                                     masses,
                                                                                     self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                                    self.decay_channels_[idx],
+                                                                                    uncertainty+"Up",
                                                                                     "light"
                                                                                     )
                                                                              self.rescale_histogram(
                                                                                     histfile,
                                                                                     directory,
-                                                                                    hist_name+"_"+uncertainty+"Down",
+                                                                                    hist_name,
                                                                                     masses,
                                                                                     self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                                    self.decay_channels_[idx],
+                                                                                    uncertainty+"Down"
                                                                                     "light"
                                                                                     )
                                                                       elif self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "degenerate-masses" :
@@ -1024,60 +1037,77 @@ class MakeDatacard :
                                                                              self.rescale_histogram_degenerate(
                                                                                     histfile,
                                                                                     directory,
-                                                                                    hist_name+"_"+uncertainty+"Up",
-                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                                                    hist_name,
+                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                                    self.decay_channels_[idx],
+                                                                                    uncertainty+"Up"
                                                                                     )
                                                                              self.rescale_histogram_degenerate(
                                                                                     histfile,
                                                                                     directory,
-                                                                                    hist_name+"_"+uncertainty+"Down",
-                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                                                    hist_name,
+                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                                    self.decay_channels_[idx],
+                                                                                    uncertainty+"Down"
                                                                                     )
                                                                       elif self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "single-mass" :
                                                                              print "using single-mass mode for shift histograms for decay channel: ", self.decay_channels_[idx]
                                                                              self.rescale_histogram_single_mass(
                                                                                     histfile,
                                                                                     directory,
-                                                                                    hist_name+"_"+uncertainty+"Up",
+                                                                                    hist_name,
                                                                                     masses,
-                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                                    self.decay_channels_[idx],
+                                                                                    uncertainty+"Up"
                                                                                     )
                                                                              self.rescale_histogram_single_mass(
                                                                                     histfile,
                                                                                     directory,
-                                                                                    hist_name+"_"+uncertainty+"Down",
+                                                                                    hist_name,
                                                                                     masses,
-                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                                    self.decay_channels_[idx],
+                                                                                    uncertainty+"Down"
                                                                                     )
                                                                       else :
                                                                              ## fall back to the default
                                                                              self.rescale_histogram(
                                                                                     histfile,
                                                                                     directory,
-                                                                                    hist_name+"_"+uncertainty+"Up",
+                                                                                    hist_name,
                                                                                     masses,
-                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                                    self.decay_channels_[idx],
+                                                                                    uncertainty+"Up"
                                                                                     )
                                                                              self.rescale_histogram(
                                                                                     histfile,
                                                                                     directory,
-                                                                                    hist_name+"_"+uncertainty+"Down",
+                                                                                    hist_name,
                                                                                     masses,
-                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                                    self.decay_channels_[idx],
+                                                                                    uncertainty+"Down"
                                                                                     )
                                                                else :
                                                                       self.rescale_histogram(
                                                                              histfile,
-                                                                             directory,hist_name+"_"+uncertainty+"Up",
+                                                                             directory,
+                                                                             hist_name,
                                                                              masses,
-                                                                             self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                                             self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                             self.decay_channels_[idx],
+                                                                             uncertainty+"Up"
                                                                              )
                                                                       self.rescale_histogram(
                                                                              histfile,
                                                                              directory,
                                                                              hist_name+"_"+uncertainty+"Down",
                                                                              masses,
-                                                                             self.signal_channel_to_cross_section[std_prod+"_"+std_decay]
+                                                                             self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                             self.decay_channels_[idx],
+                                                                             uncertainty+"Down"
                                                                              )
 
        def path(self, directory):
@@ -1109,13 +1139,13 @@ class MakeDatacard :
                      print "hist not found: ", file.GetName(), ":", name
               return hist
 
-       def rate_from_hist(self, file, directory, hist) :
+       def rate_from_hist(self, file, directory, hist, channel, uncertainty="") :
               """
               Return rate from histogram in output histfile. 
               """
               file = ROOT.TFile(file,"READ")
               rate=0.0
-              hist=self.load_hist(file, self.path(directory)+hist)
+              hist=self.load_hist(file, self.expand_histname(channel, hist, uncertainty))
               rate=hist.Integral()
               return rate
 
@@ -1133,17 +1163,21 @@ class MakeDatacard :
        def modify_shapes_line(self, words, output_line) :
               """
               Find the output histfile for shape analyses from the list of words. Modify the output histfile name
-              to include the values of mA and tanb accordingly. Modify the output_line. Copy the original output
-              histfile to a new one with the new output name. Append the new name of the output file as a unique
-              value to the list of self.output_histfiles.
+              to include the values of mA and tanb accordingly. Copy the original output histfile to a new one
+              with the new output name. Append the new name of the output file as a unique value to the list of
+              self.output_histfiles.
               
               A single output histfile can serve more than one channel: Append the channel, which corresponds to
               this hist output file to the dictionary of self.histfile_to_decay_channels.
               
-              A output histfile can contain one or more directories to indicate sub-channels or the histograms can
-              be safed directly in the root file. Determine the number of directories in the corresponding input
-              file and add it to the dictionary of self.hisrfile_to_directories. If no directories exist in the
-              given file an empty list is stored for the given key.
+              An output histfile can contain one or more directories to indicate sub-channels or the histograms
+              can be safed directly in the root file. Determine the number of directories in the corresponding
+              input file and add it to the dictionary of self.histfile_to_directories. If no directories exist
+              in the given file an empty list is stored for the given key.
+
+              Histogram names can be different from sample names. Such differences are indicated in column 5
+              and 6 of the datacards in the lines that start with keyword 'shape'. fetch potential extensions
+              and safe them in the dictionaries self.value_hist_extensions and self.shift_hist_extensions. 
               """
               for (idx, word) in enumerate(words):
                      if word.find(".root")>-1 :
@@ -1160,6 +1194,18 @@ class MakeDatacard :
                             directories = self.find_directories_in_histfile(words)
                             for directory in directories :
                                    self.append_unique_value(self.histfile_to_directories, output_histfile, directory)
+                     ## determine histogram name modifications for all samples in consideration
+                     unique_sample = self.find_decay_channel(words[2])+'/'+words[1]
+                     if idx == 4 :
+                            ## determines the full path for value histograms
+                            if not unique_sample in self.value_hist_extensions :
+                                   self.value_hist_extensions[unique_sample] = word
+                                   #word[word.find('/')+1:]
+                     if idx == 5 :
+                            ## determines the full path for shift histograms
+                            if not unique_sample in self.shift_hist_extensions :
+                                   self.shift_hist_extensions[unique_sample] = word
+                                   #word[word.find('/')+1:]
               return output_line
 
        def modify_rates_line(self, words, output_line) :
@@ -1180,14 +1226,8 @@ class MakeDatacard :
                                    if self.decay_channels_[idx] == decay_channel :
                                           cut_and_count = False
                                           hist_name = self.production_processes[idx]
-                                          for prefix_channel in self.decay_channel_to_hist_prefixes :
-                                                 if self.decay_channels_[idx] == prefix_channel :
-                                                        prefix = self.decay_channel_to_hist_prefixes[prefix_channel]
-                                                        if prefix.find("$MASS")>-1 :
-                                                               prefix = "%.0f_" % self.mA
-                                                        hist_name = prefix+hist_name
                                           output_list = output_line.split()
-                                          output_list[idx+1] = str(self.rate_from_hist(histfile, directory, hist_name))
+                                          output_list[idx+1] = str(self.rate_from_hist(histfile, directory, hist_name, self.decay_channels_[idx]))
                                           output_line = '\t   '.join(output_list)+'\n'
                      ## cut and count channels
                      if cut_and_count :

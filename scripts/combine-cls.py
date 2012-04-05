@@ -48,7 +48,7 @@ options.fork = 1
 ## convert set of inputcards and corresponding input files for a RooFit workspace
 workspace = args[0]
 if workspace.endswith(".txt"):
-    os.system("text2workspace.py --default-morphing=%s -b %s -o %s.root" % (options.shape, workspace, options.out))
+    os.system("text2workspace.py --default-morphing=%s -m %s -b %s -o %s.root" % (options.shape, options.mass, workspace, options.out))
     workspace = options.out+".root"
     print "Converted workspace to binary",workspace
 

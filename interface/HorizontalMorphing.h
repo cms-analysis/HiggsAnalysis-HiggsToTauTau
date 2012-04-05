@@ -39,7 +39,7 @@
     ## input file
     directory  = cms.string("emu_X"),
     ## name of the histogram to be subject to the template morphing
-    histName   = cms.string("Higgs_gf_sm_$MASS"), 
+    histName   = cms.string("ggH$MASS"), 
     ## upper bound mass value
     upperBound = cms.double(105),
     ## upper bound acceptance 

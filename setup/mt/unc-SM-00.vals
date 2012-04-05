@@ -1,18 +1,18 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 muTau_SM0			signal	  	            	lumi            			1.045
-muTau_SM0   			SM				pdf_gg    				1.08
-muTau_SM0		   	VBF				pdf_qqbar				1.08
+muTau_SM0   			ggH				pdf_gg    				1.08
+muTau_SM0		   	qqH				pdf_qqbar				1.08
 muTau_SM0		   	VH				pdf_vh					1.08
-muTau_SM0			SM				QCDscale_ggH     			1.12
-muTau_SM0     			VBF				QCDscale_qqH				1.035
+muTau_SM0			ggH				QCDscale_ggH     			1.12
+muTau_SM0     			qqH				QCDscale_qqH				1.035
 muTau_SM0		        signal				UEPS					0.96
 muTau_SM0		 	signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_m 				1.01
 muTau_SM0		 	signal,ZTT,TT,VV 		CMS_eff_t 				1.062
 muTau_SM0		 	signal,ZTT			CMS_scale_t 				1.00
 muTau_SM0        	        VH				CMS_scale_j				0.96
-muTau_SM0        	        SM				CMS_scale_j				0.99
-muTau_SM0        	        VBF				CMS_scale_j				0.92
+muTau_SM0        	        ggH				CMS_scale_j				0.99
+muTau_SM0        	        qqH				CMS_scale_j				0.92
 muTau_SM0        	        TT				CMS_scale_j				0.94
 muTau_SM0        	        VV				CMS_scale_j				0.97
 muTau_SM0	 		signal,ZL,ZJ	   		CMS_scale_met				1.05

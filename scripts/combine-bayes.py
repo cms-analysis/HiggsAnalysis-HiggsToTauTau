@@ -8,6 +8,7 @@ parser = OptionParser(usage="usage: %prog [options] ARG",
 parser.add_option("-o", "--out", dest="out", default="batch", type="string", help="Name of the output files (.sh and .cfg). [Default: batch]")
 parser.add_option("-r", "--random", dest="random", default=False, action="store_true", help="Use random seeds for the jobs. [Default: False]")
 parser.add_option("-v", "--verbose", dest="v", default=0, type="int", help="Verbosity level of combine. [Default: 0]")
+parser.add_option("--shape", dest="shape", default="shape2", type="string", help="Choose dedicated algorithm for shape uncertainties. [Default: 'shape2']")
 parser.add_option("--noSystematics", dest="nosys", default=False, action="store_true", help="Use statistical uncertainties only. [Default: False]")
 ## combine options
 egroup = OptionGroup(parser, "COMBINE (MarkovChainMC) COMMAND OPTIONS", "Command options for the use of combine with method -M MarkovChain.")
@@ -47,7 +48,7 @@ options.fork = 1
 ## convert set of inputcards and corresponding input files for a RooFit workspace
 workspace = args[0]
 if workspace.endswith(".txt"):
-    os.system("text2workspace.py -b %s -o %s.root" % (workspace, options.out))
+    os.system("text2workspace.py --default-morphing=%s -m %s -b %s -o %s.root" % (options.shape, options.mass, workspace, options.out))
     workspace = options.out+".root"
     print "Converted workspace to binary",workspace
 

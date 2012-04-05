@@ -48,7 +48,7 @@ for datacard in args :
     if datacard.endswith(".txt") :
         tanb = datacard[datacard.rfind("_")+1:datacard.rfind(".txt")]        
         outputname = "%s_%s.root" % (options.out, tanb)
-        os.system("text2workspace.py --default-morphing=%s -b %s -o %s" % (options.shape, datacard, outputname))
+        os.system("text2workspace.py --default-morphing=%s -m %s -b %s -o %s" % (options.shape, options.mass, datacard, outputname))
         workspaces.append(outputname)
     else :
         workspaces.append(datacard)

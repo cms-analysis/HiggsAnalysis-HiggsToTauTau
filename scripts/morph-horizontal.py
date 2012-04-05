@@ -150,7 +150,7 @@ horizontalMorphing = cms.PSet(
     ## event category
     directory  = cms.string("{category}"),
     ## signal sample
-    histName   = cms.string("{signal}_$MASS"), 
+    histName   = cms.string("{signal}$MASS"), 
     ## lower bound for the interpolation
     lowerBound = cms.double({lowerBound}),    
     ## lower bound acceptance
@@ -178,7 +178,7 @@ horizontalMorphing = cms.PSet(
     ## event category
     directory  = cms.string("{category}"),
     ## signal sample
-    histName   = cms.string("{signal}_$MASS{shape}"), 
+    histName   = cms.string("{signal}$MASS{shape}"), 
     ## lower bound for the interpolation
     lowerBound = cms.double({lowerBound}),    
     ## lower bound acceptance

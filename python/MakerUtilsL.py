@@ -84,10 +84,12 @@ class DBuilder:
                 ## append the mass point in question to the signal samples in case of positive
                 ## masses. In case of negative masses this part is skipped (usecase is the Ztt)
                 ## cross section measeurement, which has Ztt as signal sample
-                for n in range(0, len(self.signals)):
-                    if int(self.mass_point)>0:
-                        self.signals[n]+=self.mass_point
-                        #print  self.signals[n]
+
+                #for n in range(0, len(self.signals)):
+                #    if int(self.mass_point)>0:
+                #        self.signals[n]+=self.mass_point
+                #        #print  self.signals[n]
+                
                 #print "signals are: ",self.signals
                 for signal in self.signals:
                     if len(signal)+4> width:
@@ -161,8 +163,6 @@ class DBuilder:
            #print "samples_groups for this unc.:",samples_groups
            rel_samples = []
            for item in samples_groups:
-               ## check if item is contained in signal samples;
-               ## in case append mass
                for comp in self.signals :
                    if comp.find(item)>-1:
                        item = comp
@@ -181,12 +181,14 @@ class DBuilder:
                        uncert.vals[category]={}
                    uncert.vals[category][sample]=uncert_val
     
-    def get_rate(self,category,sample):
+    def get_rate(self,category,sample,mass=0):
         rate = 0
         f = TFile(self.rootfile)
         #print "fileName = %s" % self.rootfile
         #print f
         histName = category + "/" + sample
+        if mass>0 :
+            histName += mass
         #print "histName = %s" % histName
         hist = f.Get(histName)
         #print hist
@@ -195,24 +197,19 @@ class DBuilder:
         else:
             wsPath = category + '/' + self.wsName
             ws = f.Get(wsPath)
-
             if not ws:
                 raise Exception("Failed to find histogram %s or RooWorkspace %s in file %s" % (histName, wsPath, self.rootfile))
-
             # First check if the sample is data
             data = ws.data(sample)
-
             if data: 
                 rate = data.sumEntries()
             else:
                 # Otherwise, check if the sample is a PDF
                 pdf = ws.pdf(sample)
-                
                 if pdf:
                     rate = ws.pdf(sample).expectedEvents(None) # May need to provide variables in the future
                 else:
                     raise Exception('Failed to find sample %s in RooWorkspace %sin file %s' % (sample, wsPath, self.rootfile))
-
         #print "type of hist is:",type(hist)
         #print "rate of %s in category %s is " % (sample,category),hist.Integral()
         return rate
@@ -236,15 +233,19 @@ class DBuilder:
         for unc in self.uncertainties.values():
             if unc.type == "shape":
                 kShapeUnc = True
-
         wsPrefix = self.wsName + ':' if self.checkRooWorkspace() else ''
-
         #for category in self.categories:
         cat_str=""
         if kShapeUnc:
             cat_str="shapes * * %(file)s $CHANNEL/%(ws)s$PROCESS $CHANNEL/%(ws)s$PROCESS_$SYSTEMATIC \n" % {'file': self.rootfile, 'ws': wsPrefix}
+            for signal in self.signals :
+                ## add extra lines, which contain the corresponding mass, for all signal processes
+                cat_str+="shapes %(signal)s * %(file)s $CHANNEL/%(ws)s$PROCESS$MASS $CHANNEL/%(ws)s$PROCESS$MASS_$SYSTEMATIC \n" % {'signal': signal, 'file': self.rootfile, 'ws': wsPrefix}
         else:
-            cat_str = "shapes * * %s $CHANNEL/$PROCESS \n" % (self.rootfile)
+            cat_str = "shapes * * %(file)s $CHANNEL/%(ws)s$PROCESS \n" % {'file': self.rootfile, 'ws': wsPrefix}
+            for signal in self.signals :
+                ## add extra lines, which contain the corresponding mass, for all signal processes
+                cat_str+= "shapes %(signal)s * %(file)s $CHANNEL/%(ws)s$PROCESS$MASS \n" % {'signal': signal, 'file': self.rootfile, 'ws': wsPrefix}
         outfile.write(cat_str)
         outfile.write(DBuilder.DividerStr)
 
@@ -284,7 +285,7 @@ class DBuilder:
         process_str_l += "rate".ljust(self.column_zero_width)
         for category in self.categories:
             for signal in self.signals:
-                process_str_l += ("%6g"  % (self.get_rate(category,signal))).ljust(self.cw)
+                process_str_l += ("%6g"  % (self.get_rate(category,signal,self.mass_point))).ljust(self.cw)
             for background in self.backgrounds:
                 process_str_l += ("%6g" % (self.get_rate(category,background))).ljust(self.cw)
             for sample in self.samples:

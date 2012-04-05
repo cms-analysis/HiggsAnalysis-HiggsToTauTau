@@ -327,7 +327,7 @@ for directory in args :
                 if options.v != 0 :
                     print "> creating batch job for combine -M CLs"
                 ## create the job
-                os.system("combine-single.py %s %s %s" % (opts, options.shape, workspaces))
+                os.system("combine-single.py %s --shape %s %s" % (opts, options.shape, workspaces))
             if options.method == "Bayesian" :
                 ## -----------------------------------------------------------------------------------------
                 ## Option: combine Bayesian
@@ -358,7 +358,7 @@ for directory in args :
                 if options.v != 0 :
                     print "> creating batch job for combine -M Bayesian"
                 ## create the job            
-                os.system("combine-bayes.py %s %s tmp.txt" % (options,shape, opts))
+                os.system("combine-bayes.py --shape %s %s tmp.txt" % (options.shape, opts))
                 ## in case prepare a batch submission for the observed limit
                 if options.observed :
                     if os.path.exists("common") :
@@ -389,7 +389,7 @@ for directory in args :
                         opts += " --glidein"
                     if options.prio:
                         opts += " --priority"
-                    os.system("combine-bayes.py %s %s --observed tmp.txt" % (options.shape, opts))
+                    os.system("combine-bayes.py --shape %s %s --observed tmp.txt" % (options.shape, opts))
                     ## cleanup and return to the head directory to go on
                     os.system("rm tmp*")            
                     os.chdir("%s/.." % os.getcwd())
