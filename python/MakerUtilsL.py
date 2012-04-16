@@ -209,7 +209,7 @@ class DBuilder:
                 if pdf:
                     rate = ws.pdf(sample).expectedEvents(None) # May need to provide variables in the future
                 else:
-                    raise Exception('Failed to find sample %s in RooWorkspace %sin file %s' % (sample, wsPath, self.rootfile))
+                    raise Exception('Failed to find sample %s in RooWorkspace %s in file %s' % (sample, wsPath, self.rootfile))
         #print "type of hist is:",type(hist)
         #print "rate of %s in category %s is " % (sample,category),hist.Integral()
         return rate
