@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <iomanip>
 #include <iostream>
 
 #include <regex.h>
@@ -9,13 +10,14 @@
 #include <TH1F.h>
 #include <TFile.h>
 #include <TROOT.h>
+#include <TSystem.h>
 #include <TString.h>
 #include <TLegend.h>
 #include <TPaveText.h>
 #include <TCollection.h>
 
-#include "HiggsCSandWidth.h"
-#include "HiggsCSandWidthSM4.h"
+#include "HiggsAnalysis/HiggsToTauTau/interface/HiggsCSandWidth.h"
+#include "HiggsAnalysis/HiggsToTauTau/interface/HiggsCSandWidthSM4.h"
 
 /**
    \class   rescale2SM4 rescale2SM4.C "HiggsAnalysis/HiggsToTauTau/macros/rescale2SM4.C"
@@ -33,7 +35,7 @@
    armed    : update rescaled hyistograms in file
    filename : input file that is supposed to hold the histograms to be scaled
    mass     : single mass, for which the rescaling is supposed to be done. When left 
-   to be -1 all masses between 110 and 145 are rescaled in one go. 
+              to be -1 all masses between 110 and 145 are rescaled in one go. 
 */
 
 int
@@ -58,8 +60,8 @@ void rescale2SM4(bool armed, const char* filename, double mass=-1)
   for(unsigned int mdx=110; mdx<146; ++mdx){
     if( mass>0 && mdx!=mass ){ continue; }
     if( debug>0 ){
-      std::cout << "file  = " << filename << std::endl;
-      std::cout << "mass  = " << mdx      << std::endl;
+      std::cout << "file  = " << filename << std::setw(10);
+      std::cout << "mass  = " << mdx      << std::setw(10);
       std::cout << "armed = " << armed    << std::endl;
     }
     TFile* file = new TFile(filename, "update");
@@ -68,11 +70,11 @@ void rescale2SM4(bool armed, const char* filename, double mass=-1)
     while((idir = (TKey*)nextDirectory())){
       if( idir->IsFolder() ){
 	file->cd(); // make sure to start in directory head 
-	if( debug>0 ){ std::cout << "Found directory: " << idir->GetName() << std::endl; }
+	if( debug>1 ){ std::cout << "Found directory: " << idir->GetName() << std::endl; }
 	if( std::string(idir->GetName())=="emu_b"   || 
 	    std::string(idir->GetName())=="emu_nob" || 
-	    std::string(idir->GetName())=="emu_X" ){ 
-	  std::cout << "skip non SM directory..." << std::endl; 
+	    std::string(idir->GetName())=="emu_X" ){
+	  if( debug>1 ){ std::cout << "skip non SM directory..." << std::endl; }
 	  continue;
 	}
 	if( file->GetDirectory(idir->GetName()) ){
@@ -80,40 +82,35 @@ void rescale2SM4(bool armed, const char* filename, double mass=-1)
 	  TIter next(gDirectory->GetListOfKeys());
 	  TKey* iobj;
 	  while((iobj = (TKey*)next())){
-	    if(debug>1){ std::cout << " ...found object: " << iobj->GetName() << std::endl; }
+	    if(debug>2){ std::cout << " ...found object: " << iobj->GetName() << std::endl; }
 	    // why does \\w*_\\d+ not work to catch them all?!?
-	    if( match(iobj->GetName(), "Higgs") || 
-		match(iobj->GetName(), "GGH"  ) || 
-		match(iobj->GetName(), "BBH"  ) || 
-		match(iobj->GetName(), "VBF"  ) || 
-		match(iobj->GetName(), "VH"   ) || 
-		match(iobj->GetName(), "SM"   ) ){
+	    if( match(iobj->GetName(), "ggH"  ) || 
+		match(iobj->GetName(), "qqH"  ) || 
+		match(iobj->GetName(), "VH"   ) ){
 	      TH1F* h = (TH1F*)file->Get(TString::Format("%s/%s", idir->GetName(), iobj->GetName()));
-	      if( debug>1 ){ std::cout << "...old scale : " << h->Integral() << std::endl; }
-	      
+	      if( debug>2 ){ std::cout << "...old scale : " << h->Integral() << std::endl; }
 	      HiggsCSandWidth smx; HiggsCSandWidthSM4 sm4; int type = 0;
-	      if( match(iobj->GetName(), (char*)std::string(TString::Format("gf_sm_%3.0d" , mdx)).c_str() ) ){ type = 1; }
-	      if( match(iobj->GetName(), (char*)std::string(TString::Format("vbf_sm_%3.0d", mdx)).c_str() ) ){ type = 2; }
-	      if( match(iobj->GetName(), (char*)std::string(TString::Format("SM%3.0d"     , mdx)).c_str() ) ){ type = 1; }
-	      if( match(iobj->GetName(), (char*)std::string(TString::Format("VBF%3.0d"    , mdx)).c_str() ) ){ type = 2; }
+	      if( match(iobj->GetName(), (char*)std::string(TString::Format("ggH%3.0d"    , mdx)).c_str() ) ){ type = 1; }
+	      if( match(iobj->GetName(), (char*)std::string(TString::Format("qqH%3.0d"    , mdx)).c_str() ) ){ type = 2; }
 	      if( match(iobj->GetName(), (char*)std::string(TString::Format("VH%3.0d"     , mdx)).c_str() ) ){ type = 3; }
 	      if( type==0 ) { /*std::cout << "not supported process" << std::endl;*/ continue; }
-	      float smxBR = smx.HiggsWidth(2, mdx)/smx.HiggsWidth(0, mdx); 
-	      float sm4BR = sm4.HiggsWidth(2, mdx)/sm4.HiggsWidth(0, mdx);
-	      if( debug>0 ){
-		std::cout << "  --  hist  = " << iobj->GetName() 
-			  << "  --  type  = " << type 
-			  << "  --  SM    = " << (type==1 ? smx.HiggsCS(type, mdx, 7)*smxBR : smxBR) 
-			  << "  --  SM4   = " << (type==1 ? sm4.HiggsCS(type, mdx, 7)*sm4BR : sm4BR)
-			  << "  --  scale = " << (type==1 ? sm4.HiggsCS(type, mdx, 7)*sm4BR/(smx.HiggsCS(type, mdx, 7)*smxBR) : sm4BR/smxBR)
+	      float smxXS = type==1 ? smx.HiggsCS(type, mdx, 7, true) : 0.; float smxBR = type==1 ? smx.HiggsBR(2, mdx, true) : 0.; 
+	      float sm4XS = type==1 ? sm4.HiggsCS(type, mdx, 7, true) : 0.; float sm4BR = type==1 ? sm4.HiggsBR(2, mdx, true) : 0.;
+	      if( debug>1 ){
+		std::cout << "  --  hist  = " << std::setw(10) << h->GetName() << std::endl
+			  << "  --  type  = " << std::setw(10) << type << std::endl
+			  << "  --  mass  = " << std::setw(10) << mdx << std::endl
+			  << "  --  SM    = " << std::setw(10) << smxXS*smxBR << " (BR = " << smxBR << ")"  << std::endl
+			  << "  --  SM4   = " << std::setw(10) << sm4XS*sm4BR << " (BR = " << sm4BR << ")"  << std::endl
+			  << "  --  scale = " << std::setw(10) << (type==1 ? sm4XS*sm4BR/(smxXS*smxBR) : 0) << std::endl
 			  << std::endl;
 	      }
-	      if( type==1 ){ h->Scale(sm4.HiggsCS(type, mdx, 7)*sm4BR/(smx.HiggsCS(type, mdx, 7)*smxBR)); }
-	      if( type==2 ){ h->Scale(sm4BR/smxBR); }
-	      if( type==3 ){ h->Scale(sm4BR/smxBR); }
+	      if( type==1 ){ h->Scale(sm4XS*sm4BR/(smxXS*smxBR)); }
+	      if( type==2 ){ h->Scale(0.); }
+	      if( type==3 ){ h->Scale(0.); }
 	      
-	      if( debug>1 ){ std::cout << "...new scale : " << h->Integral() << std::endl; }
-	      if( armed ){ h->Write(); }
+	      if( debug>2 ){ std::cout << "...new scale : " << h->Integral() << std::endl; }
+	      if( armed ){ h->Write(iobj->GetName()); }
 	    }
 	  }
 	}
