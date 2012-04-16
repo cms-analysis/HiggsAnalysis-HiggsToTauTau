@@ -21,7 +21,7 @@ if len(args) < 1 :
 import re
 import os
 
-## create an unambiguous list out of a a string of drop-channels
+## create an unambiguous list out of a string of drop-channels
 drop_channel_list = re.sub(r'\s', '', options.drop).split(',')
 
 ## admin of available masses per channel 
