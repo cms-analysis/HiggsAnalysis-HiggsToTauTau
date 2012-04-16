@@ -1372,8 +1372,11 @@ for input_line in input_file :
 datacard_creator.rescale_shift_histograms()
 ## map out the uncertainty lines for scale and pdf uncertainties 
 datacard_creator.add_uncertainty_lines()
-## add new scale and pdf uncertinaties for new datacard
+## add new scale and pdf uncertainties for new datacard
 for signal_channel, uncertainy_lines in datacard_creator.signal_channel_to_uncertainty_lines.iteritems() :
        output_file.write(datacard_creator.signal_channel_to_uncertainty_lines[signal_channel]+"\n")
 
+##close files
+input_file.close()
+output_file.close()
 print "done"
