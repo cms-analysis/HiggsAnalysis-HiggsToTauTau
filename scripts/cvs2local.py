@@ -102,50 +102,50 @@ else :
         if not os.path.exists("{output}/{mass}".format(output=options.out, mass=mass)) :            
             os.system("mkdir {output}/{mass}".format(output=options.out, mass=mass))
         if options.channel == "sm-emu" or options.channel == "sm" :
-            os.system("cp {input}/eleMu_SM?_mH{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
-            os.system("cp {input}/*limit-inputs*.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
+            os.system("cp {input}/htt_em_?-{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
+            os.system("cp {input}/htt_em.input.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
         if options.channel == "sm-etau" or options.channel == "sm" :
-            os.system("cp {input}/eleTau_SM?_mH{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
-            os.system("cp {input}/eleTauSM.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))        
+            os.system("cp {input}/htt_et_?-{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
+            os.system("cp {input}/htt_et.input.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))        
         if options.channel == "sm-mutau" or options.channel == "sm" :
-            os.system("cp {input}/muTau_SM?_mH{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
-            os.system("cp {input}/muTauSM.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))        
+            os.system("cp {input}/htt_mt_?-{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
+            os.system("cp {input}/htt_mt.input.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))        
         if options.channel == "sm-mumu" or options.channel == "sm" :
             os.system("cp {input}/muMu_SM?_mH{mass}.* {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
 
         if options.channel == "sm-vbf-emu" or options.channel == "sm-vbf" :
-            os.system("cp {input}/eleMu_SM[02]_mH{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
-            os.system("cp {input}/*limit-inputs*.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
+            os.system("cp {input}/htt_em_[02]-{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
+            os.system("cp {input}/htt_em.input.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
         if options.channel == "sm-vbf-etau" or options.channel == "sm-vbf" :
-            os.system("cp {input}/eleTau_SM[02]_mH{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
-            os.system("cp {input}/eleTauSM.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))        
+            os.system("cp {input}/htt_et_[02]-{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
+            os.system("cp {input}/htt_et.input.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))        
         if options.channel == "sm-vbf-mutau" or options.channel == "sm-vbf" :
-            os.system("cp {input}/muTau_SM[02]_mH{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
-            os.system("cp {input}/muTauSM.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))        
+            os.system("cp {input}/htt_mt_[02]-{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
+            os.system("cp {input}/htt_mt.input.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))        
         if options.channel == "sm-vbf-mumu" or options.channel == "sm-vbf" :
             os.system("cp {input}/muMu_SM[02]_mH{mass}.* {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
     
         if options.channel == "sm-boost-emu" or options.channel == "sm-boost" :
-            os.system("cp {input}/eleMu_SM[01]_mH{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
-            os.system("cp {input}/*limit-inputs*.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
+            os.system("cp {input}/htt_em_[01]-{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
+            os.system("cp {input}/htt_em.input.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
         if options.channel == "sm-boost-etau" or options.channel == "sm-boost" :
-            os.system("cp {input}/eleTau_SM[01]_mH{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
-            os.system("cp {input}/eleTauSM.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))        
+            os.system("cp {input}/htt_et_[01]-{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
+            os.system("cp {input}/htt_et.input.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))        
         if options.channel == "sm-boost-mutau" or options.channel == "sm-boost" :
-            os.system("cp {input}/muTau_SM[01]_mH{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
-            os.system("cp {input}/muTauSM.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))        
+            os.system("cp {input}/htt_mt_[01]-{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
+            os.system("cp {input}/htt_mt.input.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))        
         if options.channel == "sm-boost-mumu" or options.channel == "sm-boost" :
             os.system("cp {input}/muMu_SM[01]_mH{mass}.* {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))        
     
         if options.channel == "sm-incl-emu" or options.channel == "sm-incl" :
-            os.system("cp {input}/eleMu_SM0_mH{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
-            os.system("cp {input}/*limit-inputs*.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
+            os.system("cp {input}/htt_em_0-{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
+            os.system("cp {input}/htt_em.input.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
         if options.channel == "sm-incl-etau" or options.channel == "sm-incl" :
-            os.system("cp {input}/eleTau_SM0_mH{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
-            os.system("cp {input}/eleTauSM.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))        
+            os.system("cp {input}/htt_et_0-{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
+            os.system("cp {input}/htt_et.input.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))        
         if options.channel == "sm-incl-mutau" or options.channel == "sm-incl" :
-            os.system("cp {input}/muTau_SM0_mH{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
-            os.system("cp {input}/muTauSM.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))        
+            os.system("cp {input}/htt_mt_0-{mass}.txt {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
+            os.system("cp {input}/htt_mt.input.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))        
         if options.channel == "sm-incl-mumu" or options.channel == "sm-incl" :
             os.system("cp {input}/muMu_SM0_mH{mass}.* {output}/{mass}/".format(input=options.input, output=options.out, mass=mass))
 
