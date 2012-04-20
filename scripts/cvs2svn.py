@@ -1,26 +1,29 @@
 #!/usr/bin/env python
-import os
+
 from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
-parser = OptionParser(usage="usage: %prog [options] args",
+parser = OptionParser(usage="usage: %prog [options] ARGS",
                       description="Simple script to copy input files for limit and significance calculation from CVS to SVN. A list of arguments can be given. These arguments should be integers corresponding to the mass points for which you want to copy the datacards.")
 parser.add_option("-i", "--input", dest="input", default="UserCode/MBachtis/htautau/sm", type="string", help="Mikes input directory [Default: UserCode/MBachtis/htautau/sm]")
 parser.add_option("-o", "--out", dest="out", default="lp11", type="string", help="Name of the output directory [Default: lp11]")
 parser.add_option("-c", "--channel", dest="channel", default="sm", type="choice", help="Channel to be copied [Default: sm]", choices=["sm", "emu", "etau", "mutau", "mumu"])
 parser.add_option("--SM4", dest="sm4", default=False, action="store_true", help="Copy SM4 datacards [Default: False]")
-
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
+
 if len(args) < 1 :
     parser.print_usage()
     exit(1)
+
+import os
+from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
 
 pre = ""
 if options.sm4 :
     pre = "SM4_"
 
-for mass in args :
+for mass in parseArgs(args) :
     if options.channel == "emu" or options.channel == "sm" :
         os.system("cp {input}/htt_em_0-{mass}.txt {output}/{mass}/{pre}htt_em_0.txt".format(input=options.input, output=options.out, pre=pre, mass=mass))
         os.system("perl -pi -e 's/htt_em.input.root/..\/common\/{pre}htt_em.input.root/g' {output}/{mass}/{pre}htt_em_0.txt".format(pre=pre, output=options.out, mass=mass))
