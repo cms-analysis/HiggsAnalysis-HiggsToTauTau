@@ -1,3 +1,4 @@
+#include <map>
 #include <string>
 #include <vector>
 #include <iomanip>
@@ -6,8 +7,9 @@
 #include <regex.h>
 #include <sys/types.h>
 
-#include <TKey.h>
+#include <TH1.h>
 #include <TH1F.h>
+#include <TKey.h>
 #include <TFile.h>
 #include <TROOT.h>
 #include <TSystem.h>
@@ -54,69 +56,140 @@ match(const char *string, char *pattern)
   return 1 ;
 }
 
-void rescale2SM4(bool armed, const char* filename, double mass=-1)
+std::map<const char*, const char*>
+httDictionary()
 {
-  unsigned int debug = 1;
-  for(unsigned int mdx=110; mdx<146; ++mdx){
-    if( mass>0 && mdx!=mass ){ continue; }
-    if( debug>0 ){
-      std::cout << "file  = " << filename << std::setw(10);
-      std::cout << "mass  = " << mdx      << std::setw(10);
-      std::cout << "armed = " << armed    << std::endl;
-    }
-    TFile* file = new TFile(filename, "update");
-    TIter nextDirectory(file->GetListOfKeys());
-    TKey* idir;
-    while((idir = (TKey*)nextDirectory())){
-      if( idir->IsFolder() ){
-	file->cd(); // make sure to start in directory head 
-	if( debug>1 ){ std::cout << "Found directory: " << idir->GetName() << std::endl; }
-	if( std::string(idir->GetName())=="emu_b"   || 
-	    std::string(idir->GetName())=="emu_nob" || 
-	    std::string(idir->GetName())=="emu_X" ){
-	  if( debug>1 ){ std::cout << "skip non SM directory..." << std::endl; }
-	  continue;
-	}
-	if( file->GetDirectory(idir->GetName()) ){
-	  file->cd(idir->GetName()); // change to sub-directory
-	  TIter next(gDirectory->GetListOfKeys());
-	  TKey* iobj;
-	  while((iobj = (TKey*)next())){
-	    if(debug>2){ std::cout << " ...found object: " << iobj->GetName() << std::endl; }
-	    // why does \\w*_\\d+ not work to catch them all?!?
-	    if( match(iobj->GetName(), "ggH"  ) || 
-		match(iobj->GetName(), "qqH"  ) || 
-		match(iobj->GetName(), "VH"   ) ){
-	      TH1F* h = (TH1F*)file->Get(TString::Format("%s/%s", idir->GetName(), iobj->GetName()));
-	      if( debug>2 ){ std::cout << "...old scale : " << h->Integral() << std::endl; }
-	      HiggsCSandWidth smx; HiggsCSandWidthSM4 sm4; int type = 0;
-	      if( match(iobj->GetName(), (char*)std::string(TString::Format("ggH%3.0d"    , mdx)).c_str() ) ){ type = 1; }
-	      if( match(iobj->GetName(), (char*)std::string(TString::Format("qqH%3.0d"    , mdx)).c_str() ) ){ type = 2; }
-	      if( match(iobj->GetName(), (char*)std::string(TString::Format("VH%3.0d"     , mdx)).c_str() ) ){ type = 3; }
-	      if( type==0 ) { /*std::cout << "not supported process" << std::endl;*/ continue; }
-	      float smxXS = type==1 ? smx.HiggsCS(type, mdx, 7, true) : 0.; float smxBR = type==1 ? smx.HiggsBR(2, mdx, true) : 0.; 
-	      float sm4XS = type==1 ? sm4.HiggsCS(type, mdx, 7, true) : 0.; float sm4BR = type==1 ? sm4.HiggsBR(2, mdx, true) : 0.;
-	      if( debug>1 ){
-		std::cout << "  --  hist  = " << std::setw(10) << h->GetName() << std::endl
-			  << "  --  type  = " << std::setw(10) << type << std::endl
-			  << "  --  mass  = " << std::setw(10) << mdx << std::endl
-			  << "  --  SM    = " << std::setw(10) << smxXS*smxBR << " (BR = " << smxBR << ")"  << std::endl
-			  << "  --  SM4   = " << std::setw(10) << sm4XS*sm4BR << " (BR = " << sm4BR << ")"  << std::endl
-			  << "  --  scale = " << std::setw(10) << (type==1 ? sm4XS*sm4BR/(smxXS*smxBR) : 0) << std::endl
-			  << std::endl;
-	      }
-	      if( type==1 ){ h->Scale(sm4XS*sm4BR/(smxXS*smxBR)); }
-	      if( type==2 ){ h->Scale(0.); }
-	      if( type==3 ){ h->Scale(0.); }
-	      
-	      if( debug>2 ){ std::cout << "...new scale : " << h->Integral() << std::endl; }
-	      if( armed ){ h->Write(iobj->GetName()); }
-	    }
-	  }
+  std::map<const char*, const char*> dict_;
+  // signal names
+  dict_["ggH" ] = "ggH";
+  dict_["qqH" ] = "qqH";
+  dict_["VH"  ] = "VH";
+  return dict_;
+}
+
+std::vector<std::string>
+signalList(const char* dirName="", const char* pattern="", unsigned int debug=0)
+{
+  std::vector<std::string> histnames;
+  TIter next(gDirectory->GetListOfKeys());
+  TKey* iobj;
+  unsigned int idx=0;
+  while((iobj = (TKey*)next())){
+    if(iobj->IsFolder()) continue;
+    if(debug>2){ std::cout << "[" << ++idx << "] ...Found object: " << iobj->GetName() << " of type: " << iobj->GetClassName() << std::endl; }
+    std::string fullpath(dirName); 
+    fullpath += fullpath == std::string("") ? "" : "/"; fullpath += iobj->GetName();
+    // why does \\w*_\\d+ not work to catch them all?!?
+    if(std::string(pattern).empty()){
+      std::map<const char*, const char*> dict = httDictionary();
+      for(std::map<const char*, const char*>::const_iterator name = dict.begin(); name!=dict.end(); ++name){
+	if(match(iobj->GetName(), (char*)name->first)){
+	  histnames.push_back(fullpath);
 	}
       }
     }
-    file->Close();
+    else if(!std::string(pattern).empty() && match(iobj->GetName(), (char*)pattern)){
+      histnames.push_back(fullpath);
+    }
   }
+  return histnames;
+}
+
+void rescale2SM4(bool armed, const char* filename, double mass=-1)
+{
+  unsigned int debug = 1;
+  std::vector<std::string> histnames; histnames.clear();
+  if( debug>0 ){
+    std::cout << "file  = " << filename << std::setw(10);
+    std::cout << "mass  = " << mass     << std::setw(10);
+    std::cout << "armed = " << armed    << std::endl;
+  }
+  TFile* file = new TFile(filename, "update");
+  TIter nextDirectory(file->GetListOfKeys());
+  std::vector<std::string> buffer; TKey* idir;
+  while((idir = (TKey*)nextDirectory())){
+    buffer.clear();
+    if( idir->IsFolder() ){
+      file->cd(); // make sure to start in directory head 
+      if( debug>1 ){ std::cout << "Found directory: " << idir->GetName() << std::endl; }
+      if( file->GetDirectory(idir->GetName()) ){
+	file->cd(idir->GetName()); // change to sub-directory
+	buffer = signalList(idir->GetName(), "", debug);
+      }
+      // append to the vector of histograms to be rescaled
+      for(std::vector<std::string>::const_iterator elem=buffer.begin(); elem!=buffer.end(); ++elem){
+	histnames.push_back(*elem);
+      }
+      if(debug>1){
+	std::cout << "added " << buffer.size() << " elements to histnames [" << histnames.size() << "] for directory " << idir->GetName() << std::endl;
+      }
+    }
+  }
+  // pick up histograms which are not kept in an extra folder
+  file->cd(); buffer.clear();
+  buffer = signalList("", "", debug);
+  // append to the vector of histograms to be rescaled
+  for(std::vector<std::string>::const_iterator elem=buffer.begin(); elem!=buffer.end(); ++elem){
+    histnames.push_back(*elem);
+  }
+  if(debug>1){
+    std::cout << "added " << buffer.size() << " elements to histnames [" << histnames.size() << "] for file head" << std::endl;
+  }
+
+  HiggsCSandWidth smx; HiggsCSandWidthSM4 sm4;
+  for(std::vector<std::string>::const_iterator hist=histnames.begin(); hist!=histnames.end(); ++hist){
+    int type = 0;
+    // determine mass from hostogram name
+    std::string strippedName = (hist->find("/")!=std::string::npos ? hist->substr(hist->find("/")+1) : *hist);
+    std::string massName;
+    if(strippedName.find("ggH")!=std::string::npos) {
+      massName = strippedName.substr(3, 3); type = 1;
+    }
+    if(strippedName.find("qqH")!=std::string::npos) {
+      massName = strippedName.substr(3, 3); type = 2;
+    }
+    if(strippedName.find("VH" )!=std::string::npos) {
+      massName = strippedName.substr(2, 3); type = 3;
+    }
+    if( type==0 ) { 
+      std::cout << "not supported process" << std::endl; 
+      continue; 
+    }
+    else {
+
+      file->cd();
+      float mdx = atof(massName.c_str());
+      TH1F* h = (TH1F*)file->Get(hist->c_str());
+      float smxXS = type==1 ? smx.HiggsCS(type, mdx, 7, true) : 0.; float smxBR = smx.HiggsBR(2, mdx, true); 
+      float sm4XS = type==1 ? sm4.HiggsCS(type, mdx, 7, true) : 0.; float sm4BR = sm4.HiggsBR(2, mdx, true);
+      if( debug>1 ){
+	std::cout << "  --  hist  = " << std::setw(10) << h->GetName() << std::endl
+		  << "  --  type  = " << std::setw(10) << type << std::endl
+		  << "  --  mass  = " << std::setw(10) << mdx << std::endl
+		  << "  --  SM    = " << std::setw(10) << smxXS*smxBR << " (BR = " << smxBR << ")"  << std::endl
+		  << "  --  SM4   = " << std::setw(10) << sm4XS*sm4BR << " (BR = " << sm4BR << ")"  << std::endl
+		  << "  --  scale = " << std::setw(10) << (type==1 ? sm4XS*sm4BR/(smxXS*smxBR) : 0) << std::endl
+		  << std::endl;
+      }
+      if( type==1 ){ h->Scale(sm4XS*sm4BR/(smxXS*smxBR)); }
+      //scaling old style
+      //if( type==2 ){ h->Scale(sm4BR/smxBR); }
+      //if( type==3 ){ h->Scale(sm4BR/smxBR); }
+      // scaling new style
+      if( type==2 ){ h->Scale(0.); }
+      if( type==3 ){ h->Scale(0.); }
+      if(armed){
+	if(hist->find("/")!=std::string::npos){
+	  file->cd(hist->substr(0, hist->find("/")).c_str());
+	}
+	else{
+	  file->cd();
+	}
+	h->Write(strippedName.c_str(), TObject::kOverwrite); 
+      }
+    }
+  }
+  file->Close();
   return;
 }
+
