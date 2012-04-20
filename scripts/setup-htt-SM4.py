@@ -46,7 +46,7 @@ for channel in ['emu', 'etau', 'mutau'] :
         ## append uncertainties to datacard 
         output_file = open(datacard,'a')
         for uncert in ["gamma_Hff", "gamma_HVV", "gamma_Hgluglu"] :
-            output_line = uncert+"   ln    "
+            output_line = uncert+"   lnN    "
             for proc in processes : 
                 if int(proc) <=0 :
                     print "root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/uncerts2SM4.C+\({MASS}\) | grep {UNCERT}".format(
