@@ -18,10 +18,13 @@
 #include "HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
 #include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
+static const double MARKER_SIZE = 0.7;  // 1.3
+
 bool
 channel(std::string& label){
   return (label==std::string("cmb")        ||
 	  label==std::string("htt")        ||
+	  label==std::string("htt+")       ||
 	  label==std::string("vhtt")       ||
 	  label==std::string("incl")       ||
 	  label==std::string("novbf")      ||
@@ -29,6 +32,11 @@ channel(std::string& label){
 	  label==std::string("vbf")        ||
 	  label==std::string("hgg")        ||	  
 	  label==std::string("hww")        ||
+	  label==std::string("hzz4l")      ||
+	  label==std::string("hzz2l2q")    ||
+	  label==std::string("hzz2l2q")    ||
+	  label==std::string("hzz2l2t")    ||
+	  label==std::string("hzz2l2n")    ||
 	  label==std::string("ggH")        ||
 	  label==std::string("bbH")        ||
 	  label==std::string("test-0")     ||
@@ -59,14 +67,19 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("mutau"     )) title = std::string("#mu#tau_{h}");
   if(channel==std::string("mumu"      )) title = std::string("#mu#mu");
   if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau+lep (vhtt)");
-  if(channel==std::string("htt"       )) title = std::string("(e#mu + e#tau_{h} + #mu#tau)");
+  if(channel==std::string("htt"       )) title = std::string("H#rightarrow#tau#tau(e#mu+e#tau_{h}+#mu#tau)");
+  if(channel==std::string("htt+"      )) title = std::string("H#rightarrow#tau#tau(e#mu+e#tau_{h}+#mu#tau+#mu#mu)");
   if(channel==std::string("cmb"       )) title = std::string("Combined");
   if(channel==std::string("incl"      )) title = std::string("Inclusive");
   if(channel==std::string("novbf"     )) title = std::string("0/1-Jet");
   if(channel==std::string("vbf"       )) title = std::string("0/1-Jet+VBF");
   if(channel==std::string("boost"     )) title = std::string("0/1-Jet+Boost");
   if(channel==std::string("hgg"       )) title = std::string("H#rightarrow#gamma#gamma");
-  if(channel==std::string("hww"       )) title = std::string("H#rightarrowWW#rightarrow 2lep 2#nu");
+  if(channel==std::string("hww"       )) title = std::string("H#rightarrowWW#rightarrow2l2#nu");
+  if(channel==std::string("hzz4l"     )) title = std::string("H#rightarrowZZ#rightarrow4l");
+  if(channel==std::string("hzz2l2q"   )) title = std::string("H#rightarrowZZ#rightarrow2l2q");
+  if(channel==std::string("hzz2l2t"   )) title = std::string("H#rightarrowZZ#rightarrow2l2#tau");
+  if(channel==std::string("hzz2l2n"   )) title = std::string("H#rightarrowZZ#rightarrow2l2#nu");
   if(channel==std::string("ggH"       )) title = std::string("gg#rightarrowH");
   if(channel==std::string("bbH"       )) title = std::string("bb#rightarrowHbb");
   if(channel==std::string("test-0"    )) title = std::string("Test-0");
@@ -90,7 +103,7 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double maximum=20.)
+void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double maximum=20., double minimum=0., bool log=false)
 {
   SetStyle();
 
@@ -106,8 +119,14 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["vhtt"      ] = kMagenta+2;
   colors["cmb"       ] = kBlack;
   colors["htt"       ] = kGray+2;
+  colors["htt+"      ] = kGray+2;
   colors["hgg"       ] = kRed;
   colors["hww"       ] = kGreen;
+  colors["hzz4l"     ] = kBlue;
+  colors["hzz2l2q"   ] = kMagenta;
+  colors["hzz2l2q+"  ] = kMagenta;
+  colors["hzz2l2t"   ] = kOrange;
+  colors["hzz2l2n"   ] = kPink;
   colors["ggH"       ] = kRed;
   colors["bbH"       ] = kBlue;
   colors["test-0"    ] = kBlue;
@@ -129,24 +148,28 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["HIG-11-020"] = kBlack;
   colors["HIG-11-029"] = kBlack;
 
-  std::cout << " ****************************************************************************************************\n"
-	    << " * Usage     : root -l                                                                               \n"
-	    << " *             .x MitLimits/Higgs2Tau/macros/compareLimits.C+(file, chn, exp, obs, type, max)        \n"
-	    << " *                                                                                                   \n"
-	    << " * Arguments :  + file     const char*      full path to the input file                              \n"
-	    << " *              + chn      const char*      list of channels; choose between: 'cmb', 'htt', 'emu',   \n"
-	    << " *                                          'etau', 'mutau', 'mumu', 'vhtt', 'hgg', 'hww', 'ggH',    \n"
-	    << " *                                          'bbH', 'nomix[-200, +200]', 'mhmax[-400, -200, +200]'    \n"
-	    << " *                                          'mhmax[+400, +600, +800]', 'test-0...5', 'saeff', 'gluph'\n"
-	    << " *                                          The list should be comma separated and may contain       \n"
-	    << " *                                          whitespaces                                              \n"
-	    << " *              + exp       bool            compare expected limits                                  \n"
-	    << " *              + obs       bool            compare observed limits                                  \n"
-	    << " *              + type      const char*     type of plot; choose between 'sm-xsec', 'mssm-xsec' and  \n"
-	    << " *                                          'mssm-tanb'                                              \n"
-	    << " *              + max       double          maximumof the plot (default is 20.)                      \n"
-	    << " *                                                                                                   \n"
-	    << " ****************************************************************************************************\n";
+  std::cout << " *******************************************************************************************************\n"
+	    << " * Usage     : root -l                                                                                  \n"
+	    << " *             .x MitLimits/Higgs2Tau/macros/compareLimits.C+(file, chn, exp, obs, type, max, min, log) \n"
+	    << " *                                                                                                      \n"
+	    << " * Arguments :  + file     const char*      full path to the input file                                 \n"
+	    << " *              + chn      const char*      list of channels; choose between: 'cmb', 'htt', 'emu',      \n"
+	    << " *                                          'etau', 'mutau', 'mumu', 'vhtt', 'hgg', 'hww', 'ggH',       \n"
+	    << " *                                          'bbH', 'nomix[-200, +200]', 'mhmax[-400, -200, +200]'       \n"
+	    << " *                                          'mhmax[+400, +600, +800]', 'test-0...5', 'saeff', 'gluph'   \n"
+	    << " *                                          The list should be comma separated and may contain          \n"
+	    << " *                                          whitespaces                                                 \n"
+	    << " *              + exp       bool            compare expected limits                                     \n"
+	    << " *              + obs       bool            compare observed limits                                     \n"
+	    << " *              + type      const char*     type of plot; choose between 'sm-xsec', 'mssm-xsec' and     \n"
+	    << " *                                          'mssm-tanb'                                                 \n"
+	    << " *              + max       double          maximum of the plot (default is 20.)                        \n"
+	    << " *                                                                                                      \n"
+	    << " *              + min       double          minimum of the plot (default is  0.)                        \n"
+	    << " *                                                                                                      \n"
+	    << " *              + log       bool            set log scale yes or no (default is false)                  \n"
+	    << " *                                                                                                      \n"
+	    << " *******************************************************************************************************\n";
 
   /// open input file  
   TFile* inputFile = new TFile(filename); if(inputFile->IsZombie()){ std::cout << "ERROR:: file: " << filename << " does not exist.\n"; }
@@ -172,13 +195,14 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   for(unsigned int i=0; i<hexp.size(); ++i){
     if(firstPlot){
       if(std::string(type) == std::string("mssm-xsec")){
-	canv1->SetLogy(1);
+	if(log){ canv1->SetLogy(1); }
 	hexp[i]->SetMaximum(maximum);
-	hexp[i]->SetMinimum(0.05);
+	hexp[i]->SetMinimum(minimum);
       }
       else{
+	if(log){ canv1->SetLogy(1); }
 	hexp[i]->SetMaximum(maximum);
-	hexp[i]->SetMinimum(0.);
+	hexp[i]->SetMinimum(minimum);
       }
       
       // format x-axis
@@ -204,7 +228,8 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 	y_title = std::string("#bf{tan#beta}");
       }
       else{
-	y_title = std::string("#sigma(H#rightarrow#tau#tau)_{95% CL} / #sigma(H#rightarrow#tau#tau)_{SM}");
+	//y_title = std::string("#sigma(H#rightarrow#tau#tau)_{95% CL} / #sigma(H#rightarrow#tau#tau)_{SM}");
+	y_title = std::string("#sigma(H)_{95% CL} / #sigma(H)_{SM}");
       }
       hexp[i]->GetYaxis()->SetTitle(y_title.c_str());
       hexp[i]->GetYaxis()->SetLabelFont(62);
@@ -216,7 +241,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     hexp[i]->SetLineWidth( 3.); 
     hexp[i]->SetLineColor(colors.find(channels[i])->second);
     hexp[i]->SetMarkerStyle(20);
-    hexp[i]->SetMarkerSize(1.3);
+    hexp[i]->SetMarkerSize(MARKER_SIZE);
     hexp[i]->SetMarkerColor(colors.find(channels[i])->second);
     hexp[i]->Draw(firstPlot ? "APL" : "PLsame");
     firstPlot=false;
@@ -224,13 +249,14 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   for(unsigned int i=0; i<hobs.size(); ++i){
     if(firstPlot){
       if(std::string(type) == std::string("mssm-xsec")){
-	canv1->SetLogy(1);
+	if(log){ canv1->SetLogy(1); }
 	hobs[i]->SetMaximum(maximum);
-	hobs[i]->SetMinimum(0.05);
+	hobs[i]->SetMinimum(minimum);
       }
       else{
+	if(log){ canv1->SetLogy(1); }
 	hobs[i]->SetMaximum(maximum);
-	hobs[i]->SetMinimum(0.);
+	hobs[i]->SetMinimum(minimum);
       }
       
       // format x-axis
@@ -256,7 +282,8 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 	y_title = std::string("#bf{tan#beta}");
       }
       else{
-	y_title = std::string("#sigma(H#rightarrow#tau#tau)_{95% CL} / #sigma(H#rightarrow#tau#tau)_{SM}");
+	//y_title = std::string("#sigma(H#rightarrow#tau#tau)_{95% CL} / #sigma(H#rightarrow#tau#tau)_{SM}");
+	y_title = std::string("#sigma(H)_{95% CL} / #sigma(H)_{SM}");
       }
       hobs[i]->GetYaxis()->SetTitle(y_title.c_str());
       hobs[i]->GetYaxis()->SetLabelFont(62);
@@ -267,7 +294,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     hobs[i]->SetLineWidth( 3.); 
     hobs[i]->SetLineColor(colors.find(channels[i])->second);
     hobs[i]->SetMarkerStyle(20);
-    hobs[i]->SetMarkerSize(1.3);
+    hobs[i]->SetMarkerSize(MARKER_SIZE);
     hobs[i]->SetMarkerColor(colors.find(channels[i])->second);
     hobs[i]->Draw(firstPlot ? "APL" : "PLsame");
     firstPlot=false;
@@ -293,6 +320,8 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     leg1->SetFillColor (kWhite);
     leg1->SetHeader( "Observed Limit" );
     for(unsigned int i=0; i<hobs.size(); ++i){
+      // skip one of the two split options
+      if(channels[i] == std::string("hzz2l2q+")){ continue; }
       leg1->AddEntry( hobs[i] , channel(channels[i]) ? legendEntry(channels[i]).c_str() : legendEntry(channels[i]).append("-Channel").c_str(),  "PL" );
     }
     leg1->Draw("same");
@@ -315,6 +344,8 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     leg0->SetFillColor (kWhite);
     leg0->SetHeader( "Expected Limit" );
     for(unsigned int i=0; i<hexp.size(); ++i){
+      // skip one of the two split options
+      if(channels[i] == std::string("hzz2l2q+")){ continue; }
       leg0->AddEntry( hexp[i] , channel(channels[i]) ? legendEntry(channels[i]).c_str() : legendEntry(channels[i]).append("-Channel").c_str(),  "PL" );
     }
     leg0->Draw("same");
