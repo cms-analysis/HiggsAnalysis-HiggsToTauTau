@@ -23,17 +23,14 @@ os.system("mkdir %s" % options.name)
 
 os.chdir(base_directory)
 os.system("mkdir emu")
-first = True
 for category in [0,1,2] : 
     os.chdir(base_directory+'/emu')
     os.system("datacard-project.py -c em -e SM-0{CAT} SM{CAT}".format(CAT=category))
     os.chdir(base_directory+"/emu/SM{CAT}".format(CAT=category))
     os.system("mv em.inputs-sm.root htt_em.input.root")
     if options.SM4 :
-        if first :
-            ## all cross section will be rescaled in one go
-            first = False
-            os.system(r"root -q -l -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescale2SM4.C+\(true,\"htt_em.input.root\"\)".format(CMSSW_BASE=os.environ['CMSSW_BASE']))
+        ## all cross section will be rescaled in one go
+        os.system(r"root -q -l -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescale2SM4.C+\(true,\"htt_em.input.root\"\)".format(CMSSW_BASE=os.environ['CMSSW_BASE']))
     for mass in masses :
         os.system("create-datacard.py -i htt_em.input.root -o htt_em_{CAT}-{MASS}.txt {MASS}".format(CAT=category, MASS=mass))
     ## cleanup
@@ -44,17 +41,14 @@ os.system("rm cgs.* unc.*")
 
 os.chdir(base_directory)
 os.system("mkdir etau")
-first = True
 for category in [0,1,2] : 
     os.chdir(base_directory+'/etau')
     os.system("datacard-project.py -c et -e SM-0{CAT} SM{CAT}".format(CAT=category))
     os.chdir(base_directory+"/etau/SM{CAT}".format(CAT=category))
     os.system("mv et.inputs-sm.root htt_et.input.root")
     if options.SM4 :
-        if first :
-            ## all cross section will be rescaled in one go
-            first = False
-            os.system(r"root -q -l -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescale2SM4.C+\(true,\"htt_et.input.root\"\)".format(CMSSW_BASE=os.environ['CMSSW_BASE']))
+        ## all cross section will be rescaled in one go
+        os.system(r"root -q -l -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescale2SM4.C+\(true,\"htt_et.input.root\"\)".format(CMSSW_BASE=os.environ['CMSSW_BASE']))
     for mass in masses :
         os.system("create-datacard.py -i htt_et.input.root -o htt_et_{CAT}-{MASS}.txt {MASS}".format(CAT=category, MASS=mass))
     ## cleanup
@@ -65,17 +59,14 @@ os.system("rm cgs.* unc.*")
 
 os.chdir(base_directory)
 os.system("mkdir mutau")
-first = True
 for category in [0,1,2] :
     os.chdir(base_directory+'/mutau')
     os.system("datacard-project.py -c mt -e SM-0{CAT} SM{CAT}".format(CAT=category))
     os.chdir(base_directory+"/mutau/SM{CAT}".format(CAT=category))
     os.system("mv mt.inputs-sm.root htt_mt.input.root")
     if options.SM4 :
-        if first :
-            ## all cross section will be rescaled in one go
-            first = False
-            os.system(r"root -q -l -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescale2SM4.C+\(true,\"htt_mt.input.root\"\)".format(CMSSW_BASE=os.environ['CMSSW_BASE']))
+        ## all cross section will be rescaled in one go
+        os.system(r"root -q -l -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescale2SM4.C+\(true,\"htt_mt.input.root\"\)".format(CMSSW_BASE=os.environ['CMSSW_BASE']))
     for mass in masses :
         os.system("create-datacard.py -i htt_mt.input.root -o htt_mt_{CAT}-{MASS}.txt {MASS}".format(CAT=category, MASS=mass))
     ## cleanup
