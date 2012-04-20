@@ -225,7 +225,8 @@ class DBuilder:
     def write_lands(self,outfile):
         imax_str = "imax    %d     number of categories \n" % (len(self.categories))
         jmax_str = "jmax    %d     number of samples minus one \n" % (len(self.samples)-1)
-        kmax_str = "kmax    %d     number of nuisance parameters \n" % len(self.uncertainties.keys())
+        #kmax_str = "kmax    %d     number of nuisance parameters \n" % len(self.uncertainties.keys())
+        kmax_str = "kmax    *     number of nuisance parameters \n"
         outfile.write(imax_str+jmax_str+kmax_str+DBuilder.DividerStr)
 
     def write_paths(self,outfile):
