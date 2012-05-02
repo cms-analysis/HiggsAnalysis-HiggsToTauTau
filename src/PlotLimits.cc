@@ -580,11 +580,11 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   HWWmH->Draw("Fsame");
   HWWmH->Draw("Lsame");
 
-  TGraph* HWWmH_ = new TGraph(); 
-  limitsHWW(HWWmH_, "mH-card-observed");
-  HWWmH_->SetMarkerStyle(20.);
-  HWWmH_->SetMarkerColor(kBlack);
-  HWWmH_->Draw("psame");
+  //TGraph* HWWmH_ = new TGraph(); 
+  //limitsHWW(HWWmH_, "mH-card-observed");
+  //HWWmH_->SetMarkerStyle(20.);
+  //HWWmH_->SetMarkerColor(kBlack);
+  //HWWmH_->Draw("psame");
 
   TGraph* HWWmh = new TGraph();
   limitsHWW(HWWmh, "mh-calc-observed");
@@ -597,11 +597,11 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   HWWmh->Draw("Fsame");
   HWWmh->Draw("Lsame");
 
-  TGraph* HWWmh_ = new TGraph(); 
-  limitsHWW(HWWmh_, "mh-card-observed");
-  HWWmh_->SetMarkerStyle(20.);
-  HWWmh_->SetMarkerColor(kBlack);
-  HWWmh_->Draw("psame");
+  //TGraph* HWWmh_ = new TGraph(); 
+  //limitsHWW(HWWmh_, "mh-card-observed");
+  //HWWmh_->SetMarkerStyle(20.);
+  //HWWmh_->SetMarkerColor(kBlack);
+  //HWWmh_->Draw("psame");
   */
 
   plain->SetFillStyle(1001.);
