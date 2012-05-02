@@ -61,6 +61,8 @@ httSignal(const char* histName)
 	  match(histName, "GGH"  ) || 
 	  match(histName, "BBH"  ) || 
 	  match(histName, "VBF"  ) || 
+	  match(histName, "ggH"  ) || 
+	  match(histName, "qqH"  ) || 
 	  match(histName, "VH"   ) || 
 	  match(histName, "SM"   ));
 }
@@ -132,14 +134,22 @@ void rescaleSignal(bool armed, double scale, const char* filename, const char* p
   for(std::vector<std::string>::const_iterator hist=histnames.begin(); hist!=histnames.end(); ++hist){
     file->cd();
     TH1F* h = (TH1F*)file->Get(hist->c_str());
+    std::string histName;
+    if(hist->find("/")!=std::string::npos){
+      histName = hist->substr(hist->find("/")+1);
+    }
+    else{
+      histName = *hist;
+    }
+    TH1F* hout = (TH1F*)h->Clone(histName.c_str());
     if(debug>1){
       std::cout << "...folder    : " << hist->substr(0, hist->find("/")).c_str() << std::endl;
-      std::cout << "...histogram : " << h->GetName () << std::endl; 
-      std::cout << "...old scale : " << h->Integral() << std::endl; 
+      std::cout << "...histogram : " << hout->GetName () << " / " << hist->c_str() << std::endl; 
+      std::cout << "...old scale : " << hout->Integral() << std::endl; 
     }
-    h->Scale(scale);
+    hout->Scale(scale);
     if(debug>1){ 
-      std::cout << "...new scale : " << h->Integral() << std::endl; 
+      std::cout << "...new scale : " << hout->Integral() << std::endl; 
     }
     if(armed){
       if(hist->find("/")!=std::string::npos){
@@ -148,7 +158,8 @@ void rescaleSignal(bool armed, double scale, const char* filename, const char* p
       else{
 	file->cd();
       }
-      h->Write(); 
+      std::cout << "writing to file: " << hout->GetName() << std::endl;
+      hout->Write(hist->substr(hist->find("/")+1).c_str(), TObject::kOverwrite); 
     }
   }
   file->Close();
