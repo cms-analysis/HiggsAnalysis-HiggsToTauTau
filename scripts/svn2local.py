@@ -34,8 +34,8 @@ for mass in parseArgs(args) :
         os.system("cp {input}/{mass}/{pre}htt_mt* {output}/{mass}/".format(input=options.input, output=options.out, mass=mass, pre=prefix))
         os.system("cp {input}/{mass}/{pre}htt_em* {output}/{mass}/".format(input=options.input, output=options.out, mass=mass, pre=prefix))
         os.system("cp {input}/{mass}/{pre}htt_mm* {output}/{mass}/".format(input=options.input, output=options.out, mass=mass, pre=prefix))
-        #os.system("cp {input}/{mass}/{pre}vhtt*.txt   {output}/{mass}/".format(input=options.input, output=options.out, mass=mass, pre=prefix))
-        #os.system("cp {input}/{mass}/vhtt_shapes.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass, pre=prefix))
+        os.system("cp {input}/{mass}/{pre}vhtt*.txt   {output}/{mass}/".format(input=options.input, output=options.out, mass=mass, pre=prefix))
+        os.system("cp {input}/{mass}/vhtt_shapes.root {output}/{mass}/".format(input=options.input, output=options.out, mass=mass, pre=prefix))
         os.system("cp {input}/common/{pre}htt_*.root {output}/common/".format(input=options.input, output=options.out, mass=mass, pre=prefix))
     if options.channel == "hgg" or options.channel == "all" :
         ## for hgg copy the input file which is common for all masspoints from common to common
