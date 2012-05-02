@@ -28,11 +28,11 @@
     run.
 */
 
-void rescaleLumi(const char* filename, bool armed=false)
+void rescaleLumi(const char* filename, float oldLumi=4.9, float newLumi=10., bool armed=false, unsigned int debug=0)
 {
-  float        oldLumi  = 4.6;
-  float        newLumi  = 20.;
-  unsigned int debug    = 1;
+  //float        oldLumi  = 4.9;
+  //float        newLumi  = 10.;
+  //unsigned int debug    = 2;
 
   TFile* file = new TFile(filename, "update");
   TIter nextDirectory(file->GetListOfKeys());
@@ -48,13 +48,14 @@ void rescaleLumi(const char* filename, bool armed=false)
 	while((iobj = (TKey*)next())){
 	  if(debug>1){ std::cout << " ...found object: " << iobj->GetName() << std::endl; }
 	  TH1F* h = (TH1F*)file->Get(TString::Format("%s/%s", idir->GetName(), iobj->GetName()));
+	  //TH1F* hout = (TH1F*)h->Clone(iobj->GetName());
 	  if(debug>1){ std::cout << "...old scale : " << h->Integral() << std::endl; }
 	  h->Scale(newLumi/oldLumi);
 	  if(std::string(h->GetName()).find("data_obs")!=std::string::npos){
 	    h->Scale((int)h->Integral()/h->Integral());
 	  }
 	  if(debug>1){ std::cout << "...new scale : " << h->Integral() << std::endl; }
-	  if(armed){ h->Write(); }
+	  if(armed){ h->Write(iobj->GetName()); }
 	}
       }
     }
