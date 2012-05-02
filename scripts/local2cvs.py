@@ -2,7 +2,7 @@
 
 from optparse import OptionParser
        
-parser = OptionParser(usage="usage: %prog [options] datacatd.txt",
+parser = OptionParser(usage="usage: %prog [options]",
                       description="script to prepare datacards from inputfiles and to copy them to cvs.")
 parser.add_option("-n", "--name", dest="name", default="new-datacards", type="string", help="Name of the directory, which is meant to contain the new datacards. [Default: new-datacards]")
 parser.add_option("--SM4", dest="SM4", default=False, action="store_true", help="Re-scale signal samples in input file according to SM4 cross section*BR before datacard creation. [Default: false]")
