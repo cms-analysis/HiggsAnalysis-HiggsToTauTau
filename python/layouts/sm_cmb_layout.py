@@ -3,6 +3,7 @@ import FWCore.ParameterSet.Config as cms
 layout = cms.PSet(
     ## dataset
     dataset = cms.string("Preliminary, #sqrt{s}=7 TeV, L = 4.9 fb^{-1}"),
+    #dataset = cms.string("Preliminary, #sqrt{s}=7 TeV, L = 10 fb^{-1} (proj."),
     ## x-axis title
     xaxis = cms.string("m_{H} [GeV]"),
     ## x-axis title
