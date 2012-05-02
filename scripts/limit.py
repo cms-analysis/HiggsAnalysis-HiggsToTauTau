@@ -316,15 +316,31 @@ for directory in args :
         os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f latex mlfit.root > mlfit.tex")
         os.chdir(subdirectory)
     if options.prepPLSig :
-        ## combine datacard from all datacards in this directory
-        os.system("combineCards.py -S *.txt > tmp.txt")
-        ## prepare binary workspace
-        mass_value = directory[directory.find("/")+1:]
-        mass_fixed = options.fixed_mass if options.fixed_mass!="" else mass_value
-        os.system("text2workspace.py --default-morphing=%s -m %s -b tmp.txt -o tmp.root"% (options.shape, mass_fixed))
-        ## calculate significance, batch_collected.root is the output file name expected by plot.cc
-        os.system("combine -M ProfileLikelihood -t {toys} --significance --signalForSignificance={sig} -m {mass} -n batch_collected.root tmp.root".format(
-            toys=options.toys, sig=options.signal_strength, mass=mass_value))
+        ifile=0
+        directoryList = os.listdir(".")
+        ## create a hadd'ed file per crab directory 
+        for name in directoryList :
+            if name.find("crab_0")>-1 and not name.find(".")>-1 :
+                if os.path.exists("batch_collected_%s.root" % ifile) :
+                    os.system("rm batch_collected_%s.root" % ifile)
+                os.system("hadd batch_collected_%s.root %s/res/*.root" % (ifile, name))
+                ifile=ifile+1
+        ## and finally hadd all sub files corresponding to each crab directory
+        if os.path.exists("batch_collected.root") :
+            os.system("rm batch_collected.root")
+        os.system("hadd batch_collected.root batch_collected_*.root")
+        os.system("rm batch_collected_*.root")
+        if file==0 :
+            ## in case there were no batch jobs run run interactively 
+            ## combine datacard from all datacards in this directory
+            os.system("combineCards.py -S *.txt > tmp.txt")
+            ## prepare binary workspace
+            mass_value = directory[directory.find("/")+1:]
+            mass_fixed = options.fixed_mass if options.fixed_mass!="" else mass_value
+            os.system("text2workspace.py --default-morphing=%s -m %s -b tmp.txt -o tmp.root"% (options.shape, mass_fixed))
+            ## calculate significance, batch_collected.root is the output file name expected by plot.cc
+            os.system("combine -M ProfileLikelihood -t {toys} --significance --signalForSignificance={sig} -m {mass} -n batch_collected.root tmp.root".format(
+                toys=options.toys, sig=options.signal_strength, mass=mass_value))
     if options.kill :
         directoryList = os.listdir(".")
         for name in directoryList :
