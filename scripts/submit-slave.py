@@ -8,12 +8,11 @@ parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...",
 parser.add_option("-o", "--out", dest="out", default="batch", type="string", help="Name of the output files (.sh and .cfg). [Default: batch]")
 parser.add_option("-v", "--verbose", dest="v", default=0, type="int", help="Verbosity level of lands or combine. [Default: 0]")
 parser.add_option("--binary", dest="binary", default="combine", type="choice", help="Binary file to be used [Default: combine]",  choices=["lands", "combine"])
-parser.add_option("--method", dest="method", default="CLs", type="choice", help="Statistical method to be used [Default: CLs]",  choices=["bayesian", "CLs", "tanb", "single"])
+parser.add_option("--method", dest="method", default="CLs", type="choice", help="Statistical method to be used [Default: CLs]",  choices=["bayesian", "CLs", "tanb", "single", "pl-significance"])
 parser.add_option("--shape",           dest="shape",           default="shape2",  type="string",             help="Choose dedicated algorithm for shape uncertainties. [Default: 'shape2']")
 parser.add_option("--random", dest="random", default=False, action="store_true", help="Use random seeds. [Default: False]")
 parser.add_option("--model", dest="model", default="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-7-nnlo.root", type="string", help="The model that should be applied for direct limits on tanb (only applicable for --method tanb, for other methods this option will have no effect). The model should be given as the absolute path to the mssm_xsec_tool input file starting from CMSSW_BASE/src/. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-7-nnlo.root']")
 parser.add_option("--interpolation", dest="interpolation_mode", default='mode-2', type="choice", help="Mode for mass interpolation for direct limits tanb (only applicable for --method tanb, for other methods this option will have no effect). [Default: mode-2]", choices=["mode-0", "mode-1", "mode-2", "mode-3", "mode-4", "mode-5"])
-parser.add_option("--interactive", dest="interactive",default=False, action="store_true", help="Set to true to run interactive, otherwise the script will submit the job to the grid directly [Default: False]")
 parser.add_option("--noSystematics", dest="nosys", default=False, action="store_true", help="Use statistical uncertainties only (currently only implemented for combine). [Default: False]")
 ## lands options for Bayesian
 lgroup = OptionGroup(parser, "LANDS (Bayesian) COMMAND OPTIONS", "Command options for the use of lands with method -M bayesian.")
@@ -39,8 +38,13 @@ ngroup.add_option("--iterations", dest="iter", default=10000, type="int", help="
 ngroup.add_option("--tries", dest="tries", default=10, type="int", help="Number of tries to run the MarkovChainMC on the same data. [Default: 10]")
 ngroup.add_option("--observed", dest="observed", default=False, action="store_true", help="Calculate the observed limit via crab (in case this is time consuming). [Default: False]")
 parser.add_option_group(ngroup)
+pgroup = OptionGroup(parser, "COMBINE (PROFILE LIKELIHOOD) COMMAND OPTIONS", "Command options for the use of combine with the ProfileLikelihood method.")
+pgroup.add_option("--fixed-mass", dest="fixed_mass", default="", type="string", help="Set a fixed mass at which to inject the signal signal (during workspace creation). If the string is empty the mass point is taken for which the significance is cslculated. [Default: \"\"]")
+pgroup.add_option("--signal-strength", dest="signal_strength", default="1", type="string", help="Set signal strength for expected significance calculation. [Default: \"1\"]")
+parser.add_option_group(pgroup)
 ## crab cfg parameters
 cgroup = OptionGroup(parser, "CRAB CONFIGURATION OPTIONS", "Options for the configuration of the crab configuration file. Note that all of these parameters can be changed in the batch.cfg file later on.")
+cgroup.add_option("--interactive", dest="interactive",default=False, action="store_true", help="Set to true to run interactive, otherwise the script will submit the job to the grid directly [Default: False]")
 cgroup.add_option("-t", "--toys", dest="t", default=1000, type="int", help="Total number of toys. (can be changed in .cfg file). [Default: 1000]")
 cgroup.add_option("-j", "--jobs", dest="j", default=10, type="int", help="Total number of jobs. [Default: 10]")
 cgroup.add_option("--server", dest="server", default=False, action="store_true", help="Use crab server. [Default: False]")
@@ -393,6 +397,36 @@ for directory in args :
                     ## cleanup and return to the head directory to go on
                     os.system("rm tmp*")            
                     os.chdir("%s/.." % os.getcwd())
+            if options.method == "pl-significance" :
+                ## -----------------------------------------------------------------------------------------
+                ## Option: combine ProfileLikelihood (significance)
+                ## -----------------------------------------------------------------------------------------
+                ## determine masspoint from directory name
+                masspoint  = directory[directory.rfind("/")+1:]
+                ## prepare binary workspace
+                mass_fixed = options.fixed_mass if options.fixed_mass!="" else masspoint
+                os.system("text2workspace.py --default-morphing=%s -m %s -b tmp.txt -o batch.root"% (options.shape, mass_fixed))
+                ## setup the batchjob creation for combine -M CLs
+                options.signal_strength
+                opts = "-o {out} -m {mass} --signal-strength {strength} -t {toys} -j {jobs} -q {queue}".format(
+                    out=options.out, mass=masspoint, strength=options.signal_strength, toys=options.t, jobs=options.j, queue=options.queue
+                    )
+                if options.v != 0 :
+                    opts += " -v"
+                if options.server :
+                    opts += " --server"
+                if options.lsf    :
+                    opts += " --lsf"
+                if options.condor :
+                    opts += " --condor"
+                if options.glide:
+                    opts += " --glidein"
+                if options.prio:
+                    opts += " --priority"                
+                if options.v != 0 :
+                    print "> creating batch job for combine -M ProfileLikelihood"
+                ## create the job
+                os.system("combine-sig.py %s batch.root" % opts)
             ## cleanup
             os.system("rm tmp*")            
     ## do the batch job submission
