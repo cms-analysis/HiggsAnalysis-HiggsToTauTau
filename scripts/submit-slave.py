@@ -98,7 +98,7 @@ for directory in args :
             ## add channel name for combined datacards (same as datacard name but w/o .txt)
             if card.find("mA")>1 :
                 optcards += card[:card.find("_mA")]
-            elif card.find("hggmva")>-1 :
+            elif card.find("hggmva")>-1 or card.find("testcard")>-1 :
                 optcards += "hgg"
             else :
                 optcards += card[:card.find(".txt")]
@@ -405,7 +405,7 @@ for directory in args :
                 masspoint  = directory[directory.rfind("/")+1:]
                 ## prepare binary workspace
                 mass_fixed = options.fixed_mass if options.fixed_mass!="" else masspoint
-                os.system("text2workspace.py --default-morphing=%s -m %s -b tmp.txt -o batch.root"% (options.shape, mass_fixed))
+                os.system("text2workspace.py tmp.txt --default-morphing=%s -m %s -o batch.root"% (options.shape, mass_fixed))
                 ## setup the batchjob creation for combine -M CLs
                 options.signal_strength
                 opts = "-o {out} -m {mass} --signal-strength {strength} -t {toys} -j {jobs} -q {queue}".format(
