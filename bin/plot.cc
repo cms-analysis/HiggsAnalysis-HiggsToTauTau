@@ -18,6 +18,7 @@ int main(int argc, char* argv[])
   types.push_back(std::string("asymptotic"));
   types.push_back(std::string("HIG-11-020"));
   types.push_back(std::string("HIG-11-029"));
+  types.push_back(std::string("significance"));
 
   // parse arguments
   if ( argc < 3 ) {
@@ -106,6 +107,23 @@ int main(int argc, char* argv[])
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plot(*canv, inner, outer, expected, observed);
+  }
+  if( std::string(argv[1]) == std::string("significance") ){
+    /// observed limit (remains empty for this execise)
+    //TGraph* observed  = new TGraph();
+    /// expected limit (for Bayesian 'median' and 'mean' are sensible parameters)
+    TGraph* expected  = new TGraph();
+    plot.fillCentral(directory, expected, "median");
+    /// 1-sigma uncertainty band
+    TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
+    plot.fillBand(directory, inner, "Bayesian", true);
+    /// 2-sigma uncertainty band
+    TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
+    plot.fillBand(directory, outer, "Bayesian", false);
+    /// make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plot(*canv, inner, outer, expected);
   }
   if( std::string(argv[1]) == std::string("asymptotic") ){
     /// expected limit
