@@ -18,7 +18,7 @@
 #include "HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
 #include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
-static const double MARKER_SIZE = 0.7;  // 1.3
+static const double MARKER_SIZE = 1.3;  // 0.7
 
 bool
 channel(std::string& label){
@@ -71,9 +71,9 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("htt+"      )) title = std::string("H#rightarrow#tau#tau(e#mu+e#tau_{h}+#mu#tau+#mu#mu)");
   if(channel==std::string("cmb"       )) title = std::string("Combined");
   if(channel==std::string("incl"      )) title = std::string("Inclusive");
-  if(channel==std::string("novbf"     )) title = std::string("0/1-Jet");
-  if(channel==std::string("vbf"       )) title = std::string("0/1-Jet+VBF");
-  if(channel==std::string("boost"     )) title = std::string("0/1-Jet+Boost");
+  if(channel==std::string("novbf"     )) title = std::string("0/1-Jet (only)");
+  if(channel==std::string("vbf"       )) title = std::string("VBF (only)");
+  if(channel==std::string("boost"     )) title = std::string("Boost (only)");
   if(channel==std::string("hgg"       )) title = std::string("H#rightarrow#gamma#gamma");
   if(channel==std::string("hww"       )) title = std::string("H#rightarrowWW#rightarrow2l2#nu");
   if(channel==std::string("hzz4l"     )) title = std::string("H#rightarrowZZ#rightarrow4l");
@@ -229,7 +229,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       }
       else{
 	//y_title = std::string("#sigma(H#rightarrow#tau#tau)_{95% CL} / #sigma(H#rightarrow#tau#tau)_{SM}");
-	y_title = std::string("#sigma(H)_{95% CL} / #sigma(H)_{SM}");
+	y_title = std::string("95% CL limit on #sigma/#sigma_{SM}");
       }
       hexp[i]->GetYaxis()->SetTitle(y_title.c_str());
       hexp[i]->GetYaxis()->SetLabelFont(62);
@@ -306,12 +306,12 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     TLegend* leg1;
     if(expected && observed){
       /// setup the CMS Preliminary
-      if (firstLeg) CMSPrelim(" Preliminary #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}", "", 0.15, 0.835);
+      if (firstLeg) CMSPrelim(", #sqrt{s} = 7 TeV, H#rightarrow#tau#tau, L = 4.6 fb^{-1}", "", 0.15, 0.835);
       leg1 = new TLegend(firstLeg ? 0.60 : 0.20, hobs.size()<5 ? 0.90-0.06*hobs.size() : 0.6, firstLeg ? 0.93 : 0.60, 0.90);
     }
     else{
       /// setup the CMS Preliminary
-      CMSPrelim(" Preliminary #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}", "", 0.15, 0.835);
+      CMSPrelim(", #sqrt{s} = 7 TeV, H#rightarrow#tau#tau, L = 4.6 fb^{-1}", "", 0.15, 0.835);
       leg1 = new TLegend(0.50, hobs.size()<5 ? 0.90-0.06*hobs.size() : 0.6, 0.93, 0.90);
     }
     leg1->SetBorderSize( 0 );
@@ -331,12 +331,12 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     TLegend* leg0;
     if(expected && observed){
       /// setup the CMS Preliminary
-      if (firstLeg) CMSPrelim(" Preliminary #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}", "", 0.15, 0.835);
+      if (firstLeg) CMSPrelim(", #sqrt{s} = 7 TeV, H#rightarrow#tau#tau, L = 4.6 fb^{-1}", "", 0.15, 0.835);
       leg0 = new TLegend(firstLeg ? 0.60 : 0.20, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.8, firstLeg ? 0.94 : 0.60, 0.90);
     }
     else{
       /// setup the CMS Preliminary
-      CMSPrelim(" Preliminary #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}", "", 0.15, 0.835);
+      CMSPrelim(", #sqrt{s} = 7 TeV, H#rightarrow#tau#tau, L = 4.6 fb^{-1}", "", 0.15, 0.835);
       leg0 = new TLegend(0.50, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.6, 0.94, 0.90);
     }
     leg0->SetBorderSize( 0 );
