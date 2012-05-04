@@ -37,6 +37,8 @@ int main(int argc, char* argv[])
     std::cout << " Error: ParameterSet 'layout' is missing in your configuration file" << std::endl; exit(0);
   }
   bool mssm = edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").getParameter<bool>("mssm");
+  bool expected_only = edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").existsAs<bool>("expectedOnly") ? edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").getParameter<bool>("expectedOnly") : false;
+  std::cout << "expectedOnly = " << expected_only << std::endl;
 
   /// get intput directory up to one before mass points
   const char* directory ((std::string(argv[1]).find("HIG")==std::string::npos) ? argv[3] : argv[1]);
@@ -53,8 +55,11 @@ int main(int argc, char* argv[])
     Plotting of CLs type limits 
     */
     /// observed limit 
-    TGraph* observed  = new TGraph();
-    plot.fillCentral(directory, observed, "higgsCombineTest.HybridNew.$MASS");
+    TGraph* observed  = 0; 
+    if(!expected_only){
+      observed = new TGraph();
+      plot.fillCentral(directory, observed, "higgsCombineTest.HybridNew.$MASS");
+    }
     /// expected limit
     TGraph* expected  = new TGraph();
     plot.fillCentral(directory, expected, "higgsCombineTest.HybridNew.$MASS.quant0.500");
@@ -74,8 +79,11 @@ int main(int argc, char* argv[])
       Plotting of CLs or asymptotic limits in tanb style
     */
     /// observed limit 
-    TGraph* observed  = new TGraph();
-    plot.fillCentral(directory, observed, "higgsCombineTest.HybridNew.$MASS");
+    TGraph* observed  = 0;
+    if(!expected_only){
+      observed = new TGraph();
+      plot.fillCentral(directory, observed, "higgsCombineTest.HybridNew.$MASS");
+    }
     /// expected limit
     TGraph* expected  = new TGraph();
     plot.fillCentral(directory, expected, "higgsCombineTest.HybridNew.$MASS.quant0.500");
@@ -92,8 +100,11 @@ int main(int argc, char* argv[])
   }
   if( std::string(argv[1]) == std::string("bayesian") ){
     /// observed limit 
-    TGraph* observed  = new TGraph();
-    plot.fillCentral(directory, observed, "higgsCombineTest.MarkovChainMC.$MASS");
+    TGraph* observed  = 0;
+    if(!expected_only){
+      observed = new TGraph();
+      plot.fillCentral(directory, observed, "higgsCombineTest.MarkovChainMC.$MASS");
+    }
     /// expected limit (for Bayesian 'median' and 'mean' are sensible parameters)
     TGraph* expected  = new TGraph();
     plot.fillCentral(directory, expected, "median");
@@ -109,9 +120,8 @@ int main(int argc, char* argv[])
     plot.plot(*canv, inner, outer, expected, observed);
   }
   if( std::string(argv[1]) == std::string("significance") ){
-    /// observed limit (remains empty for this execise)
-    //TGraph* observed  = new TGraph();
-    /// expected limit (for Bayesian 'median' and 'mean' are sensible parameters)
+    /// observed limit remains empty for this execise; for 
+    /// expected limit 'median' and 'mean' are sensible parameters
     TGraph* expected  = new TGraph();
     plot.fillCentral(directory, expected, "median");
     /// 1-sigma uncertainty band
@@ -126,6 +136,12 @@ int main(int argc, char* argv[])
     plot.plot(*canv, inner, outer, expected);
   }
   if( std::string(argv[1]) == std::string("asymptotic") ){
+    /// observed limit 
+    TGraph* observed  = 0;
+    if(!expected_only){
+      observed = new TGraph();
+      plot.fillCentral(directory, observed, "asym-observed");
+    }
     /// expected limit
     TGraph* expected  = new TGraph();
     plot.fillCentral(directory, expected, "asym-expected");
@@ -135,19 +151,18 @@ int main(int argc, char* argv[])
     /// 2-sigma uncertainty band
     TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
     plot.fillBand(directory, outer, "Asymptotic", false);
-    /// observed limit 
-    TGraph* observed  = new TGraph();
-    plot.fillCentral(directory, observed, "asym-observed");
     /// make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plot(*canv, inner, outer, expected, observed);
-    //plot.plot(*canv, inner, outer, expected);
   }
   if( std::string(argv[1]) == std::string("HIG-11-020") ){
     /// observed limit 
-    TGraph* observed  = new TGraph();
-    plot.fillCentral("HIG-11-020", observed, "HIG-11-020-observed");
+    TGraph* observed  = 0;
+    if(!expected_only){
+      observed = new TGraph();
+      plot.fillCentral("HIG-11-020", observed, "HIG-11-020-observed");
+    }
     /// expected limit
     TGraph* expected  = new TGraph();
     plot.fillCentral("HIG-11-020", expected, "HIG-11-020-expected");
@@ -160,13 +175,22 @@ int main(int argc, char* argv[])
     /// make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    /*
+      plots the layout corresponding to cross sectino limits 
+    */
     //plot.plot(*canv, inner, outer, expected, observed);  
+    /*
+      plots the layout corresponding to the direct tanb limits
+    */
     plot.plotTanb(*canv, inner, outer, expected, observed);  
   }
   if( std::string(argv[1]) == std::string("HIG-11-029") ){
     /// observed limit 
-    TGraph* observed  = new TGraph();
-    plot.fillCentral("HIG-11-029", observed, "HIG-11-029-observed");
+    TGraph* observed  = 0; 
+    if(!expected_only){
+      observed = new TGraph();
+      plot.fillCentral("HIG-11-029", observed, "HIG-11-029-observed");
+    }
     /// expected limit
     TGraph* expected  = new TGraph();
     plot.fillCentral("HIG-11-029", expected, "HIG-11-029-expected");
