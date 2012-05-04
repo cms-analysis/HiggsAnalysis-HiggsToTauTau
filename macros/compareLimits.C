@@ -45,6 +45,9 @@ channel(std::string& label){
 	  label==std::string("test-3")     ||
 	  label==std::string("test-4")     ||
 	  label==std::string("test-5")     ||
+	  label==std::string("cmb-5fb")    ||
+	  label==std::string("hpa-5fb")    ||
+	  label==std::string("hpa-10fb")   ||
 	  label==std::string("saeff")      ||
 	  label==std::string("gluph")      ||
 	  label==std::string("nomix-200")  ||
@@ -88,6 +91,9 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("test-3"    )) title = std::string("Test-3");
   if(channel==std::string("test-4"    )) title = std::string("Test-4");
   if(channel==std::string("test-5"    )) title = std::string("Test-5");
+  if(channel==std::string("cmb-5fb"   )) title = std::string("All channels (5 fb^{-1})");
+  if(channel==std::string("hpa-5fb"   )) title = std::string("HPA analyses (5 fb^{-1})");
+  if(channel==std::string("hpa-10fb"  )) title = std::string("HPA analyses (10 fb^{-1})");
   if(channel==std::string("saeff"     )) title = std::string("small #alpha_{eff}");
   if(channel==std::string("gluph"     )) title = std::string("gluo-phobic");
   if(channel==std::string("nomix-200" )) title = std::string("no mixing (#mu=-200 GeV)");
@@ -135,6 +141,9 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["test-3"    ] = kOrange;
   colors["test-4"    ] = kMagenta;
   colors["test-5"    ] = kViolet-6;
+  colors["cmb-5fb"   ] = kBlue;
+  colors["hpa-5fb"   ] = kRed;
+  colors["hpa-10fb"  ] = kBlack;
   colors["saeff"     ] = kGreen;
   colors["gluph"     ] = kOrange-3;
   colors["nomix-200" ] = kBlue-10;
