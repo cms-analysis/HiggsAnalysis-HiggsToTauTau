@@ -4,20 +4,20 @@ README for Datacard Creation with MakeDatacard.py and MakerUtilsL.py (MitLimits/
 
 Steps:
 
-1) Run the following: "DatacardProject.py some_directory_name_here".  This creates a directory with the requisite configuration files. Enter this directory
-2) Edit cgs.config: Specify the categories to be used in the datacard. Specify signal, background, and data samples
-3) Edit unc.config: Specify the names and types of uncertainty parameters to be used in the analysis
+1) Run the following: "datacard-project.py some_directory_name_here".  This creates a directory with the requisite configuration files. Enter this directory
+2) Edit cgs.conf: Specify the categories to be used in the datacard. Specify signal, background, and data samples
+3) Edit unc.conf: Specify the names and types of uncertainty parameters to be used in the analysis
 4) Edit unc.vals: Specify the values of the uncertainty parameter by category and sample name.
 5) Copy input ROOT file into the project directory.
 6) Create the datacard with the following line:
-   "MakeDatacard.py -i your_input_root_file -o your_output_datacard -c cgs.config -u unc.vals -d unc.config 120"
+   "create-datacard.py -i your_input_root_file -o your_output_datacard -c cgs.config -u unc.vals -d unc.config 120"
 
 #################################################################################
 File system overview:
 #################################################################################
 Presented below are complete descriptions of how to edit the three configuration files to produce the desired datacard.
-1) cgs.config
-2) unc.config
+1) cgs.conf
+2) unc.conf
 3) unc.vals
 
 A ten-line example is commented out at the top of each of these files. The system should be relatively straightforward to understand.
@@ -34,7 +34,7 @@ $ GROUP group_name sample_1, sample_2, sample_3, sample_4
 This creates a group of samples named group_name with samples sample_1, sample_2, sample_3, and sample_4
 Here is a practical example:
 
-$ GROUP signal Higgs_vtth_sm, Higgs_gf_sm, Higgs_vbf_sm
+$ GROUP signal VH, ggH, qqH
 $ GROUP background Ztt, ttbar, EWK, Fakes
 
 # Categories, signals, backgrounds, and data samples
@@ -68,7 +68,7 @@ Higgs_vtth_sm_120, Higgs_gf_sm_120, Higgs_vbf_sm_120, Ztt, ttbar, EWK, Fakes, da
 I'm doing a standard model search, so I want to use the emu_vbf and emu_novbf categories.
 Then, my file should look like:
 
-$ GROUP signal Higgs_vtth_sm, Higgs_gf_sm ,Higgs_vbf_sm
+$ GROUP signal VH, ggH ,qqH
 $ GROUP background Ztt, ttbar, EWK, Fakes
 categories: emu_vbf, emu_novbf
 signals: signal

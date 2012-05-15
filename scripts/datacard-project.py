@@ -27,9 +27,14 @@ d = os.path.dirname("%s/log.txt" % target_path)
 if not os.path.exists(d):
     os.makedirs(d)
 
-os.system("cp -r %s/cgs-%s.conf %s/cgs.conf" % (source_path, options.category, target_path))
-os.system("cp -r %s/unc-%s.conf %s/unc.conf" % (source_path, options.category, target_path))
-os.system("cp -r %s/unc-%s.vals %s/unc.vals" % (source_path, options.category, target_path))
+if options.channel == "new" :
+    os.system("cp -r %s/cgs.conf %s/cgs.conf" % (source_path, target_path))
+    os.system("cp -r %s/unc.conf %s/unc.conf" % (source_path, target_path))
+    os.system("cp -r %s/unc.vals %s/unc.vals" % (source_path, target_path))
+else :
+    os.system("cp -r %s/cgs-%s.conf %s/cgs.conf" % (source_path, options.category, target_path))
+    os.system("cp -r %s/unc-%s.conf %s/unc.conf" % (source_path, options.category, target_path))
+    os.system("cp -r %s/unc-%s.vals %s/unc.vals" % (source_path, options.category, target_path))
 if not options.channel == "new" :
     target_path = "{target}/{channel}.inputs-{type}.root".format(
         target=target_path, channel=options.channel, type=options.category[:options.category.find('-')].lower()
@@ -40,4 +45,4 @@ if not options.channel == "new" :
             source=source_path, channel=options.channel, type=options.category[:options.category.find('-')].lower(), target=target_path)
             )
 else:
-    os.system("cp -r %s/README %s" % (project_files, new_project_dir))
+    os.system("cp -r %s/src/HiggsAnalysis/HiggsToTauTau/setup/README %s" % (CMSSW_BASE, target_path))
