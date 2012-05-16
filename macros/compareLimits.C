@@ -315,12 +315,12 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     TLegend* leg1;
     if(expected && observed){
       /// setup the CMS Preliminary
-      if (firstLeg) CMSPrelim(", #sqrt{s} = 7 TeV, H#rightarrow#tau#tau, L = 4.6 fb^{-1}", "", 0.15, 0.835);
+      if (firstLeg) CMSPrelim(", #sqrt{s} = 7 TeV, H#rightarrow#tau#tau, L = 4.9 fb^{-1}", "", 0.15, 0.835);
       leg1 = new TLegend(firstLeg ? 0.60 : 0.20, hobs.size()<5 ? 0.90-0.06*hobs.size() : 0.6, firstLeg ? 0.93 : 0.60, 0.90);
     }
     else{
       /// setup the CMS Preliminary
-      CMSPrelim(", #sqrt{s} = 7 TeV, H#rightarrow#tau#tau, L = 4.6 fb^{-1}", "", 0.15, 0.835);
+      CMSPrelim(", #sqrt{s} = 7 TeV, H#rightarrow#tau#tau, L = 4.9 fb^{-1}", "", 0.15, 0.835);
       leg1 = new TLegend(0.50, hobs.size()<5 ? 0.90-0.06*hobs.size() : 0.6, 0.93, 0.90);
     }
     leg1->SetBorderSize( 0 );
@@ -340,12 +340,12 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     TLegend* leg0;
     if(expected && observed){
       /// setup the CMS Preliminary
-      if (firstLeg) CMSPrelim(", #sqrt{s} = 7 TeV, H#rightarrow#tau#tau, L = 4.6 fb^{-1}", "", 0.15, 0.835);
+      if (firstLeg) CMSPrelim(", #sqrt{s} = 7 TeV, H#rightarrow#tau#tau, L = 4.9 fb^{-1}", "", 0.15, 0.835);
       leg0 = new TLegend(firstLeg ? 0.60 : 0.20, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.8, firstLeg ? 0.94 : 0.60, 0.90);
     }
     else{
       /// setup the CMS Preliminary
-      CMSPrelim(", #sqrt{s} = 7 TeV, H#rightarrow#tau#tau, L = 4.6 fb^{-1}", "", 0.15, 0.835);
+      CMSPrelim(", #sqrt{s} = 7 TeV, H#rightarrow#tau#tau, L = 4.9 fb^{-1}", "", 0.15, 0.835);
       leg0 = new TLegend(0.50, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.6, 0.94, 0.90);
     }
     leg0->SetBorderSize( 0 );
