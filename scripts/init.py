@@ -8,6 +8,8 @@ parser = OptionParser(usage="usage: %prog [options]",
 ## direct options
 parser.add_option("--version", dest="version", default="V00-01-xx", type="string", help="CMSSW version of the UserCode package to administrate the input files. [Default: \"V00-01-xx\"]")
 parser.add_option("--path", dest="path", default="UserCode/RWolf/MitLimits/Higgs2Tau/data", type="string", help="Path of the UserCode package to administrate the input files. [Default: \"UserCode/RWolf/MitLimits/Higgs2Tau/data\"]")
+## check number of arguments; in case print usage
+(options, args) = parser.parse_args()
 
 import os
 
@@ -15,14 +17,14 @@ print " ------------------------------------------------------------------------
 print " Completing package HiggsAnalysis/HiggsToTauTau with all input files, which are necessary to  "
 print " make maximal use of it. These input files are expected to be present in an input directory   "
 print " datacard. trying to check this directory out from the for following UserCode directory:      "
-print " PATH    = {path}".format(options.path)
-print " VERSION = {version}".format(options.version)
+print " PATH    = {path}".format(path=options.path)
+print " VERSION = {version}".format(version=options.version)
 print " -------------------------------------------------------------------------------------------- "
 
 ## setup CMSSW to be able to co the auxiliray package
-os.chdir("{CMSSW_BASE}/src".format(CMSSW_BASE.os.environ.get("CMSSW_BASE")))
-os.chdir("cmsenv")
-os.chdir("cvs co -d datacards -r {version} {path}".format(version=options.version, options.path))
+os.chdir("{CMSSW_BASE}/src".format(CMSSW_BASE=os.environ.get("CMSSW_BASE")))
+os.system("cmsenv")
+os.system("cvs co -d datacards -r {version} {path}".format(version=options.version, path=options.path))
 
 ## copy all inputs into the corresponding directories in the HiggsToTauTau package
 os.chdir("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/data".format(CMSSW_BASE=os.environ.get("CMSSW_BASE")))
