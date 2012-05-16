@@ -42,8 +42,16 @@ int main(int argc, char* argv[])
 
   /// get intput directory up to one before mass points
   const char* directory ((std::string(argv[1]).find("HIG")==std::string::npos) ? argv[3] : argv[1]);
+  std::string directory_string(directory);
   /// chop off the prepended directories if needed for out
-  std::string out(std::string(directory).substr(std::string(directory).rfind("/")+1));
+  std::cout << directory_string << std::endl;
+  std::cout << directory_string.rfind("/") << std::endl;
+  std::cout << directory_string.length() << std::endl;
+  if(directory_string.rfind("/")+1 == directory_string.length()){
+    directory_string = directory_string.substr(0, directory_string.rfind("/"));
+  }
+  std::cout << directory_string << std::endl;
+  std::string out(directory_string.substr(directory_string.rfind("/")+1));
   PlotLimits plot(out.c_str(), edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout"));
 
   /*
