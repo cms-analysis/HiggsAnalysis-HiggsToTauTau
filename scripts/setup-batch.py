@@ -62,7 +62,7 @@ for mass in args:
     basket = os.listdir(os.getcwd())
     for piece in basket :
         if piece.endswith('.root') :
-            if piece.startswith(options.channel) :
+            if piece.startswith(options.channel) or piece.startswith("htt_"+options.channel):
                 inputFile = piece
     if inputFile :
         outputFile = options.out
@@ -87,7 +87,7 @@ for mass in args:
                               )
             os.system("create-datacard.py -i %s -o %s %s" % (inputFile, outputFile, mass))
         add_mass(outputFile[:outputFile.find(".txt")], mass)
-        #os.system("rm *.config *.vals")
+        os.system("rm *.conf *.vals")
     else :
         print "Error: did not find any input file"
     os.chdir("%s/.." % os.getcwd())
