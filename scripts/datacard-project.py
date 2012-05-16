@@ -36,13 +36,17 @@ else :
     os.system("cp -r %s/unc-%s.conf %s/unc.conf" % (source_path, options.category, target_path))
     os.system("cp -r %s/unc-%s.vals %s/unc.vals" % (source_path, options.category, target_path))
 if not options.channel == "new" :
-    target_path = "{target}/{channel}.inputs-{type}.root".format(
-        target=target_path, channel=options.channel, type=options.category[:options.category.find('-')].lower()
-        )
+    ## for event categories of type XX-YY xx is appended to the input file in lower case.
+    ## This represents the old scheme, where SM and MSSM were distinguished via label.
+    ## In the new scheme the event category is only given by a number XX. In thiw case
+    ## there is no additional label to the input file foreseen.
+    type = ""
+    if options.category.find('-')>-1 :
+        type+="-"+options.category[:options.category.find('-')].lower()
+    target_path = "{target}/htt_{channel}.inputs{type}.root".format(target=target_path, channel=options.channel, type=type)
     if not os.path.exists(target_path) :
         os.system(
-            "cp {source}/htt_{channel}.inputs-{type}.root {target}".format(
-            source=source_path, channel=options.channel, type=options.category[:options.category.find('-')].lower(), target=target_path)
-            )
+            "cp {source}/htt_{channel}.inputs{type}.root {target}".format(
+            source=source_path, channel=options.channel, type=type, target=target_path))
 else:
     os.system("cp -r %s/src/HiggsAnalysis/HiggsToTauTau/setup/README %s" % (CMSSW_BASE, target_path))
