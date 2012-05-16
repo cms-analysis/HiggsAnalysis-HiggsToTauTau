@@ -8,6 +8,8 @@ layout = cms.PSet(
     xaxis = cms.string("m_{H} [GeV]"),
     ## x-axis title
     yaxis = cms.string("95% CL limit on #sigma/#sigma_{SM}"),
+    ## plot expected only
+    expectedOnly = cms.bool(True),
     ## is this mssm?
     mssm = cms.bool(False),
     ## print to png
@@ -21,7 +23,7 @@ layout = cms.PSet(
     ## min for plotting
     min = cms.double(0.),
     ## max for plotting
-    max = cms.double(12.), ##12
+    max = cms.double(20.), ##12
     ## min for plotting
     log = cms.int32(0),
     ## define verbosity level
