@@ -10,7 +10,6 @@
   <bin   file="plot.cc"> </bin>
   <bin   file="feyn-higgs-sm.cc"> </bin>
   <bin   file="feyn-higgs-mssm.cc"> </bin>
-  <bin   file="horizontal-morphing.cc"> </bin>
 </environment>
 
 
