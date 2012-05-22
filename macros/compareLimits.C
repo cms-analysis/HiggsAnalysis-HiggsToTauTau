@@ -70,8 +70,8 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("mutau"     )) title = std::string("#mu#tau_{h}");
   if(channel==std::string("mumu"      )) title = std::string("#mu#mu");
   if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau+lep (vhtt)");
-  if(channel==std::string("htt"       )) title = std::string("H#rightarrow#tau#tau(e#mu+e#tau_{h}+#mu#tau)");
-  if(channel==std::string("htt+"      )) title = std::string("H#rightarrow#tau#tau(e#mu+e#tau_{h}+#mu#tau+#mu#mu)");
+  if(channel==std::string("htt"       )) title = std::string("H#rightarrow#tau#tau(e#mu+e#tau_{h}+#mu#tau_{h})");
+  if(channel==std::string("htt+"      )) title = std::string("H#rightarrow#tau#tau(e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu)");
   if(channel==std::string("cmb"       )) title = std::string("Combined");
   if(channel==std::string("incl"      )) title = std::string("Inclusive");
   if(channel==std::string("novbf"     )) title = std::string("0/1-Jet (only)");
