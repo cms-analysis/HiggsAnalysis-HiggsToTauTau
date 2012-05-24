@@ -118,7 +118,7 @@ class MakeDatacard :
               ## mapping of production channels to uncertainty lines in the output datacard
               self.signal_channel_to_uncertainty_lines = {}
 
-       def interpolation_mode(self, mode="mode-2") :
+       def interpolation_mode(self, mode="mode-0") :
               """
               Configure interpolation mode for htt limits. Considered modes are:
               
@@ -1287,17 +1287,18 @@ class MakeDatacard :
                                                                       uncert_upper  = self.contracted_uncertainty(prod, decay, "mu" , "+")
                                                                       uncert_lower  = self.contracted_uncertainty(prod, decay, "mu" , "-")
                                                                       if cross_section>0. and uncert_lower/cross_section!=1 :
-                                                                             uncert = (1./(1.-uncert_lower/cross_section))/(1.+uncert_upper/cross_section)
-                                                                             self.signal_channel_to_uncertainty_lines[uncertainty] += " \t\t %.3f " % uncert
+                                                                             self.signal_channel_to_uncertainty_lines[uncertainty] += " \t\t %.3f/%.3f " % \
+                                                                             (1./(1.-uncert_lower/cross_section), 1.+uncert_upper/cross_section)
                                                                       else :
-                                                                             self.signal_channel_to_uncertainty_lines[uncertainty] += " \t\t  0.1 "
+                                                                             self.signal_channel_to_uncertainty_lines[uncertainty] += " \t\t  0.1 " 
                                                                if uncertainty.find("PDF"  )>-1 :
                                                                       cross_section = self.contracted_cross_section(prod, decay, contracted_cross_section_mode)
                                                                       uncert_upper  = self.contracted_uncertainty(prod, decay, "pdf", "+")
                                                                       uncert_lower  = self.contracted_uncertainty(prod, decay, "pdf", "-")
                                                                       if cross_section>0. :
                                                                              uncert = (1./(1.+uncert_lower/cross_section))/(1.+uncert_upper/cross_section)
-                                                                             self.signal_channel_to_uncertainty_lines[uncertainty] += " \t\t %.3f " % uncert
+                                                                             self.signal_channel_to_uncertainty_lines[uncertainty] += " \t\t %.3f/%.3f " % \
+                                                                             (1./(1.+uncert_lower/cross_section), 1.+uncert_upper/cross_section)
                                                                       else :
                                                                              self.signal_channel_to_uncertainty_lines[uncertainty] += " \t\t  0.1 "
                                                         else :
