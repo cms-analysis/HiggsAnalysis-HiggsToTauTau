@@ -9,19 +9,33 @@
 /**
    \class   CrossSection CrossSection.h "HiggsAnalysis/HiggsToTauTau/interface/CrossSection.h"
 
-   \brief   Class to return pre-calculated values for cross sections and branching ratios from FeynHiggs
+   \brief   Class to return pre-calculated values for cross sections and branching ratios from the LHC cross section goup
 
-   To follow soon 
+   This is a class to return the precalculated and blessed cross sections for SM Higgs boson 
+   production and branching ratios to tau leptons from LHC Cros Section Group. You can find 
+   the cross section for 7 TeV and 8 TeV on these TWiki pages: 
+
+   https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt7TeV
+   https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt8TeV
+
+   The range from Higgs masses between 90 GeV and 1000 GeV for ggH and qqH and from 90 GeV 
+   to 300 GeV for WH, ZH, ttH. For those mass points, which are not tabluated on the TWikis, 
+   linear interpolation is applied. 
 */
 
 class CrossSection {
 
  public:
   /// default constructor
-  CrossSection(){};
+  CrossSection(float ecms) : ecms_(ecms){};
   /// default destructor
   ~CrossSection(){};
 
+  /// get cross section; values which are not mapped are interpolated
+  /// valules which are out of range return 0
+  float evaluate(const char* process, float mass);
+
+ private:
   /// load ggH cross sections
   void ggH();
   /// load qqH cross sections
@@ -34,15 +48,46 @@ class CrossSection {
   void ttH();
   /// load BR
   void BR();
-
-  /// get cross section; values which are not mapped are interpolated
-  /// valules which are out of range return 0
-  float evaluate(const char* process, float mass);
+  /// approximate scale factors for 7 TeV to 8 Tev
+  void seven2EightTeV();
+  /// get actual value from map
+  float linear(float mass, std::map<float, float>& map);
 
  private:
+  /// center of mass energy for the evaluation of the cross sections
+  float ecms_;
   /// cross section map for desired process
   std::map<float, float> xsec_;
+  /// for the time being these are the scale factors to go from 7 TeV to 8 TeV
+  std::map<float, float> scale_;
 };
+
+inline void
+CrossSection::seven2EightTeV()
+{
+  scale_[  90] = 1.27394;
+  scale_[ 120] = 1.27742;
+  scale_[ 125] = 1.28090;
+  scale_[ 130] = 1.28437;
+  scale_[ 135] = 1.28775;
+  scale_[ 140] = 1.29112;
+  scale_[ 145] = 1.29439;
+  scale_[ 150] = 1.29766;
+  scale_[ 160] = 1.30403;
+  scale_[ 170] = 1.31031;
+  scale_[ 180] = 1.31641;
+  scale_[ 190] = 1.32237;
+  scale_[ 200] = 1.32822;
+  scale_[ 250] = 1.35530;
+  scale_[ 300] = 1.38238;
+  scale_[ 350] = 1.40661;
+  scale_[ 400] = 1.43085;
+  scale_[ 450] = 1.45471;
+  scale_[ 500] = 1.47857;
+  scale_[ 550] = 1.50211;
+  scale_[ 600] = 1.52566;
+  scale_[1000] = 1.52566;
+}
 
 inline void
 CrossSection::ggH()

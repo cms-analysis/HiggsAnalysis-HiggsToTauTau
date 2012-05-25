@@ -19,21 +19,31 @@ CrossSection::evaluate(const char* process, float mass)
       << "Available proc's are: ggH, qqH, WH, ZH, ttH, BR " << std::endl;
     exit(0);
   }
+  xsec = linear(mass, xsec_);
+  if(ecms_==8){
+    scale_.clear(); seven2EightTeV();
+    xsec*= linear(mass, scale_);
+  }
+  return xsec;
+}
 
-  if(!(mass<xsec_.begin()->first || xsec_.rbegin()->first<mass)){
-    float lowerBound = xsec_.lower_bound(mass)->first<mass ? xsec_.lower_bound(mass)->first : mass;
-    float upperBound = xsec_.upper_bound(mass)->first;
-
+float
+CrossSection::linear(float mass, std::map<float, float>& map){
+  float value = 0;
+  if(!(mass<map.begin()->first || map.rbegin()->first<mass)){
+    float lowerBound = map.lower_bound(mass)->first<mass ? map.lower_bound(mass)->first : mass;
+    float upperBound = map.upper_bound(mass)->first;
+    
     if(lowerBound == mass){
-      xsec = xsec_.lower_bound(mass)->second;
+      value = map.lower_bound(mass)->second;
     }
     else if(upperBound == mass){
-      xsec = xsec_.upper_bound(mass)->second;
+      value = map.upper_bound(mass)->second;
     }
     else{
       // apply simple linear extrapolation
-      xsec = xsec_.lower_bound(mass)->second + (xsec_.upper_bound(mass)->second - xsec_.lower_bound(mass)->second)*(mass - lowerBound)/(upperBound - lowerBound);
+      value = map.lower_bound(mass)->second + (map.upper_bound(mass)->second - map.lower_bound(mass)->second)*(mass - lowerBound)/(upperBound - lowerBound);
     }
   }
-  return xsec;
+  return value;
 }
