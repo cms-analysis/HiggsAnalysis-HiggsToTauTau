@@ -23,9 +23,13 @@ std::string cleanupWhitespaces(std::string str)
 std::string string2Vector(std::string str, std::vector<std::string>& vec)
 {
   if(str.find(",")!=std::string::npos){
-    vec.push_back(str.substr(0, str.find(",")));
+    if(!str.substr(0, str.find(",")).empty()){
+      vec.push_back(str.substr(0, str.find(",")));
+    }
     return string2Vector(str.substr(str.find(",")+1, std::string::npos), vec);
   }
-  vec.push_back(str);
+  if(!vec.empty()){
+    vec.push_back(str);
+  }
   return str;
 }
