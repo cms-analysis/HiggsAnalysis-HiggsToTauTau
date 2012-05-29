@@ -1,0 +1,7 @@
+New Event Categories: 
+
+ idx     event category                   comment
+--------------------------------------------------------         
+ 00      $CHANNEL_boost	                  boost
+ 01      $CHANNEL_vbf                     vbf
+-------------------------------------------------------
