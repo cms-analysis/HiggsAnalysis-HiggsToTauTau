@@ -2,8 +2,8 @@ New Event Categories:
 
  idx     event category                   comment
 --------------------------------------------------------         
- 00      $CHANNEL_incl_low             incl  pt-low
- 01      $CHANNEL_incl_high            incl  pt-high
+ 00      $CHANNEL_0jet_low             0jet  pt-low
+ 01      $CHANNEL_0jet_high            0jet  pt-high
  02      $CHANNEL_boost_low            boost pt-low
  03      $CHANNEL_boost_high           boost pt-high
  04      $CHANNEL_2jet                 2jet 
