@@ -68,7 +68,7 @@ if options.analysis == "mssm" or options.analysis == "all" :
     masses["mssm"] = options.mssm_masses    
 
 ## define sub-channels
-sub_channels = ["em", "mt", "et", "mm", "tt", "vhtt_had"] ##, "hmm"]
+sub_channels = ["em", "mt", "et", "mm", "tt"] ##, "vhtt_had"] ##, "hmm"]
 
 ## setup sm/mssm directories
 for analysis in masses :
