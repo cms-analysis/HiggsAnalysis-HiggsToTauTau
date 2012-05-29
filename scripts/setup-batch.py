@@ -5,7 +5,7 @@ from optparse import OptionParser, OptionGroup
 parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...",
                       description="Script to setup the directory structure for the calculation of limits or significances with the CMS tools land or combine. ARG1, ARG2, ARG3, ... correspond to an arbitrary number of integers as input arguments corresponding to the mass points planned for the limit/significance calculation. If ARG1, ARG2, ARG3, ... are not a digit the datacard creation will be treated without any specific mass dependence. The tool will create a directory and a set of sub-directories corresponding to each element in ARGs. It will then copy all necessary root input files to these sub-directories and produce a consistent set of datacards (making use of the script create-datacard.py). The script relies on the machienery of automatic datacard creation detailed in the setup directory of this package. The name of the output directory and the list of necessary input files can be steered as optional parameters.")
 parser.add_option("-n", "--name", dest="name", default="submit", type="string", help="Directory name for job submission. [Default: submit]")
-parser.add_option("-c", "--decay-channel", dest="channel", default="new", type="choice", help="Ditau decay channel. [Default: new]", choices=["new", "em", "et","mt"])
+parser.add_option("-c", "--decay-channel", dest="channel", default="new", type="choice", help="Ditau decay channel. [Default: new]", choices=["new", "mm", "em", "et", "mt", "tt", "hmm", "vhtt_had"])
 parser.add_option("-e", "--event-category", dest="category", default="",type="string", help="Event category. [Default: \"\"]")
 parser.add_option("-o", "--out", dest="out", default="model.txt", type="string", help="Name of the datacard (can be extended by the mass value for convenience when creating more than one datacard, see option --extend). [Default: model.txt]")
 parser.add_option("--drop-channels", dest="drop",default="", type="string", help="Scale the given channels to 0. in the datacards. (This action will be applied to all channels that match the given string patterns, which may be on as a whitespace or ',' separated list). [Default: \"\"]")
@@ -76,6 +76,7 @@ for mass in args:
                         file=inputFile,
                         pattern=channel)
                               )
+            print "> create datacard %s for Z cross section measurement" % outputFile
             os.system("create-datacard.py -i %s -o %s 0" % (inputFile, outputFile))
         else :
             for channel in drop_channel_list :
@@ -85,6 +86,7 @@ for mass in args:
                         file=inputFile,
                         pattern=channel)
                               )
+            print "> create datacard %s for mass: %s" % (outputFile, mass)
             os.system("create-datacard.py -i %s -o %s %s" % (inputFile, outputFile, mass))
         add_mass(outputFile[:outputFile.find(".txt")], mass)
         os.system("rm *.conf *.vals")

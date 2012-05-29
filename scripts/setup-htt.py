@@ -9,15 +9,17 @@ parser.add_option("-n", "--name", dest="name", default="xxxx-test", type="string
 parser.add_option("--sm-masses", dest="sm_masses", default="110 115 120 125 130 135 140 145", type="string", help="Available SM mass points [Default: 110 115 120 125 130 135 140 145]")
 parser.add_option("--mssm-masses", dest="mssm_masses", default="90 100 120 130 140 160 180 200 250 300 350 400 450 500", type="string", help="Available MSSM mass points [Default: 90 100 120 130 140 160 180 200 250 300 350 400 450 500]")
 parser.add_option("--analysis", dest="analysis", default="all", type="choice", help="Choose between sm or mssm analysis [Default: all]", choices=["sm", "mssm", "all"])
-parser.add_option("--category", dest="category", default="all", type="choice", help="Choose between event categories (depending on analysis) [Default: all]", choices=["cmb", "incl", "btag", "nobtag", "novbf", "vbf", "boost", "all"])
-parser.add_option("--channel", dest="channel", default="all", type="choice", help="Choose between ditau decay channels [Default: all]", choices=["cmb", "emu", "etau", "mutau", "all"])
+parser.add_option("--category", dest="category", default="all", type="choice", help="Choose between event categories (depending on analysis) [Default: all]", choices=["cmb", "0jet", "btag", "boost", "2jet", "vbf", "all"])
+parser.add_option("--channel", dest="channel", default="all", type="choice", help="Choose between ditau decay channels [Default: all]", choices=["all", "cmb", "mm", "em", "et", "mt", "tt", "hmm", "vhtt_had"])
+parser.add_option("--period", dest="period", default="all", type="choice", help="Choose between run periods [Default: all]", choices=["7TeV", "8TeV", "all"])
 parser.add_option("--drop-channels", dest="drop",default="", type="string", help="Scale the given channels to 0. in the datacards. (This action will be applied to all channels that match the given string patterns, which may be on as a whitespace or ',' separated list). [Default: \"\"]")
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 
 ## create main directory
-os.system("mkdir %s" % options.name)
+if not os.path.exists(options.name) :
+    os.system("mkdir %s" % options.name)
 os.chdir("%s/%s" % (os.getcwd(), options.name))
 
 ## fill optionals
@@ -25,111 +27,122 @@ optionals = ""
 if options.drop != "":
     optionals+=" --drop-channels '%s'" % options.drop 
 
-## setup mssm directories
-if options.analysis == "mssm" or options.analysis == "all":
-    os.system("mkdir mssm")
-    os.chdir("%s/mssm" % os.getcwd())
-    ## individual event categories for all channels
-    if options.channel == "cmb" or options.channel == "all":
-        if options.category == "cmb" or options.category == "all" :
-            os.system("setup-batch.py -n cmb    -c em  -o htt_em_0.txt -e MSSM-00  %s %s" % (optionals, options.mssm_masses))
-            os.system("setup-batch.py -n cmb    -c et  -o htt_et_0.txt -e MSSM-00  %s %s" % (optionals, options.mssm_masses))
-            os.system("setup-batch.py -n cmb    -c mt  -o htt_mt_0.txt -e MSSM-00  %s %s" % (optionals, options.mssm_masses))
-            os.system("setup-batch.py -n cmb    -c em  -o htt_em_1.txt -e MSSM-01  %s %s" % (optionals, options.mssm_masses))
-            os.system("setup-batch.py -n cmb    -c et  -o htt_et_1.txt -e MSSM-01  %s %s" % (optionals, options.mssm_masses))
-            os.system("setup-batch.py -n cmb    -c mt  -o htt_mt_1.txt -e MSSM-01  %s %s" % (optionals, options.mssm_masses))        
-        if options.category == "all" or options.category == "btag" :
-            os.system("setup-batch.py -n btag   -c em  -o htt_em_1.txt -e MSSM-01  %s %s" % (optionals, options.mssm_masses))
-            os.system("setup-batch.py -n btag   -c et  -o htt_et_1.txt -e MSSM-01  %s %s" % (optionals, options.mssm_masses))
-            os.system("setup-batch.py -n btag   -c mt  -o htt_mt_1.txt -e MSSM-01  %s %s" % (optionals, options.mssm_masses))
-        if options.category == "all" or options.category == "incl" :
-            os.system("setup-batch.py -n incl   -c em  -o htt_em_x.txt -e MSSM-xx  %s %s" % (optionals, options.mssm_masses))
-            os.system("setup-batch.py -n incl   -c et  -o htt_et_x.txt -e MSSM-xx  %s %s" % (optionals, options.mssm_masses))
-            os.system("setup-batch.py -n incl   -c mt  -o htt_mt_x.txt -e MSSM-xx  %s %s" % (optionals, options.mssm_masses))
-    ## individual event categories for individual channels
-    if options.channel == "emu" or options.channel == "all" :
-        if options.category == "cmb" or options.category == "all" or options.category == "nobtag" :
-            os.system("setup-batch.py -n emu    -c em  -o htt_em_0.txt -e MSSM-00  %s %s" % (optionals, options.mssm_masses))
-        if options.category == "cmb" or options.category == "all" or options.category == "btag" :
-            os.system("setup-batch.py -n emu    -c em  -o htt_em_1.txt -e MSSM-01  %s %s" % (optionals, options.mssm_masses))
-        if options.category == "incl" :
-            os.system("setup-batch.py -n emu    -c em  -o htt_em_x.txt -e MSSM-xx  %s %s" % (optionals, options.mssm_masses))            
-    if options.channel == "etau" or options.channel == "all" :
-        if options.category == "cmb" or options.category == "all" or options.category == "nobtag" :
-            os.system("setup-batch.py -n etau   -c et  -o htt_et_0.txt -e MSSM-00  %s %s" % (optionals, options.mssm_masses))
-        if options.category == "btag"   or options.category == "cmb" or options.category == "all" :
-            os.system("setup-batch.py -n etau   -c et  -o htt_et_1.txt -e MSSM-01  %s %s" % (optionals, options.mssm_masses))
-        if options.category == "incl" :
-            os.system("setup-batch.py -n etau   -c et  -o htt_et_x.txt -e MSSM-xx  %s %s" % (optionals, options.mssm_masses))            
-    if options.channel == "mutau" or options.channel == "all" :
-        if options.category == "nobtag" or options.category == "cmb" or options.category == "all" :
-            os.system("setup-batch.py -n mutau  -c mt  -o htt_mt_0.txt -e MSSM-00  %s %s" % (optionals, options.mssm_masses))
-        if options.category == "btag"   or options.category == "cmb" or options.category == "all" :
-            os.system("setup-batch.py -n mutau  -c mt  -o htt_mt_1.txt -e MSSM-01  %s %s" % (optionals, options.mssm_masses))
-        if options.category == "incl" :
-            os.system("setup-batch.py -n mutau  -c mt  -o htt_mt_x.txt -e MSSM-xx  %s %s" % (optionals, options.mssm_masses))
-    os.chdir("%s/.." % os.getcwd())
+## define htt event categories
+htt_xx_categories = {
+    "0jet"  : ["00", "01"],
+    "boost" : ["02", "03"],
+    "2jet"  : ["04"],
+    "vbf"   : ["05"],
+    "btag"  : ["06", "07"],
+    }
 
-## setup sm directories
-if options.analysis == "sm" or options.analysis == "all":
-    os.system("mkdir sm")
-    os.chdir("%s/sm" % os.getcwd())
-    ## all categories combined
-    if options.channel == "cmb" or options.channel == "all":
-        ## individual event categories for all channels
-        if options.category == "cmb" or options.category == "all":
-            os.system("setup-batch.py -n cmb    -c em  -o htt_em_0.txt -e SM-00    %s %s" % (optionals, options.sm_masses  ))
-            os.system("setup-batch.py -n cmb    -c em  -o htt_em_1.txt -e SM-01    %s %s" % (optionals, options.sm_masses  ))
-            os.system("setup-batch.py -n cmb    -c em  -o htt_em_2.txt -e SM-02    %s %s" % (optionals, options.sm_masses  ))
-            os.system("setup-batch.py -n cmb    -c et  -o htt_et_0.txt -e SM-00    %s %s" % (optionals, options.sm_masses  ))
-            os.system("setup-batch.py -n cmb    -c et  -o htt_et_1.txt -e SM-01    %s %s" % (optionals, options.sm_masses  ))
-            os.system("setup-batch.py -n cmb    -c et  -o htt_et_2.txt -e SM-02    %s %s" % (optionals, options.sm_masses  ))
-            os.system("setup-batch.py -n cmb    -c mt  -o htt_mt_0.txt -e SM-00    %s %s" % (optionals, options.sm_masses  ))
-            os.system("setup-batch.py -n cmb    -c mt  -o htt_mt_1.txt -e SM-01    %s %s" % (optionals, options.sm_masses  ))
-            os.system("setup-batch.py -n cmb    -c mt  -o htt_mt_2.txt -e SM-02    %s %s" % (optionals, options.sm_masses  ))
-        if options.category == "novbf" or options.category == "all":
-            os.system("setup-batch.py -n novbf  -c em  -o htt_em_0.txt -e SM-00    %s %s" % (optionals, options.sm_masses  ))
-            os.system("setup-batch.py -n novbf  -c et  -o htt_et_0.txt -e SM-00    %s %s" % (optionals, options.sm_masses  ))
-            os.system("setup-batch.py -n novbf  -c mt  -o htt_mt_0.txt -e SM-00    %s %s" % (optionals, options.sm_masses  ))
-        if options.category == "boost" or options.category == "all":
-            os.system("setup-batch.py -n boost  -c em  -o htt_em_1.txt -e SM-01    %s %s" % (optionals, options.sm_masses  ))
-            os.system("setup-batch.py -n boost  -c et  -o htt_et_1.txt -e SM-01    %s %s" % (optionals, options.sm_masses  ))
-            os.system("setup-batch.py -n boost  -c mt  -o htt_mt_1.txt -e SM-01    %s %s" % (optionals, options.sm_masses  ))
-        if options.category == "vbf" or options.category == "all":
-            os.system("setup-batch.py -n vbf    -c em  -o htt_em_2.txt -e SM-02    %s %s" % (optionals, options.sm_masses  ))
-            os.system("setup-batch.py -n vbf    -c et  -o htt_et_2.txt -e SM-02    %s %s" % (optionals, options.sm_masses  ))
-            os.system("setup-batch.py -n vbf    -c mt  -o htt_mt_2.txt -e SM-02    %s %s" % (optionals, options.sm_masses  ))
-        if options.category == "incl":
-            os.system("setup-batch.py -n incl   -c em  -o htt_em_x.txt -e SM-xx    %s %s" % (optionals, options.sm_masses  ))
-            os.system("setup-batch.py -n incl   -c et  -o htt_et_x.txt -e SM-xx    %s %s" % (optionals, options.sm_masses  ))
-            os.system("setup-batch.py -n incl   -c mt  -o htt_mt_x.txt -e SM-xx    %s %s" % (optionals, options.sm_masses  ))            
-    ## individual event categories for individual channels
-    if options.channel == "emu" or options.channel == "all":
-        if options.category == "novbf" or options.category == "cmb" or options.category == "all":
-            os.system("setup-batch.py -n emu    -c em  -o htt_em_0.txt  -e SM-00   %s %s" % (optionals, options.sm_masses  ))
-        if options.category == "boost" or options.category == "cmb" or options.category == "all":
-            os.system("setup-batch.py -n emu    -c em  -o htt_em_1.txt  -e SM-01   %s %s" % (optionals, options.sm_masses  ))
-        if options.category == "vbf"   or options.category == "cmb" or options.category == "all":
-            os.system("setup-batch.py -n emu    -c em  -o htt_em_2.txt  -e SM-02   %s %s" % (optionals, options.sm_masses  ))
-        if options.category == "incl":
-            os.system("setup-batch.py -n emu    -c em  -o htt_em_x.txt  -e SM-xx   %s %s" % (optionals, options.sm_masses  ))                
-    ## all categories in the etau channel
-    if options.channel == "etau" or options.channel == "all":
-        if options.category == "novbf" or options.category == "cmb" or options.category == "all":
-            os.system("setup-batch.py -n etau   -c et  -o htt_et_0.txt  -e SM-00   %s %s" % (optionals, options.sm_masses  ))
-        if options.category == "boost" or options.category == "cmb" or options.category == "all":
-            os.system("setup-batch.py -n etau   -c et  -o htt_et_1.txt  -e SM-01   %s %s" % (optionals, options.sm_masses  ))
-        if options.category == "vbf"   or options.category == "cmb" or options.category == "all":
-            os.system("setup-batch.py -n etau   -c et  -o htt_et_2.txt  -e SM-02   %s %s" % (optionals, options.sm_masses  ))
-        if options.category == "incl":
-            os.system("setup-batch.py -n etau   -c et  -o htt_et_x.txt  -e SM-xx   %s %s" % (optionals, options.sm_masses  ))                
-    ## all categories in the mutau channel
-    if options.channel == "mutau" or options.channel == "all":
-        if options.category == "novbf" or options.category == "cmb" or options.category == "all":            
-            os.system("setup-batch.py -n mutau  -c mt  -o htt_mt_0.txt  -e SM-00   %s %s" % (optionals, options.sm_masses  ))
-        if options.category == "boost" or options.category == "cmb" or options.category == "all":
-            os.system("setup-batch.py -n mutau  -c mt  -o htt_mt_1.txt  -e SM-01   %s %s" % (optionals, options.sm_masses  ))
-        if options.category == "vbf"   or options.category == "cmb" or options.category == "all":
-            os.system("setup-batch.py -n mutau  -c mt  -o htt_mt_2.txt  -e SM-02   %s %s" % (optionals, options.sm_masses  ))
-        if options.category == "incl":
-            os.system("setup-batch.py -n mutau  -c mt  -o htt_mt_x.txt  -e SM-xx   %s %s" % (optionals, options.sm_masses  ))
+## define hmm event categories
+htt_tt_categories = {
+    "boost" : ["00"],
+    "vbf"   : ["01"]
+    }
+
+## define hmm event categories
+hmm_categories = {
+    "noTag" : ["00"],
+    "bTag"  : ["01"]
+    }
+
+## define hmm event categories
+vhtt_had_categories = {
+    "vhtt_had" : ["00"]
+    }
+
+## define run periods
+periods = []
+if options.period == "7TeV" or options.period == "all" :
+    periods.append("7TeV-")
+if options.period == "8TeV" or options.period == "all" :
+    periods.append("8TeV-")
+
+## define masses
+masses = {}
+if options.analysis == "sm" or options.analysis == "all" :
+    masses["sm"] = options.sm_masses
+if options.analysis == "mssm" or options.analysis == "all" :
+    masses["mssm"] = options.mssm_masses    
+
+## define sub-channels
+sub_channels = ["em", "mt", "et", "mm", "tt", "vhtt_had"] ##, "hmm"]
+
+## setup sm/mssm directories
+for analysis in masses :
+    if not os.path.exists(analysis) :
+        os.system("mkdir %s" % analysis)
+    os.chdir("%s/%s" % (os.getcwd(), analysis))
+    ## individual event categories for all channels
+    for period in periods :
+        for sub in sub_channels :
+            card_idx = 0
+            if sub == "hmm" :
+                ## special treatment for hmm
+                for label in hmm_categories :
+                    for cat in hmm_categories[label] :
+                        if options.category == "cmb" or options.category == "all" :
+                            if options.channel == "cmb" or options.channel == "all" or options.channel == "hmm" :
+                                #print sub, period, label, "1"
+                                os.system("setup-batch.py -n cmb -c hmm -o hmm_{PERIOD}{IDX}.txt -e {PERIOD}{CAT} {OPTIONALS} {MASSES}".format(
+                                    IDX=card_idx, PERIOD=period, CAT=cat, OPTIONALS=optionals, MASSES=masses[analysis]))
+                        if options.category == "all" or options.category == cat :
+                            #print sub, period, label, "2"
+                            os.system("setup-batch.py -n {LABEL} -c hmm -o hmm_{PERIOD}{IDX}.txt -e {PERIOD}{CAT} {OPTIONALS} {MASSES}".format(
+                                LABEL=label, IDX=card_idx, PERIOD=period, CAT=cat, OPTIONALS=optionals, MASSES=masses[analysis]))
+                        card_idx = card_idx+1
+            elif sub == "vhtt_had" :
+                ## special treatment for vhtt_had
+                for label in vhtt_had_categories :
+                    for cat in vhtt_had_categories[label] :
+                        if options.category == "cmb" or options.category == "all" :
+                            if options.channel == "cmb" or options.channel == "all" or options.channel == "hmm" :
+                                #print sub, period, label, "1"
+                                os.system("setup-batch.py -n cmb -c vhtt_had -o vhtt_had_{PERIOD}{IDX}.txt -e {PERIOD}{CAT} {OPTIONALS} {MASSES}".format(
+                                    IDX=card_idx, PERIOD=period, CAT=cat, OPTIONALS=optionals, MASSES=masses[analysis]))
+                        if options.category == "all" or options.category == cat :
+                            #print sub, period, label, "2"
+                            os.system("setup-batch.py -n {LABEL} -c vhtt_had -o vhtt_had_{PERIOD}{IDX}.txt -e {PERIOD}{CAT} {OPTIONALS} {MASSES}".format(
+                                LABEL=label, IDX=card_idx, PERIOD=period, CAT=cat, OPTIONALS=optionals, MASSES=masses[analysis]))
+                        card_idx = card_idx+1
+            elif sub == "tt" :
+                ## special treatment for htt_tt
+                for label in htt_tt_categories :
+                    for cat in htt_tt_categories[label] :
+                        if options.category == "cmb" or options.category == "all" :
+                            if options.channel == "cmb" or options.channel == "all" :
+                                #print sub, period, label, "3"
+                                os.system("setup-batch.py -n cmb -c {SUBCHN} -o htt_{SUBCHN}_{PERIOD}{IDX}.txt -e {PERIOD}{CAT} {OPTIONALS} {MASSES}".format(
+                                    SUBCHN=sub, IDX=card_idx, PERIOD=period, CAT=cat, OPTIONALS=optionals, MASSES=masses[analysis]))
+                            if options.channel == sub or options.channel == "all" :
+                                #print sub, period, label, "4"
+                                os.system("setup-batch.py -n {SUBCHN} -c {SUBCHN} -o htt_{SUBCHN}_{PERIOD}{IDX}.txt -e {PERIOD}{CAT} {OPTIONALS} {MASSES}".format(
+                                    SUBCHN=sub, IDX=card_idx, PERIOD=period, CAT=cat, OPTIONALS=optionals, MASSES=masses[analysis]))
+                        if options.category == "all" or options.category == label :
+                            if options.channel == sub or options.channel == "all" :
+                                #print sub, period, label, "4a"
+                                os.system("setup-batch.py -n {LABEL} -c {SUBCHN} -o htt_{SUBCHN}_{PERIOD}{IDX}.txt -e {PERIOD}{CAT} {OPTIONALS} {MASSES}".format(
+                                    LABEL=label, SUBCHN=sub, IDX=card_idx, PERIOD=period, CAT=cat, OPTIONALS=optionals, MASSES=masses[analysis]))
+                        card_idx = card_idx+1
+            else :
+                ## common treatment for htt_xx
+                for label in htt_xx_categories :
+                    for cat in htt_xx_categories[label] :
+                        if options.category == "cmb" or options.category == "all" :
+                            if options.channel == "cmb" or options.channel == "all" :
+                                #print sub, period, label, "5"
+                                os.system("setup-batch.py -n cmb -c {SUBCHN} -o htt_{SUBCHN}_{PERIOD}{IDX}.txt -e {PERIOD}{CAT} {OPTIONALS} {MASSES}".format(
+                                    SUBCHN=sub, IDX=card_idx, PERIOD=period, CAT=cat, OPTIONALS=optionals, MASSES=masses[analysis]))
+                            if options.channel == sub or options.channel == "all" :
+                                #print sub, period, label, "6"
+                                os.system("setup-batch.py -n {SUBCHN} -c {SUBCHN} -o htt_{SUBCHN}_{PERIOD}{IDX}.txt -e {PERIOD}{CAT} {OPTIONALS} {MASSES}".format(
+                                    SUBCHN=sub, IDX=card_idx, PERIOD=period, CAT=cat, OPTIONALS=optionals, MASSES=masses[analysis]))
+                        if options.category == "all" or options.category == label :
+                            if options.channel == sub or options.channel == "all" :
+                                #print sub, period, label, options.category, "8"
+                                os.system("setup-batch.py -n {LABEL} -c {SUBCHN} -o htt_{SUBCHN}_{PERIOD}{IDX}.txt -e {PERIOD}{CAT} {OPTIONALS} {MASSES}".format(
+                                    LABEL=label, SUBCHN=sub, IDX=card_idx, PERIOD=period, CAT=cat, OPTIONALS=optionals, MASSES=masses[analysis]))
+                        card_idx = card_idx+1                        
+    os.chdir("%s/.." % os.getcwd())
