@@ -26,8 +26,10 @@ channel(std::string& label){
 	  label==std::string("htt")        ||
 	  label==std::string("htt+")       ||
 	  label==std::string("vhtt")       ||
+	  label==std::string("vhtt_had")   ||
 	  label==std::string("incl")       ||
-	  label==std::string("novbf")      ||
+	  label==std::string("0jet")       ||
+	  label==std::string("2jet")       ||
 	  label==std::string("boost")      ||
 	  label==std::string("vbf")        ||
 	  label==std::string("hgg")        ||	  
@@ -66,15 +68,23 @@ channel(std::string& label){
 std::string legendEntry(const std::string& channel){
   std::string title;
   if(channel==std::string("emu"       )) title = std::string("e#mu");
+  if(channel==std::string("em"        )) title = std::string("e#mu");
   if(channel==std::string("etau"      )) title = std::string("e#tau_{h}");
+  if(channel==std::string("et"        )) title = std::string("e#tau_{h}");
   if(channel==std::string("mutau"     )) title = std::string("#mu#tau_{h}");
+  if(channel==std::string("mt"        )) title = std::string("#mu#tau_{h}");
+  if(channel==std::string("tautau"    )) title = std::string("#tau_{h}#tau_{h}");
+  if(channel==std::string("tt"        )) title = std::string("#tau_{h}#tau_{h}");
   if(channel==std::string("mumu"      )) title = std::string("#mu#mu");
+  if(channel==std::string("mm"        )) title = std::string("#mu#mu");
   if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau+lep (vhtt)");
+  if(channel==std::string("vhtt_had"  )) title = std::string("VH#rightarrow#tau_{h}#tau_{h}+#mu (vhtt had)");
   if(channel==std::string("htt"       )) title = std::string("H#rightarrow#tau#tau(e#mu+e#tau_{h}+#mu#tau_{h})");
   if(channel==std::string("htt+"      )) title = std::string("H#rightarrow#tau#tau(e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu)");
   if(channel==std::string("cmb"       )) title = std::string("Combined");
   if(channel==std::string("incl"      )) title = std::string("Inclusive");
-  if(channel==std::string("novbf"     )) title = std::string("0/1-Jet (only)");
+  if(channel==std::string("0jet"      )) title = std::string("0-Jet (only)");
+  if(channel==std::string("2jet"      )) title = std::string("VH (only)");
   if(channel==std::string("vbf"       )) title = std::string("VBF (only)");
   if(channel==std::string("boost"     )) title = std::string("Boost (only)");
   if(channel==std::string("hgg"       )) title = std::string("H#rightarrow#gamma#gamma");
@@ -104,8 +114,8 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("mhmax+400" )) title = std::string("m_{h, max} (#mu=+400 GeV)");
   if(channel==std::string("mhmax+600" )) title = std::string("m_{h, max} (#mu=+600 GeV)");
   if(channel==std::string("mhmax+800" )) title = std::string("m_{h, max} (#mu=+800 GeV)");
-  if(channel==std::string("HIG-11-020")) title = std::string("Combined");
-  if(channel==std::string("HIG-11-029")) title = std::string("Combined");
+  if(channel==std::string("HIG-11-020")) title = std::string("HIG-11-020");
+  if(channel==std::string("HIG-11-029")) title = std::string("HIG-11-029");
   return title;
 }
 
@@ -115,14 +125,22 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 
   std::map<std::string, unsigned int> colors;
   colors["incl"      ] = kBlue;
-  colors["novbf"     ] = kBlue;
+  colors["0jet"      ] = kBlue;
+  colors["2jet"      ] = kMagenta;
   colors["vbf"       ] = kRed;
   colors["boost"     ] = kGreen;
   colors["emu"       ] = kBlue;
+  colors["em"        ] = kBlue;
   colors["etau"      ] = kRed;
+  colors["et"        ] = kRed;
   colors["mutau"     ] = kGreen;
+  colors["mt"        ] = kGreen;
   colors["mumu"      ] = kMagenta;
+  colors["mm"        ] = kMagenta;
+  colors["tautau"    ] = kOrange;
+  colors["tt"        ] = kOrange;
   colors["vhtt"      ] = kMagenta+2;
+  colors["vhtt_had"  ] = kMagenta;
   colors["cmb"       ] = kBlack;
   colors["htt"       ] = kGray+2;
   colors["htt+"      ] = kGray+2;
@@ -154,8 +172,8 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["mhmax+400" ] = kMagenta+ 3;
   colors["mhmax+600" ] = kMagenta- 2;
   colors["mhmax+800" ] = kMagenta-10;
-  colors["HIG-11-020"] = kBlack;
-  colors["HIG-11-029"] = kBlack;
+  colors["HIG-11-020"] = kGray+1;
+  colors["HIG-11-029"] = kGray+1;
 
   std::cout << " *******************************************************************************************************\n"
 	    << " * Usage     : root -l                                                                                  \n"
