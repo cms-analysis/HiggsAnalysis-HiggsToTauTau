@@ -1,8 +1,8 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-muTau_boost_high			signal		             	lumi            			1.035
-muTau_boost_high	   		ggH				pdf_gg    				1.08
-muTau_boost_high	   		qqH				pdf_qqbar				1.08
+muTau_boost_high	signal		             	lumi_7TeV            			1.035
+muTau_boost_high	ggH				pdf_gg    				1.08
+muTau_boost_high	qqH				pdf_qqbar				1.08
 muTau_boost_high	VH				pdf_vh					1.08
 muTau_boost_high	qqH				QCDscale_qqH				1.04
 muTau_boost_high	ggH				QCDscale_ggH1in 			1.25
@@ -17,12 +17,12 @@ muTau_boost_high        VV				CMS_scale_j				1.08
 muTau_boost_high	signal,ZLL	    		CMS_scale_met				1.05
 muTau_boost_high	TT		    		CMS_scale_met				1.07
 muTau_boost_high	VV		    		CMS_scale_met				1.06
-muTau_boost_high        ZTT,ZLL				CMS_htt_ztt_extrap_boost		1.029
-muTau_boost_high        W				CMS_htt_W_extrap_boost			1.032
-muTau_boost_high        QCD				CMS_htt_muTau_boost_high_QCDSyst	1.083
-muTau_boost_high	ZTT,ZLL				CMS_htt_zttNorm 			1.033
-muTau_boost_high	TT				CMS_htt_ttbarNorm			1.095
-muTau_boost_high	VV				CMS_htt_DiBosonNorm			1.442
-muTau_boost_high	W				CMS_htt_muTau_WNorm			1.066
-muTau_boost_high	ZLL				CMS_htt_ZLLNorm				1.147
+muTau_boost_high        ZTT,ZLL				CMS_htt_ztt_extrap_boost_7TeV		1.029
+muTau_boost_high        W				CMS_htt_W_extrap_boost_7TeV		1.032
+muTau_boost_high        QCD				CMS_htt_muTau_boost_high_QCDSyst_7TeV	1.083
+muTau_boost_high	ZTT,ZLL				CMS_htt_zttNorm_7TeV 			1.033
+muTau_boost_high	TT				CMS_htt_ttbarNorm_7TeV			1.095
+muTau_boost_high	VV				CMS_htt_DiBosonNorm_7TeV		1.442
+muTau_boost_high	W				CMS_htt_muTau_WNorm_7TeV		1.066
+muTau_boost_high	ZLL				CMS_htt_ZLLNorm_7TeV			1.147
 
