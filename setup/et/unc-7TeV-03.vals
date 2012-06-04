@@ -1,6 +1,6 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-eTau_boost_high		signal		             	lumi_7TeV            			1.035
+eTau_boost_high		signal		             	lumi            			1.035
 eTau_boost_high	   	ggH				pdf_gg    				1.08
 eTau_boost_high	   	qqH				pdf_qqbar				1.08
 eTau_boost_high		VH				pdf_vh					1.08
