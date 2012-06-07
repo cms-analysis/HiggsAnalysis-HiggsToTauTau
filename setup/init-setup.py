@@ -3,7 +3,7 @@ from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options]",
-                      description="Simple script to link root input files which cannot be stored in the official cvs repository due to their size to the setup directory of this package. Apart from options no further ARGs are needed")
+                      description="Script to link root input files which cannot be stored in the official cvs repository due to their size to the setup directory of this package. Apart from options no further ARGs are needed")
 parser.add_option("-i", "--input-card", dest="input", default="input-card.txt", type="string", help="Inputcard to be used for the copy process. [Default: input-card.txt]")
 
 ## check number of arguments; in case print usage
@@ -18,10 +18,10 @@ for line in f:
         continue
     else:
         words = line.strip().split()
-        #print "cp {CMSSW_BASE}/src/{source} {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{target}/htt_{target}.input-{type}.root".format(
-        #    CMSSW_BASE=os.environ['CMSSW_BASE'], source=words[2], target=words[0], type=words[1])
-        os.system("cp {CMSSW_BASE}/src/{source} {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{target}/htt_{target}.inputs-{type}.root".format(
-            CMSSW_BASE=os.environ['CMSSW_BASE'], source=words[2], target=words[0], type=words[1]))
+        #print "cp {CMSSW_BASE}/src/{SOURCE} {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/".format(
+        #    CMSSW_BASE=os.environ['CMSSW_BASE'], SOURCE=words[2], CHN=words[0])
+        os.system("cp {CMSSW_BASE}/src/{SOURCE} {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/".format(
+            CMSSW_BASE=os.environ['CMSSW_BASE'], SOURCE=words[2], CHN=words[0]))
 f.close()
 
 
