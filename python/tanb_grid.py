@@ -362,7 +362,7 @@ class MakeDatacard :
               Fill mh and mH depending on mA. These values are calculated from the htt tools.
               """
               if self.feyn_higgs_model != "":
-                     ## read masses from feyn-higgs foro models that are not available from the
+                     ## read masses from feyn-higgs for models that are not available from the
                      ## htt mssm cross section tools. Here the cross section is not of interest,
                      ## instead just mh and mH are grep'ed
                      self.mh = float(os.popen("feyn-higgs-mssm xs mssm ggA {mA} {tanb} model={model} | grep mh".format(
