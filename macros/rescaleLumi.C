@@ -23,7 +23,7 @@
     to satisfy the combine limit calculation tool. The macro iterates only through
     one level of folders. These folders are expected to contain only histograms.
     Function arguments are the filename which is supposed to keep the input histo-
-    grams for the limit calculation and a boolean to indocate whether the rescaled
+    grams for the limit calculation and a boolean to indicate whether the rescaled
     histograms should already be written to file, or whether this is just a test
     run.
 */
