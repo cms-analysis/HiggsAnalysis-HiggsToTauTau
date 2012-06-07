@@ -7,12 +7,14 @@ parser = OptionParser(usage="usage: %prog [options] ARGs",
 parser.add_option("-s", "--scale", dest="scale", default=1.,  type="float",   help="Scale to be applied to all yields. [Default: 1.]")
 parser.add_option("-i", "--input", dest="input", default='test', type="string", help="Name of the input directoriy in which to expect the datacards. [Default: 'test']")
 parser.add_option("-n", "--name", dest="name", default='datacard_{MASS}.txt', type="string", help="Name of the input datacard. [Default: 'datacard_{MASS}.txt']")
+parser.add_option("-p", "--process", dest="proc", default='', type="string", help="Restrict scale to a certain process. This process should be given by its bin number. [Default: '']")
 (options, args) = parser.parse_args()
 
 def rescale(input_name, scale=1.) :
     """
 
     """
+    processes    = []
     output_rates = []
     input_file   = open(input_name,'r')
     output_file  = open("tmp.txt", 'w')
@@ -20,13 +22,25 @@ def rescale(input_name, scale=1.) :
        words = input_line.split()
        output_line = input_line
        if len(words) < 1: continue
+       if words[0] == "process" :
+           for (idx, word) in enumerate(words) :
+               if idx==0 :
+                   continue
+               if word.isdigit() :
+                   processes.append(word)
        ## determine which processes are actually signal. The way to determine signal
        ## processes is by the process id smaller equal 0.
        if words[0] == "rate" :
            for (idx, word) in enumerate(words) :
                if idx==0 :
                    continue
-               output_rates.append(str(scale*float(word)))
+               if options.proc == "" :
+                   output_rates.append(str(scale*float(word)))
+               else :
+                   if processes[idx-1] == options.proc :
+                       output_rates.append(str(scale*float(word)))
+                   else :
+                       output_rates.append(str(float(word)))
            output_line = "rate          "+"    ".join(output_rates)+"\n"
        output_file.write(output_line)
     input_file.close()

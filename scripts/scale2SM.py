@@ -6,6 +6,7 @@ parser = OptionParser(usage="usage: %prog [options] ARGS",
                       description="Script to scale signal in inputs files by the cross section for SM Higgs boson. This will transform expectations normalized to 1/pb to yield predictions. The signal samples have to be given as options. ARGS corresponds to the given masses, for which the scaling should be performed.")
 parser.add_option("-i", "--input", dest="input", default="test.root", type="string", help="Input file where to find the signal histograms (or workspaces). [Default: test.root]")
 parser.add_option("-s", "--samples", dest="samples", default="ggH, qqH, VH, WH, ZH, ttH, bbH", type="string", help="Signal samples that should be scaled. This should be a list of strings in \"...\", seperated by comma or by whitespace. Sample which are not present in the file will be ignored. When running in verbose mode a warning will be issued. [Default: \"ggH, qqH, VH, WH, ZH, ttH, bbH\"]")
+parser.add_option("-e", "--ecms", dest="ecms", default="7", type="string", help="Center of mass energy in TeV. [Default: 7]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="increase verbosity. [Default: False]")
 
 ## check number of arguments; in case print usage
@@ -39,15 +40,16 @@ class RescaleSamples:
             production_channel = "WH+ZH_ttH"
 
         if production_channel == 'bbH' :
+            ## not yet available
             return xs            
         if production_channel.find('+')>-1 :
             sub_channels = production_channel.split('+')
             for sub_channel in sub_channels :
-                xs += float(os.popen("xsec-sm {CHANNEL} {MA} | grep value".format(
-                    CHANNEL=sub_channel, MA=mass)).read().split()[2])
+                xs += float(os.popen("xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(
+                    CHANNEL=sub_channel, MA=mass, ECMS=options.ecms)).read().split()[2])
         else :
-            xs += float(os.popen("xsec-sm {CHANNEL} {MA} | grep value".format(
-                CHANNEL=production_channel, MA=mass)).read().split()[2])
+            xs += float(os.popen("xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(
+                CHANNEL=production_channel, MA=mass, ECMS=options.ecms)).read().split()[2])
         return xs
 
     def BR(self, mass) :
