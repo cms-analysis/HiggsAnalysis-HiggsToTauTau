@@ -26,7 +26,9 @@ channel(std::string& label){
 	  label==std::string("htt")        ||
 	  label==std::string("htt+")       ||
 	  label==std::string("vhtt")       ||
-	  label==std::string("vhtt_had")   ||
+	  label==std::string("whtt")       ||
+	  label==std::string("zhtt")       ||
+	  label==std::string("whhh")       ||
 	  label==std::string("incl")       ||
 	  label==std::string("0jet")       ||
 	  label==std::string("2jet")       ||
@@ -34,6 +36,7 @@ channel(std::string& label){
 	  label==std::string("vbf")        ||
 	  label==std::string("hgg")        ||	  
 	  label==std::string("hww")        ||
+	  label==std::string("tt")         ||
 	  label==std::string("hzz4l")      ||
 	  label==std::string("hzz2l2q")    ||
 	  label==std::string("hzz2l2q")    ||
@@ -73,20 +76,22 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("et"        )) title = std::string("e#tau_{h}");
   if(channel==std::string("mutau"     )) title = std::string("#mu#tau_{h}");
   if(channel==std::string("mt"        )) title = std::string("#mu#tau_{h}");
-  if(channel==std::string("tautau"    )) title = std::string("#tau_{h}#tau_{h}");
-  if(channel==std::string("tt"        )) title = std::string("#tau_{h}#tau_{h}");
+  if(channel==std::string("tautau"    )) title = std::string("#tau_{h}#tau_{h} (1.1 fb^{-1})");
+  if(channel==std::string("tt"        )) title = std::string("#tau_{h}#tau_{h} (1.1 fb^{-1})");
   if(channel==std::string("mumu"      )) title = std::string("#mu#mu");
   if(channel==std::string("mm"        )) title = std::string("#mu#mu");
-  if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau+lep (vhtt)");
-  if(channel==std::string("vhtt_had"  )) title = std::string("VH#rightarrow#tau_{h}#tau_{h}+#mu (vhtt had)");
-  if(channel==std::string("htt"       )) title = std::string("H#rightarrow#tau#tau(e#mu+e#tau_{h}+#mu#tau_{h})");
-  if(channel==std::string("htt+"      )) title = std::string("H#rightarrow#tau#tau(e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu)");
+  if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau+l(l)");
+  if(channel==std::string("whtt"      )) title = std::string("WH#rightarrow#tau_{l}#tau_{l}+l");
+  if(channel==std::string("zhtt"      )) title = std::string("ZH#rightarrow#tau_{l}#tau_{l}+ll");
+  if(channel==std::string("whhh"      )) title = std::string("WH#rightarrow#tau_{h}#tau_{h}+#mu");
+  if(channel==std::string("htt"       )) title = std::string("e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu");
+  if(channel==std::string("htt+"      )) title = std::string("e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu+#tau_{h}#tau_{h}");
   if(channel==std::string("cmb"       )) title = std::string("Combined");
   if(channel==std::string("incl"      )) title = std::string("Inclusive");
-  if(channel==std::string("0jet"      )) title = std::string("0-Jet (only)");
-  if(channel==std::string("2jet"      )) title = std::string("VH (only)");
-  if(channel==std::string("vbf"       )) title = std::string("VBF (only)");
-  if(channel==std::string("boost"     )) title = std::string("Boost (only)");
+  if(channel==std::string("0jet"      )) title = std::string("0-Jet");
+  if(channel==std::string("2jet"      )) title = std::string("V(jj)H(#tau#tau)");
+  if(channel==std::string("vbf"       )) title = std::string("VBF");
+  if(channel==std::string("boost"     )) title = std::string("Boost");
   if(channel==std::string("hgg"       )) title = std::string("H#rightarrow#gamma#gamma");
   if(channel==std::string("hww"       )) title = std::string("H#rightarrowWW#rightarrow2l2#nu");
   if(channel==std::string("hzz4l"     )) title = std::string("H#rightarrowZZ#rightarrow4l");
@@ -119,7 +124,7 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double maximum=20., double minimum=0., bool log=false)
+void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label=", #sqrt{s} = 7 TeV, H#rightarrow#tau#tau, L = 4.9 fb^{-1}")
 {
   SetStyle();
 
@@ -140,10 +145,12 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["tautau"    ] = kOrange;
   colors["tt"        ] = kOrange;
   colors["vhtt"      ] = kMagenta+2;
-  colors["vhtt_had"  ] = kMagenta;
+  colors["whtt"      ] = kMagenta+0;
+  colors["zhtt"      ] = kCyan+2;
+  colors["whhh"      ] = kBlue;
   colors["cmb"       ] = kBlack;
-  colors["htt"       ] = kGray+2;
-  colors["htt+"      ] = kGray+2;
+  colors["htt"       ] = kRed;
+  colors["htt+"      ] = kBlue;
   colors["hgg"       ] = kRed;
   colors["hww"       ] = kGreen;
   colors["hzz4l"     ] = kBlue;
@@ -177,7 +184,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 
   std::cout << " *******************************************************************************************************\n"
 	    << " * Usage     : root -l                                                                                  \n"
-	    << " *             .x MitLimits/Higgs2Tau/macros/compareLimits.C+(file, chn, exp, obs, type, max, min, log) \n"
+	    << " *             .x MitLimits/Higgs2Tau/macros/compareLimits.C+(file, chn, exp, obs, type, min, max, log) \n"
 	    << " *                                                                                                      \n"
 	    << " * Arguments :  + file     const char*      full path to the input file                                 \n"
 	    << " *              + chn      const char*      list of channels; choose between: 'cmb', 'htt', 'emu',      \n"
@@ -271,6 +278,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     hexp[i]->SetMarkerSize(MARKER_SIZE);
     hexp[i]->SetMarkerColor(colors.find(channels[i])->second);
     hexp[i]->Draw(firstPlot ? "APL" : "PLsame");
+    //hexp[i]->Draw(firstPlot ? "AL" : "Lsame");
     firstPlot=false;
   }
   for(unsigned int i=0; i<hobs.size(); ++i){
@@ -324,6 +332,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     hobs[i]->SetMarkerSize(MARKER_SIZE);
     hobs[i]->SetMarkerColor(colors.find(channels[i])->second);
     hobs[i]->Draw(firstPlot ? "APL" : "PLsame");
+    //hobs[i]->Draw(firstPlot ? "AL" : "Lsame");
     firstPlot=false;
   }
   canv1->RedrawAxis();
@@ -333,19 +342,19 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     TLegend* leg1;
     if(expected && observed){
       /// setup the CMS Preliminary
-      if (firstLeg) CMSPrelim(", #sqrt{s} = 7 TeV, H#rightarrow#tau#tau, L = 4.9 fb^{-1}", "", 0.15, 0.835);
+      if (firstLeg) CMSPrelim(label, "", 0.15, 0.835);
       leg1 = new TLegend(firstLeg ? 0.60 : 0.20, hobs.size()<5 ? 0.90-0.06*hobs.size() : 0.6, firstLeg ? 0.93 : 0.60, 0.90);
     }
     else{
       /// setup the CMS Preliminary
-      CMSPrelim(", #sqrt{s} = 7 TeV, H#rightarrow#tau#tau, L = 4.9 fb^{-1}", "", 0.15, 0.835);
+      CMSPrelim(label, "", 0.15, 0.835);
       leg1 = new TLegend(0.50, hobs.size()<5 ? 0.90-0.06*hobs.size() : 0.6, 0.93, 0.90);
     }
     leg1->SetBorderSize( 0 );
     leg1->SetFillStyle ( 0 );
     leg1->SetFillColor ( 0 );
     leg1->SetFillColor (kWhite);
-    leg1->SetHeader( "Observed Limit" );
+    leg1->SetHeader( "#bf{Observed Limit}" );
     for(unsigned int i=0; i<hobs.size(); ++i){
       // skip one of the two split options
       if(channels[i] == std::string("hzz2l2q+")){ continue; }
@@ -358,18 +367,18 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     TLegend* leg0;
     if(expected && observed){
       /// setup the CMS Preliminary
-      if (firstLeg) CMSPrelim(", #sqrt{s} = 7 TeV, H#rightarrow#tau#tau, L = 4.9 fb^{-1}", "", 0.15, 0.835);
+      if (firstLeg) CMSPrelim(label, "", 0.15, 0.835);
       leg0 = new TLegend(firstLeg ? 0.60 : 0.20, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.8, firstLeg ? 0.94 : 0.60, 0.90);
     }
     else{
       /// setup the CMS Preliminary
-      CMSPrelim(", #sqrt{s} = 7 TeV, H#rightarrow#tau#tau, L = 4.9 fb^{-1}", "", 0.15, 0.835);
+      CMSPrelim(label, "", 0.15, 0.835);
       leg0 = new TLegend(0.50, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.6, 0.94, 0.90);
     }
     leg0->SetBorderSize( 0 );
     leg0->SetFillStyle ( 0 );
     leg0->SetFillColor (kWhite);
-    leg0->SetHeader( "Expected Limit" );
+    leg0->SetHeader( "#bf{Expected Limit}" );
     for(unsigned int i=0; i<hexp.size(); ++i){
       // skip one of the two split options
       if(channels[i] == std::string("hzz2l2q+")){ continue; }
