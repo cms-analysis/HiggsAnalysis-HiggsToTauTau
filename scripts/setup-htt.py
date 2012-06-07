@@ -77,9 +77,15 @@ vhtt_had_categories = {
     "vhtt_had" : ["00"]
     }
 
-
 ## define categories for setup
-
+categories = {
+    "mm"  :  htt_mm_categories,
+    "em"  :  htt_em_categories,
+    "mt"  :  htt_mt_categories,
+    "et"  :  htt_et_categories,
+    #"tt"  :  htt_et_categories,
+    #"vhtt":  htt_et_categories,
+    }
 
 ## define run periods
 periods = []
@@ -159,8 +165,8 @@ for analysis in masses :
                         card_idx = card_idx+1
             else :
                 ## common treatment for htt_xx
-                for label in htt_xx_categories :
-                    for cat in htt_xx_categories[label] :
+                for label in categories[sub] :
+                    for cat in categories[sub][label] :
                         if options.category == "cmb" or options.category == "all" :
                             if options.channel == "cmb" or options.channel == "all" :
                                 #print label, cat, card_idx
