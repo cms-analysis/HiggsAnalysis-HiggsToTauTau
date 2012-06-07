@@ -49,9 +49,21 @@ class CrossSection {
   /// load BR
   void BR();
   /// approximate scale factors for 7 TeV to 8 Tev
-  void seven2EightTeV();
+  void seven2xxxTeV();
   /// get actual value from map
   float linear(float mass, std::map<float, float>& map);
+  /// this is the SM background sample for which only the scale to 
+  /// different ecms will be provided
+  bool background(std::string proc){
+    return (proc == std::string("ttbar")||
+	    proc == std::string("top-t")||
+	    proc == std::string("top-s")||
+	    proc == std::string("W-top")||
+	    proc == std::string("W"    )||
+	    proc == std::string("Z"    )||
+	    proc == std::string("QCD"  )||
+	    proc == std::string("VV"   ));
+  }
 
  private:
   /// center of mass energy for the evaluation of the cross sections
@@ -60,33 +72,93 @@ class CrossSection {
   std::map<float, float> xsec_;
   /// for the time being these are the scale factors to go from 7 TeV to 8 TeV
   std::map<float, float> scale_;
+  /// these are the scale factors for background processes
+  std::map<std::string, float> scaleBG_;
 };
 
 inline void
-CrossSection::seven2EightTeV()
+CrossSection::seven2xxxTeV()
 {
-  scale_[  90] = 1.27394;
-  scale_[ 120] = 1.27742;
-  scale_[ 125] = 1.28090;
-  scale_[ 130] = 1.28437;
-  scale_[ 135] = 1.28775;
-  scale_[ 140] = 1.29112;
-  scale_[ 145] = 1.29439;
-  scale_[ 150] = 1.29766;
-  scale_[ 160] = 1.30403;
-  scale_[ 170] = 1.31031;
-  scale_[ 180] = 1.31641;
-  scale_[ 190] = 1.32237;
-  scale_[ 200] = 1.32822;
-  scale_[ 250] = 1.35530;
-  scale_[ 300] = 1.38238;
-  scale_[ 350] = 1.40661;
-  scale_[ 400] = 1.43085;
-  scale_[ 450] = 1.45471;
-  scale_[ 500] = 1.47857;
-  scale_[ 550] = 1.50211;
-  scale_[ 600] = 1.52566;
-  scale_[1000] = 1.52566;
+  bool scaled=false;
+  if(ecms_ == 8){
+    scaled=true;
+    /// provide BG scales		     
+    scaleBG_[std::string("ttbar")] = 1.42982; 
+    scaleBG_[std::string("W"    )] = 1.15786; 
+    scaleBG_[std::string("Z"    )] = 1.14951;
+    scaleBG_[std::string("W-top")] = 1.42024;
+    scaleBG_[std::string("top-t")] = 1.32469;
+    scaleBG_[std::string("top-s")] = 1.22067;
+    scaleBG_[std::string("WW"   )] = 1.21510; 
+    scaleBG_[std::string("WZ"   )] = 1.23344;
+    scaleBG_[std::string("ZZ"   )] = 1.21944;
+    /// provide ggH signal scales
+    scale_[  90] = 1.27394;
+    scale_[ 120] = 1.27742;
+    scale_[ 125] = 1.28090;
+    scale_[ 130] = 1.28437;
+    scale_[ 135] = 1.28775;
+    scale_[ 140] = 1.29112;
+    scale_[ 145] = 1.29439;
+    scale_[ 150] = 1.29766;
+    scale_[ 160] = 1.30403;
+    scale_[ 170] = 1.31031;
+    scale_[ 180] = 1.31641;
+    scale_[ 190] = 1.32237;
+    scale_[ 200] = 1.32822;
+    scale_[ 250] = 1.35530;
+    scale_[ 300] = 1.38238;
+    scale_[ 350] = 1.40661;
+    scale_[ 400] = 1.43085;
+    scale_[ 450] = 1.45471;
+    scale_[ 500] = 1.47857;
+    scale_[ 550] = 1.50211;
+    scale_[ 600] = 1.52566;
+    scale_[1000] = 1.52566;
+  }
+  if(ecms_ == 14){
+    scaled=true;
+    /// provide BG scales		     
+    scaleBG_[std::string("ttbar")] = 5.59001; 
+    scaleBG_[std::string("W"    )] = 2.09545; 
+    scaleBG_[std::string("Z"    )] = 2.02904;
+    scaleBG_[std::string("W-top")] = 5.32411;
+    scaleBG_[std::string("top-t")] = 3.88168;
+    scaleBG_[std::string("top-s")] = 2.65179;
+    scaleBG_[std::string("WW"   )] = 2.62549; 
+    scaleBG_[std::string("WZ"   )] = 2.79381;
+    scaleBG_[std::string("ZZ"   )] = 2.64949;
+    /// provide ggH signal scales
+    scale_[  90] = 3.27581;
+    scale_[ 115] = 3.27581;
+    scale_[ 120] = 3.31737;
+    scale_[ 125] = 3.35893;
+    scale_[ 130] = 3.40049;
+    scale_[ 135] = 3.44132;
+    scale_[ 140] = 3.48215;
+    scale_[ 145] = 3.52248;
+    scale_[ 150] = 3.56281;
+    scale_[ 160] = 3.64248;
+    scale_[ 170] = 3.72139;
+    scale_[ 180] = 3.79989;
+    scale_[ 190] = 3.87800;
+    scale_[ 200] = 3.95563;
+    scale_[ 250] = 4.33932;
+    scale_[ 300] = 4.72300;
+    scale_[ 350] = 5.10642;
+    scale_[ 400] = 5.48983;
+    scale_[ 450] = 5.91051;
+    scale_[ 500] = 6.33118;
+    scale_[ 550] = 6.78806;
+    scale_[ 600] = 7.24494;
+    scale_[1000] = 7.24494;
+  }
+  if(!scaled){
+    std::cerr 
+      << "Warning: the ecms that you chose is not implemented: " << ecms_ << std::endl
+      << "Available values of ecms are: 8(TeV), 14(TeV)" << std::endl;
+    exit(0);
+  }
 }
 
 inline void

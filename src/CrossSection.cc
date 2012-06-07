@@ -13,16 +13,31 @@ CrossSection::evaluate(const char* process, float mass)
   else if(proc == std::string("ZH" )){ ZH (); }
   else if(proc == std::string("ttH")){ ttH(); }
   else if(proc == std::string("BR" )){ BR (); }
-  else { 
+  else if(!background(proc)){
     std::cerr 
       << "This proc is not implemented or does not exist: " << proc << std::endl
       << "Available proc's are: ggH, qqH, WH, ZH, ttH, BR " << std::endl;
     exit(0);
   }
-  xsec = linear(mass, xsec_);
-  if(ecms_==8){
-    scale_.clear(); seven2EightTeV();
-    xsec*= linear(mass, scale_);
+  if(background(proc)){
+    // for backround processes return the scale to 
+    // different ecms. Therefore xsec should be 1.
+    xsec = 1.;
+  }
+  else{
+    xsec = linear(mass, xsec_);
+  }
+  if(proc != std::string("BR")){
+    // do not apply any scaling to BR's
+    if(ecms_!=7){
+      scale_.clear(); seven2xxxTeV();
+      if(background(proc)){
+	xsec*= scaleBG_[proc];
+      }
+      else{
+	xsec*= linear(mass, scale_);
+      }
+    }
   }
   return xsec;
 }
