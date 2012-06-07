@@ -19,6 +19,7 @@ int main(int argc, char* argv[])
     Implementation
   */
   CrossSection scan(ecms);
+  std::cout << "Ecms  = " << ecms << " TeV" << std::endl;
   std::cout << "mH    = " << argv[2] << std::endl;
   std::cout << "proc  = " << argv[1] << std::endl;
   std::cout << "value = " << scan.evaluate(argv[1], atof(argv[2])) << std::endl;
