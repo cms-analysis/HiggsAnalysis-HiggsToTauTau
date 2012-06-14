@@ -1,0 +1,21 @@
+###########################################################################
+# unc.vals: specification of uncertainty values by category, sample, and uncertainty name
+eTau_2jet		signal		             	lumi            			1.035
+eTau_2jet 		signal,ZTT,ZLL,TT,VV 		CMS_eff_m 				1.01
+eTau_2jet 		signal,ZTT,TT,VV 		CMS_eff_t 				1.062
+eTau_2jet		signal,ZTT			CMS_scale_t 				1.00
+eTau_2jet         	ggH				CMS_scale_j				1.03
+eTau_2jet         	TT				CMS_scale_j				1.15
+eTau_2jet         	VV				CMS_scale_j				1.10
+eTau_2jet   		signal,ZLL	    		CMS_scale_met				1.05
+eTau_2jet	   	TT,VV		    		CMS_scale_met				1.10
+eTau_2jet		ZTT				CMS_htt_ztt_extrap_vbf_8TeV		1.086
+eTau_2jet		ZLL				CMS_htt_ztt_extrap_vbf_8TeV		1.028
+eTau_2jet		W				CMS_htt_W_extrap_vbf_8TeV		1.044
+eTau_2jet		QCD				CMS_htt_eTau_2jet_QCDSyst_8TeV		1.101
+eTau_2jet		ZTT,ZLL				CMS_htt_zttNorm_8TeV 			1.033
+eTau_2jet		TT				CMS_htt_ttbarNorm_8TeV			1.261
+eTau_2jet		VV				CMS_htt_DiBosonNorm_8TeV		1.990
+eTau_2jet		W				CMS_htt_eTau_WNorm_8TeV			1.066
+eTau_2jet		ZLL				CMS_htt_ZLLNorm_8TeV			1.148
+

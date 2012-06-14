@@ -1,0 +1,17 @@
+# unc.vals: specification of uncertainty values by category, sample, and uncertainty name
+mumu_boost_low		  	signal,Dibosons,WJets           lumi            		1.025
+mumu_boost_low			signal,ZTT,TTJ,WJets,Dibosons 	CMS_eff_m 			1.04
+mumu_boost_low			signal,ZMM,TTJ,WJets,Dibosons	CMS_scale_j			1.045
+mumu_boost_low			signal,ZMM,TTJ,WJets,Dibosons   CMS_scale_met			1.035
+mumu_boost_low			signal,ZMM,TTJ,WJets,Dibosons 	CMS_eff_b 			0.98
+mumu_boost_low			signal,ZMM,TTJ,WJets,Dibosons 	CMS_fake_b 			0.98
+mumu_boost_low			ZTT				CMS_htt_zttNorm 		1.033
+mumu_boost_low			TTJ				CMS_htt_ttbarNorm		1.075
+mumu_boost_low			Dibosons			CMS_htt_DiBosonNorm		1.30
+mumu_boost_low			ZTT				CMS_htt_mm_zttLikelihood	1.04
+mumu_boost_low			ZMM				CMS_htt_mm_zmmNorm		1.06
+mumu_boost_low			ggH				CMS_htt_mm_ggH_MCStat_02_11	1.08
+mumu_boost_low			bbH				CMS_htt_mm_bbH_MCStat_02_11	1.10
+mumu_boost_low			QCD				CMS_htt_mm_QCDNorm_02_11	1.27
+mumu_boost_low			ZTT				CMS_htt_ztt_extrap_boost	1.02
+mumu_boost_low			ZMM				CMS_htt_mm_zmm_extrap_boost	1.02
