@@ -8,18 +8,20 @@
 ## in the lines below.
 ## ------------------------------------------------------------------------------------------------------
 
-feyn-higgs-sm-scan.root                 auxiliaries/models/feyn-higgs-sm-451-mH50-500.root
-feyn-higgs-mssm-scan-mhmax.root         auxiliaries/models/feyn-higgs-mssm-6720-mA50-1000-tb1-70-mhmax.root
-feyn-higgs-mssm-scan-mhmax-fine.root    auxiliaries/models/feyn-higgs-mssm-8736-mA50-1000-tb1-10-mhmax.root
-feyn-higgs-mssm-scan-saeff.root         auxiliaries/models/feyn-higgs-mssm-6720-mA50-1000-tb1-70-saeff.root
-feyn-higgs-mssm-scan-saeff-fine.root    auxiliaries/models/feyn-higgs-mssm-8736-mA50-1000-tb1-10-saeff.root
-feyn-higgs-mssm-scan-gluph.root         auxiliaries/models/feyn-higgs-mssm-6720-mA50-1000-tb1-70-gluph.root
-feyn-higgs-mssm-scan-gluph-fine.root    auxiliaries/models/feyn-higgs-mssm-8736-mA50-1000-tb1-10-gluph.root
-out.mhmax-mu-400-7-nnlo.root            auxiliaries/models/out.mhmax-mu-400-7-nnlo.root
-out.mhmax-mu-200-7-nnlo.root            auxiliaries/models/out.mhmax-mu-200-7-nnlo.root
-out.mhmax-mu+200-7-nnlo.root            auxiliaries/models/out.mhmax-mu+200-7-nnlo.root
-out.mhmax-mu+400-7-nnlo.root            auxiliaries/models/out.mhmax-mu+400-7-nnlo.root
-out.mhmax-mu+600-7-nnlo.root            auxiliaries/models/out.mhmax-mu+600-7-nnlo.root
-out.mhmax-mu+800-7-nnlo.root            auxiliaries/models/out.mhmax-mu+800-7-nnlo.root
-out.nomix-mu+200-7-nnlo.root            auxiliaries/models/out.nomix-mu+200-7-nnlo.root
-out.nomix-mu-200-7-nnlo.root            auxiliaries/models/out.nomix-mu-200-7-nnlo.root
+feyn-higgs-sm-scan.root                    auxiliaries/models/feyn-higgs-sm-451-mH50-500.root
+feyn-higgs-mssm-scan-mhmax.root            auxiliaries/models/feyn-higgs-mssm-6720-mA50-1000-tb1-70-mhmax.root
+feyn-higgs-mssm-scan-mhmax-fine.root       auxiliaries/models/feyn-higgs-mssm-8736-mA50-1000-tb1-10-mhmax.root
+feyn-higgs-mssm-scan-saeff.root            auxiliaries/models/feyn-higgs-mssm-6720-mA50-1000-tb1-70-saeff.root
+feyn-higgs-mssm-scan-saeff-fine.root       auxiliaries/models/feyn-higgs-mssm-8736-mA50-1000-tb1-10-saeff.root
+feyn-higgs-mssm-scan-gluph.root            auxiliaries/models/feyn-higgs-mssm-6720-mA50-1000-tb1-70-gluph.root
+feyn-higgs-mssm-scan-gluph-fine.root	   auxiliaries/models/feyn-higgs-mssm-8736-mA50-1000-tb1-10-gluph.root
+out.mhmax-mu-400-7TeV-nnlo.root		   auxiliaries/models/out.mhmax-mu-400-7TeV-nnlo.root
+out.mhmax-mu-200-7TeV-nnlo.root            auxiliaries/models/out.mhmax-mu-200-7TeV-nnlo.root
+out.mhmax-mu+200-7TeV-nnlo.root            auxiliaries/models/out.mhmax-mu+200-7TeV-nnlo.root
+out.mhmax-mu+400-7TeV-nnlo.root            auxiliaries/models/out.mhmax-mu+400-7TeV-nnlo.root
+out.mhmax-mu+600-7TeV-nnlo.root            auxiliaries/models/out.mhmax-mu+600-7TeV-nnlo.root
+out.mhmax-mu+800-7TeV-nnlo.root            auxiliaries/models/out.mhmax-mu+800-7TeV-nnlo.root
+out.nomix-mu+200-7TeV-nnlo.root            auxiliaries/models/out.nomix-mu+200-7TeV-nnlo.root
+out.nomix-mu-200-7TeV-nnlo.root            auxiliaries/models/out.nomix-mu-200-7TeV-nnlo.root
+out.mhmax-mu+200-8TeV-nnlo.root            auxiliaries/models/out.mhmax-mu+200-8TeV-nnlo.root
+out.nomix-mu+200-8TeV-nnlo.root            auxiliaries/models/out.nomix-mu+200-8TeV-nnlo.root
