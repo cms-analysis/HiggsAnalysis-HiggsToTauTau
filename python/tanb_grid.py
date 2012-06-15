@@ -8,8 +8,8 @@ parser.add_option("-m", "--mA",    dest="mA",       default=120.,  type="float",
 parser.add_option("-t", "--tanb",  dest="tanb",     default='20.',   type="string",   help="Values of tanb. [Default: 20.]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode")
 parser.add_option("--sm-like", dest="sm_like", default=False, action="store_true", help="Do not divide by the value of tanb, but only scale to MSSM xsec according to tanb value. (Will result in typical SM limit on signal strength for given value of tanb). Used for debugging. [Default: False]")
-parser.add_option("--model", dest="model", default='HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-7-nnlo.root', type="string", help="Model to be applied for the limit calculation. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-7-nnlo.root']")
-parser.add_option("--interpolation", dest="interpolation_mode", default='mode-2', type="choice", help="Mode for mass interpolation for direct tanb limits. Choices are: mode-0 -- non-degenerate-masses for all htt channels, mode-1 -- non-degenerate-masses for classic htt channels non-degenerate-masses-light for htt_mm, mode-2 -- non-degenerate-masses for classic htt channels degenerate-masses for htt_mm, mode-3 -- non-degenerate-masses-light for all htt channels, mode-4 -- non-degenerate-masses-light for classic htt channels degenerate-masses for htt_mm, mode-5 -- degenerate-masses for all htt channels [Default: mode-2]", choices=["mode-0", "mode-1", "mode-2", "mode-3", "mode-4", "mode-5"])
+parser.add_option("--model", dest="model", default='HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-nnlo.root', type="string", help="Model to be applied for the limit calculation. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-nnlo.root']")
+parser.add_option("--interpolation", dest="interpolation_mode", default='mode-0', type="choice", help="Mode for mass interpolation for direct tanb limits. Choices are: mode-0 -- non-degenerate-masses for all htt channels, mode-1 -- non-degenerate-masses for classic htt channels non-degenerate-masses-light for htt_mm, mode-2 -- non-degenerate-masses for classic htt channels degenerate-masses for htt_mm, mode-3 -- non-degenerate-masses-light for all htt channels, mode-4 -- non-degenerate-masses-light for classic htt channels degenerate-masses for htt_mm, mode-5 -- degenerate-masses for all htt channels [Default: mode-0]", choices=["mode-0", "mode-1", "mode-2", "mode-3", "mode-4", "mode-5"])
 (options, args) = parser.parse_args()
 
 import re
@@ -25,7 +25,7 @@ from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools
 
 
 class MakeDatacard :
-       def __init__(self, tanb, mA, model="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-7-nnlo.root", feyn_higgs_model="", sm_like=False) :
+       def __init__(self, tanb, mA, model="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-nnlo.root", feyn_higgs_model="", sm_like=False) :
               ## full path for the input file for the htt xsec tools, expected in the data directory of the package
               ## This file is used to determine the cross sections and uncertainties for calculations for htt, as
               ## as for determining the masses for htt and hww
@@ -49,9 +49,9 @@ class MakeDatacard :
               self.hww_cross_point = 250
               ## mapping of unique (standardized) production process names to all possible kinds of production processes (=histograms)
               self.standardized_production_processes = {
-                      "ggH":["Higgs_gg_mssm", "Higgs_gf_sm", "SM", "GGH", "ggH", "VH"]
-                     ,"bbH":["Higgs_bb_mssm", "BBH", "bbH"]
-                     ,"qqH":["Higgs_vbf_sm" , "VBF", "qqH", "vbf"]
+                      "ggH":["SM", "GGH", "ggH", "VH"]
+                     ,"bbH":["BBH", "bbH"]
+                     ,"qqH":["VBF", "qqH", "vbf"]
                      ,"ZH" :["ZH"]
                      ,"WH" :["WH"]
                      }
@@ -59,10 +59,14 @@ class MakeDatacard :
               self.standardized_decay_channels = {
                      "hmm"    : ["hmm_0", "hmm_1",
                                  ],
-                     "htt"    : ["htt_em_0", "htt_em_1", "htt_em_2", "htt_em_x",
-                                 "htt_et_0", "htt_et_1", "htt_et_2", "htt_et_x",
-                                 "htt_mt_0", "htt_mt_1", "htt_mt_2", "htt_mt_x",
-                                 "htt_mm_0", "htt_mm_1", "htt_mm_2"
+                     "htt"    : ["htt_em_0_7TeV", "htt_em_1_7TeV", "htt_em_2_7TeV", "htt_em_3_7TeV", "htt_em_4_7TeV", "htt_em_5_7TeV", "htt_em_6_7TeV", "htt_em_7_7TeV",
+                                 "htt_et_0_7TeV", "htt_et_1_7TeV", "htt_et_2_7TeV", "htt_et_3_7TeV", "htt_et_4_7TeV", "htt_et_5_7TeV", "htt_et_6_7TeV", "htt_et_7_7TeV",
+                                 "htt_mt_0_7TeV", "htt_mt_1_7TeV", "htt_mt_2_7TeV", "htt_mt_3_7TeV", "htt_mt_4_7TeV", "htt_mt_5_7TeV", "htt_mt_6_7TeV", "htt_mt_7_7TeV",
+                                 "htt_mm_0_7TeV", "htt_mm_1_7TeV", "htt_mm_2_7TeV", "htt_mm_3_7TeV", "htt_mm_4_7TeV", "htt_mm_5_7TeV", "htt_mm_6_7TeV", "htt_mm_7_7TeV",
+                                 "htt_em_0_8TeV", "htt_em_1_8TeV", "htt_em_2_8TeV", "htt_em_3_8TeV", "htt_em_4_8TeV", "htt_em_5_8TeV", "htt_em_6_8TeV", "htt_em_7_8TeV",
+                                 "htt_et_0_8TeV", "htt_et_1_8TeV", "htt_et_2_8TeV", "htt_et_3_8TeV", "htt_et_4_8TeV", "htt_et_5_8TeV", "htt_et_6_8TeV", "htt_et_7_8TeV",
+                                 "htt_mt_0_8TeV", "htt_mt_1_8TeV", "htt_mt_2_8TeV", "htt_mt_3_8TeV", "htt_mt_4_8TeV", "htt_mt_5_8TeV", "htt_mt_6_8TeV", "htt_mt_7_8TeV",
+                                 "htt_mm_0_8TeV", "htt_mm_1_8TeV", "htt_mm_2_8TeV", "htt_mm_3_8TeV", "htt_mm_4_8TeV", "htt_mm_5_8TeV", "htt_mm_6_8TeV", "htt_mm_7_8TeV",
                                  ],
                      "hww"    : ["hwwof_0j_shape", "hwwof_1j_shape",
                                  "hwwsf_0j_shape", "hwwsf_1j_shape",
@@ -86,7 +90,6 @@ class MakeDatacard :
               self.output_histfiles = []
               ## list of decay channels that have separated
               self.hists_in_separate_files = [
-                     "htt_mm_0", "htt_mm_1", "htt_mm_2",
                      "hwwof_0j_shape", "hwwof_1j_shape",
                      "hwwsf_0j_shape", "hwwsf_1j_shape"
                      ]
@@ -124,7 +127,7 @@ class MakeDatacard :
               """
               Configure interpolation mode for htt limits. Considered modes are:
               
-                        classic htt channels (htt_em, htt_et, htt_mt)           htt_mm / hmm
+              classic htt channels (htt_em, htt_et, htt_mt)             htt_mm / hmm
               mode-0 :            non-degenerate-masses                 non-degenerate-masses
               mode-1 :            non-degenerate-masses                 non-degenerate-masses-light
               mode-2 :            non-degenerate-masses                 degenerate-masses
@@ -133,119 +136,92 @@ class MakeDatacard :
               mode-5 :            degenerate-masses                     degenerate-masses
               """
               if mode == "mode-0" :
-                     self.decay_channel_to_interpolation_method = {
-                             "hmm_0"          : "non-degenerate-masses"
-                            ,"hmm_1"          : "non-degenerate-masses"
-                            ,"htt_mm_0"       : "non-degenerate-masses"
-                            ,"htt_mm_1"       : "non-degenerate-masses"
-                            ,"htt_em_0"       : "non-degenerate-masses"
-                            ,"htt_em_1"       : "non-degenerate-masses"
-                            ,"htt_mt_0"       : "non-degenerate-masses"
-                            ,"htt_mt_1"       : "non-degenerate-masses"
-                            ,"htt_mt_2"       : "non-degenerate-masses"
-                            ,"htt_et_0"       : "non-degenerate-masses"
-                            ,"htt_et_1"       : "non-degenerate-masses"
-                            ,"hwwof_0j_shape" : "single-mass"
-                            ,"hwwof_1j_shape" : "single-mass"
-                            ,"hwwsf_0j_shape" : "single-mass"
-                            ,"hwwsf_1j_shape" : "single-mass"
-                            ,"hww_2j_cut"     : "single-mass"
-                            }
+                     for chn in ["mm", "em", "et", "mt"] :
+                            for cat in ["0", "1", "2", "3", "4", "5", "6", "7"] :
+                                   for period in ["7TeV", "8TeV"] :
+                                          decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
+                                          self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hmm_0"         ] = "non-degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hmm_1"         ] = "non-degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hwwof_0j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hwwof_1j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hwwsf_0j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hwwsf_1j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hww_2j_cut"    ] = "single-mass"
               if mode == "mode-1" :
-                     self.decay_channel_to_interpolation_method = {
-                             "hmm_0"          : "non-degenerate-masses-light"
-                            ,"hmm_1"          : "non-degenerate-masses-light"
-                            ,"htt_mm_0"       : "non-degenerate-masses-light"
-                            ,"htt_mm_1"       : "non-degenerate-masses-light"
-                            ,"htt_em_0"       : "non-degenerate-masses"
-                            ,"htt_em_1"       : "non-degenerate-masses"
-                            ,"htt_mt_0"       : "non-degenerate-masses"
-                            ,"htt_mt_1"       : "non-degenerate-masses"
-                            ,"htt_mt_2"       : "non-degenerate-masses"
-                            ,"htt_et_0"       : "non-degenerate-masses"
-                            ,"htt_et_1"       : "non-degenerate-masses"
-                            ,"hwwof_0j_shape" : "single-mass"
-                            ,"hwwof_1j_shape" : "single-mass"
-                            ,"hwwsf_0j_shape" : "single-mass"
-                            ,"hwwsf_1j_shape" : "single-mass"
-                            ,"hww_2j_cut"     : "single-mass"
-                            }
+                     for chn in ["mm", "em", "et", "mt"] :
+                            for cat in ["0", "1", "2", "3", "4", "5", "6", "7"] :
+                                   for period in ["7TeV", "8TeV"] :
+                                          decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
+                                          if chn == "mm" : 
+                                                 self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses-light"
+                                          else : 
+                                                 self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hmm_0"         ] = "non-degenerate-masses-light"
+                     self.decay_channel_to_interpolation_method["hmm_1"         ] = "non-degenerate-masses-light"
+                     self.decay_channel_to_interpolation_method["hwwof_0j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hwwof_1j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hwwsf_0j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hwwsf_1j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hww_2j_cut"    ] = "single-mass"                            
               if mode == "mode-2" :
-                     self.decay_channel_to_interpolation_method = {
-                             "hmm_0"          : "degenerate-masses"
-                            ,"hmm_1"          : "degenerate-masses"
-                            ,"htt_mm_0"       : "degenerate-masses"
-                            ,"htt_mm_1"       : "degenerate-masses"
-                            ,"htt_em_0"       : "non-degenerate-masses"
-                            ,"htt_em_1"       : "non-degenerate-masses"
-                            ,"htt_mt_0"       : "non-degenerate-masses"
-                            ,"htt_mt_1"       : "non-degenerate-masses"
-                            ,"htt_mt_2"       : "non-degenerate-masses"
-                            ,"htt_et_0"       : "non-degenerate-masses"
-                            ,"htt_et_1"       : "non-degenerate-masses"
-                            ,"hwwof_0j_shape" : "single-mass"
-                            ,"hwwof_1j_shape" : "single-mass"
-                            ,"hwwsf_0j_shape" : "single-mass"
-                            ,"hwwsf_1j_shape" : "single-mass"
-                            ,"hww_2j_cut"     : "single-mass"
-                            }
+                     for chn in ["mm", "em", "et", "mt"] :
+                            for cat in ["0", "1", "2", "3", "4", "5", "6", "7"] :
+                                   for period in ["7TeV", "8TeV"] :
+                                          decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
+                                          if chn == "mm" : 
+                                                 self.decay_channel_to_interpolation_method[decay_channel] = "degenerate-masses"
+                                          else : 
+                                                 self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hmm_0"         ] = "degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hmm_1"         ] = "degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hwwof_0j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hwwof_1j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hwwsf_0j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hwwsf_1j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hww_2j_cut"    ] = "single-mass"
               if mode == "mode-3" :
-                     self.decay_channel_to_interpolation_method = {
-                             "hmm_0"          : "non-degenerate-masses-light"
-                            ,"hmm_1"          : "non-degenerate-masses-light"
-                            ,"htt_mm_0"       : "non-degenerate-masses-light"
-                            ,"htt_mm_1"       : "non-degenerate-masses-light"
-                            ,"htt_em_0"       : "non-degenerate-masses-light"
-                            ,"htt_em_1"       : "non-degenerate-masses-light"
-                            ,"htt_mt_0"       : "non-degenerate-masses-light"
-                            ,"htt_mt_1"       : "non-degenerate-masses-light"
-                            ,"htt_mt_2"       : "non-degenerate-masses-light"
-                            ,"htt_et_0"       : "non-degenerate-masses-light"
-                            ,"htt_et_1"       : "non-degenerate-masses-light"
-                            ,"hwwof_0j_shape" : "single-mass"
-                            ,"hwwof_1j_shape" : "single-mass"
-                            ,"hwwsf_0j_shape" : "single-mass"
-                            ,"hwwsf_1j_shape" : "single-mass"
-                            ,"hww_2j_cut"     : "single-mass"
-                            }
+                     for chn in ["mm", "em", "et", "mt"] :
+                            for cat in ["0", "1", "2", "3", "4", "5", "6", "7"] :
+                                   for period in ["7TeV", "8TeV"] :
+                                          decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
+                                          self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses-light"
+                     self.decay_channel_to_interpolation_method["hmm_0"         ] = "non-degenerate-masses-light"
+                     self.decay_channel_to_interpolation_method["hmm_1"         ] = "non-degenerate-masses-light"
+                     self.decay_channel_to_interpolation_method["hwwof_0j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hwwof_1j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hwwsf_0j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hwwsf_1j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hww_2j_cut"    ] = "single-mass"
               if mode == "mode-4" :
-                     self.decay_channel_to_interpolation_method = {
-                             "hmm_0"          : "degenerate-masses"
-                            ,"hmm_1"          : "degenerate-masses"
-                            ,"htt_mm_0"       : "degenerate-masses"
-                            ,"htt_mm_1"       : "degenerate-masses"
-                            ,"htt_em_0"       : "non-degenerate-masses-light"
-                            ,"htt_em_1"       : "non-degenerate-masses-light"
-                            ,"htt_mt_0"       : "non-degenerate-masses-light"
-                            ,"htt_mt_1"       : "non-degenerate-masses-light"
-                            ,"htt_mt_2"       : "non-degenerate-masses-light"
-                            ,"htt_et_0"       : "non-degenerate-masses-light"
-                            ,"htt_et_1"       : "non-degenerate-masses-light"
-                            ,"hwwof_0j_shape" : "single-mass"
-                            ,"hwwof_1j_shape" : "single-mass"
-                            ,"hwwsf_0j_shape" : "single-mass"
-                            ,"hwwsf_1j_shape" : "single-mass"
-                            ,"hww_2j_cut"     : "single-mass"
-                            }
+                     for chn in ["mm", "em", "et", "mt"] :
+                            for cat in ["0", "1", "2", "3", "4", "5", "6", "7"] :
+                                   for period in ["7TeV", "8TeV"] :
+                                          decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
+                                          if chn == "mm" : 
+                                                 self.decay_channel_to_interpolation_method[decay_channel] = "degenerate-masses"
+                                          else : 
+                                                 self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses-light"
+                     self.decay_channel_to_interpolation_method["hmm_0"         ] = "degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hmm_1"         ] = "degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hwwof_0j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hwwof_1j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hwwsf_0j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hwwsf_1j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hww_2j_cut"    ] = "single-mass"
               if mode == "mode-5" :
-                     self.decay_channel_to_interpolation_method = {
-                             "hmm_0"          : "degenerate-masses"
-                            ,"hmm_1"          : "degenerate-masses"
-                            ,"htt_mm_0"       : "degenerate-masses"
-                            ,"htt_mm_1"       : "degenerate-masses"
-                            ,"htt_em_0"       : "degenerate-masses"
-                            ,"htt_em_1"       : "degenerate-masses"
-                            ,"htt_mt_0"       : "degenerate-masses"
-                            ,"htt_mt_1"       : "degenerate-masses"
-                            ,"htt_mt_2"       : "degenerate-masses"
-                            ,"htt_et_0"       : "degenerate-masses"
-                            ,"htt_et_1"       : "degenerate-masses"
-                            ,"hwwof_0j_shape" : "single-mass"
-                            ,"hwwof_1j_shape" : "single-mass"
-                            ,"hwwsf_0j_shape" : "single-mass"
-                            ,"hwwsf_1j_shape" : "single-mass"
-                            ,"hww_2j_cut"     : "single-mass"
-                            }                     
+                     for chn in ["mm", "em", "et", "mt"] :
+                            for cat in ["0", "1", "2", "3", "4", "5", "6", "7"] :
+                                   for period in ["7TeV", "8TeV"] :
+                                          decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
+                                          self.decay_channel_to_interpolation_method[decay_channel] = "degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hmm_0"         ] = "degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hmm_1"         ] = "degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hwwof_0j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hwwof_1j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hwwsf_0j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hwwsf_1j_shape"] = "single-mass"
+                     self.decay_channel_to_interpolation_method["hww_2j_cut"    ] = "single-mass"
               print "using mass interpolation", mode, "for htt limits"
               
        def init(self, interpolation_mode="mode-0") :
@@ -370,8 +346,10 @@ class MakeDatacard :
                      self.mH = float(os.popen("feyn-higgs-mssm xs mssm ggA {mA} {tanb} model={model} | grep mH".format(
                             mA=self.mA, tanb=self.tanb, model=self.feyn_higgs_model)).read().split()[2])
               else :
-                     ## read masses from htt mssm cross section tools (default behavior)
-                     scan = mssm_xsec_tools("{CMSSW_BASE}/src/{path}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], path=self.mssm_xsec_tools_input_path))
+                     ## read masses from htt mssm cross section tools (default behavior); the
+                     ## masses are taken from the 7TeV input files
+                     path = self.mssm_xsec_tools_input_path.format(PERIOD="7TeV")
+                     scan = mssm_xsec_tools("{CMSSW_BASE}/src/{PATH}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], PATH=path))
                      htt_query = scan.query(self.mA, self.tanb)
                      self.mh = htt_query['higgses']['h']['mass']
                      self.mH = htt_query['higgses']['H']['mass']      
@@ -401,7 +379,7 @@ class MakeDatacard :
                             cross_sections[key] = 0
               return cross_sections
 
-       def cross_sections_htt(self, production_channel, decay_channel) :
+       def cross_sections_htt(self, production_channel, decay_channel, period) :
               """
               Fill cross section results for different production channels for htt and hmm, which uses
               the same infrastructure as ht,t depending on mass and tanb. The variable 'production_channel'
@@ -416,7 +394,7 @@ class MakeDatacard :
               - 'hmm' for hmm
               
               The function returns the dictionary of production cross sections mapped to the individual
-              higgses 'A', 'H' and 'h'.
+              run periods (7TeV or 8TeV) and higgses in form 'period' : {'A', 'H' and 'h'}.
               """
               cross_sections = {"A" : 0., "H" : 0., "h" : 0.}
               if self.feyn_higgs_model != "":
@@ -440,7 +418,8 @@ class MakeDatacard :
                                    cross_sections[key] = 0
               else:
                      ## read cross section results for htt
-                     scan = mssm_xsec_tools("{CMSSW_BASE}/src/{path}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], path=self.mssm_xsec_tools_input_path))
+                     path = self.mssm_xsec_tools_input_path.format(PERIOD=period)
+                     scan = mssm_xsec_tools("{CMSSW_BASE}/src/{PATH}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], PATH=path))
                      htt_query = scan.query(self.mA, self.tanb)
                      ## fill cross section (central values)
                      for key in cross_sections :
@@ -465,33 +444,73 @@ class MakeDatacard :
                      if not filled_htt :
                             if self.standardized_decay_channel(decay_channel) == "htt" :
                                    filled_htt = True
-                                   self.signal_channel_to_cross_section["ggH_htt"] = self.cross_sections_htt("ggF", "htt")
-                                   self.signal_channel_to_cross_section["bbH_htt"] = self.cross_sections_htt("santander", "htt")
-                                   self.signal_channel_to_cross_section["qqH_htt"] = {"A" : 1., "H" : 1., "h" : 1.}
-                                   self.signal_channel_to_cross_section["VH_htt" ] = {"A" : 1., "H" : 1., "h" : 1.}
+                                   for period in ["7TeV", "8TeV"] :
+                                          self.signal_channel_to_cross_section[("ggH_htt", period)] = self.cross_sections_htt("ggF", "htt", period)
+                                          self.signal_channel_to_cross_section[("bbH_htt", period)] = self.cross_sections_htt("santander", "htt", period)
+                                          self.signal_channel_to_cross_section[("qqH_htt", period)] = {"A" : 1., "H" : 1., "h" : 1.} 
+                                          self.signal_channel_to_cross_section[("VH_htt" , period)] = {"A" : 1., "H" : 1., "h" : 1.} 
                      if not filled_hmm :
                             if self.standardized_decay_channel(decay_channel) == "hmm" :
                                    filled_hmm = True
-                                   self.signal_channel_to_cross_section["ggH_hmm"] = self.cross_sections_htt("ggF", "hmm")
-                                   self.signal_channel_to_cross_section["bbH_hmm"] = self.cross_sections_htt("santander", "hmm")
-                                   self.signal_channel_to_cross_section["qqH_hmm"] = {"A" : 1., "H" : 1., "h" : 1.}
-                                   self.signal_channel_to_cross_section["VH_hmm" ] = {"A" : 1., "H" : 1., "h" : 1.}                                   
+                                   for period in ["7TeV", "8TeV"] :
+                                          self.signal_channel_to_cross_section[("ggH_hmm", period)] = self.cross_sections_htt("ggF", "hmm", period) 
+                                          self.signal_channel_to_cross_section[("bbH_hmm", period)] = self.cross_sections_htt("santander", "hmm", period)
+                                          self.signal_channel_to_cross_section[("qqH_hmm", period)] = {"A" : 1., "H" : 1., "h" : 1.} 
+                                          self.signal_channel_to_cross_section[("VH_hmm" , period)] = {"A" : 1., "H" : 1., "h" : 1.}              
                      if not filled_vhtt :
                             if self.standardized_decay_channel(decay_channel) == "vhtt" :
                                    filled_htt = True
-                                   self.signal_channel_to_cross_section["ggH_vhtt"] = {"A" : 1., "H" : 1., "h" : 1.}
-                                   self.signal_channel_to_cross_section["bbH_vhtt"] = {"A" : 1., "H" : 1., "h" : 1.}
-                                   self.signal_channel_to_cross_section["qqH_vhtt"] = {"A" : 1., "H" : 1., "h" : 1.}
-                                   self.signal_channel_to_cross_section["VH_vhtt" ] = {"A" : 1., "H" : 1., "h" : 1.}                                   
+                                   for period in ["7TeV", "8TeV"] :
+                                          self.signal_channel_to_cross_section[("ggH_vhtt", period)] = {"A" : 1., "H" : 1., "h" : 1.}
+                                          self.signal_channel_to_cross_section[("bbH_vhtt", period)] = {"A" : 1., "H" : 1., "h" : 1.}
+                                          self.signal_channel_to_cross_section[("qqH_vhtt", period)] = {"A" : 1., "H" : 1., "h" : 1.}
+                                          self.signal_channel_to_cross_section[("VH_vhtt" , period)] = {"A" : 1., "H" : 1., "h" : 1.}
                      if not filled_hww :
                             if self.standardized_decay_channel(decay_channel) == "hww" :
                                    filled_hww = True
-                                   self.signal_channel_to_cross_section["ggH_hww"] = self.cross_sections_hww("gg")
-                                   self.signal_channel_to_cross_section["qqH_hww"] = self.cross_sections_hww("qq")
-                                   self.signal_channel_to_cross_section["WH_hww" ] = self.cross_sections_hww("W" )
-                                   self.signal_channel_to_cross_section["ZH_hww" ] = self.cross_sections_hww("Z" )
+                                   for period in ["7TeV", "8TeV"] :
+                                          self.signal_channel_to_cross_section[("ggH_hww", period)] = self.cross_sections_hww("gg")
+                                          self.signal_channel_to_cross_section[("qqH_hww", period)] = self.cross_sections_hww("qq")
+                                          self.signal_channel_to_cross_section[("WH_hww" , period)] = self.cross_sections_hww("W" )
+                                          self.signal_channel_to_cross_section[("ZH_hww" , period)] = self.cross_sections_hww("Z" )
 
-       def uncertainties_htt(self, production_channel, decay_channel, uncertainty_type, uncertainty_direction):
+       def contracted_cross_section(self, standardized_production_process, standardized_decay_channel, period, mode=0) :
+              """
+              Conracted cross section for A, H, h for a given production process and decay channel. The 
+              contracted cross section is provided in three modes:
+              mode 0 : cross sections for all Higgses added
+              mode 1 : cross sections added for degenerate mass mode (depending on mA only two or all
+                       higgses contribute)
+              mode 2 : cross section for single mass mode (depending on mA only one Higgs contributes)
+              The argument 'period' indicates the 7TeV or 8TeV running period.
+              """
+              contracted_cross_section = 0.
+              channel = standardized_production_process+"_"+standardized_decay_channel
+              if mode == 2 :
+                     ## determine cross section for single-mass mode
+                     if self.mA<self.hww_cross_point :
+                            contracted_cross_section = self.signal_channel_to_cross_section[(channel, period)]["H"]
+                     else :
+                            contracted_cross_section = self.signal_channel_to_cross_section[(channel, period)]["h"]
+              elif mode == 1 :
+                     ## determine cross section for degenerate-masses mode
+                     if abs(self.mA-self.mh) < abs(self.mA-self.mH) :
+                            contracted_cross_section = self.signal_channel_to_cross_section[(channel, period)]["A"]
+                            contracted_cross_section+= self.signal_channel_to_cross_section[(channel, period)]["h"]
+                     else:
+                            contracted_cross_section = self.signal_channel_to_cross_section[(channel, period)]["A"]
+                            contracted_cross_section+= self.signal_channel_to_cross_section[(channel, period)]["H"]
+                     if self.mA == 130. :
+                            contracted_cross_section = self.signal_channel_to_cross_section[(channel, period)]["A"]
+                            contracted_cross_section+= self.signal_channel_to_cross_section[(channel, period)]["H"]
+                            contracted_cross_section+= self.signal_channel_to_cross_section[(channel, period)]["h"]
+              else :
+                     ## determine cross section for non-degenerate-masses mode
+                     for higgs in self.signal_channel_to_cross_section[(channel, period)] :
+                            contracted_cross_section += self.signal_channel_to_cross_section[(channel, period)][higgs]
+              return contracted_cross_section
+
+       def uncertainties_htt(self, production_channel, decay_channel, period, uncertainty_type, uncertainty_direction):
               """
               Fill cross section uncertainties for different production channels for htt and hmm, which uses
               the same infrastructure as htt, depending on mass and tanb. The variable 'production_channel'
@@ -504,6 +523,11 @@ class MakeDatacard :
 
               - 'htt' for htt
               - 'hmm' for hmm
+
+              The variables 'period' can have the values:
+
+              - '7TeV' for the 7TeV data taking period
+              - '8TeV' for the 8TeV data taking period
               
               The variable 'uncertainty_type' can have the values 'mu' and 'pdf' for the different
               uncertainty types (scale or pdf). The variable 'uncertainty_direction' can be -1 or
@@ -513,7 +537,8 @@ class MakeDatacard :
               """
               cross_sections = {"A" : 0., "H" : 0., "h" : 0.}
               ## read cross section results for htt
-              inputFileName="{CMSSW_BASE}/src/{path}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], path=self.mssm_xsec_tools_input_path)
+              path = self.mssm_xsec_tools_input_path.format(PERIOD=period)
+              inputFileName="{CMSSW_BASE}/src/{PATH}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], PATH=path)
               scan = mssm_xsec_tools(inputFileName)
               htt_query = scan.query(self.mA, self.tanb)
               ## fill uncertainties of Up/Down type
@@ -523,55 +548,20 @@ class MakeDatacard :
                      if decay_channel == "hmm" :
                             cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR-mumu"]
               return cross_sections
-
-       def contracted_cross_section(self, standardized_production_process, standardized_decay_channel, mode=0) :
-              """
-              Conracted cross section for A, H, h for a given production process and decay channel. The 
-              contracted cross section is provided in three modes:
-              mode 0 : cross sections for all Higgses added
-              mode 1 : cross sections added for degenerate mass mode (depending on mA only two or all
-                       higgses contribute)
-              mode 2 : cross section for single mass mode (depending on mA only one Higgs contributes)
-              """
-              contracted_cross_section = 0.
-              channel = standardized_production_process+"_"+standardized_decay_channel
-              if mode == 2 :
-                     ## determine cross section for single-mass mode
-                     if self.mA<self.hww_cross_point :
-                            contracted_cross_section = self.signal_channel_to_cross_section[channel]["H"]
-                     else :
-                            contracted_cross_section = self.signal_channel_to_cross_section[channel]["h"]
-              elif mode == 1 :
-                     ## determine cross section for degenerate-masses mode
-                     if abs(self.mA-self.mh) < abs(self.mA-self.mH) :
-                            contracted_cross_section = self.signal_channel_to_cross_section[channel]["A"]
-                            contracted_cross_section+= self.signal_channel_to_cross_section[channel]["h"]
-                     else:
-                            contracted_cross_section = self.signal_channel_to_cross_section[channel]["A"]
-                            contracted_cross_section+= self.signal_channel_to_cross_section[channel]["H"]
-                     if self.mA == 130. :
-                            contracted_cross_section = self.signal_channel_to_cross_section[channel]["A"]
-                            contracted_cross_section+= self.signal_channel_to_cross_section[channel]["H"]
-                            contracted_cross_section+= self.signal_channel_to_cross_section[channel]["h"]
-              else :
-                     ## determine cross section for non-degenerate-masses mode
-                     for higgs in self.signal_channel_to_cross_section[channel] :
-                            contracted_cross_section += self.signal_channel_to_cross_section[channel][higgs]
-              return contracted_cross_section
                      
-       def contracted_uncertainty(self, standardized_production_process, standardized_decay_channel, uncertainty_type, uncertainty_direction) :
+       def contracted_uncertainty(self, standardized_production_process, standardized_decay_channel, period, uncertainty_type, uncertainty_direction) :
               """
               Contract the uncertainties for A, H, h into a single uncertainty for a given production process
               times decay channel. Scale uncertainties are added linearly, PDF uncertainties are added in
-              quadrature.
+              quadrature. The argument 'period' indicates the 7TeV or 8TeV running period.
               """
               contracted_uncertainty = 0.
               channel = standardized_production_process+"_"+standardized_decay_channel+"_"+uncertainty_type+uncertainty_direction
-              for higgs in self.signal_channel_to_uncertainties[channel] :
+              for higgs in self.signal_channel_to_uncertainties[(channel, period)] :
                      if uncertainty_type == "mu" :
-                            contracted_uncertainty += self.signal_channel_to_uncertainties[channel][higgs]
+                            contracted_uncertainty += self.signal_channel_to_uncertainties[(channel, period)][higgs]
                      if uncertainty_type == "pdf" :
-                            contracted_uncertainty += self.signal_channel_to_uncertainties[channel][higgs]*self.signal_channel_to_uncertainties[channel][higgs]
+                            contracted_uncertainty += self.signal_channel_to_uncertainties[(channel, period)][higgs]*self.signal_channel_to_uncertainties[(channel, period)][higgs]
               if uncertainty_type == "pdf" :
                      contracted_uncertainty = math.sqrt(contracted_uncertainty)
               return contracted_uncertainty
@@ -589,79 +579,83 @@ class MakeDatacard :
                      if not filled_htt :
                             if self.standardized_decay_channel(decay_channel) == "htt" :
                                    filled_htt = True
-                                   self.signal_channel_to_uncertainties["ggH_htt_mu+" ] = self.uncertainties_htt("ggF"      , "htt", "mu" ,  1)
-                                   self.signal_channel_to_uncertainties["ggH_htt_mu-" ] = self.uncertainties_htt("ggF"      , "htt", "mu" , -1)
-                                   self.signal_channel_to_uncertainties["bbH_htt_mu+" ] = self.uncertainties_htt("santander", "htt", "mu" ,  1)
-                                   self.signal_channel_to_uncertainties["bbH_htt_mu-" ] = self.uncertainties_htt("santander", "htt", "mu" , -1)
-                                   self.signal_channel_to_uncertainties["qqH_htt_mu+" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["qqH_htt_mu-" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["VH_htt_mu+"  ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["VH_htt_mu-"  ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["ggH_htt_pdf+"] = self.uncertainties_htt("ggF"      , "htt", "pdf",  1)
-                                   self.signal_channel_to_uncertainties["ggH_htt_pdf-"] = self.uncertainties_htt("ggF"      , "htt", "pdf", -1)
-                                   self.signal_channel_to_uncertainties["bbH_htt_pdf+"] = self.uncertainties_htt("santander", "htt", "pdf",  1)
-                                   self.signal_channel_to_uncertainties["bbH_htt_pdf-"] = self.uncertainties_htt("santander", "htt", "pdf", -1)
-                                   self.signal_channel_to_uncertainties["qqH_htt_pdf+"] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["qqH_htt_pdf-"] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["VH_htt_pdf+" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["VH_htt_pdf-" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   for period in ["7TeV", "8TeV"] :
+                                          self.signal_channel_to_uncertainties[("ggH_htt_mu+" , period)] = self.uncertainties_htt("ggF"      , "htt", period, "mu" ,  1)
+                                          self.signal_channel_to_uncertainties[("ggH_htt_mu-" , period)] = self.uncertainties_htt("ggF"      , "htt", period, "mu" , -1)
+                                          self.signal_channel_to_uncertainties[("bbH_htt_mu+" , period)] = self.uncertainties_htt("santander", "htt", period, "mu" ,  1)
+                                          self.signal_channel_to_uncertainties[("bbH_htt_mu-" , period)] = self.uncertainties_htt("santander", "htt", period, "mu" , -1)
+                                          self.signal_channel_to_uncertainties[("qqH_htt_mu+" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("qqH_htt_mu-" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("VH_htt_mu+"  , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("VH_htt_mu-"  , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("ggH_htt_pdf+", period)] = self.uncertainties_htt("ggF"      , "htt", period, "pdf",  1)
+                                          self.signal_channel_to_uncertainties[("ggH_htt_pdf-", period)] = self.uncertainties_htt("ggF"      , "htt", period, "pdf", -1)
+                                          self.signal_channel_to_uncertainties[("bbH_htt_pdf+", period)] = self.uncertainties_htt("santander", "htt", period, "pdf",  1)
+                                          self.signal_channel_to_uncertainties[("bbH_htt_pdf-", period)] = self.uncertainties_htt("santander", "htt", period, "pdf", -1)
+                                          self.signal_channel_to_uncertainties[("qqH_htt_pdf+", period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("qqH_htt_pdf-", period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("VH_htt_pdf+" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("VH_htt_pdf-" , period)] = {"A" : .1, "H" : .1, "h" : .1}
                      if not filled_hmm :
                             if self.standardized_decay_channel(decay_channel) == "hmm" :
                                    filled_hmm = True
-                                   self.signal_channel_to_uncertainties["ggH_hmm_mu+" ] = self.uncertainties_htt("ggF"      , "hmm", "mu" ,  1)
-                                   self.signal_channel_to_uncertainties["ggH_hmm_mu-" ] = self.uncertainties_htt("ggF"      , "hmm", "mu" , -1)
-                                   self.signal_channel_to_uncertainties["bbH_hmm_mu+" ] = self.uncertainties_htt("santander", "hmm", "mu" ,  1)
-                                   self.signal_channel_to_uncertainties["bbH_hmm_mu-" ] = self.uncertainties_htt("santander", "hmm", "mu" , -1)
-                                   self.signal_channel_to_uncertainties["qqH_hmm_mu+" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["qqH_hmm_mu-" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["VH_hmm_mu+"  ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["VH_hmm_mu-"  ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["ggH_hmm_pdf+"] = self.uncertainties_htt("ggF"      , "hmm", "pdf",  1)
-                                   self.signal_channel_to_uncertainties["ggH_hmm_pdf-"] = self.uncertainties_htt("ggF"      , "hmm", "pdf", -1)
-                                   self.signal_channel_to_uncertainties["bbH_hmm_pdf+"] = self.uncertainties_htt("santander", "hmm", "pdf",  1)
-                                   self.signal_channel_to_uncertainties["bbH_hmm_pdf-"] = self.uncertainties_htt("santander", "hmm", "pdf", -1)
-                                   self.signal_channel_to_uncertainties["qqH_hmm_pdf+"] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["qqH_hmm_pdf-"] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["VH_hmm_pdf+" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["VH_hmm_pdf-" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   for period in ["7TeV", "8TeV"] :
+                                          self.signal_channel_to_uncertainties[("ggH_hmm_mu+" , period)] = self.uncertainties_htt("ggF"      , "hmm", period, "mu" ,  1)
+                                          self.signal_channel_to_uncertainties[("ggH_hmm_mu-" , period)] = self.uncertainties_htt("ggF"      , "hmm", period, "mu" , -1)
+                                          self.signal_channel_to_uncertainties[("bbH_hmm_mu+" , period)] = self.uncertainties_htt("santander", "hmm", period, "mu" ,  1)
+                                          self.signal_channel_to_uncertainties[("bbH_hmm_mu-" , period)] = self.uncertainties_htt("santander", "hmm", period, "mu" , -1)
+                                          self.signal_channel_to_uncertainties[("qqH_hmm_mu+" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("qqH_hmm_mu-" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("VH_hmm_mu+"  , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("VH_hmm_mu-"  , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("ggH_hmm_pdf+", period)] = self.uncertainties_htt("ggF"      , "hmm", period, "pdf",  1)
+                                          self.signal_channel_to_uncertainties[("ggH_hmm_pdf-", period)] = self.uncertainties_htt("ggF"      , "hmm", period, "pdf", -1)
+                                          self.signal_channel_to_uncertainties[("bbH_hmm_pdf+", period)] = self.uncertainties_htt("santander", "hmm", period, "pdf",  1)
+                                          self.signal_channel_to_uncertainties[("bbH_hmm_pdf-", period)] = self.uncertainties_htt("santander", "hmm", period, "pdf", -1)
+                                          self.signal_channel_to_uncertainties[("qqH_hmm_pdf+", period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("qqH_hmm_pdf-", period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("VH_hmm_pdf+" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("VH_hmm_pdf-" , period)] = {"A" : .1, "H" : .1, "h" : .1}
                      if not filled_vhtt :
                             if self.standardized_decay_channel(decay_channel) == "vhtt" :
                                    filled_vhtt = True
-                                   self.signal_channel_to_uncertainties["ggH_vhtt_mu+" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["ggH_vhtt_mu-" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["bbH_vhtt_mu+" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["bbH_vhtt_mu-" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["qqH_vhtt_mu+" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["qqH_vhtt_mu-" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["VH_vhtt_mu+"  ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["VH_vhtt_mu-"  ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["ggH_vhtt_pdf+"] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["ggH_vhtt_pdf-"] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["bbH_vhtt_pdf+"] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["bbH_vhtt_pdf-"] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["qqH_vhtt_pdf+"] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["qqH_vhtt_pdf-"] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["VH_vhtt_pdf+" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["VH_vhtt_pdf-" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   for period in ["7TeV", "8TeV"] :
+                                          self.signal_channel_to_uncertainties[("ggH_vhtt_mu+" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("ggH_vhtt_mu-" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("bbH_vhtt_mu+" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("bbH_vhtt_mu-" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("qqH_vhtt_mu+" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("qqH_vhtt_mu-" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("VH_vhtt_mu+"  , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("VH_vhtt_mu-"  , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("ggH_vhtt_pdf+", period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("ggH_vhtt_pdf-", period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("bbH_vhtt_pdf+", period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("bbH_vhtt_pdf-", period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("qqH_vhtt_pdf+", period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("qqH_vhtt_pdf-", period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("VH_vhtt_pdf+" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("VH_vhtt_pdf-" , period)] = {"A" : .1, "H" : .1, "h" : .1}
                      if not filled_hww :
                             if self.standardized_decay_channel(decay_channel) == "hww" :
                                    filled_hww = True
-                                   self.signal_channel_to_uncertainties["ggH_hww_mu+" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["ggH_hww_mu-" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["bbH_hww_mu+" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["bbH_hww_mu-" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["qqH_hww_mu+" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["qqH_hww_mu-" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["VH_hww_mu+"  ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["VH_hww_mu-"  ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["ggH_hww_pdf+"] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["ggH_hww_pdf-"] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["bbH_hww_pdf+"] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["bbH_hww_pdf-"] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["qqH_hww_pdf+"] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["qqH_hww_pdf-"] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["VH_hww_pdf+" ] = {"A" : .1, "H" : .1, "h" : .1}
-                                   self.signal_channel_to_uncertainties["VH_hww_pdf-" ] = {"A" : .1, "H" : .1, "h" : .1}
+                                   for period in ["7TeV", "8TeV"] :
+                                          self.signal_channel_to_uncertainties[("ggH_hww_mu+" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("ggH_hww_mu-" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("bbH_hww_mu+" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("bbH_hww_mu-" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("qqH_hww_mu+" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("qqH_hww_mu-" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("VH_hww_mu+"  , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("VH_hww_mu-"  , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("ggH_hww_pdf+", period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("ggH_hww_pdf-", period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("bbH_hww_pdf+", period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("bbH_hww_pdf-", period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("qqH_hww_pdf+", period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("qqH_hww_pdf-", period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("VH_hww_pdf+" , period)] = {"A" : .1, "H" : .1, "h" : .1}
+                                          self.signal_channel_to_uncertainties[("VH_hww_pdf-" , period)] = {"A" : .1, "H" : .1, "h" : .1}
                             
        def load_available_masses(self, decay_channel) :
               """
@@ -695,6 +689,9 @@ class MakeDatacard :
               lower  = -1.
               upper  = -1.
               failed = False
+              ## drop out here if there's not more than one mass available
+              if not len(masses)>1 :
+                     return (True, lower, upper)
               for idx in range(len(masses)-1) :
                      if masses[idx]<mass and mass<=masses[idx+1] :
                             lower = masses[idx  ]
@@ -993,6 +990,8 @@ class MakeDatacard :
                                                                histfile = "../$MASS/"+histfile                                                               
                                           ## add prefix to histogram name where needed 
                                           hist_name = self.production_processes[idx]
+                                          ## define run period for proper histogram scaling according to 7TeV or 8TeV cross sections 
+                                          period = self.decay_channels_[idx][self.decay_channels_[idx].rfind("_")+1:]
                                           ## rescale central value histograms
                                           if self.decay_channel_to_interpolation_method.has_key(self.decay_channels_[idx]) :
                                                  if self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "non-degenerate-masses-light" :
@@ -1002,7 +1001,7 @@ class MakeDatacard :
                                                                directory,
                                                                hist_name,
                                                                masses,
-                                                               self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                               self.signal_channel_to_cross_section[(std_prod+"_"+std_decay, period)],
                                                                self.decay_channels_[idx],
                                                                ""
                                                                "light"
@@ -1013,7 +1012,7 @@ class MakeDatacard :
                                                                histfile,
                                                                directory,
                                                                hist_name,
-                                                               self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                               self.signal_channel_to_cross_section[(std_prod+"_"+std_decay, period)],
                                                                self.decay_channels_[idx]
                                                                )
                                                  elif self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "single-mass" :
@@ -1023,7 +1022,7 @@ class MakeDatacard :
                                                                directory,
                                                                hist_name,
                                                                masses,
-                                                               self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                               self.signal_channel_to_cross_section[(std_prod+"_"+std_decay, period)],
                                                                self.decay_channels_[idx]
                                                                )                                                        
                                                  else :
@@ -1033,7 +1032,7 @@ class MakeDatacard :
                                                                directory,
                                                                hist_name,
                                                                masses,
-                                                               self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                               self.signal_channel_to_cross_section[(std_prod+"_"+std_decay, period)],
                                                                self.decay_channels_[idx]
                                                                )
                                           else :
@@ -1042,7 +1041,7 @@ class MakeDatacard :
                                                         directory,
                                                         hist_name,
                                                         masses,
-                                                        self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                        self.signal_channel_to_cross_section[(std_prod+"_"+std_decay, period)],
                                                         self.decay_channels_[idx]
                                                         )
 
@@ -1075,6 +1074,8 @@ class MakeDatacard :
                                                                histfile = "../$MASS/"+histfile
                                           ## add prefix to histogram name where needed 
                                           hist_name = self.production_processes[idx]
+                                          ## define run period for proper histogram scaling according to 7TeV or 8TeV cross sections 
+                                          period = self.decay_channels_[idx][self.decay_channels_[idx].rfind("_")+1:]
                                           ## rescal histograms for "Up"/"Down" shape uncertainties
                                           for uncertainty, indexes in self.uncertainty_to_signal_indexes.iteritems() :
                                                  for jdx in indexes :
@@ -1087,7 +1088,7 @@ class MakeDatacard :
                                                                                     directory,
                                                                                     hist_name,
                                                                                     masses,
-                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                                    self.signal_channel_to_cross_section[(std_prod+"_"+std_decay, period)],
                                                                                     self.decay_channels_[idx],
                                                                                     uncertainty+"Up",
                                                                                     "light"
@@ -1097,7 +1098,7 @@ class MakeDatacard :
                                                                                     directory,
                                                                                     hist_name,
                                                                                     masses,
-                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                                    self.signal_channel_to_cross_section[(std_prod+"_"+std_decay, period)],
                                                                                     self.decay_channels_[idx],
                                                                                     uncertainty+"Down"
                                                                                     "light"
@@ -1108,7 +1109,7 @@ class MakeDatacard :
                                                                                     histfile,
                                                                                     directory,
                                                                                     hist_name,
-                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                                    self.signal_channel_to_cross_section[(std_prod+"_"+std_decay, period)],
                                                                                     self.decay_channels_[idx],
                                                                                     uncertainty+"Up"
                                                                                     )
@@ -1116,7 +1117,7 @@ class MakeDatacard :
                                                                                     histfile,
                                                                                     directory,
                                                                                     hist_name,
-                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                                    self.signal_channel_to_cross_section[(std_prod+"_"+std_decay, period)],
                                                                                     self.decay_channels_[idx],
                                                                                     uncertainty+"Down"
                                                                                     )
@@ -1127,7 +1128,7 @@ class MakeDatacard :
                                                                                     directory,
                                                                                     hist_name,
                                                                                     masses,
-                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                                    self.signal_channel_to_cross_section[(std_prod+"_"+std_decay, period)],
                                                                                     self.decay_channels_[idx],
                                                                                     uncertainty+"Up"
                                                                                     )
@@ -1136,7 +1137,7 @@ class MakeDatacard :
                                                                                     directory,
                                                                                     hist_name,
                                                                                     masses,
-                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                                    self.signal_channel_to_cross_section[(std_prod+"_"+std_decay, period)],
                                                                                     self.decay_channels_[idx],
                                                                                     uncertainty+"Down"
                                                                                     )
@@ -1147,7 +1148,7 @@ class MakeDatacard :
                                                                                     directory,
                                                                                     hist_name,
                                                                                     masses,
-                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                                    self.signal_channel_to_cross_section[(std_prod+"_"+std_decay, period)],
                                                                                     self.decay_channels_[idx],
                                                                                     uncertainty+"Up"
                                                                                     )
@@ -1156,7 +1157,7 @@ class MakeDatacard :
                                                                                     directory,
                                                                                     hist_name,
                                                                                     masses,
-                                                                                    self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                                    self.signal_channel_to_cross_section[(std_prod+"_"+std_decay, period)],
                                                                                     self.decay_channels_[idx],
                                                                                     uncertainty+"Down"
                                                                                     )
@@ -1166,7 +1167,7 @@ class MakeDatacard :
                                                                              directory,
                                                                              hist_name,
                                                                              masses,
-                                                                             self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                             self.signal_channel_to_cross_section[(std_prod+"_"+std_decay, period)],
                                                                              self.decay_channels_[idx],
                                                                              uncertainty+"Up"
                                                                              )
@@ -1175,7 +1176,7 @@ class MakeDatacard :
                                                                              directory,
                                                                              hist_name+"_"+uncertainty+"Down",
                                                                              masses,
-                                                                             self.signal_channel_to_cross_section[std_prod+"_"+std_decay],
+                                                                             self.signal_channel_to_cross_section[(std_prod+"_"+std_decay, period)],
                                                                              self.decay_channels_[idx],
                                                                              uncertainty+"Down"
                                                                              )
@@ -1306,9 +1307,12 @@ class MakeDatacard :
                                    contracted_cross_section_mode = 1
                             if self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "single-mass" :
                                    contracted_cross_section_mode = 2
+                            ## define run period for proper histogram scaling according to 7TeV or 8TeV cross sections 
+                            period = self.decay_channels_[idx][self.decay_channels_[idx].rfind("_")+1:]       
                             xsec = self.contracted_cross_section(
                                    self.standardized_signal_process(self.production_processes[idx]),
                                    self.standardized_decay_channel(self.decay_channels_[idx]),
+                                   period,
                                    contracted_cross_section_mode
                                    )
                             output_list = output_line.split()
@@ -1345,20 +1349,22 @@ class MakeDatacard :
                                                                       contracted_cross_section_mode = 1
                                                                if self.decay_channel_to_interpolation_method[self.decay_channels_[jdx]] == "single-mass" :
                                                                       contracted_cross_section_mode = 2
+                                                               ## define run period for proper histogram scaling according to 7TeV or 8TeV cross sections 
+                                                               period = self.decay_channels_[idx][self.decay_channels_[idx].rfind("_")+1:]           
                                                                ## add uncertainties for given process
-                                                               if uncertainty.find("Scale")>-1 :
-                                                                      cross_section = self.contracted_cross_section(prod, decay, contracted_cross_section_mode)
-                                                                      uncert_upper  = self.contracted_uncertainty(prod, decay, "mu" , "+")
-                                                                      uncert_lower  = self.contracted_uncertainty(prod, decay, "mu" , "-")
+                                                               if uncertainty.find("Scale")>-1 :      
+                                                                      cross_section = self.contracted_cross_section(prod, decay, period, contracted_cross_section_mode)
+                                                                      uncert_upper  = self.contracted_uncertainty(prod, decay, period, "mu" , "+")
+                                                                      uncert_lower  = self.contracted_uncertainty(prod, decay, period, "mu" , "-")
                                                                       if cross_section>0. and uncert_lower/cross_section!=1 :
                                                                              self.signal_channel_to_uncertainty_lines[uncertainty] += " \t\t %.3f/%.3f " % \
                                                                              (1./(1.-uncert_lower/cross_section), 1.+uncert_upper/cross_section)
                                                                       else :
                                                                              self.signal_channel_to_uncertainty_lines[uncertainty] += " \t\t  0.1 " 
                                                                if uncertainty.find("PDF"  )>-1 :
-                                                                      cross_section = self.contracted_cross_section(prod, decay, contracted_cross_section_mode)
-                                                                      uncert_upper  = self.contracted_uncertainty(prod, decay, "pdf", "+")
-                                                                      uncert_lower  = self.contracted_uncertainty(prod, decay, "pdf", "-")
+                                                                      cross_section = self.contracted_cross_section(prod, decay, period, contracted_cross_section_mode)
+                                                                      uncert_upper  = self.contracted_uncertainty(prod, decay, period, "pdf", "+")
+                                                                      uncert_lower  = self.contracted_uncertainty(prod, decay, period, "pdf", "-")
                                                                       if cross_section>0. :
                                                                              uncert = (1./(1.+uncert_lower/cross_section))/(1.+uncert_upper/cross_section)
                                                                              self.signal_channel_to_uncertainty_lines[uncertainty] += " \t\t %.3f/%.3f " % \
