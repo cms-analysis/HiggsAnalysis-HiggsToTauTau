@@ -42,16 +42,10 @@ if not options.channel == "new" :
     ## there is no additional label to the input file foreseen.
     type = ""
     if options.category.find('-')>-1 :
-        type+="-"+options.category[:options.category.find('-')].lower()
+        type+="-"+options.category[:options.category.rfind('-')].lower()
     if options.channel == "hmm" or options.channel == "vhtt": 
-        target_path = "{target}/{channel}.inputs{type}.root".format(target=target_path, channel=options.channel, type=type)
+        os.system("cp {source}/{channel}.inputs{type}*.root {target}".format(source=source_path, channel=options.channel, type=type, target=target_path))
     else :
-        target_path = "{target}/htt_{channel}.inputs{type}.root".format(target=target_path, channel=options.channel, type=type)
-    if not os.path.exists(target_path) :
-        if options.channel == "hmm" or options.channel == "vhtt": 
-            os.system("cp {source}/{channel}.inputs{type}.root {target}".format(source=source_path, channel=options.channel, type=type, target=target_path))
-        else :
-            os.system("cp {source}/htt_{channel}.inputs{type}.root {target}".format(source=source_path, channel=options.channel, type=type, target=target_path))
-            
+        os.system("cp {source}/htt_{channel}.inputs{type}*.root {target}".format(source=source_path, channel=options.channel, type=type, target=target_path))    
 else:
     os.system("cp -r %s/src/HiggsAnalysis/HiggsToTauTau/setup/README %s" % (CMSSW_BASE, target_path))
