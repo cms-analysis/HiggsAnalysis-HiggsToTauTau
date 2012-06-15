@@ -137,9 +137,9 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["emu"       ] = kBlue;
   colors["em"        ] = kBlue;
   colors["etau"      ] = kRed;
-  colors["et"        ] = kRed;
+  colors["et"        ] = kRed
   colors["mutau"     ] = kGreen;
-  colors["mt"        ] = kGreen;
+  colors["mt"        ] = kGreen
   colors["mumu"      ] = kMagenta;
   colors["mm"        ] = kMagenta;
   colors["tautau"    ] = kOrange;
@@ -149,7 +149,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["zhtt"      ] = kCyan+2;
   colors["whhh"      ] = kBlue;
   colors["cmb"       ] = kBlack;
-  colors["htt"       ] = kRed;
+  colors["htt"       ] = kBlack;
   colors["htt+"      ] = kBlue;
   colors["hgg"       ] = kRed;
   colors["hww"       ] = kGreen;
@@ -160,11 +160,11 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["hzz2l2n"   ] = kPink;
   colors["ggH"       ] = kRed;
   colors["bbH"       ] = kBlue;
-  colors["test-0"    ] = kBlue;
-  colors["test-1"    ] = kRed;
+  colors["test-0"    ] = kBlue+2;
+  colors["test-1"    ] = kRed+2;
   colors["test-2"    ] = kGreen;
-  colors["test-3"    ] = kOrange;
-  colors["test-4"    ] = kMagenta;
+  colors["test-3"    ] = kRed+2;
+  colors["test-4"    ] = kBlue;
   colors["test-5"    ] = kViolet-6;
   colors["cmb-5fb"   ] = kBlue;
   colors["hpa-5fb"   ] = kRed;
