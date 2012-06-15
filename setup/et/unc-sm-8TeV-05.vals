@@ -1,6 +1,6 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-eTau_vbf		signal		             	lumi            			1.05
+eTau_vbf		signal		             	lumi_8TeV            			1.05
 eTau_vbf   		ggH				pdf_gg    				1.08
 eTau_vbf   		qqH				pdf_qqbar				1.03
 eTau_vbf   		VH				pdf_vh					1.02
@@ -18,13 +18,13 @@ eTau_vbf         	TT				CMS_scale_j				1.14
 eTau_vbf         	VV				CMS_scale_j				1.21
 eTau_vbf   		signal,ZLL	    		CMS_scale_met				1.05
 eTau_vbf	   	TT,VV		    		CMS_scale_met				1.10
-eTau_vbf		ZTT				CMS_htt_ztt_extrap_vbf_8TeV		1.086
-eTau_vbf		ZLL				CMS_htt_ztt_extrap_vbf_8TeV		1.028
-eTau_vbf		W				CMS_htt_W_extrap_vbf_8TeV		1.044
-eTau_vbf		QCD				CMS_htt_eTau_vbf_QCDSyst_8TeV		1.101
-eTau_vbf		ZTT,ZLL				CMS_htt_zttNorm_8TeV 			1.033
-eTau_vbf		TT				CMS_htt_ttbarNorm_8TeV			1.261
-eTau_vbf		VV				CMS_htt_DiBosonNorm_8TeV		1.990
-eTau_vbf		W				CMS_htt_eTau_WNorm_8TeV			1.066
-eTau_vbf		ZLL				CMS_htt_ZLLNorm_8TeV			1.148
+eTau_vbf		ZTT				CMS_htt_ztt_extrap_vbf_8TeV		1.09
+eTau_vbf		ZLL				CMS_htt_ztt_extrap_vbf_8TeV		1.03
+eTau_vbf		W				CMS_htt_W_extrap_vbf_8TeV		1.04
+eTau_vbf		QCD				CMS_htt_eTau_vbf_QCDSyst_8TeV		1.10
+eTau_vbf		ZTT,ZLL				CMS_htt_zttNorm_8TeV 			1.03
+eTau_vbf		TT				CMS_htt_ttbarNorm_8TeV			1.25
+eTau_vbf		VV				CMS_htt_DiBosonNorm_8TeV		2.00
+eTau_vbf		W				CMS_htt_eTau_WNorm_8TeV			1.07
+eTau_vbf		ZLL				CMS_htt_ZLLNorm_8TeV			1.15
 
