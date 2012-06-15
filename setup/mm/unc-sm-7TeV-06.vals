@@ -1,5 +1,5 @@
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-mumu_btag_low		  	signal,Dibosons,WJets           lumi            			1.025
+mumu_btag_low		  	signal,Dibosons,WJets           lumi_7TeV            			1.022
 mumu_btag_low			signal,ZTT,TTJ,WJets,Dibosons 	CMS_eff_m 				1.04
 mumu_btag_low			signal,ZMM,TTJ,WJets,Dibosons	CMS_scale_j				1.04
 mumu_btag_low			signal,ZMM,TTJ,WJets,Dibosons   CMS_scale_met				1.04
@@ -12,8 +12,8 @@ mumu_btag_low			ggH				QCDscale_ggH1in     			1.25
 mumu_btag_low			qqH				QCDscale_qqH				1.06
 mumu_btag_low			VH 	                        QCDscale_VH				1.04
 mumu_btag_low			signal				UEPS					1.04
-mumu_btag_low			ZTT				CMS_htt_zttNorm_7TeV 			1.033
-mumu_btag_low			TTJ				CMS_htt_ttbarNorm_7TeV			1.075
+mumu_btag_low			ZTT				CMS_htt_zttNorm_7TeV 			1.03
+mumu_btag_low			TTJ				CMS_htt_ttbarNorm_7TeV			1.08
 mumu_btag_low			Dibosons			CMS_htt_DiBosonNorm_7TeV		1.30
 mumu_btag_low			ZMM				CMS_htt_mm_zmmNorm_7TeV			1.06
 mumu_btag_low			ggH				CMS_htt_mm_ggH_MCStat_06_7TeV		1.50
