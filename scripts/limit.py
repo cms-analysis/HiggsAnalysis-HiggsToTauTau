@@ -292,6 +292,8 @@ for directory in args :
             os.system("combine -M Asymptotic --run observed -C {CL} {minuit} --minimizerStrategy {strategy} -n '-obs' {qtilde} {mass} {user} tmp.root".format(
                 CL=options.confidenceLevel, minuit=minuitopt, qtilde=qtildeopt, strategy=options.strategy, mass=massopt, user=options.userOpt))
     if options.prepMLFit :
+        ## determine mass value from directory
+        mass = directory[directory.rfind("/")+1:]
         ## combine datacard from all datacards in this directory
         ## if not done so already
         if not os.path.exists("tmp.txt") :
@@ -309,7 +311,7 @@ for directory in args :
             minuitopt = "--minimizerAlgo minuit"
         qtildeopt = ""
         ## run expected limits
-        os.system("combine -M MaxLikelihoodFit {minuit} {user} tmp.txt --out=out".format(minuit=minuitopt, user=options.userOpt))
+        os.system("combine -M MaxLikelihoodFit -m {mass} {minuit} {user} tmp.txt --out=out".format(mass=mass, minuit=minuitopt, user=options.userOpt))
         ## change to sub-directory out and prepare formated output
         os.chdir(os.path.join(subdirectory, "out"))
         os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f text mlfit.root > mlfit.txt")
