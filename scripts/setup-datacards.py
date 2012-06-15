@@ -35,6 +35,7 @@ if len(args) < 1 :
     
 import os
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
+from HiggsAnalysis.HiggsToTauTau.utils import mass_category
 
 ## periods
 periods = options.periods.split()
@@ -46,13 +47,12 @@ for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
 ## setup directory structure in case it does not exist, yet 
 if not os.path.exists(options.out) :
     os.system("mkdir {OUTPUT}/".format(OUTPUT=options.out))
-if options.analysis == "sm" : 
-    if not os.path.exists("{OUTPUT}/sm".format(OUTPUT=options.out)) :
-        os.system("mkdir {OUTPUT}/sm".format(OUTPUT=options.out))
-        for channel in channels :
-            prefix = "" if channel == "vhtt" else "htt_"
-            if not os.path.exists("{OUTPUT}/sm/{PRE}{CHN}".format(OUTPUT=options.out, PRE=prefix, CHN=channel)) :
-                os.system("mkdir {OUTPUT}/sm/{PRE}{CHN}".format(OUTPUT=options.out, PRE=prefix, CHN=channel))
+if not os.path.exists("{OUTPUT}/{ANA}".format(OUTPUT=options.out, ANA=options.analysis)) :
+    os.system("mkdir {OUTPUT}/{ANA}".format(OUTPUT=options.out, ANA=options.analysis))
+for channel in channels :
+    prefix = "" if channel == "vhtt" else "htt_"
+    if not os.path.exists("{OUTPUT}/{ANA}/{PRE}{CHN}".format(OUTPUT=options.out, ANA=options.analysis, PRE=prefix, CHN=channel)) :
+        os.system("mkdir {OUTPUT}/{ANA}/{PRE}{CHN}".format(OUTPUT=options.out, ANA=options.analysis, PRE=prefix, CHN=channel))
 os.chdir(options.out)
 
 ## switch to sm event categories
@@ -64,8 +64,8 @@ if options.analysis == "sm" :
         "em"   : options.em_sm_categories.split(),
         "mt"   : options.mt_sm_categories.split(),
         "et"   : options.et_sm_categories.split(),
-        "tt"   : options.tt_sm_categories.split(),
-        "vhtt" : options.vhtt_sm_categories.split(),
+        #"tt"   : options.tt_sm_categories.split(),
+        #"vhtt" : options.vhtt_sm_categories.split(),
         }
     
 ## switch to mssm event categories
@@ -76,8 +76,8 @@ if options.analysis == "mssm" :
         "em"   : options.em_mssm_categories.split(),
         "mt"   : options.mt_mssm_categories.split(),
         "et"   : options.et_mssm_categories.split(),
-        "tt"   : options.tt_mssm_categories.split(),
-        "hmm"  : options.hmm_mssm_categories.split(),
+        #"tt"   : options.tt_mssm_categories.split(),
+        #"hmm"  : options.hmm_mssm_categories.split(),
         }
 
 ## start the process here
@@ -85,30 +85,24 @@ base = os.getcwd()
 for channel in channels :
     for period in periods :
         for cat in categories[channel] :
-            ## special treatment for incomplete 8TeV samples:
-            ## here only mH=115 is considered for mm/em/mt/et
-            ## and mH=125 for tt, vhtt misses completely.
-            single_mass = "125" if channel == "tt" else "115"
-            if channel == "vhtt" and period == "8TeV" :
-                continue
             ## here the normal workflow continues
             prefix = "" if channel == "vhtt" else "htt_"
             os.chdir("{PWD}/{CHN}".format(CHN=prefix+channel, PWD=base))
-            os.system("datacard-project.py -c {CHN} -e {PER}-0{CAT} {PER}-0{CAT}".format(CHN=channel, PER=period, CAT=cat))
+            os.system("datacard-project.py -c {CHN} -e {ANA}-{PER}-0{CAT} {PER}-0{CAT}".format(CHN=channel, ANA=options.analysis, PER=period, CAT=cat))
             os.chdir("{PWD}/{CHN}/{PER}-0{CAT}".format(CHN=prefix+channel, PER=period, PWD=base, CAT=cat))
             for mass in parseArgs(args) :
+                print "creating datacard for:", options.analysis, period, channel, cat, mass
+                if options.analysis == "mssm" :
+                    os.system("create-datacard.py -i {CHN}.inputs-{ana}-{per}-{MASSCAT}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
+                        CHN=prefix+channel, ana=options.analysis, per=period.lower(), MASSCAT=mass_category(mass), CAT=cat, PER=period, MASS=mass))
                 ## patch for incomplete 8TeV samples (see above)
-                if period == "8TeV" :
-                    if not int(mass) == int(single_mass) :
-                        print "drop out"
-                        continue
-                if options.SM4 :
-                    print "rescaling signal cross sections accoring to SM4 cross sections"
-                    os.system(r"root -q -l -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescale2SM4.C+\(true,\"{CHN}.inputs-{per}.root\"\)".format(
-                        CMSSW_BASE=os.environ['CMSSW_BASE'], CHN=channel, per=period.lowe()))
-                print "creating datacard for:", period, channel, cat, mass
-                os.system("create-datacard.py -i {CHN}.inputs-{per}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
-                    CHN=prefix+channel, per=period.lower(), CAT=cat, PER=period, MASS=mass))
+                if options.analysis == "sm" :
+                    if options.SM4 :
+                        print "rescaling signal cross sections accoring to SM4 cross sections"
+                        os.system(r"root -q -l -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescale2SM4.C+\(true,\"{CHN}.inputs-{per}.root\"\)".format(
+                            CMSSW_BASE=os.environ['CMSSW_BASE'], CHN=channel, per=period.lowe()))
+                    os.system("create-datacard.py -i {CHN}.inputs-{ana}-{per}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
+                        CHN=prefix+channel, ana=options.analysis, per=period.lower(), CAT=cat, PER=period, MASS=mass))
             os.system("mv *.* ../")
             os.chdir("{PWD}/{CHN}".format(CHN=prefix+channel, PWD=base))
             os.system("rm -r {PER}-0{CAT}".format(PER=period, CAT=cat))
