@@ -1,4 +1,14 @@
-
+def mass_category(mass) :
+    """
+    return the mass category depending on the value of mass
+    """
+    value = int(mass)
+    category = 0
+    if 150<value and value<=250 :
+        category = 1
+    elif 250<value :
+        category = 2
+    return category
 
 
 def parseArgs(args) :
