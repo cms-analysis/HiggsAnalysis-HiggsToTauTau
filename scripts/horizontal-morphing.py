@@ -82,7 +82,7 @@ class Morph:
         norm = self.norm_hist(hist_lower, hist_upper, float(lower), float(upper), float(value))
         hist_morph = th1fmorph(name.format(MASS=value),name.format(MASS=value),hist_lower, hist_upper, float(lower), float(upper), float(value), norm, 0)
         if self.verbose :
-            print "writing morphed histogram to file: name =", hist_morph.GetName(), "integral =", hist_morph.Integral()
+            print "writing morphed histogram to file: name =", hist_morph.GetName(), "integral =[ %.5f | %.5f | %.5f ]" % (hist_lower.Integral(), hist_morph.Integral(), hist_upper.Integral())
         if directory == "" :
             file.cd()
         else :
@@ -100,14 +100,17 @@ class Morph:
         for dir in self.directories :
             for sample in self.samples :
                 for idx in range(len(self.masses)-1) :
-                    nbin = int(float(self.masses[idx+1])-float(self.masses[idx])/self.step_size)
-                    for x in range(nbin-1) :
-                        value = "%.0f" % (float(self.masses[idx])+(x+1)*float(self.step_size))
-                        self.morph_hist(file, dir, sample, self.masses[idx], self.masses[idx+1], value)
-                        for uncert in self.uncerts :
-                            if not uncert == '' :
-                                self.morph_hist(file, dir, sample+'_'+uncert+'Up', self.masses[idx], self.masses[idx+1], value)
-                                self.morph_hist(file, dir, sample+'_'+uncert+'Down', self.masses[idx], self.masses[idx+1], value)
-                    
+                    nbin = int((float(self.masses[idx+1])-float(self.masses[idx]))/self.step_size)
+                    if nbin > 1 :
+                        for x in range(nbin-1) :
+                            value = "%.0f" % (float(self.masses[idx])+(x+1)*float(self.step_size))
+                            self.morph_hist(file, dir, sample, self.masses[idx], self.masses[idx+1], value)
+                            for uncert in self.uncerts :
+                                if not uncert == '' :
+                                    self.morph_hist(file, dir, sample+'_'+uncert+'Up', self.masses[idx], self.masses[idx+1], value)
+                                    self.morph_hist(file, dir, sample+'_'+uncert+'Down', self.masses[idx], self.masses[idx+1], value)
+                    else :
+                        if self.verbose :
+                            print "nothing needs to be done here: nbin =", nbin 
 template_morphing = Morph(options.input,options.categories,options.samples,options.uncerts,options.masses,options.step_size,options.verbose)
 template_morphing.run()
