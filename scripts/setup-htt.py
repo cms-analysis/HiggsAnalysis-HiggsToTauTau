@@ -34,7 +34,7 @@ htt_mm_categories = {
     "boost" : ["02", "03"],
     "2jet"  : ["04"],
     "vbf"   : ["05"],
-    "btag"  : ["06", "07"],
+    #"btag"  : ["06", "07"],
     }
 
 htt_em_categories = {
@@ -42,7 +42,7 @@ htt_em_categories = {
     "boost" : ["02", "03"],
     "2jet"  : ["04"],
     "vbf"   : ["05"],
-    "btag"  : ["06", "07"],
+    #"btag"  : ["06", "07"],
     }
 
 htt_mt_categories = {
@@ -50,7 +50,7 @@ htt_mt_categories = {
     "boost" : ["02", "03"],
     "2jet"  : ["04"],
     "vbf"   : ["05"],
-    "btag"  : ["06", "07"],
+    #"btag"  : ["06", "07"],
     }
 
 htt_et_categories = {
@@ -58,7 +58,7 @@ htt_et_categories = {
     "boost" : ["02", "03"],
     "2jet"  : ["04"],
     "vbf"   : ["05"],
-    "btag"  : ["06", "07"],
+    #"btag"  : ["06", "07"],
     }
 
 htt_tt_categories = {
