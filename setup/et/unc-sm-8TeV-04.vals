@@ -6,6 +6,7 @@ eTau_2jet   		qqH				pdf_qqbar				1.08
 eTau_2jet   		VH				pdf_vh					1.08
 eTau_2jet		qqH				QCDscale_qqH				1.04
 eTau_2jet		ggH				QCDscale_ggH2in 			1.30
+eTau_2jet		VH 	                        QCDscale_VH				1.04
 eTau_2jet		signal				UEPS					1.04
 eTau_2jet 		signal,ZTT,ZLL,TT,VV 		CMS_eff_m 				1.01
 eTau_2jet 		signal,ZTT,TT,VV 		CMS_eff_t 				1.062
@@ -24,6 +25,6 @@ eTau_2jet		QCD				CMS_htt_eTau_2jet_QCDSyst_8TeV		1.10
 eTau_2jet		ZTT,ZLL				CMS_htt_zttNorm_8TeV 			1.03
 eTau_2jet		TT				CMS_htt_ttbarNorm_8TeV			1.25
 eTau_2jet		VV				CMS_htt_DiBosonNorm_8TeV		2.00
-eTau_2jet		W				CMS_htt_eTau_WNorm_8TeV			1.07
+eTau_2jet		W				CMS_htt_eTau_WNorm_8TeV			1.10
 eTau_2jet		ZLL				CMS_htt_ZLLNorm_8TeV			1.15
 

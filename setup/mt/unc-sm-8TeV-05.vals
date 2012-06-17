@@ -25,6 +25,6 @@ muTau_vbf		QCD				CMS_htt_muTau_vbf_QCDSyst_8TeV		1.10
 muTau_vbf		ZTT,ZLL				CMS_htt_zttNorm_8TeV 			1.03
 muTau_vbf		TT				CMS_htt_ttbarNorm_8TeV			1.25
 muTau_vbf		VV				CMS_htt_DiBosonNorm_8TeV		2.00
-muTau_vbf		W				CMS_htt_muTau_WNorm_8TeV		1.066
-muTau_vbf		ZLL				CMS_htt_ZLLNorm_8TeV			1.148
+muTau_vbf		W				CMS_htt_muTau_WNorm_8TeV		1.10
+muTau_vbf		ZLL				CMS_htt_ZLLNorm_8TeV			1.15
 

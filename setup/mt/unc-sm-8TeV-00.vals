@@ -22,7 +22,7 @@ muTau_0jet_low	 		VV    				CMS_scale_met					1.06
 muTau_0jet_low                  QCD				CMS_htt_muTau_0jet_low_QCDSyst_8TeV		1.10
 muTau_0jet_low                  QCD				CMS_htt_muTau_0jet_low_QCDNorm_8TeV		1.00
 muTau_0jet_low			ZTT,ZL,ZJ			CMS_htt_zttNorm_8TeV 				1.03
-muTau_0jet_low			W				CMS_htt_muTau_WNorm_8TeV 			1.07
+muTau_0jet_low			W				CMS_htt_muTau_WNorm_8TeV 			1.10
 muTau_0jet_low			TT				CMS_htt_ttbarNorm_8TeV				1.10
 muTau_0jet_low			VV				CMS_htt_DiBosonNorm_8TeV			1.30 
 muTau_0jet_low			ZJ				CMS_htt_muTau_0jet_low_ZJetFakeTau_8TeV      	1.10

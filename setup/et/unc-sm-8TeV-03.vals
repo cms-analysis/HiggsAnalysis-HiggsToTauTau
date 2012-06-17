@@ -23,6 +23,6 @@ eTau_boost_high         QCD				CMS_htt_eTau_boost_high_QCDSyst_8TeV	1.10
 eTau_boost_high		ZTT,ZJ,ZL			CMS_htt_zttNorm_8TeV 			1.03
 eTau_boost_high		TT				CMS_htt_ttbarNorm_8TeV			1.10
 eTau_boost_high		VV				CMS_htt_DiBosonNorm_8TeV		1.45
-eTau_boost_high		W				CMS_htt_eTau_WNorm_8TeV			1.07
+eTau_boost_high		W				CMS_htt_eTau_WNorm_8TeV			1.10
 eTau_boost_high		ZJ				CMS_htt_eTau_ZJetFakeTau_8TeV		1.20
 eTau_boost_high		ZL				CMS_htt_eTau_ZLeptonFakeTau_8TeV	1.20
