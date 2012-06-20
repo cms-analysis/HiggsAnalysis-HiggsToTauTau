@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 from optparse import OptionParser, OptionGroup
+import logging
+log = logging.getLogger("setup-htt")
+logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options]",
@@ -26,7 +29,7 @@ os.chdir("%s/%s" % (os.getcwd(), options.name))
 ## fill optionals
 optionals = ""
 if options.drop != "":
-    optionals+=" --drop-channels '%s'" % options.drop 
+    optionals+=" --drop-channels '%s'" % options.drop
 
 ## define htt event categories
 htt_mm_categories = {
@@ -99,22 +102,25 @@ masses = {}
 if options.analysis == "sm" or options.analysis == "all" :
     masses["sm"] = options.sm_masses
 if options.analysis == "mssm" or options.analysis == "all" :
-    masses["mssm"] = options.mssm_masses    
+    masses["mssm"] = options.mssm_masses
 
 ## define sub-channels
 sub_channels = ["em", "mt", "et", "mm", "tt", "vhtt_had"] ##, "hmm"]
 
 ## setup sm/mssm directories
 for analysis in masses :
+    log.info("Setting up analysis %s", analysis)
     if not os.path.exists(analysis) :
         os.system("mkdir %s" % analysis)
     os.chdir("%s/%s" % (os.getcwd(), analysis))
     ## individual event categories for all channels
     for period in periods :
+        log.info("=> in period %s", period)
         for sub in sub_channels :
             card_idx = 0
             if period == "8TeV" and (sub == "vhtt_had" or sub == "tt") :
                 continue
+            log.info("==> sub channel", sub)
             if sub == "hmm" :
                 ## special treatment for hmm
                 for label in hmm_categories :
@@ -181,5 +187,5 @@ for analysis in masses :
                                 #print label, cat, card_idx
                                 os.system("setup-batch.py -n {LABEL} -c {SUBCHN} -o htt_{SUBCHN}_{PERIOD}{IDX}.txt -e {PERIOD}{CAT} {OPTIONALS} {MASSES}".format(
                                     LABEL=label, SUBCHN=sub, IDX=card_idx, PERIOD=period, CAT=cat, OPTIONALS=optionals, MASSES=masses[analysis]))
-                        card_idx = card_idx+1                        
+                        card_idx = card_idx+1
     os.chdir("%s/.." % os.getcwd())
