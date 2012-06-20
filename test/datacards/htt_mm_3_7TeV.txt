@@ -1,0 +1,38 @@
+imax    1     number of categories 
+jmax    8     number of samples minus one 
+kmax    *     number of nuisance parameters 
+------------------------------------------------------------------------------- 
+shapes * * ../common/htt_mm.input_7TeV.root $CHANNEL/$PROCESS 
+shapes ggH * ../common/htt_mm.input_7TeV.root $CHANNEL/$PROCESS$MASS 
+shapes qqH * ../common/htt_mm.input_7TeV.root $CHANNEL/$PROCESS$MASS 
+shapes VH * ../common/htt_mm.input_7TeV.root $CHANNEL/$PROCESS$MASS 
+------------------------------------------------------------------------------- 
+bin                                     mumu_boost_high     
+observation                             224908              
+------------------------------------------------------------------------------- 
+bin                                     mumu_boost_high    mumu_boost_high    mumu_boost_high    mumu_boost_high    mumu_boost_high    mumu_boost_high    mumu_boost_high    mumu_boost_high    mumu_boost_high     
+process                                 -2                 -1                 0                  1                  2                  3                  4                  5                  6                   
+process                                 ggH                qqH                VH                 ZTT                ZMM                QCD                TTJ                WJets              Dibosons            
+rate                                    5.81127            1.18017            1.43239            950.724            221417                144             684.189            13.6268            1105.68             
+------------------------------------------------------------------------------- 
+lumi_7TeV lnN                           1.022              1.022              1.022              -                  -                  -                  -                  1.022              1.022               
+CMS_eff_m lnN                           1.04               1.04               1.04               1.040              -                  -                  1.040              1.040              1.040               
+CMS_scale_j lnN                         1.045              1.045              1.045              -                  1.045              -                  1.045              1.045              1.045               
+CMS_scale_met lnN                       1.035              1.035              1.035              -                  1.035              -                  1.035              1.035              1.035               
+CMS_eff_b lnN                           0.98               0.98               0.98               -                  0.980              -                  0.980              0.980              0.980               
+CMS_fake_b lnN                          0.98               0.98               0.98               -                  0.980              -                  0.980              0.980              0.980               
+pdf_qqbar lnN                           -                  1.08               -                  -                  -                  -                  -                  -                  -                   
+pdf_gg lnN                              1.08               -                  -                  -                  -                  -                  -                  -                  -                   
+pdf_vh lnN                              -                  -                  1.01               -                  -                  -                  -                  -                  -                   
+QCDscale_ggH1in lnN                     1.15               -                  -                  -                  -                  -                  -                  -                  -                   
+QCDscale_qqH lnN                        -                  1.035              -                  -                  -                  -                  -                  -                  -                   
+QCDscale_VH lnN                         -                  -                  1.04               -                  -                  -                  -                  -                  -                   
+UEPS lnN                                1.04               1.04               1.04               -                  -                  -                  -                  -                  -                   
+CMS_htt_zttNorm_7TeV lnN                -                  -                  -                  1.030              -                  -                  -                  -                  -                   
+CMS_htt_ttbarNorm_7TeV lnN              -                  -                  -                  -                  -                  -                  1.080              -                  -                   
+CMS_htt_DiBosonNorm_7TeV lnN            -                  -                  -                  -                  -                  -                  -                  -                  1.300               
+CMS_htt_mm_zmmNorm_7TeV lnN             -                  -                  -                  -                  1.055              -                  -                  -                  -                   
+CMS_htt_mm_QCDNorm_03_7TeV lnN          -                  -                  -                  -                  -                  1.120              -                  -                  -                   
+CMS_htt_mm_zttLikelihood_7TeV lnN       -                  -                  -                  1.030              -                  -                  -                  -                  -                   
+CMS_htt_ztt_extrap_boost_7TeV lnN       -                  -                  -                  1.020              -                  -                  -                  -                  -                   
+CMS_htt_mm_zmm_extrap_boost_7TeV lnN    -                  -                  -                  -                  1.020              -                  -                  -                  -                   
