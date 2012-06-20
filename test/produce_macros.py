@@ -29,10 +29,14 @@ class Analysis:
              template_name = self.template_fname[self.template_fname.find("/")+1:self.template_fname.rfind("_template.C")]
              output_name   = self.output_fname[:self.output_fname.rfind(".C")]
              ## prepare first lines of macro
-             line = line.replace("$DEFINE_EXTRA_SAMPLES", "#define EXTRA_SAMPLES" if "0jet" in self.category else "")
+             line = line.replace("$DEFINE_EXTRA_SAMPLES", "#define EXTRA_SAMPLES" if "0jet" in self.category or "boost" in self.category else "")
              line = line.replace(template_name, output_name)
              line = line.replace("$HISTFILE", self.histfile)
              line = line.replace("$CATEGORY", self.category)
+             ## PATCH untill Josh fixed his input files...
+             if "et" in self.output_fname :
+                 patch = "eTau" if "7TeV" in self.output_fname else "eleTau"
+                 line = line.replace("$PATCH", patch)
              word_arr=line.split("\n")
              for process_name in self.process_weight.keys():
                  cand_str = "$%s" % process_name
@@ -51,7 +55,7 @@ class Analysis:
 
 # specify the fit results text files for sm and mssm cases                    
 mssm_fit_path = "fitresults/mlfit_mssm.txt"
-sm_fit_path   = "fitresults/mlfit_sm.txt"    
+sm_fit_path   = "fitresults/mlfit_all_2011-2012.txt"    
 tmp_dir       ="templates/"
 
 ## post-fit plots for all channels in MSSM 
@@ -84,7 +88,7 @@ category_mapping = {
     }
 
 for chn in ["em", "et", "mt"] :
-    for per in ["7TeV"] :
+    for per in ["7TeV", "8TeV"] :
         for cat in ["0", "1", "2", "3", "5"] :
             plots = Analysis("htt_{CHN}.input_{PER}.root".format(CHN=chn, PER=per),
                              category_mapping[cat],
