@@ -44,9 +44,12 @@ TH1F* refill(TH1F* hin, bool data=false)
   for(int i=0; i<hout->GetNbinsX(); ++i){
     hout->SetBinContent(i+1, hin->GetBinContent(i+1)/hin->GetBinWidth(i+1));
     if(data){
+      //hout->SetBinContent(i+1, 0.);
+      //hout->SetBinError(i+1, 0.);
       hout->SetBinError(i+1, hout->GetBinError(i+1)/hout->GetBinWidth(i+1));
     }
     else{
+      //hout->SetBinContent(i+1, hin->GetBinContent(i+1)/hin->GetBinWidth(i+1));
       hout->SetBinError(i+1, 0.);
     }
   }
@@ -81,14 +84,14 @@ void rescale(TH1F* hin, unsigned int idx)
 }
 
 void 
-HTT_EM_X(const char* inputfile="root/$HISTFILE", const char* directory="emu_$CATEGORY", bool scaled = true, bool log = true, float max=500., float min=0.05)
+HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=500., const char* inputfile="root/$HISTFILE", const char* directory="emu_$CATEGORY")
 {
   // define common canvas, axes pad styles
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
 
   const char* dataset;
-  if(std::string(inputfile).find("7tev")!=std::string::npos){dataset = "#sqrt{s} = 7 TeV, L = 4.9 fb^{-1}";}
-  if(std::string(inputfile).find("8tev")!=std::string::npos){dataset = "#sqrt{s} = 8 TeV, L = 3.0 fb^{-1}";}
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "#sqrt{s} = 7 TeV, L = 4.9 fb^{-1}";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "#sqrt{s} = 8 TeV, L = 3.0 fb^{-1}";}
   
   TFile* input = new TFile(inputfile);
   TH1F* Fakes  = refill((TH1F*)input->Get(TString::Format("%s/Fakes"   , directory))); InitHist(Fakes, "", "", kMagenta-10, 1001);
@@ -127,19 +130,19 @@ HTT_EM_X(const char* inputfile="root/$HISTFILE", const char* directory="emu_$CAT
 
   TH1F* scales[7];
   scales[0] = new TH1F("scales-Fakes", "", 7, 0, 7);
-  scales[0]->SetBinContent(1, Fakes->Integral()/unscaled[0]-1.);
+  scales[0]->SetBinContent(1, unscaled[0]>0 ? (Fakes->Integral()/unscaled[0]-1.) : 0.);
   scales[1] = new TH1F("scales-EWK"  , "", 7, 0, 7);
-  scales[1]->SetBinContent(2, EWK  ->Integral()/unscaled[1]-1.);
+  scales[1]->SetBinContent(2, unscaled[1]>0 ? (EWK  ->Integral()/unscaled[1]-1.) : 0.);
   scales[2] = new TH1F("scales-ttbar", "", 7, 0, 7);
-  scales[2]->SetBinContent(3, ttbar->Integral()/unscaled[2]-1.);
+  scales[2]->SetBinContent(3, unscaled[2]>0 ? (ttbar->Integral()/unscaled[2]-1.) : 0.);
   scales[3] = new TH1F("scales-Ztt"  , "", 7, 0, 7);
-  scales[3]->SetBinContent(4, Ztt  ->Integral()/unscaled[3]-1.);
+  scales[3]->SetBinContent(4, unscaled[3]>0 ? (Ztt  ->Integral()/unscaled[3]-1.) : 0.);
   scales[4] = new TH1F("scales-ggH"  , "", 7, 0, 7);
-  scales[4]->SetBinContent(5, ggH  ->Integral()/unscaled[4]-1.);
+  scales[4]->SetBinContent(5, unscaled[4]>0 ? (ggH  ->Integral()/unscaled[4]-1.) : 0.);
   scales[5] = new TH1F("scales-qqH"  , "", 7, 0, 7);
-  scales[5]->SetBinContent(6, qqH  ->Integral()/unscaled[5]-1.);
+  scales[5]->SetBinContent(6, unscaled[5]>0 ? (qqH  ->Integral()/unscaled[5]-1.) : 0.);
   scales[6] = new TH1F("scales-VH"   , "", 7, 0, 7);
-  scales[6]->SetBinContent(7, VH   ->Integral()/unscaled[6]-1.);
+  scales[6]->SetBinContent(7, unscaled[6]>0 ? (VH   ->Integral()/unscaled[6]-1.) : 0.);
 
   EWK  ->Add(Fakes);
   ttbar->Add(EWK  );
@@ -293,7 +296,6 @@ HTT_EM_X(const char* inputfile="root/$HISTFILE", const char* directory="emu_$CAT
   scales[0]->SetMinimum(-1.0);
   scales[0]->GetYaxis()->CenterTitle();
   scales[0]->GetYaxis()->SetTitle("#bf{Fit/Prefit-1}");
-  scales[0]->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}");
   scales[1]->Draw("same");
   scales[2]->Draw("same");
   scales[3]->Draw("same");
@@ -306,14 +308,16 @@ HTT_EM_X(const char* inputfile="root/$HISTFILE", const char* directory="emu_$CAT
   /*
     prepare output
   */
-  canv ->Print(TString::Format("%s_%sscaled_%s.pdf"       , directory, scaled ? "re" : "un", log ? "LOG" : "")); 
-  canv0->Print(TString::Format("%s_datamc_%sscaled_%s.png", directory, scaled ? "re" : "un", log ? "LOG" : "")); 
-  canv0->Print(TString::Format("%s_datamc_%sscaled_%s.pdf", directory, scaled ? "re" : "un", log ? "LOG" : ""));
-  canv1->Print(TString::Format("%s_prefit_%sscaled_%s.png", directory, scaled ? "re" : "un", log ? "LOG" : "")); 
-  canv1->Print(TString::Format("%s_prefit_%sscaled_%s.pdf", directory, scaled ? "re" : "un", log ? "LOG" : ""));
-  canv2->Print(TString::Format("%s_sample_%sscaled_%s.png", directory, scaled ? "re" : "un", log ? "LOG" : "")); 
-  canv2->Print(TString::Format("%s_sample_%sscaled_%s.pdf", directory, scaled ? "re" : "un", log ? "LOG" : ""));
-  TFile* output = new TFile(TString::Format("%s_%sscaled_%s.root", directory, scaled ? "re" : "un", log ? "LOG" : ""), "update");
+  bool isSevenTeV = std::string(inputfile).find("7TeV")!=std::string::npos;
+  canv ->Print(TString::Format("%s_%sscaled_%s_%s.png"       , directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
+  canv ->Print(TString::Format("%s_%sscaled_%s_%s.pdf"       , directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
+  canv0->Print(TString::Format("%s_datamc_%sscaled_%s_%s.png", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
+  canv0->Print(TString::Format("%s_datamc_%sscaled_%s_%s.pdf", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
+  canv1->Print(TString::Format("%s_prefit_%sscaled_%s_%s.png", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
+  canv1->Print(TString::Format("%s_prefit_%sscaled_%s_%s.pdf", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
+  canv2->Print(TString::Format("%s_sample_%sscaled_%s_%s.png", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
+  canv2->Print(TString::Format("%s_sample_%sscaled_%s_%s.pdf", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
+  TFile* output = new TFile(TString::Format("%s_%sscaled_%s_%s.root", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""), "update");
   output->cd();
   data ->Write("data_obs");
   Fakes->Write("Fakes"   );
