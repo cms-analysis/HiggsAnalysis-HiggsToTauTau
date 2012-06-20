@@ -17,14 +17,14 @@ muTau_0jet_low        	        VH				CMS_scale_j					0.98
 muTau_0jet_low        	        TT				CMS_scale_j					1.01
 muTau_0jet_low        	        VV				CMS_scale_j					0.97
 muTau_0jet_low	 		signal,ZL,ZJ	   		CMS_scale_met					1.05
-muTau_0jet_low	 		TT		    		CMS_scale_met					1.02
-muTau_0jet_low	 		VV    				CMS_scale_met					1.06
-muTau_0jet_low                  QCD				CMS_htt_muTau_0jet_low_QCDSyst_7TeV		1.10
+muTau_0jet_low	 		TT		    		CMS_scale_met					1.07
+muTau_0jet_low	 		VV    				CMS_scale_met					1.07
 muTau_0jet_low			ZTT,ZL,ZJ			CMS_htt_zttNorm_7TeV 				1.03
-muTau_0jet_low			W				CMS_htt_muTau_WNorm_7TeV 			1.10
-muTau_0jet_low			TT				CMS_htt_ttbarNorm_7TeV				1.09
+muTau_0jet_low			TT				CMS_htt_ttbarNorm_7TeV				1.07
+muTau_0jet_low			W				CMS_htt_WNorm_mutau_0jet_7TeV 			1.10
 muTau_0jet_low			VV				CMS_htt_DiBosonNorm_7TeV			1.30
-muTau_0jet_low                  QCD				CMS_htt_muTau_0jet_low_QCDNorm_7TeV		1.11 
-muTau_0jet_low			ZJ				CMS_htt_muTau_0jet_low_ZJetFakeTau_7TeV      	1.11
-muTau_0jet_low			ZL				CMS_htt_muTau_0jet_low_ZLeptonFakeTau_7TeV	1.11
+muTau_0jet_low                  QCD				CMS_htt_QCDNorm_mutau_0jet_low_7TeV		1.00 
+muTau_0jet_low                  QCD				CMS_htt_QCDSyst_mutau_0jet_7TeV			1.10
+muTau_0jet_low			ZJ				CMS_htt_ZJetFakeTau_mutau_0jet_7TeV      	1.20
+muTau_0jet_low			ZL				CMS_htt_ZLeptonFakeTau_mutau_0jet_7TeV		1.30
 
