@@ -28,7 +28,7 @@ parser.add_option_group(cgroup)
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
-if len(args) != 3:
+if len(args) != 1:
     parser.print_usage()
     exit(1)
 
@@ -42,8 +42,11 @@ options.fork = 1
 workspace = args[0]
 workspaces=[]
 if workspace.endswith(".txt"):
+    inputname = workspace
     outputname = "%s.root" % (options.out)
-    os.system("text2workspace.py --default-morphing=%s -m %s -b %s -o %s" % (options.shape, options.mass, inputname, outputname))
+    #os.system("text2workspace.py --default-morphing=%s -m %s -b %s -o %s" % (options.shape, options.mass, inputname, outputname))
+    # TEMP DEBUG FIXME
+    os.system("text2workspace.py --X-no-check-norm --default-morphing=%s -m %s -b %s -o %s" % (options.shape, options.mass, inputname, outputname))
     workspaces.append(outputname)
 print "Converted workspaces to binary",workspaces
 
@@ -68,7 +71,7 @@ if options.random:
     seed = -1
 
 script.write("./combine {wsp} -M Asymptotic {opts} --fork {fork} -m {mass} -v {v} -n {out} -s {seed} {opt}\n".format(
-    wsp=workspaces[i], opts=options.options, fork=options.fork, mass=options.mass, seed=seed, out=options.out, v=options.v,
+    wsp=workspaces[0], opts=options.options, fork=options.fork, mass=options.mass, seed=seed, out=options.out, v=options.v,
     opt=opts
 ))
 
