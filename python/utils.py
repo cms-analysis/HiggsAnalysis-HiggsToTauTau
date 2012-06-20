@@ -1,3 +1,12 @@
+def contained(elem, list) :
+    """
+    return true if the element is contained in the list
+    """
+    if elem in "\n".join(list) :
+        return True
+    return False
+
+
 def mass_category(mass) :
     """
     return the mass category depending on the value of mass
