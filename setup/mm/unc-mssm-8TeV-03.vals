@@ -10,8 +10,8 @@ mumu_boost_high			TTJ				CMS_htt_ttbarNorm		1.075
 mumu_boost_high			Dibosons			CMS_htt_DiBosonNorm		1.30
 mumu_boost_high			ZTT				CMS_htt_mm_zttLikelihood	1.03
 mumu_boost_high			ZMM				CMS_htt_mm_zmmNorm		1.055
-mumu_boost_high			ggH				CMS_htt_mm_ggH_MCStat_03_11	1.095
-mumu_boost_high			bbH				CMS_htt_mm_bbH_MCStat_03_11	1.1
+#mumu_boost_high		ggH				CMS_htt_mm_ggH_MCStat_03_11	1.095
+#mumu_boost_high		bbH				CMS_htt_mm_bbH_MCStat_03_11	1.1
 mumu_boost_high			QCD				CMS_htt_mm_QCDNorm_03_11	1.12
 mumu_boost_high			ZTT				CMS_htt_ztt_extrap_boost	1.02
 mumu_boost_high			ZMM				CMS_htt_mm_zmm_extrap_boost	1.02

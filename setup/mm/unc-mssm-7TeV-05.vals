@@ -9,10 +9,10 @@ mumu_vbf			ZTT				CMS_htt_zttNorm 		1.033
 mumu_vbf			TTJ				CMS_htt_ttbarNorm		1.075
 mumu_vbf			Dibosons			CMS_htt_DiBosonNorm		1.30
 mumu_vbf			ZMM				CMS_htt_mm_zmmNorm		1.06
-mumu_vbf			ggH				CMS_htt_mm_ggH_MCStat_05_11	1.42
-mumu_vbf			bbH				CMS_htt_mm_bbH_MCStat_05_11	1.27
+#mumu_vbf			ggH				CMS_htt_mm_ggH_MCStat_05_11	1.42
+#mumu_vbf			bbH				CMS_htt_mm_bbH_MCStat_05_11	1.27
 mumu_vbf			QCD				CMS_htt_mm_QCDNorm_05_11	2.00
 mumu_vbf			ZTT				CMS_htt_ztt_extrap_vbf		1.07
-mumu_vbf			ZMM				CMS_htt_mm_zmm_extrap_vbf	1.11
-mumu_vbf			TTJ				CMS_htt_mm_ttbar_MCStat_05_11	1.17
+#mumu_vbf			ZMM				CMS_htt_mm_zmm_extrap_vbf	1.11
+#mumu_vbf			TTJ				CMS_htt_mm_ttbar_MCStat_05_11	1.17
 mumu_vbf			Dibosons			CMS_htt_mm_DiBoson_MCStat_05_11	1.30

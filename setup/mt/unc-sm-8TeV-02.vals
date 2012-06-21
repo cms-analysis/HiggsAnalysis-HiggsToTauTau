@@ -21,7 +21,7 @@ muTau_boost_low	   	VV		    		CMS_scale_met				1.07
 muTau_boost_low		ZTT,ZJ,ZL			CMS_htt_zttNorm_8TeV 			1.03
 muTau_boost_low         ZTT,ZJ,ZL			CMS_htt_extrap_ztt_boost_8TeV		1.03
 muTau_boost_low		TT				CMS_htt_ttbarNorm_8TeV			1.10
-muTau_boost_low		VV				CMS_htt_DiBosonNorm_8TeV		1.30
+muTau_boost_low		VV				CMS_htt_mt_boost_DiBosonNorm_8TeV		1.30
 muTau_boost_low		W				CMS_htt_WNorm_mutau_boost_low_8TeV	1.30
 #muTau_boost_low	W				CMS_htt_WNorm_mutau_boost_low_8TeV	1.10
 muTau_boost_low         QCD				CMS_htt_QCDSyst_mutau_boost_low_8TeV	1.20

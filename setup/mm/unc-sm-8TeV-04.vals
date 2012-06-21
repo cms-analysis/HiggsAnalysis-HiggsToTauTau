@@ -14,7 +14,7 @@ mumu_2jet			VH 	                        QCDscale_VH				1.04
 mumu_2jet			signal				UEPS					1.04
 mumu_2jet			ZTT				CMS_htt_zttNorm_8TeV 			1.03
 mumu_2jet			TTJ				CMS_htt_ttbarNorm_8TeV			1.10
-mumu_2jet			Dibosons			CMS_htt_DiBosonNorm_8TeV		1.30
+mumu_2jet			Dibosons			CMS_htt_mm_2jet_DiBosonNorm_8TeV		1.50
 mumu_2jet			ZTT				CMS_htt_mm_zttLikelihood_8TeV		1.035
 mumu_2jet			ZMM				CMS_htt_mm_zmmNorm_8TeV			1.055
 #mumu_2jet			ggH				CMS_htt_mm_ggH_MCStat_04_8TeV		1.88

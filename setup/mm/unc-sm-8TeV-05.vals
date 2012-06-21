@@ -14,7 +14,7 @@ mumu_vbf			VH 	                        QCDscale_VH				1.04
 mumu_vbf			signal				UEPS					1.04
 mumu_vbf			ZTT				CMS_htt_zttNorm_8TeV 			1.03
 mumu_vbf			TTJ				CMS_htt_ttbarNorm_8TeV			1.10
-mumu_vbf			Dibosons			CMS_htt_DiBosonNorm_8TeV		1.30
+mumu_vbf			Dibosons			CMS_htt_mm_vbf_DiBosonNorm_8TeV		1.50
 mumu_vbf			ZMM				CMS_htt_mm_zmmNorm_8TeV			1.06
 #mumu_vbf			ggH				CMS_htt_mm_ggH_MCStat_05_8TeV		1.42
 #mumu_vbf			qqH				CMS_htt_mm_qqH_MCStat_05_8TeV		1.07
@@ -23,4 +23,4 @@ mumu_vbf			QCD				CMS_htt_mm_QCDNorm_05_8TeV		2.00
 mumu_vbf			ZTT				CMS_htt_ztt_extrap_vbf_8TeV		1.07
 mumu_vbf			ZMM				CMS_htt_mm_zmm_extrap_vbf_8TeV		1.11
 #mumu_vbf			TTJ				CMS_htt_mm_ttbar_MCStat_05_8TeV		1.17
-#mumu_vbf			Dibosons			CMS_htt_mm_DiBoson_MCStat_05_8TeV	1.30
+#mumu_vbf			Dibosons			CMS_htt_mm_DiBoson_MCStat_05_8TeV	1.50

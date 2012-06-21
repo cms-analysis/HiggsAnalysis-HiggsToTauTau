@@ -20,7 +20,7 @@ eTau_boost_high		TT		    		CMS_scale_met				1.07
 eTau_boost_high		VV		    		CMS_scale_met				1.07
 eTau_boost_high		ZTT,ZJ,ZL			CMS_htt_zttNorm_7TeV 			1.03
 eTau_boost_high		TT				CMS_htt_ttbarNorm_7TeV			1.07
-eTau_boost_high		VV				CMS_htt_DiBosonNorm_7TeV		1.30
+eTau_boost_high		VV				CMS_htt_et_boost_DiBosonNorm_7TeV		1.30
 eTau_boost_high		W				CMS_htt_WNorm_etau_boost_high_7TeV	1.20
 eTau_boost_high         ZTT,ZJ,ZL			CMS_htt_extrap_ztt_boost_7TeV		1.03
 eTau_boost_high         QCD				CMS_htt_QCDSyst_etau_boost_high_7TeV	1.20

@@ -14,7 +14,7 @@ mumu_0jet_low			VH 	                        QCDscale_VH				1.04
 mumu_0jet_low			signal				UEPS					0.96
 mumu_0jet_low			ZTT				CMS_htt_zttNorm_8TeV 			1.03
 mumu_0jet_low			TTJ				CMS_htt_ttbarNorm_8TeV			1.10
-mumu_0jet_low			Dibosons			CMS_htt_DiBosonNorm_8TeV		1.30
+mumu_0jet_low			Dibosons			CMS_htt_mm_0jet_DiBosonNorm_8TeV		1.50
 mumu_0jet_low			ZTT				CMS_htt_mm_zttLikelihood_8TeV		1.034
 mumu_0jet_low			ZMM				CMS_htt_mm_zmmNorm_8TeV			1.06
 #mumu_0jet_low			ggH				CMS_htt_mm_ggH_MCStat_00_8TeV		1.09

@@ -10,10 +10,10 @@ mumu_2jet			TTJ				CMS_htt_ttbarNorm		1.075
 mumu_2jet			Dibosons			CMS_htt_DiBosonNorm		1.30
 mumu_2jet			ZTT				CMS_htt_mm_zttLikelihood	1.035
 mumu_2jet			ZMM				CMS_htt_mm_zmmNorm		1.055
-mumu_2jet			ggH				CMS_htt_mm_ggH_MCStat_04_11	1.88
-mumu_2jet			bbH				CMS_htt_mm_bbH_MCStat_04_11	1.40
+#mumu_2jet			ggH				CMS_htt_mm_ggH_MCStat_04_11	1.88
+#mumu_2jet			bbH				CMS_htt_mm_bbH_MCStat_04_11	1.40
 mumu_2jet			QCD				CMS_htt_mm_QCDNorm_04_11	2.00
 mumu_2jet			ZTT				CMS_htt_ztt_extrap_2jet		1.07
-mumu_2jet			ZMM				CMS_htt_mm_zmm_extrap_2jet	1.08
-mumu_2jet			TTJ				CMS_htt_mm_ttbar_MCStat_04_11	1.14
+#mumu_2jet			ZMM				CMS_htt_mm_zmm_extrap_2jet	1.08
+#mumu_2jet			TTJ				CMS_htt_mm_ttbar_MCStat_04_11	1.14
 mumu_2jet			Dibosons			CMS_htt_mm_DiBoson_MCStat_04_11	1.18

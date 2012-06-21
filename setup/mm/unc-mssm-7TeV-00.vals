@@ -10,6 +10,6 @@ mumu_0jet_low			TTJ				CMS_htt_ttbarNorm		1.075
 mumu_0jet_low			Dibosons			CMS_htt_DiBosonNorm		1.30
 mumu_0jet_low			ZTT				CMS_htt_mm_zttLikelihood	1.034
 mumu_0jet_low			ZMM				CMS_htt_mm_zmmNorm		1.06
-mumu_0jet_low			ggH				CMS_htt_mm_ggH_MCStat_00_11	1.11
-mumu_0jet_low			bbH				CMS_htt_mm_bbH_MCStat_00_11	1.12
+#mumu_0jet_low			ggH				CMS_htt_mm_ggH_MCStat_00_11	1.11
+#mumu_0jet_low			bbH				CMS_htt_mm_bbH_MCStat_00_11	1.12
 mumu_0jet_low			QCD				CMS_htt_mm_QCDNorm_00_11	1.15

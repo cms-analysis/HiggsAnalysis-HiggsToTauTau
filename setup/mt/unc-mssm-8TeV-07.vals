@@ -1,6 +1,6 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-muTau_btag_high		signal            	lumi            			1.045
+muTau_btag_high		signal            	lumi            			1.05
 muTau_btag_high		signal,ZTT,ZLL,TT,VV  	CMS_eff_m 				1.01
 muTau_btag_high		signal,ZTT,VV  		CMS_eff_t 				1.062
 #muTau_btag_high 	bbH,TT	          	CMS_eff_b 				1.106

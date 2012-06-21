@@ -9,11 +9,11 @@ mumu_btag_high			ZTT				CMS_htt_zttNorm 		1.033
 mumu_btag_high			TTJ				CMS_htt_ttbarNorm		1.075
 mumu_btag_high			Dibosons			CMS_htt_DiBosonNorm		1.30
 mumu_btag_high			ZMM				CMS_htt_mm_zmmNorm		1.06
-mumu_btag_high			ggH				CMS_htt_mm_ggH_MCStat_07_11	1.50
-mumu_btag_high			bbH				CMS_htt_mm_bbH_MCStat_07_11	1.16
+#mumu_btag_high			ggH				CMS_htt_mm_ggH_MCStat_07_11	1.50
+#mumu_btag_high			bbH				CMS_htt_mm_bbH_MCStat_07_11	1.16
 mumu_btag_high			QCD				CMS_htt_mm_QCDNorm_07_11	2.00
 mumu_btag_high			ZTT				CMS_htt_ztt_extrap_btag		1.025
 mumu_btag_high			ZMM				CMS_htt_mm_zmm_extrap_btag	1.02
-mumu_btag_high			TTJ				CMS_htt_mm_ttbar_MCStat_07_11	1.07
-mumu_btag_high			Dibosons			CMS_htt_mm_DiBoson_MCStat_07_11	1.10
+#mumu_btag_high			TTJ				CMS_htt_mm_ttbar_MCStat_07_11	1.07
+#mumu_btag_high			Dibosons			CMS_htt_mm_DiBoson_MCStat_07_11	1.10
 mumu_btag_high			ZTT				CMS_htt_mm_zttLikelihood	1.03
