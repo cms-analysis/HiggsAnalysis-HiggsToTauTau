@@ -48,8 +48,6 @@ channels = options.channels.split()
 for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
 ## define prefix for SM4
 prefix = "SM4_" if options.sm4 else ""
-## channel to mass point dictionary for mssm
-channel_to_mass = {}
 
 ## add mass point to the list of available masses per channel
 def add_mass(channel, mass) :
@@ -57,9 +55,37 @@ def add_mass(channel, mass) :
     add a mass point for a corresponding channel to communicate, which mass points
     do exist for which decay channel.
     """
-    if not channel in channel_to_mass :
-        channel_to_mass[channel] = "%s :  " % channel
-    channel_to_mass[channel]+= "  %s  " % mass
+    ## map of channel to available masses
+    channel_to_mass = {}
+    ## map out already available channels and masses
+    if os.path.exists("{OUTPUT}/common/masses.vals".format(OUTPUT=options.out)) :
+        input  = open("{OUTPUT}/common/masses.vals".format(OUTPUT=options.out), 'r')
+        for line in input :
+            words = line.split()
+            channel_to_mass[words[0]] = words
+        input.close()
+    ## check for the presence of a given channel and mass and depending on that
+    ## append to the list or create a new entry
+    CHANNEL_EXISTS = False
+    for existing_channel, existing_masses in channel_to_mass.iteritems() :
+        if existing_channel == channel :
+            CHANNEL_EXISTS = True
+        MASS_EXISTS = False
+        for existing_mass in existing_masses :
+            if not existing_mass.isdigit() :
+                continue
+            if int(existing_mass) == mass :
+                MASS_EXISTS = True
+        if not MASS_EXISTS :
+            channel_to_mass[existing_channel].append(str(mass))
+    if not CHANNEL_EXISTS :
+        channel_to_mass[channel] = [channel, str(mass)]
+    ## putting everything together again and fan out
+    update = open("{OUTPUT}/common/masses.vals".format(OUTPUT=options.out), 'w')
+    for chn in channel_to_mass :
+        line = '\t'.join(channel_to_mass[chn])+'\n'
+        update.write(line)
+    update.close()
 
 ## switch to sm event categories
 if options.analysis == "sm" :
@@ -90,15 +116,6 @@ if not os.path.exists("{OUTPUT}/common".format(OUTPUT=options.out)) :
 for mass in parseArgs(args) :
     if not os.path.exists("{OUTPUT}/{MASS}".format(OUTPUT=options.out, MASS=mass)) :
         os.system("mkdir {OUTPUT}/{MASS}".format(OUTPUT=options.out, MASS=mass))
-
-## open masses/vals file in common to communicate which mass points do exist for which
-## decay channel for mssm
-if options.analysis == "mssm" :
-    ## open masses.vals, append if it exists already, create otherwise
-    if os.path.exists("{OUTPUT}/common/masses.vals".format(OUTPUT=options.out)) :
-        masses = open("{OUTPUT}/common/masses.vals".format(OUTPUT=options.out), 'a')
-    else :
-        masses = open("{OUTPUT}/common/masses.vals".format(OUTPUT=options.out), 'w')
 
 for period in periods :
     for channel in channels :
@@ -132,9 +149,3 @@ for period in periods :
                             INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
                         os.system("perl -pi -e 's/htt_{CHN}.inputs-{ANA}-{period}.root/..\/common\/{PRE}htt_{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASS}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
                             CHN=channel, ANA=options.analysis, period=period.lower(), PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period))
-
-## write channel-mass strings to masses.vals
-if options.analysis == "mssm" :
-    for channel in channel_to_mass :
-        masses.write(channel_to_mass[channel]+"\n")
-    masses.close()
