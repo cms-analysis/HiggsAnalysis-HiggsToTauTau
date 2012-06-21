@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from optparse import OptionParser
-       
+
 parser = OptionParser(usage="usage: %prog [options] datacatd.txt",
                       description="Main script to create individual a modified datacard for given mass and tanb value.")
 parser.add_option("-m", "--mA",    dest="mA",       default=120.,  type="float",   help="Value of mA. [Default: 120.]")
@@ -19,7 +19,7 @@ import sys
 import shutil
 import ROOT
 
-ROOT.gSystem.Load('$CMSSW_BASE/lib/slc5_amd64_gcc434/libHiggsAnalysisCombinedLimit.so')
+ROOT.gSystem.Load('$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so')
 from ROOT import th1fmorph
 from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools
 
@@ -126,7 +126,7 @@ class MakeDatacard :
        def interpolation_mode(self, mode="mode-0") :
               """
               Configure interpolation mode for htt limits. Considered modes are:
-              
+
               classic htt channels (htt_em, htt_et, htt_mt)             htt_mm / hmm
               mode-0 :            non-degenerate-masses                 non-degenerate-masses
               mode-1 :            non-degenerate-masses                 non-degenerate-masses-light
@@ -153,9 +153,9 @@ class MakeDatacard :
                             for cat in ["0", "1", "2", "3", "4", "5", "6", "7"] :
                                    for period in ["7TeV", "8TeV"] :
                                           decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
-                                          if chn == "mm" : 
+                                          if chn == "mm" :
                                                  self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses-light"
-                                          else : 
+                                          else :
                                                  self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses"
                      self.decay_channel_to_interpolation_method["hmm_0"         ] = "non-degenerate-masses-light"
                      self.decay_channel_to_interpolation_method["hmm_1"         ] = "non-degenerate-masses-light"
@@ -163,15 +163,15 @@ class MakeDatacard :
                      self.decay_channel_to_interpolation_method["hwwof_1j_shape"] = "single-mass"
                      self.decay_channel_to_interpolation_method["hwwsf_0j_shape"] = "single-mass"
                      self.decay_channel_to_interpolation_method["hwwsf_1j_shape"] = "single-mass"
-                     self.decay_channel_to_interpolation_method["hww_2j_cut"    ] = "single-mass"                            
+                     self.decay_channel_to_interpolation_method["hww_2j_cut"    ] = "single-mass"
               if mode == "mode-2" :
                      for chn in ["mm", "em", "et", "mt"] :
                             for cat in ["0", "1", "2", "3", "4", "5", "6", "7"] :
                                    for period in ["7TeV", "8TeV"] :
                                           decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
-                                          if chn == "mm" : 
+                                          if chn == "mm" :
                                                  self.decay_channel_to_interpolation_method[decay_channel] = "degenerate-masses"
-                                          else : 
+                                          else :
                                                  self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses"
                      self.decay_channel_to_interpolation_method["hmm_0"         ] = "degenerate-masses"
                      self.decay_channel_to_interpolation_method["hmm_1"         ] = "degenerate-masses"
@@ -198,9 +198,9 @@ class MakeDatacard :
                             for cat in ["0", "1", "2", "3", "4", "5", "6", "7"] :
                                    for period in ["7TeV", "8TeV"] :
                                           decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
-                                          if chn == "mm" : 
+                                          if chn == "mm" :
                                                  self.decay_channel_to_interpolation_method[decay_channel] = "degenerate-masses"
-                                          else : 
+                                          else :
                                                  self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses-light"
                      self.decay_channel_to_interpolation_method["hmm_0"         ] = "degenerate-masses"
                      self.decay_channel_to_interpolation_method["hmm_1"         ] = "degenerate-masses"
@@ -223,17 +223,17 @@ class MakeDatacard :
                      self.decay_channel_to_interpolation_method["hwwsf_1j_shape"] = "single-mass"
                      self.decay_channel_to_interpolation_method["hww_2j_cut"    ] = "single-mass"
               print "using mass interpolation", mode, "for htt limits"
-              
+
        def init(self, interpolation_mode="mode-0") :
               ## load masses
               self.load_masses()
               ## setup interpolation mode for htt
               self.interpolation_mode(interpolation_mode)
-              ## announce model 
+              ## announce model
               if self.feyn_higgs_model != "" :
                      print "preparing limit calculation for model input: feyn-higgs model="+self.feyn_higgs_model
               else :
-                     print "preparing limit calculation for model input:", self.mssm_xsec_tools_input_path 
+                     print "preparing limit calculation for model input:", self.mssm_xsec_tools_input_path
 
        def decay_channels(self, words) :
               """
@@ -309,7 +309,7 @@ class MakeDatacard :
               for key, value in self.standardized_production_processes.iteritems() :
                      for type in value :
                             if word.find(type)>-1 :
-                                   signal_process = key  
+                                   signal_process = key
               return signal_process
 
        def standardized_decay_channel(self, word) :
@@ -352,23 +352,23 @@ class MakeDatacard :
                      scan = mssm_xsec_tools("{CMSSW_BASE}/src/{PATH}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], PATH=path))
                      htt_query = scan.query(self.mA, self.tanb)
                      self.mh = htt_query['higgses']['h']['mass']
-                     self.mH = htt_query['higgses']['H']['mass']      
+                     self.mH = htt_query['higgses']['H']['mass']
 
        def cross_sections_hww(self, production_channel) :
               """
               Fill cross section results for different production channels for hww depending on mass
               and tanb vaoue. The variable 'production_channel' can have the values:
-              
+
               - 'gg[A,H,h]'  for gluon gluon fusion,
               - 'qq[A,H,h]'  for VBF and
               - 'W/Z[A,H,h]' for assicoated higgs production.
-              
+
               The values in '[]' will be completed automatically. The function returns the dictionary
               of production cross sections mapped to the individual Higgs bosons 'A', 'H' and 'h'.
               """
               cross_sections = {"A" : 0., "H" : 0., "h" : 0.}
               ## read cross section results for hww, the cross section is returned in fb
-              for key in cross_sections : 
+              for key in cross_sections :
                      xs = float(os.popen("feyn-higgs-mssm xs mssm {channel}{higgs} {mA} {tanb} | grep value".format(
                             channel=production_channel, higgs=key, mA=self.mA, tanb=self.tanb)).read().split()[2])/1000.
                      br = float(os.popen("feyn-higgs-mssm br mssm {higgs}WW {mA} {tanb} | grep value".format(
@@ -384,7 +384,7 @@ class MakeDatacard :
               Fill cross section results for different production channels for htt and hmm, which uses
               the same infrastructure as ht,t depending on mass and tanb. The variable 'production_channel'
               can have the values:
-              
+
               - 'ggF' for gluon gluon fusion and
               - 'santander' for higgs production in association with b quarks.
 
@@ -392,7 +392,7 @@ class MakeDatacard :
 
               - 'htt' for htt
               - 'hmm' for hmm
-              
+
               The function returns the dictionary of production cross sections mapped to the individual
               run periods (7TeV or 8TeV) and higgses in form 'period' : {'A', 'H' and 'h'}.
               """
@@ -407,7 +407,7 @@ class MakeDatacard :
                             feyn_decay = "tt"
                      if decay_channel == "hmm" :
                             feyn_decay = "mm"
-                     for key in cross_sections : 
+                     for key in cross_sections :
                             xs = float(os.popen("feyn-higgs-mssm xs mssm {channel}{higgs} {mA} {tanb} model={model} | grep value".format(
                                    channel=channel, higgs=key, mA=self.mA, tanb=self.tanb, model=self.feyn_higgs_model)).read().split()[2])/1000.
                             br = float(os.popen("feyn-higgs-mssm br mssm {higgs}{decay} {mA} {tanb} model={model}| grep value".format(
@@ -423,7 +423,7 @@ class MakeDatacard :
                      htt_query = scan.query(self.mA, self.tanb)
                      ## fill cross section (central values)
                      for key in cross_sections :
-                            if decay_channel == "htt" : 
+                            if decay_channel == "htt" :
                                    cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR"]
                             if decay_channel == "hmm" :
                                    cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR-mumu"]
@@ -447,16 +447,16 @@ class MakeDatacard :
                                    for period in ["7TeV", "8TeV"] :
                                           self.signal_channel_to_cross_section[("ggH_htt", period)] = self.cross_sections_htt("ggF", "htt", period)
                                           self.signal_channel_to_cross_section[("bbH_htt", period)] = self.cross_sections_htt("santander", "htt", period)
-                                          self.signal_channel_to_cross_section[("qqH_htt", period)] = {"A" : 1., "H" : 1., "h" : 1.} 
-                                          self.signal_channel_to_cross_section[("VH_htt" , period)] = {"A" : 1., "H" : 1., "h" : 1.} 
+                                          self.signal_channel_to_cross_section[("qqH_htt", period)] = {"A" : 1., "H" : 1., "h" : 1.}
+                                          self.signal_channel_to_cross_section[("VH_htt" , period)] = {"A" : 1., "H" : 1., "h" : 1.}
                      if not filled_hmm :
                             if self.standardized_decay_channel(decay_channel) == "hmm" :
                                    filled_hmm = True
                                    for period in ["7TeV", "8TeV"] :
-                                          self.signal_channel_to_cross_section[("ggH_hmm", period)] = self.cross_sections_htt("ggF", "hmm", period) 
+                                          self.signal_channel_to_cross_section[("ggH_hmm", period)] = self.cross_sections_htt("ggF", "hmm", period)
                                           self.signal_channel_to_cross_section[("bbH_hmm", period)] = self.cross_sections_htt("santander", "hmm", period)
-                                          self.signal_channel_to_cross_section[("qqH_hmm", period)] = {"A" : 1., "H" : 1., "h" : 1.} 
-                                          self.signal_channel_to_cross_section[("VH_hmm" , period)] = {"A" : 1., "H" : 1., "h" : 1.}              
+                                          self.signal_channel_to_cross_section[("qqH_hmm", period)] = {"A" : 1., "H" : 1., "h" : 1.}
+                                          self.signal_channel_to_cross_section[("VH_hmm" , period)] = {"A" : 1., "H" : 1., "h" : 1.}
                      if not filled_vhtt :
                             if self.standardized_decay_channel(decay_channel) == "vhtt" :
                                    filled_htt = True
@@ -476,7 +476,7 @@ class MakeDatacard :
 
        def contracted_cross_section(self, standardized_production_process, standardized_decay_channel, period, mode=0) :
               """
-              Conracted cross section for A, H, h for a given production process and decay channel. The 
+              Conracted cross section for A, H, h for a given production process and decay channel. The
               contracted cross section is provided in three modes:
               mode 0 : cross sections for all Higgses added
               mode 1 : cross sections added for degenerate mass mode (depending on mA only two or all
@@ -515,7 +515,7 @@ class MakeDatacard :
               Fill cross section uncertainties for different production channels for htt and hmm, which uses
               the same infrastructure as htt, depending on mass and tanb. The variable 'production_channel'
               can have the values:
-              
+
               - 'ggF' for gluon gluon fusion and
               - 'santander' for higgs production in association with b quarks.
 
@@ -528,7 +528,7 @@ class MakeDatacard :
 
               - '7TeV' for the 7TeV data taking period
               - '8TeV' for the 8TeV data taking period
-              
+
               The variable 'uncertainty_type' can have the values 'mu' and 'pdf' for the different
               uncertainty types (scale or pdf). The variable 'uncertainty_direction' can be -1 or
               +1 for the minus or plus variation of the uncertainty. The function returns the
@@ -543,12 +543,12 @@ class MakeDatacard :
               htt_query = scan.query(self.mA, self.tanb)
               ## fill uncertainties of Up/Down type
               for key in cross_sections :
-                     if decay_channel == "htt" : 
+                     if decay_channel == "htt" :
                             cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR"]
                      if decay_channel == "hmm" :
                             cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR-mumu"]
               return cross_sections
-                     
+
        def contracted_uncertainty(self, standardized_production_process, standardized_decay_channel, period, uncertainty_type, uncertainty_direction) :
               """
               Contract the uncertainties for A, H, h into a single uncertainty for a given production process
@@ -565,7 +565,7 @@ class MakeDatacard :
               if uncertainty_type == "pdf" :
                      contracted_uncertainty = math.sqrt(contracted_uncertainty)
               return contracted_uncertainty
-                     
+
        def load_uncertainties_map(self) :
               """
               Fill signal process to uncertainties dictionary for scale and pdf uncertainties for all involved
@@ -656,7 +656,7 @@ class MakeDatacard :
                                           self.signal_channel_to_uncertainties[("qqH_hww_pdf-", period)] = {"A" : .1, "H" : .1, "h" : .1}
                                           self.signal_channel_to_uncertainties[("VH_hww_pdf+" , period)] = {"A" : .1, "H" : .1, "h" : .1}
                                           self.signal_channel_to_uncertainties[("VH_hww_pdf-" , period)] = {"A" : .1, "H" : .1, "h" : .1}
-                            
+
        def load_available_masses(self, decay_channel) :
               """
               Read all available masses for a given decay channel. The values are read from a file masses.vals,
@@ -718,7 +718,7 @@ class MakeDatacard :
               Determine the proper filename for the loading of histograms for the rescaling of
               the histograms for the central value and for the embracing masses for h an H. If
               the histogram name contains the keyword $MASS (i.e. signal histograms for all mass
-              points not all contained in the same file), this keyword will be replaced by the 
+              points not all contained in the same file), this keyword will be replaced by the
               value of mass. In this case the embracing histograms will be looked up from the
               input histfiles in other directories of the setup. If mass is -1, the keyword will
               be ignored. This is the case for the central value, which has already the proper
@@ -738,7 +738,7 @@ class MakeDatacard :
               """
               Map signal or background process to histogram name in case of shape analyses.
               The modification string is taken from the lines starting with keyword 'shape'
-              in the datacard. 
+              in the datacard.
               """
               expanded_histname = process
               if uncertainty == "" :
@@ -755,7 +755,7 @@ class MakeDatacard :
                      ## apply modifications which are common for special inputs
                      if channel+"/"+process in self.shift_hist_extensions :
                             expanded_histname = self.shift_hist_extensions[channel+"/"+process].replace("$PROCESS", process).replace("$MASS", "%.0f" % self.mA).replace("$SYSTEMATIC", uncertainty)
-              return expanded_histname             
+              return expanded_histname
 
        def rescale_histogram(self, filename, dir, process, masses, cross_sections, channel, uncertainty="", interpolation_method="") :
               """
@@ -769,10 +769,10 @@ class MakeDatacard :
               and mass reconstruction. In a light version the histograms for mH/mh are not determined
               by horizontal template morphing but the histogram closest to mH/mh is chosen. NOTE:
               this function has the results of self.load_cross_sections_map and self.load_available_masses
-              as input. 
+              as input.
               """
               ## cross check whether more then one histfile is needed or not
-              single_file = not (filename.find("$MASS")>-1)                     
+              single_file = not (filename.find("$MASS")>-1)
               ## open root file and get original histograms
               path_name = self.expand_histname(channel, process, uncertainty)
               hist_name = path_name[path_name.rfind("/")+1:]
@@ -827,7 +827,7 @@ class MakeDatacard :
                      hist_mh_value.Scale(cross_sections["h"]/self.tanb)
               else :
                      hist_mA_value.Add(hist_mh_value)
-                     
+
               ## determine upper and lower mass edges for mH
               (mH_failed, mH_lower, mH_upper) = self.embracing_masses(self.mH, masses)
               if not mH_failed :
@@ -867,7 +867,7 @@ class MakeDatacard :
               else :
                      hist_mA_value.Add(hist_mH_value)
               #print "RESCALING OF HIST FINISHED: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
-              
+
               ## write modified histogram to file
               if self.path(dir)=="" :
                      file_mA_value.cd()
@@ -885,7 +885,7 @@ class MakeDatacard :
 
        def rescale_histogram_degenerate(self, filename, dir, process, cross_sections, channel, uncertainty="") :
               """
-              Rescale a histogram with name 'process' according to the degenerate-masses scheme.  
+              Rescale a histogram with name 'process' according to the degenerate-masses scheme.
               """
               ## open root file and get original histograms
               path_name = self.expand_histname(channel, process, uncertainty)
@@ -934,7 +934,7 @@ class MakeDatacard :
               point of the dominating contribution.
               """
               ## cross check whether more then one histfile is needed or not
-              single_file = not (filename.find("$MASS")>-1)                     
+              single_file = not (filename.find("$MASS")>-1)
               ## open root file and get original histograms
               path_name = self.expand_histname(channel, process, uncertainty)
               hist_name = path_name[path_name.rfind("/")+1:]
@@ -953,18 +953,18 @@ class MakeDatacard :
               else :
                      hist_mA_value.Scale(cross_sections["h"]/(1. if self.sm_like else self.tanb))
               #print "RESCALING OF HIST FINISHED: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
-              
+
               ## write modified histogram to file
               if self.path(dir)=="" :
                      file_mA_value.cd()
               else :
                      file_mA_value.cd(dir)
               hist_mA_value.Write(hist_name, ROOT.TObject.kOverwrite)
-                           
+
        def rescale_value_histograms(self) :
               """
               Rescale all histograms for central values
-              """       
+              """
               ## extend empty lists by empty strings to allow looping
               for key, value in self.histfile_to_directories.iteritems() :
                      if len(value)==0 :
@@ -983,14 +983,14 @@ class MakeDatacard :
                                           ## list of all available masses for this decay channel
                                           masses = self.load_available_masses(decay_channel)
                                           ## modify path to hist file for such decay channels that do not keep
-                                          ## signal hists for all masses in one file 
+                                          ## signal hists for all masses in one file
                                           for in_separate_files in self.hists_in_separate_files :
                                                  if self.decay_channels_[idx] == in_separate_files :
                                                         if not histfile.find("$MASS")>-1:
-                                                               histfile = "../$MASS/"+histfile                                                               
-                                          ## add prefix to histogram name where needed 
+                                                               histfile = "../$MASS/"+histfile
+                                          ## add prefix to histogram name where needed
                                           hist_name = self.production_processes[idx]
-                                          ## define run period for proper histogram scaling according to 7TeV or 8TeV cross sections 
+                                          ## define run period for proper histogram scaling according to 7TeV or 8TeV cross sections
                                           period = self.decay_channels_[idx][self.decay_channels_[idx].rfind("_")+1:]
                                           ## rescale central value histograms
                                           if self.decay_channel_to_interpolation_method.has_key(self.decay_channels_[idx]) :
@@ -1024,7 +1024,7 @@ class MakeDatacard :
                                                                masses,
                                                                self.signal_channel_to_cross_section[(std_prod+"_"+std_decay, period)],
                                                                self.decay_channels_[idx]
-                                                               )                                                        
+                                                               )
                                                  else :
                                                         ## fall back to the default
                                                         self.rescale_histogram(
@@ -1048,7 +1048,7 @@ class MakeDatacard :
        def rescale_shift_histograms(self) :
               """
               Rescale all histograms for upper/lower boundaries of shift histograms
-              """       
+              """
               ## extend empty lists by empty strings to allow looping
               for key, value in self.histfile_to_directories.iteritems() :
                      if len(value)==0 :
@@ -1067,14 +1067,14 @@ class MakeDatacard :
                                           ## list of all available masses for this decay channel
                                           masses = self.load_available_masses(decay_channel)
                                           ## modify path to hist file for such decay channels that do not keep
-                                          ## signal hists for all masses in one file 
+                                          ## signal hists for all masses in one file
                                           for in_separate_files in self.hists_in_separate_files :
                                                  if self.decay_channels_[idx] == in_separate_files :
                                                         if not histfile.find("$MASS")>-1:
                                                                histfile = "../$MASS/"+histfile
-                                          ## add prefix to histogram name where needed 
+                                          ## add prefix to histogram name where needed
                                           hist_name = self.production_processes[idx]
-                                          ## define run period for proper histogram scaling according to 7TeV or 8TeV cross sections 
+                                          ## define run period for proper histogram scaling according to 7TeV or 8TeV cross sections
                                           period = self.decay_channels_[idx][self.decay_channels_[idx].rfind("_")+1:]
                                           ## rescal histograms for "Up"/"Down" shape uncertainties
                                           for uncertainty, indexes in self.uncertainty_to_signal_indexes.iteritems() :
@@ -1212,7 +1212,7 @@ class MakeDatacard :
 
        def rate_from_hist(self, file, directory, hist, channel, uncertainty="") :
               """
-              Return rate from histogram in output histfile. 
+              Return rate from histogram in output histfile.
               """
               file = ROOT.TFile(file,"READ")
               rate=0.0
@@ -1237,10 +1237,10 @@ class MakeDatacard :
               to include the values of mA and tanb accordingly. Copy the original output histfile to a new one
               with the new output name. Append the new name of the output file as a unique value to the list of
               self.output_histfiles.
-              
+
               A single output histfile can serve more than one channel: Append the channel, which corresponds to
               this hist output file to the dictionary of self.histfile_to_decay_channels.
-              
+
               An output histfile can contain one or more directories to indicate sub-channels or the histograms
               can be safed directly in the root file. Determine the number of directories in the corresponding
               input file and add it to the dictionary of self.histfile_to_directories. If no directories exist
@@ -1248,7 +1248,7 @@ class MakeDatacard :
 
               Histogram names can be different from sample names. Such differences are indicated in column 5
               and 6 of the datacards in the lines that start with keyword 'shape'. fetch potential extensions
-              and safe them in the dictionaries self.value_hist_extensions and self.shift_hist_extensions. 
+              and safe them in the dictionaries self.value_hist_extensions and self.shift_hist_extensions.
               """
               for (idx, word) in enumerate(words):
                      if word.find(".root")>-1 :
@@ -1307,8 +1307,8 @@ class MakeDatacard :
                                    contracted_cross_section_mode = 1
                             if self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "single-mass" :
                                    contracted_cross_section_mode = 2
-                            ## define run period for proper histogram scaling according to 7TeV or 8TeV cross sections 
-                            period = self.decay_channels_[idx][self.decay_channels_[idx].rfind("_")+1:]       
+                            ## define run period for proper histogram scaling according to 7TeV or 8TeV cross sections
+                            period = self.decay_channels_[idx][self.decay_channels_[idx].rfind("_")+1:]
                             xsec = self.contracted_cross_section(
                                    self.standardized_signal_process(self.production_processes[idx]),
                                    self.standardized_decay_channel(self.decay_channels_[idx]),
@@ -1320,7 +1320,7 @@ class MakeDatacard :
                             output_list[idx+1] = str(new_rate)
                             output_line = '\t   '.join(output_list)+'\n'
               return output_line
-       
+
        def add_uncertainty_lines(self) :
               """
               Determine additional lines that are needed for the uncertainties. For each signal
@@ -1331,7 +1331,7 @@ class MakeDatacard :
               the uncertainty at the position of the given process and a '-' for all all other
               processes.
               """
-              for idx in self.signal_indexes :       
+              for idx in self.signal_indexes :
                      signal = self.standardized_signal_process(self.production_processes[idx])
                      for key in self.standardized_signal_process_to_uncertainty_heads :
                             if key == signal :
@@ -1349,10 +1349,10 @@ class MakeDatacard :
                                                                       contracted_cross_section_mode = 1
                                                                if self.decay_channel_to_interpolation_method[self.decay_channels_[jdx]] == "single-mass" :
                                                                       contracted_cross_section_mode = 2
-                                                               ## define run period for proper histogram scaling according to 7TeV or 8TeV cross sections 
-                                                               period = self.decay_channels_[idx][self.decay_channels_[idx].rfind("_")+1:]           
+                                                               ## define run period for proper histogram scaling according to 7TeV or 8TeV cross sections
+                                                               period = self.decay_channels_[idx][self.decay_channels_[idx].rfind("_")+1:]
                                                                ## add uncertainties for given process
-                                                               if uncertainty.find("Scale")>-1 :      
+                                                               if uncertainty.find("Scale")>-1 :
                                                                       cross_section = self.contracted_cross_section(prod, decay, period, contracted_cross_section_mode)
                                                                       uncert_upper  = self.contracted_uncertainty(prod, decay, period, "mu" , "+")
                                                                       uncert_lower  = self.contracted_uncertainty(prod, decay, period, "mu" , "-")
@@ -1360,7 +1360,7 @@ class MakeDatacard :
                                                                              self.signal_channel_to_uncertainty_lines[uncertainty] += " \t\t %.3f/%.3f " % \
                                                                              (1./(1.-uncert_lower/cross_section), 1.+uncert_upper/cross_section)
                                                                       else :
-                                                                             self.signal_channel_to_uncertainty_lines[uncertainty] += " \t\t  0.1 " 
+                                                                             self.signal_channel_to_uncertainty_lines[uncertainty] += " \t\t  0.1 "
                                                                if uncertainty.find("PDF"  )>-1 :
                                                                       cross_section = self.contracted_cross_section(prod, decay, period, contracted_cross_section_mode)
                                                                       uncert_upper  = self.contracted_uncertainty(prod, decay, period, "pdf", "+")
@@ -1379,7 +1379,7 @@ class MakeDatacard :
 if len(args) < 1 :
        parser.print_help()
        exit(1)
-       
+
 ## skip first pass of 'bin'
 first_pass_on_bin = True
 ## name of the input datacard
@@ -1440,14 +1440,14 @@ for input_line in input_file :
        ## out on its own, whether really a histogram exists for a given uncertainty
        ## or not
        if len(words)>1 and words[1].find("shape")>-1 :
-              ## map out the shape uncertainties for later rescaling of hists              
+              ## map out the shape uncertainties for later rescaling of hists
               datacard_creator.map_shape_uncertainties(words)
        ## write output line to output file
        output_file.write(output_line)
 
 ## rescale the shape uncertainty histograms
 datacard_creator.rescale_shift_histograms()
-## map out the uncertainty lines for scale and pdf uncertainties 
+## map out the uncertainty lines for scale and pdf uncertainties
 datacard_creator.add_uncertainty_lines()
 ## add new scale and pdf uncertainties for new datacard
 for signal_channel, uncertainy_lines in datacard_creator.signal_channel_to_uncertainty_lines.iteritems() :

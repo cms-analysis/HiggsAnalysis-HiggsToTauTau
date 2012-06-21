@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from optparse import OptionParser
-       
+
 parser = OptionParser(usage="usage: %prog [options] datacatd.txt",
                       description="script to apply horizontal template morphing for htt datacards to estimate masses, which have not been simulated.")
 parser.add_option("--categories", dest="categories", default="emu_vbf,emu_boost, emu_novbf", type="string", help="List of event categories to be morphed; can be given as comma separated list of strings with an aritary number of whitespaces. [Default: 'vbf,boost,novbf']")
@@ -18,7 +18,7 @@ import os
 import re
 import ROOT
 
-ROOT.gSystem.Load('$CMSSW_BASE/lib/slc5_amd64_gcc434/libHiggsAnalysisCombinedLimit.so')
+ROOT.gSystem.Load('$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so')
 from ROOT import th1fmorph
 
 
@@ -38,7 +38,7 @@ class Morph:
         self.uncerts = re.sub(r'\s', '', uncerts).split(',')
         ## list of event categories
         self.directories = re.sub(r'\s', '', directories).split(',')
-        
+
     def load_hist(self, file, directory, name) :
         """
         Load a histogram with name from input histfile. Issue a warning in case the histogram
@@ -56,7 +56,7 @@ class Morph:
         as this is only a technical workaround. This situation should be fixed asap.
         """
         if hist.Integral() == 0 :
-            print "Warning: histogram ", hist.GetName(), "is empty!" 
+            print "Warning: histogram ", hist.GetName(), "is empty!"
             hist.SetBinContent(1, 10e-6)
         return hist
 
@@ -89,14 +89,14 @@ class Morph:
             file.cd(directory)
         hist_morph.Write(hist_morph.GetName())
 
-    def run(self) : 
+    def run(self) :
         """
         Open input rootfile, loop all directories and samples. Pick pivotal masses
-        and apply horizontal template morphing for all samples and systematic shifts.  
+        and apply horizontal template morphing for all samples and systematic shifts.
         """
         file = ROOT.TFile(self.input, "UPDATE")
         if not file :
-            print "file not found: ", self.input 
+            print "file not found: ", self.input
         for dir in self.directories :
             for sample in self.samples :
                 for idx in range(len(self.masses)-1) :
@@ -111,6 +111,6 @@ class Morph:
                                     self.morph_hist(file, dir, sample+'_'+uncert+'Down', self.masses[idx], self.masses[idx+1], value)
                     else :
                         if self.verbose :
-                            print "nothing needs to be done here: nbin =", nbin 
+                            print "nothing needs to be done here: nbin =", nbin
 template_morphing = Morph(options.input,options.categories,options.samples,options.uncerts,options.masses,options.step_size,options.verbose)
 template_morphing.run()
