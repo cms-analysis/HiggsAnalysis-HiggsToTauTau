@@ -11,35 +11,35 @@
 ## ztt corresponds to the analysis type that the file should be input to (choose between mssm/sm/ztt)). 
 ## Finally the source file should be given (full path from CMSSW_BASE on) 
 mm     sm       auxiliaries/datacards/sm/htt_mm/htt_mm.inputs-*.root
-#mm    mssm     auxiliaries/datacards/mssm/htt_mm/mssm/htt_mm.inputs-*.root
+mm     mssm     auxiliaries/datacards/mssm/htt_mm/htt_mm.inputs-*.root
 #mm    ztt      auxiliaries/datacards/xsec/htt_mm/htt_mm.inputs-*.root
 
 ## inputs for em datacard creation (em corresponds to the target directory (relative from setup), mssm/sm
 ## ztt corresponds to the analysis type that the file should be input to (choose between mssm/sm/ztt)). 
 ## Finally the source file should be given (full path from CMSSW_BASE on) 
 em     sm       auxiliaries/datacards/sm/htt_em/htt_em.inputs-*.root
-#em    mssm     auxiliaries/datacards/mssm/htt_em/mssm/htt_em.inputs-*.root
+em     mssm     auxiliaries/datacards/mssm/htt_em/htt_em.inputs-*.root
 #em    ztt      auxiliaries/datacards/xsec/htt_em/htt_em.inputs-*.root
 
 ## inputs for mt datacard creation (et corresponds to the target directory (relative from setup), mssm/sm
 ## ztt corresponds to the analysis type that the file should be input to (choose between mssm/sm/ztt)). 
 ## Finally the source file should be given (full path from CMSSW_BASE on) 
 mt     sm       auxiliaries/datacards/sm/htt_mt/htt_mt.inputs-*.root
-#mt    mssm     auxiliaries/datacards/mssm/htt_mt/mssm/htt_mt.inputs-*.root
+mt     mssm     auxiliaries/datacards/mssm/htt_mt/htt_mt.inputs-*.root
 #mt    ztt      auxiliaries/datacards/xsec/htt_mt/htt_mt.inputs-*.root
 
 ## inputs for mt datacard creation (et corresponds to the target directory (relative from setup), mssm/sm
 ## ztt corresponds to the analysis type that the file should be input to (choose between mssm/sm/ztt)). 
 ## Finally the source file should be given (full path from CMSSW_BASE on) 
 et     sm       auxiliaries/datacards/sm/htt_et/htt_et.inputs-*.root
-#et    mssm     auxiliaries/datacards/mssm/htt_et/mssm/htt_et.inputs-*.root
+et     mssm     auxiliaries/datacards/mssm/htt_et/htt_et.inputs-*.root
 #et    ztt      auxiliaries/datacards/xsec/htt_et/htt_et.inputs-*.root
 
 ## inputs for tt datacard creation (tt corresponds to the target directory (relative from setup), mssm/sm
 ## ztt corresponds to the analysis type that the file should be input to (choose between mssm/sm/ztt)). 
 ## Finally the source file should be given (full path from CMSSW_BASE on) 
 tt     sm       auxiliaries/datacards/sm/htt_tt/htt_tt.inputs-*.root
-#tt    mssm     auxiliaries/datacards/mssm/htt_tt/mssm/htt_tt.inputs-*.root
+#tt    mssm     auxiliaries/datacards/mssm/htt_tt/htt_tt.inputs-*.root
 #tt    ztt      auxiliaries/datacards/xsec/htt_tt/htt_tt.inputs-*.root
 
 ## inputs for vhtt datacard creation (vhtt corresponds to the target directory (relative from setup) 
