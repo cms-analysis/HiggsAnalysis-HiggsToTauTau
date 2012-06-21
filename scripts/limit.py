@@ -56,7 +56,7 @@ base_directory = os.getcwd()
 for directory in args :
     if directory.find("common")>-1 :
         print "> skipping directory common"
-        continue 
+        continue
     print "> entering directory %s" % directory
     ## visit subdirectories
     subdirectory = os.path.join(base_directory, directory)
@@ -116,7 +116,7 @@ for directory in args :
     if options.prepCLs :
         ifile=0
         directoryList = os.listdir(".")
-        ## create a hadd'ed file per crab directory 
+        ## create a hadd'ed file per crab directory
         for name in directoryList :
             if name.find("crab_0")>-1 and not name.find(".")>-1:
                 if os.path.exists("batch_collected_%s.root" % ifile) :
@@ -142,11 +142,11 @@ for directory in args :
         ## expected +1sigma
         os.system("combine batch.root -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.8400" % masspoint)
         ## expected +2sigma
-        os.system("combine batch.root -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.9750" % masspoint)        
+        os.system("combine batch.root -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.9750" % masspoint)
     if options.prepTanB or options.prepSingle :
         ifile=0
         directoryList = os.listdir(".")
-        ## create a hadd'ed file per crab directory 
+        ## create a hadd'ed file per crab directory
         for name in directoryList :
             if name.find("crab_0")>-1 and not name.find(".")>-1:
                 if os.path.exists("batch_collected_%s.root" % ifile) :
@@ -181,6 +181,7 @@ for directory in args :
     if options.prepTanB_fast :
         ## determine masspoint from directory name
         masspoint = directory[directory.rfind("/")+1:]
+        print "> asymptotic limits for mass %s" % masspoint
         ## prepare prefit option
         prefitopt = ""
         if options.noprefit :
@@ -193,14 +194,14 @@ for directory in args :
         if options.qtilde :
             qtildeopt = "--qtilde 0"
         ## prepare mass argument for limit calculation if configured such
-        idx = directory.rfind("/") 
+        idx = directory.rfind("/")
         if idx == (len(directory) - 1):
             idx = directory[:idx - 1].rfind("/")
         mass_string  = directory[idx + 1:]
         mass_matcher = re.compile(r"(?P<mass>[\+\-0-9\s]+)[a-zA-Z0-9]*")
         mass_value   = mass_matcher.match(mass_string).group('mass')
         massopt = "-m %i " % int(mass_value)
-        ## string for tanb inputfiles 
+        ## string for tanb inputfiles
         tanb_inputfiles = ""
         ## list of all elements in the current directory
         directoryList = os.listdir(".")
@@ -209,28 +210,31 @@ for directory in args :
             if re.match(r"batch_\d+(.\d\d)?.root", wsp) :
                 tanb_inputfiles += wsp.replace("batch", "point")+","
                 tanb_string = wsp[wsp.rfind("_")+1:]
-                if not options.refit : 
+                if not options.refit :
                     ## run expected & observed limits in one go
+                    print "Running asymptotic limit command:"
+                    print "combine -M Asymptotic --run both -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} {mass} {user} {wsp}".format(CL=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt,strategy=options.strategy,mass=massopt, wsp=wsp, user=options.userOpt)
                     os.system("combine -M Asymptotic --run both -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} {mass} {user} {wsp}".format(CL=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt,strategy=options.strategy,mass=massopt, wsp=wsp, user=options.userOpt))
                     os.system("mv higgsCombineTest.Asymptotic.mH{mass}.root point_{tanb}".format(mass=mass_value, tanb=tanb_string))
         ## strip last ','
-        tanb_inputfiles = tanb_inputfiles.rstrip(",")
-        ## combine limits of individual tanb point to a single file equivalent to the standard output of --prepCLs
-        ## to be compatible with the output of the option --prepTanB for further processing
-        CMSSW_BASE = os.environ["CMSSW_BASE"]
-        ## clean up directory from former run
-        os.system("rm higgsCombineTest.HybridNew*")
-        if not options.expectedOnly :
-            os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.027.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.160.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.500.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.840.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.975.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+        if False:
+            tanb_inputfiles = tanb_inputfiles.rstrip(",")
+            ## combine limits of individual tanb point to a single file equivalent to the standard output of --prepCLs
+            ## to be compatible with the output of the option --prepTanB for further processing
+            CMSSW_BASE = os.environ["CMSSW_BASE"]
+            ## clean up directory from former run
+            os.system("rm higgsCombineTest.HybridNew*")
+            if not options.expectedOnly :
+                os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+            os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.027.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+            os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.160.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+            os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.500.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+            os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.840.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+            os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.975.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
     if options.prepBayesian :
         ifile=0
         directoryList = os.listdir(".")
-        ## create a hadd'ed file per crab directory 
+        ## create a hadd'ed file per crab directory
         for name in directoryList :
             if name.find("crab_0")>-1 and not name.find(".")>-1:
                 if os.path.exists("batch_collected_%s.root" % ifile) :
@@ -257,7 +261,7 @@ for directory in args :
                 hint=options.hint, rMin=options.rMin, rMax=options.rMax, tries=options.tries, mass=masspoint, user=options.userOpt, iter=options.iter))
     if options.prepAsym :
         ## prepare mass argument for limit calculation if configured such
-        idx = directory.rfind("/") 
+        idx = directory.rfind("/")
         if idx == (len(directory) - 1):
             idx = directory[:idx - 1].rfind("/")
         mass_string  = directory[idx + 1:]
@@ -320,7 +324,7 @@ for directory in args :
     if options.prepPLSig :
         ifile=0
         directoryList = os.listdir(".")
-        ## create a hadd'ed file per crab directory 
+        ## create a hadd'ed file per crab directory
         for name in directoryList :
             if name.find("crab_0")>-1 and not name.find(".")>-1 :
                 if os.path.exists("batch_collected_%s.root" % ifile) :
@@ -333,7 +337,7 @@ for directory in args :
         os.system("hadd batch_collected.root batch_collected_*.root")
         os.system("rm batch_collected_*.root")
         if file==0 :
-            ## in case there were no batch jobs run run interactively 
+            ## in case there were no batch jobs run run interactively
             ## combine datacard from all datacards in this directory
             os.system("combineCards.py -S *.txt > tmp.txt")
             ## prepare binary workspace
@@ -360,7 +364,7 @@ for directory in args :
                 ## before
                 if name.find("crab_0")>-1 and not name.find(".")>-1:
                     os.system("crab -kill all -c %s" % name)
-            os.chdir(subdirectory) 
+            os.chdir(subdirectory)
     if options.cleanup :
         os.system("rm -r crab*")
         if os.path.exists("observed") :
