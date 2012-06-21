@@ -27,7 +27,9 @@ layout = cms.PSet(
     ## define verbosity level
     verbosity   = cms.uint32(2),
     ## define output label
-    outputLabel = cms.string("mssm"), 
+    outputLabel = cms.string("mssm"),
+    ## Set true if we want to skip observed limits
+    expectedOnly = cms.bool(False),
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
     90.
