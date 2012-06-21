@@ -2,32 +2,26 @@
 
 '''
 
-Parellelize calls to limit.py using LXBATCH.
+Parellelize calls to submit.py using LXBATCH.
 
 Usage:
 
-    lxb_limit.py submit_name "ARG_GLOB" [other options]
+    submit.py submit_name "ARG_GLOB" [other options]
 
 ARG_GLOB must expand to a list of directories.  Each entry in this list will be
 a separate lxbatch job.  NB the use of quotes about ARG_GLOB.
 
-Note also you may need to escape the quotes around sub-arguments.  For example,
+Example:
 
-    limit.py --tanb+ --userOpt '--minosAlgo stepping' cmb/*
+    submit.py --method tanb+ cmb/*
 
-would be
+would become
 
-    lxb_limit.py my_limits "cmb/*"  --tanb+ --userOpt \'--minosAlgo stepping\'
+    lxb_submit.py cmb_create "cmb/*" "--method tanb+"
 
-will produce
+which is then submitted by:
 
-    my_limits_submit.sh
-
-which bsubs
-
-    my_limits_0.sh
-    ...
-    my_limits_n.sh
+    bash < cmb_create_submit.sh
 
 '''
 
@@ -36,11 +30,11 @@ import logging
 import os
 import sys
 
-log = logging.getLogger("lxb_limit")
+log = logging.getLogger("lxb_submit")
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 if len(sys.argv) < 4:
-    print "Usage: lxb_limit.py submit_name \"ARG_GLOB\" \"[other options]\""
+    print "Usage: lxb_submit.py submit_name \"ARG_GLOB\" \"[other options]\""
     sys.exit(1)
 
 name = sys.argv[1]
@@ -53,14 +47,14 @@ script_template = '''
 cd {working_dir}
 eval `scram runtime -sh`
 
-$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} {directory}
+$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/submit.py {options} {directory}
 
 '''
 
 submit_name = '%s_submit.sh' % name
 with open(submit_name, 'w') as submit_script:
     for i, dir in enumerate(glob.glob(dirglob)):
-        log.info("Generating limit.py script for %s", dir)
+        log.info("Generating submit.py script for %s", dir)
         script_file_name = '%s_%i.sh' % (name, i)
         with open(script_file_name, 'w') as script:
             script.write(script_template.format(
