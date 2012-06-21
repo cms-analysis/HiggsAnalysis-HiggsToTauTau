@@ -9,6 +9,7 @@ parser.add_option("-o", "--out", dest="out", default="htt-limits", type="string"
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="Choose between run periods [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
 parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string", help="List of channels, for which datacards should be created. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt. [Default: \"mm em mt et\"]")
+parser.add_option("-s", "--setup", dest="setup", default="all", type="choice", help="Setup in which to run. Choises are between cmb only (cmb), split by channels (chn), split by event category (cat), all (all). The combiend limit will always be calculated. [Default: all]", choices=["cmb", "chn", "cat", "all"])
 parser.add_option("--SM4", dest="SM4", default=False, action="store_true", help="Copy datacards for SM4 (for SM only). [Default: False]")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
@@ -92,10 +93,12 @@ for channel in channels :
                 ## setup combined
                 os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} -v {MASS}".format(
                     INPUT=options.input, OUTPUT=options.out+"/cmb", PER=period, ANA=options.analysis, CHN=channel, MASS=mass))
-                ## setup channel-wise
-                os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} -v {MASS}".format(
-                    INPUT=options.input, OUTPUT=options.out+"/"+channel, PER=period, ANA=options.analysis, CHN=channel, MASS=mass))
-                ## setup category-wise
-                os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --{ANA}-categories-{CHN} {CAT} --v {MASS}".format(
-                    INPUT=options.input, OUTPUT=options.out+"/"+directories[cat], PER=period, ANA=options.analysis, CHN=channel, CAT=cat, MASS=mass))
+                if options.setup == "all" or options.setup == "chn" :
+                    ## setup channel-wise
+                    os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} -v {MASS}".format(
+                        INPUT=options.input, OUTPUT=options.out+"/"+channel, PER=period, ANA=options.analysis, CHN=channel, MASS=mass))
+                if options.setup == "all" or options.setup == "cat" :
+                    ## setup category-wise
+                    os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --{ANA}-categories-{CHN} {CAT} --v {MASS}".format(
+                        INPUT=options.input, OUTPUT=options.out+"/"+directories[cat], PER=period, ANA=options.analysis, CHN=channel, CAT=cat, MASS=mass))
 
