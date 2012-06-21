@@ -1,28 +1,28 @@
 #include "HiggsAnalysis/HiggsToTauTau/interface/PlotLimits.h"
 
 
-PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) : output_(output), 
+PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) : output_(output),
   dataset_(cfg.getParameter<std::string>("dataset")),
-  xaxis_(cfg.getParameter<std::string>("xaxis")), 
-  yaxis_(cfg.getParameter<std::string>("yaxis")), 
-  mssm_ (cfg.getParameter<bool  >("mssm")), 
-  png_  (cfg.getParameter<bool  >("png" )), 
-  pdf_  (cfg.getParameter<bool  >("pdf" )), 
-  txt_  (cfg.getParameter<bool  >("txt" )), 
-  root_ (cfg.getParameter<bool  >("root")), 
-  min_  (cfg.getParameter<double>("min" )), 
-  max_  (cfg.getParameter<double>("max" )), 
-  log_  (cfg.getParameter<int   >("log") ), 
+  xaxis_(cfg.getParameter<std::string>("xaxis")),
+  yaxis_(cfg.getParameter<std::string>("yaxis")),
+  mssm_ (cfg.getParameter<bool  >("mssm")),
+  png_  (cfg.getParameter<bool  >("png" )),
+  pdf_  (cfg.getParameter<bool  >("pdf" )),
+  txt_  (cfg.getParameter<bool  >("txt" )),
+  root_ (cfg.getParameter<bool  >("root")),
+  min_  (cfg.getParameter<double>("min" )),
+  max_  (cfg.getParameter<double>("max" )),
+  log_  (cfg.getParameter<int   >("log") ),
   verbosity_(cfg.getParameter<unsigned int>("verbosity")),
-  outputLabel_(cfg.getParameter<std::string>("outputLabel")) 
+  outputLabel_(cfg.getParameter<std::string>("outputLabel"))
 {
   bins_=cfg.getParameter<std::vector<double> >("masspoints");
   for(unsigned int i=0; i<bins_.size(); ++i) valid_.push_back(true);
 }
 
-void 
+void
 PlotLimits::prepareSimple(const char* directory, std::vector<double>& values, const char* filename)
-{ 
+{
   for(unsigned int imass=0; imass<bins_.size(); ++imass){
     double value=-1.;
     std::string buffer = std::string(filename);
@@ -30,7 +30,7 @@ PlotLimits::prepareSimple(const char* directory, std::vector<double>& values, co
     std::string filetail = buffer.substr(buffer.find("$MASS")+5, std::string::npos);
     TString fullpath(TString::Format("%s/%d/%smH%d%s.root", directory, (int)bins_[imass], filehead.c_str(), (int)bins_[imass], filetail.c_str()));
     if(verbosity_>0) std::cout << "INFO: opening file " << fullpath << std::endl;
-    TFile* file = new TFile(fullpath); 
+    TFile* file = new TFile(fullpath);
     if(file->IsZombie()){
       if(verbosity_>0){
 	std::cout << "INFO: file not found: " << fullpath  << std::endl
@@ -43,12 +43,12 @@ PlotLimits::prepareSimple(const char* directory, std::vector<double>& values, co
       if(!limit){
 	if(verbosity_>0){
 	  std::cout << "INFO: tree not found: limit" << std::endl
-		    << "      leave value at -1. to invalidate" << std::endl; 
+		    << "      leave value at -1. to invalidate" << std::endl;
 	}
 	valid_[imass]=false;
       }
       else{
-	double x; 
+	double x;
 	limit->SetBranchAddress("limit", &x);
 	int nevent = limit->GetEntries();
 	for(int i=0; i<nevent; ++i){
@@ -63,7 +63,7 @@ PlotLimits::prepareSimple(const char* directory, std::vector<double>& values, co
   return;
 }
 
-void 
+void
 PlotLimits::prepareAsymptotic(const char* directory, std::vector<double>& values, const char* type)
 {
   for(unsigned int imass=0; imass<bins_.size(); ++imass){
@@ -79,7 +79,7 @@ PlotLimits::prepareAsymptotic(const char* directory, std::vector<double>& values
       std::cout << "INFO: type is " << type << std::endl;
       std::cout << "INFO: opening file " << fullpath << std::endl;
     }
-    TFile* file = new TFile(fullpath); 
+    TFile* file = new TFile(fullpath);
     if(file->IsZombie()){
       if(verbosity_>0){
 	std::cout << "INFO: file not found: " << fullpath  << std::endl
@@ -92,32 +92,32 @@ PlotLimits::prepareAsymptotic(const char* directory, std::vector<double>& values
       if(!limit){
 	if(verbosity_>0){
 	  std::cout << "ERROR: tree not found: limit" << std::endl
-		    << "       leave value at -1. to invalidate" << std::endl; 
+		    << "       leave value at -1. to invalidate" << std::endl;
 	}
 	valid_[imass]=false;
       }
       else{
-	double x; 
+	double x;
 	std::vector<double> limits;
 	limit->SetBranchAddress("limit", &x);
 	int nevent = limit->GetEntries();
-	// for asymptotic it can happen that the pre-fit does not converge and 
-	// that the tree does exist but it is empty. We also need to catch this 
+	// for asymptotic it can happen that the pre-fit does not converge and
+	// that the tree does exist but it is empty. We also need to catch this
 	// case here
 	if(nevent<=0){
 	  valid_[imass]=false;
 	}
 	for(int i=0; i<nevent; ++i){
 	  limit->GetEvent(i);
-	  // we have six options: observed, -2sigma, -1sigma, median, +1sigma, 
-	  // +2sigma; for observed the tree has only one entry and the loop 
+	  // we have six options: observed, -2sigma, -1sigma, median, +1sigma,
+	  // +2sigma; for observed the tree has only one entry and the loop
 	  // ends here automatically, else we break after the corresponding
 	  // entry
 	  value = x;
-	  // for asymptotic it can happen that the limit calculation does not 
-	  // come to a result due to difficulties with the pre-fit. In this 
-	  // cases expected and observed limit are 0. We also need to catch 
-	  // this case here  
+	  // for asymptotic it can happen that the limit calculation does not
+	  // come to a result due to difficulties with the pre-fit. In this
+	  // cases expected and observed limit are 0. We also need to catch
+	  // this case here
 	  if(value<=0){
 	    std::cout << "invalidate MASS " << imass << std::endl;
 	    valid_[imass]=false;
@@ -127,7 +127,7 @@ PlotLimits::prepareAsymptotic(const char* directory, std::vector<double>& values
 	  }
 	}
 	std::sort(limits.begin(), limits.end());
-	if(std::string(type)==std::string("observed")){ 
+	if(std::string(type)==std::string("observed")){
 	  if(limits.size()<=0) {
 	    if(verbosity_>1){
 	      std::cout << "INFO: no observed limit for this file and masspoint. Masspoint invalidated" << std::endl;
@@ -135,7 +135,7 @@ PlotLimits::prepareAsymptotic(const char* directory, std::vector<double>& values
 	    valid_[imass]=false;
 	  }
 	  else{
-	    value=limits[0]; 
+	    value=limits[0];
 	  }
 	}
 	else{
@@ -150,7 +150,7 @@ PlotLimits::prepareAsymptotic(const char* directory, std::vector<double>& values
 	    if(std::string(type)==std::string("-1sigma" )){ value=limits[1]; }
 	    if(std::string(type)==std::string("median"  )){ value=limits[2]; }
 	    if(std::string(type)==std::string("+1sigma" )){ value=limits[3]; }
-	    if(std::string(type)==std::string("+2sigma" )){ value=limits[4]; }	  
+	    if(std::string(type)==std::string("+2sigma" )){ value=limits[4]; }
 	  }
 	}
       }
@@ -161,7 +161,7 @@ PlotLimits::prepareAsymptotic(const char* directory, std::vector<double>& values
   return;
 }
 
-void 
+void
 PlotLimits::prepareBayesian(const char* directory, std::vector<double>& values, const char* type)
 {
   for(unsigned int imass=0; imass<bins_.size(); ++imass){
@@ -181,11 +181,11 @@ PlotLimits::prepareBayesian(const char* directory, std::vector<double>& values, 
       if(!limit){
 	if(verbosity_>0){
 	  std::cout << "INFO: tree not found: limit" << std::endl
-		    << "      leave value at -1. to invalildate" << std::endl; 
+		    << "      leave value at -1. to invalildate" << std::endl;
 	}
 	valid_[imass]=false;
       }
-      else{           
+      else{
 	double x;
 	double mean=0, var=0;
 	// vector for simple median determination
@@ -215,12 +215,12 @@ PlotLimits::prepareBayesian(const char* directory, std::vector<double>& values, 
 	*/
 
 	// using standard deviations can result in bands that span below 0
-	// we therefore use quantiles here for +/-1 ans +/-2 sigma also for 
-	// bayesian; the measn remains as it is 
+	// we therefore use quantiles here for +/-1 ans +/-2 sigma also for
+	// bayesian; the measn remains as it is
 	if(std::string(type)==std::string("mean"   ) ){ value= mean; }
-	else if(std::string(type)==std::string("+2sigma") ){ value= limits[(int)(0.975*limits.size())];}//+2*sqrt(var);}                
+	else if(std::string(type)==std::string("+2sigma") ){ value= limits[(int)(0.975*limits.size())];}//+2*sqrt(var);}
 	else if(std::string(type)==std::string("+1sigma") ){ value= limits[(int)(0.840*limits.size())];}//+1*sqrt(var);}
-	else if(std::string(type)==std::string("median" ) ){ value= limits[(int)(0.500*limits.size())];} 
+	else if(std::string(type)==std::string("median" ) ){ value= limits[(int)(0.500*limits.size())];}
 	else if(std::string(type)==std::string("-1sigma") ){ value= limits[(int)(0.160*limits.size())];}//-1*sqrt(var);}
 	else if(std::string(type)==std::string("-2sigma") ){ value= limits[(int)(0.027*limits.size())];}//-2*sqrt(var);}
 	else{
@@ -236,9 +236,9 @@ PlotLimits::prepareBayesian(const char* directory, std::vector<double>& values, 
   return;
 }
 
-TGraph* 
+TGraph*
 PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filename)
-{ 
+{
   std::vector<double> central;
   if(std::string(filename)==std::string("median") || std::string(filename)==std::string("mean")){
     prepareBayesian(directory, central, filename);
@@ -277,9 +277,9 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
   return plot;
 }
 
-TGraphAsymmErrors* 
+TGraphAsymmErrors*
 PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char* method, bool innerBand)
-{ 
+{
   std::vector<double> upper, lower, expected;
 
   if(std::string(method) == std::string("Bayesian")){
@@ -309,9 +309,9 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
     prepareHIG_11_029(lower, innerBand ? "-1sigma" : "-2sigma");
   }
   else{
-    std::cout << "ERROR: chose wrong method to fill uncertainty band. Available methods are: Bayesian, CLs" 
+    std::cout << "ERROR: chose wrong method to fill uncertainty band. Available methods are: Bayesian, CLs"
 	      << "       for the moment I'll stop here" << std::endl;
-    exit(1); 
+    exit(1);
   }
 
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
@@ -332,13 +332,13 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
   return plot;
 }
 
-void 
+void
 PlotLimits::print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* innerBand, TGraph* expected, TGraph* observed, const char* type)
 {
   if(std::string(type) == std::string("tex")){
-    ofstream file;  
+    ofstream file;
     file.open (std::string(filename).append(".tex").c_str());
-    file 
+    file
       << std::endl << "\\hline" << std::endl << "     "
       << "   " << std::setw(15) << std::right << "    $m_{X}$"
       << " & " << std::setw(15) << std::right << "$-2\\sigma$"
@@ -350,7 +350,7 @@ PlotLimits::print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsym
       << std::right << "  \\\\"
       << std::endl << "\\hline" << std::endl;
     for(int imass=0; imass<expected->GetN(); ++imass){
-      file 
+      file
 	<< "   " << std::setw(15) << std::setprecision(3) << std::right << expected->GetX()[imass] << "~\\GeV"
 	<< " & " << std::setw(15) << std::setprecision(3) << std::right << expected->GetY()[imass] - outerBand->GetEYlow()[imass]
 	<< " & " << std::setw(15) << std::setprecision(3) << std::right << expected->GetY()[imass] - innerBand->GetEYlow()[imass]
@@ -368,9 +368,9 @@ PlotLimits::print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsym
     file.close();
   }
   if(std::string(type) == std::string("txt")){
-    ofstream file;  
+    ofstream file;
     file.open (std::string(filename).append(".txt").c_str());
-    file 
+    file
       << "#"
       << "   " << std::setw(15) << std::right << "         mX"
       << "   " << std::setw(15) << std::right << "   -2 sigma"
@@ -381,8 +381,8 @@ PlotLimits::print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsym
       << "   " << std::setw(15) << std::right << "Obs. Limit [pb]"
       << std::endl;
     for(int imass=0; imass<expected->GetN(); ++imass){
-      file 
-	<< "   " << std::setw(15) << std::setprecision(3) << std::right << expected->GetX()[imass] 
+      file
+	<< "   " << std::setw(15) << std::setprecision(3) << std::right << expected->GetX()[imass]
 	<< "   " << std::setw(15) << std::setprecision(3) << std::right << expected->GetY()[imass] - outerBand->GetEYlow()[imass]
 	<< "   " << std::setw(15) << std::setprecision(3) << std::right << expected->GetY()[imass] - innerBand->GetEYlow()[imass]
 	<< "   " << std::setw(15) << std::setprecision(3) << std::right << expected->GetY()[imass]
@@ -399,7 +399,7 @@ PlotLimits::print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsym
   }
 }
 
-void 
+void
 PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed)
 {
   // set up styles
@@ -517,7 +517,7 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
   return;
 }
 
-void 
+void
 PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed)
 {
   // set up styles
@@ -550,14 +550,18 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   plain->SetPoint(0, 80., 100.);
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
     if(valid_[imass]){
-      plain->SetPoint(ipoint+1, observed->GetX()[ipoint], observed->GetY()[ipoint]); ++ipoint;
+      if (observed) {
+        plain->SetPoint(ipoint+1, observed->GetX()[ipoint], observed->GetY()[ipoint]); ++ipoint;
+      } else {
+        plain->SetPoint(ipoint+1, expected->GetX()[ipoint], expected->GetY()[ipoint]); ++ipoint;
+      }
     }
   }
   plain->SetPoint(bins_.size()+1, 550, 100.);
 
   // create LEP exclusion plot
-  TGraph* LEP = new TGraph(); 
-  limitsLEP(LEP); 
+  TGraph* LEP = new TGraph();
+  limitsLEP(LEP);
   LEP->SetFillStyle(1001.);
   LEP->SetFillColor(lep->GetNumber());
   LEP->SetLineColor(lep->GetNumber());
@@ -569,7 +573,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   // --- 80% ggH CL Limits from H->WW moriond12 combination
   //
   /*
-  TGraph* HWWmH = new TGraph(); 
+  TGraph* HWWmH = new TGraph();
   limitsHWW(HWWmH, "mH-calc-observed");
   HWWmH->SetFillStyle( 3010);
   HWWmH->SetFillColor(kBlue);
@@ -580,7 +584,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   HWWmH->Draw("Fsame");
   HWWmH->Draw("Lsame");
 
-  //TGraph* HWWmH_ = new TGraph(); 
+  //TGraph* HWWmH_ = new TGraph();
   //limitsHWW(HWWmH_, "mH-card-observed");
   //HWWmH_->SetMarkerStyle(20.);
   //HWWmH_->SetMarkerColor(kBlack);
@@ -597,7 +601,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   HWWmh->Draw("Fsame");
   HWWmh->Draw("Lsame");
 
-  //TGraph* HWWmh_ = new TGraph(); 
+  //TGraph* HWWmh_ = new TGraph();
   //limitsHWW(HWWmh_, "mh-card-observed");
   //HWWmh_->SetMarkerStyle(20.);
   //HWWmh_->SetMarkerColor(kBlack);
@@ -626,13 +630,13 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
     if(valid_[imass]){
       outerHigh->SetPoint(ipoint, outerBand->GetX()[ipoint], outerBand->GetY()[ipoint]+outerBand->GetEYhigh()[ipoint]);
-      innerHigh->SetPoint(ipoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]+innerBand->GetEYhigh()[ipoint]); 
+      innerHigh->SetPoint(ipoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]+innerBand->GetEYhigh()[ipoint]);
       outerLow ->SetPoint(ipoint, outerBand->GetX()[ipoint], outerBand->GetY()[ipoint]-outerBand->GetEYlow ()[ipoint]);
-      innerLow ->SetPoint(ipoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]-innerBand->GetEYlow ()[ipoint]); 
+      innerLow ->SetPoint(ipoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]-innerBand->GetEYlow ()[ipoint]);
       ++ipoint;
       if(innerBand->GetX()[ipoint]>350){
-	innerAuxH->SetPoint(jpoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]+innerBand->GetEYhigh()[ipoint]); 
-	innerAuxL->SetPoint(jpoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]-innerBand->GetEYlow ()[ipoint]); 
+	innerAuxH->SetPoint(jpoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]+innerBand->GetEYhigh()[ipoint]);
+	innerAuxL->SetPoint(jpoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]-innerBand->GetEYlow ()[ipoint]);
 	//std::cout << jpoint << " " << innerBand->GetX()[ipoint] << " " << innerBand->GetY()[ipoint]-innerBand->GetEYlow ()[ipoint] << std::endl;
 	++jpoint;
       }
@@ -691,7 +695,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   theory->SetTextFont (   62 );
   theory->AddText("MSSM m_{h}^{max} scenario, M_{SUSY} = 1 TeV");
   theory->Draw();
-    
+
   /// add the proper legend
   TLegend* leg = new TLegend(0.18, 0.70, 0.605, 0.90);
   leg->SetBorderSize( 0 );
