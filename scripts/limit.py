@@ -213,9 +213,9 @@ for directory in args :
                 if not options.refit :
                     ## run expected & observed limits in one go
                     print "Running asymptotic limit command:"
-                    print "combine -M Asymptotic --run both -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} {mass} {user} {wsp}".format(CL=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt,strategy=options.strategy,mass=massopt, wsp=wsp, user=options.userOpt)
-                    os.system("combine -M Asymptotic --run both -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} {mass} {user} {wsp}".format(CL=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt,strategy=options.strategy,mass=massopt, wsp=wsp, user=options.userOpt))
-                    os.system("mv higgsCombineTest.Asymptotic.mH{mass}.root point_{tanb}".format(mass=mass_value, tanb=tanb_string))
+                    print "combine -M Asymptotic -n .tanb{tanb} --run both -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} {mass} {user} {wsp}".format(CL=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt,strategy=options.strategy,mass=massopt, wsp=wsp, user=options.userOpt, tanb=tanb_string)
+                    os.system("combine -M Asymptotic -n .tanb{tanb} --run both -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} {mass} {user} {wsp}".format(CL=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt,strategy=options.strategy,mass=massopt, wsp=wsp, user=options.userOpt, tanb=tanb_string))
+                    os.system("mv higgsCombine.tanb{tanb}.Asymptotic.mH{mass}.root point_{tanb}".format(mass=mass_value, tanb=tanb_string))
         ## strip last ','
         if False:
             tanb_inputfiles = tanb_inputfiles.rstrip(",")
