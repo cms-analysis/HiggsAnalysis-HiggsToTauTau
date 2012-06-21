@@ -54,6 +54,10 @@ script_template = '''
 cd {working_dir}
 eval `scram runtime -sh`
 
+echo "Running limit.py:"
+echo "with options {options}"
+echo "in directory {directory}"
+
 $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} {directory}
 
 '''
