@@ -3,6 +3,7 @@ import re
 import os
 import re
 from optparse import OptionParser, OptionGroup
+from HiggsAnalysis.HiggsToTauTau.parallelize import parallelize
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...",
@@ -13,6 +14,7 @@ parser.add_option("--getoutput", dest="getoutput", default=False, action="store_
 parser.add_option("--CLs", dest="prepCLs", default=False, action="store_true", help="Prepare CLs limits (expected and obeserved). [Default: False]")
 parser.add_option("--tanb", dest="prepTanB", default=False, action="store_true", help="Prepare CLs limits directly in tanb (expected and obeserved, based on the tang-grip.py script). For this option you must have run the submit.py script with option --method tanb for CLs type limit calculation via the grid. [Default: False]")
 parser.add_option("--tanb+", dest="prepTanB_fast", default=False, action="store_true", help="Prepare asymptotic limits directly in tanb (expected and obeserved, based on the tanb-grid.py script). For this option you must have run the submit.py script with options --method tanb+. A submission via grid is not necessary but can be run in parallel on the same derived datacards. [Default: False]")
+parser.add_option("--tanbparallel", dest="tanbparallel", type="int", default=-1, help="Run combine calls in parallel (supply nTasks) when scanning in tanBeta")
 parser.add_option("--single", dest="prepSingle", default=False, action="store_true", help="Prepare CLs limits directly in tanb(expected and obeserved, using Christians method). [Default: False]")
 parser.add_option("--bayesian", dest="prepBayesian", default=False, action="store_true", help="Prepare Bayesian limits (expected and obeserved). [Default: False]")
 parser.add_option("--asymptotic", dest="prepAsym", default=False, action="store_true", help="Prepare Asymptotic limits (expected and obeserved). [Default: False]")
@@ -205,32 +207,45 @@ for directory in args :
         tanb_inputfiles = ""
         ## list of all elements in the current directory
         directoryList = os.listdir(".")
+
+        tasks = []
         ## fetch workspace for each tanb point
         for wsp in directoryList :
             if re.match(r"batch_\d+(.\d\d)?.root", wsp) :
                 tanb_inputfiles += wsp.replace("batch", "point")+","
                 tanb_string = wsp[wsp.rfind("_")+1:]
                 if not options.refit :
-                    ## run expected & observed limits in one go
-                    print "Running asymptotic limit command:"
-                    print "combine -M Asymptotic -n .tanb{tanb} --run both -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} {mass} {user} {wsp}".format(CL=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt,strategy=options.strategy,mass=massopt, wsp=wsp, user=options.userOpt, tanb=tanb_string)
-                    os.system("combine -M Asymptotic -n .tanb{tanb} --run both -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} {mass} {user} {wsp}".format(CL=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt,strategy=options.strategy,mass=massopt, wsp=wsp, user=options.userOpt, tanb=tanb_string))
-                    os.system("mv higgsCombine.tanb{tanb}.Asymptotic.mH{mass}.root point_{tanb}".format(mass=mass_value, tanb=tanb_string))
+                    tasks.append(
+                        ["combine -M Asymptotic -n .tanb{tanb} --run both -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} {mass} {user} {wsp}".format(CL=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt,strategy=options.strategy,mass=massopt, wsp=wsp, user=options.userOpt, tanb=tanb_string),
+                         "mv higgsCombine.tanb{tanb}.Asymptotic.mH{mass}.root point_{tanb}".format(mass=mass_value, tanb=tanb_string)
+                        ]
+                    )
+        if options.tanbparallel == -1:
+            for task in tasks:
+                for subtask in task:
+                    os.system(subtask)
+        else:
+            # Run in parallel using multiple cores
+            parallelize(tasks, options.tanbparallel)
+
         ## strip last ','
-        if False:
-            tanb_inputfiles = tanb_inputfiles.rstrip(",")
-            ## combine limits of individual tanb point to a single file equivalent to the standard output of --prepCLs
-            ## to be compatible with the output of the option --prepTanB for further processing
-            CMSSW_BASE = os.environ["CMSSW_BASE"]
-            ## clean up directory from former run
-            os.system("rm higgsCombineTest.HybridNew*")
-            if not options.expectedOnly :
-                os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-            os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.027.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-            os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.160.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-            os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.500.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-            os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.840.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-            os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.975.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+        tanb_inputfiles = tanb_inputfiles.rstrip(",")
+        ## combine limits of individual tanb point to a single file equivalent to the standard output of --prepCLs
+        ## to be compatible with the output of the option --prepTanB for further processing
+
+        # NB if the ACliC compliation crashes here, run
+        # root -l -b -q HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+
+        # in $CMSSW_BASE/src
+        CMSSW_BASE = os.environ["CMSSW_BASE"]
+        ## clean up directory from former run
+        os.system("rm higgsCombineTest.HybridNew*")
+        if not options.expectedOnly :
+            os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.027.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.160.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.500.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.840.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.975.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
     if options.prepBayesian :
         ifile=0
         directoryList = os.listdir(".")
