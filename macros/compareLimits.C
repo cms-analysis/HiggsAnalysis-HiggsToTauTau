@@ -137,9 +137,9 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["emu"       ] = kBlue;
   colors["em"        ] = kBlue;
   colors["etau"      ] = kRed;
-  colors["et"        ] = kRed
+  colors["et"        ] = kRed;
   colors["mutau"     ] = kGreen;
-  colors["mt"        ] = kGreen
+  colors["mt"        ] = kGreen;
   colors["mumu"      ] = kMagenta;
   colors["mm"        ] = kMagenta;
   colors["tautau"    ] = kOrange;
