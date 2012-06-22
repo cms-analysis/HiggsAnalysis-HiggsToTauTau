@@ -13,6 +13,7 @@ import fnmatch
 import logging
 import os
 import ROOT
+import shutil
 import sys
 
 log = logging.getLogger('stat_shapes')
@@ -57,7 +58,7 @@ def walk_and_copy(inputdir, outputdir, matchers, threshold, prefix):
                             err_down = th1.Clone(
                                 th1.GetName() + "_%s_%s_bin_%i_down" % (prefix, histo, ibin))
                             # Print to stdout, so we can capture the uncertainties
-                            print "%-50s shape" % ("%s_%s_bin_%i" % (prefix, histo, ibin))
+                            print "%s_%s_bin_%i" % (prefix, histo, ibin)
                             err_up.SetBinContent(ibin, val + error)
                             err_down.SetBinContent(ibin, val - error)
                             outputdir.cd()
@@ -95,6 +96,14 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    in_place = True
+    if args.input == args.output:
+        log.info("Modifying in place!  Backing up input file...")
+        shutil.copy(args.input, args.input.replace('.root', '.root.bak'))
+        args.output = args.output.replace('.root', '.tmp.root')
+
     log.info("Building shape systematics. input: %s output: %s",
              args.input, args.output)
     main(args.input, args.output, args.filter, args.threshold, args.prefix)
+    log.info("Moving temproary output to final destination")
+    shutil.move(args.output, args.output.replace('.tmp.root', '.root'))
