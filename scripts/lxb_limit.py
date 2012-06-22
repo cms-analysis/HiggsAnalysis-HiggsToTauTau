@@ -65,6 +65,9 @@ $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} {director
 submit_name = '%s_submit.sh' % name
 with open(submit_name, 'w') as submit_script:
     for i, dir in enumerate(glob.glob(dirglob)):
+        # Don't submit jobs on old LSF output
+        if 'LSFJOB' in dir:
+            continue
         log.info("Generating limit.py script for %s", dir)
         script_file_name = '%s_%i.sh' % (name, i)
         with open(script_file_name, 'w') as script:

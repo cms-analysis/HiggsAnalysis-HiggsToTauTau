@@ -47,6 +47,10 @@ script_template = '''
 cd {working_dir}
 eval `scram runtime -sh`
 
+echo "Running submit.py:"
+echo "with options {options}"
+echo "in directory {directory}"
+
 $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/submit.py {options} {directory}
 
 '''
@@ -54,6 +58,9 @@ $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/submit.py {options} {directo
 submit_name = '%s_submit.sh' % name
 with open(submit_name, 'w') as submit_script:
     for i, dir in enumerate(glob.glob(dirglob)):
+        # Don't submit jobs on old LSF output
+        if 'LSFJOB' in dir:
+            continue
         log.info("Generating submit.py script for %s", dir)
         script_file_name = '%s_%i.sh' % (name, i)
         with open(script_file_name, 'w') as script:
