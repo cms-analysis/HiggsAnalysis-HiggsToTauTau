@@ -11,6 +11,8 @@ def mass_category(mass) :
     """
     return the mass category depending on the value of mass
     """
+    # Temprorarily only use 1 mass cat.
+    return 0
     value = int(mass)
     category = 0
     if 150<value and value<=250 :
