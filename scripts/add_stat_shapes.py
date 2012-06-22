@@ -11,12 +11,13 @@ Author: Evan K. Friis, UW Madison
 from RecoLuminosity.LumiDB import argparse
 import fnmatch
 import logging
+import os
 import ROOT
 import sys
 
 log = logging.getLogger('stat_shapes')
 
-def walk_and_copy(inputdir, outputdir, matchers, threshold):
+def walk_and_copy(inputdir, outputdir, matchers, threshold, prefix):
     ''' Recursive function which copies from inputdir to outputdir '''
     for key in inputdir.GetListOfKeys():
         # Keep track of stuff we find in this directory
@@ -35,8 +36,11 @@ def walk_and_copy(inputdir, outputdir, matchers, threshold):
             th1.Write()
             # Check if this histogram has shape uncertainties
             do_shapes = False
+            path = inputdir.GetPath().split(':')[1]
+            full_path = os.path.join(path, histo)
             for pattern in matchers:
-                if fnmatch.fnmatch(histo, pattern):
+                #print histo, full_path, pattern
+                if fnmatch.fnmatch(histo, pattern) or fnmatch.fnmatch(full_path, pattern):
                     do_shapes = True
                     break
             if do_shapes:
@@ -49,9 +53,11 @@ def walk_and_copy(inputdir, outputdir, matchers, threshold):
                         # Check if we are above threshold
                         if error/val > threshold:
                             err_up = th1.Clone(
-                                th1.GetName() + "_ss_bin_%i_up" % ibin)
+                                th1.GetName() + "_%s_%s_bin_%i_up" % (prefix, histo, ibin))
                             err_down = th1.Clone(
-                                th1.GetName() + "_ss_bin_%i_down" % ibin)
+                                th1.GetName() + "_%s_%s_bin_%i_down" % (prefix, histo, ibin))
+                            # Print to stdout, so we can capture the uncertainties
+                            print "%-50s shape" % ("%s_%s_bin_%i" % (prefix, histo, ibin))
                             err_up.SetBinContent(ibin, val + error)
                             err_down.SetBinContent(ibin, val - error)
                             outputdir.cd()
@@ -65,17 +71,20 @@ def walk_and_copy(inputdir, outputdir, matchers, threshold):
             # Recurse
             walk_and_copy(
                 inputdir.Get(subdir), output_subdir,
-                matchers, threshold)
+                matchers, threshold, prefix)
 
-def main(inputfilename, outputfilename, matchers, threshold):
+def main(inputfilename, outputfilename, matchers, threshold, prefix):
     input = ROOT.TFile(inputfilename, 'READ')
     output = ROOT.TFile(outputfilename, 'RECREATE')
-    walk_and_copy(input, output, matchers, threshold)
+    walk_and_copy(input, output, matchers, threshold, prefix)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('input', help='Input .root file')
     parser.add_argument('output', help='Output .root file')
+    parser.add_argument('--prefix', default='CMS_htt_fixme',
+                        help='Prefix for the systematic name,'
+                        'fixme should be something like mutau, etau, etc')
     parser.add_argument('--filter', nargs='+', metavar='pattern',
                         help='Patterns of TH1F names to shape-ize')
     parser.add_argument('--threshold', type=float, default=0.05,
@@ -88,4 +97,4 @@ if __name__ == "__main__":
 
     log.info("Building shape systematics. input: %s output: %s",
              args.input, args.output)
-    main(args.input, args.output, args.filter, args.threshold)
+    main(args.input, args.output, args.filter, args.threshold, args.prefix)
