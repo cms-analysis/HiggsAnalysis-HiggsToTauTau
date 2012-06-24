@@ -92,16 +92,15 @@ for channel in channels :
             for mass in parseArgs(args) :
                 print "creating datacard for:", options.analysis, period, channel, cat, mass
                 if options.analysis == "mssm" :
-                    os.system("create-datacard.py -i {CHN}.inputs-{ana}-{per}-{MASSCAT}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
-                        CHN=prefix+channel, ana=options.analysis, per=period.lower(), MASSCAT=mass_category(mass), CAT=cat, PER=period, MASS=mass))
-                ## patch for incomplete 8TeV samples (see above)
+                    os.system("create-datacard.py -i {CHN}.inputs-{ana}-{PER}-{MASSCAT}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
+                        CHN=prefix+channel, ana=options.analysis, PER=period, MASSCAT=mass_category(mass), CAT=cat, MASS=mass))
                 if options.analysis == "sm" :
                     if options.SM4 :
                         print "rescaling signal cross sections accoring to SM4 cross sections"
                         os.system(r"root -q -l -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescale2SM4.C+\(true,\"{CHN}.inputs-{per}.root\"\)".format(
                             CMSSW_BASE=os.environ['CMSSW_BASE'], CHN=channel, per=period.lowe()))
-                    os.system("create-datacard.py -i {CHN}.inputs-{ana}-{per}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
-                        CHN=prefix+channel, ana=options.analysis, per=period.lower(), CAT=cat, PER=period, MASS=mass))
+                    os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{per}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
+                        CHN=prefix+channel, ANA=options.analysis, per=period.lower(), CAT=cat, PER=period, MASS=mass))
             os.system("mv *.* ../")
             os.chdir("{PWD}/{CHN}".format(CHN=prefix+channel, PWD=base))
             os.system("rm -r {PER}-0{CAT}".format(PER=period, CAT=cat))

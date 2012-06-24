@@ -42,7 +42,7 @@ if not options.channel == "new" :
     ## there is no additional label to the input file foreseen.
     type = ""
     if options.category.find('-')>-1 :
-        type+="-"+options.category[:options.category.rfind('-')].lower()
+        type+="-"+options.category[:options.category.rfind('-')]
     if options.channel == "hmm" or options.channel == "vhtt": 
         os.system("cp {source}/{channel}.inputs{type}*.root {target}".format(source=source_path, channel=options.channel, type=type, target=target_path))
     else :
