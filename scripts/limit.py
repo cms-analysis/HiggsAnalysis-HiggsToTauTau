@@ -27,10 +27,12 @@ parser.add_option("--expectedOnly", dest="expectedOnly", default=False, action="
 parser.add_option("--userOpt", dest="userOpt", default="", type="string", help="Any kind of user options that should be passed on to combine. [Defaul: \"\"]")
 parser.add_option("--shape", dest="shape", default="shape2", type="string", help="Choose dedicated algorithm for shape uncertainties. [Default: 'shape2']")
 parser.add_option("-C", "--convidence-level", dest="confidenceLevel", default="0.95", type="string", help="Choose the actual confidence level. At this step this applies only to asymptotic methods like for option --prepTanB+ and --preAsym. It does not apply to toy based methods, which have to be configured accordingly in the submission step. [Default: '0.95']")
+parser.add_option("--rMin", dest="rMin", default="-2", type="string", help="Minimum value of signal strenth. [Default: -2]")
+parser.add_option("--rMax", dest="rMax", default="2", type="string", help="Maximum value of signal strenth. [Default: 2]")
+mgroup = OptionGroup(parser, "COMBINE (MAXIMUM LIKELIHOOD FIT) COMMAND OPTIONS", "Command options for the use of combine with the Maximum Likelihood method.")
+mgroup.add_option("--stable", dest="stable", default=True, action="store_true", help="Run maximum likelihood fit with a set of options that lead to stable results. Makes use of the common options --rMin and --rMax to define the boundaries of the fit. [Default: True]")
 egroup = OptionGroup(parser, "COMBINE (MCMC/BAYESIAN) COMMAND OPTIONS", "Command options for the use of combine with the MarkovChainMC/Bayesian method.")
 egroup.add_option("--hint", dest="hint", default="Asymptotic", type="string", help="Name of the hint method that is used to guide the MarkovChainMC. [Default: Asymptotic]")
-egroup.add_option("--rMin", dest="rMin", default="0.1", type="string", help="Minimum value of signal strenth. [Default: 0.1]")
-egroup.add_option("--rMax", dest="rMax", default="100", type="string", help="Maximum value of signal strenth. [Default: 100]")
 egroup.add_option("--iterations", dest="iter", default=10000, type="int", help="Number of iterations to integrate out nuisance parameters. [Default: 10000]")
 egroup.add_option("--tries", dest="tries", default=10, type="int", help="Number of tries to run the MCMC on the same data. [Default: 10]")
 parser.add_option_group(egroup)
@@ -328,9 +330,14 @@ for directory in args :
         minuitopt = ""
         if options.minuit :
             minuitopt = "--minimizerAlgo minuit"
-        qtildeopt = ""
+        stableopt = ""
+        if options.stable :
+            stableopt = "--robustFit=1 --stepSize=0.5  --minimizerStrategy=0 --minimizerTolerance=0.1 --preFitValue=0.1  --X-rtd FITTER_DYN_STEP  --cminFallbackAlgo=\"Minuit;0.001\" "
+            stableopt+= "--rMin {MIN} --rMax {MAX} ".format(MIN=options.rMin, MAX=options.rMax)
         ## run expected limits
-        os.system("combine -M MaxLikelihoodFit -m {mass} {minuit} {user} tmp.txt --out=out".format(mass=mass, minuit=minuitopt, user=options.userOpt))
+        print "Running maximum likelihood fit with options: "
+        print "combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} tmp.txt --out=out".format(mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt)
+        os.system("combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} tmp.txt --out=out".format(mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt))
         ## change to sub-directory out and prepare formated output
         os.chdir(os.path.join(subdirectory, "out"))
         os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f text mlfit.root > mlfit.txt")
