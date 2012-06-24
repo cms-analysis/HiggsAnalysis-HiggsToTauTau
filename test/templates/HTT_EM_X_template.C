@@ -15,6 +15,8 @@
 
 #include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
+$DEFINE_MSSM
+
 /**
    \class   HTT_EM_X_template HTT_EM_X_template.C "HiggsAnalysis/HiggsToTauTau/postfit/tamplates/HTT_EM_X_template.C"
 
@@ -34,12 +36,16 @@
 */
 
 
-TH1F* refill(TH1F* hin, bool data=false)
+TH1F* refill(TH1F* hin, const char* sample, bool data=false)
 /*
   refill histograms, divide by bin width and correct bin errors. For MC histograms set 
   bin errors to zero.
 */
 {
+  if(hin==0){
+    std::cout << "hist not found: " << sample << "  -- close here" << std::endl;
+    exit(1);  
+  }
   TH1F* hout = (TH1F*)hin->Clone(); hout->Clear();
   for(int i=0; i<hout->GetNbinsX(); ++i){
     hout->SetBinContent(i+1, hin->GetBinContent(i+1)/hin->GetBinWidth(i+1));
@@ -72,12 +78,19 @@ void rescale(TH1F* hin, unsigned int idx)
   $EWK
   case 4: // Fakes
   $Fakes
+#if defined MSSM
+  case 5: // ggH
+  $ggH120
+  case 6: // bbH
+  $bbH120
+#else
   case 5: // ggH
   $ggH125
   case 6: // qqH
   $qqH125
   case 7: // VH
   $VH125
+#endif
   default :
     std::cout << "error histograms not known?!?" << std::endl;
   }
@@ -94,14 +107,19 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=500., const c
   if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "#sqrt{s} = 8 TeV, L = 3.0 fb^{-1}";}
   
   TFile* input = new TFile(inputfile);
-  TH1F* Fakes  = refill((TH1F*)input->Get(TString::Format("%s/Fakes"   , directory))); InitHist(Fakes, "", "", kMagenta-10, 1001);
-  TH1F* EWK    = refill((TH1F*)input->Get(TString::Format("%s/EWK"     , directory))); InitHist(EWK  , "", "", kRed    + 2, 1001);
-  TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/ttbar"   , directory))); InitHist(ttbar, "", "", kBlue   - 8, 1001);
-  TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/Ztt"     , directory))); InitHist(Ztt  , "", "", kOrange - 4, 1001);
-  TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125"  , directory))); InitSignal(ggH); ggH->Scale(5);
-  TH1F* qqH    = refill((TH1F*)input->Get(TString::Format("%s/qqH125"  , directory))); InitSignal(qqH); qqH->Scale(5);
-  TH1F* VH     = refill((TH1F*)input->Get(TString::Format("%s/VH125"   , directory))); InitSignal(VH ); VH ->Scale(5);
-  TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), true);
+  TH1F* Fakes  = refill((TH1F*)input->Get(TString::Format("%s/Fakes"   , directory)), "Fakes"); InitHist(Fakes, "", "", kMagenta-10, 1001);
+  TH1F* EWK    = refill((TH1F*)input->Get(TString::Format("%s/EWK"     , directory)), "EWK"  ); InitHist(EWK  , "", "", kRed    + 2, 1001);
+  TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/ttbar"   , directory)), "ttbar"); InitHist(ttbar, "", "", kBlue   - 8, 1001);
+  TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/Ztt"     , directory)), "Ztt"  ); InitHist(Ztt  , "", "", kOrange - 4, 1001);
+#ifdef MSSM
+  TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH120"  , directory)), "ggH"  ); InitSignal(ggH); ggH->Scale(5);
+  TH1F* bbH    = refill((TH1F*)input->Get(TString::Format("%s/bbH120"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale(5);
+#else
+  TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125"  , directory)), "ggH"  ); InitSignal(ggH); ggH->Scale(5);
+  TH1F* qqH    = refill((TH1F*)input->Get(TString::Format("%s/qqH125"  , directory)), "qqH"  ); InitSignal(qqH); qqH->Scale(5);
+  TH1F* VH     = refill((TH1F*)input->Get(TString::Format("%s/VH125"   , directory)), "VH"   ); InitSignal(VH ); VH ->Scale(5);
+#endif
+  TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data", true);
   InitHist(data, "#bf{m_{#tau#tau} [GeV]}", "#bf{dN/dm_{#tau#tau} [1/GeV]}"); InitData(data);
 
   TH1F* ref=(TH1F*)Fakes->Clone("ref");
@@ -114,18 +132,29 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=500., const c
   unscaled[1] = EWK  ->Integral();
   unscaled[2] = ttbar->Integral();
   unscaled[3] = Ztt  ->Integral();
+#ifdef MSSM
+  unscaled[4] = ggH  ->Integral();
+  unscaled[5] = bbH  ->Integral();
+  unscaled[6] = 0;
+#else
   unscaled[4] = ggH  ->Integral();
   unscaled[5] = qqH  ->Integral();
   unscaled[6] = VH   ->Integral();
-  
+#endif
+
   if(scaled){
     rescale(Fakes, 4); 
     rescale(EWK,   3); 
     rescale(ttbar, 2); 
-    rescale(Ztt,   1); 
+    rescale(Ztt,   1);
+#ifdef MSSM 
+    rescale(ggH,   5);
+    rescale(bbH,   6);
+#else
     rescale(ggH,   5);
     rescale(qqH,   6);
     rescale(qqH,   7);
+#endif
   }
 
   TH1F* scales[7];
@@ -137,24 +166,42 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=500., const c
   scales[2]->SetBinContent(3, unscaled[2]>0 ? (ttbar->Integral()/unscaled[2]-1.) : 0.);
   scales[3] = new TH1F("scales-Ztt"  , "", 7, 0, 7);
   scales[3]->SetBinContent(4, unscaled[3]>0 ? (Ztt  ->Integral()/unscaled[3]-1.) : 0.);
+#ifdef MSSM
+  scales[4] = new TH1F("scales-ggH"  , "", 7, 0, 7);
+  scales[4]->SetBinContent(5, unscaled[4]>0 ? (ggH  ->Integral()/unscaled[4]-1.) : 0.);
+  scales[5] = new TH1F("scales-qqH"  , "", 7, 0, 7);
+  scales[5]->SetBinContent(6, unscaled[5]>0 ? (bbH  ->Integral()/unscaled[5]-1.) : 0.);
+  scales[6] = new TH1F("scales-NONE" , "", 7, 0, 7);
+  scales[6]->SetBinContent(7, 0.);
+#else
   scales[4] = new TH1F("scales-ggH"  , "", 7, 0, 7);
   scales[4]->SetBinContent(5, unscaled[4]>0 ? (ggH  ->Integral()/unscaled[4]-1.) : 0.);
   scales[5] = new TH1F("scales-qqH"  , "", 7, 0, 7);
   scales[5]->SetBinContent(6, unscaled[5]>0 ? (qqH  ->Integral()/unscaled[5]-1.) : 0.);
   scales[6] = new TH1F("scales-VH"   , "", 7, 0, 7);
   scales[6]->SetBinContent(7, unscaled[6]>0 ? (VH   ->Integral()/unscaled[6]-1.) : 0.);
+#endif
 
   EWK  ->Add(Fakes);
   ttbar->Add(EWK  );
   Ztt  ->Add(ttbar);
   if(log){
+#ifdef MSSM
+    bbH  ->Add(bbH);
+#else
     qqH  ->Add(VH );
     ggH  ->Add(qqH);
+#endif
   }
   else{
+#ifdef MSSM
+    bbH  ->Add(Ztt);
+    ggH  ->Add(bbH);
+#else
     VH   ->Add(Ztt);
     qqH  ->Add(VH );
     ggH  ->Add(qqH);
+#endif
   }
 
   /*
@@ -191,7 +238,11 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=500., const c
   
   TLegend* leg = new TLegend(0.57, 0.65, 0.95, 0.90);
   SetLegendStyle(leg);
+#ifdef MSSM
+  leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau"        , "L" );
+#else
   leg->AddEntry(ggH  , "(5#times) H#rightarrow#tau#tau" , "L" );
+#endif
   leg->AddEntry(data , "observed"                       , "LP");
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
   leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
@@ -199,6 +250,17 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=500., const c
   leg->AddEntry(Fakes, "QCD"                            , "F" );
   leg->Draw();
 
+#ifdef MSSM
+  TPaveText* mssm  = new TPaveText(0.69, 0.85, 0.90, 0.90, "NDC");
+  mssm->SetBorderSize(   0 );
+  mssm->SetFillStyle(    0 );
+  mssm->SetTextAlign(   12 );
+  mssm->SetTextSize ( 0.03 );
+  mssm->SetTextColor(    1 );
+  mssm->SetTextFont (   62 );
+  mssm->AddText("(m_{A}=120, tan#beta=10)");
+  mssm->Draw();
+#else
   TPaveText* mssm  = new TPaveText(0.83, 0.85, 0.95, 0.90, "NDC");
   mssm->SetBorderSize(   0 );
   mssm->SetFillStyle(    0 );
@@ -208,6 +270,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=500., const c
   mssm->SetTextFont (   62 );
   mssm->AddText("m_{H}=125");
   mssm->Draw();
+#endif
 
   /*
     Ratio Data over MC
@@ -289,9 +352,15 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=500., const c
   scales[0]->GetXaxis()->SetBinLabel(2, "#bf{EWK}"  );
   scales[0]->GetXaxis()->SetBinLabel(3, "#bf{ttbar}");
   scales[0]->GetXaxis()->SetBinLabel(4, "#bf{Ztt}"  );
+#ifdef MSSM
+  scales[0]->GetXaxis()->SetBinLabel(5, "#bf{ggH}"  );
+  scales[0]->GetXaxis()->SetBinLabel(6, "#bf{bbH}"  );
+  scales[0]->GetXaxis()->SetBinLabel(7, "#bf{NONE}" );
+#else
   scales[0]->GetXaxis()->SetBinLabel(5, "#bf{ggH}"  );
   scales[0]->GetXaxis()->SetBinLabel(6, "#bf{qqH}"  );
   scales[0]->GetXaxis()->SetBinLabel(7, "#bf{VH}"   );
+#endif
   scales[0]->SetMaximum(+1.0);
   scales[0]->SetMinimum(-1.0);
   scales[0]->GetYaxis()->CenterTitle();
@@ -324,7 +393,13 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=500., const c
   EWK  ->Write("EWK"     );
   ttbar->Write("ttbar"   );
   Ztt  ->Write("Ztt"     );
+#ifdef MSSM
+  ggH  ->Write("ggH"     );
+  bbH  ->Write("bbH"     );
+#else
   ggH  ->Write("ggH"     );
   qqH  ->Write("qqH"     );
+  VH   ->Write("VH"      );
+#endif
   output->Close();
 }

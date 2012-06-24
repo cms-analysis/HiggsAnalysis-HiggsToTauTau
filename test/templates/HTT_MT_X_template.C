@@ -17,6 +17,8 @@
 
 $DEFINE_EXTRA_SAMPLES
 
+$DEFINE_MSSM
+
 /**
    \class   HTT_MT_X_template HTT_MT_X_template.C "HiggsAnalysis/HiggsToTauTau/postfit/tamplates/HTT_MT_X_template.C"
 
@@ -35,12 +37,16 @@ $DEFINE_EXTRA_SAMPLES
    are supposed to be made.
 */
 
-TH1F* refill(TH1F* hin, bool data=false)
+TH1F* refill(TH1F* hin, const char* sample, bool data=false)
 /*
   refill histograms, divide by bin width and correct bin errors. For MC histograms set 
   bin errors to zero.
 */
 {
+  if(hin==0){
+    std::cout << "hist not found: " << sample << " -- close here" << std::endl;
+    exit(1);  
+  }
   TH1F* hout = (TH1F*)hin->Clone(); hout->Clear();
   for(int i=0; i<hout->GetNbinsX(); ++i){
     hout->SetBinContent(i+1, hin->GetBinContent(i+1)/hin->GetBinWidth(i+1));
@@ -83,12 +89,19 @@ void rescale(TH1F* hin, unsigned int idx)
   $VV
   case  7: // QCD
   $QCD
+#if defined MSSM
+  case  8: // ggH
+  $ggH120
+  case  9: // bbH
+  $bbH120
+#else
   case  8: // ggH
   $ggH125
   case  9: // qqH
   $qqH125
   case 10: // VH
   $VH125
+#endif
   default :
     std::cout << "error histograms not known?!?" << std::endl;
   }
@@ -106,21 +119,26 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
 
   // open example histogram file
   TFile* input = new TFile(inputfile);
-  TH1F* Fakes  = refill((TH1F*)input->Get(TString::Format("%s/QCD"   , directory))); InitHist(Fakes, "", "", kMagenta-10, 1001);
-  TH1F* EWK1   = refill((TH1F*)input->Get(TString::Format("%s/W"     , directory))); InitHist(EWK1 , "", "", kRed    + 2, 1001);
+  TH1F* Fakes  = refill((TH1F*)input->Get(TString::Format("%s/QCD"   , directory)), "QCD"); InitHist(Fakes, "", "", kMagenta-10, 1001);
+  TH1F* EWK1   = refill((TH1F*)input->Get(TString::Format("%s/W"     , directory)), "W"  ); InitHist(EWK1 , "", "", kRed    + 2, 1001);
 #ifdef EXTRA_SAMPLES
-  TH1F* EWK2   = refill((TH1F*)input->Get(TString::Format("%s/ZJ"    , directory))); InitHist(EWK2 , "", "", kRed    + 2, 1001);
-  TH1F* EWK3   = refill((TH1F*)input->Get(TString::Format("%s/ZL"    , directory))); InitHist(EWK3 , "", "", kRed    + 2, 1001);
+  TH1F* EWK2   = refill((TH1F*)input->Get(TString::Format("%s/ZJ"    , directory)), "ZJ" ); InitHist(EWK2 , "", "", kRed    + 2, 1001);
+  TH1F* EWK3   = refill((TH1F*)input->Get(TString::Format("%s/ZL"    , directory)), "ZL" ); InitHist(EWK3 , "", "", kRed    + 2, 1001);
 #else
-  TH1F* EWK2   = refill((TH1F*)input->Get(TString::Format("%s/ZLL"   , directory))); InitHist(EWK2 , "", "", kRed    + 2, 1001);
+  TH1F* EWK2   = refill((TH1F*)input->Get(TString::Format("%s/ZLL"   , directory)), "ZLL"); InitHist(EWK2 , "", "", kRed    + 2, 1001);
 #endif
-  TH1F* EWK    = refill((TH1F*)input->Get(TString::Format("%s/VV"    , directory))); InitHist(EWK  , "", "", kRed    + 2, 1001);
-  TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/TT"    , directory))); InitHist(ttbar, "", "", kBlue   - 8, 1001);
-  TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/ZTT"   , directory))); InitHist(Ztt  , "", "", kOrange - 4, 1001);
-  TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125", directory))); InitSignal(ggH); ggH ->Scale(5);
-  TH1F* qqH    = refill((TH1F*)input->Get(TString::Format("%s/qqH125", directory))); InitSignal(qqH); qqH ->Scale(5);
-  TH1F* VH     = refill((TH1F*)input->Get(TString::Format("%s/VH125" , directory))); InitSignal(VH ); VH  ->Scale(5);
-  TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), true);
+  TH1F* EWK    = refill((TH1F*)input->Get(TString::Format("%s/VV"    , directory)), "VV" ); InitHist(EWK  , "", "", kRed    + 2, 1001);
+  TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/TT"    , directory)), "TT" ); InitHist(ttbar, "", "", kBlue   - 8, 1001);
+  TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/ZTT"   , directory)), "ZTT"); InitHist(Ztt  , "", "", kOrange - 4, 1001);
+#ifdef MSSM
+  TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH120", directory)), "ggH"); InitSignal(ggH); ggH ->Scale(5);
+  TH1F* bbH    = refill((TH1F*)input->Get(TString::Format("%s/bbH120", directory)), "bbH"); InitSignal(bbH); bbH ->Scale(5);
+#else
+  TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125", directory)), "ggH"); InitSignal(ggH); ggH ->Scale(5);
+  TH1F* qqH    = refill((TH1F*)input->Get(TString::Format("%s/qqH125", directory)), "qqH"); InitSignal(qqH); qqH ->Scale(5);
+  TH1F* VH     = refill((TH1F*)input->Get(TString::Format("%s/VH125" , directory)), "VH" ); InitSignal(VH ); VH  ->Scale(5);
+#endif
+  TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data", true);
   InitHist(data, "#bf{m_{#tau#tau} [GeV]}", "#bf{dN/dm_{#tau#tau} [1/GeV]}"); InitData(data);
 
   TH1F* ref=(TH1F*)Fakes->Clone("ref");
@@ -143,9 +161,15 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
 #endif
   unscaled[2] = ttbar->Integral();
   unscaled[3] = Ztt  ->Integral();
+#ifdef MSSM
+  unscaled[4] = ggH  ->Integral();
+  unscaled[5] = bbH  ->Integral();
+  unscaled[6] = 0;
+#else
   unscaled[4] = ggH  ->Integral();
   unscaled[5] = qqH  ->Integral();
   unscaled[6] = VH   ->Integral();
+#endif
 
   if(scaled){
     rescale(Fakes, 7); 
@@ -157,9 +181,14 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
     rescale(EWK  , 6); 
     rescale(ttbar, 2); 
     rescale(Ztt  , 1);
+#ifdef MSSM
+    rescale(ggH  , 8); 
+    rescale(bbH  , 9);  
+#else
     rescale(ggH  , 8); 
     rescale(qqH  , 9);  
     rescale(VH   ,10);  
+#endif
   }
 
   TH1F* scales[7];
@@ -177,12 +206,21 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   scales[2]->SetBinContent(3, unscaled[2]>0 ? (ttbar->Integral()/unscaled[2]-1.) : 0.);
   scales[3] = new TH1F("scales-Ztt"  , "", 7, 0, 7);
   scales[3]->SetBinContent(4, unscaled[3]>0 ? (Ztt  ->Integral()/unscaled[3]-1.) : 0.);
+#ifdef MSSM
+  scales[4] = new TH1F("scales-ggH"  , "", 7, 0, 7);
+  scales[4]->SetBinContent(5, unscaled[4]>0 ? (ggH  ->Integral()/unscaled[4]-1.) : 0.);
+  scales[5] = new TH1F("scales-bbH"  , "", 7, 0, 7);
+  scales[5]->SetBinContent(6, unscaled[5]>0 ? (bbH  ->Integral()/unscaled[5]-1.) : 0.);
+  scales[6] = new TH1F("scales-NONE" , "", 7, 0, 7);
+  scales[6]->SetBinContent(7, 0.);
+#else
   scales[4] = new TH1F("scales-ggH"  , "", 7, 0, 7);
   scales[4]->SetBinContent(5, unscaled[4]>0 ? (ggH  ->Integral()/unscaled[4]-1.) : 0.);
   scales[5] = new TH1F("scales-qqH"  , "", 7, 0, 7);
   scales[5]->SetBinContent(6, unscaled[5]>0 ? (qqH  ->Integral()/unscaled[5]-1.) : 0.);
   scales[6] = new TH1F("scales-VH"   , "", 7, 0, 7);
   scales[6]->SetBinContent(7, unscaled[6]>0 ? (VH   ->Integral()/unscaled[6]-1.) : 0.);
+#endif
 
   EWK1 ->Add(Fakes);
   EWK2 ->Add(EWK1 );
@@ -195,13 +233,22 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   ttbar->Add(EWK  );
   Ztt  ->Add(ttbar);
   if(log){
+#ifdef MSSM
+    ggH  ->Add(bbH);
+#else
     qqH  ->Add(VH );
     ggH  ->Add(qqH);
+#endif
   }
   else{
+#ifdef MSSM    
+    bbH  ->Add(Ztt);
+    ggH  ->Add(bbH);
+#else
     VH   ->Add(Ztt);
     qqH  ->Add(VH );
     ggH  ->Add(qqH);
+#endif
   }
 
   /*
@@ -239,7 +286,11 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   
   TLegend* leg = new TLegend(0.57, 0.65, 0.95, 0.90);
   SetLegendStyle(leg);
+#ifdef MSSM
+  leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau"        , "L" );
+#else
   leg->AddEntry(ggH  , "(5#times) H#rightarrow#tau#tau" , "L" );
+#endif
   leg->AddEntry(data , "observed"                       , "LP");
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
   leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
@@ -247,6 +298,17 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   leg->AddEntry(Fakes, "QCD"                            , "F" );
   leg->Draw();
 
+#ifdef MSSM
+  TPaveText* mssm  = new TPaveText(0.69, 0.85, 0.90, 0.90, "NDC");
+  mssm->SetBorderSize(   0 );
+  mssm->SetFillStyle(    0 );
+  mssm->SetTextAlign(   12 );
+  mssm->SetTextSize ( 0.03 );
+  mssm->SetTextColor(    1 );
+  mssm->SetTextFont (   62 );
+  mssm->AddText("(m_{A}=120, tan#beta=10)");
+  mssm->Draw();
+#else
   TPaveText* mssm  = new TPaveText(0.83, 0.85, 0.95, 0.90, "NDC");
   mssm->SetBorderSize(   0 );
   mssm->SetFillStyle(    0 );
@@ -256,6 +318,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   mssm->SetTextFont (   62 );
   mssm->AddText("m_{H}=125");
   mssm->Draw();
+#endif
 
   /*
     Ratio Data over MC
@@ -336,9 +399,15 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   scales[0]->GetXaxis()->SetBinLabel(2, "#bf{EWK}"  );
   scales[0]->GetXaxis()->SetBinLabel(3, "#bf{ttbar}");
   scales[0]->GetXaxis()->SetBinLabel(4, "#bf{Ztt}"  );
+#ifdef MSSM
+  scales[0]->GetXaxis()->SetBinLabel(5, "#bf{ggH}"  );
+  scales[0]->GetXaxis()->SetBinLabel(6, "#bf{bbH}"  );
+  scales[0]->GetXaxis()->SetBinLabel(7, "NONE"      );
+#else
   scales[0]->GetXaxis()->SetBinLabel(5, "#bf{ggH}"  );
   scales[0]->GetXaxis()->SetBinLabel(6, "#bf{qqH}"  );
   scales[0]->GetXaxis()->SetBinLabel(7, "#bf{VH}"   );
+#endif
   scales[0]->SetMaximum(+1.0);
   scales[0]->SetMinimum(-1.0);
   scales[0]->GetYaxis()->CenterTitle();
@@ -356,7 +425,6 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
     prepare output
   */
   bool isSevenTeV = std::string(inputfile).find("7TeV")!=std::string::npos;
-  std::cout << "isSeven? " << isSevenTeV << std::endl;
   canv ->Print(TString::Format("%s_%sscaled_%s_%s.png"       , directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
   canv ->Print(TString::Format("%s_%sscaled_%s_%s.pdf"       , directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
   canv0->Print(TString::Format("%s_datamc_%sscaled_%s_%s.png", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
@@ -372,7 +440,13 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   EWK  ->Write("EWK"     );
   ttbar->Write("ttbar"   );
   Ztt  ->Write("Ztt"     );
+#ifdef MSSM
+  ggH  ->Write("ggH"     );
+  bbH  ->Write("bbH"     );
+#else
   ggH  ->Write("ggH"     );
   qqH  ->Write("qqH"     );
+  VH   ->Write("VH"      );
+#endif
   output->Close();
 }
