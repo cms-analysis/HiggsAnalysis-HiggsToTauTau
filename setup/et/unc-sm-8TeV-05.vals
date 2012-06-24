@@ -5,7 +5,7 @@ eleTau_vbf   		ggH				pdf_gg    				1.08
 eleTau_vbf   		qqH				pdf_qqbar				1.03
 eleTau_vbf   		VH				pdf_vh					1.02
 eleTau_vbf		ggH				QCDscale_ggH2in 			1.30
-eleTau_vbf		qqH				QCDscale_qqH				1.04
+eleTau_vbf		qqH				QCDscale_qqH				1.10
 eleTau_vbf		VH 	                        QCDscale_VH				1.04
 eleTau_vbf		signal				UEPS					1.04
 eleTau_vbf 		signal,ZTT,ZLL,TT,VV 		CMS_eff_e 				1.02
@@ -18,6 +18,8 @@ eleTau_vbf         	TT				CMS_scale_j_8TeV			1.10
 eleTau_vbf         	VV				CMS_scale_j_8TeV			1.25
 eleTau_vbf   		signal,ZLL	    		CMS_scale_met_8TeV			1.05
 eleTau_vbf	   	TT,VV		    		CMS_scale_met_8TeV			1.07
+eleTau_vbf      	signal,background               CMS_eff_b_8TeV                  	0.97
+eleTau_vbf      	signal,background               CMS_fake_b_8TeV                 	0.98
 eleTau_vbf		ZTT,ZLL				CMS_htt_zttNorm_8TeV 			1.03
 eleTau_vbf		TT				CMS_htt_ttbarNorm_8TeV			1.10
 eleTau_vbf		VV				CMS_htt_et_vbf_DiBosonNorm_8TeV		2.00

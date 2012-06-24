@@ -5,7 +5,7 @@ muTau_vbf   		ggH				pdf_gg    				1.08
 muTau_vbf   		qqH				pdf_qqbar				1.03
 muTau_vbf   		VH				pdf_vh					1.02
 muTau_vbf		ggH				QCDscale_ggH2in 			1.30
-muTau_vbf		qqH				QCDscale_qqH				1.04
+muTau_vbf		qqH				QCDscale_qqH				1.10
 muTau_vbf		VH 	                        QCDscale_VH				1.04
 muTau_vbf		signal				UEPS					1.04
 muTau_vbf 		signal,ZTT,ZLL,TT,VV 		CMS_eff_m 				1.01
@@ -18,6 +18,8 @@ muTau_vbf         	TT				CMS_scale_j				1.10
 muTau_vbf         	VV				CMS_scale_j				1.15
 muTau_vbf   		signal,ZLL	    		CMS_scale_met				1.05
 muTau_vbf	   	TT,VV		    		CMS_scale_met				1.07
+muTau_vbf      		signal,background               CMS_eff_b                  		0.98
+muTau_vbf      		signal,background               CMS_fake_b                 		0.99
 muTau_vbf		ZTT,ZLL				CMS_htt_zttNorm_7TeV 			1.03
 muTau_vbf		TT				CMS_htt_ttbarNorm_7TeV			1.25
 muTau_vbf		VV				CMS_htt_mt_vbf_DiBosonNorm_7TeV		2.00

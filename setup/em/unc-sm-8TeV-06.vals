@@ -11,7 +11,7 @@ emu_btag_low	ggH				pdf_gg    			1.08
 emu_btag_low	qqH				pdf_qqbar			1.08
 emu_btag_low	VH				pdf_vh				1.01
 emu_btag_low	ggH                             QCDscale_ggH1in                 1.12
-emu_btag_low	qqH				QCDscale_qqH			1.04
+emu_btag_low	qqH				QCDscale_qqH			1.10
 emu_btag_low	VH 	                        QCDscale_VH			1.04
 emu_btag_low	signal				UEPS				1.04
 emu_btag_low	Ztt				CMS_htt_zttNorm_8TeV 		1.033

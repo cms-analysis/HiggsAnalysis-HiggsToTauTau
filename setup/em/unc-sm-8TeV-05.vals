@@ -14,7 +14,7 @@ emu_vbf		ggH				pdf_gg    			1.08
 emu_vbf		qqH				pdf_qqbar			1.03
 emu_vbf		VH				pdf_vh				1.02
 emu_vbf		ggH				QCDscale_ggH2in 		1.30
-emu_vbf		qqH				QCDscale_qqH			1.04
+emu_vbf		qqH				QCDscale_qqH			1.10
 emu_vbf		VH 	                        QCDscale_VH			1.04
 emu_vbf		signal				UEPS				1.04
 emu_vbf		Ztt				CMS_htt_zttNorm_8TeV 		1.03

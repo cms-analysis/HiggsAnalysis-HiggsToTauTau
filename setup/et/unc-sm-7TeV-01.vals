@@ -19,9 +19,11 @@ eTau_0jet_high        	        VV				CMS_scale_j					0.97
 eTau_0jet_high	 		signal,ZL,ZJ	   		CMS_scale_met					1.05
 eTau_0jet_high	 		TT		    		CMS_scale_met					1.07
 eTau_0jet_high	 		VV    				CMS_scale_met					1.07
+eTau_0jet_high			signal,background 		CMS_eff_b 					0.99
+eTau_0jet_high			signal,background 		CMS_fake_b 					0.99
 eTau_0jet_high			ZTT,ZL,ZJ			CMS_htt_zttNorm_7TeV 				1.03
 eTau_0jet_high			TT				CMS_htt_ttbarNorm_7TeV				1.07
-eTau_0jet_high			VV				CMS_htt_et_0jet_DiBosonNorm_7TeV			1.30
+eTau_0jet_high			VV				CMS_htt_et_0jet_DiBosonNorm_7TeV		1.30
 eTau_0jet_high			W				CMS_htt_WNorm_etau_0jet_high_7TeV 		1.10
 eTau_0jet_high                 QCD				CMS_htt_QCDNorm_etau_0jet_high_7TeV		1.00 
 eTau_0jet_high                 QCD				CMS_htt_QCDSyst_etau_0jet_high_7TeV		1.20

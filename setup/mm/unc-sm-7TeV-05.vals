@@ -9,7 +9,7 @@ mumu_vbf			ggH				pdf_gg    				1.08
 mumu_vbf			qqH				pdf_qqbar				1.08
 mumu_vbf			VH				pdf_vh					1.01
 mumu_vbf			ggH				QCDscale_ggH2in     			1.25
-mumu_vbf			qqH				QCDscale_qqH				1.06
+mumu_vbf			qqH				QCDscale_qqH				1.10
 mumu_vbf			VH 	                        QCDscale_VH				1.04
 mumu_vbf			signal				UEPS					1.04
 mumu_vbf			ZTT				CMS_htt_zttNorm_7TeV 			1.03
