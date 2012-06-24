@@ -9,16 +9,17 @@ def contained(elem, list) :
 
 def mass_category(mass) :
     """
-    return the mass category depending on the value of mass
+    return the mass category depending on the value of mass. Currently we
+    will have only one mass category for the pt sub-categorization.
     """
     # Temprorarily only use 1 mass cat.
     return 0
     value = int(mass)
     category = 0
     if 150<value and value<=250 :
-        category = 1
+        category = 0
     elif 250<value :
-        category = 2
+        category = 0
     return category
 
 
