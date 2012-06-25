@@ -8,7 +8,7 @@ emu_2jet	signal,EWK,ttbar      		CMS_scale_met				1.05
 emu_2jet        signal,background               CMS_eff_b                  		0.98
 emu_2jet        signal,background               CMS_fake_b                 		0.99
 emu_2jet	Ztt				CMS_htt_zttNorm_7TeV 			1.03
-emu_2jet	Ztt                             CMS_htt_ztt_extrap_2jet_7TeV		1.10
+emu_2jet	Ztt                             CMS_htt_extrap_ztt_2jet_7TeV		1.10
 emu_2jet	ttbar				CMS_htt_ttbarNorm_7TeV			1.08
 emu_2jet	EWK				CMS_htt_em_2jet_DiBosonNorm_7TeV	1.15
 emu_2jet	Fakes				CMS_hww_fakes_em_7TeV			1.30
