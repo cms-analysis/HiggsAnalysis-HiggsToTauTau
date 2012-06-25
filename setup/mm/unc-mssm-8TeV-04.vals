@@ -14,7 +14,7 @@ mumu_2jet			ZMM				CMS_htt_mm_zmmNorm_8TeV			1.055
 #mumu_2jet			qqH				CMS_htt_mm_qqH_MCStat_04_8TeV		1.44
 #mumu_2jet			VH				CMS_htt_mm_VH_MCStat_04_8TeV		1.13
 mumu_2jet			QCD				CMS_htt_mm_QCDNorm_04_8TeV		2.00
-mumu_2jet			ZTT				CMS_htt_ztt_extrap_2jet_8TeV		1.07
+mumu_2jet			ZTT				CMS_htt_extrap_ztt_2jet_8TeV		1.07
 mumu_2jet			ZMM				CMS_htt_mm_zmm_extrap_2jet_8TeV		1.08
 #mumu_2jet			TTJ				CMS_htt_mm_ttbar_MCStat_04_8TeV		1.14
 #mumu_2jet			Dibosons			CMS_htt_mm_DiBoson_MCStat_04_8TeV	1.18

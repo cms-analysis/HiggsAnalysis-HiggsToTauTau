@@ -13,7 +13,7 @@ mumu_btag_low			ZMM				CMS_htt_mm_zmmNorm_7TeV			1.06
 #mumu_btag_low			qqH				CMS_htt_mm_qqH_MCStat_06_7TeV		1.50
 #mumu_btag_low			VH				CMS_htt_mm_VH_MCStat_06_7TeV		1.84
 mumu_btag_low			QCD				CMS_htt_mm_QCDNorm_06_7TeV		2.00
-mumu_btag_low			ZTT				CMS_htt_ztt_extrap_btag_7TeV		1.025
+mumu_btag_low			ZTT				CMS_htt_extrap_ztt_btag_7TeV		1.025
 mumu_btag_low			ZMM				CMS_htt_mm_zmm_extrap_btag_7TeV		1.02
 #mumu_btag_low			TTJ				CMS_htt_mm_ttbar_MCStat_06_7TeV		1.50
 #mumu_btag_low			Dibosons			CMS_htt_mm_DiBoson_MCStat_06_7TeV	1.50

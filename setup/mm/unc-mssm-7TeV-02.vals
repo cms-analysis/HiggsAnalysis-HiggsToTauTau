@@ -14,5 +14,5 @@ mumu_boost_low			ZMM				CMS_htt_mm_zmmNorm_7TeV			1.06
 #mumu_boost_low			qqH				CMS_htt_mm_qqH_MCStat_02_7TeV		1.05
 #mumu_boost_low			VH				CMS_htt_mm_VH_MCStat_02_7TeV		1.07
 mumu_boost_low			QCD				CMS_htt_mm_QCDNorm_02_7TeV		1.27
-mumu_boost_low			ZTT				CMS_htt_ztt_extrap_boost_7TeV		1.02
+mumu_boost_low			ZTT				CMS_htt_extrap_ztt_boost_7TeV		1.02
 mumu_boost_low			ZMM				CMS_htt_mm_zmm_extrap_boost_7TeV	1.02

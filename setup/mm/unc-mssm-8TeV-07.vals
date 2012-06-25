@@ -13,7 +13,7 @@ mumu_btag_high			ZMM				CMS_htt_mm_zmmNorm_8TeV			1.06
 #mumu_btag_high			qqH				CMS_htt_mm_qqH_MCStat_07_8TeV		1.25
 #mumu_btag_high			VH				CMS_htt_mm_VH_MCStat_07_8TeV		1.18
 mumu_btag_high			QCD				CMS_htt_mm_QCDNorm_07_8TeV		2.00
-mumu_btag_high			ZTT				CMS_htt_ztt_extrap_btag_8TeV		1.03
+mumu_btag_high			ZTT				CMS_htt_extrap_ztt_btag_8TeV		1.03
 mumu_btag_high			ZMM				CMS_htt_mm_zmm_extrap_btag_8TeV		1.02
 #mumu_btag_high			TTJ				CMS_htt_mm_ttbar_MCStat_07_8TeV		1.07
 #mumu_btag_high			Dibosons			CMS_htt_mm_DiBoson_MCStat_07_8TeV	1.10

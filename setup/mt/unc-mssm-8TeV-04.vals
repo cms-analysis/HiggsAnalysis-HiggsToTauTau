@@ -18,6 +18,6 @@ muTau_2jet		VV				CMS_htt_mt_2jet_DiBosonNorm_8TeV	2.00
 muTau_2jet		W				CMS_htt_WNorm_mutau_2jet_8TeV		1.30
 muTau_2jet		ZTT				CMS_htt_extrap_ztt_2jet_8TeV		1.09
 muTau_2jet		ZLL				CMS_htt_extrap_ztt_2jet_8TeV		1.03
-muTau_2jet		QCD				CMS_htt_QCDSyst_mutau_2jet_8TeV		1.10
+muTau_2jet		QCD				CMS_htt_QCDSyst_mutau_2jet_8TeV		1.30
 muTau_2jet		ZLL				CMS_htt_ZLLNorm_mutau_2jet_8TeV		1.15
 
