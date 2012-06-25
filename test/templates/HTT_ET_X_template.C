@@ -15,8 +15,8 @@
 
 #include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
+#define BLIND
 $DEFINE_EXTRA_SAMPLES
-
 $DEFINE_MSSM
 
 /**
@@ -37,6 +37,7 @@ $DEFINE_MSSM
    are supposed to be made.
 */
 
+static const bool BLIND_DATA = false;
 
 TH1F* refill(TH1F* hin, const char* sample, bool data=false)
 /*
@@ -50,14 +51,13 @@ TH1F* refill(TH1F* hin, const char* sample, bool data=false)
   }
   TH1F* hout = (TH1F*)hin->Clone(); hout->Clear();
   for(int i=0; i<hout->GetNbinsX(); ++i){
-    hout->SetBinContent(i+1, hin->GetBinContent(i+1)/hin->GetBinWidth(i+1));
+    //hout->SetBinContent(i+1, hin->GetBinContent(i+1)/hin->GetBinWidth(i+1));
     if(data){
-      //hout->SetBinContent(i+1, 0.);
-      //hout->SetBinError(i+1, 0.);
-      hout->SetBinError(i+1, hout->GetBinError(i+1)/hout->GetBinWidth(i+1));
+      hout->SetBinContent(i+1, BLIND_DATA ? 0. : hin->GetBinContent(i+1)/hin->GetBinWidth(i+1));
+      hout->SetBinError  (i+1, BLIND_DATA ? 0. : hin->GetBinError(i+1)/hin->GetBinWidth(i+1));
     }
     else{
-      //hout->SetBinContent(i+1, hin->GetBinContent(i+1)/hin->GetBinWidth(i+1));
+      hout->SetBinContent(i+1, hin->GetBinContent(i+1)/hin->GetBinWidth(i+1));
       hout->SetBinError(i+1, 0.);
     }
   }
@@ -284,11 +284,13 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
 
   CMSPrelim(dataset, "#tau_{e}#tau_{h}", 0.17, 0.835);
   
-  TLegend* leg = new TLegend(0.57, 0.65, 0.95, 0.90);
-  SetLegendStyle(leg);
 #ifdef MSSM
+  TLegend* leg = new TLegend(0.50, 0.65, 0.95, 0.90);
+  SetLegendStyle(leg);
   leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau"        , "L" );
 #else
+  TLegend* leg = new TLegend(0.57, 0.65, 0.95, 0.90);
+  SetLegendStyle(leg);
   leg->AddEntry(ggH  , "(5#times) H#rightarrow#tau#tau" , "L" );
 #endif
   leg->AddEntry(data , "observed"                       , "LP");
