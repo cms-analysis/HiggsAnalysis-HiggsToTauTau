@@ -13,17 +13,18 @@ int main(int argc, char* argv[])
 	      << "            between keyword and value. Possible values for the options are:   \n "
 	      << "            - uncertainty=mu- \n "
 	      << "            - uncertainty=mu+ \n "
-	      << "            - model=mhmax     \n "
-	      << "            - model=nomix     \n "
-	      << "            - model=saeff     \n "
-	      << "            - model=gluph     \n "
+	      << "            - model=mhmax-7TeV\n "
+	      << "            - model=mhmax-8TeV\n "
+	      << "            - model=nomix-7TeV\n "
+	      << "            - model=saeff-7TeV\n "
+	      << "            - model=gluph-7TeV\n "
 	      << "At the moment uncertainties are not fully supported. A set of examples is     \n "
 	      << "given below:                                                                  \n "            
 	      << " - " << argv[0] << " xs sm ggH 120 5 uncertainty=mu+    \n "
-	      << " - " << argv[0] << " xs sm ggH 120 5 model=saeff        \n ";
+	      << " - " << argv[0] << " xs sm ggH 120 5 model=saeff-7TeV   \n ";
     return 0;
   }
-  std::string model("mhmax");
+  std::string model("mhmax-7TeV");
   if( argc > 6 ){
     if( std::string(argv[6]).find("model=")!=std::string::npos ){
       model = std::string(argv[6]).substr(std::string(argv[6]).find("=")+1);
