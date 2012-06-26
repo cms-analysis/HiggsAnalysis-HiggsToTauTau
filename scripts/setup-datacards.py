@@ -100,7 +100,7 @@ for channel in channels :
                         os.system(r"root -q -l -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescale2SM4.C+\(true,\"{CHN}.inputs-{per}.root\"\)".format(
                             CMSSW_BASE=os.environ['CMSSW_BASE'], CHN=channel, per=period.lowe()))
                     os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{per}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
-                        CHN=prefix+channel, ANA=options.analysis, per=period.lower(), CAT=cat, PER=period, MASS=mass))
+                        CHN=prefix+channel, ANA=options.analysis, per=period, CAT=cat, PER=period, MASS=mass))
             os.system("mv *.* ../")
             os.chdir("{PWD}/{CHN}".format(CHN=prefix+channel, PWD=base))
             os.system("rm -r {PER}-0{CAT}".format(PER=period, CAT=cat))
