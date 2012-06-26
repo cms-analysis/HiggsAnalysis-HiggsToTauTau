@@ -30,13 +30,12 @@ $DEFINE_MSSM
    directory of the package and the pulls of the fit as picked up from the maximum likelihood fit 
    results file in the postfit/fitresults directory of the package.
 
-   
    In the headline of the main macro the keywords HTT_EM_X, $HISTFILE and $CATEGORY will be 
    replaced by proper names according to the inputfile and event category, for which the polts 
    are supposed to be made.
 */
 
-static const bool BLIND_DATA = true;
+static const bool BLIND_DATA = false;
 
 TH1F* refill(TH1F* hin, const char* sample, bool data=false)
 /*
