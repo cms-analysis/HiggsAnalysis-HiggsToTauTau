@@ -12,7 +12,7 @@ eTau_boost_high 	signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_e 				1.02
 eTau_boost_high 	signal,ZTT,TT,VV 		CMS_eff_t 				1.07
 eTau_boost_high		signal,ZTT   			CMS_scale_t 				1.00
 eTau_boost_high         ggH				CMS_scale_j				1.06
-eTau_boost_high         qqH				CMS_scale_j				0.98
+eTau_boost_high         qqH				CMS_scale_j				1.02
 eTau_boost_high         VH				CMS_scale_j				1.06
 eTau_boost_high         VV				CMS_scale_j				1.02
 eTau_boost_high		signal,ZJ,ZL	    		CMS_scale_met				1.05

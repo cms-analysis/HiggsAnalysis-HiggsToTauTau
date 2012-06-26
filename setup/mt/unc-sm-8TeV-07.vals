@@ -5,7 +5,7 @@ muTau_btag_high		signal,ZTT,ZLL,TT,VV  	CMS_eff_m 				1.01
 muTau_btag_high		signal,ZTT,VV  		CMS_eff_t 				1.07
 muTau_btag_high		signal,ZTT		CMS_scale_t   	        		1.00
 muTau_btag_high      	ggH,VH		  	CMS_scale_j_8TeV 			1.05	
-muTau_btag_high      	qqH		  	CMS_scale_j_8TeV 			0.94	
+muTau_btag_high      	qqH		  	CMS_scale_j_8TeV 			1.06	
 muTau_btag_high      	TT		  	CMS_scale_j_8TeV 			1.10
 muTau_btag_high      	VV		  	CMS_scale_j_8TeV 			1.03
 muTau_btag_high      	signal		  	CMS_scale_met_8TeV			1.05

@@ -11,9 +11,9 @@ muTau_0jet_high		        signal				UEPS						0.96
 muTau_0jet_high		 	signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_m 					1.01
 muTau_0jet_high		 	signal,ZTT,TT,VV 		CMS_eff_t 					1.07
 muTau_0jet_high		 	signal,ZTT			CMS_scale_t 					1.00
-muTau_0jet_high        	        ggH				CMS_scale_j_8TeV				1.03
-muTau_0jet_high        	        qqH				CMS_scale_j_8TeV				1.15
-muTau_0jet_high        	        VH				CMS_scale_j_8TeV				1.05
+muTau_0jet_high        	        ggH				CMS_scale_j_8TeV				0.97
+muTau_0jet_high        	        qqH				CMS_scale_j_8TeV				0.85
+muTau_0jet_high        	        VH				CMS_scale_j_8TeV				0.95
 muTau_0jet_high        	        TT				CMS_scale_j_8TeV				0.90
 muTau_0jet_high        	        VV				CMS_scale_j_8TeV				0.95
 muTau_0jet_high	 		signal,ZL,ZJ	   		CMS_scale_met_8TeV				1.05
