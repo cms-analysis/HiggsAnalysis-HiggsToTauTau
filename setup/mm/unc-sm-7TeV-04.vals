@@ -7,7 +7,7 @@ mumu_2jet			signal,ZMM,TTJ,WJets,Dibosons 	CMS_eff_b 				0.98
 mumu_2jet			signal,ZMM,TTJ,WJets,Dibosons 	CMS_fake_b 				0.98
 mumu_2jet			ggH				pdf_gg    				1.08
 mumu_2jet			qqH				pdf_qqbar				1.08
-mumu_2jet			VH				pdf_vh					1.01
+mumu_2jet			VH				pdf_qqbar				1.01
 mumu_2jet			ggH				QCDscale_ggH2in     			1.25
 mumu_2jet			qqH				QCDscale_qqH				1.10
 mumu_2jet			VH 	                        QCDscale_VH				1.04

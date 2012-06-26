@@ -12,7 +12,7 @@ emu_0jet_high	signal,background 		CMS_eff_b_8TeV 			0.98
 emu_0jet_high	signal,background 		CMS_fake_b_8TeV 		0.98
 emu_0jet_high	ggH				pdf_gg    			1.08
 emu_0jet_high	qqH				pdf_qqbar			1.03
-emu_0jet_high	VH				pdf_vh				1.01
+emu_0jet_high	VH				pdf_qqbar			1.01
 emu_0jet_high	ggH				QCDscale_ggH     		1.08
 emu_0jet_high	qqH				QCDscale_qqH			1.035
 emu_0jet_high	VH 	                        QCDscale_VH			1.04

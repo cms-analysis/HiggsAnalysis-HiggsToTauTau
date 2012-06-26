@@ -10,7 +10,7 @@ emu_boost_low	signal,background	        CMS_eff_b_8TeV		        0.97
 emu_boost_low	signal,background	        CMS_fake_b_8TeV		        0.98
 emu_boost_low	ggH				pdf_gg    			1.08
 emu_boost_low	qqH				pdf_qqbar			1.03
-emu_boost_low	VH				pdf_vh				1.02
+emu_boost_low	VH				pdf_qqbar			1.02
 emu_boost_low	ggH				QCDscale_ggH1in 		1.10
 emu_boost_low	qqH				QCDscale_qqH			1.04
 emu_boost_low	VH 	                        QCDscale_VH			1.04

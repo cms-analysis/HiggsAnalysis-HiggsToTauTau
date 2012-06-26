@@ -9,7 +9,7 @@ emu_btag_high	signal,background               CMS_fake_b_8TeV                 1.
 emu_btag_high	signal,EWK,ttbar      		CMS_scale_met_8TeV		1.05
 emu_btag_high	ggH				pdf_gg    			1.08
 emu_btag_high	qqH				pdf_qqbar			1.08
-emu_btag_high	VH				pdf_vh				1.01
+emu_btag_high	VH				pdf_qqbar			1.01
 emu_btag_high	ggH                             QCDscale_ggH1in                 1.12
 emu_btag_high	qqH				QCDscale_qqH			1.10
 emu_btag_high	VH 	                        QCDscale_VH			1.04
