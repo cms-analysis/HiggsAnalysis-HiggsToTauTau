@@ -22,7 +22,8 @@ import ROOT
 ROOT.gSystem.Load('$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so')
 from ROOT import th1fmorph
 from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools
-
+from HiggsAnalysis.HiggsToTauTau.acceptance_correction import interval
+from HiggsAnalysis.HiggsToTauTau.acceptance_correction import acceptance_correction
 
 class MakeDatacard :
        def __init__(self, tanb, mA, model="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-nnlo.root", feyn_higgs_model="", sm_like=False) :
@@ -770,6 +771,11 @@ class MakeDatacard :
               by horizontal template morphing but the histogram closest to mH/mh is chosen. NOTE:
               this function has the results of self.load_cross_sections_map and self.load_available_masses
               as input.
+
+              NOTE: (not yet armed)
+              This rescaling includes an acceptance correction due to the smearing of mA/H/h on generator
+              level. The NNLO cross section is determined in a mass window of 30% of the nominal boson mass.
+              Currently analyses have not corrected for this, therefore this correction is applied here.    
               """
               ## cross check whether more then one histfile is needed or not
               single_file = not (filename.find("$MASS")>-1)
@@ -788,6 +794,8 @@ class MakeDatacard :
               hist_mA_value = buff_mA_value.Clone(hist_name)
               #print "RESCALING OF HIST STARTING: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
 
+              acc_mA = acceptance_correction(process, self.mA)
+              print "acceptance correction for mA: ", acc_mA
               hist_mA_value.Scale(cross_sections["A"]/self.tanb)
               ## determine upper and lower mass edges for mh
               (mh_failed, mh_lower, mh_upper) = self.embracing_masses(self.mh, masses)
@@ -813,17 +821,25 @@ class MakeDatacard :
                                    hist_mh_value = hist_mh_upper
                             if hist_mh_value.Integral()>0 :
                                    norm_mh_value = cross_sections["h"]/self.tanb*self.scale(hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh)
+                                   acc_mh = acceptance_correction(process, self.mh)
+                                   print "acceptance correction for mh: ", acc_mh
                                    hist_mh_value.Scale(norm_mh_value/hist_mh_value.Integral())
                      else:
                             norm_mh_value = cross_sections["h"]/self.tanb*self.scale(hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh)
+                            acc_mh = acceptance_correction(process, self.mh)
+                            print "acceptance correction for mh: ", acc_mh
                             hist_mh_value = th1fmorph("I","",hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh, norm_mh_value, 0)
               else :
                      hist_mh_value = hist_mA_value.Clone(hist_name)
+                     acc_mh = acceptance_correction(process, self.mh)
+                     print "acceptance correction for mh: ", acc_mh
                      hist_mh_value.Scale(cross_sections["h"]/self.tanb)
               ## catch cases where the morphing failed. Fallback to mA
               ## in this case and scale according to cross section of mh
               if not hist_mA_value.GetNbinsX() == hist_mh_value.GetNbinsX() :
                      hist_mh_value = hist_mA_value.Clone(hist_name)
+                     acc_mh = acceptance_correction(process, self.mh)
+                     print "acceptance correction for mh: ", acc_mh
                      hist_mh_value.Scale(cross_sections["h"]/self.tanb)
               else :
                      hist_mA_value.Add(hist_mh_value)
@@ -852,17 +868,25 @@ class MakeDatacard :
                                    hist_mH_value = hist_mH_upper
                             if hist_mH_value.Integral()>0 :
                                    norm_mH_value = cross_sections["H"]/self.tanb*self.scale(hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH)
+                                   acc_mH = acceptance_correction(process, self.mH)
+                                   print "acceptance correction for mH: ", acc_mH
                                    hist_mH_value.Scale(norm_mH_value/hist_mH_value.Integral())
                      else :
                             norm_mH_value = cross_sections["H"]/self.tanb*self.scale(hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH)
+                            acc_mH = acceptance_correction(process, self.mH)
+                            print "acceptance correction for mH: ", acc_mH
                             hist_mH_value = th1fmorph("I","",hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH, norm_mH_value, 0)
               else :
                      hist_mH_value = hist_mA_value.Clone(hist_name)
+                     acc_mH = acceptance_correction(process, self.mH)
+                     print "acceptance correction for mH: ", acc_mH
                      hist_mH_value.Scale(cross_sections["H"]/self.tanb)
               ## catch cases where the morphing failed. Fallback to mA
               ## in this case and scale according to cross section of mH
               if not hist_mA_value.GetNbinsX() == hist_mH_value.GetNbinsX() :
                      hist_mH_value = hist_mA_value.Clone(hist_name)
+                     acc_mH = acceptance_correction(process, self.mH)
+                     print "acceptance correction for mH: ", acc_mH
                      hist_mH_value.Scale(cross_sections["H"]/self.tanb)
               else :
                      hist_mA_value.Add(hist_mH_value)
@@ -886,6 +910,12 @@ class MakeDatacard :
        def rescale_histogram_degenerate(self, filename, dir, process, cross_sections, channel, uncertainty="") :
               """
               Rescale a histogram with name 'process' according to the degenerate-masses scheme.
+
+              NOTE: (not yet armed)
+              This rescaling includes an acceptance correction due to the smearing of mA/H/h on
+              generator level. The NNLO cross section is determined in a mass window of 30% of
+              the nominal boson mass. Currently analyses have not corrected for this, therefore
+              this correction is applied here.    
               """
               ## open root file and get original histograms
               path_name = self.expand_histname(channel, process, uncertainty)
@@ -907,6 +937,8 @@ class MakeDatacard :
               if self.mA == 130. :
                      cross_section = cross_sections["A"]+cross_sections["H"]+cross_sections["h"]
               ## rescale histogram
+              acc_mA = acceptance_correction(process, self.mA)
+              print "acceptance correction for mA: ", acc_mA
               hist_mA_value.Scale(cross_section/self.tanb)
               ## write modified histogram to file
               if self.path(dir)=="" :
