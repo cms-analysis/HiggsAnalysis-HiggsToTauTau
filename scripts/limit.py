@@ -30,7 +30,7 @@ parser.add_option("-C", "--convidence-level", dest="confidenceLevel", default="0
 parser.add_option("--rMin", dest="rMin", default="-2", type="string", help="Minimum value of signal strenth. [Default: -2]")
 parser.add_option("--rMax", dest="rMax", default="2", type="string", help="Maximum value of signal strenth. [Default: 2]")
 mgroup = OptionGroup(parser, "COMBINE (MAXIMUM LIKELIHOOD FIT) COMMAND OPTIONS", "Command options for the use of combine with the Maximum Likelihood method.")
-mgroup.add_option("--stable", dest="stable", default=True, action="store_true", help="Run maximum likelihood fit with a set of options that lead to stable results. Makes use of the common options --rMin and --rMax to define the boundaries of the fit. [Default: True]")
+mgroup.add_option("--stable", dest="stable", default=False, action="store_true", help="Run maximum likelihood fit with a set of options that lead to stable results. Makes use of the common options --rMin and --rMax to define the boundaries of the fit. [Default: True]")
 egroup = OptionGroup(parser, "COMBINE (MCMC/BAYESIAN) COMMAND OPTIONS", "Command options for the use of combine with the MarkovChainMC/Bayesian method.")
 egroup.add_option("--hint", dest="hint", default="Asymptotic", type="string", help="Name of the hint method that is used to guide the MarkovChainMC. [Default: Asymptotic]")
 egroup.add_option("--iterations", dest="iter", default=10000, type="int", help="Number of iterations to integrate out nuisance parameters. [Default: 10000]")
