@@ -136,16 +136,16 @@ for period in periods :
                         print "copying datacards for:", period, channel, category, mass
                     if options.analysis == "mssm" :
                         add_mass("htt_{CHN}_{CAT}_{PERIOD}".format(CHN=channel, CAT=category, PERIOD=period), mass)
-                        os.system("cp {INPUT}/htt_{CHN}/{PRE}htt_{CHN}.inputs-{ANA}-{period}*.root {OUTPUT}/common/".format(
-                            INPUT=input, CHN=channel, ANA=options.analysis, period=period.lower(), OUTPUT=options.out, PRE=prefix))                        
+                        os.system("cp {INPUT}/htt_{CHN}/{PRE}htt_{CHN}.inputs-{ANA}-{PERIOD}*.root {OUTPUT}/common/".format(
+                            INPUT=input, CHN=channel, ANA=options.analysis, PERIOD=period, OUTPUT=options.out, PRE=prefix))                        
                         os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
                             INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
                         os.system("perl -pi -e 's/htt_{CHN}.inputs/..\/common\/{PRE}htt_{CHN}.inputs/g' {OUTPUT}/{MASS}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
-                            CHN=channel, period=period.lower(), PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period))
+                            CHN=channel, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period))
                     else :
-                        os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}.inputs-{ANA}-{period}.root {OUTPUT}/common/{PRE}htt_{CHN}.input_{PERIOD}.root".format(
-                            INPUT=input, CHN=channel, ANA=options.analysis, period=period.lower(), OUTPUT=options.out, PRE=prefix, PERIOD=period))                        
+                        os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}.inputs-{ANA}-{PERIOD}.root {OUTPUT}/common/{PRE}htt_{CHN}.input_{PERIOD}.root".format(
+                            INPUT=input, CHN=channel, ANA=options.analysis, OUTPUT=options.out, PRE=prefix, PERIOD=period))                        
                         os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
                             INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
-                        os.system("perl -pi -e 's/htt_{CHN}.inputs-{ANA}-{period}.root/..\/common\/{PRE}htt_{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASS}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
-                            CHN=channel, ANA=options.analysis, period=period.lower(), PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period))
+                        os.system("perl -pi -e 's/htt_{CHN}.inputs-{ANA}-{PERIOD}.root/..\/common\/{PRE}htt_{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASS}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
+                            CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period))
