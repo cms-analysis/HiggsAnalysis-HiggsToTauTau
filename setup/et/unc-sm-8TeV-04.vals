@@ -21,7 +21,7 @@ eleTau_2jet	   	TT,VV		    		CMS_scale_met_8TeV			1.07
 eleTau_2jet        	signal,background               CMS_eff_b_8TeV                  	0.97
 eleTau_2jet     	signal,background               CMS_fake_b_8TeV                 	0.98
 eleTau_2jet		ZTT,ZLL				CMS_htt_zttNorm_8TeV 			1.03
-eleTau_2jet		TT				CMS_htt_ttbarNorm_8TeV			1.10
+eleTau_2jet		TT				CMS_htt_ttbarNorm_2jet_8TeV		1.30
 eleTau_2jet		VV				CMS_htt_et_2jet_DiBosonNorm_8TeV	2.00
 eleTau_2jet		W				CMS_htt_WNorm_etau_2jet_8TeV		1.30
 eleTau_2jet		ZTT				CMS_htt_extrap_ztt_2jet_8TeV		1.10
