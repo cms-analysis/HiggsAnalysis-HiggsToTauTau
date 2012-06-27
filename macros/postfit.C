@@ -32,8 +32,8 @@ postfit(const char* inputfile, const char* dataset = "2011+2012", const char* ex
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
 
   if (std::string(dataset) == std::string("2011"     )){ dataset = "2011, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}"; }
-  if (std::string(dataset) == std::string("2012"     )){ dataset = "2012, #sqrt{s} = 8 TeV, L = 3.0-3.9 fb^{-1}"; }
-  if (std::string(dataset) == std::string("2011+2012")){ dataset = "2011+2012, #sqrt{s} = 7-8 TeV, L = 8-9 fb^{-1}"; }
+  if (std::string(dataset) == std::string("2012"     )){ dataset = "2012, #sqrt{s} = 8 TeV, L = 5.0 fb^{-1}"; }
+  if (std::string(dataset) == std::string("2011+2012")){ dataset = "2011+2012, #sqrt{s} = 7-8 TeV, L = 10 fb^{-1}"; }
 
   TFile* input = new TFile(inputfile);
   TH1F* Fakes  = (TH1F*)input->Get("Fakes"   ); 
