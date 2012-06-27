@@ -7,6 +7,8 @@
 #include <TH1F.h>
 #include <TFile.h>
 #include <TROOT.h>
+#include <TMath.h>
+#include <TRandom3.h>
 #include <TCollection.h>
 
 #include "HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
@@ -41,6 +43,19 @@
    armed                  : write modified data_obs histograms back to file
 */
 
+void randomize(TH1F* hist, unsigned int seed, unsigned int debug=0.)
+{
+  TRandom3* rnd = new TRandom3(seed); 
+  for(int idx=0; idx<hist->GetNbinsX(); ++idx){
+    if(debug>0){
+      std::cout << "[" << idx+1 << "] : " << "mean=" << hist->GetBinContent(idx+1) << "  rnd=" << rnd->Poisson(hist->GetBinContent(idx+1)) << std::endl;  
+    }
+    hist->SetBinContent(idx+1, rnd->Poisson(hist->GetBinContent(idx+1)));
+    hist->SetBinError(idx+1, TMath::Sqrt(rnd->Poisson(hist->GetBinContent(idx+1))));
+  }
+  delete rnd;
+}
+
 bool inPatterns(const std::string& test, const char* patterns)
 {
   std::vector<std::string> samples;
@@ -51,7 +66,7 @@ bool inPatterns(const std::string& test, const char* patterns)
   return false;
 }
 
-void blindData(const char* filename, const char* background_patterns="Fakes, EWK, ttbar, Ztt", const char* signal_patterns="ggH125, qqH125, VH125", bool armed=false, float signal_scale=1., unsigned int debug=1)
+void blindData(const char* filename, const char* background_patterns="Fakes, EWK, ttbar, Ztt", const char* signal_patterns="ggH125, qqH125, VH125", bool armed=false, int rnd=-1, float signal_scale=1., unsigned int debug=1)
 {
   /// prepare input parameters
   std::vector<std::string> signals;
@@ -79,13 +94,23 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
 	  if( debug>0 ){ std::cout << "Looking for histogram: " << (std::string(idir->GetName())+"/"+(*sample)) << std::endl; }
 	  buffer = (TH1F*)file->Get((std::string(idir->GetName())+"/"+(*sample)).c_str()); 
 	  if(inPatterns(*sample, signal_patterns)) {
-	    std::cout << " scale signal sample " << *sample << " by scale " << signal_scale << std::endl;
+	    if( debug>1 ){
+	      std::cout << " scale signal sample " << *sample << " by scale " << signal_scale << std::endl;
+	    }
 	    buffer->Scale(signal_scale);
 	  }
 	  blind_data_obs->Add(buffer);
 	}
-	blind_data_obs->Scale((int)blind_data_obs->Integral()/blind_data_obs->Integral());
-	//if( debug>0 ){ std::cout << "New scale of blinded data_obs: " << blind_data_obs->Integral() << std::endl; }
+	if(rnd>=0){
+	  // randomize histogram; this will automatically have integer integral
+	  randomize(blind_data_obs, rnd, debug);
+	}
+	else{
+	  // use expected mean with signal injected
+	  blind_data_obs->Scale((int)blind_data_obs->Integral()/blind_data_obs->Integral());
+	  if( debug>1 ){ std::cout << "New scale of blinded data_obs: " << blind_data_obs->Integral() << std::endl; }
+	}
+	std::cout << "data_obs yield: " << idir->GetName() << "   " << blind_data_obs->Integral() << std::endl;
 	if(armed){
 	  std::cout << "Writing to file: " << blind_data_obs->GetName() << std::endl;
 	  blind_data_obs->Write("data_obs", TObject::kOverwrite); 
