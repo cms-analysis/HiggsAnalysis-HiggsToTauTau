@@ -6,8 +6,8 @@ def get_svar(factor,fname):
     for line in ffile.readlines():
         if line.strip().lower().startswith(factor.lower()):
             res = re.search("[+-]\d+\.\d+(?=sig)",line)
-            #svar = float(res.group(0))
-            svar = float(line.strip().split()[1].split(",")[0])
+            svar = float(res.group(0))
+            #svar = float(line.strip().split()[1].split(",")[0])
             return svar
             #return float(res.group(0))
             
