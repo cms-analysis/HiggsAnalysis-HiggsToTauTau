@@ -2,5 +2,12 @@ New Event Categories:
 
  idx     event category                   comment
 --------------------------------------------------------         
- 00      $CHANNEL_mtt                  single event class
--------------------------------------------------------
+ 00      zh_eeem                     single event class
+ 01      zh_eeet                     single event class
+ 02      zh_eemt                     single event class
+ 03      zh_eett                     single event class
+ 04      zh_mmem                     single event class
+ 05      zh_mmet                     single event class
+ 06      zh_mmmt                     single event class
+ 07      zh_mmtt                     single event class
+--------------------------------------------------------
