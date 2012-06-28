@@ -16,6 +16,6 @@ emu_2jet	ggH                             QCDscale_ggH2in                 1.12
 emu_2jet	signal				UEPS				1.04
 emu_2jet	Ztt				CMS_htt_zttNorm_8TeV 		1.03
 emu_2jet	Ztt                             CMS_htt_extrap_ztt_2jet_8TeV	1.10
-emu_2jet	ttbar				CMS_htt_ttbarNorm_2jet_8TeV	1.20
-emu_2jet	EWK				CMS_htt_em_2jet_DiBosonNorm_8TeV	1.15
+emu_2jet	ttbar				CMS_htt_ttbarNorm_8TeV		1.20
+emu_2jet	EWK				CMS_htt_DiBosonNorm_8TeV	1.15
 emu_2jet	Fakes				CMS_hww_fakes_em_8TeV		1.30

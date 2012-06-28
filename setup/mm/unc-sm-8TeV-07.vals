@@ -14,7 +14,7 @@ mumu_btag_high			VH 	                        QCDscale_VH				1.04
 mumu_btag_high			signal				UEPS					1.04
 mumu_btag_high			ZTT				CMS_htt_zttNorm_8TeV 			1.03
 mumu_btag_high			TTJ				CMS_htt_ttbarNorm_8TeV			1.10
-mumu_btag_high			Dibosons			CMS_htt_mm_btag_DiBosonNorm_8TeV	1.50
+mumu_btag_high			Dibosons			CMS_htt_mm_DiBosonNorm_8TeV		1.50
 mumu_btag_high			ZMM				CMS_htt_mm_zmmNorm_8TeV			1.06
 #mumu_btag_high			ggH				CMS_htt_mm_ggH_MCStat_07_8TeV		1.23
 #mumu_btag_high			qqH				CMS_htt_mm_qqH_MCStat_07_8TeV		1.25
