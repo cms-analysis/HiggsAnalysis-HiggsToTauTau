@@ -64,7 +64,8 @@ channel(std::string& label){
 	  label==std::string("mhmax+600")  ||
 	  label==std::string("mhmax+800")  ||
 	  label==std::string("HIG-11-020") ||
-	  label==std::string("HIG-11-029")
+	  label==std::string("HIG-11-029") ||
+	  label==std::string("HIG-12-018")
 	  );
 }
 
@@ -100,8 +101,8 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("hzz2l2n"   )) title = std::string("H#rightarrowZZ#rightarrow2l2#nu");
   if(channel==std::string("ggH"       )) title = std::string("gg#rightarrowH");
   if(channel==std::string("bbH"       )) title = std::string("bb#rightarrowHbb");
-  if(channel==std::string("test-0"    )) title = std::string("Test-0");
-  if(channel==std::string("test-1"    )) title = std::string("Test-1");
+  if(channel==std::string("test-0"    )) title = std::string("Limit on 2011 Data");
+  if(channel==std::string("test-1"    )) title = std::string("Limit on 2012 Data");
   if(channel==std::string("test-2"    )) title = std::string("Test-2");
   if(channel==std::string("test-3"    )) title = std::string("Test-3");
   if(channel==std::string("test-4"    )) title = std::string("Test-4");
@@ -119,12 +120,13 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("mhmax+400" )) title = std::string("m_{h, max} (#mu=+400 GeV)");
   if(channel==std::string("mhmax+600" )) title = std::string("m_{h, max} (#mu=+600 GeV)");
   if(channel==std::string("mhmax+800" )) title = std::string("m_{h, max} (#mu=+800 GeV)");
-  if(channel==std::string("HIG-11-020")) title = std::string("HIG-11-020");
-  if(channel==std::string("HIG-11-029")) title = std::string("HIG-11-029");
+  if(channel==std::string("HIG-11-020")) title = std::string("HIG-11-020 (1.6 fb^{-1})");
+  if(channel==std::string("HIG-11-029")) title = std::string("HIG-11-029 (4.9 fb^{-1})");
+  if(channel==std::string("HIG-12-018")) title = std::string("HIG-12-018 (10 fb^{-1})");
   return title;
 }
 
-void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label=", #sqrt{s} = 7 TeV, H#rightarrow#tau#tau, L = 4.9 fb^{-1}")
+void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label=" Preliminary, #sqrt{s} = 7+8 TeV, H#rightarrow#tau#tau, L = 10 fb^{-1}", bool legendOnRight = true)
 {
   SetStyle();
 
@@ -179,8 +181,9 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["mhmax+400" ] = kMagenta+ 3;
   colors["mhmax+600" ] = kMagenta- 2;
   colors["mhmax+800" ] = kMagenta-10;
-  colors["HIG-11-020"] = kGray+1;
-  colors["HIG-11-029"] = kGray+1;
+  colors["HIG-11-020"] = kBlue+2;
+  colors["HIG-11-029"] = kRed+2;
+  colors["HIG-12-018"] = kBlack;
 
   std::cout << " *******************************************************************************************************\n"
 	    << " * Usage     : root -l                                                                                  \n"
@@ -348,7 +351,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     else{
       /// setup the CMS Preliminary
       CMSPrelim(label, "", 0.15, 0.835);
-      leg1 = new TLegend(0.50, hobs.size()<5 ? 0.90-0.06*hobs.size() : 0.6, 0.93, 0.90);
+      leg1 = new TLegend(legendOnRight ? 0.50 : 0.20, hobs.size()<5 ? 0.90-0.06*hobs.size() : 0.6, legendOnRight ? 0.93 : 0.63, 0.90);
     }
     leg1->SetBorderSize( 0 );
     leg1->SetFillStyle ( 0 );
@@ -373,7 +376,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     else{
       /// setup the CMS Preliminary
       CMSPrelim(label, "", 0.15, 0.835);
-      leg0 = new TLegend(0.50, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.6, 0.94, 0.90);
+      leg0 = new TLegend(legendOnRight ? 0.50 : 0.20, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.6, legendOnRight ? 0.94 : 0.64, 0.90);
     }
     leg0->SetBorderSize( 0 );
     leg0->SetFillStyle ( 0 );
@@ -389,5 +392,6 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   }
   canv1->Print(std::string("singleLimits").append(expected ? "_expected" : "").append(observed ? "_observed" : "").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.png" : "_sm.png").c_str());
   canv1->Print(std::string("singleLimits").append(expected ? "_expected" : "").append(observed ? "_observed" : "").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.pdf" : "_sm.pdf").c_str());
+  canv1->Print(std::string("singleLimits").append(expected ? "_expected" : "").append(observed ? "_observed" : "").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.pdf" : "_sm.eps").c_str());
   return;
 }

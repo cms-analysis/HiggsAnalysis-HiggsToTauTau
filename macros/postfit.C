@@ -33,7 +33,7 @@ postfit(const char* inputfile, const char* dataset = "2011+2012", const char* ex
 
   if (std::string(dataset) == std::string("2011"     )){ dataset = "2011, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}"; }
   if (std::string(dataset) == std::string("2012"     )){ dataset = "2012, #sqrt{s} = 8 TeV, L = 5.0 fb^{-1}"; }
-  if (std::string(dataset) == std::string("2011+2012")){ dataset = "2011+2012, #sqrt{s} = 7-8 TeV, L = 10 fb^{-1}"; }
+  if (std::string(dataset) == std::string("2011+2012")){ dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 10 fb^{-1}"; }
 
   TFile* input = new TFile(inputfile);
   TH1F* Fakes  = (TH1F*)input->Get("Fakes"   ); 
@@ -42,6 +42,12 @@ postfit(const char* inputfile, const char* dataset = "2011+2012", const char* ex
   TH1F* Ztt    = (TH1F*)input->Get("Ztt"     ); 
   TH1F* ggH    = (TH1F*)input->Get("ggH"     ); 
   TH1F* data   = (TH1F*)input->Get("data_obs"); 
+  // determine channel for etau Z->ee (EWK) will be shown separated from the rest (EWK1)
+  TH1F* EWK1   = 0;
+  std::cout << extra << std::endl;
+  if(std::string(extra) == std::string("#tau_{e}#tau_{h}")){
+    EWK1 = (TH1F*)input->Get("EWK1");
+  }
 
   /*
     mass plot before and after fit
@@ -59,6 +65,9 @@ postfit(const char* inputfile, const char* dataset = "2011+2012", const char* ex
     Ztt  ->Draw("same");
     ttbar->Draw("same");
     EWK  ->Draw("same");
+    if(EWK1){
+      EWK1->Draw("same");
+    }
     Fakes->Draw("same");
     ggH  ->Draw("same");
   }
@@ -67,32 +76,42 @@ postfit(const char* inputfile, const char* dataset = "2011+2012", const char* ex
     Ztt  ->Draw("same");
     ttbar->Draw("same");
     EWK  ->Draw("same");
+    if(EWK1){
+      EWK1->Draw("same");
+    }
     Fakes->Draw("same");
   }
   data->Draw("esame");
   canv->RedrawAxis();
 
-  CMSPrelim(dataset, "", 0.17, 0.835);
+  CMSPrelim(dataset, extra, 0.17, 0.835);
 
-  TLegend* leg = new TLegend(0.57, 0.65, 0.95, 0.90);
+  float lower_bound = EWK1 ? 0.60 : 0.65;
+  TLegend* leg = new TLegend(0.53, lower_bound, 0.93, 0.90);
   SetLegendStyle(leg);
-  leg->AddEntry(ggH  , "(5#times) H#rightarrow#tau#tau" , "L" );
+  leg->AddEntry(ggH  , "(5#times) H#rightarrow#tau#tau  m_{H}=125" , "L" );
   leg->AddEntry(data , "observed"                       , "LP");
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
+  if(EWK1){
+    leg->AddEntry(EWK  , "Z#rightarrow ee"              , "F" );
+    leg->AddEntry(EWK1 , "electroweak"                  , "F" );
+  }
+  else{
+    leg->AddEntry(EWK  , "electroweak"                  , "F" );
+  }
   leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
-  leg->AddEntry(EWK  , "electroweak"                    , "F" );
   leg->AddEntry(Fakes, "QCD"                            , "F" );
   leg->Draw();
 
-  TPaveText* mssm  = new TPaveText(0.83, 0.85, 0.95, 0.90, "NDC");
-  mssm->SetBorderSize(   0 );
-  mssm->SetFillStyle(    0 );
-  mssm->SetTextAlign(   12 );
-  mssm->SetTextSize ( 0.03 );
-  mssm->SetTextColor(    1 );
-  mssm->SetTextFont (   62 );
-  mssm->AddText("m_{H}=125");
-  mssm->Draw();
+//  TPaveText* mssm  = new TPaveText(0.83, 0.85, 0.95, 0.90, "NDC");
+//  mssm->SetBorderSize(   0 );
+//  mssm->SetFillStyle(    0 );
+//  mssm->SetTextAlign(   12 );
+//  mssm->SetTextSize ( 0.03 );
+//  mssm->SetTextColor(    1 );
+//  mssm->SetTextFont (   62 );
+//  mssm->AddText("m_{H}=125");
+//  mssm->Draw();
 
 //
 //  TPaveText* cat;
@@ -182,4 +201,5 @@ postfit(const char* inputfile, const char* dataset = "2011+2012", const char* ex
   std::string newName = std::string(inputfile).substr(0, std::string(inputfile).find(".root"));
   canv->Print(TString::Format("%s.png", newName.c_str())); 
   canv->Print(TString::Format("%s.pdf", newName.c_str())); 
+  canv->Print(TString::Format("%s.eps", newName.c_str())); 
 }
