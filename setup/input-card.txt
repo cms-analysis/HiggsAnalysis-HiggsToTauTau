@@ -44,4 +44,4 @@ tt     sm       auxiliaries/datacards/sm/htt_tt/htt_tt.inputs-*.root
 
 ## inputs for vhtt datacard creation (vhtt corresponds to the target directory (relative from setup) 
 ## Finally the source file should be given (full path from CMSSW_BASE on) 
-vhtt   sm     auxiliaries/datacards/sm/vhtt/vhtt_*.input_*.root
+vhtt   sm     auxiliaries/datacards/sm/vhtt/vhtt.inputs-*.root
