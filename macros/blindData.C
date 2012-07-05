@@ -45,7 +45,7 @@
 
 void randomize(TH1F* hist, unsigned int seed, unsigned int debug=0.)
 {
-  TRandom3* rnd = new TRandom3(seed); 
+  TRandom3* rnd = new TRandom3(seed); rnd->SetSeed();
   for(int idx=0; idx<hist->GetNbinsX(); ++idx){
     if(debug>0){
       std::cout << "[" << idx+1 << "] : " << "mean=" << hist->GetBinContent(idx+1) << "  rnd=" << rnd->Poisson(hist->GetBinContent(idx+1)) << std::endl;  
@@ -92,6 +92,13 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
 	blind_data_obs->Reset();
 	for(std::vector<std::string>::const_iterator sample = samples.begin(); sample!=samples.end(); ++sample){
 	  if( debug>0 ){ std::cout << "Looking for histogram: " << (std::string(idir->GetName())+"/"+(*sample)) << std::endl; }
+	  // add special treatment for et/mt ZLL,ZJ,ZL here
+	  if(std::string(idir->GetName()).find("vbf") != std::string::npos && (*sample == std::string("ZL") || *sample == std::string("ZJ"))){
+	    continue;
+	  }
+	  else if(std::string(idir->GetName()).find("vbf") == std::string::npos && *sample == std::string("ZLL")){
+	    continue;
+	  }
 	  buffer = (TH1F*)file->Get((std::string(idir->GetName())+"/"+(*sample)).c_str()); 
 	  if(inPatterns(*sample, signal_patterns)) {
 	    if( debug>1 ){
@@ -100,9 +107,11 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
 	    buffer->Scale(signal_scale);
 	  }
 	  blind_data_obs->Add(buffer);
+	  std::cout << "adding: " << buffer->GetName() << " -- " << buffer->Integral() << " --> " << blind_data_obs->Integral() << std::endl;
 	}
 	if(rnd>=0){
 	  // randomize histogram; this will automatically have integer integral
+	  std::cout << "randomizing" << std::endl;
 	  randomize(blind_data_obs, rnd, debug);
 	}
 	else{
