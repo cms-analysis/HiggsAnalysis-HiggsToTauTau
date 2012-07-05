@@ -5,16 +5,20 @@ from optparse import OptionParser, OptionGroup
 parser = OptionParser(usage="usage: %prog [options]",
                       description="Script create tables for the AN and PAS from the datacards.")
 parser.add_option("-i", "--input", dest="input", default="datacards", type="string", help="Path to the complete set of datacards. [Default: datacards]")
-parser.add_option("-p", "--period", dest="period", default="7TeV", type="choice", help="Data taking period. [Default: 7TeV]", choices=["7TeV", "8TeV"])
+parser.add_option("-p", "--period", dest="period", default="7TeV 8TeV", type="choice", help="Data taking period. [Default: \"7TeV, 8TeV\"]", choices=["7TeV", "8TeV", "7TeV 8TeV"])
 parser.add_option("-m", "--mass", dest="mass", default="125", type="string", help="Mass for signal sample to be included in the table. [Default: 125]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="increase verbosity. [Default: False]")
 parser.add_option("--channels", dest="channels", default="mt, et, em, mm", type="string", help="Channels to produce the tables for. [Default: \"mt, et, em, mm\"]")
 parser.add_option("--categories", dest="categories", default="0, 1, 2, 3, 5, 6, 7", type="string", help="Categories to produce the tables for. [Default: \"0, 1, 2, 3, 5, 6, 7\"]")
 cats1 = OptionGroup(parser, "LUMI PER CHANNEL", "Luminosities per channel.")
-cats1.add_option("--lumi-mm", dest="lumi_mm", default=4.9, type="float", help="Luminosity used for mm channel. [Default: 4.9]")
-cats1.add_option("--lumi-em", dest="lumi_em", default=4.9, type="float", help="Luminosity used for em channel. [Default: 4.9]")
-cats1.add_option("--lumi-mt", dest="lumi_mt", default=4.9, type="float", help="Luminosity used for mt channel. [Default: 4.9]")
-cats1.add_option("--lumi-et", dest="lumi_et", default=4.9, type="float", help="Luminosity used for et channel. [Default: 4.9]")
+cats1.add_option("--lumi-7TeV-mm", dest="lumi_7TeV_mm", default=4.9, type="float", help="Luminosity used for mm channel. [Default: 4.9]")
+cats1.add_option("--lumi-7TeV-em", dest="lumi_7TeV_em", default=4.9, type="float", help="Luminosity used for em channel. [Default: 4.9]")
+cats1.add_option("--lumi-7TeV-mt", dest="lumi_7TeV_mt", default=4.9, type="float", help="Luminosity used for mt channel. [Default: 4.9]")
+cats1.add_option("--lumi-7TeV-et", dest="lumi_7TeV_et", default=4.9, type="float", help="Luminosity used for et channel. [Default: 4.9]")
+cats1.add_option("--lumi-8TeV-mm", dest="lumi_8TeV_mm", default=3.0, type="float", help="Luminosity used for mm channel. [Default: 3.0]")
+cats1.add_option("--lumi-8TeV-em", dest="lumi_8TeV_em", default=5.0, type="float", help="Luminosity used for em channel. [Default: 5.0]")
+cats1.add_option("--lumi-8TeV-mt", dest="lumi_8TeV_mt", default=5.0, type="float", help="Luminosity used for mt channel. [Default: 5.0]")
+cats1.add_option("--lumi-8TeV-et", dest="lumi_8TeV_et", default=5.0, type="float", help="Luminosity used for et channel. [Default: 5.0]")
 parser.add_option_group(cats1)
 
 ## check number of arguments; in case print usage
@@ -46,8 +50,12 @@ def cross_section_sm (process, mass, ecms) :
             CHANNEL=process, MA=mass, ECMS=ecms)).read().split()[2])
     return xs
 
-def extractor(inputfile):
-
+def extractor(inputfile, period):
+    lumi_mm = options.lumi_7TeV_mm if options.period == "7TeV" else options.lumi_8TeV_mm
+    lumi_em = options.lumi_7TeV_em if options.period == "7TeV" else options.lumi_8TeV_em
+    lumi_et = options.lumi_7TeV_et if options.period == "7TeV" else options.lumi_8TeV_et
+    lumi_mt = options.lumi_7TeV_mt if options.period == "7TeV" else options.lumi_8TeV_mt
+    
     file = open(inputfile)
 
     nomeFile = '/dev/null'
@@ -79,12 +87,9 @@ def extractor(inputfile):
     if '_7_'in str(file):
         category = 'Btag_highPt'
 
+    nomeFileEff = 'eff'+channel+'_'+period+'.tmp'            
+    nomeFileTab = channel+'_'+category+'_'+period+'.tmp'
     
-    nomeFileEff = 'eff'+channel+'.tmp'            
-    nomeFileTab = channel+category+'.tmp'
-    
-    
-
     lines = ['imax',
              'jmax',
              'kmax',
@@ -108,7 +113,6 @@ def extractor(inputfile):
     rate = []
     name = []
     data = 0
-    totbkg = 0
     signal = []
     errSignal = {}
     first = True
@@ -120,10 +124,10 @@ def extractor(inputfile):
     ## cross sectino for Sm and MSSM Higgs signal yield
     ## lumi in pb
     lumi = {
-        "mm" : 1000*options.lumi_mm,
-        "em" : 1000*options.lumi_em,
-        "mt" : 1000*options.lumi_mt,
-        "et" : 1000*options.lumi_et,
+        "mm" : 1000*lumi_mm,
+        "em" : 1000*lumi_em,
+        "mt" : 1000*lumi_mt,
+        "et" : 1000*lumi_et,
       }  
     xsec = {
         "ggH" : cross_section_sm("ggH", options.mass, float(options.period[:options.period.find("TeV")])),
@@ -215,14 +219,18 @@ def extractor(inputfile):
                 except ValueError:
                     continue        
 
+            ##DEBUG
             #print values[0]
-            #  for myErrors in sums.values():
-                        #print math.sqrt(myErrors) 
+            #for myErrors in sums.values():
+            #    print math.sqrt(myErrors) 
 
-
-
+    totbkg = 0
     for i in range(0, len(rate)):
         rate[i] = float(rate[i])
+        digit = round(math.log10(rate[i])) if math.log10(rate[i])>0 else -int(math.ceil(-math.log10(rate[i])))
+        print rate[i], digit, round(math.log10(rate[i]))
+        rate[i] = round(rate[i], 0 if round(math.log10(rate[i])) else -int(math.ceil(-math.log10(rate[i]))))
+        print rate[i]
         totbkg += rate[i]
 
     errors = [ math.sqrt(value) for value in sums.values() ]
@@ -236,7 +244,6 @@ def extractor(inputfile):
         totSignal = totSignal + float(signal[i])
         
     totErrorSignal = totErrorSignal / totSignal
-
 
     value0 = float(signal[0]) / float(xsec["ggH"]*BR*lumi[channel])
     value1 = float(signal[1]) / float(xsec["qqH"]*BR*lumi[channel])
@@ -253,7 +260,6 @@ def extractor(inputfile):
         errors[i]=errors[i]*rate[i]
         if errors[i] > 100:
             errors[i] = round(errors[i]) 
-
 
     totalError =0
     for i in range(0, len(errors)):
@@ -272,23 +278,16 @@ def extractor(inputfile):
     tabFile = open(nomeFileTab,'w') 
 
     for na, ra, err in zip( name, rate, errors ):
-        if float(ra) > 10:            
-            tabFile.write('%s & %d \pm %d &\n' % ( na, round(float(ra)), round(float(err))))
-        else:
-            tabFile.write('%s & %.1f \pm %.1f &\n' % ( na, float(ra), err))
-    if totbkg > 10: 
-            tabFile.write('Total Bkg & %d \\pm %d\n' %(round(totbkg), round(totalError)))
-    else:
-        tabFile.write('Total Bkg  & %.1f \\pm %.1f\n' %(totbkg, totalError))
-    if totSignal > 10:
-        tabFile.write('Signal & %d \pm %d &\n' %(totSignal,totErrorSignal*totSignal))
-    else:
-        tabFile.write('Signal & %.1f \pm %.1f &\n' %(totSignal,totErrorSignal*totSignal))
+        digit = int(math.log10(float(ra)))
+        tabFile.write('%s & %d \pm %d &\n' % ( na, round(float(ra)), round(float(err))))
+    tabFile.write('Total Bkg & %d \\pm %d\n' %(round(totbkg), round(totalError)))
+    tabFile.write('Signal & %d \pm %d &\n' %(totSignal,totErrorSignal*totSignal))
     tabFile.write('Data & %d & \n'%float(data))
     tabFile.close()
     return 0
 
 def getLine(file, n, m=-1):
+    #print "get line from file:", file
     line = linecache.getline(file,n)
     line1 = 'dummy 0'
     if m != -1:
@@ -304,11 +303,10 @@ def getLine(file, n, m=-1):
     myValue_toBeReturn = [myValue_ab[0],myValue_after]
     return myValue_toBeReturn
 
-
-def mergingCategories(channel, category):
-    file1 = channel+category+'_lowPt.tmp'
-    file2 = channel+category+'_highPt.tmp'
-    newfile = channel+category+'.tmp'
+def mergingCategories(channel, category, period):
+    file1 = channel+'_'+category+'_lowPt_'+period+'.tmp'
+    file2 = channel+'_'+category+'_highPt_'+period+'.tmp'
+    newfile = channel+'_'+category+'_'+period+'.tmp'
     
     samples = []
     events1 = []
@@ -349,30 +347,96 @@ def mergingCategories(channel, category):
 
     myfile = open(newfile,'a')
     for i in range(len(samples)):
-        if events1[i]+events2[i] >10:
-            myfile.write('%s & %d \pm %d \n' %(samples[i],events1[i]+events2[i],errors1[i]+errors2[i]))
-        else:
-            myfile.write('%s & %.1f \pm %.1f \n' %(samples[i],events1[i]+events2[i],errors1[i]+errors2[i]))
+        myfile.write('%s & %d \pm %d \n' %(samples[i],events1[i]+events2[i],math.sqrt(errors1[i]*errors1[i]+errors2[i]*errors2[i])))
     myfile.write('Data & %d &\n'%(data1+data2))
         
+def mergingPeriods(channel, cat, compressed=True):
+    if compressed :
+        if cat == "1" or cat == "3" or cat=="7" :
+            return
+        catlabels = {
+            "0" : '0Jet',
+            "2" : 'Boosted',
+            "5" : 'VBF',
+            "6" : 'Btag',
+            }
+    else :
+        catlabels = {
+            "0" : '0Jet_lowPt',
+            "1" : '0Jet_highPt',
+            "2" : 'Boosted_low_Pt',
+            "3" : 'Boosted_highPt',
+            "5" : 'VBF',
+            "6" : 'Btag_lowPt',
+            "7" : 'Btag_highPt',
+            }
+    file1 = channel+'_'+catlabels[cat]+'_7TeV.tmp'
+    file2 = channel+'_'+catlabels[cat]+'_8TeV.tmp'
+    newfile = channel+'_'+catlabels[cat]+'_7+8TeV.tmp'
+    #print "writing file: ", newfile
+    
+    samples = []
+    events1 = []
+    events2 = []
+    errors1 = []
+    errors2 = []
+    total1 = 0
+    errTot1 = 0
+    total2 = 0 
+    errTot2 = 0
+    data1 = 0
+    data2 = 0
+    myfile = open(file1)
+    for line in myfile:
+        values = line.split()
+        if values[0] == 'Total':
+            samples.append('Total Bkg')
+            events1.append(float(values[3]))
+            errors1.append(float(values[5]))
+        if values[0] != 'Data' and values[0] != 'Total':
+            samples.append(values[0])
+            events1.append(float(values[2]))
+            errors1.append(float(values[4]))
+        if values[0] == 'Data':
+            data1 = float(values[2])
 
+    myfile = open(file2)
+    for line in myfile:
+        values = line.split()
+        if values[0] == 'Total':
+            events2.append(float(values[3]))
+            errors2.append(float(values[5]))
+        if values[0] != 'Data' and values[0] != 'Total':
+            events2.append(float(values[2]))
+            errors2.append(float(values[4]))
+        if values[0] == 'Data':
+            data2 = float(values[2])
 
-def chooseCategory(myList,cat='0Jet_lowPt'):
-    myNN = []
-    if '0Jet' in cat:
-        for i in range(len(myList)):
-            if myList[i][0] == cat: 
-                myNN.append(myList[i][1])
+    myfile = open(newfile,'a')
+    for i in range(len(samples)):
+        myfile.write('%s & %d \pm %d \n' %(samples[i],events1[i]+events2[i],math.sqrt(errors1[i]*errors1[i]+errors2[i]*errors2[i])))
+    myfile.write('Data & %d &\n'%(data1+data2))
+ 
 
-    if '0Jet' not in cat:
-        j = 0
-        for i in range(len(myList)):
-            if myList[i][0] == cat:
-                myNN.append(myList[i][1])            
-                if j == 2:
-                    myNN.append("-")
-                j=j+1
+def mergingEfficiencies() :
+    """
+    this is to merge the efficiencies
+    """
+    print "not yet implemented"
+    
 
+def chooseCategory(samples, myList, cat='0Jet_lowPt'):
+    myNN = {}
+    addZLL = False
+    for i in range(len(myList)):
+        if myList[i][0] == cat:
+            if myList[i][1] == "ZJ" or myList[i][1] == "ZL" :
+                addZLL=True
+            #print "append value for sample:", myList[i][1], "category:", myList[i][0], "value:", myList[i][2] 
+            myNN[myList[i][1]] = myList[i][2]
+    if addZLL :
+        ## add ZL and ZJ for mt and et
+        myNN["ZLL"] = str(float(myNN['ZL'])+float(myNN['ZJ']))
     return myNN 
 
 def blankColumn(number_of_samples) :
@@ -383,9 +447,9 @@ def blankColumn(number_of_samples) :
         i=i+1                
     return myNN
 
-def makingTables(channel, combined = True):
+def makingTables(channel, period, combine_categories=True):
     
-    if not combined:
+    if not combine_categories:
         cat = ['0Jet_lowPt','0Jet_highPt','Boosted_lowPt','Boosted_highPt','VBF','Btag_lowPt','Btag_highPt']
     else:
         cat = ['0Jet','Boosted','VBF','Btag']
@@ -403,34 +467,50 @@ def makingTables(channel, combined = True):
     
     data = []
     
-    texFile = channel+'-'+options.period+'.tex'
+    texFile = channel+'-'+period+'.tex'
     output = open(texFile,'w')
 
-    if not combined :
+    if not combine_categories :
         output.write("""
 \\begin{tabular}{|l|r@{$ \,\,\pm\,\, $}l|r@{$\,\,\pm\,\,$}l|r@{$\,\,\pm\,\,$}l|r@{$\,\,\pm\,\,$}l|r@{$\,\,\pm\,\,$}l|r@{$\,\,\pm\,\,$}l|r@{$\,\,\pm\,\,$}l|}
-%\cline{2-15}
+%\cline{2-11}
 %\multicolumn{1}{c|}{ } &  \multicolumn{10}{c|}{SM} & \multicolumn{4}{c|}{MSSM} \\
 \\hline
-Process & \multicolumn{2}{c|}{\emph{0-Jet} (low)} & \multicolumn{2}{c|}{\emph{0-Jet} (high)}  & \multicolumn{2}{c|}{\emph{Boosted} (low)} &  \multicolumn{2}{c|}{\emph{Boosted} (high)} & \multicolumn{2}{c|}{\emph{VBF}} &  \multicolumn{2}{c|}{\emph{$b$-Tag} (low)} & \multicolumn{2}{c|}{\emph{$b$-Tag} (high)} \\\\
+Process & \multicolumn{2}{c|}{\emph{0-Jet} (low)} & \multicolumn{2}{c|}{\emph{0-Jet} (high)}  & \multicolumn{2}{c|}{\emph{Boosted} (low)} &  \multicolumn{2}{c|}{\emph{Boosted} (high)} & \multicolumn{2}{c|}{\emph{VBF}} \\\\
 \\hline
 """)
+#        output.write("""
+#\\begin{tabular}{|l|r@{$ \,\,\pm\,\, $}l|r@{$\,\,\pm\,\,$}l|r@{$\,\,\pm\,\,$}l|r@{$\,\,\pm\,\,$}l|r@{$\,\,\pm\,\,$}l|r@{$\,\,\pm\,\,$}l|r@{$\,\,\pm\,\,$}l|}
+#%\cline{2-15}
+#%\multicolumn{1}{c|}{ } &  \multicolumn{10}{c|}{SM} & \multicolumn{4}{c|}{MSSM} \\
+#\\hline
+#Process & \multicolumn{2}{c|}{\emph{0-Jet} (low)} & \multicolumn{2}{c|}{\emph{0-Jet} (high)}  & \multicolumn{2}{c|}{\emph{Boosted} (low)} &  \multicolumn{2}{c|}{\emph{Boosted} (high)} & \multicolumn{2}{c|}{\emph{VBF}} &  \multicolumn{2}{c|}{\emph{$b$-Tag} (low)} & \multicolumn{2}{c|}{\emph{$b$-Tag} (high)} \\\\
+#\\hline
+#""")        
     else:
         output.write("""
 \\begin{tabular}{|l|r@{$ \,\,\pm\,\, $}l|r@{$\,\,\pm\,\,$}l|r@{$\,\,\pm\,\,$}l|r@{$\,\,\pm\,\,$}l|}
-%\cline{2-9}
+%\cline{2-7}
 %\multicolumn{1}{c|}{ } &  \multicolumn{6}{c|}{SM}  & \multicolumn{2}{c|}{MSSM} \\
 \\hline
-Process & \multicolumn{2}{c|}{\emph{0-Jet}} & \multicolumn{2}{c|}{\emph{Boosted}} & \multicolumn{2}{c|}{\emph{VBF}} &  \multicolumn{2}{c|}{\emph{$b$-Tag}} \\\\
+Process & \multicolumn{2}{c|}{\emph{0-Jet}} & \multicolumn{2}{c|}{\emph{Boosted}} & \multicolumn{2}{c|}{\emph{VBF}} \\\\
 \\hline
-""")    
+""")
+#        output.write("""
+#\\begin{tabular}{|l|r@{$ \,\,\pm\,\, $}l|r@{$\,\,\pm\,\,$}l|r@{$\,\,\pm\,\,$}l|r@{$\,\,\pm\,\,$}l|}
+#%\cline{2-9}
+#%\multicolumn{1}{c|}{ } &  \multicolumn{6}{c|}{SM}  & \multicolumn{2}{c|}{MSSM} \\
+#\\hline
+#Process & \multicolumn{2}{c|}{\emph{0-Jet}} & \multicolumn{2}{c|}{\emph{Boosted}} & \multicolumn{2}{c|}{\emph{VBF}} &  \multicolumn{2}{c|}{\emph{$b$-Tag}} \\\\
+#\\hline
+#""")            
 
     for category in cat:
-        myfile = str(channel)+str(category)+'.tmp'
+        myfile = str(channel)+'_'+str(category)+'_'+period+'.tmp'
         file = open(myfile)    
         for line in file:
             values = line.split()
-            #        print values
+            #print values
             if category == firstCat and values[0] != 'Data' and values[0] != 'Total' and values[0] != 'Signal':
                 samples.append(values[0])
             if values[0] == 'Data':
@@ -442,19 +522,18 @@ Process & \multicolumn{2}{c|}{\emph{0-Jet}} & \multicolumn{2}{c|}{\emph{Boosted}
                 total.append(values[3])
                 errTot.append(values[5])   
 
-            elif values[0] != 'Data' and values[0] != 'Total' and values[0] != 'Signal':
-                rate.append((category,values[2]))
-                error.append((category,values[4]))
+            if values[0] != 'Data' and values[0] != 'Total' and values[0] != 'Signal':
+                rate.append((category,values[0],values[2]))
+                error.append((category,values[0],values[4]))
     
-
     rateCat =[]
     errorCat = []
     totCat = []
     errTotCat =[]                
     for category in cat:
-        rateCat.append(chooseCategory(rate,category))
-        errorCat.append(chooseCategory(error,category))
-    
+        rateCat.append(chooseCategory(samples, rate,category))
+        errorCat.append(chooseCategory(samples, error,category))
+
     for i in range(0, len(samples)):
         if samples[i] == 'VV' or samples[i] == 'EWK' :
             samples[i] = 'Dibosons'
@@ -475,37 +554,66 @@ Process & \multicolumn{2}{c|}{\emph{0-Jet}} & \multicolumn{2}{c|}{\emph{Boosted}
         if samples[i] == 'ZMM' :
             samples[i] = 'Z$\\rightarrow \\mu\\mu$'               
 
-        if not combined:
-            output.write('%s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s\\\\\n' %(samples[i], rateCat[0][i], errorCat[0][i],rateCat[1][i], errorCat[1][i],rateCat[2][i], errorCat[2][i],rateCat[3][i], errorCat[3][i],rateCat[4][i], errorCat[4][i],rateCat[5][i], errorCat[5][i],rateCat[6][i], errorCat[6][i]))
-        if combined:
-            output.write('%s & %s & %s & %s & %s & %s & %s & %s & %s\\\\\n' %(samples[i], rateCat[0][i], errorCat[0][i],rateCat[1][i], errorCat[1][i],rateCat[2][i], errorCat[2][i],rateCat[3][i], errorCat[3][i]))
+    order = {
+        "mt" : ["ZTT", "QCD", "W", "ZLL", "TT", "VV"],
+        "et" : ["ZTT", "QCD", "W", "ZLL", "TT", "VV"],
+        "mm" : ["ZTT", "QCD", "WJets", "ZMM", "TTJ", "Dibosons"],
+        "em" : ["Ztt", "Fakes", "ttbar", "EWK"],
+        }
+    sample_name = {
+        "ZTT" : 'Z$\\rightarrow \\tau\\tau$',
+        "Ztt" : 'Z$\\rightarrow \\tau\\tau$',
+        "QCD" : 'QCD',
+        "Fakes" : 'QCD',
+        "W" : 'W+jets',
+        "WJets" : 'W+jets',
+        "ZLL" : 'Z+jets (l/jet faking $\\tau$)',
+        "ZMM" : 'Z$\\rightarrow \\mu\\mu$',
+        "TT" : 't$\\bar{\\rm{t}}$',
+        "ttbar" : 't$\\bar{\\rm{t}}$',
+        "TTJ" : 't$\\bar{\\rm{t}}$',
+        "EWK" : 'Dibosons',
+        "VV" : 'Dibosons',
+        "Dibosons" : 'Dibosons',
+        }
+
+    for i in order[channel] :
+        if not combine_categories:
+            output.write('%s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s \\\\\n' %(sample_name[i], rateCat[0][i], errorCat[0][i],rateCat[1][i], errorCat[1][i],rateCat[2][i], errorCat[2][i],rateCat[3][i], errorCat[3][i],rateCat[4][i], errorCat[4][i]))
+            #output.write('%s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s\\\\\n' %(sample_name[i], rateCat[0][i], errorCat[0][i],rateCat[1][i], errorCat[1][i],rateCat[2][i], errorCat[2][i],rateCat[3][i], errorCat[3][i],rateCat[4][i], errorCat[4][i],rateCat[5][i], errorCat[5][i],rateCat[6][i], errorCat[6][i]))
+        if combine_categories:
+            output.write('%s & %s & %s & %s & %s & %s & %s \\\\\n' %(sample_name[i], rateCat[0][i], errorCat[0][i],rateCat[1][i], errorCat[1][i],rateCat[2][i], errorCat[2][i]))
+            #output.write('%s & %s & %s & %s & %s & %s & %s & %s & %s\\\\\n' %(sample_name[i], rateCat[0][i], errorCat[0][i],rateCat[1][i], errorCat[1][i],rateCat[2][i], errorCat[2][i],rateCat[3][i], errorCat[3][i]))
 
     output.write('\\hline\n')
     output.write('\\hline\n')
 
-    if not combined:
-        output.write('Total Background & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s \\\\\n' %(total[0], errTot[0],total[1], errTot[1],total[2], errTot[2],total[3], errTot[3],total[4], errTot[4],total[5], errTot[5],total[6], errTot[6]))
+    if not combine_categories:
+        output.write('Total Background & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s \\\\\n' %(total[0], errTot[0],total[1], errTot[1],total[2], errTot[2],total[3], errTot[3],total[4], errTot[4]))
+        #output.write('Total Background & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s \\\\\n' %(total[0], errTot[0],total[1], errTot[1],total[2], errTot[2],total[3], errTot[3],total[4], errTot[4],total[5], errTot[5],total[6], errTot[6]))
         output.write('\\hline\n')
-        output.write('H$\\rightarrow\\tau\\tau$ & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s \\\\\n' %(signal[0], errsignal[0],signal[1], errsignal[1],signal[2], errsignal[2],signal[3], errsignal[3],signal[4], errsignal[4],signal[5], errsignal[5],signal[6], errsignal[6]))
-                                                                                         
+        output.write('H$\\rightarrow\\tau\\tau$ & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s \\\\\n' %(signal[0], errsignal[0],signal[1], errsignal[1],signal[2], errsignal[2],signal[3], errsignal[3],signal[4], errsignal[4]))
+        #output.write('H$\\rightarrow\\tau\\tau$ & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s & %s \\\\\n' %(signal[0], errsignal[0],signal[1], errsignal[1],signal[2], errsignal[2],signal[3], errsignal[3],signal[4], errsignal[4],signal[5], errsignal[5],signal[6], errsignal[6]))
         output.write('\\hline\n')
-        output.write('Data & \multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} \\\\\n' %(data[0],data[1],data[2],data[3],data[4],data[5],data[6]))
+        output.write('Data & \multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} \\\\\n' %(data[0],data[1],data[2],data[3],data[4],data[5]))
+        #output.write('Data & \multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} \\\\\n' %(data[0],data[1],data[2],data[3],data[4],data[5],data[6]))
     else:
-        output.write('Total Background & %s & %s & %s & %s & %s & %s & %s & %s\\\\\n' %(total[0], errTot[0],total[1], errTot[1],total[2], errTot[2],total[3], errTot[3]))
+        output.write('Total Background & %s & %s & %s & %s & %s & %s \\\\\n' %(total[0], errTot[0],total[1], errTot[1],total[2], errTot[2]))
+        #output.write('Total Background & %s & %s & %s & %s & %s & %s & %s & %s\\\\\n' %(total[0], errTot[0],total[1], errTot[1],total[2], errTot[2],total[3], errTot[3]))
         output.write('\\hline\n')
-        output.write('H$\\rightarrow\\tau\\tau$ & %s & %s & %s & %s & %s & %s & %s & %s \\\\\n' %(signal[0], errsignal[0],signal[1], errsignal[1],signal[2], errsignal[2],signal[3], errsignal[3]))
+        output.write('H$\\rightarrow\\tau\\tau$ & %s & %s & %s & %s & %s & %s \\\\\n' %(signal[0], errsignal[0],signal[1], errsignal[1],signal[2], errsignal[2]))
+        #output.write('H$\\rightarrow\\tau\\tau$ & %s & %s & %s & %s & %s & %s & %s & %s \\\\\n' %(signal[0], errsignal[0],signal[1], errsignal[1],signal[2], errsignal[2],signal[3], errsignal[3]))
                                                                                          
         output.write('\\hline\n')   
-        output.write('Data & \multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} \\\\\n' %(data[0],data[1],data[2],data[3]))
-
-
+        output.write('Data & \multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} \\\\\n' %(data[0],data[1],data[2]))
+        #output.write('Data & \multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} &\multicolumn{2}{|c|}{%s} \\\\\n' %(data[0],data[1],data[2],data[3]))
     output.write('\\hline\n')
     
     #AND NOW FOR THE efficiencies!!!!
         
-    efffile = 'eff'+channel+'.tmp'
+    efffile = 'eff'+channel+'_7TeV.tmp'
   
-    if combined:
+    if combine_categories:
         output.write('\\multicolumn{7}{c}{ } \\\\\n')
         output.write('\\multicolumn{2}{l}{Signal Eff.} &  \\multicolumn{5}{c}{ } \\\\\n')
         output.write('\\hline\n')
@@ -515,22 +623,24 @@ Process & \multicolumn{2}{c|}{\emph{0-Jet}} & \multicolumn{2}{c|}{\emph{Boosted}
         value3 = getLine(efffile,18,23)
         value4 = getLine(efffile,28)
 
-        output.write('gg$\\rightarrow$ H &   \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &  \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &  \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} & \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$}  \\\\\n' %(value1[0],value1[1],value2[0],value2[1],value3[0],value3[1],value4[0],value4[1]))
+        output.write('gg$\\rightarrow$ H &   \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &  \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &  \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$}  \\\\\n' %(value1[0],value1[1],value2[0],value2[1],value3[0],value3[1]))
+        #output.write('gg$\\rightarrow$ H &   \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &  \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &  \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} & \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$}  \\\\\n' %(value1[0],value1[1],value2[0],value2[1],value3[0],value3[1],value4[0],value4[1]))
     
         value1 = getLine(efffile,4,9)
         value2 = getLine(efffile,14)
         value3 = getLine(efffile,19,24)
         value4 = getLine(efffile,29)
       
-        
-        output.write('qq$\\rightarrow$ qqH &     \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &  \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &  \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &    \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$}  \\\\\n' %(value1[0],value1[1],value2[0],value2[1],value3[0],value3[1],value4[0],value4[1]))
+        output.write('qq$\\rightarrow$ qqH &     \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &  \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &  \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} \\\\\n' %(value1[0],value1[1],value2[0],value2[1],value3[0],value3[1]))
+        #output.write('qq$\\rightarrow$ qqH &     \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &  \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &  \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &    \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$}  \\\\\n' %(value1[0],value1[1],value2[0],value2[1],value3[0],value3[1],value4[0],value4[1]))
     
         value1 = getLine(efffile,5,10)
         value2 = getLine(efffile,15)
         value3 = getLine(efffile,20,25)
         value4 = getLine(efffile,30)
 
-        output.write('qq$\\rightarrow$ Ht$\overline{\\rm{t}}$ or VH&   \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &  \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &  \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &    \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$}  \\\\\n' %(value1[0],value1[1],value2[0],value2[1],value3[0],value3[1],value4[0],value4[1]))
+        output.write('qq$\\rightarrow$ Ht$\overline{\\rm{t}}$ or VH&   \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &  \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &  \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} \\\\\n' %(value1[0],value1[1],value2[0],value2[1],value3[0],value3[1]))
+        #output.write('qq$\\rightarrow$ Ht$\overline{\\rm{t}}$ or VH&   \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &  \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &  \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$} &    \multicolumn{2}{|c|}{%s$\cdot$10$^{-%s}$}  \\\\\n' %(value1[0],value1[1],value2[0],value2[1],value3[0],value3[1],value4[0],value4[1]))
         '''
         value1 = getLine(efffile,23)
         value2 = getLine(efffile,18)
@@ -545,9 +655,9 @@ Process & \multicolumn{2}{c|}{\emph{0-Jet}} & \multicolumn{2}{c|}{\emph{Boosted}
 \label{tab:cutflow-%s-%s}
 \end{center}
 \end{table*}
-""" % (channel, options.period))
+""" % (channel, "7+8TeV" if "7TeV" in options.period and "8TeV" in options.period else option.period))
         
-    if not combined:
+    if not combine_categories:
         output.write('\\multicolumn{6}{c}{ } \\\\\n')
         output.write('\\multicolumn{2}{l}{Signal Eff.} &  \\multicolumn{4}{c}{ } \\\\\n')
         output.write('\\hline\n')
@@ -607,17 +717,29 @@ for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')## ch
 ## categories
 categories = options.categories.split()
 for idx in range(len(categories)) : categories[idx] = categories[idx].rstrip(',')
+## periods
+periods = options.period.split()
+for idx in range(len(periods)) : periods[idx] = periods[idx].rstrip(',')
+
 
 os.system("rm -f *.tmp")
 for chn in channels :
-    for cat in categories :
-        filename = options.input+"/htt_"+chn+"_"+cat+"_"+options.period+"-"+options.mass+".txt"
-        extractor(filename)
-    if contained("0", categories) and contained("1", categories):
-        mergingCategories(chn,'0Jet')
-    if contained("1", categories) and contained("2", categories):
-        mergingCategories(chn,'Boosted')
-    if contained("6", categories) and contained("7", categories):
-        mergingCategories(chn,'Btag')
-    makingTables(chn, True)
+    for per in periods :
+        for cat in categories :
+            filename = options.input+"/htt_"+chn+"_"+cat+"_"+per+"-"+options.mass+".txt"
+            extractor(filename, per)
+
+        if contained("0", categories) and contained("1", categories):
+            mergingCategories(chn,'0Jet',per)
+        if contained("1", categories) and contained("2", categories):
+            mergingCategories(chn,'Boosted',per)
+        if contained("6", categories) and contained("7", categories):
+            mergingCategories(chn,'Btag',per)
+    if contained("7TeV", periods) and contained("8TeV", periods) :
+        for cat in categories :
+            mergingPeriods(chn, cat)
+        makingTables(chn, "7+8TeV", True)
+    else :
+        for per in periods :
+            makingTables(chn, per, True)
 os.system("rm *.tmp")
