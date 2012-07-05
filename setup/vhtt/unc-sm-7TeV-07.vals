@@ -2,13 +2,13 @@
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 
 
-mmtt_zh      signal,ZZ             lumi                                 1.022
-mmtt_zh      signal,ZZ             CMS_eff_m                            1.01
-mmtt_zh      signal,ZZ             CMS_eff_t                            1.09617
-mmtt_zh      signal,ZZ             CMS_scale_m                          1.01
-mmtt_zh      signal,ZZ             CMS_scale_t                          1.03
-mmtt_zh      signal,ZZ             CMS_trigger_m                        1.01
-mmtt_zh      ZZ                    CMS_zh2l2tau_ZZBkg_extrap            1.10
-mmtt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap      1.25
-mmtt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap      1.09
-mmtt_zh      Zjets                 CMS_zh2l2tau_ZjetBkgMMTT_7TeV
+mmmt_zh      signal,ZZ             lumi                                 1.022
+mmmt_zh      signal,ZZ             CMS_eff_m                            1.02
+mmmt_zh      signal,ZZ             CMS_eff_t                            1.06
+mmmt_zh      signal,ZZ             CMS_scale_m                          1.01
+mmmt_zh      signal,ZZ             CMS_scale_t                          1.03
+mmmt_zh      signal,ZZ             CMS_trigger_m                        1.01
+mmmt_zh      ZZ                    CMS_zh2l2tau_ZZBkg_extrap            1.10
+mmmt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap      1.17
+mmmt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap      1.11
+mmmt_zh      Zjets                 CMS_zh2l2tau_ZjetBkgMMMT_7TeV
