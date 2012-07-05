@@ -15,7 +15,7 @@ cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3
 cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3 5", type="string", help="List mt of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 5", type="string", help="List et of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
-cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="2", type="string", help="List of vhtt event categories. [Default: \"2\"]")
+cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="1 2 3 4 5 6 7 8", type="string", help="List of vhtt event categories. [Default: \"1 2 3 4 5 6 7 8\"]")
 parser.add_option_group(cats1)
 cats2 = OptionGroup(parser, "MSSM EVENT CATEGORIES", "Event categories to be used for the MSSM analysis.")
 cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="0 1 2 3 6 7", type="string", help="List mm of event categories. [Default: \"0 1 2 3 6 7\"]")
@@ -64,7 +64,7 @@ if options.analysis == "sm" :
         "mt"   : options.mt_sm_categories.split(),
         "et"   : options.et_sm_categories.split(),
         #"tt"   : options.tt_sm_categories.split(),
-        #"vhtt" : options.vhtt_sm_categories.split(),
+        "vhtt" : options.vhtt_sm_categories.split(),
         }
     
 ## switch to mssm event categories
