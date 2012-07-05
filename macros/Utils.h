@@ -28,7 +28,7 @@ std::string string2Vector(std::string str, std::vector<std::string>& vec)
     }
     return string2Vector(str.substr(str.find(",")+1, std::string::npos), vec);
   }
-  if(!vec.empty()){
+  if(!str.empty()){
     vec.push_back(str);
   }
   return str;
