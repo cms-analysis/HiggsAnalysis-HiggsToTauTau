@@ -18,6 +18,12 @@ categories = [
     "vbf",
     ] 
 
+extra = {
+    "emu"   : "#tau_{e}#tau_{#mu}",
+    "eTau"  : "#tau_{e}#tau_{h}",
+    "muTau" : "#tau_{#mu}#tau_{h}",
+    }
+
 log = {
     ("emu"  , "0jet_low"  ) : "true",
     ("emu"  , "0jet_high" ) : "false",
@@ -110,5 +116,5 @@ for chn in channels :
 for chn in channels :
     for cat in categories :
         print chn, cat
-        os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7+8TeV.root\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",{MIN},{MAX},{LOG}\)".format(CMSSW_BASE=os.environ['CMSSW_BASE'], CHN=chn, CAT=cat, TYPE=type, LABEL="2011+2012", EXTRA="", MIN=min[chn,cat], MAX=max[chn,cat], LOG=log[chn,cat]))
+        os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7+8TeV.root\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",{MIN},{MAX},{LOG}\)".format(CMSSW_BASE=os.environ['CMSSW_BASE'], CHN=chn, CAT=cat, TYPE=type, LABEL="2011+2012", EXTRA=extra[chn], MIN=min[chn,cat], MAX=max[chn,cat], LOG=log[chn,cat]))
         
