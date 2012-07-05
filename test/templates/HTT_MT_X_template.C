@@ -290,7 +290,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
 #else
   TLegend* leg = new TLegend(0.57, 0.65, 0.95, 0.90);
   SetLegendStyle(leg);
-  leg->AddEntry(ggH  , "(5#times) H#rightarrow#tau#tau" , "L" );
+  leg->AddEntry(ggH  , "(5#times) H#rightarrow#tau#tau  m_{H}=125" , "L" );
 #endif
   leg->AddEntry(data , "observed"                       , "LP");
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
@@ -299,27 +299,27 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   leg->AddEntry(Fakes, "QCD"                            , "F" );
   leg->Draw();
 
-#ifdef MSSM
-  TPaveText* mssm  = new TPaveText(0.69, 0.85, 0.90, 0.90, "NDC");
-  mssm->SetBorderSize(   0 );
-  mssm->SetFillStyle(    0 );
-  mssm->SetTextAlign(   12 );
-  mssm->SetTextSize ( 0.03 );
-  mssm->SetTextColor(    1 );
-  mssm->SetTextFont (   62 );
-  mssm->AddText("(m_{A}=120, tan#beta=10)");
-  mssm->Draw();
-#else
-  TPaveText* mssm  = new TPaveText(0.83, 0.85, 0.95, 0.90, "NDC");
-  mssm->SetBorderSize(   0 );
-  mssm->SetFillStyle(    0 );
-  mssm->SetTextAlign(   12 );
-  mssm->SetTextSize ( 0.03 );
-  mssm->SetTextColor(    1 );
-  mssm->SetTextFont (   62 );
-  mssm->AddText("m_{H}=125");
-  mssm->Draw();
-#endif
+//#ifdef MSSM
+//  TPaveText* mssm  = new TPaveText(0.69, 0.85, 0.90, 0.90, "NDC");
+//  mssm->SetBorderSize(   0 );
+//  mssm->SetFillStyle(    0 );
+//  mssm->SetTextAlign(   12 );
+//  mssm->SetTextSize ( 0.03 );
+//  mssm->SetTextColor(    1 );
+//  mssm->SetTextFont (   62 );
+//  mssm->AddText("(m_{A}=120, tan#beta=10)");
+//  mssm->Draw();
+//#else
+//  TPaveText* mssm  = new TPaveText(0.83, 0.85, 0.95, 0.90, "NDC");
+//  mssm->SetBorderSize(   0 );
+//  mssm->SetFillStyle(    0 );
+//  mssm->SetTextAlign(   12 );
+//  mssm->SetTextSize ( 0.03 );
+//  mssm->SetTextColor(    1 );
+//  mssm->SetTextFont (   62 );
+//  mssm->AddText("m_{H}=125");
+//  mssm->Draw();
+//#endif
 
   /*
     Ratio Data over MC
@@ -428,12 +428,16 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   bool isSevenTeV = std::string(inputfile).find("7TeV")!=std::string::npos;
   canv ->Print(TString::Format("%s_%sscaled_%s_%s.png"       , directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
   canv ->Print(TString::Format("%s_%sscaled_%s_%s.pdf"       , directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
+  canv ->Print(TString::Format("%s_%sscaled_%s_%s.eps"       , directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
   canv0->Print(TString::Format("%s_datamc_%sscaled_%s_%s.png", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
   canv0->Print(TString::Format("%s_datamc_%sscaled_%s_%s.pdf", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
+  canv0->Print(TString::Format("%s_datamc_%sscaled_%s_%s.eps", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
   canv1->Print(TString::Format("%s_prefit_%sscaled_%s_%s.png", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
   canv1->Print(TString::Format("%s_prefit_%sscaled_%s_%s.pdf", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
+  canv1->Print(TString::Format("%s_prefit_%sscaled_%s_%s.eps", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
   canv2->Print(TString::Format("%s_sample_%sscaled_%s_%s.png", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
   canv2->Print(TString::Format("%s_sample_%sscaled_%s_%s.pdf", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
+  canv2->Print(TString::Format("%s_sample_%sscaled_%s_%s.eps", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
   TFile* output = new TFile(TString::Format("%s_%sscaled_%s_%s.root", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""), "update");
   output->cd();
   data ->Write("data_obs");

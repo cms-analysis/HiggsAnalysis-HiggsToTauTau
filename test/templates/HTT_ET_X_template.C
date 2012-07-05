@@ -76,7 +76,7 @@ void rescale(TH1F* hin, unsigned int idx)
   case  2: // TT
   $TT
   case  3: // W  [EWK1]
-  $W
+  $W"em" : "e#mu",
 #if defined EXTRA_SAMPLES
   case  4: // ZJ [EWK2]
   $ZJ
@@ -120,14 +120,14 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   
   TFile* input = new TFile(inputfile);
   TH1F* Fakes  = refill((TH1F*)input->Get(TString::Format("%s/QCD"     , directory)), "QCD"); InitHist(Fakes, "", "", kMagenta-10, 1001); 
+  TH1F* EWK0   = refill((TH1F*)input->Get(TString::Format("%s/VV"      , directory)), "VV" ); InitHist(EWK0 , "", "", kRed    + 2, 1001);
   TH1F* EWK1   = refill((TH1F*)input->Get(TString::Format("%s/W"       , directory)), "W"  ); InitHist(EWK1 , "", "", kRed    + 2, 1001);
 #ifdef EXTRA_SAMPLES
-  TH1F* EWK2   = refill((TH1F*)input->Get(TString::Format("%s/ZJ"      , directory)), "ZJ" ); InitHist(EWK2 , "", "", kRed    + 2, 1001);
-  TH1F* EWK3   = refill((TH1F*)input->Get(TString::Format("%s/ZL"      , directory)), "ZL" ); InitHist(EWK3 , "", "", kRed    + 2, 1001);
+  TH1F* EWK2   = refill((TH1F*)input->Get(TString::Format("%s/ZJ"      , directory)), "ZJ" ); InitHist(EWK2 , "", "", kAzure  + 2, 1001);
+  TH1F* EWK    = refill((TH1F*)input->Get(TString::Format("%s/ZL"      , directory)), "ZL" ); InitHist(EWK  , "", "", kAzure  + 2, 1001);
 #else
-  TH1F* EWK2   = refill((TH1F*)input->Get(TString::Format("%s/ZLL"     , directory)), "ZLL"); InitHist(EWK2 , "", "", kRed    + 2, 1001);
+  TH1F* EWK    = refill((TH1F*)input->Get(TString::Format("%s/ZLL"     , directory)), "ZLL"); InitHist(EWK  , "", "", kAzure  + 2, 1001);
 #endif
-  TH1F* EWK    = refill((TH1F*)input->Get(TString::Format("%s/VV"      , directory)), "VV" ); InitHist(EWK  , "", "", kRed    + 2, 1001);
   TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/TT"      , directory)), "TT" ); InitHist(ttbar, "", "", kBlue   - 8, 1001);
   TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/ZTT"     , directory)), "ZTT"); InitHist(Ztt  , "", "", kOrange - 4, 1001);
 #ifdef MSSM
@@ -142,10 +142,10 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   InitHist(data, "#bf{m_{#tau#tau} [GeV]}", "#bf{dN/dm_{#tau#tau} [1/GeV]}"); InitData(data);
 
   TH1F* ref=(TH1F*)Fakes->Clone("ref");
+  ref->Add(EWK0 );
   ref->Add(EWK1 );
-  ref->Add(EWK2 );
 #ifdef EXTRA_SAMPLES
-  ref->Add(EWK3 );
+  ref->Add(EWK2 );
 #endif
   ref->Add(EWK  );
   ref->Add(ttbar);
@@ -154,10 +154,10 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   double unscaled[7];
   unscaled[0] = Fakes->Integral();
   unscaled[1] = EWK  ->Integral();
+  unscaled[1]+= EWK0 ->Integral();
   unscaled[1]+= EWK1 ->Integral();
-  unscaled[1]+= EWK2 ->Integral();
 #ifdef EXTRA_SAMPLES
-  unscaled[1]+= EWK3 ->Integral();
+  unscaled[1]+= EWK2 ->Integral();
 #endif
   unscaled[2] = ttbar->Integral();
   unscaled[3] = Ztt  ->Integral();
@@ -173,12 +173,14 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
 
   if(scaled){
     rescale(Fakes, 7); 
+    rescale(EWK0 , 6); 
     rescale(EWK1 , 3); 
-    rescale(EWK2 , 4); 
 #ifdef EXTRA_SAMPLES
-    rescale(EWK3 , 5);
+    rescale(EWK2 , 4); 
+    rescale(EWK  , 5);
+#else
+    rescale(EWK  , 4);
 #endif 
-    rescale(EWK  , 6); 
     rescale(ttbar, 2); 
     rescale(Ztt  , 1);
 #ifdef MSSM
@@ -196,10 +198,10 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   scales[0]->SetBinContent(1, unscaled[0]>0 ? (Fakes->Integral()/unscaled[0]-1.) : 0.);
   scales[1] = new TH1F("scales-EWK"  , "", 7, 0, 7);
   scales[1]->SetBinContent(2, unscaled[1]>0 ? ((EWK  ->Integral()
+					       +EWK0 ->Integral()
 					       +EWK1 ->Integral()
-					       +EWK2 ->Integral()
 #ifdef EXTRA_SAMPLES
-					       +EWK3 ->Integral()
+					       +EWK2 ->Integral()
 #endif
 						)/unscaled[1]-1.) : 0.);
   scales[2] = new TH1F("scales-ttbar", "", 7, 0, 7);
@@ -222,13 +224,13 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   scales[6]->SetBinContent(7, unscaled[6]>0 ? (VH   ->Integral()/unscaled[6]-1.) : 0.);
 #endif
 
-  EWK1 ->Add(Fakes);
-  EWK2 ->Add(EWK1 );
+  EWK0 ->Add(Fakes);
+  EWK1 ->Add(EWK0 );
 #ifdef EXTRA_SAMPLES
-  EWK3 ->Add(EWK2 );
-  EWK  ->Add(EWK3 );
-#else
+  EWK2 ->Add(EWK1 );
   EWK  ->Add(EWK2 );
+#else
+  EWK  ->Add(EWK1 );
 #endif
   ttbar->Add(EWK  );
   Ztt  ->Add(ttbar);
@@ -269,6 +271,7 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
     Ztt  ->Draw("same");
     ttbar->Draw("same");
     EWK  ->Draw("same");
+    EWK1 ->Draw("same");
     Fakes->Draw("same");
     ggH  ->Draw("same");
   }
@@ -277,6 +280,7 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
     Ztt  ->Draw("same");
     ttbar->Draw("same");
     EWK  ->Draw("same");
+    EWK1 ->Draw("same");
     Fakes->Draw("same");
   }
   data->Draw("esame");
@@ -291,36 +295,37 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
 #else
   TLegend* leg = new TLegend(0.57, 0.65, 0.95, 0.90);
   SetLegendStyle(leg);
-  leg->AddEntry(ggH  , "(5#times) H#rightarrow#tau#tau" , "L" );
+  leg->AddEntry(ggH  , "(5#times) H#rightarrow#tau#tau  m_{H}=125" , "L" );
 #endif
   leg->AddEntry(data , "observed"                       , "LP");
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
+  leg->AddEntry(EWK  , "Z#rightarrow ee"                , "F" );
+  leg->AddEntry(EWK1 , "W+jets"                         , "F" );
   leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
-  leg->AddEntry(EWK  , "electroweak"                    , "F" );
   leg->AddEntry(Fakes, "QCD"                            , "F" );
   leg->Draw();
 
-#ifdef MSSM
-  TPaveText* mssm  = new TPaveText(0.69, 0.85, 0.90, 0.90, "NDC");
-  mssm->SetBorderSize(   0 );
-  mssm->SetFillStyle(    0 );
-  mssm->SetTextAlign(   12 );
-  mssm->SetTextSize ( 0.03 );
-  mssm->SetTextColor(    1 );
-  mssm->SetTextFont (   62 );
-  mssm->AddText("(m_{A}=120, tan#beta=10)");
-  mssm->Draw();
-#else
-  TPaveText* mssm  = new TPaveText(0.83, 0.85, 0.95, 0.90, "NDC");
-  mssm->SetBorderSize(   0 );
-  mssm->SetFillStyle(    0 );
-  mssm->SetTextAlign(   12 );
-  mssm->SetTextSize ( 0.03 );
-  mssm->SetTextColor(    1 );
-  mssm->SetTextFont (   62 );
-  mssm->AddText("m_{H}=125");
-  mssm->Draw();
-#endif
+//#ifdef MSSM
+//  TPaveText* mssm  = new TPaveText(0.69, 0.85, 0.90, 0.90, "NDC");
+//  mssm->SetBorderSize(   0 );
+//  mssm->SetFillStyle(    0 );
+//  mssm->SetTextAlign(   12 );
+//  mssm->SetTextSize ( 0.03 );
+//  mssm->SetTextColor(    1 );
+//  mssm->SetTextFont (   62 );
+//  mssm->AddText("(m_{A}=120, tan#beta=10)");
+//  mssm->Draw();
+//#else
+//  TPaveText* mssm  = new TPaveText(0.83, 0.85, 0.95, 0.90, "NDC");
+//  mssm->SetBorderSize(   0 );
+//  mssm->SetFillStyle(    0 );
+//  mssm->SetTextAlign(   12 );
+//  mssm->SetTextSize ( 0.03 );
+//  mssm->SetTextColor(    1 );
+//  mssm->SetTextFont (   62 );
+//  mssm->AddText("m_{H}=125");
+//  mssm->Draw();
+//#endif
 
   /*
     Ratio Data over MC
@@ -429,17 +434,22 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   bool isSevenTeV = std::string(inputfile).find("7TeV")!=std::string::npos;
   canv ->Print(TString::Format("%s_%sscaled_%s_%s.png"       , directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
   canv ->Print(TString::Format("%s_%sscaled_%s_%s.pdf"       , directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
+  canv ->Print(TString::Format("%s_%sscaled_%s_%s.eps"       , directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
   canv0->Print(TString::Format("%s_datamc_%sscaled_%s_%s.png", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
   canv0->Print(TString::Format("%s_datamc_%sscaled_%s_%s.pdf", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
+  canv0->Print(TString::Format("%s_datamc_%sscaled_%s_%s.eps", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
   canv1->Print(TString::Format("%s_prefit_%sscaled_%s_%s.png", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
   canv1->Print(TString::Format("%s_prefit_%sscaled_%s_%s.pdf", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
+  canv1->Print(TString::Format("%s_prefit_%sscaled_%s_%s.eps", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
   canv2->Print(TString::Format("%s_sample_%sscaled_%s_%s.png", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
   canv2->Print(TString::Format("%s_sample_%sscaled_%s_%s.pdf", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
+  canv2->Print(TString::Format("%s_sample_%sscaled_%s_%s.eps", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
   TFile* output = new TFile(TString::Format("%s_%sscaled_%s_%s.root", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""), "update");
   output->cd();
   data ->Write("data_obs");
   Fakes->Write("Fakes"   );
   EWK  ->Write("EWK"     );
+  EWK1 ->Write("EWK1"    );
   ttbar->Write("ttbar"   );
   Ztt  ->Write("Ztt"     );
 #ifdef MSSM
