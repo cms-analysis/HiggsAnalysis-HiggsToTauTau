@@ -54,9 +54,9 @@ def walk_and_copy(inputdir, outputdir, matchers, threshold, prefix):
                         # Check if we are above threshold
                         if error/val > threshold:
                             err_up = th1.Clone(
-                                th1.GetName() + "_%s_%s_bin_%i_up" % (prefix, histo, ibin))
+                                th1.GetName() + "_%s_%s_bin_%iUp" % (prefix, histo, ibin))
                             err_down = th1.Clone(
-                                th1.GetName() + "_%s_%s_bin_%i_down" % (prefix, histo, ibin))
+                                th1.GetName() + "_%s_%s_bin_%iDown" % (prefix, histo, ibin))
                             # Print to stdout, so we can capture the uncertainties
                             print "%s_%s_bin_%i" % (prefix, histo, ibin)
                             err_up.SetBinContent(ibin, val + error)
@@ -76,7 +76,11 @@ def walk_and_copy(inputdir, outputdir, matchers, threshold, prefix):
 
 def main(inputfilename, outputfilename, matchers, threshold, prefix):
     input = ROOT.TFile(inputfilename, 'READ')
+    if not input:
+        raise IOError("Can't open input file: %s" % inputfilename)
     output = ROOT.TFile(outputfilename, 'RECREATE')
+    if not output:
+        raise IOError("Can't open output file: %s" % outputfilename)
     walk_and_copy(input, output, matchers, threshold, prefix)
 
 if __name__ == "__main__":
