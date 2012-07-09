@@ -11,6 +11,7 @@ parser.add_option("-u", "--unc_vals", dest="unc_vals", default="unc.vals", type=
 parser.add_option("-c", "--cgs_defs", dest="cgs_defs", default="cgs.conf", type="string", help="Group, sample, category listings [Default: cgs.config]")
 parser.add_option("-d", "--unc_defs", dest="unc_defs", default="unc.conf", type="string", help="All uncertainty parameters listed [Default: unc.config]")
 parser.add_option("-o", "--output_file", dest="out_file", default="datacard.txt", type="string", help="Output name of the datacard [Default: datacard.txt]")
+parser.add_option("--categories", dest="categories", type="string", help="If specified, only build the specified categories")
 (options,args)=parser.parse_args()
 
 masspoint=0
@@ -19,6 +20,10 @@ if len(args) < 1 :
 else :
     masspoint=args[0]
 
+desired_categories = None
+if options.categories is not None:
+    desired_categories = options.categories.split(',')
+
 from HiggsAnalysis.HiggsToTauTau.MakerUtilsL import DBuilder
 dmaker = DBuilder(
     uncertainty_file=options.unc_vals,
@@ -26,7 +31,8 @@ dmaker = DBuilder(
     root_file=options.input_file,
     unc_defs=options.unc_defs,
     cgs_defs=options.cgs_defs,
-    mass_point=masspoint
+    mass_point=masspoint,
+    categories=desired_categories
     )
 dmaker.run()
 

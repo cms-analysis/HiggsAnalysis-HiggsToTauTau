@@ -8,11 +8,11 @@ def main():
 
 class DBuilder:
     DividerStr = "------------------------------------------------------------------------------- \n"
-    def __init__(self,uncertainty_file,out_file,root_file,unc_defs,cgs_defs,mass_point):
+    def __init__(self,uncertainty_file,out_file,root_file,unc_defs,cgs_defs,mass_point,categories=None):
         ## name of the input file to contain the uncertainties and where
         ## they apply (unc.vals)
         self.uncertainty_file = uncertainty_file
-        ## name of the datacard output file (w/o .txt extension) 
+        ## name of the datacard output file (w/o .txt extension)
         self.out_file = out_file
         ## name of the root input file
         self.rootfile = root_file
@@ -29,6 +29,8 @@ class DBuilder:
         self.groups={}
         ## list of category names
         self.categories = []
+        ## list of desired categories
+        self.desired_categories = categories
         ## list of signal samples (mass point will be extended internally)
         self.signals = []
         ## list of the background samples
@@ -36,7 +38,7 @@ class DBuilder:
         ## list of all simulated sample names (signal+background)
         self.samples = []
         ## name of the data sample; per default this should be data_obs,
-        ## but it can also differ 
+        ## but it can also differ
         self.data_sample = ""
         ## dictionary of uncertainty names mapping to Uncertainty objects
         self.uncertainties = {}
@@ -61,7 +63,7 @@ class DBuilder:
         for line in f:
             line = line.strip().split("\n")[0].strip()
             ## remove all ',\s+' from line, so the group can be a comma
-            ## seperated list separated by an arbitrary number of spaces 
+            ## seperated list separated by an arbitrary number of spaces
             pattern = re.compile(r",\s+")
             line = re.sub(pattern, ",", line)
             if line == "" or line.startswith("#") or line.startswith("%"):
@@ -74,7 +76,10 @@ class DBuilder:
                 #print name,self.groups[name].samples
             if line.lower().startswith("categories:"):
                 wordarr = line.lstrip("categories:").strip().split(",")
-                self.categories=wordarr
+                # Only take desired categories
+                self.categories=[
+                    word for word in wordarr
+                    if self.desired_categories is None or word in self.desired_categories]
                 #print "categories are: ",self.categories
                 for category in self.categories:
                     if len(category)+4 > width:
@@ -89,7 +94,7 @@ class DBuilder:
                 #    if int(self.mass_point)>0:
                 #        self.signals[n]+=self.mass_point
                 #        #print  self.signals[n]
-                
+
                 #print "signals are: ",self.signals
                 for signal in self.signals:
                     if len(signal)+4> width:
@@ -128,20 +133,20 @@ class DBuilder:
                         #print "SIDEBAND EVENTS ARE: %d" % sideband_events
                     except ValueError as e:
                         print "gmN is expecting a numerical value for the number of events in the sideband"
-                        raise                         
+                        raise
                 self.uncertainties[name]=Uncertainty(name,type,sideband_events)
                 self.unc_list.append(name)
                 #print self.uncertainties[name].name,self.uncertainties[name].type
                 if len(line)+4>width:
                     width = len(line)+4
         self.column_zero_width = width
-        
+
     def read(self):
        file = open(self.uncertainty_file)
        for line in file:
            line = line.strip().split("\n")[0].strip()
            ## remove all ',\s+' from line, so the group can be a comma
-           ## seperated list separated by an arbitrary number of spaces 
+           ## seperated list separated by an arbitrary number of spaces
            pattern = re.compile(r",\s+")
            line = re.sub(pattern, ",", line)
            #print line
@@ -169,10 +174,10 @@ class DBuilder:
                if item in self.groups.keys():
                    #print item
                    for sample in self.groups[item].samples:
-                       rel_samples.append(sample) 
+                       rel_samples.append(sample)
                if item in self.samples:
                    #print item
-                   rel_samples.append(item)           
+                   rel_samples.append(item)
            #print "rel samples for this unc.:",rel_samples
            for category in rel_categories:
                for sample in rel_samples:
@@ -180,7 +185,7 @@ class DBuilder:
                    if not uncert.vals.has_key(category):
                        uncert.vals[category]={}
                    uncert.vals[category][sample]=uncert_val
-    
+
     def get_rate(self,category,sample,mass=0):
         rate = 0
         f = TFile(self.rootfile)
@@ -201,7 +206,7 @@ class DBuilder:
                 raise Exception("Failed to find histogram %s or RooWorkspace %s in file %s" % (histName, wsPath, self.rootfile))
             # First check if the sample is data
             data = ws.data(sample)
-            if data: 
+            if data:
                 rate = data.sumEntries()
             else:
                 # Otherwise, check if the sample is a PDF
@@ -267,7 +272,7 @@ class DBuilder:
             for index in range(len(self.signals)+len(self.backgrounds)):
                 bins_str += category.ljust(self.cw)
         bins_str += " \n"
-        outfile.write(bins_str) 
+        outfile.write(bins_str)
         process_str_n = "process".ljust(self.column_zero_width)
         for category in self.categories:
             for signal_index in range(len(self.signals)):
@@ -275,7 +280,7 @@ class DBuilder:
             for background_index in range(1,len(self.backgrounds)+1):
                 process_str_n += ("%d" % (background_index)).ljust(self.cw)
         process_str_n += " \n"
-        outfile.write(process_str_n) 
+        outfile.write(process_str_n)
         process_str_l = "process".ljust(self.column_zero_width)
         for category in self.categories:
             for signal in self.signals:
@@ -305,8 +310,10 @@ class DBuilder:
             uncert_str = ""
             if uncert.type=="gmN":
                 uncert_str = ("%s %s %d" % (uncert.name,uncert.type,uncert.sideband_events)).ljust(self.column_zero_width)
-            else: 
+            else:
                 uncert_str = ("%s %s" % (uncert.name,uncert.type)).ljust(self.column_zero_width)
+            # If this systematic never appears in a category which is used, omit
+            uncertainty_is_used = False
             for category_name in self.categories:
                 for signal in self.signals:
                     sample_name = signal
@@ -314,18 +321,21 @@ class DBuilder:
                         uncert_val = uncert.vals[category_name][sample_name]
                         #print category_name,sample_name,uncert.name,uncert_val
                         uncert_str += ("%4g" % uncert_val).ljust(self.cw)
+                        uncertainty_is_used = True
                     except KeyError as e:
-                        uncert_str += "-".ljust(self.cw) 
+                        uncert_str += "-".ljust(self.cw)
                 for background in self.backgrounds:
                     sample_name = background
                     try:
                         uncert_val = uncert.vals[category_name][sample_name]
                         #print category_name,sample_name,uncert.name,uncert_val
                         uncert_str += ("%4.3f" % uncert_val).ljust(self.cw)
+                        uncertainty_is_used = True
                     except KeyError as e:
                         uncert_str += "-".ljust(self.cw)
             uncert_str += " \n"
-            outfile.write(uncert_str)
+            if uncertainty_is_used:
+                outfile.write(uncert_str)
 
     def checkRooWorkspace(self):
         f = TFile(self.rootfile)
