@@ -1,5 +1,8 @@
 New Event Categories: 
 
+NOTA BENE: You must run ./merge_shape_files.sh after updating any of the
+subchannel shape files!
+
  idx     event category                   comment
 --------------------------------------------------------         
  00      wh_llt                      emt, mmt, and eet 
