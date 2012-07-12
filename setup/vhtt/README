@@ -2,13 +2,8 @@ New Event Categories:
 
  idx     event category                   comment
 --------------------------------------------------------         
- 00      STILL MISSING               STILL MISSING
- 01      zh_eeem                     single event class
- 02      zh_eeet                     single event class
- 03      zh_eemt                     single event class
- 04      zh_eett                     single event class
- 05      zh_mmem                     single event class
- 06      zh_mmet                     single event class
- 07      zh_mmmt                     single event class
- 08      zh_mmtt                     single event class
+ 00      wh_llt                      emt, mmt, and eet 
+ 01      zh_4l                       mmmt_zh,mmet_zh,mmem_zh,mmtt_zh,
+                                     eemt_zh,eeet_zh,eeem_zh,eett_zh
+ 02      wh_ltt                      ett and mtt
 --------------------------------------------------------
