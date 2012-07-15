@@ -23,12 +23,22 @@ mmt,emt,eet wz CMS_vhtt_WZ 1.10
 mmt,emt,eet fakes CMS_vhtt_llt_fakes 1.3
 
 # Stat shape uncertainties
+emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_1 1.0
+emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_2 1.0
+emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_3 1.0
+emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_4 1.0
+emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_5 1.0
+emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_6 1.0
+emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_7 1.0
+emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_9 1.0
+emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_10 1.0
+eet fakes CMS_vhtt_8TeV_eet_fakeshape_fakes_bin_1 1.0
 eet fakes CMS_vhtt_8TeV_eet_fakeshape_fakes_bin_2 1.0
 eet fakes CMS_vhtt_8TeV_eet_fakeshape_fakes_bin_3 1.0
 eet fakes CMS_vhtt_8TeV_eet_fakeshape_fakes_bin_4 1.0
 eet fakes CMS_vhtt_8TeV_eet_fakeshape_fakes_bin_5 1.0
 eet fakes CMS_vhtt_8TeV_eet_fakeshape_fakes_bin_6 1.0
-eet fakes CMS_vhtt_8TeV_eet_fakeshape_fakes_bin_9 1.0
+eet fakes CMS_vhtt_8TeV_eet_fakeshape_fakes_bin_7 1.0
 eet fakes CMS_vhtt_8TeV_eet_fakeshape_fakes_bin_10 1.0
 mmt fakes CMS_vhtt_8TeV_mmt_fakeshape_fakes_bin_1 1.0
 mmt fakes CMS_vhtt_8TeV_mmt_fakeshape_fakes_bin_2 1.0
@@ -39,12 +49,3 @@ mmt fakes CMS_vhtt_8TeV_mmt_fakeshape_fakes_bin_6 1.0
 mmt fakes CMS_vhtt_8TeV_mmt_fakeshape_fakes_bin_7 1.0
 mmt fakes CMS_vhtt_8TeV_mmt_fakeshape_fakes_bin_8 1.0
 mmt fakes CMS_vhtt_8TeV_mmt_fakeshape_fakes_bin_9 1.0
-emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_1 1.0
-emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_2 1.0
-emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_3 1.0
-emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_4 1.0
-emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_5 1.0
-emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_6 1.0
-emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_7 1.0
-emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_9 1.0
-emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_10 1.0
