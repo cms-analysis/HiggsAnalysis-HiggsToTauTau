@@ -21,7 +21,7 @@ morph()
   echo "LTT channels"
   horizontal-morphing.py \
     --categories="${lttCategories}"\
-    --samples="WH{MASS}" \
+    --samples="VH{MASS}" \
     --uncerts="" --masses="120,130,140" --step-size=1 -i $1
 }
 

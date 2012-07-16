@@ -1,34 +1,18 @@
-ett_sm		signal,WZ,ZZ,FakeRate		lumi                    1.022
-ett_sm		signal				pdf_vh                 	1.043
-ett_sm		signal,WZ,ZZ			isr_fsr                 1.006
-ett_sm		signal,WZ,ZZ			eff_trigger             1.030
-ett_sm		signal,WZ,ZZ			CMS_eff_e               1.029
-ett_sm		signal,WZ,ZZ			CMS_eff_m               1.014
-ett_sm		signal,WZ,ZZ			CMS_eff_t               1.085
-ett_sm		signal,WZ,ZZ			CMS_eff_b               1.000
-ett_sm		signal,WZ,ZZ			CMS_scale_e             1.000
-ett_sm		signal,WZ,ZZ			CMS_scale_m             1.000
-ett_sm		signal,WZ,ZZ			CMS_scale_t             1.030
-ett_sm		signal,WZ,ZZ			CMS_scale_j             1.010
-ett_sm		signal,WZ,ZZ			CMS_scale_met           1.000
-ett_sm		signal				signal_fake             1.028
-ett_sm		signal				signal_shape            1.000
-ett_sm		FakeRate			fake                    1.300
+###########################################################################
+# unc.vals: specification of uncertainty values by category, sample, and uncertainty name
+# Example:
+# emu_vbf,emu_novbf,emu_boost     signal,EWK              lumi            1.045
 
-# TODO - some of these lines can be merged together
-mtt_sm		signal,WZ,ZZ			lumi                    1.022
-mtt_sm		signal				pdf_vh                 	1.043
-mtt_sm		signal,WZ,ZZ			isr_fsr                 1.006
-mtt_sm		signal,WZ,ZZ			eff_trigger             1.030
-mtt_sm		signal,WZ,ZZ			CMS_eff_e               1.029
-mtt_sm		signal,WZ,ZZ			CMS_eff_m               1.014
-mtt_sm		signal,WZ,ZZ			CMS_eff_t               1.085
-mtt_sm		signal,WZ,ZZ			CMS_eff_b               1.000
-mtt_sm		signal,WZ,ZZ			CMS_scale_e             1.000
-mtt_sm		signal,WZ,ZZ			CMS_scale_m             1.000
-mtt_sm		signal,WZ,ZZ			CMS_scale_t             1.030
-mtt_sm		signal,WZ,ZZ			CMS_scale_j             1.010
-mtt_sm		signal,WZ,ZZ			CMS_scale_met           1.000
-mtt_sm		signal				signal_fake             1.028
-mtt_sm		signal				signal_shape            1.000
-mtt_sm		FakeRate			fake                    1.300
+mtt_sm,ett_sm		signal,wz,zz			lumi                    1.022
+mtt_sm,ett_sm		signal					pdf_vh                 	1.043
+mtt_sm,ett_sm		signal,wz,zz			eff_trigger             1.030
+mtt_sm,ett_sm		signal,wz,zz			CMS_eff_e               1.029
+mtt_sm,ett_sm		signal,wz,zz			CMS_eff_m               1.014
+mtt_sm,ett_sm		signal,wz,zz			CMS_eff_t               1.085
+mtt_sm,ett_sm		signal,wz,zz			CMS_eff_b               1.000
+mtt_sm,ett_sm		signal,wz,zz			CMS_scale_e             1.000
+mtt_sm,ett_sm		signal,wz,zz			CMS_scale_m             1.000
+mtt_sm,ett_sm		signal,wz,zz			CMS_scale_t             1.030
+mtt_sm,ett_sm		signal,wz,zz			CMS_scale_j             1.010
+mtt_sm,ett_sm		signal,wz,zz			CMS_scale_met           1.000
+mtt_sm,ett_sm		fakes					CMS_vhtt_ltt_fake       1.300
