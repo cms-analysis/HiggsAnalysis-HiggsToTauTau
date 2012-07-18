@@ -61,6 +61,43 @@ postfit(const char* inputfile, const char* dataset = "2011+2012", const char* ex
   data->SetMaximum(max);
   data->Draw("e");
 
+  /* 
+     For combination paper HIG-12-028
+
+  data->GetYaxis()->SetTitle("Event/10GeV");
+  data->GetXaxis()->SetTitle("m_{#tau#tau} (GeV)");
+
+  TPaveText* label1  = new TPaveText(0.27, 0.84, 0.35, 0.93, "NDC");
+  label1->SetBorderSize(   0 );
+  label1->SetFillStyle(    0 );
+  label1->SetTextAlign(   12 );
+  label1->SetTextSize ( 0.032 );
+  label1->SetTextColor(    1 );
+  label1->SetTextFont (   42 );
+  label1->AddText("CMS H#rightarrow#tau#tau");
+  label1->Draw();
+
+  TPaveText* label2  = new TPaveText(0.21, 0.82, 0.35, 0.86, "NDC");
+  label2->SetBorderSize(   0 );
+  label2->SetFillStyle(    0 );
+  label2->SetTextAlign(   12 );
+  label2->SetTextSize ( 0.032 );
+  label2->SetTextColor(    1 );
+  label2->SetTextFont (   42 );
+  label2->AddText("#sqrt{s} = 7 TeV, L = 4.9 fb^{-1}");
+  label2->Draw();
+
+  TPaveText* label3  = new TPaveText(0.21, 0.80, 0.35, 0.79, "NDC");
+  label3->SetBorderSize(   0 );
+  label3->SetFillStyle(    0 );
+  label3->SetTextAlign(   12 );
+  label3->SetTextSize ( 0.032 );
+  label3->SetTextColor(    1 );
+  label3->SetTextFont (   42 );
+  label3->AddText("#sqrt{s} = 8 TeV, L = 5.1 fb^{-1}");
+  label3->Draw();
+  */
+
   if(log){
     Ztt  ->Draw("same");
     ttbar->Draw("same");
