@@ -104,6 +104,8 @@ class PlotLimits {
   void prepareHIG_11_020(std::vector<double>& values, const char* type, bool xsec=true);
   /// fill officially approved limits for HIG-11-029 paper (NOTE: these are direct limits on tanb for MSSM)
   void prepareHIG_11_029(std::vector<double>& values, const char* type);
+  /// fill officially approved limits for HIG-12-018 PAS and HIG-12-028 paper (NOTE: these are only SM limits)
+  void prepareHIG_12_018(std::vector<double>& values, const char* type);
 
   /*
     Limits for comparison
@@ -602,6 +604,84 @@ PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type)
       values.push_back( 2.25);
       values.push_back( 2.39);
       values.push_back( 3.06);
+    }
+    else{
+      std::cout << "ERROR: picked wrong type. Available types are: +2sigma, +1sigma, mean, median, -1sigma, -2sigma" << std::endl
+		<< "       for the moment I'll stop here" << std::endl;
+      exit(1);
+    }
+  }
+  return;
+}
+
+
+inline void
+PlotLimits::prepareHIG_12_018(std::vector<double>& values, const char* type)
+{
+  if(mssm_){
+    std::cout << "HIG-12-018 contained only SM limits" << std::endl;
+    exit(1);
+  }
+  else{
+    if(std::string(type)==std::string("observed")){
+      values.push_back(1.21);
+      values.push_back( 1.2);
+      values.push_back(1.19);
+      values.push_back(1.06);
+      values.push_back( 1.2);
+      values.push_back(1.81);
+      values.push_back( 2.2);
+      values.push_back(3.36);
+    }
+    else if(std::string(type)==std::string("+2sigma")){
+      values.push_back(2.52);
+      values.push_back(2.47);
+      values.push_back(2.41);
+      values.push_back(2.36);
+      values.push_back(2.48);
+      values.push_back(2.84);
+      values.push_back(3.33);
+      values.push_back(4.35);
+    }
+    else if(std::string(type)==std::string("+1sigma")){
+      values.push_back( 1.9);
+      values.push_back(1.86);
+      values.push_back(1.81);
+      values.push_back(1.78);
+      values.push_back(1.87);
+      values.push_back(2.14);
+      values.push_back(2.51);
+      values.push_back(3.28);
+    }
+    else if(std::string(type)==std::string("expected")){
+      values.push_back(1.37);
+      values.push_back(1.34);
+      values.push_back( 1.3);
+      values.push_back(1.28);
+      values.push_back(1.34);
+      values.push_back(1.54);
+      values.push_back( 1.8);
+      values.push_back(2.36);
+    }
+    else if(std::string(type)==std::string("-1sigma")){
+      values.push_back(0.987);
+      values.push_back(0.964);
+      values.push_back(0.942);
+      values.push_back(0.925);
+      values.push_back( 0.97);
+      values.push_back( 1.11);
+      values.push_back(  1.3);
+      values.push_back(  1.7);
+    }
+    else if(std::string(type)==std::string("-2sigma")){
+      values.push_back(0.742);
+      values.push_back(0.725);
+      values.push_back(0.708);
+      values.push_back(0.695);
+      values.push_back(0.729);
+      values.push_back(0.835);
+      values.push_back(0.979);
+      values.push_back( 1.28);
     }
     else{
       std::cout << "ERROR: picked wrong type. Available types are: +2sigma, +1sigma, mean, median, -1sigma, -2sigma" << std::endl

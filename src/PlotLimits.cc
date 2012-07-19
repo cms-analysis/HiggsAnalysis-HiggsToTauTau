@@ -261,6 +261,12 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
   else if(std::string(filename)==std::string("HIG-11-029-expected")){
     prepareHIG_11_029(central, "expected");
   }
+  else if(std::string(filename)==std::string("HIG-12-018-observed")){
+    prepareHIG_12_018(central, "observed");
+  }
+  else if(std::string(filename)==std::string("HIG-12-018-expected")){
+    prepareHIG_12_018(central, "expected");
+  }
   else{
     prepareSimple(directory, central, filename);
   }
@@ -308,8 +314,13 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
     prepareHIG_11_029(upper, innerBand ? "+1sigma" : "+2sigma");
     prepareHIG_11_029(lower, innerBand ? "-1sigma" : "-2sigma");
   }
+  else if(std::string(method) == std::string("HIG-12-018")){
+    prepareHIG_12_018(expected, "expected");
+    prepareHIG_12_018(upper, innerBand ? "+1sigma" : "+2sigma");
+    prepareHIG_12_018(lower, innerBand ? "-1sigma" : "-2sigma");
+  }
   else{
-    std::cout << "ERROR: chose wrong method to fill uncertainty band. Available methods are: Bayesian, CLs"
+    std::cout << "ERROR: chose wrong method to fill uncertainty band. Available methods are: Bayesian, CLs\n"
 	      << "       for the moment I'll stop here" << std::endl;
     exit(1);
   }

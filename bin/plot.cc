@@ -18,6 +18,7 @@ int main(int argc, char* argv[])
   types.push_back(std::string("asymptotic"));
   types.push_back(std::string("HIG-11-020"));
   types.push_back(std::string("HIG-11-029"));
+  types.push_back(std::string("HIG-12-018"));
   types.push_back(std::string("significance"));
 
   // parse arguments
@@ -38,7 +39,6 @@ int main(int argc, char* argv[])
   }
   bool mssm = edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").getParameter<bool>("mssm");
   bool expected_only = edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").existsAs<bool>("expectedOnly") ? edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").getParameter<bool>("expectedOnly") : false;
-  std::cout << "expectedOnly = " << expected_only << std::endl;
 
   /// get intput directory up to one before mass points
   const char* directory ((std::string(argv[1]).find("HIG")==std::string::npos) ? argv[3] : argv[1]);
@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
   PlotLimits plot(out.c_str(), edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout"));
 
   /*
-    Implementations
+    Implementations (as dirty hardcoded list)
   */
 
   if( std::string(argv[1]) == std::string("CLs") ){
@@ -203,7 +203,7 @@ int main(int argc, char* argv[])
     plot.fillBand("HIG-11-029", inner, "HIG-11-029", true);
     /// 2-sigma uncertainty band
     TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
-    plot.fillBand("winter11", outer, "HIG-11-029", false);
+    plot.fillBand("HIG-11-029", outer, "HIG-11-029", false);
     /// make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
@@ -213,6 +213,27 @@ int main(int argc, char* argv[])
     else{
       plot.plot(*canv, inner, outer, expected, observed);
     }
+  }
+  if( std::string(argv[1]) == std::string("HIG-12-018") ){
+    /// observed limit 
+    TGraph* observed  = 0; 
+    if(!expected_only){
+      observed = new TGraph();
+      plot.fillCentral("HIG-12-018", observed, "HIG-12-018-observed");
+    }
+    /// expected limit
+    TGraph* expected  = new TGraph();
+    plot.fillCentral("HIG-12-018", expected, "HIG-12-018-expected");
+    /// 1-sigma uncertainty band
+    TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
+    plot.fillBand("HIG-12-018", inner, "HIG-12-018", true);
+    /// 2-sigma uncertainty band
+    TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
+    plot.fillBand("HIG-12-018", outer, "HIG-12-018", false);
+    /// make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plot(*canv, inner, outer, expected, observed);
   }
   return 0;
 }
