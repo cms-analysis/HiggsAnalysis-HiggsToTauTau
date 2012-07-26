@@ -8,9 +8,9 @@ tauTau_boost	   		ggH							pdf_gg    							1.08
 tauTau_boost	   		qqH							pdf_qqbar							1.03	                     
 tauTau_boost	   		VH							pdf_qqbar							1.02	                     
 tauTau_boost			qqH							QCDscale_qqH						1.04	                   
-tauTau_boost			ggH							QCDscale_ggH1in	 					1.1	                   
+tauTau_boost			ggH							QCDscale_ggH1in	 					1.08	                   
 tauTau_boost			VH							QCDscale_VH	 					1.04	                   
-tauTau_boost		    signal						UEPS								1.04	      
+tauTau_boost		    signal						UEPS								0.96	      
 tauTau_boost 			signal,ZTT,TT,VV			CMS_eff_t 							1.15	    
 tauTau_boost			signal,ZTT,W,ZJ,ZL,TT,VV   	CMS_scale_t 						1.00	               
 tauTau_boost         	ggH							CMS_scale_j							0.99	      
@@ -18,10 +18,10 @@ tauTau_boost         	qqH							CMS_scale_j							0.92
 tauTau_boost         	VH							CMS_scale_j							0.96	             
 tauTau_boost         	TT							CMS_scale_j							0.97	           
 tauTau_boost         	VV							CMS_scale_j							0.94	           
-tauTau_boost         	ZTT,ZL,ZJ					CMS_htt_ztt_extrap_boost			1.025	                        
+tauTau_boost         	ZTT,ZL,ZJ					CMS_htt_ztt_extrap_boost			1.03	                        
 tauTau_boost         	QCD							CMS_htt_tauTau_SM00_QCDNorm			1.056	                     
 tauTau_boost			ZTT,ZL,ZJ					CMS_htt_zttNorm 					1.033	                  
-tauTau_boost			TT							CMS_htt_ttbarNorm					1.075	 
+tauTau_boost			TT							CMS_htt_ttbarNorm					1.10	 
 tauTau_boost			VV							CMS_htt_DiBosonNorm					1.30	 
 tauTau_boost			W							CMS_htt_tauTau_SM00_WNorm			1.30	                          
 tauTau_boost         	ZJ                      	CMS_htt_ZJetFakeTau         		1.10

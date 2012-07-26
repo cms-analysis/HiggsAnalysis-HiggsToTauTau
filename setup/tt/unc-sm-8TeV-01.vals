@@ -18,10 +18,10 @@ tauTau_vbf         		qqH							CMS_scale_j							0.92
 tauTau_vbf         		VH							CMS_scale_j							0.96	           
 tauTau_vbf         		TT							CMS_scale_j							0.97	           
 tauTau_vbf         		VV							CMS_scale_j							0.94	           
-tauTau_vbf         		ZTT,ZL,ZJ					CMS_htt_ztt_extrap_vbf   			1.028	                        
+tauTau_vbf         		ZTT,ZL,ZJ					CMS_htt_ztt_extrap_vbf   			1.1	                        
 tauTau_vbf         		QCD							CMS_htt_tauTau_SM05_QCDNorm			1.22	                     
 tauTau_vbf				ZTT,ZL,ZJ					CMS_htt_zttNorm 					1.033	                  
-tauTau_vbf				TT							CMS_htt_ttbarNorm					1.075	                  
+tauTau_vbf				TT							CMS_htt_ttbarNorm					1.30	                  
 tauTau_vbf				VV							CMS_htt_DiBosonNorm					1.30	 
 tauTau_vbf				W							CMS_htt_tauTau_SM05_WNorm			1.30	                          
 tauTau_vbf         		ZJ                      	CMS_htt_ZJetFakeTau         		1.10
