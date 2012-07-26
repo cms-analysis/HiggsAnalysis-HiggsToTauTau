@@ -2,105 +2,196 @@
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 
 
-eeem_zh      signal,ZZ             lumi                                 1.022
-eeem_zh      signal,ZZ             CMS_eff_e                            1.04
+eeem_zh      signal,ZZ             lumi_7TeV                                 1.022
+eeem_zh      signal,ZZ             CMS_eff_e                            1.06
 eeem_zh      signal,ZZ             CMS_eff_m                            1.02
-eeem_zh      signal,ZZ             CMS_scale_e                          1.02
+eeem_zh      signal,ZZ             CMS_scale_e                          1.03
 eeem_zh      signal,ZZ             CMS_scale_m                          1.01
 eeem_zh      signal,ZZ             CMS_trigger_e                        1.01
 eeem_zh      ZZ                    CMS_zh2l2tau_ZZBkg_extrap            1.10
-eeem_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap      1.48
-eeem_zh      Zjets                 CMS_zh2l2tau_ZjetBkgEEEM_7TeV		1.0
+eeem_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap_7TeV      1.30
+eeem_zh      Zjets                 CMS_zh2l2tau_ZjetBkgEEEM_7TeV        1
+eeem_zh      Zjets                 CMS_vhtt_eeem_7TeV_fakeshape_Zjets_bin_1   1.0
+eeem_zh      Zjets                 CMS_vhtt_eeem_7TeV_fakeshape_Zjets_bin_2   1.0
+eeem_zh      Zjets                 CMS_vhtt_eeem_7TeV_fakeshape_Zjets_bin_3   1.0
+eeem_zh      Zjets                 CMS_vhtt_eeem_7TeV_fakeshape_Zjets_bin_4   1.0
+eeem_zh      Zjets                 CMS_vhtt_eeem_7TeV_fakeshape_Zjets_bin_6   1.0
+eeem_zh      Zjets                 CMS_vhtt_eeem_7TeV_fakeshape_Zjets_bin_10   1.0
+
+###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 
 
-eeet_zh      signal,ZZ             lumi                                 1.022
+eeet_zh      signal,ZZ             lumi_7TeV                                 1.022
 eeet_zh      signal,ZZ             CMS_eff_e                            1.06
 eeet_zh      signal,ZZ             CMS_eff_t                            1.06
-eeet_zh      signal,ZZ             CMS_scale_e                          1.02
+eeet_zh      signal,ZZ             CMS_scale_e                          1.03
 eeet_zh      signal,ZZ             CMS_scale_t                          1.03
 eeet_zh      signal,ZZ             CMS_trigger_e                        1.01
 eeet_zh      ZZ                    CMS_zh2l2tau_ZZBkg_extrap            1.10
-eeet_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap      1.13
-eeet_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap      1.14
-eeet_zh      Zjets                 CMS_zh2l2tau_ZjetBkgEEET_7TeV		1.0
+eeet_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap_7TeV      1.20
+eeet_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap_7TeV      1.30
+eeet_zh      Zjets                 CMS_zh2l2tau_ZjetBkgEEET_7TeV        1
+eeet_zh      Zjets                 CMS_vhtt_eeet_7TeV_fakeshape_Zjets_bin_1   1.0
+eeet_zh      Zjets                 CMS_vhtt_eeet_7TeV_fakeshape_Zjets_bin_2   1.0
+eeet_zh      Zjets                 CMS_vhtt_eeet_7TeV_fakeshape_Zjets_bin_3   1.0
+eeet_zh      Zjets                 CMS_vhtt_eeet_7TeV_fakeshape_Zjets_bin_4   1.0
+eeet_zh      Zjets                 CMS_vhtt_eeet_7TeV_fakeshape_Zjets_bin_5   1.0
+eeet_zh      Zjets                 CMS_vhtt_eeet_7TeV_fakeshape_Zjets_bin_6   1.0
+eeet_zh      Zjets                 CMS_vhtt_eeet_7TeV_fakeshape_Zjets_bin_7   1.0
+eeet_zh      Zjets                 CMS_vhtt_eeet_7TeV_fakeshape_Zjets_bin_8   1.0
+eeet_zh      Zjets                 CMS_vhtt_eeet_7TeV_fakeshape_Zjets_bin_9   1.0
+eeet_zh      Zjets                 CMS_vhtt_eeet_7TeV_fakeshape_Zjets_bin_10   1.0
+eeet_zh      Zjets                 CMS_vhtt_eeet_7TeV_fakeshape_Zjets_bin_11   1.0
+eeet_zh      Zjets                 CMS_vhtt_eeet_7TeV_fakeshape_Zjets_bin_12   1.0
+eeet_zh      Zjets                 CMS_vhtt_eeet_7TeV_fakeshape_Zjets_bin_14   1.0
+eeet_zh      Zjets                 CMS_vhtt_eeet_7TeV_fakeshape_Zjets_bin_15   1.0
+eeet_zh      Zjets                 CMS_vhtt_eeet_7TeV_fakeshape_Zjets_bin_19   1.0
+
+
+###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 
 
-eemt_zh      signal,ZZ             lumi                                 1.022
-eemt_zh      signal,ZZ             CMS_eff_e                            1.02
-eemt_zh      signal,ZZ             CMS_eff_m                            1.01
+eemt_zh      signal,ZZ             lumi_7TeV                                 1.022
+eemt_zh      signal,ZZ             CMS_eff_e                            1.04
+eemt_zh      signal,ZZ             CMS_eff_m                            1.02
 eemt_zh      signal,ZZ             CMS_eff_t                            1.06
 eemt_zh      signal,ZZ             CMS_scale_e                          1.02
 eemt_zh      signal,ZZ             CMS_scale_m                          1.01
 eemt_zh      signal,ZZ             CMS_scale_t                          1.03
 eemt_zh      signal,ZZ             CMS_trigger_e                        1.01
 eemt_zh      ZZ                    CMS_zh2l2tau_ZZBkg_extrap            1.10
-eemt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap      1.24
-eemt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap      1.04
-eemt_zh      Zjets                 CMS_zh2l2tau_ZjetBkgEEMT_7TeV		1.0
+eemt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap_7TeV      1.20
+eemt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap_7TeV      1.30
+eemt_zh      Zjets                 CMS_zh2l2tau_ZjetBkgEEMT_7TeV        1
+eemt_zh      Zjets                 CMS_vhtt_eemt_7TeV_fakeshape_Zjets_bin_1     1.0
+eemt_zh      Zjets                 CMS_vhtt_eemt_7TeV_fakeshape_Zjets_bin_2   1.0
+eemt_zh      Zjets                 CMS_vhtt_eemt_7TeV_fakeshape_Zjets_bin_3   1.0
+eemt_zh      Zjets                 CMS_vhtt_eemt_7TeV_fakeshape_Zjets_bin_4   1.0   
+eemt_zh      Zjets                 CMS_vhtt_eemt_7TeV_fakeshape_Zjets_bin_5   1.0
+eemt_zh      Zjets                 CMS_vhtt_eemt_7TeV_fakeshape_Zjets_bin_6   1.0
+eemt_zh      Zjets                 CMS_vhtt_eemt_7TeV_fakeshape_Zjets_bin_7   1.0
+eemt_zh      Zjets                 CMS_vhtt_eemt_7TeV_fakeshape_Zjets_bin_9   1.0
+eemt_zh      Zjets                 CMS_vhtt_eemt_7TeV_fakeshape_Zjets_bin_10   1.0
+eemt_zh      Zjets                 CMS_vhtt_eemt_7TeV_fakeshape_Zjets_bin_12   1.0
+###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 
 
-eett_zh      signal,ZZ             lumi                                 1.022
-eett_zh      signal,ZZ             CMS_eff_e                            1.02
-eett_zh      signal,ZZ             CMS_eff_t                            1.09617
+eett_zh      signal,ZZ             lumi_7TeV                                 1.022
+eett_zh      signal,ZZ             CMS_eff_e                            1.04
+eett_zh      signal,ZZ             CMS_eff_t                            1.12
 eett_zh      signal,ZZ             CMS_scale_e                          1.02
 eett_zh      signal,ZZ             CMS_scale_t                          1.03
 eett_zh      signal,ZZ             CMS_trigger_e                        1.01
 eett_zh      ZZ                    CMS_zh2l2tau_ZZBkg_extrap            1.10
-eett_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap      1.27
-eett_zh      Zjets                 CMS_zh2l2tau_ZjetBkgEETT_7TeV		1.0
+eett_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap_7TeV      1.20
+eett_zh      Zjets                 CMS_zh2l2tau_ZjetBkgEETT_7TeV        1
+eett_zh      Zjets                 CMS_vhtt_eett_7TeV_fakeshape_Zjets_bin_8   1.0
+eett_zh      Zjets                 CMS_vhtt_eett_7TeV_fakeshape_Zjets_bin_9   1.0
+eett_zh      Zjets                 CMS_vhtt_eett_7TeV_fakeshape_Zjets_bin_10   1.0
+eett_zh      Zjets                 CMS_vhtt_eett_7TeV_fakeshape_Zjets_bin_11   1.0
+eett_zh      Zjets                 CMS_vhtt_eett_7TeV_fakeshape_Zjets_bin_12   1.0
+eett_zh      Zjets                 CMS_vhtt_eett_7TeV_fakeshape_Zjets_bin_13   1.0
+eett_zh      Zjets                 CMS_vhtt_eett_7TeV_fakeshape_Zjets_bin_14   1.0
+eett_zh      Zjets                 CMS_vhtt_eett_7TeV_fakeshape_Zjets_bin_15   1.0
+eett_zh      Zjets                 CMS_vhtt_eett_7TeV_fakeshape_Zjets_bin_16   1.0
+eett_zh      Zjets                 CMS_vhtt_eett_7TeV_fakeshape_Zjets_bin_17   1.0
+eett_zh      Zjets                 CMS_vhtt_eett_7TeV_fakeshape_Zjets_bin_18   1.0
+eett_zh      Zjets                 CMS_vhtt_eett_7TeV_fakeshape_Zjets_bin_19   1.0
+###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 
 
-mmem_zh      signal,ZZ             lumi                                 1.022
-mmem_zh      signal,ZZ             CMS_eff_e                            1.03
-mmem_zh      signal,ZZ             CMS_eff_m                            1.02
-mmem_zh      signal,ZZ             CMS_scale_e                          1.02
-mmem_zh      signal,ZZ             CMS_scale_m                          1.01
-mmem_zh      signal,ZZ             CMS_trigger_m                        1.01
-mmem_zh      ZZ                    CMS_zh2l2tau_ZZBkg_extrap            1.10
-mmem_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap      1.49
-mmem_zh      Zjets                 CMS_zh2l2tau_ZjetBkgMMEM_7TeV		1.0
-# unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-
-
-mmet_zh      signal,ZZ             lumi                                 1.022
-mmet_zh      signal,ZZ             CMS_eff_e                            1.02
-mmet_zh      signal,ZZ             CMS_eff_m                            1.01
+mmet_zh      signal,ZZ             lumi_7TeV                                 1.022
+mmet_zh      signal,ZZ             CMS_eff_e                            1.04
+mmet_zh      signal,ZZ             CMS_eff_m                            1.02
 mmet_zh      signal,ZZ             CMS_eff_t                            1.06
 mmet_zh      signal,ZZ             CMS_scale_e                          1.02
 mmet_zh      signal,ZZ             CMS_scale_m                          1.01
 mmet_zh      signal,ZZ             CMS_scale_t                          1.03
 mmet_zh      signal,ZZ             CMS_trigger_m                        1.01
 mmet_zh      ZZ                    CMS_zh2l2tau_ZZBkg_extrap            1.10
-mmet_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap      1.04
-mmet_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap      1.26
-mmet_zh      Zjets                 CMS_zh2l2tau_ZjetBkgMMET_7TeV		1.0
+mmet_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap_7TeV      1.20
+mmet_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap_7TeV      1.30
+mmet_zh      Zjets                 CMS_zh2l2tau_ZjetBkgMMET_7TeV        1
+mmet_zh      Zjets                 CMS_vhtt_mmet_7TeV_fakeshape_Zjets_bin_1   1.0
+mmet_zh      Zjets                 CMS_vhtt_mmet_7TeV_fakeshape_Zjets_bin_2   1.0
+mmet_zh      Zjets                 CMS_vhtt_mmet_7TeV_fakeshape_Zjets_bin_3   1.0
+mmet_zh      Zjets                 CMS_vhtt_mmet_7TeV_fakeshape_Zjets_bin_4   1.0
+mmet_zh      Zjets                 CMS_vhtt_mmet_7TeV_fakeshape_Zjets_bin_5   1.0
+mmet_zh      Zjets                 CMS_vhtt_mmet_7TeV_fakeshape_Zjets_bin_6   1.0
+mmet_zh      Zjets                 CMS_vhtt_mmet_7TeV_fakeshape_Zjets_bin_7   1.0
+mmet_zh      Zjets                 CMS_vhtt_mmet_7TeV_fakeshape_Zjets_bin_8   1.0
+mmet_zh      Zjets                 CMS_vhtt_mmet_7TeV_fakeshape_Zjets_bin_9   1.0
+mmet_zh      Zjets                 CMS_vhtt_mmet_7TeV_fakeshape_Zjets_bin_10   1.0
+mmet_zh      Zjets                 CMS_vhtt_mmet_7TeV_fakeshape_Zjets_bin_11   1.0
+mmet_zh      Zjets                 CMS_vhtt_mmet_7TeV_fakeshape_Zjets_bin_12   1.0
+mmet_zh      Zjets                 CMS_vhtt_mmet_7TeV_fakeshape_Zjets_bin_13   1.0
+mmet_zh      Zjets                 CMS_vhtt_mmet_7TeV_fakeshape_Zjets_bin_16   1.0
+mmet_zh      Zjets                 CMS_vhtt_mmet_7TeV_fakeshape_Zjets_bin_17   1.0
+mmet_zh      Zjets                 CMS_vhtt_mmet_7TeV_fakeshape_Zjets_bin_18   1.0
+###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 
 
-mmmt_zh      signal,ZZ             lumi                                 1.022
-mmmt_zh      signal,ZZ             CMS_eff_m                            1.02
+mmme_zh      signal,ZZ             lumi_7TeV                                 1.022
+mmme_zh      signal,ZZ             CMS_eff_e                            1.06
+mmme_zh      signal,ZZ             CMS_eff_m                            1.02
+mmme_zh      signal,ZZ             CMS_scale_e                          1.03
+mmme_zh      signal,ZZ             CMS_scale_m                          1.01
+mmme_zh      signal,ZZ             CMS_trigger_m                        1.01
+mmme_zh      ZZ                    CMS_zh2l2tau_ZZBkg_extrap            1.10
+mmme_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap_7TeV      1.30
+mmme_zh      Zjets                 CMS_zh2l2tau_ZjetBkgMMME_7TeV        1
+mmme_zh      Zjets                 CMS_vhtt_mmme_7TeV_fakeshape_Zjets_bin_1   1.0
+mmme_zh      Zjets                 CMS_vhtt_mmme_7TeV_fakeshape_Zjets_bin_2   1.0
+mmme_zh      Zjets                 CMS_vhtt_mmme_7TeV_fakeshape_Zjets_bin_4   1.0
+###########################################################################
+# unc.vals: specification of uncertainty values by category, sample, and uncertainty name
+
+
+mmmt_zh      signal,ZZ             lumi_7TeV                                 1.022
+mmmt_zh      signal,ZZ             CMS_eff_m                            1.06
 mmmt_zh      signal,ZZ             CMS_eff_t                            1.06
-mmmt_zh      signal,ZZ             CMS_scale_m                          1.01
+mmmt_zh      signal,ZZ             CMS_scale_m                          1.03
 mmmt_zh      signal,ZZ             CMS_scale_t                          1.03
 mmmt_zh      signal,ZZ             CMS_trigger_m                        1.01
 mmmt_zh      ZZ                    CMS_zh2l2tau_ZZBkg_extrap            1.10
-mmmt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap      1.17
-mmmt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap      1.11
-mmmt_zh      Zjets                 CMS_zh2l2tau_ZjetBkgMMMT_7TeV		1.0
+mmmt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap_7TeV      1.20
+mmmt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap_7TeV      1.30
+mmmt_zh      Zjets                 CMS_zh2l2tau_ZjetBkgMMMT_7TeV        1
+mmmt_zh      Zjets                 CMS_vhtt_mmmt_7TeV_fakeshape_Zjets_bin_1   1.0
+mmmt_zh      Zjets                 CMS_vhtt_mmmt_7TeV_fakeshape_Zjets_bin_2   1.0
+mmmt_zh      Zjets                 CMS_vhtt_mmmt_7TeV_fakeshape_Zjets_bin_3   1.0
+mmmt_zh      Zjets                 CMS_vhtt_mmmt_7TeV_fakeshape_Zjets_bin_4   1.0
+mmmt_zh      Zjets                 CMS_vhtt_mmmt_7TeV_fakeshape_Zjets_bin_5   1.0
+mmmt_zh      Zjets                 CMS_vhtt_mmmt_7TeV_fakeshape_Zjets_bin_6   1.0
+mmmt_zh      Zjets                 CMS_vhtt_mmmt_7TeV_fakeshape_Zjets_bin_7   1.0
+mmmt_zh      Zjets                 CMS_vhtt_mmmt_7TeV_fakeshape_Zjets_bin_8   1.0
+###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 
 
-mmtt_zh      signal,ZZ             lumi                                 1.022
-mmtt_zh      signal,ZZ             CMS_eff_m                            1.01
-mmtt_zh      signal,ZZ             CMS_eff_t                            1.09617
-mmtt_zh      signal,ZZ             CMS_scale_m                          1.01
+mmtt_zh      signal,ZZ             lumi_7TeV                                 1.022
+mmtt_zh      signal,ZZ             CMS_eff_m                            1.04
+mmtt_zh      signal,ZZ             CMS_eff_t                            1.12
+mmtt_zh      signal,ZZ             CMS_scale_m                          1.02
 mmtt_zh      signal,ZZ             CMS_scale_t                          1.03
 mmtt_zh      signal,ZZ             CMS_trigger_m                        1.01
 mmtt_zh      ZZ                    CMS_zh2l2tau_ZZBkg_extrap            1.10
-mmtt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap      1.25
-mmtt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap      1.09
-mmtt_zh      Zjets                 CMS_zh2l2tau_ZjetBkgMMTT_7TeV
+mmtt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap_7TeV      1.20
+mmtt_zh      Zjets                 CMS_zh2l2tau_ZjetBkgMMTT_7TeV        1
+mmtt_zh      Zjets                 CMS_vhtt_mmtt_7TeV_fakeshape_Zjets_bin_8  1.0
+mmtt_zh      Zjets                 CMS_vhtt_mmtt_7TeV_fakeshape_Zjets_bin_9  1.0
+mmtt_zh      Zjets                 CMS_vhtt_mmtt_7TeV_fakeshape_Zjets_bin_10  1.0
+mmtt_zh      Zjets                 CMS_vhtt_mmtt_7TeV_fakeshape_Zjets_bin_11  1.0
+mmtt_zh      Zjets                 CMS_vhtt_mmtt_7TeV_fakeshape_Zjets_bin_12  1.0
+mmtt_zh      Zjets                 CMS_vhtt_mmtt_7TeV_fakeshape_Zjets_bin_13  1.0
+mmtt_zh      Zjets                 CMS_vhtt_mmtt_7TeV_fakeshape_Zjets_bin_14  1.0
+mmtt_zh      Zjets                 CMS_vhtt_mmtt_7TeV_fakeshape_Zjets_bin_15  1.0
+mmtt_zh      Zjets                 CMS_vhtt_mmtt_7TeV_fakeshape_Zjets_bin_16  1.0
+mmtt_zh      Zjets                 CMS_vhtt_mmtt_7TeV_fakeshape_Zjets_bin_17  1.0
+mmtt_zh      Zjets                 CMS_vhtt_mmtt_7TeV_fakeshape_Zjets_bin_18  1.0
+mmtt_zh      Zjets                 CMS_vhtt_mmtt_7TeV_fakeshape_Zjets_bin_19  1.0
