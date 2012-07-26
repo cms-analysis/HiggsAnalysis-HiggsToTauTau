@@ -3,7 +3,7 @@
 echo "Combining VHTT shape files and running horizontal interpolation"
 
 lltCategories="emt,mmt" 
-zhCategories="mmmt_zh,mmet_zh,mmem_zh,mmtt_zh,eemt_zh,eeet_zh,eeem_zh,eett_zh" 
+zhCategories="mmmt_zh,mmet_zh,mmme_zh,mmtt_zh,eemt_zh,eeet_zh,eeem_zh,eett_zh" 
 lttCategories="ett_sm,mtt_sm" 
 
 morph() 
