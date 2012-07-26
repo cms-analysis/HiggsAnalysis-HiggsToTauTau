@@ -18,17 +18,16 @@ morph()
     --categories="${zhCategories}"\
     --samples="VH{MASS},VH_hww{MASS}" \
     --uncerts="" --masses="110,120,130,140" --step-size=1 -i $1
-  echo "LTT channels"
-  horizontal-morphing.py \
-    --categories="${lttCategories}"\
-    --samples="VH{MASS}" \
-    --uncerts="" --masses="110,120,130,140" --step-size=1 -i $1
+  #echo "LTT channels"
+  #horizontal-morphing.py \
+    #--categories="${lttCategories}"\
+    #--samples="VH{MASS}" \
+    #--uncerts="" --masses="110,120,130,140" --step-size=1 -i $1
 }
 
 echo "Combining 7TeV"
 hadd -f vhtt.inputs-sm-7TeV.root \
   vhtt_4l.inputs-sm-7TeV.root \
-  vhtt_ltt.inputs-sm-7TeV.root \
   vhtt_llt.inputs-sm-7TeV.root
 
 echo "Morphing 7TeV"
@@ -37,7 +36,6 @@ morph vhtt.inputs-sm-7TeV.root
 echo "Combining 8TeV"
 hadd -f vhtt.inputs-sm-8TeV.root \
   vhtt_4l.inputs-sm-8TeV.root \
-  vhtt_ltt.inputs-sm-8TeV.root \
   vhtt_llt.inputs-sm-8TeV.root
 
 echo "Morphing 8TeV"
