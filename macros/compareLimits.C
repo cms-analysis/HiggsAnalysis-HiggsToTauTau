@@ -37,6 +37,9 @@ channel(std::string& label){
 	  label==std::string("hgg")        ||	  
 	  label==std::string("hww")        ||
 	  label==std::string("tt")         ||
+	  label==std::string("ltt") 	   ||
+	  label==std::string("llt") 	   ||
+	  label==std::string("4l") 	   ||
 	  label==std::string("hzz4l")      ||
 	  label==std::string("hzz2l2q")    ||
 	  label==std::string("hzz2l2q")    ||
@@ -65,7 +68,8 @@ channel(std::string& label){
 	  label==std::string("mhmax+800")  ||
 	  label==std::string("HIG-11-020") ||
 	  label==std::string("HIG-11-029") ||
-	  label==std::string("HIG-12-018")
+	  label==std::string("HIG-12-018") ||
+	  label==std::string("HIG-12-032")
 	  );
 }
 
@@ -77,8 +81,8 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("et"        )) title = std::string("e#tau_{h}");
   if(channel==std::string("mutau"     )) title = std::string("#mu#tau_{h}");
   if(channel==std::string("mt"        )) title = std::string("#mu#tau_{h}");
-  if(channel==std::string("tautau"    )) title = std::string("#tau_{h}#tau_{h} (1.1 fb^{-1})");
-  if(channel==std::string("tt"        )) title = std::string("#tau_{h}#tau_{h} (1.1 fb^{-1})");
+  if(channel==std::string("tautau"    )) title = std::string("#tau_{h}#tau_{h} (5.0 fb^{-1})");
+  if(channel==std::string("tt"        )) title = std::string("#tau_{h}#tau_{h} (5.0 fb^{-1})");
   if(channel==std::string("mumu"      )) title = std::string("#mu#mu");
   if(channel==std::string("mm"        )) title = std::string("#mu#mu");
   if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau+l(l)");
@@ -95,6 +99,9 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("boost"     )) title = std::string("Boost");
   if(channel==std::string("hgg"       )) title = std::string("H#rightarrow#gamma#gamma");
   if(channel==std::string("hww"       )) title = std::string("H#rightarrowWW#rightarrow2l2#nu");
+  if(channel==std::string("ltt"       )) title = std::string("WH#rightarrow#tau_{h}#tau_{h}+l");
+  if(channel==std::string("llt"       )) title = std::string("WH#rightarrow#tau_{h}+2l");
+  if(channel==std::string("4l"        )) title = std::string("ZH#rightarrow2l2#tau");
   if(channel==std::string("hzz4l"     )) title = std::string("H#rightarrowZZ#rightarrow4l");
   if(channel==std::string("hzz2l2q"   )) title = std::string("H#rightarrowZZ#rightarrow2l2q");
   if(channel==std::string("hzz2l2t"   )) title = std::string("H#rightarrowZZ#rightarrow2l2#tau");
@@ -123,6 +130,7 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("HIG-11-020")) title = std::string("HIG-11-020 (1.6 fb^{-1})");
   if(channel==std::string("HIG-11-029")) title = std::string("HIG-11-029 (4.9 fb^{-1})");
   if(channel==std::string("HIG-12-018")) title = std::string("HIG-12-018 (10 fb^{-1})");
+  if(channel==std::string("HIG-12-032")) title = std::string("HIG-12-032 (5-10 fb^{-1})");
   return title;
 }
 
@@ -155,6 +163,9 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["htt+"      ] = kBlue;
   colors["hgg"       ] = kRed;
   colors["hww"       ] = kGreen;
+  colors["4l"        ] = kGreen;
+  colors["llt"       ] = kRed;
+  colors["ltt"       ] = kBlue;
   colors["hzz4l"     ] = kBlue;
   colors["hzz2l2q"   ] = kMagenta;
   colors["hzz2l2q+"  ] = kMagenta;
@@ -183,7 +194,8 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["mhmax+800" ] = kMagenta-10;
   colors["HIG-11-020"] = kBlue+2;
   colors["HIG-11-029"] = kRed+2;
-  colors["HIG-12-018"] = kBlack;
+  colors["HIG-12-018"] = kBlue;
+  colors["HIG-12-032"] = kRed+2;
 
   std::cout << " *******************************************************************************************************\n"
 	    << " * Usage     : root -l                                                                                  \n"
