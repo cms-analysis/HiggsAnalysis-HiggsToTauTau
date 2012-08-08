@@ -62,6 +62,9 @@ class CrossSection {
 	    proc == std::string("W"    )||
 	    proc == std::string("Z"    )||
 	    proc == std::string("QCD"  )||
+	    proc == std::string("WW"   )||
+	    proc == std::string("WZ"   )||
+	    proc == std::string("ZZ"   )||
 	    proc == std::string("VV"   ));
   }
 
