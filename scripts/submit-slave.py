@@ -39,7 +39,7 @@ ngroup.add_option("--tries", dest="tries", default=10, type="int", help="Number 
 ngroup.add_option("--observed", dest="observed", default=False, action="store_true", help="Calculate the observed limit via crab (in case this is time consuming). [Default: False]")
 parser.add_option_group(ngroup)
 pgroup = OptionGroup(parser, "COMBINE (PROFILE LIKELIHOOD) COMMAND OPTIONS", "Command options for the use of combine with the ProfileLikelihood method.")
-pgroup.add_option("--fixed-mass", dest="fixed_mass", default="", type="string", help="Set a fixed mass at which to inject the signal signal (during workspace creation). If the string is empty the mass point is taken for which the significance is cslculated. [Default: \"\"]")
+pgroup.add_option("--fixed-mass", dest="fixed_mass", default="", type="string", help="Set a fixed mass at which to inject the signal signal (during workspace creation). If the string is empty the mass point is taken for which the significance is calculated. [Default: \"\"]")
 pgroup.add_option("--signal-strength", dest="signal_strength", default="1", type="string", help="Set signal strength for expected significance calculation. [Default: \"1\"]")
 parser.add_option_group(pgroup)
 ## crab cfg parameters
@@ -407,7 +407,6 @@ for directory in args :
                 mass_fixed = options.fixed_mass if options.fixed_mass!="" else masspoint
                 os.system("text2workspace.py tmp.txt --default-morphing=%s -m %s -o batch.root"% (options.shape, mass_fixed))
                 ## setup the batchjob creation for combine -M CLs
-                options.signal_strength
                 opts = "-o {out} -m {mass} --signal-strength {strength} -t {toys} -j {jobs} -q {queue}".format(
                     out=options.out, mass=masspoint, strength=options.signal_strength, toys=options.t, jobs=options.j, queue=options.queue
                     )
