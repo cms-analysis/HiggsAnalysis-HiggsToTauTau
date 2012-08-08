@@ -16,7 +16,8 @@ cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3
 cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3 5", type="string", help="List mt of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 5", type="string", help="List et of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
-cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
+cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1 2", type="string", help="List of tt event categories. [Default: \"0 1 2\"]")
+cats1.add_option("--sm-categories-vhbb", dest="vhbb_sm_categories", default="0 1 2 3 4 5 6 7", type="string", help="List of tt event categories. [Default: \"0 1 2 3 4 5 6 7\"]")
 parser.add_option_group(cats1)
 cats2 = OptionGroup(parser, "MSSM EVENT CATEGORIES", "Event categories to be used for the MSSM analysis.")
 cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="0 1 2 3 6 7", type="string", help="List mm of event categories. [Default: \"0 1 2 3 6 7\"]")
@@ -96,6 +97,7 @@ if options.analysis == "sm" :
         "et"   : options.et_sm_categories.split(),
         "tt"   : options.tt_sm_categories.split(),
         "vhtt" : options.vhtt_sm_categories.split(),
+        "vhbb" : options.vhbb_sm_categories.split(),
         }
 ## switch to mssm event categories
 if options.analysis == "mssm" :
@@ -120,16 +122,16 @@ for mass in parseArgs(args) :
 for period in periods :
     for channel in channels :
         for mass in parseArgs(args) :
-            if channel == "vhtt" :
+            if channel == "vhtt" or channel == "vhbb":
                 for category in categories[channel] :
                     if options.verbose :
                         print "copying datacards for:", period, channel, category, mass
-                    os.system("cp {INPUT}/{CHN}/vhtt.inputs-{ANA}-{PERIOD}.root {OUTPUT}/common/{PRE}vhtt.input_{PERIOD}.root".format(
-                        INPUT=input, ANA=options.analysis, CHN=channel, OUTPUT=options.out, PRE=prefix, PERIOD=period))
-                    os.system("cp {INPUT}/{CHN}/vhtt_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}vhtt_{CAT}_{PERIOD}.txt".format(
+                    os.system("cp {INPUT}/{CHN}/{CHN}.inputs-{ANA}-{PERIOD}.root {OUTPUT}/common/{PRE}{CHN}.input_{PERIOD}.root".format(
+                        INPUT=input, ANA=options.analysis, CHN=channel, OUTPUT=options.out, PRE=prefix, PERIOD=period))                        
+                    os.system("cp {INPUT}/{CHN}/{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
                         INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
-                    os.system("perl -pi -e 's/vhtt.inputs-{ANA}-{PERIOD}.root/..\/common\/{PRE}vhtt.input_{PERIOD}.root/g' {OUTPUT}/{MASS}/{PRE}vhtt_{CAT}_{PERIOD}.txt".format(
-                        ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period))
+                    os.system("perl -pi -e 's/{CHN}.inputs-{ANA}-{PERIOD}.root/..\/common\/{PRE}{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
+                        CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period))
             else :
                 for category in categories[channel] :
                     if options.verbose :

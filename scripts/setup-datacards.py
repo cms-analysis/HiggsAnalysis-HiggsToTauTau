@@ -16,6 +16,7 @@ cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3
 cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 5", type="string", help="List et of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
 cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1 2 ", type="string", help="List of vhtt event categories. [Default: \"0 1 2 \"]")
+cats1.add_option("--sm-categories-vhbb", dest="vhbb_sm_categories", default="0 1 2 3 4 5 6 7", type="string", help="List of vhbb event categories. [Default: \"0 1 2 3 4 5 6 7\"]")
 parser.add_option_group(cats1)
 cats2 = OptionGroup(parser, "MSSM EVENT CATEGORIES", "Event categories to be used for the MSSM analysis.")
 cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="0 1 2 3 6 7", type="string", help="List mm of event categories. [Default: \"0 1 2 3 6 7\"]")
@@ -50,7 +51,7 @@ if not os.path.exists(options.out) :
 if not os.path.exists("{OUTPUT}/{ANA}".format(OUTPUT=options.out, ANA=options.analysis)) :
     os.system("mkdir {OUTPUT}/{ANA}".format(OUTPUT=options.out, ANA=options.analysis))
 for channel in channels :
-    prefix = "" if channel == "vhtt" else "htt_"
+    prefix = "" if (channel == "vhtt" or channel == "vhbb") else "htt_"
     if not os.path.exists("{OUTPUT}/{ANA}/{PRE}{CHN}".format(OUTPUT=options.out, ANA=options.analysis, PRE=prefix, CHN=channel)) :
         os.system("mkdir {OUTPUT}/{ANA}/{PRE}{CHN}".format(OUTPUT=options.out, ANA=options.analysis, PRE=prefix, CHN=channel))
 os.chdir(options.out)
@@ -65,6 +66,7 @@ if options.analysis == "sm" :
         "et"   : options.et_sm_categories.split(),
         "tt"   : options.tt_sm_categories.split(),
         "vhtt" : options.vhtt_sm_categories.split(),
+        "vhbb" : options.vhbb_sm_categories.split(),
         }
 
 ## switch to mssm event categories
@@ -85,7 +87,7 @@ for channel in channels :
     for period in periods :
         for cat in categories[channel] :
             ## here the normal workflow continues
-            prefix = "" if channel == "vhtt" else "htt_"
+            prefix = "" if (channel == "vhtt" or channel == "vhbb") else "htt_"
             os.chdir("{PWD}/{CHN}".format(CHN=prefix+channel, PWD=base))
             os.system("datacard-project.py -c {CHN} -e {ANA}-{PER}-0{CAT} {PER}-0{CAT}".format(CHN=channel, ANA=options.analysis, PER=period, CAT=cat))
             os.chdir("{PWD}/{CHN}/{PER}-0{CAT}".format(CHN=prefix+channel, PER=period, PWD=base, CAT=cat))
