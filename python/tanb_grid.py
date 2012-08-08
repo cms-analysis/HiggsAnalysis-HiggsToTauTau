@@ -795,7 +795,7 @@ class MakeDatacard :
               #print "RESCALING OF HIST STARTING: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
 
               acc_mA = acceptance_correction(process, self.mA)
-              print "acceptance correction for mA: ", acc_mA
+              #print "ACCEPTANCE CORRECTION FOR mA: ", acc_mA
               hist_mA_value.Scale(cross_sections["A"]/self.tanb)
               ## determine upper and lower mass edges for mh
               (mh_failed, mh_lower, mh_upper) = self.embracing_masses(self.mh, masses)
@@ -822,24 +822,24 @@ class MakeDatacard :
                             if hist_mh_value.Integral()>0 :
                                    norm_mh_value = cross_sections["h"]/self.tanb*self.scale(hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh)
                                    acc_mh = acceptance_correction(process, self.mh)
-                                   print "acceptance correction for mh: ", acc_mh
+                                   #print "ACCEPTANCE CORRECTION FOR mh: ", acc_mh
                                    hist_mh_value.Scale(norm_mh_value/hist_mh_value.Integral())
                      else:
                             norm_mh_value = cross_sections["h"]/self.tanb*self.scale(hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh)
                             acc_mh = acceptance_correction(process, self.mh)
-                            print "acceptance correction for mh: ", acc_mh
+                            #print "ACCEPTANCE CORRECTION FOR mh: ", acc_mh
                             hist_mh_value = th1fmorph("I","",hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh, norm_mh_value, 0)
               else :
                      hist_mh_value = hist_mA_value.Clone(hist_name)
                      acc_mh = acceptance_correction(process, self.mh)
-                     print "acceptance correction for mh: ", acc_mh
+                     #print "ACCEPTANCE CORRECTION FOR mh: ", acc_mh
                      hist_mh_value.Scale(cross_sections["h"]/self.tanb)
               ## catch cases where the morphing failed. Fallback to mA
               ## in this case and scale according to cross section of mh
               if not hist_mA_value.GetNbinsX() == hist_mh_value.GetNbinsX() :
                      hist_mh_value = hist_mA_value.Clone(hist_name)
                      acc_mh = acceptance_correction(process, self.mh)
-                     print "acceptance correction for mh: ", acc_mh
+                     #print "ACCEPTANCE CORECTION FOR mh: ", acc_mh
                      hist_mh_value.Scale(cross_sections["h"]/self.tanb)
               else :
                      hist_mA_value.Add(hist_mh_value)
@@ -869,24 +869,24 @@ class MakeDatacard :
                             if hist_mH_value.Integral()>0 :
                                    norm_mH_value = cross_sections["H"]/self.tanb*self.scale(hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH)
                                    acc_mH = acceptance_correction(process, self.mH)
-                                   print "acceptance correction for mH: ", acc_mH
+                                   #print "ACCEPTANCE CORRECTION FOR mH: ", acc_mH
                                    hist_mH_value.Scale(norm_mH_value/hist_mH_value.Integral())
                      else :
                             norm_mH_value = cross_sections["H"]/self.tanb*self.scale(hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH)
                             acc_mH = acceptance_correction(process, self.mH)
-                            print "acceptance correction for mH: ", acc_mH
+                            #print "ACCEPTANCE CORRECTION FOR mH: ", acc_mH
                             hist_mH_value = th1fmorph("I","",hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH, norm_mH_value, 0)
               else :
                      hist_mH_value = hist_mA_value.Clone(hist_name)
                      acc_mH = acceptance_correction(process, self.mH)
-                     print "acceptance correction for mH: ", acc_mH
+                     #print "ACCEPTANCE CORRECTION FOR mH: ", acc_mH
                      hist_mH_value.Scale(cross_sections["H"]/self.tanb)
               ## catch cases where the morphing failed. Fallback to mA
               ## in this case and scale according to cross section of mH
               if not hist_mA_value.GetNbinsX() == hist_mH_value.GetNbinsX() :
                      hist_mH_value = hist_mA_value.Clone(hist_name)
                      acc_mH = acceptance_correction(process, self.mH)
-                     print "acceptance correction for mH: ", acc_mH
+                     #print "ACCEPTANCE CORRECTION FOR mH: ", acc_mH
                      hist_mH_value.Scale(cross_sections["H"]/self.tanb)
               else :
                      hist_mA_value.Add(hist_mH_value)
@@ -938,7 +938,7 @@ class MakeDatacard :
                      cross_section = cross_sections["A"]+cross_sections["H"]+cross_sections["h"]
               ## rescale histogram
               acc_mA = acceptance_correction(process, self.mA)
-              print "acceptance correction for mA: ", acc_mA
+              #print "ACCEPTANCE CORRECTION FOR mA: ", acc_mA
               hist_mA_value.Scale(cross_section/self.tanb)
               ## write modified histogram to file
               if self.path(dir)=="" :
@@ -974,15 +974,21 @@ class MakeDatacard :
               new_filename  = self.expand_filename(filename)
               file_mA_value = ROOT.TFile(new_filename, "UPDATE")
               ## check whether the requested histogram does exist or not: in
-              ## the case of shape uncertainties of type shape? this has to
+              ## the case of shape uncertainties of type 'shape?' this has to
               ## be determined from the existence of a shape uncertainty hist
               if not self.exists(file_mA_value, path_name) :
                      return
               hist_mA_value = self.load_hist(file_mA_value, path_name)
               #print "RESCALING OF HIST STARTING: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
               if self.mA<self.hww_cross_point :
+                     ## rescale histogram
+                     acc_mA = acceptance_correction(process, self.mH)
+                     #print "ACCEPTANCE CORRECTION FOR mH: ", acc_mH
                      hist_mA_value.Scale(cross_sections["H"]/(1. if self.sm_like else self.tanb))
               else :
+                     ## rescale histogram
+                     acc_mA = acceptance_correction(process, self.mh)
+                     #print "ACCEPTANCE CORRECTION FOR mh: ", acc_mh                     
                      hist_mA_value.Scale(cross_sections["h"]/(1. if self.sm_like else self.tanb))
               #print "RESCALING OF HIST FINISHED: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
 
