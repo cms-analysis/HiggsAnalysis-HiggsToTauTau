@@ -29,13 +29,13 @@
    Macro to rescale all signal components in a given input file for limit calculations 
    from SM to SM4 exploiting the official tools provided by Matt Snowball. All 
    directories in the given file will be searched for histograms. All histograms that 
-   start with 'Higgs', 'GGH', 'BBH', 'SM', 'VH', 'VBF' will be scaled from SM for SM4. 
-   All other histograms remain unscaled. The macro iterates only through one level of 
-   folders. These folders are expected to contain all histograms. Function arguments 
-   are: 
+   start with 'ggH', 'qqH', 'VH', will be scaled from SM for SM4. All other histograms 
+   remain unscaled. The macro iterates only through one level of folders. These folders 
+   are expected to contain all histograms. Function arguments are: 
    
    armed    : update rescaled hyistograms in file
    filename : input file that is supposed to hold the histograms to be scaled
+   ecms     : center of mass energy to which the cross section should be scaled
    mass     : single mass, for which the rescaling is supposed to be done. When left 
               to be -1 all masses between 110 and 145 are rescaled in one go. 
 */
@@ -95,7 +95,7 @@ signalList(const char* dirName="", const char* pattern="", unsigned int debug=0)
   return histnames;
 }
 
-void rescale2SM4(bool armed, const char* filename, double mass=-1)
+void rescale2SM4(bool armed, const char* filename, double ecms=7., double mass=-1)
 {
   unsigned int debug = 1;
   std::vector<std::string> histnames; histnames.clear();
@@ -160,8 +160,8 @@ void rescale2SM4(bool armed, const char* filename, double mass=-1)
       file->cd();
       float mdx = atof(massName.c_str());
       TH1F* h = (TH1F*)file->Get(hist->c_str());
-      float smxXS = type==1 ? smx.HiggsCS(type, mdx, 7, true) : 0.; float smxBR = smx.HiggsBR(2, mdx, true); 
-      float sm4XS = type==1 ? sm4.HiggsCS(type, mdx, 7, true) : 0.; float sm4BR = sm4.HiggsBR(2, mdx, true);
+      float smxXS = type==1 ? smx.HiggsCS(type, mdx, ecms, true) : 0.; float smxBR = smx.HiggsBR(2, mdx, true); 
+      float sm4XS = type==1 ? sm4.HiggsCS(type, mdx, ecms, true) : 0.; float sm4BR = sm4.HiggsBR(2, mdx, true);
       if( debug>1 ){
 	std::cout << "  --  hist  = " << std::setw(10) << h->GetName() << std::endl
 		  << "  --  type  = " << std::setw(10) << type << std::endl
