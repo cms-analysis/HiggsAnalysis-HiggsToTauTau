@@ -298,8 +298,15 @@ class DBuilder:
                 for unc_name,unc in self.uncertainties.iteritems():
                     if unc.vals.has_key(category):
                         if unc.vals[category].has_key(sample) and unc.type == "gmN":
+                            # It's possible that we would want to use a gmN
+                            # uncertainty to describe the stat uncertainty on a
+                            # signal yield (for example in ZH).  We need to pass
+                            # the mass in this case.
+                            mass_for_gmN_query = 0
+                            if sample in self.signals:
+                                mass_for_gmN_query = self.mass_point
                             #print unc_name,"with %d sideband events" % unc.sideband_events
-                            unc.vals[category][sample]=self.get_rate(category,sample)/unc.sideband_events
+                            unc.vals[category][sample]=self.get_rate(category,sample,mass_for_gmN_query)/unc.sideband_events
         process_str_l += " \n"
         outfile.write(process_str_l)
         outfile.write(DBuilder.DividerStr)
