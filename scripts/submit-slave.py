@@ -68,11 +68,11 @@ import re
 for directory in args :
     if directory.find("common")>-1 :
         print "> skipping directory common"
-        continue 
+        continue
     print "> entering directory %s" % directory
     ## visit subdirectories
     os.chdir("%s/%s" % (os.getcwd(), directory))
-    ## determine list of datacards and list of inputfiles 
+    ## determine list of datacards and list of inputfiles
     ## from what is contained in the current directory
     datacards = []
     inputfiles= []
@@ -118,7 +118,7 @@ for directory in args :
             ## if it does not exist already
             if not os.path.exists("lands") :
                 os.system("cp -s $(which lands) .")
-            if options.method == "Bayesian" : 
+            if options.method == "Bayesian" :
                 ## -----------------------------------------------------------------------------------------
                 ## Option: LandS Bayesian
                 ## -----------------------------------------------------------------------------------------
@@ -131,7 +131,7 @@ for directory in args :
                 if options.random :
                     opts += " --random"
                 if options.server :
-                    opts += " --server"                
+                    opts += " --server"
                 if options.lsf    :
                     opts += " --lsf"
                 if options.condor :
@@ -168,9 +168,9 @@ for directory in args :
                 if options.nosys :
                     opts += " --noSystematics"
                 if options.nofit :
-                    opts += " --noPrefit"                                
+                    opts += " --noPrefit"
                 if options.random :
-                    opts += " --random"                
+                    opts += " --random"
                 if options.server :
                     opts += " --server"
                 if options.lsf    :
@@ -180,7 +180,7 @@ for directory in args :
                 if options.glide:
                     opts += " --glidein"
                 if options.prio:
-                    opts += " --priority"                
+                    opts += " --priority"
                 if options.v != 0 :
                     print "> creating batch job for combine -M CLs"
                 ## create the job
@@ -210,9 +210,9 @@ for directory in args :
                 if options.nosys :
                     opts += " --noSystematics"
                 if options.nofit :
-                    opts += " --noPrefit"                                
+                    opts += " --noPrefit"
                 if options.random :
-                    opts += " --random"                
+                    opts += " --random"
                 if options.server :
                     opts += " --server"
                 if options.lsf    :
@@ -222,7 +222,7 @@ for directory in args :
                 if options.glide:
                     opts += " --glidein"
                 if options.prio:
-                    opts += " --priority"                
+                    opts += " --priority"
                 if options.v != 0 :
                     print "> creating batch job for combine -M CLs"
                 ## create the job
@@ -280,7 +280,7 @@ for directory in args :
                                 line = line.strip().split("\n")[0].strip()
                                 if line.startswith("rate") :
                                     wordarr = line.strip().split()
-                                    for idx in indices : 
+                                    for idx in indices :
                                         #print "datacard: %s \t old rate: %10.3s \t new rate %10.3s" % (datacard, wordarr[idx], float(wordarr[idx])/float(tanb))
                                         os.system("perl -pi -e 's/%s/%s/g' %s" % (wordarr[idx], float(wordarr[idx])/float(tanb), datacard))
                             f.close()
@@ -296,7 +296,7 @@ for directory in args :
                     for rootfile in rootbuffer :
                         if rootfile.endswith('.root') :
                             ## skip those root files that might be remnants from former harvestings or batch
-                            ## job submissions in that directory 
+                            ## job submissions in that directory
                             if rootfile.find("higgsCombine")>-1 or rootfile.find("batch")>-1 :
                                 continue
                             if rootfile.find("tanBeta")>-1 :
@@ -315,9 +315,9 @@ for directory in args :
                 if options.nosys :
                     opts += " --noSystematics"
                 if options.nofit :
-                    opts += " --noPrefit"                                
+                    opts += " --noPrefit"
                 if options.random :
-                    opts += " --random"                
+                    opts += " --random"
                 if options.server :
                     opts += " --server"
                 if options.lsf    :
@@ -327,7 +327,7 @@ for directory in args :
                 if options.glide:
                     opts += " --glidein"
                 if options.prio:
-                    opts += " --priority"                
+                    opts += " --priority"
                 if options.v != 0 :
                     print "> creating batch job for combine -M CLs"
                 ## create the job
@@ -335,7 +335,7 @@ for directory in args :
             if options.method == "Bayesian" :
                 ## -----------------------------------------------------------------------------------------
                 ## Option: combine Bayesian
-                ## -----------------------------------------------------------------------------------------  
+                ## -----------------------------------------------------------------------------------------
                 ## determine masspoint from directory name
                 masspoint = directory[directory.rfind("/")+1:]
                 ## setup the batchjob creation for combine -M MarkovChainMC [Bayesian]
@@ -348,7 +348,7 @@ for directory in args :
                 if options.nosys :
                     opts += " --noSystematics"
                 if options.random :
-                    opts += " --random"                                
+                    opts += " --random"
                 if options.server :
                     opts += " --server"
                 if options.lsf    :
@@ -358,10 +358,10 @@ for directory in args :
                 if options.glide:
                     opts += " --glidein"
                 if options.prio:
-                    opts += " --priority"                
+                    opts += " --priority"
                 if options.v != 0 :
                     print "> creating batch job for combine -M Bayesian"
-                ## create the job            
+                ## create the job
                 os.system("combine-bayes.py --shape %s %s tmp.txt" % (options.shape, opts))
                 ## in case prepare a batch submission for the observed limit
                 if options.observed :
@@ -374,7 +374,7 @@ for directory in args :
                     ## copy necessary input for workspace creation
                     os.system("cp tmp.txt observed")
                     os.system("cp *.root observed")
-                    ## create job in subdirectory           
+                    ## create job in subdirectory
                     os.chdir("%s/observed" % os.getcwd())
                     ## setup batchjob creation for combine -M MarkovChainMC [Bayesian] for data (with some reduced)
                     ## set of options
@@ -395,7 +395,7 @@ for directory in args :
                         opts += " --priority"
                     os.system("combine-bayes.py --shape %s %s --observed tmp.txt" % (options.shape, opts))
                     ## cleanup and return to the head directory to go on
-                    os.system("rm tmp*")            
+                    os.system("rm tmp*")
                     os.chdir("%s/.." % os.getcwd())
             if options.method == "pl-significance" :
                 ## -----------------------------------------------------------------------------------------
@@ -421,18 +421,19 @@ for directory in args :
                 if options.glide:
                     opts += " --glidein"
                 if options.prio:
-                    opts += " --priority"                
+                    opts += " --priority"
                 if options.v != 0 :
                     print "> creating batch job for combine -M ProfileLikelihood"
                 ## create the job
                 os.system("combine-sig.py %s batch.root" % opts)
             ## cleanup
-            os.system("rm tmp*")            
+            os.system("rm tmp*")
     ## do the batch job submission
     if not options.interactive :
         os.system("crab -create -cfg %s.cfg" % options.out)
         os.system("sleep 5")
         os.system("crab -submit")
+        print "Snoozing for 45 seconds ..."
         os.system("sleep 45")
         os.system("crab -status")
         os.system("sleep 10")
@@ -447,6 +448,7 @@ for directory in args :
             ## need for crab server
             os.system("sleep 10")
             os.chdir("%s/.." % os.getcwd())
+        print "Snoozing for three minutes..."
         os.system("sleep 180")
     ## step back to main working directory
     os.chdir("%s/../.." % os.getcwd())

@@ -22,7 +22,7 @@ import re
 import os
 
 ## create a subvector of a vector of strings that contains
-## an integer and a '/' as substring 
+## an integer and a '/' as substring
 def subvec(vec, min, max):
     subvec = []
     for directory in vec :
@@ -69,9 +69,9 @@ if options.setup == "hww-mssm" :
                 os.system("submit-slave.py --bin combine --method tanb -n 10 --min 10.0  --max 65.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 250, 299))))
             if len(subvec(args, 300, 550))>0 :
                 os.system("submit-slave.py --bin combine --method tanb -n 11 --min  2.0  --max 22.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 300, 550))))
-                os.system("submit-slave.py --bin combine --method tanb -n  6 --min 26.0  --max 66.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 300, 550))))                
+                os.system("submit-slave.py --bin combine --method tanb -n  6 --min 26.0  --max 66.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 300, 550))))
         cycle = cycle-1
-        
+
 if options.setup == "htt-mssm" :
     cycle = options.cycles
     while cycle>0 :
@@ -140,24 +140,24 @@ if options.setup == "htt-mssm" :
             if len(subvec(args, 350, 500))>0 :
                 os.system("submit-slave.py --bin combine --method CLs -n 11 --min  0.005  --max  0.105 --toysH 100 -t 200 -j 100 --random --server --priority %s %s" % (options.opt, vec2str(subvec(args, 120, 500))))
                 os.system("submit-slave.py --bin combine --method CLs -n 11 --min  0.130  --max  0.380 --toysH 100 -t 200 -j 100 --random --server --priority %s %s" % (options.opt, vec2str(subvec(args, 120, 500))))
-                os.system("submit-slave.py --bin combine --method CLs -n 11 --min  0.500  --max  1.700 --toysH 100 -t 200 -j 100 --random --server --priority %s %s" % (options.opt, vec2str(subvec(args, 120, 500))))                                
+                os.system("submit-slave.py --bin combine --method CLs -n 11 --min  0.500  --max  1.700 --toysH 100 -t 200 -j 100 --random --server --priority %s %s" % (options.opt, vec2str(subvec(args, 120, 500))))
         if options.method == "Bayesian" :
             if len(subvec(args,  90, 500))>0 :
                 os.system("submit-slave.py --bin combine --method Bayesian -t 1000 -j 100 --server --random --priority %s %s" % (options.opt, vec2str(subvec(args, 90, 500))))
         cycle = cycle-1
-        
+
 if options.setup == "htt-sm" :
     cycle = options.cycles
     while cycle>0 :
         print "***********************************************************"
         print " %s cycle(s) to finish" % cycle
-        print "***********************************************************"    
+        print "***********************************************************"
         if options.method == "CLs" :
             ## three submits depending on the mass
             if len(subvec(args, 90, 150))>0 :
-                os.system("submit-slave.py --bin combine --method CLs -n 11 --min   0.5  --max   5.5 --toysH 100 -t 200 -j 100 --random --server --priority %s %s" % (options.opt, vec2str(subvec(args,  90, 150))))
-                os.system("submit-slave.py --bin combine --method CLs -n 11 --min   8.5  --max  38.5 --toysH 100 -t 200 -j 100 --random --server --priority %s %s" % (options.opt, vec2str(subvec(args,  90, 150))))
-                os.system("submit-slave.py --bin combine --method CLs -n 11 --min  68.5  --max 368.5 --toysH 100 -t 200 -j 100 --random --server --priority %s %s" % (options.opt, vec2str(subvec(args,  90, 150))))
+                os.system("submit-slave.py --bin combine --method CLs -n 11 --min   0.5  --max   5.5 --toysH 100 -t 200 -j 100 --random --server %s %s" % (options.opt, vec2str(subvec(args,  90, 150))))
+                os.system("submit-slave.py --bin combine --method CLs -n 11 --min   8.5  --max  38.5 --toysH 100 -t 200 -j 100 --random --server %s %s" % (options.opt, vec2str(subvec(args,  90, 150))))
+                os.system("submit-slave.py --bin combine --method CLs -n 11 --min  68.5  --max 368.5 --toysH 100 -t 200 -j 100 --random --server %s %s" % (options.opt, vec2str(subvec(args,  90, 150))))
         if options.method == "Bayesian" :
             if len(subvec(args, 90, 150))>0 :
                 os.system("submit-slave.py --bin combine --method Bayesian -t 1000 -j 100 --server --random --priority %s %s" % (options.opt, vec2str(subvec(args, 90, 150))))
@@ -168,15 +168,15 @@ if options.setup == "cmb" :
     while cycle>0 :
         print "***********************************************************"
         print " %s cycle(s) to finish" % cycle
-        print "***********************************************************"            
+        print "***********************************************************"
         for directory in args :
             if directory.find("common")>-1 :
                 print "> skipping directory common"
-                continue 
+                continue
             mass = int(directory[directory.rfind("/")+1:])
             ## search for limit boundaries corresponding to mass point and submit
             found = False
-            CMSSW_BASE = os.environ["CMSSW_BASE"]                
+            CMSSW_BASE = os.environ["CMSSW_BASE"]
             f = open("%s/src/datacards/bounds/%s.bnd" % (CMSSW_BASE, options.bound))
             for line in f:
                 line = line.strip().split("\n")[0].strip()
