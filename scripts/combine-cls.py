@@ -110,7 +110,7 @@ script.write("\n");
 # Make sure at least one file was written before reporing that the job succeeded
 script.write("""
 outputs=$(ls higgsCombine*.root 2> /dev/null | wc -l)
-if [ "$outputs" != "0" ]
+if [ "$outputs" == "0" ]
 then
    echo "No combine output root files detected - nothing to hadd!"
    exit 3
