@@ -43,7 +43,7 @@ from math import *
 import os
 
 ## No fork in batch jobs for now
-options.fork = 1 
+options.fork = 1
 
 ## convert set of inputcards and corresponding input files for a RooFit workspace
 workspace = args[0]
@@ -107,6 +107,16 @@ for i,x in enumerate(points):
               ))
 
 script.write("\n");
+# Make sure at least one file was written before reporing that the job succeeded
+script.write("""
+outputs=$(ls higgsCombine*.root 2> /dev/null | wc -l)
+if [ "$outputs" != "0" ]
+then
+   echo "No combine output root files detected - nothing to hadd!"
+   exit 3
+fi
+""")
+
 script.write("hadd %s_grid.root higgsCombine*.root\n" % options.out)
 script.write('echo "## Done at $(date)"\n');
 script.close()
