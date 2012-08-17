@@ -148,6 +148,10 @@ void rescaleSignal(bool armed, double scale, const char* filename, const char* p
       std::cout << "...old scale : " << hout->Integral() << std::endl; 
     }
     hout->Scale(scale);
+    if(match(pattern, "data")){
+      //make sure to have an integer integral when rescaling data yields
+      hout->Scale(int(hout->Integral())/hout->Integral());
+    }
     if(debug>1){ 
       std::cout << "...new scale : " << hout->Integral() << std::endl; 
     }
