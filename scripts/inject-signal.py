@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from optparse import OptionParser, OptionGroup
-
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGS",
                       description="Script to inject signal with fixed mH into a BG only hypothesis from simulation. The mass of the signal to be injected can be passed on by option --mass-injected (-m). The data_obs histograms of each event category found in the input root file is rescaled and the datacard is ajusted accordingly. The injected signal can be chosen to correspond to the expectation from BG and signal. In addition it can be randomized. The signal can be scaled before injection.")
@@ -41,7 +40,7 @@ def output_to_list(basket) :
     line=""
     for elem in basket :
         line+=elem
-    return line.split('\n') 
+    return line.split('\n')
 
 def search_list(list, value) :
     for idx in range(len(list)) :
@@ -104,10 +103,10 @@ signals = {
 ## run periods
 periods = options.periods.split()
 for idx in range(len(periods)) : periods[idx] = periods[idx].rstrip(',')
-## channels 
+## channels
 channels = options.channels.split()
 for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
-## categories 
+## categories
 categories = options.categories.split()
 for idx in range(len(categories)) : categories[idx] = categories[idx].rstrip(',')
 ## mapping out the yields
@@ -133,13 +132,13 @@ for chn in channels :
                 SCALE=options.signal_strength,
                 )).read()
             yields_map[(chn,per)] = yields
-            
+
 ## put output, which is in bits and pieces into a list of relevant lines
 ## that is used for further processing
 for mass in parseArgs(args) :
     for chn in channels :
         for per in periods :
-            for cat in categories: 
+            for cat in categories:
                 datacard = options.input+"/"+str(mass)+"/htt_"+chn+"_"+cat+"_"+per+".txt"
                 if os.path.exists(datacard) :
                     if options.verbose :
@@ -155,4 +154,4 @@ for mass in parseArgs(args) :
                     new_yield = search_list(yields_map[(chn,per)].split(), directory)[1]
                     #print search_list(yields_map[(chn,per)].split(), directory)
                     adjust_datacard(datacard, new_yield)
-        
+
