@@ -7,3 +7,9 @@
 # so we don't need to recompile to pick up changes.
 
 export PATH=$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts:$PATH
+
+# Compile necessary macros
+pushd $CMSSW_BASE/src
+root -b -q HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C+  
+root -b -q HiggsAnalysis/HiggsToTauTau/macros/blindData.C+  
+popd
