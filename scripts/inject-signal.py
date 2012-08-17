@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
 from optparse import OptionParser, OptionGroup
+import subprocess
+import shlex
+
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGS",
                       description="Script to inject signal with fixed mH into a BG only hypothesis from simulation. The mass of the signal to be injected can be passed on by option --mass-injected (-m). The data_obs histograms of each event category found in the input root file is rescaled and the datacard is ajusted accordingly. The injected signal can be chosen to correspond to the expectation from BG and signal. In addition it can be randomized. The signal can be scaled before injection.")
@@ -9,19 +12,21 @@ parser.add_option("-m", "--mass-injected", dest="mass_injected", default="125", 
 parser.add_option("-s", "--signal-strength", dest="signal_strength", default="1", type="string", help="Signal strength to inject into the BG only expecation (in multiples of SM cross section). [Default: \"1\"]")
 parser.add_option("-r", "--random", dest="rnd", default="-1", type="int", help="Randomize data yield, enter random seed, -1 will switch randomization off. [Default: \"-1\"]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
-parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string", help="List of channels, for whch the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt. [Default: \"mm em mt et\"]")
+parser.add_option("-c", "--channels", dest="channels", default="tt mm em mt et", type="string", help="List of channels, for whch the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt. [Default: \"mm em mt et\"]")
 parser.add_option("--categories", dest="categories", default="0 1 2 3 5", type="string", help="List of all principally available event categories. The script will internally pick all event categories, which are present in the corresponding mass directory, but this string indicated what event categories will be checked for.. [Default: \"0 1 2 3 5\"]")
 sub1 = OptionGroup(parser, "BACKGROUNDS", "Backgrounds to be considered to replace data_obs.")
 sub1.add_option("--backgrounds-mm", dest="backgrounds_mm", default="ZTT,ZMM,QCD,TTJ,WJets,Dibosons", type="string", help="List of backgrounds for mm channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"ZTT,ZMM,QCD,TTJ,WJets,Dibosons\"]")
 sub1.add_option("--backgrounds-em", dest="backgrounds_em", default="Fakes,EWK,ttbar,Ztt", type="string", help="List of backgrounds for em channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"Fakes,EWK,ttbar,Ztt\"]")
 sub1.add_option("--backgrounds-et", dest="backgrounds_et", default="ZTT,QCD,W,ZJ,ZL,ZLL,TT,VV", type="string", help="List of backgrounds for et channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"ZTT,QCD,W,ZJ,ZL,ZLL,TT,VV\"]")
 sub1.add_option("--backgrounds-mt", dest="backgrounds_mt", default="ZTT,QCD,W,ZJ,ZL,ZLL,TT,VV", type="string", help="List of backgrounds for mt channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"ZTT,QCD,W,ZJ,ZL,ZLL,TT,VV\"]")
+sub1.add_option("--backgrounds-tt", dest="backgrounds_tt", default="ZTT,QCD,W,ZJ,ZL,TT,VV", type="string", help="List of backgrounds for tt channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"ZTT,QCD,W,ZJ,ZL,ZLL,TT,VV\"]")
 parser.add_option_group(sub1)
 sub1 = OptionGroup(parser, "SIGNALS", "Signals to be considered to replace data_obs.")
 sub1.add_option("--signals-mm", dest="signals_mm", default="ggH{MASS},qqH{MASS},VH{MASS}", type="string", help="List of signal for em channel. NOTE: should be comma separated, NO spaces allowed. The keyword {MASS} will be replaced by the mass to be injected (--mass-injected). It has to be present in the signal sample string. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
 sub1.add_option("--signals-em", dest="signals_em", default="ggH{MASS},qqH{MASS},VH{MASS}", type="string", help="List of signal for em channel. NOTE: should be comma separated, NO spaces allowed. The keyword {MASS} will be replaced by the mass to be injected (--mass-injected). It has to be present in the signal sample string. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
 sub1.add_option("--signals-et", dest="signals_et", default="ggH{MASS},qqH{MASS},VH{MASS}", type="string", help="List of signal for em channel. NOTE: should be comma separated, NO spaces allowed. The keyword {MASS} will be replaced by the mass to be injected (--mass-injected). It has to be present in the signal sample string. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
 sub1.add_option("--signals-mt", dest="signals_mt", default="ggH{MASS},qqH{MASS},VH{MASS}", type="string", help="List of signal for em channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
+sub1.add_option("--signals-tt", dest="signals_tt", default="ggH{MASS},qqH{MASS},VH{MASS}", type="string", help="List of signal for em channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
 parser.add_option_group(sub1)
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode. [Default: False]")
 ## check number of arguments; in case print usage
@@ -85,13 +90,17 @@ directories = {
     ("mt", "2") : "muTau_boost_low",
     ("mt", "3") : "muTau_boost_high",
     ("mt", "5") : "muTau_vbf",
+    ("tt", "0") : "tauTau_boost",
+    ("tt", "1") : "tauTau_vbf",
     }
+
 ## mapping out backgrounds
 backgrounds = {
     "mm" : options.backgrounds_mm,
     "em" : options.backgrounds_em,
     "et" : options.backgrounds_et,
     "mt" : options.backgrounds_mt,
+    "tt" : options.backgrounds_tt,
     }
 ## mapping out signals
 signals = {
@@ -99,6 +108,7 @@ signals = {
     "em" : options.signals_em,
     "et" : options.signals_et,
     "mt" : options.signals_mt,
+    "tt" : options.signals_tt,
     }
 ## run periods
 periods = options.periods.split()
@@ -122,16 +132,21 @@ for chn in channels :
         if os.path.exists(histfile) :
             if options.verbose :
                 print "randomizing all data_obs in histogram input file:", histfile
-            yields = os.popen(
-                "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/blindData.C+\\(\\\"{FILE}\\\",\\\"{BACKGROUNDS}\\\",\\\"{SIGNALS}\\\",true,{RND},{SCALE},0\) | grep data_obs".format(
+            yields = subprocess.Popen(
+                shlex.split("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/blindData.C+\\(\\\"{FILE}\\\",\\\"{BACKGROUNDS}\\\",\\\"{SIGNALS}\\\",true,{RND},{SCALE},0\)".format(
                 CMSSW_BASE=os.environ["CMSSW_BASE"],
                 FILE=histfile,
                 BACKGROUNDS=backgrounds[chn],
                 SIGNALS=signals[chn],
                 RND=options.rnd,
                 SCALE=options.signal_strength,
-                )).read()
-            yields_map[(chn,per)] = yields
+                )), stdout=subprocess.PIPE)
+
+            (stdout, _) = yields.communicate()
+            for line in stdout.split('\n'):
+                if 'data_obs' in line:
+                    yields_map[(chn,per)] = line.strip()
+            print "%s ...done" % yields_map[(chn,per)]
 
 ## put output, which is in bits and pieces into a list of relevant lines
 ## that is used for further processing

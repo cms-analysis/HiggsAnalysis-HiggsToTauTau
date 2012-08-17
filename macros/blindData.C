@@ -48,7 +48,7 @@ void randomize(TH1F* hist, unsigned int seed, unsigned int debug=0.)
   TRandom3* rnd = new TRandom3(seed); rnd->SetSeed();
   for(int idx=0; idx<hist->GetNbinsX(); ++idx){
     if(debug>0){
-      std::cout << "[" << idx+1 << "] : " << "mean=" << hist->GetBinContent(idx+1) << "  rnd=" << rnd->Poisson(hist->GetBinContent(idx+1)) << std::endl;  
+      std::cerr << "[" << idx+1 << "] : " << "mean=" << hist->GetBinContent(idx+1) << "  rnd=" << rnd->Poisson(hist->GetBinContent(idx+1)) << std::endl;  
     }
     hist->SetBinContent(idx+1, rnd->Poisson(hist->GetBinContent(idx+1)));
     hist->SetBinError(idx+1, TMath::Sqrt(rnd->Poisson(hist->GetBinContent(idx+1))));
@@ -84,14 +84,14 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
   while((idir = (TKey*)nextDirectory())){
     if( idir->IsFolder() ){
       file->cd(); // make sure to start in directory head 
-      if( debug>0 ){ std::cout << "Found directory: " << idir->GetName() << std::endl; }
+      if( debug>0 ){ std::cerr << "Found directory: " << idir->GetName() << std::endl; }
       if( file->GetDirectory(idir->GetName()) ){
 	file->cd(idir->GetName()); // change to sub-directory
 	buffer = (TH1F*)file->Get((std::string(idir->GetName())+"/data_obs").c_str()); blind_data_obs = (TH1F*)buffer->Clone("data_obs");
-	//if( debug>0 ){ std::cout << "Old scale of blinded data_obs: " << blind_data_obs->Integral() << std::endl; }
+	//if( debug>0 ){ std::cerr << "Old scale of blinded data_obs: " << blind_data_obs->Integral() << std::endl; }
 	blind_data_obs->Reset();
 	for(std::vector<std::string>::const_iterator sample = samples.begin(); sample!=samples.end(); ++sample){
-	  if( debug>0 ){ std::cout << "Looking for histogram: " << (std::string(idir->GetName())+"/"+(*sample)) << std::endl; }
+	  if( debug>0 ){ std::cerr << "Looking for histogram: " << (std::string(idir->GetName())+"/"+(*sample)) << std::endl; }
 	  // add special treatment for et/mt ZLL,ZJ,ZL here
 	  if(std::string(idir->GetName()).find("vbf") != std::string::npos && (*sample == std::string("ZL") || *sample == std::string("ZJ"))){
 	    continue;
@@ -100,28 +100,33 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
 	    continue;
 	  }
 	  buffer = (TH1F*)file->Get((std::string(idir->GetName())+"/"+(*sample)).c_str()); 
+          if (!buffer) {
+            std::cerr << "ERROR: Could not get histogram from: " << std::string(idir->GetName())+"/"+(*sample) << std::endl;
+          }
 	  if(inPatterns(*sample, signal_patterns)) {
 	    if( debug>1 ){
-	      std::cout << " scale signal sample " << *sample << " by scale " << signal_scale << std::endl;
+	      std::cerr << " scale signal sample " << *sample << " by scale " << signal_scale << std::endl;
 	    }
 	    buffer->Scale(signal_scale);
 	  }
 	  blind_data_obs->Add(buffer);
-	  std::cout << "adding: " << buffer->GetName() << " -- " << buffer->Integral() << " --> " << blind_data_obs->Integral() << std::endl;
+          if (debug > 1)
+            std::cerr << "adding: " << buffer->GetName() << " -- " << buffer->Integral() << " --> " << blind_data_obs->Integral() << std::endl;
 	}
 	if(rnd>=0){
 	  // randomize histogram; this will automatically have integer integral
-	  std::cout << "randomizing" << std::endl;
+	  std::cerr << "randomizing" << std::endl;
 	  randomize(blind_data_obs, rnd, debug);
 	}
 	else{
 	  // use expected mean with signal injected
 	  blind_data_obs->Scale((int)blind_data_obs->Integral()/blind_data_obs->Integral());
-	  if( debug>1 ){ std::cout << "New scale of blinded data_obs: " << blind_data_obs->Integral() << std::endl; }
+	  if( debug>1 ){ std::cerr << "New scale of blinded data_obs: " << blind_data_obs->Integral() << std::endl; }
 	}
 	std::cout << "data_obs yield: " << idir->GetName() << "   " << blind_data_obs->Integral() << std::endl;
 	if(armed){
-	  std::cout << "Writing to file: " << blind_data_obs->GetName() << std::endl;
+          if (debug > 1)
+            std::cerr << "Writing to file: " << blind_data_obs->GetName() << std::endl;
 	  blind_data_obs->Write("data_obs", TObject::kOverwrite); 
 	}
       }
