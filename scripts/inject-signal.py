@@ -19,7 +19,9 @@ sub1.add_option("--backgrounds-mm", dest="backgrounds_mm", default="ZTT,ZMM,QCD,
 sub1.add_option("--backgrounds-em", dest="backgrounds_em", default="Fakes,EWK,ttbar,Ztt", type="string", help="List of backgrounds for em channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"Fakes,EWK,ttbar,Ztt\"]")
 sub1.add_option("--backgrounds-et", dest="backgrounds_et", default="ZTT,QCD,W,ZJ,ZL,ZLL,TT,VV", type="string", help="List of backgrounds for et channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"ZTT,QCD,W,ZJ,ZL,ZLL,TT,VV\"]")
 sub1.add_option("--backgrounds-mt", dest="backgrounds_mt", default="ZTT,QCD,W,ZJ,ZL,ZLL,TT,VV", type="string", help="List of backgrounds for mt channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"ZTT,QCD,W,ZJ,ZL,ZLL,TT,VV\"]")
-sub1.add_option("--backgrounds-tt", dest="backgrounds_tt", default="ZTT,QCD,W,ZJ,ZL,TT,VV", type="string", help="List of backgrounds for tt channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"ZTT,QCD,W,ZJ,ZL,ZLL,TT,VV\"]")
+sub1.add_option("--backgrounds-tt", dest="backgrounds_tt", default="ZTT,QCD,W,ZJ,ZL,TT,VV", type="string", help="List of backgrounds for tt channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"ZTT,QCD,W,ZJ,ZL,TT,VV\"]")
+sub1.add_option("--backgrounds-wh", dest="backgrounds_wh", default="wz,zz,fakes", type="string", help="List of backgrounds for the WH channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"wz,zz,fakes\"]")
+sub1.add_option("--backgrounds-zh", dest="backgrounds_zh", default="ZZ,Zjets", type="string", help="List of backgrounds for the WH channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"ZZ,Zjets\"]")
 parser.add_option_group(sub1)
 sub1 = OptionGroup(parser, "SIGNALS", "Signals to be considered to replace data_obs.")
 sub1.add_option("--signals-mm", dest="signals_mm", default="ggH{MASS},qqH{MASS},VH{MASS}", type="string", help="List of signal for em channel. NOTE: should be comma separated, NO spaces allowed. The keyword {MASS} will be replaced by the mass to be injected (--mass-injected). It has to be present in the signal sample string. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
@@ -27,6 +29,7 @@ sub1.add_option("--signals-em", dest="signals_em", default="ggH{MASS},qqH{MASS},
 sub1.add_option("--signals-et", dest="signals_et", default="ggH{MASS},qqH{MASS},VH{MASS}", type="string", help="List of signal for em channel. NOTE: should be comma separated, NO spaces allowed. The keyword {MASS} will be replaced by the mass to be injected (--mass-injected). It has to be present in the signal sample string. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
 sub1.add_option("--signals-mt", dest="signals_mt", default="ggH{MASS},qqH{MASS},VH{MASS}", type="string", help="List of signal for em channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
 sub1.add_option("--signals-tt", dest="signals_tt", default="ggH{MASS},qqH{MASS},VH{MASS}", type="string", help="List of signal for em channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
+sub1.add_option("--signals-vhtt", dest="signals_vhtt", default="VH{MASS},VH_hww{MASS}", type="string", help="List of signal for the VH (WH & ZH) channels. NOTE: should be comma separated, NO spaces allowed. [Default: \"VH{MASS},VH_hww{MASS}\"]")
 parser.add_option_group(sub1)
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode. [Default: False]")
 ## check number of arguments; in case print usage
@@ -54,7 +57,8 @@ def search_list(list, value) :
             return (list[idx], list[idx+1])
     return ("NONE", -999.)
 
-def adjust_datacard(datacard, value) :
+def adjust_datacard(datacard, new_values) :
+    print "doot", datacard, new_values
     old = open(datacard, 'r')
     new = open("tmp.txt", 'w')
     for line in old :
@@ -62,11 +66,25 @@ def adjust_datacard(datacard, value) :
         if len(words) < 1: continue
         ## determine a list of unique decay channels
         if words[0] == "observation" :
-            line = line.replace(words[1], str(value))
-        new.write(line)
+            line = " ".join(['observation'] + new_values)
+        new.write(line + '\n')
     old.close()
     new.close()
     os.system("mv tmp.txt %s" % datacard)
+
+def get_bins(datacard):
+    ''' Extract the name of the bins from a data card. Returns a list.
+
+    Example of a bin: mumu_0jet_low
+
+    The order is preserved.
+    '''
+    dc = open(datacard, 'r')
+    for line in dc:
+        words = line.split()
+        if words and words[0].lower() == 'bin':
+            return words[1:]
+    return []
 
 ## mapping out the channel and event category to directories in the root files
 directories = {
@@ -92,6 +110,10 @@ directories = {
     ("mt", "5") : "muTau_vbf",
     ("tt", "0") : "tauTau_boost",
     ("tt", "1") : "tauTau_vbf",
+    ("wh", "0") : ["emt", "mmt"], # WH is always category 0, and is 2 channels
+    # ZH is always category 1, and is 8 channels
+    ("zh", "1") : ["mmmt_zh", "mmet_zh", "mmme_zh", "mmtt_zh", "eemt_zh",
+                   "eeet_zh", "eeem_zh", "eett_zh"],
     }
 
 ## mapping out backgrounds
@@ -101,6 +123,8 @@ backgrounds = {
     "et" : options.backgrounds_et,
     "mt" : options.backgrounds_mt,
     "tt" : options.backgrounds_tt,
+    "wh" : options.backgrounds_wh,
+    "zh" : options.backgrounds_zh,
     }
 ## mapping out signals
 signals = {
@@ -109,6 +133,8 @@ signals = {
     "et" : options.signals_et,
     "mt" : options.signals_mt,
     "tt" : options.signals_tt,
+    "wh" : options.signals_vhtt,
+    "zh" : options.signals_vhtt,
     }
 ## run periods
 periods = options.periods.split()
@@ -122,31 +148,67 @@ for idx in range(len(categories)) : categories[idx] = categories[idx].rstrip(','
 ## mapping out the yields
 yields_map = {}
 
+def get_shape_file(channel, period):
+    ''' Map a channel + run period to a shape .root file '''
+    if channel not in ['wh', 'zh']:
+        return options.input+"/common/htt_"+channel+".input_"+period+".root"
+    else:
+        return options.input+"/common/vhtt.input_"+period+".root"
+
 ## randomize observation for all potential hist input files
 for chn in channels :
     for per in periods :
         re.sub(r'\s', '', signals[chn])
         signals[chn] = signals[chn].format(MASS=options.mass_injected)
         re.sub(r'\s', '', backgrounds[chn])
-        histfile = options.input+"/common/htt_"+chn+".input_"+per+".root"
+        histfile = get_shape_file(chn, per)
         if os.path.exists(histfile) :
             if options.verbose :
                 print "randomizing all data_obs in histogram input file:", histfile
+            # Which channel directories in the .root file to randomize.
+            # For the normal H2Tau case, this doesn't matter - since every
+            # channel (directory) has the same backgrounds in it.
+            # For WH/ZH, both are in the same file, and the names of the bkgs.
+            # depend on which category (i.e. WH or ZH) it is.
+            directories_to_randomize = '*'
+            if chn == 'zh':
+                directories_to_randomize = '*_zh'
+            elif chn == 'wh':
+                directories_to_randomize = 'emt,mmt'
+            command = "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/blindData.C+\\(\\\"{FILE}\\\",\\\"{BACKGROUNDS}\\\",\\\"{SIGNALS}\\\",\\\"{DIRS}\\\",true,{RND},{SCALE},1\)"
             yields = subprocess.Popen(
-                shlex.split("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/blindData.C+\\(\\\"{FILE}\\\",\\\"{BACKGROUNDS}\\\",\\\"{SIGNALS}\\\",true,{RND},{SCALE},0\)".format(
-                CMSSW_BASE=os.environ["CMSSW_BASE"],
-                FILE=histfile,
-                BACKGROUNDS=backgrounds[chn],
-                SIGNALS=signals[chn],
-                RND=options.rnd,
-                SCALE=options.signal_strength,
+                shlex.split(command.format(
+                    CMSSW_BASE=os.environ["CMSSW_BASE"],
+                    FILE=histfile,
+                    BACKGROUNDS=backgrounds[chn],
+                    SIGNALS=signals[chn],
+                    DIRS=directories_to_randomize,
+                    RND=options.rnd,
+                    SCALE=options.signal_strength,
                 )), stdout=subprocess.PIPE)
 
             (stdout, _) = yields.communicate()
+            data_obs_lines = []
             for line in stdout.split('\n'):
                 if 'data_obs' in line:
-                    yields_map[(chn,per)] = line.strip()
-            print "%s ...done" % yields_map[(chn,per)]
+                    data_obs_lines.append(line)
+            yields_map[(chn,per)] = " ".join(data_obs_lines)
+            #print "%s ...done" % yields_map[(chn,per)]
+            print "...done"
+
+def get_card_file(channel, category, period, mass):
+    ''' Map a channel, category, period, and mass to a datacard .txt file'''
+    if channel not in ['wh', 'zh']:
+        return os.path.join(options.input, str(mass),
+                            "htt_"+channel+"_"+category+"_"+period+".txt")
+    else:
+        # For WH and ZH, they are differentiated by category number
+        if channel == 'wh' and int(category) != 0:
+            return "wh is always category 0" # this will fail os.path.exists
+        elif channel == 'zh' and int(category) != 1:
+            return "zh is always category 1" # this will fail os.path.exists
+        return os.path.join(options.input, str(mass),
+                            "vhtt_"+category+"_"+period+".txt")
 
 ## put output, which is in bits and pieces into a list of relevant lines
 ## that is used for further processing
@@ -154,19 +216,20 @@ for mass in parseArgs(args) :
     for chn in channels :
         for per in periods :
             for cat in categories:
-                datacard = options.input+"/"+str(mass)+"/htt_"+chn+"_"+cat+"_"+per+".txt"
+                datacard = get_card_file(chn, cat, per, mass)
                 if os.path.exists(datacard) :
                     if options.verbose :
                         print "adapting observation yield in datacard:", datacard
-                    ## PATCH until Josh fixes his input fies to contain the proper
-                    ## directory names in et
-                    directory = directories[(chn,cat)]
-                    if per == "8TeV" and chn == "et" :
-                        #print "changing directory name"
-                        directory = directory.replace("eTau", "eleTau")
-                    #print directory, chn, per
-                    #print yields_map[(chn,per)]
-                    new_yield = search_list(yields_map[(chn,per)].split(), directory)[1]
-                    #print search_list(yields_map[(chn,per)].split(), directory)
-                    adjust_datacard(datacard, new_yield)
+                    # Get name of bins
+                    directories = get_bins(datacard)
+                    print datacard, directories
+
+                    new_values = []
+                    for dir in directories:
+                        #print directory, chn, per
+                        #print yields_map[(chn,per)]
+                        new_yield = search_list(yields_map[(chn,per)].split(), dir)[1]
+                        new_values.append(new_yield)
+                        #print search_list(yields_map[(chn,per)].split(), directory)
+                    adjust_datacard(datacard, new_values)
 

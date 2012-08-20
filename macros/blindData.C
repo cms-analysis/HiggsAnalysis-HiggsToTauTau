@@ -9,6 +9,8 @@
 #include <TROOT.h>
 #include <TMath.h>
 #include <TRandom3.h>
+#include <TRegexp.h>
+#include <TString.h>
 #include <TCollection.h>
 
 #include "HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
@@ -61,12 +63,13 @@ bool inPatterns(const std::string& test, const char* patterns)
   std::vector<std::string> samples;
   string2Vector(cleanupWhitespaces(patterns), samples);
   for(std::vector<std::string>::const_iterator sample = samples.begin(); sample!=samples.end(); ++sample){
-    if(test == *sample) return true;
+    TRegexp matcher(sample->c_str(), true);  // true = make it "glob-style" i.e. "*" instead of ".*"
+    if(TString(test).Index(matcher) > -1) return true;
   }
   return false;
 }
 
-void blindData(const char* filename, const char* background_patterns="Fakes, EWK, ttbar, Ztt", const char* signal_patterns="ggH125, qqH125, VH125", bool armed=false, int rnd=-1, float signal_scale=1., unsigned int debug=1)
+void blindData(const char* filename, const char* background_patterns="Fakes, EWK, ttbar, Ztt", const char* signal_patterns="ggH125, qqH125, VH125", const char* directory_patterns=".*", bool armed=false, int rnd=-1, float signal_scale=1., unsigned int debug=1)
 {
   /// prepare input parameters
   std::vector<std::string> signals;
@@ -85,9 +88,17 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
     if( idir->IsFolder() ){
       file->cd(); // make sure to start in directory head 
       if( debug>0 ){ std::cerr << "Found directory: " << idir->GetName() << std::endl; }
+      // Check if we want to muck w/ this directory.  For the VHTT case, we have 
+      // different background types in the same root file, so we have to run
+      // blindData twice.
+      if (!inPatterns(std::string(idir->GetName()), directory_patterns)) {
+        if( debug>0 ){ std::cerr << "Skipping directory: " << idir->GetName() << " - matches no pattern in " << directory_patterns << std::endl; }
+        continue;
+      }
       if( file->GetDirectory(idir->GetName()) ){
 	file->cd(idir->GetName()); // change to sub-directory
-	buffer = (TH1F*)file->Get((std::string(idir->GetName())+"/data_obs").c_str()); blind_data_obs = (TH1F*)buffer->Clone("data_obs");
+	buffer = (TH1F*)file->Get((std::string(idir->GetName())+"/data_obs").c_str()); 
+        blind_data_obs = (TH1F*)buffer->Clone("data_obs");
 	//if( debug>0 ){ std::cerr << "Old scale of blinded data_obs: " << blind_data_obs->Integral() << std::endl; }
 	blind_data_obs->Reset();
 	for(std::vector<std::string>::const_iterator sample = samples.begin(); sample!=samples.end(); ++sample){
