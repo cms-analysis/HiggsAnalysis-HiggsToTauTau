@@ -131,7 +131,7 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
 	}
 	else{
 	  // use expected mean with signal injected
-	  blind_data_obs->Scale((int)blind_data_obs->Integral()/blind_data_obs->Integral());
+	  blind_data_obs->Scale(TMath::Nint(blind_data_obs->Integral())/blind_data_obs->Integral());
 	  if( debug>1 ){ std::cerr << "New scale of blinded data_obs: " << blind_data_obs->Integral() << std::endl; }
 	}
 	std::cout << "data_obs yield: " << idir->GetName() << "   " << blind_data_obs->Integral() << std::endl;
