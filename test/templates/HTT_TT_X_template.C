@@ -241,19 +241,26 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   data->SetMaximum(max);
   data->Draw("e");
 
+  TH1F* errorBand = (TH1F*)Ztt ->Clone();
+  errorBand  ->SetMarkerSize(0);
+  errorBand  ->SetFillColor(1);
+  errorBand  ->SetFillStyle(3013);
+
   if(log){
-    Ztt  ->Draw("same");
-    ttbar->Draw("same");
-    EWK  ->Draw("same");
-    Fakes->Draw("same");
-    ggH  ->Draw("same");
+    Ztt  ->Draw("histsame");
+    ttbar->Draw("histsame");
+    EWK  ->Draw("histsame");
+    Fakes->Draw("histsame");
+    ggH  ->Draw("histsame");
+    errorBand->Draw("e2same");
   }
   else{
-    ggH  ->Draw("same");
-    Ztt  ->Draw("same");
-    ttbar->Draw("same");
-    EWK  ->Draw("same");
-    Fakes->Draw("same");
+    ggH  ->Draw("histsame");
+    Ztt  ->Draw("histsame");
+    ttbar->Draw("histsame");
+    EWK  ->Draw("histsame");
+    Fakes->Draw("histsame");
+    errorBand->Draw("e2same");
   }
   data->Draw("esame");
   canv->RedrawAxis();
@@ -261,11 +268,11 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   CMSPrelim(dataset, "#tau_{h}#tau_{h}", 0.17, 0.835);
   
 #ifdef MSSM
-  TLegend* leg = new TLegend(0.50, 0.65, 0.95, 0.90);
+  TLegend* leg = new TLegend(0.50, 0.65, 0.95, 0.88);
   SetLegendStyle(leg);
   leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau"        , "L" );
 #else
-  TLegend* leg = new TLegend(0.57, 0.65, 0.95, 0.90);
+  TLegend* leg = new TLegend(0.50, 0.65, 0.95, 0.88);
   SetLegendStyle(leg);
   leg->AddEntry(ggH  , "(5#times) H#rightarrow#tau#tau  m_{H}=125" , "L" );
 #endif
@@ -274,6 +281,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
   leg->AddEntry(EWK  , "electroweak"                    , "F" );
   leg->AddEntry(Fakes, "QCD"                            , "F" );
+  leg->AddEntry(errorBand, "BG uncertainty"             , "F" );
   leg->Draw();
 
 //#ifdef MSSM

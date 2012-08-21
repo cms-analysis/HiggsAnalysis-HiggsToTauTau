@@ -8,6 +8,7 @@ parser.add_option("-f", "--fitresults", dest="fitresults", default="fitresults/m
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="List of run periods, for which postfit plots shuld be made. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
 parser.add_option("-c", "--channels", dest="channels", default="em, et, mt", type="string", help="Channels for which postfit plots should be made. Individual channels should be separated by comma or whitespace. [Default: 'em, et, mt']")
+parser.add_option("-u", "--uncertainties", dest="uncertainties", default="0", type="int", help="Set uncertainties of backgrounds. [Default: '0']")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 5", type="string", help="List em of event categories. [Default: \"0 1 2 3 5\"]")
@@ -34,16 +35,22 @@ if len(args) > 0 :
 from DatacardUtils import parse_dcard
 # use parse_dcard to get a dictionary mapping sample name strings to fit weights
 
+from ROOT import *
+import math
+
 class Analysis:
     """
     A class designed to insert the proper scale factors into a pre-defined template set of plotting macros
     """
-    def __init__(self, analysis, histfile, category, process_weight, template_fname, output_fname):
+    def __init__(self, analysis, histfile, category, process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties, template_fname, output_fname):
          """
          Takes a dictionary (mapping strings representing samples) of fit weights and inserts these into the template macro
          at template_fname. Output is written to output_fname
          """
          self.process_weight = process_weight
+         self.process_shape_weight = process_shape_weight
+         self.process_uncertainties = process_uncertainties
+         self.process_shape_uncertainties = process_shape_uncertainties
          self.template_fname = template_fname
          self.output_fname   = output_fname
          self.histfile       = histfile 
@@ -67,6 +74,7 @@ class Analysis:
          output_file = open(self.output_fname,'w')
          
          curr_name = ""
+         uncertainties_set=[]
          for line in input_file:
              move_on = False
              template_name = self.template_fname[self.template_fname.find("/")+1:self.template_fname.rfind("_template.C")]
@@ -89,12 +97,57 @@ class Analysis:
                      print word_arr[0]
                      curr_name = process_name
                      print_me  = '''std::cout << "scaling by %f" << std::endl;''' % self.process_weight[curr_name]
-                     out_line  = print_me+"hin->Scale(%f); break; \n" % self.process_weight[curr_name]
+                     out_line  = print_me+"hin->Scale(%f); \n" % self.process_weight[curr_name]
                      move_on   = True
                      output_file.write(out_line)
                      print out_line
+             for process_name in self.process_shape_weight.keys():
+                 cand_str = "$%s" % process_name
+                 output_cand = ""
+                 if line.strip().startswith(cand_str):
+                     curr_name = process_name
+                     for shape_name in self.process_shape_weight[curr_name]:
+		       input = TFile("root/"+self.histfile)
+		       for key in input.GetListOfKeys():
+		           if self.category in key.GetName():
+			       histname=key.GetName()+"/"+word_arr[0].strip("$ ")
+                       hist = input.Get(histname)
+                       hist_down = input.Get(histname+"_"+shape_name+"Down")
+                       hist_up = input.Get(histname+"_"+shape_name+"Up")
+                       for bin in range(1,hist.GetNbinsX()+1):
+		         if options.uncertainties and not process_name+str(bin) in uncertainties_set:
+			   uncertainties_set+=[process_name+str(bin)]
+		           uncertainty = math.sqrt(self.process_uncertainties[curr_name])
+		           out_line  = "hin->SetBinError(%(bin)i,hin->GetBinContent(%(bin)i)*%(uncertainty)f); \n" % {"bin":bin, "uncertainty":uncertainty}
+                           move_on   = True
+                           output_file.write(out_line)
+                           print out_line
+		         if hist.GetBinContent(bin)==0:
+			     continue
+		         shift = self.process_shape_weight[curr_name][shape_name]
+		         if shift>0 and hist_up.GetBinContent(bin)!=hist.GetBinContent(bin):
+		             value = shift*(hist_up.GetBinContent(bin)/hist.GetBinContent(bin)-1)+1
+		         elif shift<0 and hist_down.GetBinContent(bin)!=hist.GetBinContent(bin):
+		             value = shift*(hist.GetBinContent(bin)/hist_down.GetBinContent(bin)-1)+1
+		         else:
+		             continue
+		         print_me  = '''std::cout << "scaling bin %(bin)i by %(value)f" << std::endl;''' % {"bin":bin, "value":value}
+		         out_line  = print_me+"hin->SetBinContent(%(bin)i,hin->GetBinContent(%(bin)i)*%(value)f); \n" % {"bin":bin, "value":value}
+			 if options.uncertainties:
+			   uncertainty=1
+			   if hist_down.GetBinContent(bin):
+			     uncertainty=max(uncertainty,hist.GetBinContent(bin)/hist_down.GetBinContent(bin),hist_down.GetBinContent(bin)/hist.GetBinContent(bin))
+			   if hist_up.GetBinContent(bin):
+			     uncertainty=max(uncertainty,hist.GetBinContent(bin)/hist_up.GetBinContent(bin),hist_up.GetBinContent(bin)/hist.GetBinContent(bin))
+			   uncertainty = self.process_shape_uncertainties[curr_name][shape_name]*min(2,uncertainty-1)
+                           out_line  += "hin->SetBinError(%(bin)i,sqrt(pow(hin->GetBinError(%(bin)i),2)+pow(hin->GetBinContent(%(bin)i)*%(uncertainty)f,2))); \n" % {"bin":bin, "uncertainty":uncertainty}
+                         move_on   = True
+                         output_file.write(out_line)
+                         print out_line
              if not move_on:
                  output_file.write(line)
+	     else:
+                 output_file.write("break; \n")
                  
 
 ## run periods
@@ -152,8 +205,9 @@ for chn in channels :
     for per in periods :
         for cat in categories[chn] :
             histfile = "htt_{CHN}.input_{PER}.root".format(CHN=chn, PER=per) if options.analysis == "sm" else "htt_{CHN}.inputs-mssm-{PER}-0.root".format(CHN=chn, PER=per)
+	    process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties = parse_dcard("datacards/htt_{CHN}_{CAT}_{PER}.txt".format(CHN=chn, CAT=cat, PER=per), fitresults, "ANYBIN")
             plots = Analysis(options.analysis, histfile, category_mapping[chn][cat],
-                             parse_dcard("datacards/htt_{CHN}_{CAT}_{PER}.txt".format(CHN=chn, CAT=cat, PER=per), fitresults, "ANYBIN"),
+                             process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
                              "templates/HTT_{CHN}_X_template.C".format(CHN=chn.upper()),
                              "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per)
                              )

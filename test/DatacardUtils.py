@@ -11,6 +11,14 @@ def get_svar(factor,fname):
             return svar
             #return float(res.group(0))
             
+def get_sigma(factor,fname):
+    '''Obtains the sigma of fit parameter (factor) from the fit result file ffile'''
+    ffile = open(fname,'r')
+    for line in ffile.readlines():
+        if line.strip().lower().startswith(factor.lower()):
+	    sigma = float(line.split("(")[1].split(")")[0].split(" ")[1])
+            return sigma
+            
 def parse_dcard(datacard,fitres,bin_name="ANYBIN"):
     '''Parses a datacard and returns a dictionary with sample names as keys and fit weights as the values.'''
 
@@ -34,6 +42,9 @@ def parse_dcard(datacard,fitres,bin_name="ANYBIN"):
     rel_indices = []
     processes = []
     process_weights = {}
+    process_uncertainties = {}
+    process_shape_weights = {}
+    process_shape_uncertainties = {}
     factor_weights = {}
     rates = []
     nsplits = 0
@@ -71,6 +82,9 @@ def parse_dcard(datacard,fitres,bin_name="ANYBIN"):
                    processes = tprocesses
                    for process in processes:
                        process_weights[process]=1
+                       process_uncertainties[process]=0
+                       process_shape_weights[process]={}
+                       process_shape_uncertainties[process]={}
                # we don't gain any valuable information from the second line beginning with "process", which numbers the bins
                
            # need to figure out what this is useful for.
@@ -89,9 +103,6 @@ def parse_dcard(datacard,fitres,bin_name="ANYBIN"):
            factor_name = info[0].strip() # the factor name will need to match 
            # log normal or gaussian are the usual fit types
            fit_type = info[1].strip()
-           # only lnN
-           if fit_type.strip() != "lnN":
-               continue
            aligned_list = info[2:]
            #print "aligned list length is %d" % len(processes)
            for index in range(0,len(bins)):
@@ -107,13 +118,19 @@ def parse_dcard(datacard,fitres,bin_name="ANYBIN"):
                    # subtract 1 to get a decimal representation of the "percent" uncertainty
                    uncert -= 1
                    svar = get_svar(factor_name,fitres) #obtain the sigma variation
+                   sigma = get_sigma(factor_name,fitres) #obtain the sigma variation
                    print processes[index],factor_name,"Uncertainty: ",uncert,"Sigma variations: ",svar,"Total: ",1+uncert*svar
                    new_weight = 1 + uncert*svar
                    if new_weight<0:
                        new_weight = 0
                        print "SETTING WEIGHT TO 0... NEGATIVE WEIGHT FOUND"
-                   process_weights[processes[index]]*= new_weight #multiply the existing weight by the new weight.
+		   if fit_type.strip() == "lnN":
+                       process_weights[processes[index]]*= new_weight #multiply the existing weight by the new weight.
+                       process_uncertainties[processes[index]]+= pow(uncert*sigma,2)
+		   elif fit_type.strip() == "shape":
+                       process_shape_weights[processes[index]][factor_name] = float(val)*svar #multiply the existing weight by the new weight.
+                       process_shape_uncertainties[processes[index]][factor_name] = sigma
    # return the dictionary of weights
                    factor_weights[factor_name]= "%f ; // 1+%f*%f " % (1+uncert*svar,uncert,svar)
     print "the list of indices for bin %s is:" % bin_name,rel_indices
-    return process_weights
+    return process_weights, process_shape_weights, process_uncertainties, process_shape_uncertainties
