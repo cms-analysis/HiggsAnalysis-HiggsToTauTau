@@ -268,20 +268,22 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   data->Draw("e");
 
   if(log){
-    Ztt  ->Draw("same");
-    ttbar->Draw("same");
-    EWK  ->Draw("same");
-    EWK1 ->Draw("same");
-    Fakes->Draw("same");
-    ggH  ->Draw("same");
+    Ztt  ->Draw("histsame");
+    ttbar->Draw("histsame");
+    EWK  ->Draw("histsame");
+    EWK1 ->Draw("histsame");
+    Fakes->Draw("histsame");
+    ggH  ->Draw("histsame");
+    $DRAW_ERROR
   }
   else{
-    ggH  ->Draw("same");
-    Ztt  ->Draw("same");
-    ttbar->Draw("same");
-    EWK  ->Draw("same");
-    EWK1 ->Draw("same");
-    Fakes->Draw("same");
+    ggH  ->Draw("histsame");
+    Ztt  ->Draw("histsame");
+    ttbar->Draw("histsame");
+    EWK  ->Draw("histsame");
+    EWK1 ->Draw("histsame");
+    Fakes->Draw("histsame");
+    $DRAW_ERROR
   }
   data->Draw("esame");
   canv->RedrawAxis();
@@ -303,6 +305,7 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   leg->AddEntry(EWK1 , "W+jets"                         , "F" );
   leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
   leg->AddEntry(Fakes, "QCD"                            , "F" );
+  $ERROR_LEGEND
   leg->Draw();
 
 //#ifdef MSSM

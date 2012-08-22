@@ -252,7 +252,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
     EWK  ->Draw("histsame");
     Fakes->Draw("histsame");
     ggH  ->Draw("histsame");
-    errorBand->Draw("e2same");
+    $DRAW_ERROR
   }
   else{
     ggH  ->Draw("histsame");
@@ -260,7 +260,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
     ttbar->Draw("histsame");
     EWK  ->Draw("histsame");
     Fakes->Draw("histsame");
-    errorBand->Draw("e2same");
+    $DRAW_ERROR
   }
   data->Draw("esame");
   canv->RedrawAxis();
@@ -281,7 +281,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
   leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
   leg->AddEntry(EWK  , "electroweak"                    , "F" );
   leg->AddEntry(Fakes, "QCD"                            , "F" );
-  leg->AddEntry(errorBand, "BG uncertainty"             , "F" );
+  $ERROR_LEGEND
   leg->Draw();
 
 //#ifdef MSSM

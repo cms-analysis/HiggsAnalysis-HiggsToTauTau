@@ -8,6 +8,8 @@ parser.add_option("-f", "--fitresults", dest="fitresults", default="fitresults/m
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="List of run periods, for which postfit plots shuld be made. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
 parser.add_option("-c", "--channels", dest="channels", default="em, et, mt", type="string", help="Channels for which postfit plots should be made. Individual channels should be separated by comma or whitespace. [Default: 'em, et, mt']")
+parser.add_option("-y", "--yields", dest="yields", default="1", type="int", help="Shift yield uncertainties. [Default: '1']")
+parser.add_option("-s", "--shapes", dest="shapes", default="1", type="int", help="Shift shape uncertainties. [Default: '1']")
 parser.add_option("-u", "--uncertainties", dest="uncertainties", default="0", type="int", help="Set uncertainties of backgrounds. [Default: '0']")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
@@ -74,7 +76,6 @@ class Analysis:
          output_file = open(self.output_fname,'w')
          
          curr_name = ""
-         uncertainties_set=[]
          for line in input_file:
              move_on = False
              template_name = self.template_fname[self.template_fname.find("/")+1:self.template_fname.rfind("_template.C")]
@@ -85,23 +86,46 @@ class Analysis:
              line = line.replace(template_name, output_name)
              line = line.replace("$HISTFILE", self.histfile)
              line = line.replace("$CATEGORY", self.category)
+	     if options.uncertainties and (options.yields or options.shapes):
+                line = line.replace("$DRAW_ERROR", 'if(scaled) errorBand->Draw("e2same");')
+                line = line.replace("$ERROR_LEGEND", 'if(scaled) leg->AddEntry(errorBand, "bkg. uncertainty" , "F" );')
+	     else:
+                line = line.replace("$DRAW_ERROR", '')
+                line = line.replace("$ERROR_LEGEND", '')
              ## PATCH until Josh fixed his input files...
              if "et" in self.output_fname :
                  patch = "eTau" if "7TeV" in self.output_fname else "eleTau"
                  line = line.replace("$PATCH", patch)
              word_arr=line.split("\n")
+             uncertainties_set=[]
              for process_name in self.process_weight.keys():
                  cand_str = "$%s" % process_name
                  output_cand = ""
                  if line.strip().startswith(cand_str):
                      print word_arr[0]
                      curr_name = process_name
-                     print_me  = '''std::cout << "scaling by %f" << std::endl;''' % self.process_weight[curr_name]
-                     out_line  = print_me+"hin->Scale(%f); \n" % self.process_weight[curr_name]
                      move_on   = True
-                     output_file.write(out_line)
-                     print out_line
-             for process_name in self.process_shape_weight.keys():
+                     if options.yields:
+                         print_me  = '''std::cout << "scaling by %f" << std::endl;''' % self.process_weight[curr_name]
+                         out_line  = print_me+"hin->Scale(%f); \n" % self.process_weight[curr_name]
+                         output_file.write(out_line)
+                         print out_line
+                         if options.uncertainties:
+                           for shape_name in self.process_shape_weight[curr_name]:
+		             input = TFile("root/"+self.histfile)
+		             for key in input.GetListOfKeys():
+		               if self.category in key.GetName():
+			           histname=key.GetName()+"/"+word_arr[0].strip("$ ")
+                             hist = input.Get(histname)
+                             for bin in range(1,hist.GetNbinsX()+1):
+		               if not process_name+str(bin) in uncertainties_set:
+			         uncertainties_set+=[process_name+str(bin)]
+		                 uncertainty = math.sqrt(self.process_uncertainties[curr_name])
+		                 out_line  = "hin->SetBinError(%(bin)i,hin->GetBinContent(%(bin)i)*%(uncertainty)f); \n" % {"bin":bin, "uncertainty":uncertainty}
+                                 output_file.write(out_line)
+                                 print out_line
+	     if options.shapes:
+               for process_name in self.process_shape_weight.keys():
                  cand_str = "$%s" % process_name
                  output_cand = ""
                  if line.strip().startswith(cand_str):
@@ -115,33 +139,28 @@ class Analysis:
                        hist_down = input.Get(histname+"_"+shape_name+"Down")
                        hist_up = input.Get(histname+"_"+shape_name+"Up")
                        for bin in range(1,hist.GetNbinsX()+1):
-		         if options.uncertainties and not process_name+str(bin) in uncertainties_set:
-			   uncertainties_set+=[process_name+str(bin)]
-		           uncertainty = math.sqrt(self.process_uncertainties[curr_name])
-		           out_line  = "hin->SetBinError(%(bin)i,hin->GetBinContent(%(bin)i)*%(uncertainty)f); \n" % {"bin":bin, "uncertainty":uncertainty}
-                           move_on   = True
-                           output_file.write(out_line)
-                           print out_line
-		         if hist.GetBinContent(bin)==0:
-			     continue
 		         shift = self.process_shape_weight[curr_name][shape_name]
-		         if shift>0 and hist_up.GetBinContent(bin)!=hist.GetBinContent(bin):
+                         out_line=''
+			 value=1
+		         if shift>0 and hist.GetBinContent(bin)>0 and hist_up.GetBinContent(bin)!=hist.GetBinContent(bin):
 		             value = shift*(hist_up.GetBinContent(bin)/hist.GetBinContent(bin)-1)+1
-		         elif shift<0 and hist_down.GetBinContent(bin)!=hist.GetBinContent(bin):
+		         elif shift<0 and hist.GetBinContent(bin)>0 and hist_down.GetBinContent(bin)!=hist.GetBinContent(bin):
 		             value = shift*(hist.GetBinContent(bin)/hist_down.GetBinContent(bin)-1)+1
-		         else:
-		             continue
-		         print_me  = '''std::cout << "scaling bin %(bin)i by %(value)f" << std::endl;''' % {"bin":bin, "value":value}
-		         out_line  = print_me+"hin->SetBinContent(%(bin)i,hin->GetBinContent(%(bin)i)*%(value)f); \n" % {"bin":bin, "value":value}
+			 if value!=1:
+		             print_me  = '''std::cout << "scaling bin %(bin)i by %(value)f" << std::endl;''' % {"bin":bin, "value":value}
+		             out_line  = print_me+"hin->SetBinContent(%(bin)i,hin->GetBinContent(%(bin)i)*%(value)f); \n" % {"bin":bin, "value":value}
 			 if options.uncertainties:
 			   uncertainty=1
-			   if hist_down.GetBinContent(bin):
+			   if hist_down.GetBinContent(bin) and hist.GetBinContent(bin):
 			     uncertainty=max(uncertainty,hist.GetBinContent(bin)/hist_down.GetBinContent(bin),hist_down.GetBinContent(bin)/hist.GetBinContent(bin))
-			   if hist_up.GetBinContent(bin):
+			   if hist_up.GetBinContent(bin) and hist.GetBinContent(bin):
 			     uncertainty=max(uncertainty,hist.GetBinContent(bin)/hist_up.GetBinContent(bin),hist_up.GetBinContent(bin)/hist.GetBinContent(bin))
 			   uncertainty = self.process_shape_uncertainties[curr_name][shape_name]*min(2,uncertainty-1)
-                           out_line  += "hin->SetBinError(%(bin)i,sqrt(pow(hin->GetBinError(%(bin)i),2)+pow(hin->GetBinContent(%(bin)i)*%(uncertainty)f,2))); \n" % {"bin":bin, "uncertainty":uncertainty}
-                         move_on   = True
+		           if not process_name+str(bin) in uncertainties_set:
+   		               uncertainties_set+=[process_name+str(bin)]
+                               out_line  += "hin->SetBinError(%(bin)i,hin->GetBinContent(%(bin)i)*%(uncertainty)f); \n" % {"bin":bin, "uncertainty":uncertainty}
+			   elif uncertainty!=0:
+                               out_line  += "hin->SetBinError(%(bin)i,sqrt(pow(hin->GetBinError(%(bin)i),2)+pow(hin->GetBinContent(%(bin)i)*%(uncertainty)f,2))); \n" % {"bin":bin, "uncertainty":uncertainty}
                          output_file.write(out_line)
                          print out_line
              if not move_on:
