@@ -1,9 +1,11 @@
 #!/usr/bin/env python
-import re
+import glob
+import hashlib
 import os
 import re
 from optparse import OptionParser, OptionGroup
 from HiggsAnalysis.HiggsToTauTau.parallelize import parallelize
+import sys
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...",
@@ -29,6 +31,7 @@ parser.add_option("--shape", dest="shape", default="shape2", type="string", help
 parser.add_option("-C", "--convidence-level", dest="confidenceLevel", default="0.95", type="string", help="Choose the actual confidence level. At this step this applies only to asymptotic methods like for option --prepTanB+ and --preAsym. It does not apply to toy based methods, which have to be configured accordingly in the submission step. [Default: '0.95']")
 parser.add_option("--rMin", dest="rMin", default="-2", type="string", help="Minimum value of signal strenth. [Default: -2]")
 parser.add_option("--rMax", dest="rMax", default="2", type="string", help="Maximum value of signal strenth. [Default: 2]")
+parser.add_option("--norepeat", dest="norepeat", default=False, action="store_true", help="Detect if command has already been run, and skip the job.")
 mgroup = OptionGroup(parser, "COMBINE (MAXIMUM LIKELIHOOD FIT) COMMAND OPTIONS", "Command options for the use of combine with the Maximum Likelihood method.")
 mgroup.add_option("--stable", dest="stable", default=False, action="store_true", help="Run maximum likelihood fit with a set of options that lead to stable results. Makes use of the common options --rMin and --rMax to define the boundaries of the fit. [Default: True]")
 parser.add_option_group(mgroup)
@@ -58,6 +61,45 @@ if len(args) < 1 :
 ## base directory introduced to allow use of absolute file paths
 base_directory = os.getcwd()
 
+def get_hash_for_this_call():
+    ''' Create a unique hash corresponding to this call to limit.py
+
+    Returns a hexadecimal string.
+    '''
+    # Create the hash of the limit.py call
+    hash = hashlib.md5()
+    # Hash in the modification time of this script
+    hash.update(str(os.path.getmtime(os.path.realpath(__file__))))
+    # Hash in the arguments
+    for x in sys.argv:
+        # So we can enable norepeat after running the jobs
+        if x == '--norepeat':
+            continue
+        hash.update(x)
+    return 'limit_hash_' + hash.hexdigest()[:9]
+
+def already_run(directory):
+    ''' Determine if the limit.py tool has already been run for this directory
+
+    Checks if any .txt card file or .root file is up-to-date with the limit
+    calculation.  The calls to limit.py are hashed using the arguments, and
+    modification time of the limit.py script.
+
+    '''
+    dependents = glob.glob(os.path.join(directory, '*.txt')) + glob.glob(
+        os.path.join(directory, '..', 'common', '*.root'))
+    # Find the latest modified time of the dependents
+    latest_modified = max(os.path.getmtime(x) for x in dependents)
+    hash_file = os.path.join(directory, get_hash_for_this_call())
+    if not os.path.exists(hash_file):
+        print ">>> limit hash file %s does not exist, must compute" % hash_file
+        return False
+    # Check if any dependent file has been modified after the hash
+    if os.path.getmtime(hash_file) < latest_modified:
+        print ">>> hash file %s is out of date: %f < %f" % (os.path.getmtime(hash_file), latest_modified)
+        return False
+    return True
+
 for directory in args :
     if directory.find("common")>-1 :
         print "> skipping directory common"
@@ -65,6 +107,9 @@ for directory in args :
     print "> entering directory %s" % directory
     ## visit subdirectories
     subdirectory = os.path.join(base_directory, directory)
+    if options.norepeat and already_run(subdirectory):
+        print ">> limit already computed - skipping %s" % directory
+        exit(0)
     subdirectory = subdirectory.replace(os.path.join(base_directory, base_directory), base_directory)
     os.chdir(subdirectory)
     ## check status
@@ -404,4 +449,9 @@ for directory in args :
         for tmp in tmps :
             if tmp.find("tmp")>-1 :
                 os.system("rm observed/%s" % tmp)
+    # Remove any previous hashes
+    os.system("rm -f limit_hash_*")
+    # Create hash file for this call, so we can use the norepeat feature.
+    hash_file = get_hash_for_this_call()
+    os.system("touch %s" % hash_file)
     print "done"
