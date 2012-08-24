@@ -55,6 +55,8 @@ void randomize(TH1F* hist, unsigned int seed, unsigned int debug=0.)
     hist->SetBinContent(idx+1, rnd->Poisson(hist->GetBinContent(idx+1)));
     hist->SetBinError(idx+1, TMath::Sqrt(rnd->Poisson(hist->GetBinContent(idx+1))));
   }
+  // Make sure there is no rounding error, and the total is truly an integer.
+  hist->Scale(TMath::Nint(hist->Integral())/hist->Integral());
   delete rnd;
 }
 
