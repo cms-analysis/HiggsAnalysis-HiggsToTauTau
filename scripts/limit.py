@@ -96,7 +96,7 @@ def already_run(directory):
         return False
     # Check if any dependent file has been modified after the hash
     if os.path.getmtime(hash_file) < latest_modified:
-        print ">>> hash file %s is out of date: %f < %f" % (os.path.getmtime(hash_file), latest_modified)
+        print ">>> hash file %s is out of date: %f < %f" % (hash_file, os.path.getmtime(hash_file), latest_modified)
         return False
     return True
 
