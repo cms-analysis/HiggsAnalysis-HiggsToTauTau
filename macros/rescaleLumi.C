@@ -52,7 +52,8 @@ void rescaleLumi(const char* filename, float oldLumi=4.9, float newLumi=10., boo
 	  if(debug>1){ std::cout << "...old scale : " << h->Integral() << std::endl; }
 	  h->Scale(newLumi/oldLumi);
 	  if(std::string(h->GetName()).find("data_obs")!=std::string::npos){
-	    h->Scale((int)h->Integral()/h->Integral());
+            if (h->Integral() > 0)
+              h->Scale((int)h->Integral()/h->Integral());
 	  }
 	  if(debug>1){ std::cout << "...new scale : " << h->Integral() << std::endl; }
 	  if(armed){ h->Write(iobj->GetName()); }
