@@ -81,8 +81,8 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("et"        )) title = std::string("e#tau_{h}");
   if(channel==std::string("mutau"     )) title = std::string("#mu#tau_{h}");
   if(channel==std::string("mt"        )) title = std::string("#mu#tau_{h}");
-  if(channel==std::string("tautau"    )) title = std::string("#tau_{h}#tau_{h} (5.0 fb^{-1})");
-  if(channel==std::string("tt"        )) title = std::string("#tau_{h}#tau_{h} (5.0 fb^{-1})");
+  if(channel==std::string("tautau"    )) title = std::string("#tau_{h}#tau_{h} (5 fb^{-1})");
+  if(channel==std::string("tt"        )) title = std::string("#tau_{h}#tau_{h} (5 fb^{-1})");
   if(channel==std::string("mumu"      )) title = std::string("#mu#mu");
   if(channel==std::string("mm"        )) title = std::string("#mu#mu");
   if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau+l(l)");
