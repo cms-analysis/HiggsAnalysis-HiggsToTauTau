@@ -9,7 +9,7 @@ parser = OptionParser(
     )
 parser.add_option("-c", "--decay-channel", dest="channel", default="new", type="choice", help="Ditau decay channel. [Default: new]", choices=["new", "mm", "em", "et", "mt", "tt", "hmm", "vhtt", "vhbb"])
 parser.add_option("-e", "--event-category", dest="category", default="", type="string", help="Event category. [Default: \"\"]")
-
+parser.add_option("-s", "--setup", default="%s/src/HiggsAnalysis/HiggsToTauTau/setup" % os.environ["CMSSW_BASE"])
 
 ## check number of arguments; in case print usage
 (options,args) = parser.parse_args()
@@ -17,10 +17,8 @@ if len(args) < 1 :
     parser.print_usage()
     exit(1)
     
-CMSSW_BASE = os.environ["CMSSW_BASE"]
-
 target_path = args[0]
-source_path = "%s/src/HiggsAnalysis/HiggsToTauTau/setup/%s" % (CMSSW_BASE, options.channel)
+source_path = os.path.abspath("%s/%s" % (options.setup, options.channel))
 
 ## setup the new project directory 
 d = os.path.dirname("%s/log.txt" % target_path)
@@ -48,4 +46,4 @@ if not options.channel == "new" :
     else :
         os.system("cp {source}/htt_{channel}.inputs{type}*.root {target}".format(source=source_path, channel=options.channel, type=type, target=target_path))    
 else:
-    os.system("cp -r %s/src/HiggsAnalysis/HiggsToTauTau/setup/README %s" % (CMSSW_BASE, target_path))
+    os.system("cp -r %s/README %s" % (options.setup, target_path))

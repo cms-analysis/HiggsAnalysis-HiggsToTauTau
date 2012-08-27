@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
@@ -9,6 +10,7 @@ parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
 parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string", help="List of channels, for which datacards should be created. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt. [Default: \"mm em mt et\"]")
 parser.add_option("--SM4", dest="SM4", default=False, action="store_true", help="Re-scale signal samples in input file according to SM4 cross section*BR before datacard creation. [Default: False]")
+parser.add_option("-s", "--setup", default="%s/src/HiggsAnalysis/HiggsToTauTau/setup" % os.environ["CMSSW_BASE"])
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 5", type="string", help="List em of event categories. [Default: \"0 1 2 3 5\"]")
@@ -34,9 +36,10 @@ if len(args) < 1 :
     parser.print_usage()
     exit(1)
 
-import os
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
 from HiggsAnalysis.HiggsToTauTau.utils import mass_category
+
+setup_path = os.path.abspath(options.setup)
 
 ## periods
 periods = options.periods.split()
@@ -89,7 +92,7 @@ for channel in channels :
             ## here the normal workflow continues
             prefix = "" if (channel == "vhtt" or channel == "vhbb") else "htt_"
             os.chdir("{PWD}/{CHN}".format(CHN=prefix+channel, PWD=base))
-            os.system("datacard-project.py -c {CHN} -e {ANA}-{PER}-0{CAT} {PER}-0{CAT}".format(CHN=channel, ANA=options.analysis, PER=period, CAT=cat))
+            os.system("datacard-project.py -c {CHN} -e {ANA}-{PER}-0{CAT} {PER}-0{CAT} -s {STP}".format(CHN=channel, ANA=options.analysis, PER=period, CAT=cat, STP=setup_path))
             os.chdir("{PWD}/{CHN}/{PER}-0{CAT}".format(CHN=prefix+channel, PER=period, PWD=base, CAT=cat))
             for mass in parseArgs(args) :
                 print "creating datacard for:", options.analysis, period, channel, cat, mass
