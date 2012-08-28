@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 #include <TKey.h>
 #include <TH1F.h>
@@ -37,6 +38,8 @@ void rescaleLumi(const char* filename, float oldLumi=4.9, float newLumi=10., boo
   TFile* file = new TFile(filename, "update");
   TIter nextDirectory(file->GetListOfKeys());
   TKey* idir;
+  std::vector<TString> paths;
+  // collect all histogram names
   while((idir = (TKey*)nextDirectory())){
     if(idir->IsFolder()){
       file->cd(); // make sure to start in directory head 
@@ -46,19 +49,33 @@ void rescaleLumi(const char* filename, float oldLumi=4.9, float newLumi=10., boo
 	TIter next(gDirectory->GetListOfKeys());
 	TKey* iobj;
 	while((iobj = (TKey*)next())){
-	  if(debug>1){ std::cout << " ...found object: " << iobj->GetName() << std::endl; }
-	  TH1F* h = (TH1F*)file->Get(TString::Format("%s/%s", idir->GetName(), iobj->GetName()));
-	  //TH1F* hout = (TH1F*)h->Clone(iobj->GetName());
-	  if(debug>1){ std::cout << "...old scale : " << h->Integral() << std::endl; }
-	  h->Scale(newLumi/oldLumi);
-	  if(std::string(h->GetName()).find("data_obs")!=std::string::npos){
-            if (h->Integral() > 0)
-              h->Scale((int)h->Integral()/h->Integral());
+	  if(debug>2){ std::cout << " ...found object: " << iobj->GetName() << std::endl; }
+	  TString path = TString::Format("%s/%s", idir->GetName(), iobj->GetName());
+	  if(!std::count(paths.begin(), paths.end(), path)){
+	    paths.push_back(path);
 	  }
-	  if(debug>1){ std::cout << "...new scale : " << h->Integral() << std::endl; }
-	  if(armed){ h->Write(iobj->GetName()); }
 	}
       }
+    }
+  }
+  // do the rescaling
+  for(std::vector<TString>::const_iterator path = paths.begin(); path!=paths.end(); ++path){
+    TH1F* h = (TH1F*)file->Get(*path);
+    if(debug>1){ std::cout << "histogram: " << *path << std::endl; }
+    if(debug>1){ std::cout << "...old scale : " << h->Integral() << std::endl; }
+    h->Scale(newLumi/oldLumi);
+    if(std::string(h->GetName()).find("data_obs")!=std::string::npos){
+      if (h->Integral() > 0)
+	h->Scale((int)h->Integral()/h->Integral());
+    }
+    if(debug>1){ std::cout << "...new scale : " << h->Integral() << std::endl; }
+    if(armed){
+      std::string str = std::string(*path);
+      std::string dir = str.substr(0, str.find("/"));
+      std::string hist = str.substr(str.find("/")+1, std::string::npos);
+      file->cd();
+      file->cd(dir.c_str());
+      h->Write(hist.c_str()); 
     }
   }
   file->Close();
