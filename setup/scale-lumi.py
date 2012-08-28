@@ -45,7 +45,7 @@ if __name__ == "__main__":
     parser.add_argument('currentlumi', type=float, help="Current lumi of cards")
     parser.add_argument('targetlumi', type=float, help="Target lumi")
     parser.add_argument('--channels', nargs='+',
-                        default=['mt', 'tt', 'em', 'mm', 'vhtt'])
+                        default=['et', 'mt', 'tt', 'em', 'mm', 'vhtt'])
 
     args = parser.parse_args()
 
@@ -64,8 +64,14 @@ if __name__ == "__main__":
     # Scale each channel up
     for channel in args.channels:
         print "Scaling shape file for channel: %s" % channel
-        command = "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleLumi.C+\\(\\\"{FILE}\\\",{OLDLUMI},{NEWLUMI},true)"
+        command = "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleLumi.C+\\(\\\"{FILE}\\\",{OLDLUMI},{NEWLUMI},true,2\\)"
         shape_file = file_map(channel)
+        #print command.format(
+        #        CMSSW_BASE = os.environ['CMSSW_BASE'],
+        #        FILE=shape_file,
+        #        OLDLUMI="%0.3f" % args.currentlumi,
+        #        NEWLUMI="%0.3f" % args.targetlumi,
+        #    )
         shape_scaling = subprocess.Popen(
             shlex.split(command.format(
                 CMSSW_BASE = os.environ['CMSSW_BASE'],
@@ -75,7 +81,8 @@ if __name__ == "__main__":
             )), stdout=subprocess.PIPE)
 
         (stdout, _) = shape_scaling.communicate()
-
+        #print stdout
+        
         for category in range(8):
             unc_conf, _ = get_unc_conf_val(channel, category)
             if os.path.exists(unc_conf):
