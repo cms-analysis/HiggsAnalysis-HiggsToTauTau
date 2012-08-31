@@ -350,24 +350,24 @@ PlotLimits::print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsym
     ofstream file;
     file.open (std::string(filename).append(".tex").c_str());
     file
-      << std::endl << "\\hline" << std::endl << "     "
-      << "   " << std::setw(15) << std::right << "    $m_{X}$"
+      << "   " << std::setw(15) << std::right << "    $m_{\\mathrm H}$"
       << " & " << std::setw(15) << std::right << "$-2\\sigma$"
       << " & " << std::setw(15) << std::right << "$-1\\sigma$"
       << " & " << std::setw(15) << std::right << "     Median"
       << " & " << std::setw(15) << std::right << "$+1\\sigma$"
       << " & " << std::setw(15) << std::right << "$+2\\sigma$"
-      << " & " << std::setw(15) << std::right << "Obs. Limit [pb]"
+      << " & " << std::setw(15) << std::right << "Obs. Limit"
       << std::right << "  \\\\"
       << std::endl << "\\hline" << std::endl;
+    unsigned int precision = 2;
     for(int imass=0; imass<expected->GetN(); ++imass){
       file
-	<< "   " << std::setw(15) << std::setprecision(3) << std::right << expected->GetX()[imass] << "~\\GeV"
-	<< " & " << std::setw(15) << std::setprecision(3) << std::right << expected->GetY()[imass] - outerBand->GetEYlow()[imass]
-	<< " & " << std::setw(15) << std::setprecision(3) << std::right << expected->GetY()[imass] - innerBand->GetEYlow()[imass]
-	<< " & " << std::setw(15) << std::setprecision(3) << std::right << expected->GetY()[imass]
-	<< " & " << std::setw(15) << std::setprecision(3) << std::right << expected->GetY()[imass] + innerBand->GetEYhigh()[imass]
-	<< " & " << std::setw(15) << std::setprecision(3) << std::right << expected->GetY()[imass] + outerBand->GetEYhigh()[imass];
+	<< "   " << std::setw(15) << std::setprecision(3) << std::resetiosflags(std::ios_base::fixed) << std::right << expected->GetX()[imass] << "~\\GeV"
+	<< " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << expected->GetY()[imass] - outerBand->GetEYlow()[imass]
+	<< " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << expected->GetY()[imass] - innerBand->GetEYlow()[imass]
+	<< " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << expected->GetY()[imass]
+	<< " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << expected->GetY()[imass] + innerBand->GetEYhigh()[imass]
+	<< " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << expected->GetY()[imass] + outerBand->GetEYhigh()[imass];
       if(observed){
 	file
 	  << " & " << std::setw(15) << std::right << observed->GetY()[imass];
