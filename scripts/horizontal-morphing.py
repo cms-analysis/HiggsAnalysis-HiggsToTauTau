@@ -81,6 +81,11 @@ class Morph:
         hist_upper = self.zero_safe(self.load_hist(file, directory, name.format(MASS=upper)))
         norm = self.norm_hist(hist_lower, hist_upper, float(lower), float(upper), float(value))
         hist_morph = th1fmorph(name.format(MASS=value),name.format(MASS=value),hist_lower, hist_upper, float(lower), float(upper), float(value), norm, 0)
+        # th1fmorph() will set a value null if you are right on top of it
+        if not hist_lower and lower == value:
+            hist_lower = hist_morph
+        if not hist_upper and upper == value:
+            hist_upper = hist_morph
         if self.verbose :
             print "writing morphed histogram to file: name =", hist_morph.GetName(), "integral =[ %.5f | %.5f | %.5f ]" % (hist_lower.Integral(), hist_morph.Integral(), hist_upper.Integral())
         if directory == "" :
