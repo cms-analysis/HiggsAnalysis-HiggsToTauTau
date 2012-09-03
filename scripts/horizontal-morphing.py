@@ -103,12 +103,20 @@ class Morph:
         if not file :
             print "file not found: ", self.input
         for dir in self.directories :
+            if self.verbose:
+                print "Morphing directory: %s" % dir
             for sample in self.samples :
+                if self.verbose:
+                    print "Morphing sample: %s" % sample
                 for idx in range(len(self.masses)-1) :
                     nbin = int((float(self.masses[idx+1])-float(self.masses[idx]))/self.step_size)
                     if nbin > 1 :
                         for x in range(nbin-1) :
-                            value = "%.0f" % (float(self.masses[idx])+(x+1)*float(self.step_size))
+                            # This formatting is valid for 0.5 GeV bins up to TeV
+                            # Returns 111 for 111.0, 111.5 for 111.5
+                            value = "%.4g" % (float(self.masses[idx])+(x+1)*float(self.step_size))
+                            if self.verbose:
+                                print "Morphing %0.1f between (%0.1f, %0.1f)" % tuple(float(x) for x in (value, self.masses[idx], self.masses[idx+1]))
                             self.morph_hist(file, dir, sample, self.masses[idx], self.masses[idx+1], value)
                             for uncert in self.uncerts :
                                 if not uncert == '' :
