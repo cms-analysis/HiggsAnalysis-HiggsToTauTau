@@ -23,6 +23,7 @@ import math
 from optparse import OptionParser
 import os
 from HiggsAnalysis.HiggsToTauTau.uncertainties import ufloat
+import sys
 
 # The DatacardParser takes some wacky arguments
 _parser = OptionParser()
@@ -177,17 +178,37 @@ class DataCard(object):
                     errors.append(error)
         return quad(*errors)/rate.nominal_value
 
-    def print_systematics(self, bins, process):
-        ''' Print out a list of the systematic effects '''
-        errors = []
-        rate = self.get_rate(bins, process)
+    def get_systematics(self, bins, process, excludesys=None):
+        ''' Return a list of the systematic effects, sorted by descending size
+
+        The format is [(syst_name1, rel. error), (syst_name2, ... ]
+        '''
+        rate = self.get_rate(bins, process, excludesys)
+        errors = [('Total', rate.std_dev()/rate.nominal_value)]
         for var, error in rate.error_components().items():
-            errors.append((var.tag, error/rate.nominal_value))
+            errors.append((var.tag.strip(), error/rate.nominal_value))
 
-        errors.sort(key = lambda x: x[1])
+        errors.sort(key = lambda x: -1*x[1])
+        return errors
+
+    def print_systematics(self, bins, process, stream=sys.stdout, excludesys=None):
+        ''' Print out a nice list of the systematic effects '''
+        errors = self.get_systematics(bins, process, excludesys)
+        rate = self.get_rate(bins, process, excludesys)
+        for i in range(70):
+            stream.write('=')
+        stream.write('\n')
+        stream.write("%-40s: %0.2f +- %0.2f\n" % (
+            process + ' (' + ','.join(bins) + ')',
+            rate.nominal_value, rate.std_dev()))
+        for i in range(70):
+            stream.write('-')
+        stream.write('\n')
         for error in errors:
-            print "%25s: %0.4f" % error
-
+            stream.write("%-40s: %0.1f%%\n" % (error[0], 100.*error[1]))
+        for i in range(70):
+            stream.write('=')
+        stream.write('\n')
 
 if __name__ == "__main__":
     import doctest; doctest.testmod()
