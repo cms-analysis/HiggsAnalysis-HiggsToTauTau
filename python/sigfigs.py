@@ -33,7 +33,7 @@ Author: Evan K. Friis
 
 import math
 
-def find_nth_sig_fig(x, n, min_sig_fig=-999):
+def find_nth_sig_fig(x, n, min_sig_fig=-999, max_sig_fig=999):
     ''' Get the decimal place of the nth significant figure
 
     If n is less than min_sig_fig, only give one significant figure.
@@ -57,6 +57,11 @@ def find_nth_sig_fig(x, n, min_sig_fig=-999):
     2
     >>> find_nth_sig_fig(1, 2)
     -1
+
+    You can set the maximum sig. fig to use.
+    >>> find_nth_sig_fig(1671, 2, max_sig_fig=0)
+    0
+
     '''
 
     log10 = math.log10(x)
@@ -64,9 +69,11 @@ def find_nth_sig_fig(x, n, min_sig_fig=-999):
     # Only give 1 sigfig if below threshold
     if sigfig < min_sig_fig:
         sigfig += (n-1)
+    if sigfig > max_sig_fig:
+        return max_sig_fig
     return sigfig
 
-def sigfigs(x, err, n_error=2, min_sig_fig=-999):
+def sigfigs(x, err, n_error=2, min_sig_fig=-999, max_sig_fig=9999):
     ''' Round x and err to their appropriate representations.
 
     The n_error parameter controls how many significant figures of the error
@@ -81,7 +88,7 @@ def sigfigs(x, err, n_error=2, min_sig_fig=-999):
     >>> sigfigs(0.067, 0.0264, 2)
     ('0.067', '0.026')
 
-    Provided a minimum sigfig.  Values lower than this will be rounded to only
+    Can provide a minimum sigfig.  Values lower than this will be rounded to only
     one signficant figure.
 
     >>> sigfigs(0.067, 0.0264, 2, -1)
@@ -90,8 +97,20 @@ def sigfigs(x, err, n_error=2, min_sig_fig=-999):
     >>> sigfigs(0.067, 0.0267, 2)
     ('0.067', '0.027')
 
+    Can provide a max sigfig.  Values higher than this will be rounded to only
+    the max sig_fig
+
+    >>> sigfigs(1234567, 123456.7, 1, max_sig_fig=0)
+    ('1234567', '123457')
+
+    >>> sigfigs(4.2, 0.02, 1, max_sig_fig=0)
+    ('4.20', '0.02')
+
+    >>> sigfigs(4.2, 0.2, 1, max_sig_fig=0)
+    ('4.2', '0.2')
+
     '''
-    power = find_nth_sig_fig(err, n_error, min_sig_fig)
+    power = find_nth_sig_fig(err, n_error, min_sig_fig, max_sig_fig)
     x = round(x, -power)
     err = round(err, -power)
 
