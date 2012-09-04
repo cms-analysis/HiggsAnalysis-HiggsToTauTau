@@ -14,7 +14,7 @@ def mass_category(mass) :
     """
     # Temprorarily only use 1 mass cat.
     return 0
-    value = int(mass)
+    value = float(mass)
     category = 0
     if 150<value and value<=250 :
         category = 0
@@ -22,6 +22,14 @@ def mass_category(mass) :
         category = 0
     return category
 
+def is_integer(elem):
+    try:
+        int(elem)
+    except ValueError:
+        return False
+    if abs(int(elem) - float(elem)) < 1e-6:
+        return True
+    return False
 
 def parseArgs(args) :
     """
@@ -32,16 +40,22 @@ def parseArgs(args) :
     for elem in args :
         if elem.find("-") > -1 :
             if elem.find(":") > -1 :
-                step = int(elem[elem.find(":")+1:])
-                min = int(elem[:elem.find("-")  ])
-                max = int(elem[elem.find("-")+1:elem.find(":")])
+                step = float(elem[elem.find(":")+1:])
+                min = float(elem[:elem.find("-")  ])
+                max = float(elem[elem.find("-")+1:elem.find(":")])
             else :
                 step = 1
-                min = int(elem[:elem.find("-")  ])
-                max = int(elem[elem.find("-")+1:])
+                min = float(elem[:elem.find("-")  ])
+                max = float(elem[elem.find("-")+1:])
             while min <= max :
-                list.append(min)
+                if is_integer(min):
+                    list.append(int(min))
+                else:
+                    list.append(min)
                 min=min+step
         else :
-            list.append(int(elem))
+            if is_integer(elem):
+                list.append(int(elem))
+            else:
+                list.append(elem)
     return list
