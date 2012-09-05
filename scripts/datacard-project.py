@@ -7,9 +7,10 @@ parser = OptionParser(
     usage="usage: %prog [options] ARG",
     description="Script to setup a project to create datacards for a given ditau decay channel. This directory will be created and all necessary inputs for datacard creation will be copied there. The decay channel and category can be chosen by command line option. The category is defined a code of type XX-YY, where XX corresponds to the analysis type SM, MSSM, ZTT (Ztt cross section measurement) and YY corresponds to the event category (depending on the analysis type). For more details have a look into the README file in the setup directory of the package. Without channel specification a blank set of configuration files for the uncertainty configuration will be copied into the project directory, which should be edited by the user. ARG corresponds to the name of the project directory."
     )
+parser.add_option("-i", "--in", dest="input", default="%s/HiggsAnalysis/HiggsToTauTau/setup" % os.environ["CMSSW_BASE"], type="string", help="Full path to the input directory from which you would like to create the datacards. The path should be given relative to $CMSSW_BASE. Note that you need to obey the directory structures provide the corresponding configurationfiels for the translatino of the uncertainties into the datacards if you plan to use your own input path. [Default: src/HiggsAnalysis/HiggsToTauTau/setup]")
+parser.add_option("-o", "--out", dest="out", default="auxiliaries/datacards", type="string", help="Name of the output directory to which the datacards should be copied. [Default: auxiliaries/datacards]")
 parser.add_option("-c", "--decay-channel", dest="channel", default="new", type="choice", help="Ditau decay channel. [Default: new]", choices=["new", "mm", "em", "et", "mt", "tt", "hmm", "vhtt", "vhbb"])
 parser.add_option("-e", "--event-category", dest="category", default="", type="string", help="Event category. [Default: \"\"]")
-parser.add_option("-s", "--setup", default="%s/src/HiggsAnalysis/HiggsToTauTau/setup" % os.environ["CMSSW_BASE"])
 
 ## check number of arguments; in case print usage
 (options,args) = parser.parse_args()
