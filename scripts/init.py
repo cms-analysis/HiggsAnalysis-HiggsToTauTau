@@ -22,7 +22,7 @@ print " ------------------------------------------------------------------------
 
 ## setup CMSSW to be able to co the auxiliray package
 os.chdir("{CMSSW_BASE}/src".format(CMSSW_BASE=os.environ.get("CMSSW_BASE")))
-os.system("'eval `scramv1 runtime -sh`'")
+os.system("eval `scram runtime -sh`")
 os.system("cvs co -d auxiliaries -r {TAG} {PATH}".format(TAG=options.version, PATH=options.path))
 
 ## copy all inputs into the corresponding directories in the HiggsToTauTau package
