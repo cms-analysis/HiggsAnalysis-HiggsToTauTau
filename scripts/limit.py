@@ -44,7 +44,7 @@ agroup = OptionGroup(parser, "COMBINE (ASYMPTOTIC) COMMAND OPTIONS", "Command op
 agroup.add_option("--noprefit", dest="noprefit", default=False, action="store_true", help="Skip prefit before running the asymptotics limits. [Default: False]")
 agroup.add_option("--minuit", dest="minuit", default=False, action="store_true", help="Switch from Minuit2 to Minuti for the prefit. [Default: False]")
 agroup.add_option("--qtilde", dest="qtilde", default=False, action="store_true", help="Also allow negative signal strength. [Default: False]")
-agroup.add_option("--strategy", dest="strategy", default=1, type="int", help="Change the fit strategy [Default: 0]")
+agroup.add_option("--strategy", dest="strategy", default=2, type="int", help="Change the fit strategy [Default: 2]")
 parser.add_option_group(agroup)
 pgroup = OptionGroup(parser, "COMBINE (PROFILE LIKELIHOOD) COMMAND OPTIONS", "Command options for the use of combine with the ProfileLikelihood method.")
 pgroup.add_option("--fixed-mass", dest="fixed_mass", default="", type="string", help="Set a fixed mass at which to inject the signal signal (during workspace creation). If the string is empty the mass point is taken for which the significance is cslculated. [Default: \"\"]")
