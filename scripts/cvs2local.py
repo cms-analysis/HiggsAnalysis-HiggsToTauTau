@@ -110,6 +110,56 @@ if options.analysis == "mssm" :
         "hmm"  : options.hmm_mssm_categories.split(),
         }
 
+## valid mass range per category
+if options.analysis == "sm" :
+    valid_masses = {
+        "mm"   : (110, 145),
+        "em"   : (110, 145),
+        "mt"   : (110, 145),
+        "et"   : (110, 145),
+        "tt"   : (110, 145),
+        "vhtt" : (110, 140),
+    }
+if options.analysis == "mssm" :
+    valid_masses = {
+        "mm"   : (100, 500),
+        "em"   : (100, 500),
+        "mt"   : (100, 500),
+        "et"   : (100, 500),
+        "tt"   : (100, 500),
+    }
+print "------------------------------------------------------"
+print " Valid mass ranges per channel:"
+print "------------------------------------------------------"
+for chn in channels :
+    print "chn: ", chn, "valid mass range:", valid_masses[chn]
+print
+
+## valid run periods
+if options.analysis == "sm" :
+    valid_periods = {
+        "mm"   : "7TeV 8TeV",
+        "em"   : "7TeV 8TeV",
+        "mt"   : "7TeV 8TeV",
+        "et"   : "7TeV 8TeV",
+        "tt"   : "8TeV",
+        "vhtt" : "7TeV 8TeV",
+        }
+if options.analysis == "mssm" :
+    valid_periods = {
+        "mm"   : "7TeV 8TeV",
+        "em"   : "7TeV 8TeV",
+        "mt"   : "7TeV 8TeV",
+        "et"   : "7TeV 8TeV",
+        "tt"   : "8TeV",
+        }
+print "------------------------------------------------------"
+print " Valid mass run periods per channel:"
+print "------------------------------------------------------"
+for chn in channels :
+    print "chn: ", chn, "valid run periods:", valid_periods[chn]
+print
+
 ## setup directory structure in case it does not exist, yet
 if not os.path.exists(options.out) :
     os.system("mkdir {OUTPUT}".format(OUTPUT=options.out))
@@ -122,6 +172,14 @@ for mass in parseArgs(args) :
 for period in periods :
     for channel in channels :
         for mass in parseArgs(args) :
+            ## check validity of run period
+            if not period in valid_periods[channel] :
+                #print "drop due to failing period: ", channel, valid_periods[channel], period 
+                continue
+            ## check validity of mass
+            if (float(mass)< valid_masses[channel][0] or float(mass)> valid_masses[channel][1]) :
+                #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass 
+                continue
             if channel == "vhtt" or channel == "vhbb":
                 for category in categories[channel] :
                     if options.verbose :

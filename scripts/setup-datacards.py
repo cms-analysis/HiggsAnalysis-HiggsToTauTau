@@ -57,6 +57,58 @@ for channel in channels :
         os.system("mkdir {OUTPUT}/{ANA}/{PRE}{CHN}".format(OUTPUT=options.out, ANA=options.analysis, PRE=prefix, CHN=channel))
 os.chdir(options.out)
 
+## valid mass range per category
+if options.analysis == "sm" :
+    valid_masses = {
+        "mm"   : (110, 145),
+        "em"   : (110, 145),
+        "mt"   : (110, 145),
+        "et"   : (110, 145),
+        "tt"   : (110, 145),
+        "vhtt" : (110, 140),
+    }
+if options.analysis == "mssm" :
+    valid_masses = {
+        "mm"   : (100, 500),
+        "em"   : (100, 500),
+        "mt"   : (100, 500),
+        "et"   : (100, 500),
+        "tt"   : (100, 500),
+    }
+    
+print "------------------------------------------------------"
+print " Valid mass ranges per channel:"
+print "------------------------------------------------------"
+for chn in channels :
+    print "chn: ", chn, "valid mass range:", valid_masses[chn]
+print
+
+## valid run periods
+if options.analysis == "sm" :
+    valid_periods = {
+        "mm"   : "7TeV 8TeV",
+        "em"   : "7TeV 8TeV",
+        "mt"   : "7TeV 8TeV",
+        "et"   : "7TeV 8TeV",
+        "tt"   : "8TeV",
+        "vhtt" : "7TeV 8TeV",
+        }
+if options.analysis == "mssm" :
+    valid_periods = {
+        "mm"   : "7TeV 8TeV",
+        "em"   : "7TeV 8TeV",
+        "mt"   : "7TeV 8TeV",
+        "et"   : "7TeV 8TeV",
+        "tt"   : "8TeV",
+        }
+
+print "------------------------------------------------------"
+print " Valid mass run periods per channel:"
+print "------------------------------------------------------"
+for chn in channels :
+    print "chn: ", chn, "valid run periods:", valid_periods[chn]
+print
+
 ## switch to sm event categories
 if options.analysis == "sm" :
     os.chdir("sm")
@@ -90,9 +142,17 @@ for channel in channels :
             ## here the normal workflow continues
             prefix = "" if (channel == "vhtt" or channel == "vhbb") else "htt_"
             os.chdir("{PWD}/{CHN}".format(CHN=prefix+channel, PWD=base))
+            ## check validity of run period
+            if not period in valid_periods[channel] :
+                #print "drop due to failing period: ", channel, valid_periods[channel], period 
+                continue
             os.system("datacard-project.py -i {PATH} -c {CHN} -e {ANA}-{PER}-0{CAT} {PER}-0{CAT}".format(PATH=os.path.abspath(options.input), CHN=channel, ANA=options.analysis, PER=period, CAT=cat))
             os.chdir("{PWD}/{CHN}/{PER}-0{CAT}".format(CHN=prefix+channel, PER=period, PWD=base, CAT=cat))
             for mass in parseArgs(args) :
+                ## check validity of mass
+                if (float(mass)< valid_masses[channel][0] or float(mass)> valid_masses[channel][1]) :
+                    #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass 
+                    continue
                 print "creating datacard for:", options.analysis, period, channel, cat, mass
                 if options.analysis == "mssm" :
                     os.system("create-datacard.py -i {CHN}.inputs-{ana}-{PER}-{MASSCAT}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
