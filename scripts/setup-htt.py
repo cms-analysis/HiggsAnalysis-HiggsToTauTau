@@ -93,10 +93,20 @@ vhtt_directories = {
     "2" : "ltt",
 }
 
+# For tau_h tau_h, 0 = boost, 1 = vbf
+tt_directories = {
+    "0"  : "boost",
+    "1"  : "vbf",
+}
+
 for channel in channels :
     for period in periods :
         for cat in categories[channel] :
-            category_names = directories if 'vhtt' not in channel else vhtt_directories
+            category_names = directories
+            if 'vhtt' in channel:
+                category_names = vhtt_directories
+            if channel == 'tt':
+                category_names = tt_directories
             for mass in parseArgs(args) :
                 ## setup combined
                 os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} -v {MASS}".format(
