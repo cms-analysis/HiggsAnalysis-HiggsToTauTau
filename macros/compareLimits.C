@@ -66,6 +66,8 @@ channel(std::string& label){
 	  label==std::string("mhmax+400")  ||
 	  label==std::string("mhmax+600")  ||
 	  label==std::string("mhmax+800")  ||
+	  label==std::string("MSSM-7TeV")  ||
+	  label==std::string("MSSM-8TeV")  ||
 	  label==std::string("HIG-11-020") ||
 	  label==std::string("HIG-11-029") ||
 	  label==std::string("HIG-12-018") ||
@@ -127,6 +129,9 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("mhmax+400" )) title = std::string("m_{h, max} (#mu=+400 GeV)");
   if(channel==std::string("mhmax+600" )) title = std::string("m_{h, max} (#mu=+600 GeV)");
   if(channel==std::string("mhmax+800" )) title = std::string("m_{h, max} (#mu=+800 GeV)");
+  if(channel==std::string("MSSM-7TeV" )) title = std::string("ICHEP 7 TeV (4.9 fb^{-1})");
+  if(channel==std::string("MSSM-8TeV" )) title = std::string("ICHEP 8 TeV (5.1 fb^{-1})");
+  if(channel==std::string("HIG-11-020")) title = std::string("HIG-11-020 (1.6 fb^{-1})");
   if(channel==std::string("HIG-11-020")) title = std::string("HIG-11-020 (1.6 fb^{-1})");
   if(channel==std::string("HIG-11-029")) title = std::string("HIG-11-029 (4.9 fb^{-1})");
   if(channel==std::string("HIG-12-018")) title = std::string("HIG-12-018 (10 fb^{-1})");
@@ -192,6 +197,8 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["mhmax+400" ] = kMagenta+ 3;
   colors["mhmax+600" ] = kMagenta- 2;
   colors["mhmax+800" ] = kMagenta-10;
+  colors["MSSM-7TeV" ] = kBlue+2;
+  colors["MSSM-8TeV" ] = kBlue+4;
   colors["HIG-11-020"] = kBlue+2;
   colors["HIG-11-029"] = kRed+2;
   colors["HIG-12-018"] = kBlue;
