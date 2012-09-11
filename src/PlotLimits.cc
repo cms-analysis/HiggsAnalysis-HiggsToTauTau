@@ -558,18 +558,19 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
 
   // create plain background
   TGraph* plain = new TGraph();
-  plain->SetPoint(0, 80., 100.);
-  for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
-    if(valid_[imass]){
-      if (observed) {
-        plain->SetPoint(ipoint+1, observed->GetX()[ipoint], observed->GetY()[ipoint]); ++ipoint;
-      } else {
-        plain->SetPoint(ipoint+1, expected->GetX()[ipoint], expected->GetY()[ipoint]); ++ipoint;
+  if(observed){
+    plain->SetPoint(0, observed->GetX()[0]-10., 100.);
+    for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
+      if(valid_[imass]){
+	//if (observed) {
+	plain->SetPoint(ipoint+1, observed->GetX()[ipoint], observed->GetY()[ipoint]); ++ipoint;
+	//} else {
+	//plain->SetPoint(ipoint+1, expected->GetX()[ipoint], expected->GetY()[ipoint]); ++ipoint;
+	//}
       }
     }
+    plain->SetPoint(bins_.size(), observed->GetX()[observed->GetN()-1]+50., 100.);
   }
-  plain->SetPoint(bins_.size()+1, 550, 100.);
-
   // create LEP exclusion plot
   TGraph* LEP = new TGraph();
   limitsLEP(LEP);
@@ -619,11 +620,11 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   //HWWmh_->Draw("psame");
   */
 
-  plain->SetFillStyle(1001.);
-  plain->SetFillColor(obs->GetNumber());
-  plain->Draw("Fsame");
-
   if(observed){
+    plain->SetFillStyle(1001.);
+    plain->SetFillColor(obs->GetNumber());
+    plain->Draw("Fsame");
+
     observed->SetMarkerStyle(20);
     observed->SetMarkerSize(1.0);
     observed->SetMarkerColor(kBlack);
@@ -631,13 +632,12 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
     observed->Draw("Lsame");
   }
 
-  int jpoint=0;
   TGraph* outerHigh = new TGraph();
   TGraph* innerHigh = new TGraph();
   TGraph* outerLow  = new TGraph();
   TGraph* innerLow  = new TGraph();
-  TGraph* innerAuxH = new TGraph();
-  TGraph* innerAuxL = new TGraph();
+  //TGraph* innerAuxH = new TGraph();
+  //TGraph* innerAuxL = new TGraph();
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
     if(valid_[imass]){
       outerHigh->SetPoint(ipoint, outerBand->GetX()[ipoint], outerBand->GetY()[ipoint]+outerBand->GetEYhigh()[ipoint]);
@@ -645,15 +645,8 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
       outerLow ->SetPoint(ipoint, outerBand->GetX()[ipoint], outerBand->GetY()[ipoint]-outerBand->GetEYlow ()[ipoint]);
       innerLow ->SetPoint(ipoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]-innerBand->GetEYlow ()[ipoint]);
       ++ipoint;
-      if(innerBand->GetX()[ipoint]>350){
-	innerAuxH->SetPoint(jpoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]+innerBand->GetEYhigh()[ipoint]);
-	innerAuxL->SetPoint(jpoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]-innerBand->GetEYlow ()[ipoint]);
-	//std::cout << jpoint << " " << innerBand->GetX()[ipoint] << " " << innerBand->GetY()[ipoint]-innerBand->GetEYlow ()[ipoint] << std::endl;
-	++jpoint;
-      }
     }
   }
-  innerAuxL->SetPoint(jpoint+1, 550, 40.);
 
   outerHigh->SetLineStyle(11);
   outerHigh->SetLineColor(kGray+1);
@@ -662,27 +655,13 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   innerHigh->SetFillStyle(3005);
   innerHigh->SetFillColor(kGray+1);
   innerHigh->SetLineColor(kGray+1);
-  innerHigh->SetLineWidth(-902);
+  innerHigh->SetLineWidth(-702);
   innerHigh->Draw("Lsame");
-
-  /*
-  innerAuxH->SetFillStyle(3005);
-  innerAuxH->SetFillColor(kGray+1);
-  innerAuxH->SetLineColor(kGray+1);
-  innerAuxH->SetLineWidth(-1202);
-  innerAuxH->Draw("Lsame");
-
-  innerAuxL->SetFillStyle(3005);
-  innerAuxL->SetFillColor(kGray+1);
-  innerAuxL->SetLineColor(kGray+1);
-  innerAuxL->SetLineWidth( 1202);
-  innerAuxL->Draw("Lsame");
-  */
 
   innerLow ->SetFillStyle(3005);
   innerLow ->SetFillColor(kGray+1);
   innerLow ->SetLineColor(kGray+1);
-  innerLow ->SetLineWidth( 902);
+  innerLow ->SetLineWidth( 702);
   innerLow ->Draw("Lsame");
 
   outerLow ->SetLineStyle(11);
@@ -692,7 +671,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   expected->SetLineColor(kGray+2);
   expected->SetLineWidth(3);
   expected->SetLineStyle(1);
-  expected->Draw("L");
+  expected->Draw("Lsame");
 
   /// setup the CMS Preliminary
   CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
