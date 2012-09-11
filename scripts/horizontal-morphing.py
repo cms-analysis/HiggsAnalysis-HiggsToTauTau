@@ -11,6 +11,7 @@ parser.add_option("--masses", dest="masses", default="110,115,120,125,130,135,14
 parser.add_option("--step-size", dest="step_size", default="1", type="string", help="Step-size for morphing in GeV of the mass. [Default: 1]")
 parser.add_option("-i", "--input", dest="input", default='testFile.root', type="string", help="Input file for morphing. Note that the file will be updated [Default: 'testFile.root']")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode")
+parser.add_option("--extrapolate", dest="extrapolate", default="", type="string", help="A comma separated list of masses outside the pivot range to extrapolate too - WARNING: less robust that interpolation. [Default: '']")
 (options, args) = parser.parse_args()
 
 
@@ -23,7 +24,7 @@ from ROOT import th1fmorph
 
 
 class Morph:
-    def __init__(self,input,directories,samples,uncerts,masses,step_size,verbose):
+    def __init__(self,input,directories,samples,uncerts,masses,step_size,verbose,extrapolate):
         ## verbose
         self.verbose = verbose
         ## input file
@@ -38,6 +39,8 @@ class Morph:
         self.uncerts = re.sub(r'\s', '', uncerts).split(',')
         ## list of event categories
         self.directories = re.sub(r'\s', '', directories).split(',')
+        ## list of mass points outside the range
+        self.extrapolations = [x for x in re.sub(r'\s', '', extrapolate).split(',') if x != '']
 
     def load_hist(self, file, directory, name) :
         """
@@ -106,6 +109,9 @@ class Morph:
             if self.verbose:
                 print "Morphing directory: %s" % dir
             for sample in self.samples :
+                # Keep track of morphings that need to be done.  This list
+                # holds tuples with (low, high, target) masses.
+                masses_to_morph = []
                 if self.verbose:
                     print "Morphing sample: %s" % sample
                 for idx in range(len(self.masses)-1) :
@@ -115,15 +121,36 @@ class Morph:
                             # This formatting is valid for 0.5 GeV bins up to TeV
                             # Returns 111 for 111.0, 111.5 for 111.5
                             value = "%.4g" % (float(self.masses[idx])+(x+1)*float(self.step_size))
+                            masses_to_morph.append((self.masses[idx], self.masses[idx+1], value))
                             if self.verbose:
                                 print "Morphing %0.1f between (%0.1f, %0.1f)" % tuple(float(x) for x in (value, self.masses[idx], self.masses[idx+1]))
-                            self.morph_hist(file, dir, sample, self.masses[idx], self.masses[idx+1], value)
-                            for uncert in self.uncerts :
-                                if not uncert == '' :
-                                    self.morph_hist(file, dir, sample+'_'+uncert+'Up', self.masses[idx], self.masses[idx+1], value)
-                                    self.morph_hist(file, dir, sample+'_'+uncert+'Down', self.masses[idx], self.masses[idx+1], value)
                     else :
                         if self.verbose :
                             print "nothing needs to be done here: nbin =", nbin
-template_morphing = Morph(options.input,options.categories,options.samples,options.uncerts,options.masses,options.step_size,options.verbose)
+                # Extrapolate outside the pivot range, if desired.
+                for mass in self.extrapolations:
+                    if float(mass) < float(self.masses[-1]) and float(mass) > float(self.masses[0]):
+                        raise ValueError("The point %f does not need to be extrapolated, it is within the pivot range" % mass)
+                    # Check if we are extrapolating on the high end or low end.
+                    if float(mass) > float(self.masses[-1]):
+                        # High end
+                        masses_to_morph.append(
+                            (self.masses[-2], self.masses[-1], mass)
+                        )
+                    else:
+                        # Low end
+                        masses_to_morph.append(
+                            (self.masses[0], self.masses[1], mass)
+                        )
+                    #import pdb; pdb.set_trace()
+                    print "Extrapolating [%0s, %0s] -> %0s" % masses_to_morph[-1]
+
+                for mass_low, mass_high, value in masses_to_morph:
+                    self.morph_hist(file, dir, sample, mass_low, mass_high, value)
+                    for uncert in self.uncerts :
+                        if not uncert == '' :
+                            self.morph_hist(file, dir, sample+'_'+uncert+'Up', mass_low, mass_high, value)
+                            self.morph_hist(file, dir, sample+'_'+uncert+'Down', mass_low, mass_high, value)
+
+template_morphing = Morph(options.input,options.categories,options.samples,options.uncerts,options.masses,options.step_size,options.verbose,options.extrapolate)
 template_morphing.run()
