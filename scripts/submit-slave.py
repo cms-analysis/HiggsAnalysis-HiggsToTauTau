@@ -65,13 +65,17 @@ if len(args) < 1 :
 import os
 import re
 
+## define root path (to allow for direcotry
+## structure of arbitrary depth)
+ROOTPATH = os.getcwd()
+
 for directory in args :
     if directory.find("common")>-1 :
         print "> skipping directory common"
         continue
     print "> entering directory %s" % directory
     ## visit subdirectories
-    os.chdir("%s/%s" % (os.getcwd(), directory))
+    os.chdir("%s/%s" % (ROOTPATH, directory))
     ## determine list of datacards and list of inputfiles
     ## from what is contained in the current directory
     datacards = []
