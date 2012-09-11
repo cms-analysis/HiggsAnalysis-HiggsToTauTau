@@ -29,7 +29,7 @@ layout = cms.PSet(
     ## define output label
     outputLabel = cms.string("mssm"),
     ## Set true if we want to skip observed limits
-    expectedOnly = cms.bool(False),
+    expectedOnly = cms.bool(True),
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
     90.
