@@ -22,8 +22,8 @@ import ROOT
 ROOT.gSystem.Load('$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so')
 from ROOT import th1fmorph
 from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools
-from HiggsAnalysis.HiggsToTauTau.acceptance_correction import interval
-from HiggsAnalysis.HiggsToTauTau.acceptance_correction import acceptance_correction
+from HiggsAnalysis.HiggsToTauTau.acceptance_correction import interval 
+from HiggsAnalysis.HiggsToTauTau.acceptance_correction import acceptance_correction 
 
 class MakeDatacard :
        def __init__(self, tanb, mA, model="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-nnlo.root", feyn_higgs_model="", sm_like=False) :
@@ -796,9 +796,9 @@ class MakeDatacard :
               hist_mA_value = buff_mA_value.Clone(hist_name)
               #print "RESCALING OF HIST STARTING: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
 
-              acc_mA = acceptance_correction(self.standardized_signal_process(process), self.mA)
+              acc_mA = acceptance_correction(self.standardized_signal_process(process), self.mA) 
               #print "ACCEPTANCE CORRECTION FOR mA: ", acc_mA
-              hist_mA_value.Scale(cross_sections["A"]/self.tanb)
+              hist_mA_value.Scale(cross_sections["A"]/self.tanb*acc_mA) 
               ## determine upper and lower mass edges for mh
               (mh_failed, mh_lower, mh_upper) = self.embracing_masses(self.mh, masses)
               if not mh_failed :
@@ -823,26 +823,27 @@ class MakeDatacard :
                                    hist_mh_value = hist_mh_upper
                             if hist_mh_value.Integral()>0 :
                                    norm_mh_value = cross_sections["h"]/self.tanb*self.scale(hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh)
-                                   acc_mh = acceptance_correction(self.standardized_signal_process(process), self.mh)
+                                   acc_mh = acceptance_correction(self.standardized_signal_process(process), self.mh) 
                                    #print "ACCEPTANCE CORRECTION FOR mh: ", acc_mh
-                                   hist_mh_value.Scale(norm_mh_value/hist_mh_value.Integral())
+                                   hist_mh_value.Scale(norm_mh_value/hist_mh_value.Integral()*acc_mh) 
                      else:
                             norm_mh_value = cross_sections["h"]/self.tanb*self.scale(hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh)
-                            acc_mh = acceptance_correction(self.standardized_signal_process(process), self.mh)
+                            acc_mh = acceptance_correction(self.standardized_signal_process(process), self.mh) 
                             #print "ACCEPTANCE CORRECTION FOR mh: ", acc_mh
                             hist_mh_value = th1fmorph("I","",hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh, norm_mh_value, 0)
+                            hist_mh_value.Scale(acc_mh) 
               else :
                      hist_mh_value = hist_mA_value.Clone(hist_name)
-                     acc_mh = acceptance_correction(self.standardized_signal_process(process), self.mh)
+                     acc_mh = acceptance_correction(self.standardized_signal_process(process), self.mh) 
                      #print "ACCEPTANCE CORRECTION FOR mh: ", acc_mh
-                     hist_mh_value.Scale(cross_sections["h"]/self.tanb)
+                     hist_mh_value.Scale(cross_sections["h"]/self.tanb*acc_mh) 
               ## catch cases where the morphing failed. Fallback to mA
               ## in this case and scale according to cross section of mh
               if not hist_mA_value.GetNbinsX() == hist_mh_value.GetNbinsX() :
                      hist_mh_value = hist_mA_value.Clone(hist_name)
-                     acc_mh = acceptance_correction(self.standardized_signal_process(process), self.mh)
+                     acc_mh = acceptance_correction(self.standardized_signal_process(process), self.mh) 
                      #print "ACCEPTANCE CORECTION FOR mh: ", acc_mh
-                     hist_mh_value.Scale(cross_sections["h"]/self.tanb)
+                     hist_mh_value.Scale(cross_sections["h"]/self.tanb*acc_mh) 
               else :
                      hist_mA_value.Add(hist_mh_value)
 
@@ -870,26 +871,27 @@ class MakeDatacard :
                                    hist_mH_value = hist_mH_upper
                             if hist_mH_value.Integral()>0 :
                                    norm_mH_value = cross_sections["H"]/self.tanb*self.scale(hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH)
-                                   acc_mH = acceptance_correction(self.standardized_signal_process(process), self.mH)
+                                   acc_mH = acceptance_correction(self.standardized_signal_process(process), self.mH) 
                                    #print "ACCEPTANCE CORRECTION FOR mH: ", acc_mH
-                                   hist_mH_value.Scale(norm_mH_value/hist_mH_value.Integral())
+                                   hist_mH_value.Scale(norm_mH_value/hist_mH_value.Integral())*acc_mH 
                      else :
                             norm_mH_value = cross_sections["H"]/self.tanb*self.scale(hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH)
-                            acc_mH = acceptance_correction(self.standardized_signal_process(process), self.mH)
+                            acc_mH = acceptance_correction(self.standardized_signal_process(process), self.mH) 
                             #print "ACCEPTANCE CORRECTION FOR mH: ", acc_mH
                             hist_mH_value = th1fmorph("I","",hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH, norm_mH_value, 0)
+                            hist_mH_value.Scale(acc_mH) 
               else :
                      hist_mH_value = hist_mA_value.Clone(hist_name)
-                     acc_mH = acceptance_correction(self.standardized_signal_process(process), self.mH)
+                     acc_mH = acceptance_correction(self.standardized_signal_process(process), self.mH) 
                      #print "ACCEPTANCE CORRECTION FOR mH: ", acc_mH
-                     hist_mH_value.Scale(cross_sections["H"]/self.tanb)
+                     hist_mH_value.Scale(cross_sections["H"]/self.tanb*acc_mH) 
               ## catch cases where the morphing failed. Fallback to mA
               ## in this case and scale according to cross section of mH
               if not hist_mA_value.GetNbinsX() == hist_mH_value.GetNbinsX() :
                      hist_mH_value = hist_mA_value.Clone(hist_name)
-                     acc_mH = acceptance_correction(self.standardized_signal_process(process), self.mH)
+                     acc_mH = acceptance_correction(self.standardized_signal_process(process), self.mH) 
                      #print "ACCEPTANCE CORRECTION FOR mH: ", acc_mH
-                     hist_mH_value.Scale(cross_sections["H"]/self.tanb)
+                     hist_mH_value.Scale(cross_sections["H"]/self.tanb*acc_mH) 
               else :
                      hist_mA_value.Add(hist_mH_value)
               #print "RESCALING OF HIST FINISHED: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
@@ -939,9 +941,9 @@ class MakeDatacard :
               if self.mA == 130. :
                      cross_section = cross_sections["A"]+cross_sections["H"]+cross_sections["h"]
               ## rescale histogram
-              acc_mA = acceptance_correction(self.standardized_signal_process(process), self.mA)
+              acc_mA = acceptance_correction(self.standardized_signal_process(process), self.mA) 
               #print "ACCEPTANCE CORRECTION FOR mA: ", acc_mA
-              hist_mA_value.Scale(cross_section/self.tanb)
+              hist_mA_value.Scale(cross_section/self.tanb*acc_mA) 
               ## write modified histogram to file
               if self.path(dir)=="" :
                      file_mA_value.cd()
@@ -984,14 +986,14 @@ class MakeDatacard :
               #print "RESCALING OF HIST STARTING: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
               if self.mA<self.hww_cross_point :
                      ## rescale histogram
-                     acc_mA = acceptance_correction(self.standardized_signal_process(process), self.mH)
+                     acc_mA = acceptance_correction(self.standardized_signal_process(process), self.mH) 
                      #print "ACCEPTANCE CORRECTION FOR mH: ", acc_mH
-                     hist_mA_value.Scale(cross_sections["H"]/(1. if self.sm_like else self.tanb))
+                     hist_mA_value.Scale(cross_sections["H"]/(1. if self.sm_like else self.tanb)*acc_mA) 
               else :
                      ## rescale histogram
-                     acc_mA = acceptance_correction(self.standardized_signal_process(process), self.mh)
+                     acc_mA = acceptance_correction(self.standardized_signal_process(process), self.mh) 
                      #print "ACCEPTANCE CORRECTION FOR mh: ", acc_mh                     
-                     hist_mA_value.Scale(cross_sections["h"]/(1. if self.sm_like else self.tanb))
+                     hist_mA_value.Scale(cross_sections["h"]/(1. if self.sm_like else self.tanb)*acc_mA) 
               #print "RESCALING OF HIST FINISHED: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
 
               ## write modified histogram to file
