@@ -388,7 +388,7 @@ class MakeDatacard :
        def cross_sections_htt(self, production_channel, decay_channel, period) :
               """
               Fill cross section results for different production channels for htt and hmm, which uses
-              the same infrastructure as ht,t depending on mass and tanb. The variable 'production_channel'
+              the same infrastructure as htt depending on mass and tanb. The variable 'production_channel'
               can have the values:
 
               - 'ggF' for gluon gluon fusion and
