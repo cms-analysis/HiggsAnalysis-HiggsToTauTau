@@ -136,7 +136,7 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
 	  blind_data_obs->Scale(TMath::Nint(blind_data_obs->Integral())/blind_data_obs->Integral());
 	  if( debug>1 ){ std::cerr << "New scale of blinded data_obs: " << blind_data_obs->Integral() << std::endl; }
 	}
-	std::cout << "data_obs yield: " << idir->GetName() << "   " << blind_data_obs->Integral() << std::endl;
+	std::cout << "data_obs yield: " << idir->GetName() << "   " << TMath::Nint(blind_data_obs->Integral()) << std::endl;
 	if(armed){
           if (debug > 1)
             std::cerr << "Writing to file: " << blind_data_obs->GetName() << std::endl;
