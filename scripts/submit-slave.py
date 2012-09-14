@@ -452,8 +452,10 @@ for directory in args :
             ## need for crab server
             os.system("sleep 10")
             os.chdir("%s/.." % os.getcwd())
-        print "Snoozing for three minutes..."
-        os.system("sleep 180")
+        #print "Snoozing for 1.5 minutes..."
+        #os.system("sleep 180")
+        print "Snoozing for 1.5 minutes..."
+        os.system("sleep 90")
     ## step back to main working directory
     os.chdir("%s/../.." % os.getcwd())
 print "> done"
