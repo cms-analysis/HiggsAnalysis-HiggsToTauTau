@@ -29,18 +29,19 @@
     run.
 */
 
-void rescaleLumi(const char* filename, float oldLumi=4.9, float newLumi=10., bool armed=false, unsigned int debug=0)
+void rescaleLumi(const char* oldfilename, float oldLumi=4.9, float newLumi=10., bool armed=false, unsigned int debug=0)
 {
   //float        oldLumi  = 4.9;
   //float        newLumi  = 10.;
   //unsigned int debug    = 2;
 
-  TFile* file = new TFile(filename, "update");
+  TFile* file = new TFile(oldfilename, "Update");
   TIter nextDirectory(file->GetListOfKeys());
+  TIter nextDirectory2(file->GetListOfKeys());
   TKey* idir;
   std::vector<TString> paths;
   // collect all histogram names
-  while((idir = (TKey*)nextDirectory())){
+  while((idir = (TKey*)nextDirectory())){;
     if(idir->IsFolder()){
       file->cd(); // make sure to start in directory head 
       if(debug>0){ std::cout << "Found directory: " << idir->GetName() << std::endl; }
@@ -56,26 +57,38 @@ void rescaleLumi(const char* filename, float oldLumi=4.9, float newLumi=10., boo
 	  }
 	}
       }
-    }
+    }    
   }
   // do the rescaling
   for(std::vector<TString>::const_iterator path2 = paths.begin(); path2!=paths.end(); ++path2){ 
     TH1F* h = (TH1F*)file->Get(*path2);
     if(debug>1){ std::cout << "histogram: " << *path2 << std::endl; }
     if(debug>1){ std::cout << "...old scale : " << h->Integral() << std::endl; }
-    h->Scale(newLumi/oldLumi);
-    if(std::string(h->GetName()).find("data_obs")!=std::string::npos){
-      if (h->Integral() > 0)
-	h->Scale((int)h->Integral()/h->Integral());
+    h->Scale(newLumi/oldLumi);  
+    if(std::string(*path2).find("data_obs")!=std::string::npos){
+      // for(int i=0; i<h->GetSize(); i++){
+      //  	float x=h->GetBinContent(i)+0.5;
+      //  	h->SetBinContent(i, int(x));
+      //        }
+      if (h->Integral() > 0)  h->Scale((int)h->Integral()/h->Integral());
     }
     if(debug>1){ std::cout << "...new scale : " << h->Integral() << std::endl; }
     if(armed){
       std::string str = std::string(*path2);
       std::string dir = str.substr(0, str.find("/"));
       std::string hist = str.substr(str.find("/")+1, std::string::npos);
-      file->cd();
+      file->cd();;
       file->cd(dir.c_str());
       h->Write(hist.c_str()); 
+    }
+  }
+  // remove unscaled histos from the root file to make sure the "right" histo is picked in limit calculation
+  TKey* idir2;
+  while((idir2 = (TKey*)nextDirectory2())){
+    file->cd();
+    if(file->GetDirectory(idir2->GetName())){ 
+      file->cd(idir2->GetName());
+      gDirectory->Delete("*;1"); // this only removes ;1 histos ... running twice on same input won't work proper
     }
   }
   file->Close();
