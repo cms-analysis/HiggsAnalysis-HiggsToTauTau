@@ -118,7 +118,7 @@ if options.analysis == "sm" :
         "mt"   : (110, 145),
         "et"   : (110, 145),
         "tt"   : (110, 145),
-        "vhtt" : (110, 140),
+        "vhtt" : (110, 145),
     }
 if options.analysis == "mssm" :
     valid_masses = {
@@ -174,11 +174,11 @@ for period in periods :
         for mass in parseArgs(args) :
             ## check validity of run period
             if not period in valid_periods[channel] :
-                #print "drop due to failing period: ", channel, valid_periods[channel], period 
+                #print "drop due to failing period: ", channel, valid_periods[channel], period
                 continue
             ## check validity of mass
             if (float(mass)< valid_masses[channel][0] or float(mass)> valid_masses[channel][1]) :
-                #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass 
+                #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass
                 continue
             if channel == "vhtt" or channel == "vhbb":
                 for category in categories[channel] :
