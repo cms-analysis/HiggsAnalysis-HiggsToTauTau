@@ -76,27 +76,27 @@ for category in categories :
         os.system("mkdir {OUTPUT}/{CAT}".format(OUTPUT=options.out, CAT=category))
 
 directories = {
-    "0"  : "0jet",
-    "1"  : "0jet",
-    "2"  : "boost",
-    "3"  : "boost",
-    "4"  : "2jet",
-    "5"  : "vbf",
+    "0"  : ["0jet", "fermionic"],
+    "1"  : ["0jet", "fermionic"],
+    "2"  : ["boost", "fermionic"],
+    "3"  : ["boost", "fermionic"],
+    "4"  : ["2jet"],
+    "5"  : ["vbf", "gauge"],
     "6"  : "btag",
     "7"  : "btag",
 }
 
 # The categories are different for the vhtt case
 vhtt_directories = {
-    "0" : "llt",
-    "1" : "4l",
-    "2" : "ltt",
+    "0" : ["llt", "gauge"],
+    "1" : ["4l", "gauge"],
+    "2" : ["ltt", "gauge"],
 }
 
 # For tau_h tau_h, 0 = boost, 1 = vbf
 tt_directories = {
-    "0"  : "boost",
-    "1"  : "vbf",
+    "0"  : ["boost", "fermionic"],
+    "1"  : ["vbf", "gauge"],
 }
 
 for channel in channels :
@@ -117,6 +117,7 @@ for channel in channels :
                         INPUT=options.input, OUTPUT=options.out+"/"+channel, PER=period, ANA=options.analysis, CHN=channel, MASS=mass))
                 if options.setup == "all" or options.setup == "cat" :
                     ## setup category-wise
-                    os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --{ANA}-categories-{CHN} {CAT} --v {MASS}".format(
-                        INPUT=options.input, OUTPUT=options.out+"/"+category_names[cat], PER=period, ANA=options.analysis, CHN=channel, CAT=cat, MASS=mass))
+                    for category in category_names[cat]:
+                        os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --{ANA}-categories-{CHN} {CAT} --v {MASS}".format(
+                            INPUT=options.input, OUTPUT=options.out+"/"+category, PER=period, ANA=options.analysis, CHN=channel, CAT=cat, MASS=mass))
 
