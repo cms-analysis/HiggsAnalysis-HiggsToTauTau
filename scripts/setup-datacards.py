@@ -65,7 +65,7 @@ if options.analysis == "sm" :
         "mt"   : (110, 145),
         "et"   : (110, 145),
         "tt"   : (110, 145),
-        "vhtt" : (110, 140),
+        "vhtt" : (110, 145),
     }
 if options.analysis == "mssm" :
     valid_masses = {
@@ -75,6 +75,7 @@ if options.analysis == "mssm" :
         "et"   : (100, 500),
         "tt"   : (100, 500),
     }
+
 print "------------------------------------------------------"
 print " Valid mass ranges per channel:"
 print "------------------------------------------------------"
@@ -143,14 +144,14 @@ for channel in channels :
             os.chdir("{PWD}/{CHN}".format(CHN=prefix+channel, PWD=base))
             ## check validity of run period
             if not period in valid_periods[channel] :
-                #print "drop due to failing period: ", channel, valid_periods[channel], period 
+                #print "drop due to failing period: ", channel, valid_periods[channel], period
                 continue
             os.system("datacard-project.py -i {PATH} -c {CHN} -e {ANA}-{PER}-0{CAT} {PER}-0{CAT}".format(PATH=os.path.abspath(options.input), CHN=channel, ANA=options.analysis, PER=period, CAT=cat))
             os.chdir("{PWD}/{CHN}/{PER}-0{CAT}".format(CHN=prefix+channel, PER=period, PWD=base, CAT=cat))
             for mass in parseArgs(args) :
                 ## check validity of mass
                 if (float(mass)< valid_masses[channel][0] or float(mass)> valid_masses[channel][1]) :
-                    #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass 
+                    #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass
                     continue
                 print "creating datacard for:", options.analysis, period, channel, cat, mass
                 if options.analysis == "mssm" :
