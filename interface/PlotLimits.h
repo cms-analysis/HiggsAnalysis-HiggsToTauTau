@@ -101,11 +101,11 @@ class PlotLimits {
   /// take these mass points out of consideration
   void prepareSimple(const char* directory, std::vector<double>& values, const char* filename);
   /// fill officially approved limits for LP2011 (NOTE: these are cross section also for MSSM)
-  void prepareHIG_11_020(std::vector<double>& values, const char* type, bool xsec=true);
+  void prepareHIG_11_020(std::vector<double>& values, const char* type, bool xsec, double mass);
   /// fill officially approved limits for HIG-11-029 paper (NOTE: these are direct limits on tanb for MSSM)
-  void prepareHIG_11_029(std::vector<double>& values, const char* type);
+  void prepareHIG_11_029(std::vector<double>& values, const char* type, double mass);
   /// fill officially approved limits for HIG-12-018 PAS and HIG-12-028 paper (NOTE: these are only SM limits)
-  void prepareHIG_12_018(std::vector<double>& values, const char* type);
+  void prepareHIG_12_018(std::vector<double>& values, const char* type, double mass);
 
   /*
     Limits for comparison
@@ -152,214 +152,216 @@ class PlotLimits {
   std::vector<double> bins_;
   /// check whether mass point is available or not
   std::vector<bool> valid_; 
+  /// mass for which a limit has been calculated (needed for plotting of HIG-XX-YYY results)
+  std::vector<double> masses_;  
 };
 
 inline void
-PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, bool xsec)
+PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, bool xsec, double mass)
 {
   if(mssm_){
     if(std::string(type)==std::string("observed")){
       if(xsec){
 	// xsec limits
-	values.push_back(14.076);
-	values.push_back( 7.995);
-	values.push_back( 4.501);
-	values.push_back( 4.095);
-	values.push_back( 3.834);
-	values.push_back( 3.103);
-	values.push_back( 2.296);
-	values.push_back( 2.353);
-	values.push_back( 1.700);
-	values.push_back( 1.227);
-	values.push_back( 0.600);
-	values.push_back( 0.416);
-	values.push_back( 0.335);
+	if(mass==90) {values.push_back(14.076); }
+	if(mass==100) {values.push_back( 7.995); }
+	if(mass==120) {values.push_back( 4.501); }
+	if(mass==130) {values.push_back( 4.095); }
+	if(mass==140) {values.push_back( 3.834); }
+	if(mass==160) {values.push_back( 3.103); }
+	if(mass==180) {values.push_back( 2.296); }
+	if(mass==200) {values.push_back( 2.353); }
+	if(mass==250) {values.push_back( 1.700); }
+	if(mass==300) {values.push_back( 1.227); }
+	if(mass==400) {values.push_back( 0.600); }
+	if(mass==450) {values.push_back( 0.416); }
+	if(mass==400) {values.push_back( 0.335); }
       }
       else{
 	// tanb limits
-	values.push_back(8.50 );
-	values.push_back(7.92 );
-	values.push_back(8.67 );
-	values.push_back(7.78 );
-	values.push_back(10.99);
-	values.push_back(12.69);
-	values.push_back(14.00);
-	values.push_back(17.66);
-	values.push_back(24.46);
-	values.push_back(31.68);
-	values.push_back(44.82);
-	values.push_back(50.62);
-	values.push_back(59.53);
+	if(mass==90) {values.push_back(8.50 ); }
+	if(mass==100) {values.push_back(7.92 ); }
+	if(mass==120) {values.push_back(8.67 ); }
+	if(mass==130) {values.push_back(7.78 ); }
+	if(mass==140) {values.push_back(10.99); }
+	if(mass==160) {values.push_back(12.69); }
+	if(mass==180) {values.push_back(14.00); }
+	if(mass==200) {values.push_back(17.66); }
+	if(mass==250) {values.push_back(24.46); }
+	if(mass==300) {values.push_back(31.68); }
+	if(mass==400) {values.push_back(44.82); }
+	if(mass==450) {values.push_back(50.62); }
+	if(mass==500) {values.push_back(59.53); }
       }
     }
     else if (std::string(type)==std::string("+2sigma")){
       if(xsec){
 	// xsec limits
-	values.push_back(34.598);
-	values.push_back(24.746);
-	values.push_back(11.224);
-	values.push_back( 9.260);
-	values.push_back( 6.884);
-	values.push_back( 5.011);
-	values.push_back( 3.504);
-	values.push_back( 2.916);
-	values.push_back( 1.848);
-	values.push_back( 1.279);
-	values.push_back( 0.736);
-	values.push_back( 0.579);
-	values.push_back( 0.457);
+	if(mass==90) {values.push_back(34.598); }
+	if(mass==100) {values.push_back(24.746); }
+	if(mass==120) {values.push_back(11.224); }
+	if(mass==130) {values.push_back( 9.260); }
+	if(mass==140) {values.push_back( 6.884); }
+	if(mass==160) {values.push_back( 5.011); }
+	if(mass==180) {values.push_back( 3.504); }
+	if(mass==200) {values.push_back( 2.916); }
+	if(mass==250) {values.push_back( 1.848); }
+	if(mass==300) {values.push_back( 1.279); }
+	if(mass==400) {values.push_back( 0.736); }
+	if(mass==450) {values.push_back( 0.579); }
+	if(mass==500) {values.push_back( 0.457); }
       }
       else{
 	// tanb limits
-	values.push_back(13.33);
-	values.push_back(13.90);
-	values.push_back(13.86);
-	values.push_back(13.16);
-	values.push_back(14.81);
-	values.push_back(16.13);
-	values.push_back(17.20);
-	values.push_back(19.64);
-	values.push_back(25.48);
-	values.push_back(32.29);
-	values.push_back(49.22);
-	values.push_back(58.79);
-	values.push_back(69.25);
+	if(mass==90) {values.push_back(13.33); }
+	if(mass==100) {values.push_back(13.90); }
+	if(mass==120) {values.push_back(13.86); }
+	if(mass==130) {values.push_back(13.16); }
+	if(mass==140) {values.push_back(14.81); }
+	if(mass==160) {values.push_back(16.13); }
+	if(mass==180) {values.push_back(17.20); }
+	if(mass==200) {values.push_back(19.64); }
+	if(mass==250) {values.push_back(25.48); }
+	if(mass==300) {values.push_back(32.29); }
+	if(mass==400) {values.push_back(49.22); } 
+	if(mass==450) {values.push_back(58.79); } 
+	if(mass==500) {values.push_back(69.25); }
       }
     }
     else if (std::string(type)==std::string("+1sigma")){
       if(xsec){
 	/// xsec limits
-	values.push_back(24.864);
-	values.push_back(18.287);
-	values.push_back( 8.397);
-	values.push_back( 6.899);
-	values.push_back( 5.134);
-	values.push_back( 3.718);
-	values.push_back( 2.616);
-	values.push_back( 2.190);
-	values.push_back( 1.351);
-	values.push_back( 0.955);
-	values.push_back( 0.538);
-	values.push_back( 0.416);
-	values.push_back( 0.335);
+	if(mass==90) {values.push_back(24.864); }
+	if(mass==100) {values.push_back(18.287); } 
+	if(mass==120) {values.push_back( 8.397); }
+	if(mass==130) {values.push_back( 6.899); }
+	if(mass==140) {values.push_back( 5.134); }
+	if(mass==160) {values.push_back( 3.718); }
+	if(mass==180) {values.push_back( 2.616); }
+	if(mass==200) {values.push_back( 2.190); }
+	if(mass==250) {values.push_back( 1.351); }
+	if(mass==300) {values.push_back( 0.955); }
+	if(mass==400) {values.push_back( 0.538); }
+	if(mass==450) {values.push_back( 0.416); }
+	if(mass==500) {values.push_back( 0.335); }
       }
       else{
 	// tanb limits
-	values.push_back(11.31);
-	values.push_back(11.99);
-	values.push_back(12.02);
-	values.push_back(11.05);
-	values.push_back(12.77);
-	values.push_back(13.91);
-	values.push_back(14.92);
-	values.push_back(17.06);
-	values.push_back(21.88);
-	values.push_back(28.14);
-	values.push_back(42.65);
-	values.push_back(50.62);
-	values.push_back(59.53);
+	if(mass==90) {values.push_back(11.31); }
+	if(mass==100) {values.push_back(11.99); }
+	if(mass==120) {values.push_back(12.02); }
+	if(mass==130) {values.push_back(11.05); }
+	if(mass==140) {values.push_back(12.77); }
+	if(mass==160) {values.push_back(13.91); }
+	if(mass==180) {values.push_back(14.92); }
+	if(mass==200) {values.push_back(17.06); }
+	if(mass==250) {values.push_back(21.88); }
+	if(mass==300) {values.push_back(28.14); }
+	if(mass==400) {values.push_back(42.65); }
+	if(mass==450) {values.push_back(50.62); }
+	if(mass==500) {values.push_back(59.53); }
       }
     }
     else if(std::string(type)==std::string("expected")){
       if(xsec){
 	// xsec limits
-	values.push_back(17.802);
-	values.push_back(12.569);
-	values.push_back( 6.001);
-	values.push_back( 4.823);
-	values.push_back( 3.655);
-	values.push_back( 2.630);
-	values.push_back( 1.883);
-	values.push_back( 1.543);
-	values.push_back( 0.957);
-	values.push_back( 0.661);
-	values.push_back( 0.376);
-	values.push_back( 0.294);
-	values.push_back( 0.254);
+	if(mass==90) {values.push_back(17.802); masses_.push_back(mass);}
+	if(mass==100) {values.push_back(12.569); masses_.push_back(mass);}
+	if(mass==120) {values.push_back( 6.001); masses_.push_back(mass);}
+	if(mass==130) {values.push_back( 4.823); masses_.push_back(mass);}
+	if(mass==140) {values.push_back( 3.655); masses_.push_back(mass);}
+	if(mass==160) {values.push_back( 2.630); masses_.push_back(mass);}
+	if(mass==180) {values.push_back( 1.883); masses_.push_back(mass);}
+	if(mass==200) {values.push_back( 1.543); masses_.push_back(mass);}
+	if(mass==250) {values.push_back( 0.957); masses_.push_back(mass);}
+	if(mass==300) {values.push_back( 0.661); masses_.push_back(mass);}
+	if(mass==400) {values.push_back( 0.376); masses_.push_back(mass);}
+	if(mass==450) {values.push_back( 0.294); masses_.push_back(mass);}
+	if(mass==500) {values.push_back( 0.254); masses_.push_back(mass);}
       }
       else{
 	// tanb limtis
-	values.push_back(9.56 );
-	values.push_back(9.96 );
-	values.push_back(10.12);
-	values.push_back(8.75 );
-	values.push_back(10.71);
-	values.push_back(11.69);
-	values.push_back(12.67);
-	values.push_back(14.37);
-	values.push_back(18.56);
-	values.push_back(23.75);
-	values.push_back(36.32);
-	values.push_back(43.41);
-	values.push_back(52.65);
+	if(mass==90) {values.push_back(9.56 ); masses_.push_back(mass);}
+	if(mass==100) {values.push_back(9.96 ); masses_.push_back(mass);}
+	if(mass==120) {values.push_back(10.12); masses_.push_back(mass);}
+	if(mass==130) {values.push_back(8.75 ); masses_.push_back(mass);}
+	if(mass==140) {values.push_back(10.71); masses_.push_back(mass);}
+	if(mass==160) {values.push_back(11.69); masses_.push_back(mass);}
+	if(mass==180) {values.push_back(12.67); masses_.push_back(mass);}
+	if(mass==200) {values.push_back(14.37); masses_.push_back(mass);}
+	if(mass==250) {values.push_back(18.56); masses_.push_back(mass);}
+	if(mass==300) {values.push_back(23.75); masses_.push_back(mass);}
+	if(mass==400) {values.push_back(36.32); masses_.push_back(mass);}
+	if(mass==450) {values.push_back(43.41); masses_.push_back(mass);}
+	if(mass==500) {values.push_back(52.65); masses_.push_back(mass);}
       }
     }
     else if (std::string(type)==std::string("-1sigma")){
       if(xsec){
 	// xsec limits
-	values.push_back(12.360);
-	values.push_back( 8.644);
-	values.push_back( 4.062);
-	values.push_back( 3.381);
-	values.push_back( 2.619);
-	values.push_back( 1.877);
-	values.push_back( 1.323);
-	values.push_back( 1.119);
-	values.push_back( 0.701);
-	values.push_back( 0.470);
-	values.push_back( 0.264);
-	values.push_back( 0.213);
-	values.push_back( 0.213);
+	if(mass==90) {values.push_back(12.360); }
+	if(mass==100) {values.push_back( 8.644); }
+	if(mass==120) {values.push_back( 4.062); }
+	if(mass==130) {values.push_back( 3.381); }
+	if(mass==140) {values.push_back( 2.619); }
+	if(mass==160) {values.push_back( 1.877); }
+	if(mass==180) {values.push_back( 1.323); }
+	if(mass==200) {values.push_back( 1.119); }
+	if(mass==250) {values.push_back( 0.701); }
+	if(mass==300) {values.push_back( 0.470); }
+	if(mass==400) {values.push_back( 0.264); }
+	if(mass==450) {values.push_back( 0.213); }
+	if(mass==500) {values.push_back( 0.213); }
       }
       else{
 	// tanb limits
-	values.push_back(7.98 );
-	values.push_back(8.23 );
-	values.push_back(8.19 );
-	values.push_back(6.68 );
-	values.push_back(8.95 );
-	values.push_back(9.87 );
-	values.push_back(10.66);
-	values.push_back(12.31);
-	values.push_back(16.03);
-	values.push_back(20.37);
-	values.push_back(31.13);
-	values.push_back(37.77);
-	values.push_back(48.74);
+	if(mass==90) {values.push_back(7.98 ); }
+	if(mass==100) {values.push_back(8.23 ); }
+	if(mass==120) {values.push_back(8.19 ); } 
+	if(mass==130) {values.push_back(6.68 ); }
+	if(mass==140) {values.push_back(8.95 ); }
+	if(mass==160) {values.push_back(9.87 ); }
+	if(mass==180) {values.push_back(10.66); }
+	if(mass==200) {values.push_back(12.31); }
+	if(mass==250) {values.push_back(16.03); }
+	if(mass==300) {values.push_back(20.37); }
+	if(mass==400) {values.push_back(31.13); }
+	if(mass==450) {values.push_back(37.77); }
+	if(mass==500) {values.push_back(48.74); }
       }
     }
     else if (std::string(type)==std::string("-2sigma")){
       if(xsec){
 	// xsec limits
-	values.push_back( 9.211);
-	values.push_back( 6.216);
-	values.push_back( 2.891);
-	values.push_back( 2.579);
-	values.push_back( 1.912);
-	values.push_back( 1.450);
-	values.push_back( 0.945);
-	values.push_back( 0.703);
-	values.push_back( 0.518);
-	values.push_back( 0.368);
-	values.push_back( 0.213);
-	values.push_back( 0.132);
-	values.push_back( 0.172);
+	if(mass==90) {values.push_back( 9.211); }
+	if(mass==100) {values.push_back( 6.216); }
+	if(mass==120) {values.push_back( 2.891); }
+	if(mass==130) {values.push_back( 2.579); }
+	if(mass==140) {values.push_back( 1.912); }
+	if(mass==160) {values.push_back( 1.450); }
+	if(mass==180) {values.push_back( 0.945); }
+	if(mass==200) {values.push_back( 0.703); }
+	if(mass==250) {values.push_back( 0.518); }
+	if(mass==300) {values.push_back( 0.368); }
+	if(mass==400) {values.push_back( 0.213); }
+	if(mass==450) {values.push_back( 0.132); }
+	if(mass==500) {values.push_back( 0.172); }
       }
       else{
 	// tanb limits
-	values.push_back(6.85 );
-	values.push_back(6.95 );
-	values.push_back(6.65 );
-	values.push_back(5.14 );
-	values.push_back(7.43 );
-	values.push_back(8.64 );
-	values.push_back(9.07 );
-	values.push_back(9.84 );
-	values.push_back(13.92);
-	values.push_back(18.30);
-	values.push_back(28.40);
-	values.push_back(30.95);
-	values.push_back(44.45);
+	if(mass==90) {values.push_back(6.85 ); }
+	if(mass==100) {values.push_back(6.95 ); }
+	if(mass==120) {values.push_back(6.65 ); }
+	if(mass==130) {values.push_back(5.14 ); }
+	if(mass==140) {values.push_back(7.43 ); }
+	if(mass==160) {values.push_back(8.64 ); }
+	if(mass==180) {values.push_back(9.07 ); }
+	if(mass==200) {values.push_back(9.84 ); }
+	if(mass==250) {values.push_back(13.92); }
+	if(mass==300) {values.push_back(18.30); }
+	if(mass==400) {values.push_back(28.40); }
+	if(mass==450) {values.push_back(30.95); }
+	if(mass==500) {values.push_back(44.45); }
       }
     }
     else{
@@ -370,64 +372,64 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
   }
   else{
     if(std::string(type)==std::string("observed")){
-      values.push_back( 5.984);
-      values.push_back( 7.018);
-      values.push_back( 7.618);
-      values.push_back( 7.106);
-      values.push_back(10.029);
-      values.push_back(10.352);
-      values.push_back(12.415);
-      values.push_back(17.923);
+      if(mass==110) {values.push_back( 5.984); }
+      if(mass==150) {values.push_back( 7.018); }
+      if(mass==120) {values.push_back( 7.618); }
+      if(mass==125) {values.push_back( 7.106); }
+      if(mass==130) {values.push_back(10.029); }
+      if(mass==135) {values.push_back(10.352); }
+      if(mass==140) {values.push_back(12.415); }
+      if(mass==145) {values.push_back(17.923); }
     }
     else if(std::string(type)==std::string("+2sigma")){
-      values.push_back(10.971);
-      values.push_back(11.788);
-      values.push_back(11.099);
-      values.push_back(11.190);
-      values.push_back(12.661);
-      values.push_back(14.527);
-      values.push_back(17.831);
-      values.push_back(24.432);
+      if(mass==110) {values.push_back(10.971); }
+      if(mass==115) {values.push_back(11.788); }
+      if(mass==120) {values.push_back(11.099); }
+      if(mass==125) {values.push_back(11.190); }
+      if(mass==130) {values.push_back(12.661); }
+      if(mass==135) {values.push_back(14.527); }
+      if(mass==140) {values.push_back(17.831); }
+      if(mass==145) {values.push_back(24.432); }
     }
     else if(std::string(type)==std::string("+1sigma")){
-      values.push_back( 7.839);
-      values.push_back( 8.663);
-      values.push_back( 8.010);
-      values.push_back( 8.108);
-      values.push_back( 9.178);
-      values.push_back(10.558);
-      values.push_back(12.944);
-      values.push_back(17.708);
+      if(mass==110) {values.push_back( 7.839); }
+      if(mass==115) {values.push_back( 8.663); }
+      if(mass==120) {values.push_back( 8.010); }
+      if(mass==125) {values.push_back( 8.108); }
+      if(mass==130) {values.push_back( 9.178); }
+      if(mass==135) {values.push_back(10.558); }
+      if(mass==140) {values.push_back(12.944); }
+      if(mass==145) {values.push_back(17.708); }
     }
     else if(std::string(type)==std::string("expected")){
-      values.push_back( 5.402);
-      values.push_back( 6.139);
-      values.push_back( 5.606);
-      values.push_back( 5.706);
-      values.push_back( 6.439);
-      values.push_back( 7.430);
-      values.push_back( 9.124);
-      values.push_back(12.534);
+      if(mass==110) {values.push_back( 5.402); masses_.push_back(mass);}
+      if(mass==115) {values.push_back( 6.139); masses_.push_back(mass);}
+      if(mass==120) {values.push_back( 5.606); masses_.push_back(mass);}
+      if(mass==125) {values.push_back( 5.706); masses_.push_back(mass);}
+      if(mass==130) {values.push_back( 6.439); masses_.push_back(mass);}
+      if(mass==135) {values.push_back( 7.430); masses_.push_back(mass);}
+      if(mass==140) {values.push_back( 9.124); masses_.push_back(mass);}
+      if(mass==145) {values.push_back(12.534); masses_.push_back(mass);}
     }
     else if(std::string(type)==std::string("-1sigma")){
-      values.push_back( 3.911);
-      values.push_back( 4.443);
-      values.push_back( 4.013);
-      values.push_back( 3.997);
-      values.push_back( 4.563);
-      values.push_back( 5.401);
-      values.push_back( 6.522);
-      values.push_back( 8.975);
+      if(mass==110) {values.push_back( 3.911); }
+      if(mass==115) {values.push_back( 4.443); }
+      if(mass==120) {values.push_back( 4.013); }
+      if(mass==125) {values.push_back( 3.997); }
+      if(mass==130) {values.push_back( 4.563); }
+      if(mass==135) {values.push_back( 5.401); }
+      if(mass==140) {values.push_back( 6.522); }
+      if(mass==145) {values.push_back( 8.975); }
     }
     else if(std::string(type)==std::string("-2sigma")){
-      values.push_back( 3.114);
-      values.push_back( 3.342);
-      values.push_back( 3.110);
-      values.push_back( 3.117);
-      values.push_back( 3.440);
-      values.push_back( 4.209);
-      values.push_back( 5.210);
-      values.push_back( 7.148);
+      if(mass==110) {values.push_back( 3.114); }
+      if(mass==115) {values.push_back( 3.342); }
+      if(mass==120) {values.push_back( 3.110); }
+      if(mass==125) {values.push_back( 3.117); }
+      if(mass==130) {values.push_back( 3.440); }
+      if(mass==135) {values.push_back( 4.209); }
+      if(mass==140) {values.push_back( 5.210); }
+      if(mass==145) {values.push_back( 7.148); }
     }
     else{
       std::cout << "ERROR: picked wrong type. Available types are: +2sigma, +1sigma, mean, median, -1sigma, -2sigma" << std::endl
@@ -439,104 +441,104 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
 }
 
 inline void
-PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type)
+PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type, double mass)
 {
   if(mssm_){
     if(std::string(type)==std::string("observed")){
-      values.push_back(12.246);
-      values.push_back(11.799);
-      values.push_back( 9.842);
-      values.push_back( 9.026);
-      values.push_back( 8.031);
-      values.push_back( 7.113);
-      values.push_back( 7.504);
-      values.push_back( 8.464);
-      values.push_back(13.755);
-      values.push_back(20.943);
-      values.push_back(29.124);
-      values.push_back(37.298);
-      values.push_back(45.178);
-      values.push_back(51.904);
+      if(mass==90) {values.push_back(12.246); }
+      if(mass==100) {values.push_back(11.799); }
+      if(mass==120) {values.push_back( 9.842); }
+      if(mass==130) {values.push_back( 9.026); }
+      if(mass==140) {values.push_back( 8.031); }
+      if(mass==160) {values.push_back( 7.113); }
+      if(mass==180) {values.push_back( 7.504); }
+      if(mass==200) {values.push_back( 8.464); }
+      if(mass==250) {values.push_back(13.755); }
+      if(mass==300) {values.push_back(20.943); }
+      if(mass==350) {values.push_back(29.124); }
+      if(mass==400) {values.push_back(37.298); }
+      if(mass==450) {values.push_back(45.178); }
+      if(mass==500) {values.push_back(51.904); }
     } 
     else if (std::string(type)==std::string("-2sigma")){
-      values.push_back( 5.194);
-      values.push_back( 6.492);
-      values.push_back( 4.500);
-      values.push_back( 5.369);
-      values.push_back( 5.615);
-      values.push_back( 5.574);
-      values.push_back( 6.747);
-      values.push_back( 7.845);
-      values.push_back(10.327);
-      values.push_back(13.469);
-      values.push_back(17.660);
-      values.push_back(21.923);
-      values.push_back(25.008);
-      values.push_back(30.315);
+      if(mass==90) {values.push_back( 5.194); }
+      if(mass==100) {values.push_back( 6.492); }
+      if(mass==120) {values.push_back( 4.500); }
+      if(mass==130) {values.push_back( 5.369); }
+      if(mass==140) {values.push_back( 5.615); }
+      if(mass==160) {values.push_back( 5.574); }
+      if(mass==180) {values.push_back( 6.747); }
+      if(mass==200) {values.push_back( 7.845); }
+      if(mass==250) {values.push_back(10.327); }
+      if(mass==300) {values.push_back(13.469); }
+      if(mass==350) {values.push_back(17.660); }
+      if(mass==400) {values.push_back(21.923); }
+      if(mass==450) {values.push_back(25.008); }
+      if(mass==500) {values.push_back(30.315); }
     }
     else if (std::string(type)==std::string("-1sigma")){
-      values.push_back( 7.009);
-      values.push_back( 7.450);
-      values.push_back( 6.475);
-      values.push_back( 6.710);
-      values.push_back( 6.628);
-      values.push_back( 6.986);
-      values.push_back( 8.140);
-      values.push_back( 9.118);
-      values.push_back(12.344);
-      values.push_back(15.704);
-      values.push_back(20.093);
-      values.push_back(24.298);
-      values.push_back(29.164);
-      values.push_back(35.739);
+      if(mass==90) {values.push_back( 7.009); }
+      if(mass==100) {values.push_back( 7.450); }
+      if(mass==120) {values.push_back( 6.475); }
+      if(mass==130) {values.push_back( 6.710); }
+      if(mass==140) {values.push_back( 6.628); }
+      if(mass==160) {values.push_back( 6.986); }
+      if(mass==180) {values.push_back( 8.140); }
+      if(mass==200) {values.push_back( 9.118); }
+      if(mass==250) {values.push_back(12.344); }
+      if(mass==300) {values.push_back(15.704); }
+      if(mass==350) {values.push_back(20.093); }
+      if(mass==400) {values.push_back(24.298); }
+      if(mass==450) {values.push_back(29.164); }
+      if(mass==500) {values.push_back(35.739); }
     }
     else if(std::string(type)==std::string("expected")){
-      values.push_back( 8.371);
-      values.push_back( 8.777);
-      values.push_back( 8.087);
-      values.push_back( 7.847);
-      values.push_back( 7.901);
-      values.push_back( 8.514);
-      values.push_back( 9.533);
-      values.push_back(10.519);
-      values.push_back(13.923);
-      values.push_back(18.378);
-      values.push_back(23.025);
-      values.push_back(27.886);
-      values.push_back(33.264);
-      values.push_back(40.510);
+      if(mass==90) {values.push_back( 8.371); masses_.push_back(mass);}
+      if(mass==100) {values.push_back( 8.777); masses_.push_back(mass);}
+      if(mass==120) {values.push_back( 8.087); masses_.push_back(mass);}
+      if(mass==130) {values.push_back( 7.847); masses_.push_back(mass);}
+      if(mass==140) {values.push_back( 7.901); masses_.push_back(mass);}
+      if(mass==160) {values.push_back( 8.514); masses_.push_back(mass);}
+      if(mass==180) {values.push_back( 9.533); masses_.push_back(mass);}
+      if(mass==200) {values.push_back(10.519); masses_.push_back(mass);}
+      if(mass==250) {values.push_back(13.923); masses_.push_back(mass);}
+      if(mass==300) {values.push_back(18.378); masses_.push_back(mass);}
+      if(mass==350) {values.push_back(23.025); masses_.push_back(mass);}
+      if(mass==400) {values.push_back(27.886); masses_.push_back(mass);}
+      if(mass==450) {values.push_back(33.264); masses_.push_back(mass);}
+      if(mass==500) {values.push_back(40.510); masses_.push_back(mass);}
     }
     else if (std::string(type)==std::string("+1sigma")){
-      values.push_back(10.605);
-      values.push_back(10.828);
-      values.push_back( 9.889);
-      values.push_back( 9.691);
-      values.push_back( 9.692);
-      values.push_back(10.419);
-      values.push_back(11.324);
-      values.push_back(12.811);
-      values.push_back(16.765);
-      values.push_back(21.415);
-      values.push_back(26.939);
-      values.push_back(32.449);
-      values.push_back(38.800);
-      values.push_back(47.145);
+      if(mass==90) {values.push_back(10.605); }
+      if(mass==100) {values.push_back(10.828); }
+      if(mass==120) {values.push_back( 9.889); }
+      if(mass==130) {values.push_back( 9.691); }
+      if(mass==140) {values.push_back( 9.692); }
+      if(mass==160) {values.push_back(10.419); }
+      if(mass==180) {values.push_back(11.324); }
+      if(mass==200) {values.push_back(12.811); }
+      if(mass==250) {values.push_back(16.765); }
+      if(mass==300) {values.push_back(21.415); }
+      if(mass==350) {values.push_back(26.939); }
+      if(mass==400) {values.push_back(32.449); }
+      if(mass==450) {values.push_back(38.800); }
+      if(mass==500) {values.push_back(47.145); }
     }
     else if (std::string(type)==std::string("+2sigma")){
-      values.push_back(12.836);
-      values.push_back(13.418);
-      values.push_back(11.957);
-      values.push_back(11.453);
-      values.push_back(11.557);
-      values.push_back(12.453);
-      values.push_back(13.762);
-      values.push_back(14.989);
-      values.push_back(19.373);
-      values.push_back(24.471);
-      values.push_back(31.113);
-      values.push_back(37.293);
-      values.push_back(44.728);
-      values.push_back(55.000);
+      if(mass==90) {values.push_back(12.836); }
+      if(mass==100) {values.push_back(13.418); }
+      if(mass==120) {values.push_back(11.957); }
+      if(mass==130) {values.push_back(11.453); }
+      if(mass==140) {values.push_back(11.557); }
+      if(mass==160) {values.push_back(12.453); }
+      if(mass==180) {values.push_back(13.762); }
+      if(mass==200) {values.push_back(14.989); }
+      if(mass==250) {values.push_back(19.373); }
+      if(mass==300) {values.push_back(24.471); }
+      if(mass==350) {values.push_back(31.113); }
+      if(mass==400) {values.push_back(37.293); }
+      if(mass==450) {values.push_back(44.728); }
+      if(mass==500) {values.push_back(55.000); }
     }
     else{
       std::cout << "ERROR: picked wrong type. Available types are: +2sigma, +1sigma, mean, median, -1sigma, -2sigma" << std::endl
@@ -546,64 +548,64 @@ PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type)
   }
   else{ // SM Winter11 results
     if(std::string(type)==std::string("observed")){
-      values.push_back( 3.20);
-      values.push_back( 3.19);
-      values.push_back( 3.62);
-      values.push_back( 4.27);
-      values.push_back( 5.08);
-      values.push_back( 5.39);
-      values.push_back( 5.46);
-      values.push_back( 7.00);
+      if(mass==110) {values.push_back( 3.20); }
+      if(mass==115) {values.push_back( 3.19); }
+      if(mass==120) {values.push_back( 3.62); }
+      if(mass==125) {values.push_back( 4.27); }
+      if(mass==130) {values.push_back( 5.08); }
+      if(mass==135) {values.push_back( 5.39); }
+      if(mass==140) {values.push_back( 5.46); }
+      if(mass==145) {values.push_back( 7.00); }
     }
     else if(std::string(type)==std::string("+2sigma")){
-      values.push_back( 6.63);
-      values.push_back( 5.86);
-      values.push_back( 6.07);
-      values.push_back( 6.01);
-      values.push_back( 6.43);
-      values.push_back( 7.87);
-      values.push_back( 7.99);
-      values.push_back(10.70);
+      if(mass==110) {values.push_back( 6.63); }
+      if(mass==115) {values.push_back( 5.86); }
+      if(mass==120) {values.push_back( 6.07); }
+      if(mass==125) {values.push_back( 6.01); }
+      if(mass==130) {values.push_back( 6.43); }
+      if(mass==135) {values.push_back( 7.87); }
+      if(mass==140) {values.push_back( 7.99); }
+      if(mass==145) {values.push_back(10.70); }
     }
     else if(std::string(type)==std::string("+1sigma")){
-      values.push_back( 4.76);
-      values.push_back( 4.23);
-      values.push_back( 4.33);
-      values.push_back( 4.38);
-      values.push_back( 4.72);
-      values.push_back( 5.77);
-      values.push_back( 5.85);
-      values.push_back( 7.65);
+      if(mass==110) {values.push_back( 4.76); }
+      if(mass==115) {values.push_back( 4.23); }
+      if(mass==120) {values.push_back( 4.33); }
+      if(mass==125) {values.push_back( 4.38); }
+      if(mass==130) {values.push_back( 4.72); }
+      if(mass==135) {values.push_back( 5.77); }
+      if(mass==140) {values.push_back( 5.85); }
+      if(mass==145) {values.push_back( 7.65); }
     }
     else if(std::string(type)==std::string("expected")){
-      values.push_back( 3.30);
-      values.push_back( 2.97);
-      values.push_back( 3.03);
-      values.push_back( 3.05);
-      values.push_back( 3.31);
-      values.push_back( 4.06);
-      values.push_back( 4.17);
-      values.push_back( 5.45);
+      if(mass==110) {values.push_back( 3.30); masses_.push_back(mass);}
+      if(mass==115) {values.push_back( 2.97); masses_.push_back(mass);}
+      if(mass==120) {values.push_back( 3.03); masses_.push_back(mass);}
+      if(mass==125) {values.push_back( 3.05); masses_.push_back(mass);}
+      if(mass==130) {values.push_back( 3.31); masses_.push_back(mass);}
+      if(mass==135) {values.push_back( 4.06); masses_.push_back(mass);}
+      if(mass==140) {values.push_back( 4.17); masses_.push_back(mass);}
+      if(mass==145) {values.push_back( 5.45); masses_.push_back(mass);}
     }
     else if(std::string(type)==std::string("-1sigma")){
-      values.push_back( 2.36);
-      values.push_back( 2.13);
-      values.push_back( 2.17);
-      values.push_back( 2.19);
-      values.push_back( 2.37);
-      values.push_back( 2.96);
-      values.push_back( 2.99);
-      values.push_back( 3.97);
+      if(mass==110) {values.push_back( 2.36); }
+      if(mass==115) {values.push_back( 2.13); }
+      if(mass==120) {values.push_back( 2.17); }
+      if(mass==125) {values.push_back( 2.19); }
+      if(mass==130) {values.push_back( 2.37); }
+      if(mass==135) {values.push_back( 2.96); }
+      if(mass==140) {values.push_back( 2.99); }
+      if(mass==145) {values.push_back( 3.97); }
     }
     else if(std::string(type)==std::string("-2sigma")){
-      values.push_back( 1.83);
-      values.push_back( 1.61);
-      values.push_back( 1.65);
-      values.push_back( 1.75);
-      values.push_back( 1.82);
-      values.push_back( 2.25);
-      values.push_back( 2.39);
-      values.push_back( 3.06);
+      if(mass==110) {values.push_back( 1.83); }
+      if(mass==115) {values.push_back( 1.61); }
+      if(mass==120) {values.push_back( 1.65); }
+      if(mass==125) {values.push_back( 1.75); }
+      if(mass==130) {values.push_back( 1.82); }
+      if(mass==135) {values.push_back( 2.25); }
+      if(mass==140) {values.push_back( 2.39); }
+      if(mass==145) {values.push_back( 3.06); }
     }
     else{
       std::cout << "ERROR: picked wrong type. Available types are: +2sigma, +1sigma, mean, median, -1sigma, -2sigma" << std::endl
@@ -615,8 +617,8 @@ PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type)
 }
 
 
-inline void
-PlotLimits::prepareHIG_12_018(std::vector<double>& values, const char* type)
+inline void 
+PlotLimits::prepareHIG_12_018(std::vector<double>& values, const char* type, double mass)
 {
   if(mssm_){
     std::cout << "HIG-12-018 contained only SM limits" << std::endl;
@@ -624,64 +626,64 @@ PlotLimits::prepareHIG_12_018(std::vector<double>& values, const char* type)
   }
   else{
     if(std::string(type)==std::string("observed")){
-      values.push_back(1.21);
-      values.push_back( 1.2);
-      values.push_back(1.19);
-      values.push_back(1.06);
-      values.push_back( 1.2);
-      values.push_back(1.81);
-      values.push_back( 2.2);
-      values.push_back(3.36);
+      if(mass==110) {values.push_back(1.21); }
+      if(mass==115) {values.push_back( 1.2); }
+      if(mass==120) {values.push_back(1.19); }
+      if(mass==125) {values.push_back(1.06); }
+      if(mass==130) {values.push_back( 1.2); }
+      if(mass==135) {values.push_back(1.81); }
+      if(mass==140) {values.push_back( 2.2); }
+      if(mass==145) {values.push_back(3.36); }
     }
     else if(std::string(type)==std::string("+2sigma")){
-      values.push_back(2.52);
-      values.push_back(2.47);
-      values.push_back(2.41);
-      values.push_back(2.36);
-      values.push_back(2.48);
-      values.push_back(2.84);
-      values.push_back(3.33);
-      values.push_back(4.35);
+      if(mass==110) {values.push_back(2.52); }
+      if(mass==115) {values.push_back(2.47); }
+      if(mass==120) {values.push_back(2.41); }
+      if(mass==125) {values.push_back(2.36); }
+      if(mass==130) {values.push_back(2.48); }
+      if(mass==135) {values.push_back(2.84); }
+      if(mass==140) {values.push_back(3.33); }
+      if(mass==145) {values.push_back(4.35); }
     }
     else if(std::string(type)==std::string("+1sigma")){
-      values.push_back( 1.9);
-      values.push_back(1.86);
-      values.push_back(1.81);
-      values.push_back(1.78);
-      values.push_back(1.87);
-      values.push_back(2.14);
-      values.push_back(2.51);
-      values.push_back(3.28);
+      if(mass==110) {values.push_back( 1.9); }
+      if(mass==115) {values.push_back(1.86); }
+      if(mass==120) {values.push_back(1.81); }
+      if(mass==125) {values.push_back(1.78); }
+      if(mass==130) {values.push_back(1.87); }
+      if(mass==135) {values.push_back(2.14); }
+      if(mass==140) {values.push_back(2.51); }
+      if(mass==145) {values.push_back(3.28); }
     }
     else if(std::string(type)==std::string("expected")){
-      values.push_back(1.37);
-      values.push_back(1.34);
-      values.push_back( 1.3);
-      values.push_back(1.28);
-      values.push_back(1.34);
-      values.push_back(1.54);
-      values.push_back( 1.8);
-      values.push_back(2.36);
+      if(mass==110) {values.push_back(1.37); masses_.push_back(mass);}
+      if(mass==115) {values.push_back(1.34); masses_.push_back(mass);}
+      if(mass==120) {values.push_back( 1.3); masses_.push_back(mass);}
+      if(mass==125) {values.push_back(1.28); masses_.push_back(mass);}
+      if(mass==130) {values.push_back(1.34); masses_.push_back(mass);}
+      if(mass==135) {values.push_back(1.54); masses_.push_back(mass);}
+      if(mass==140) {values.push_back( 1.8); masses_.push_back(mass);}
+      if(mass==145) {values.push_back(2.36); masses_.push_back(mass);}
     }
     else if(std::string(type)==std::string("-1sigma")){
-      values.push_back(0.987);
-      values.push_back(0.964);
-      values.push_back(0.942);
-      values.push_back(0.925);
-      values.push_back( 0.97);
-      values.push_back( 1.11);
-      values.push_back(  1.3);
-      values.push_back(  1.7);
+      if(mass==110) {values.push_back(0.987); }
+      if(mass==115) {values.push_back(0.964); }
+      if(mass==120) {values.push_back(0.942); }
+      if(mass==125) {values.push_back(0.925); }
+      if(mass==130) {values.push_back( 0.97); }
+      if(mass==135) {values.push_back( 1.11); }
+      if(mass==140) {values.push_back(  1.3); }
+      if(mass==145) {values.push_back(  1.7); }
     }
     else if(std::string(type)==std::string("-2sigma")){
-      values.push_back(0.742);
-      values.push_back(0.725);
-      values.push_back(0.708);
-      values.push_back(0.695);
-      values.push_back(0.729);
-      values.push_back(0.835);
-      values.push_back(0.979);
-      values.push_back( 1.28);
+      if(mass==110) {values.push_back(0.742); }
+      if(mass==115) {values.push_back(0.725); }
+      if(mass==120) {values.push_back(0.708); }
+      if(mass==125) {values.push_back(0.695); }
+      if(mass==130) {values.push_back(0.729); }
+      if(mass==135) {values.push_back(0.835); }
+      if(mass==140) {values.push_back(0.979); }
+      if(mass==145) {values.push_back( 1.28); }
     }
     else{
       std::cout << "ERROR: picked wrong type. Available types are: +2sigma, +1sigma, mean, median, -1sigma, -2sigma" << std::endl
