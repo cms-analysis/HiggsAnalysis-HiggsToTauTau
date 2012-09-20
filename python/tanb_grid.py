@@ -20,8 +20,11 @@ import sys
 import shutil
 import ROOT
 
-ROOT.gSystem.Load('$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so')
+ROOT.gSystem.Load('$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so') #can be removed after including interplolate2D to package
+#ROOT.gSystem.Load('$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/interpolate2D/th1fmorph_cc.so') - don't has to be included i guess
+#ROOT.gSystem.Load('$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/interpolate2D/th2fmorph_cc.so') - th2 morphing not armed yet
 from ROOT import th1fmorph
+# from ROOT import th1fmorph, th2fmorph - th2 morphing not armed yet
 from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools
 from HiggsAnalysis.HiggsToTauTau.acceptance_correction import interval 
 from HiggsAnalysis.HiggsToTauTau.acceptance_correction import acceptance_correction 
@@ -830,7 +833,12 @@ class MakeDatacard :
                      else:
                             norm_mh_value = cross_sections["h"]/self.tanb*self.scale(hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh)
                             acc_mh = acceptance_correction(self.standardized_signal_process(process), self.mh) if self.acc_corr else 1.
-                            hist_mh_value = th1fmorph("I","mh_"+hist_name,hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh, norm_mh_value, 0)
+                            if channel.find("htt_mm")>-1 :
+                                   hist_mh_value = th1fmorph("I","mh_"+hist_name,hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh, norm_mh_value, 0)
+                                   ##hist_mH_value = th2fmorph("I","mH_"+hist_name,hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, norm_mh_value, true) ## change to th2 morphing - not armed yet
+                            else :
+                                   hist_mh_value = th1fmorph("I","mh_"+hist_name,hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh, norm_mh_value, 0)
+
                             hist_mh_value.Scale(acc_mh) 
               else :
                      hist_mh_value = hist_mA_value.Clone(hist_name)
@@ -874,7 +882,11 @@ class MakeDatacard :
                      else :
                             norm_mH_value = cross_sections["H"]/self.tanb*self.scale(hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH)
                             acc_mH = acceptance_correction(self.standardized_signal_process(process), self.mH) if self.acc_corr else 1.
-                            hist_mH_value = th1fmorph("I","mH_"+hist_name,hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH, norm_mH_value, 0)
+                            if channel.find("htt_mm")>-1 :
+                                   hist_mH_value = th1fmorph("I","mH_"+hist_name,hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH, norm_mH_value, 0) 
+                                   ##hist_mH_value = th2fmorph("I","mH_"+hist_name,hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, norm_mH_value, true) ## change to th2 morphing - not armed yet
+                            else :
+                                 hist_mH_value = th1fmorph("I","mH_"+hist_name, hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH, norm_mH_value, 0)                              
                             hist_mH_value.Scale(acc_mH) 
               else :
                      hist_mH_value = hist_mA_value.Clone(hist_name)
