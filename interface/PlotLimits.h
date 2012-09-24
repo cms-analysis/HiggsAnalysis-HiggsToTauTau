@@ -46,7 +46,7 @@
       bands
     - a tex file containing the observed and expected limit and the uncertainty bands
     - a root output file with name limit_mssm/sm.root containing the observed and expected limit
-      ans uncertainty bands in TGraph format.
+      and uncertainty bands in TGraph format.
 
     in the directory in which the tool plot has been executed. The names of the png/pdf/txt/tex output 
     files will be derived from the laypout and from the input directory. The output in the 
@@ -78,7 +78,7 @@ class PlotLimits {
   /// plot limits on canvas, print out png, pdf, txt, root formats if desired 
   void plot(TCanvas& canv, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* innerBand, TGraph* expected, TGraph* observed=0);
   /// plot limits for tanb on canvas, print out png, pdf, txt, root formats if desired 
-  void plotTanb(TCanvas& canv, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* innerBand, TGraph* expected, TGraph* observed=0);
+  void plotTanb(TCanvas& canv, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* innerBand, TGraph* expected, TGraph* observed=0, const char* directory="");
 
  private:
   /// fill a single vector of values according to 2sigma, 1sigma, median or observed 
@@ -153,7 +153,9 @@ class PlotLimits {
   /// check whether mass point is available or not
   std::vector<bool> valid_; 
   /// mass for which a limit has been calculated (needed for plotting of HIG-XX-YYY results)
-  std::vector<double> masses_;  
+  std::vector<double> masses_; 
+  /// print higgs125 bands?
+  bool higgs125_bands;
 };
 
 inline void
