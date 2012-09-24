@@ -110,24 +110,27 @@ if options.setup == "htt-mssm" :
         if options.method == "tanb+" :
             ## three submits depending on the mass
             if len(subvec(args,  90, 249))>0 :
-                os.system("submit-slave.py --bin combine --method tanb -n 10 --min  1.0  --max  4.0 --interactive %s %s" % (options.opt, vec2str(subvec(args,  90, 249))))
+                os.system("submit-slave.py --bin combine --method tanb -n 4 --min  1.0  --max  4.0 --interactive %s %s" % (options.opt, vec2str(subvec(args,  90, 249))))
                 os.system("submit-slave.py --bin combine --method tanb -n 10 --min  5.0  --max 14.0 --interactive %s %s" % (options.opt, vec2str(subvec(args,  90, 249))))
                 os.system("submit-slave.py --bin combine --method tanb -n  6 --min 15.0  --max 30.0 --interactive %s %s" % (options.opt, vec2str(subvec(args,  90, 249))))
                 os.system("submit-slave.py --bin combine --method tanb -n  4 --min 40.0  --max 70.0 --interactive %s %s" % (options.opt, vec2str(subvec(args,  90, 249))))
             if len(subvec(args, 250, 299))>0 :
-                os.system("submit-slave.py --bin combine --method tanb -n 10 --min  1.0  --max  4.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 250, 299))))
+                os.system("submit-slave.py --bin combine --method tanb -n 4 --min  1.0  --max  4.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 250, 299))))
                 os.system("submit-slave.py --bin combine --method tanb -n 10 --min  5.0  --max 14.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 250, 299))))
                 os.system("submit-slave.py --bin combine --method tanb -n  5 --min 16.0  --max 24.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 250, 299))))
                 os.system("submit-slave.py --bin combine --method tanb -n  5 --min 30.0  --max 70.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 250, 299))))
             if len(subvec(args, 300, 399))>0 :
+                os.system("submit-slave.py --bin combine --method tanb -n  7 --min  1.0  --max 7.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 300, 399))))
                 os.system("submit-slave.py --bin combine --method tanb -n  8 --min  8.0  --max 22.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 300, 399))))
                 os.system("submit-slave.py --bin combine --method tanb -n  6 --min 25.0  --max 40.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 300, 399))))
                 os.system("submit-slave.py --bin combine --method tanb -n  6 --min 45.0  --max 70.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 300, 399))))
             if len(subvec(args, 400, 499))>0 :
-                os.system("submit-slave.py --bin combine --method tanb -n 10 --min 12.0  --max 39.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 400, 499))))
+                os.system("submit-slave.py --bin combine --method tanb -n 8 --min 1.0  --max 8.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 400, 499))))
+                os.system("submit-slave.py --bin combine --method tanb -n 11 --min 9.0  --max 39.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 400, 499))))
                 os.system("submit-slave.py --bin combine --method tanb -n 10 --min 42.0  --max 69.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 400, 499))))
             if len(subvec(args, 500, 550))>0 :
-                os.system("submit-slave.py --bin combine --method tanb -n  9 --min 18.0  --max 42.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 500, 550))))
+                os.system("submit-slave.py --bin combine --method tanb -n  8 --min 1.0  --max 8.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 500, 550))))
+                os.system("submit-slave.py --bin combine --method tanb -n  12 --min 9.0  --max 42.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 500, 550))))
                 os.system("submit-slave.py --bin combine --method tanb -n  9 --min 45.0  --max 69.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 500, 550))))
         if options.method == "CLs" :
             ## three submits depending on the mass
