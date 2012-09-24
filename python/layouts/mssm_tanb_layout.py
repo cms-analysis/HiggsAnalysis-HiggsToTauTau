@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 layout = cms.PSet(
     ## dataset
     #dataset = cms.string("Preliminary #sqrt{s} = 7 TeV, L = 1.6 fb^{-1}"),
-    dataset = cms.string("#sqrt{s} = 7 TeV, L = 4.6 fb^{-1}"),
+    dataset = cms.string("#sqrt{s} = 7 TeV, L = 4.9 fb^{-1}"),
     ## x-axis title
     xaxis = cms.string("m_{A} [GeV]"),
     ## x-axis title
@@ -30,17 +30,19 @@ layout = cms.PSet(
     outputLabel = cms.string("mssm"),
     ## Set true if we want to skip observed limits
     expectedOnly = cms.bool(True),
+    ## print mh=125GeV bands?
+    higgs125_bands = cms.bool(False),
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
-    90.
-   ,100.
+    #90.
+    100.
    ,120.
    ,130.
    ,140.
    ,160.
    ,180.
    ,200.
-   ,250.
+   ,250.  
    ,300.
    ,350.
    ,400.
