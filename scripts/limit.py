@@ -110,7 +110,7 @@ for directory in args :
     subdirectory = os.path.join(base_directory, directory)
     if options.norepeat and already_run(subdirectory):
         print ">> limit already computed - skipping %s" % directory
-        exit(0)
+        continue
     subdirectory = subdirectory.replace(os.path.join(base_directory, base_directory), base_directory)
     os.chdir(subdirectory)
     ## check status
