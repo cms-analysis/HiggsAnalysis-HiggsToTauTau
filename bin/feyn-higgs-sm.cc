@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
   /*
     Implementation
   */
-  std::string path(getenv("CMSSW_BASE")+std::string("/src/HiggsAnalysis/HiggsToTauTau/data/feyn-higgs-sm-scan.root"));
+  std::string path(getenv("CMSSW_BASE")+std::string("/src/HiggsAnalysis/HiggsToTauTau/data/feyn-higgs-sm-scan-7TeV.root"));
   FeynHiggsScan scan(path.c_str(), TString::Format("mssm_scan%s", uncertainty.c_str()), 1, 1., 2., 951, 50, 1000.);
   std::cout << "mA     = " << argv[3] << std::endl;
   std::cout << "var    = " << argv[1] << "_sm_" << argv[2] << std::endl;
