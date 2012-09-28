@@ -30,44 +30,7 @@ layout = cms.PSet(
     ## define verbosity level
     verbosity   = cms.uint32(2),
     ## define output label
-    outputLabel = cms.string("sm"), 
+    outputLabel = cms.string("sm"),
     ## define masspoints for limit plot
-    masspoints = cms.vdouble(
-    110.
-   #,111.
-   #,112.
-   #,113.
-   #,114.
-   ,115.
-   #,116.
-   #,117.
-   #,118.
-   #,119.
-   ,120.
-   #,121.
-   #,122.
-   #,123.
-   #,124.
-   ,125.
-   #,126.
-   #,127.
-   #,128.
-   #,129.
-   ,130.
-   #,131.
-   #,132.
-   #,133.
-   #,134.
-   ,135.
-   #,136.
-   #,137.
-   #,138.
-   #,139.
-   ,140.
-   #,141.
-   #,142.
-   #,143.
-   #,144.
-   ,145.
-  ),
+    masspoints = cms.vdouble(range(110, 146, 5))
 )
