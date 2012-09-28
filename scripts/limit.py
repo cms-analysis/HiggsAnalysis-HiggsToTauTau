@@ -21,6 +21,7 @@ parser.add_option("--single", dest="prepSingle", default=False, action="store_tr
 parser.add_option("--bayesian", dest="prepBayesian", default=False, action="store_true", help="Prepare Bayesian limits (expected and obeserved). [Default: False]")
 parser.add_option("--asymptotic", dest="prepAsym", default=False, action="store_true", help="Prepare Asymptotic limits (expected and obeserved). [Default: False]")
 parser.add_option("--max-likelihood", dest="prepMLFit", default=False, action="store_true", help="Prepare Maximum Likelihood Fit (also used for postfit plots). [Default: False]")
+parser.add_option("--multi-dim-fit", dest="prepMDFit", default=False, action="store_true", help="Prepare MultiDimentional Fit (also used for postfit plots). [Default: False]")
 parser.add_option("--pl-significance", dest="prepPLSig", default=False, action="store_true", help="Calculate expected significance from Profile Likelihood method. [Default: False]")
 parser.add_option("--refit", dest="refit", default=False, action="store_true", help="Do not run the asymptotic limits again, but only run the last step, the fit for the limit determination. (Only valid for option --tanb+, for all other options will have no effect.)  [Default: False]")
 parser.add_option("--cleanup", dest="cleanup", default=False, action="store_true", help="Remove all crab remainders from previous submissions. [Default: False]")
@@ -389,6 +390,33 @@ for directory in args :
         os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f text mlfit.root > mlfit.txt")
         os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f latex mlfit.root > mlfit.tex")
         os.chdir(subdirectory)
+    if options.prepMDFit :
+        ## determine mass value from directory
+        mass = directory[directory.rfind("/")+1:]
+        ## combine datacard from all datacards in this directory
+        ## if not done so already
+        if not os.path.exists("tmp.txt") :
+            os.system("combineCards.py *.txt > tmp.txt")
+        ## create sub-directory out from scratch
+        if os.path.exists("out") :
+            os.system("rm -r out")
+        os.system("mkdir out")
+        ## if it does not exist already, create link to executable
+        if not os.path.exists("combine") :
+            os.system("cp -s $(which combine) .")
+        ## prepare fit option
+        minuitopt = ""
+        if options.minuit :
+            minuitopt = "--minimizerAlgo minuit"
+        stableopt = ""
+        if options.stable :
+            stableopt = "--robustFit=1 --stepSize=0.5  --minimizerStrategy=0 --minimizerTolerance=0.1 --preFitValue=0.1  --X-rtd FITTER_DYN_STEP  --cminFallbackAlgo=\"Minuit;0.001\" "
+            #stableopt = "--robustFit=1 --stepSize=0.1  --minimizerStrategy=2 --minimizerTolerance=0.1 --preFitValue=1  --X-rtd FITTER_DYN_STEP  --cminFallbackAlgo=\"Minuit;0.001\" "
+            stableopt+= "--rMin {MIN} --rMax {MAX} ".format(MIN=options.rMin, MAX=options.rMax)
+        ## run expected limits
+        print "Running maximum likelihood fit with options: "
+        print "combine -M MultiDimFit -m {mass} --algo=grid --points=1000 {minuit} {stable} {user} tmp.txt ".format(mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt)
+        os.system("combine -M MultiDimFit -m {mass} --algo=grid --points=1000 {minuit} {stable} {user} tmp.txt ".format(mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt))
     if options.prepPLSig :
         ifile=0
         directoryList = os.listdir(".")
