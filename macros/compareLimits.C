@@ -102,8 +102,8 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("hgg"       )) title = std::string("H#rightarrow#gamma#gamma");
   if(channel==std::string("hww"       )) title = std::string("H#rightarrowWW#rightarrow2l2#nu");
   if(channel==std::string("ltt"       )) title = std::string("WH#rightarrow#tau_{h}#tau_{h}+l");
-  if(channel==std::string("llt"       )) title = std::string("WH#rightarrow#tau_{h}+2l");
-  if(channel==std::string("4l"        )) title = std::string("ZH#rightarrow2l2#tau");
+  if(channel==std::string("llt"       )) title = std::string("WH#rightarrow#tau_{h}+2l (10 fb^{-1})");
+  if(channel==std::string("4l"        )) title = std::string("ZH#rightarrow2l2#tau (10 fb^{-1})");
   if(channel==std::string("hzz4l"     )) title = std::string("H#rightarrowZZ#rightarrow4l");
   if(channel==std::string("hzz2l2q"   )) title = std::string("H#rightarrowZZ#rightarrow2l2q");
   if(channel==std::string("hzz2l2t"   )) title = std::string("H#rightarrowZZ#rightarrow2l2#tau");
@@ -139,7 +139,7 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label=" Preliminary, #sqrt{s} = 7+8 TeV, H#rightarrow#tau#tau, L = 10 fb^{-1}", bool legendOnRight = true)
+void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label=" Preliminary, H#rightarrow#tau#tau, #sqrt{s} = 7-8 TeV, L=5-10 fb^{-1}", bool legendOnRight = true)
 {
   SetStyle();
 
@@ -373,7 +373,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       leg1 = new TLegend(legendOnRight ? 0.50 : 0.20, hobs.size()<5 ? 0.90-0.06*hobs.size() : 0.6, legendOnRight ? 0.93 : 0.63, 0.90);
     }
     leg1->SetBorderSize( 0 );
-    leg1->SetFillStyle ( 0 );
+    leg1->SetFillStyle ( 1001 );
     leg1->SetFillColor ( 0 );
     leg1->SetFillColor (kWhite);
     leg1->SetHeader( "#bf{Observed Limit}" );
@@ -398,7 +398,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       leg0 = new TLegend(legendOnRight ? 0.50 : 0.20, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.6, legendOnRight ? 0.94 : 0.64, 0.90);
     }
     leg0->SetBorderSize( 0 );
-    leg0->SetFillStyle ( 0 );
+    leg0->SetFillStyle ( 1001 );
     leg0->SetFillColor (kWhite);
     leg0->SetHeader( "#bf{Expected Limit}" );
     for(unsigned int i=0; i<hexp.size(); ++i){
