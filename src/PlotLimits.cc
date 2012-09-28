@@ -15,8 +15,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) : outpu
   log_  (cfg.getParameter<int   >("log") ),
   verbosity_(cfg.getParameter<unsigned int>("verbosity")),
   outputLabel_(cfg.getParameter<std::string>("outputLabel")),
-  higgs125_bands (cfg.getParameter<bool>("higgs125_bands"))
-		      //bool higgs125_bands = edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").existsAs<bool>("higgs125_bands") ? edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").getParameter<bool>("higgs125_bands") : false;
+  higgs125_bands (cfg.exists("higgs125_bands") ? cfg.getParameter<bool>("higgs125_bands") : false)
 {
   bins_=cfg.getParameter<std::vector<double> >("masspoints");
   for(unsigned int i=0; i<bins_.size(); ++i) valid_.push_back(true);
