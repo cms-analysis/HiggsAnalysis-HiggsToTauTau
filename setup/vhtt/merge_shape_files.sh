@@ -12,12 +12,13 @@ morph()
   horizontal-morphing.py \
     --categories="${lltCategories}"\
     --samples="VH{MASS},VH_hww{MASS}" \
-    --uncerts="" --masses="110,120,130,140" --step-size=1 -i $1
+    --uncerts="" --masses="110,120,130,140" --step-size=1 \
+    --extrapolate="145" -i $1 -v
   echo "ZH channels"
   horizontal-morphing.py \
     --categories="${zhCategories}"\
     --samples="VH{MASS},VH_hww{MASS}" \
-    --uncerts="" --masses="110,115,120,125,130,135,140" --step-size=1 -i $1
+    --uncerts="" --masses="110,115,120,125,130,135,140,150" --step-size=1 -i $1
   #echo "LTT channels"
   #horizontal-morphing.py \
     #--categories="${lttCategories}"\
