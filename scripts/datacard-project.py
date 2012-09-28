@@ -19,7 +19,7 @@ if len(args) < 1 :
     exit(1)
     
 target_path = args[0]
-source_path = os.path.abspath("%s/%s" % (options.input, options.channel))
+source_path = "%s/%s" % (options.input, options.channel)
 
 ## setup the new project directory 
 d = os.path.dirname("%s/log.txt" % target_path)
