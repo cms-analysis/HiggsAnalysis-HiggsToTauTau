@@ -19,7 +19,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) : outpu
 		      //bool higgs125_bands = edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").existsAs<bool>("higgs125_bands") ? edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").getParameter<bool>("higgs125_bands") : false;
 {
   bins_=cfg.getParameter<std::vector<double> >("masspoints");
-  for(unsigned int i=0; i<bins_.size(); ++i) valid_.push_back(true); 
+  for(unsigned int i=0; i<bins_.size(); ++i) valid_.push_back(true);
 }
 
 void
@@ -273,7 +273,7 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
     }
     else if(std::string(filename)==std::string("asym-expected")){
       prepareAsymptotic(directory, central, "median");
-    }    
+    }
     else{
       prepareSimple(directory, central, filename);
     }
@@ -281,7 +281,7 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
     if(valid_[imass] && std::string(filename).find("HIG")==std::string::npos){
       plot->SetPoint(ipoint, bins_[imass], central[imass]);
-      ++ipoint; // only add valid mass points to the TGraph      
+      ++ipoint; // only add valid mass points to the TGraph
       if(verbosity_>1){
 	// second verbosity level
 	std::cout << "INFO: central [" << bins_[imass] << "] = " << central[imass] << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl;
@@ -290,7 +290,7 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
     else{
       if(valid_[imass]){
 	for(unsigned int imassHIG=0; imassHIG<masses_.size(); ++imassHIG){
-	  if(masses_[imassHIG]==bins_[imass]){	 
+	  if(masses_[imassHIG]==bins_[imass]){
 	    plot->SetPoint(ipoint, masses_[imassHIG], central[imassHIG]);
 	    ++ipoint; // only add valid mass points to the TGraph
 	    if(verbosity_>1){
@@ -300,7 +300,7 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
 	    break;
 	  }
 	}
-      }      
+      }
     }
   }
   return plot;
@@ -346,7 +346,7 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
       prepareCLs(directory, expected, ".quant0.500");
       prepareCLs(directory, upper, innerBand ? ".quant0.840" : ".quant0.975");
       prepareCLs(directory, lower, innerBand ? ".quant0.160" : ".quant0.027");
-    }       
+    }
     else{
       std::cout << "ERROR: chose wrong method to fill uncertainty band. Available methods are: Bayesian, CLs\n"
 		<< "       for the moment I'll stop here" << std::endl;
@@ -369,12 +369,12 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
     }
     else{
       if(valid_[imass]){
-	for(unsigned int imassHIG=0; imassHIG<masses_.size(); ++imassHIG){ 
+	for(unsigned int imassHIG=0; imassHIG<masses_.size(); ++imassHIG){
 	  if(masses_[imassHIG]==bins_[imass]){
 	    plot->SetPoint(ipoint, masses_[imassHIG], expected[imassHIG]);
 	    plot->SetPointEYhigh(ipoint, upper[imassHIG] - expected[imassHIG]);
 	    plot->SetPointEYlow (ipoint, expected[imassHIG] - lower[imassHIG]);
-	    ++ipoint; // only add valid mass points to the TGraph	    
+	    ++ipoint; // only add valid mass points to the TGraph
 	    if(verbosity_>1){
 	      // second verbosity level
 	      std::cout << "INFO: Calculating " << (innerBand ? "inner" : "outer") << " uncertainty band" << std::endl;
@@ -382,7 +382,7 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
 	      std::cout << "INFO: expected [" << masses_[imassHIG] << "] = " << expected[imassHIG]          << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl;
 	      std::cout << "INFO: lower    [" << masses_[imassHIG] << "] = " << " (" << lower[imassHIG] << ") " << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl;
 	    }
-	    break; 
+	    break;
 	  }
 	}
       }
@@ -611,10 +611,10 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
     for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
       if(valid_[imass]){
 	//if (observed) {
-	plain->SetPoint(ipoint+1, observed->GetX()[ipoint], observed->GetY()[ipoint]); ++ipoint; 
+	plain->SetPoint(ipoint+1, observed->GetX()[ipoint], observed->GetY()[ipoint]); ++ipoint;
 	//} else {
 	//plain->SetPoint(ipoint+1, expected->GetX()[ipoint], expected->GetY()[ipoint]); ++ipoint;
-	//}	  		
+	//}
       }
     }
     plain->SetPoint(bins_.size(), observed->GetX()[observed->GetN()-1]+50., 100.);
@@ -668,12 +668,12 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   //HWWmh_->Draw("psame");
   */
 
-  //if(higgs125_bands){  
+  //if(higgs125_bands){
     TGraphAsymmErrors* higgs125_4 = new TGraphAsymmErrors();
     for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
       std::string fullpath;
       std::string line;
-      float tanb, mh, mA, mH, high_tanb=-999, low_tanb;
+      float tanb, mh, mA, mH, high_tanb=-999, low_tanb=0;
       bool NotPlotted =true;
       fullpath = TString::Format("%s/%d/higgs_mass.dat", directory, (int)bins_[imass]);
       ifstream higgs (fullpath.c_str());
@@ -684,7 +684,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
 	      getline (higgs,line);
 	      sscanf (line.c_str(),"%f %f %f %f", &tanb, &mh, &mA, &mH);
 	      if (fabs(mh-125)<4){
-		if (NotPlotted){		
+		if (NotPlotted){
 		  higgs125_4->SetPoint(ipoint, bins_[imass], tanb);
 		  higgs125_4->SetPointEYlow(ipoint, tanb-tanb);
 		  ipoint++;
@@ -696,18 +696,18 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
 	    }
 	  if(high_tanb>0)	higgs125_4->SetPointEYhigh(ipoint-1, high_tanb-low_tanb);
 	}
-      higgs.close(); 
-    }  
+      higgs.close();
+    }
     higgs125_4->SetLineColor(kRed-9);
     //higgs125_4->SetLineStyle(20.);
     higgs125_4->SetFillColor(kRed-9);
     if(higgs125_bands) higgs125_4->Draw("3same");
-    
+
     TGraphAsymmErrors* higgs125_3 = new TGraphAsymmErrors();
     for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
       std::string fullpath;
       std::string line;
-      float tanb, mh, mA, mH, high_tanb=-999, low_tanb;
+      float tanb, mh, mA, mH, high_tanb=-999, low_tanb=0;
       bool NotPlotted =true;
       fullpath = TString::Format("%s/%d/higgs_mass.dat", directory, (int)bins_[imass]);
       ifstream higgs (fullpath.c_str());
@@ -718,7 +718,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
 	      getline (higgs,line);
 	      sscanf (line.c_str(),"%f %f %f %f", &tanb, &mh, &mA, &mH);
 	      if (fabs(mh-125)<3){
-		if (NotPlotted){		
+		if (NotPlotted){
 		  higgs125_3->SetPoint(ipoint, bins_[imass], tanb);
 		  higgs125_3->SetPointEYlow(ipoint, tanb-tanb);
 		  ipoint++;
@@ -730,18 +730,18 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
 	    }
 	  if(high_tanb>0)	higgs125_3->SetPointEYhigh(ipoint-1, high_tanb-low_tanb);
 	}
-      higgs.close(); 
-    }  
+      higgs.close();
+    }
     higgs125_3->SetLineColor(kRed-7);
     //higgs125_3->SetLineStyle(20.);
     higgs125_3->SetFillColor(kRed-7);
-    if(higgs125_bands) higgs125_3->Draw("3same"); 
-    
+    if(higgs125_bands) higgs125_3->Draw("3same");
+
     TGraphAsymmErrors* higgs125_2 = new TGraphAsymmErrors();
     for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
       std::string fullpath;
       std::string line;
-      float tanb, mh, mA, mH, high_tanb=-999, low_tanb;
+      float tanb, mh, mA, mH, high_tanb=-999, low_tanb=0;
       bool NotPlotted =true;
       fullpath = TString::Format("%s/%d/higgs_mass.dat", directory, (int)bins_[imass]);
       ifstream higgs (fullpath.c_str());
@@ -752,7 +752,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
 	      getline (higgs,line);
 	      sscanf (line.c_str(),"%f %f %f %f", &tanb, &mh, &mA, &mH);
 	      if (fabs(mh-125)<2){
-		if (NotPlotted){		
+		if (NotPlotted){
 		  higgs125_2->SetPoint(ipoint, bins_[imass], tanb);
 		  higgs125_2->SetPointEYlow(ipoint, tanb-tanb);
 		  ipoint++;
@@ -762,10 +762,10 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
 		high_tanb=tanb;
 	      }
 	    }
-	  if(high_tanb>0)	higgs125_2->SetPointEYhigh(ipoint-1, high_tanb-low_tanb); 
+	  if(high_tanb>0)	higgs125_2->SetPointEYhigh(ipoint-1, high_tanb-low_tanb);
 	}
-      higgs.close(); 
-    }  
+      higgs.close();
+    }
     higgs125_2->SetLineColor(kRed);
     //higgs125_2->SetLineStyle(20.);
     higgs125_2->SetFillColor(kRed);
