@@ -115,6 +115,8 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
 	  buffer = (TH1F*)file->Get((std::string(idir->GetName())+"/"+(*sample)).c_str()); 
           if (!buffer) {
             std::cerr << "ERROR: Could not get histogram from: " << std::string(idir->GetName())+"/"+(*sample) << std::endl;
+            std::cerr << "ERROR: Histogram will be skipped   : " << std::string(idir->GetName())+"/"+(*sample) << std::endl;
+	    continue;
           }
 	  if(inPatterns(*sample, signal_patterns)) {
 	    if( debug>1 ){
