@@ -106,6 +106,8 @@ class PlotLimits {
   void prepareHIG_11_029(std::vector<double>& values, const char* type, double mass);
   /// fill officially approved limits for HIG-12-018 PAS and HIG-12-028 paper (NOTE: these are only SM limits)
   void prepareHIG_12_018(std::vector<double>& values, const char* type, double mass);
+  /// fill officially approved limits for HIG-12-032 PAS (NOTE: these are only SM limits)
+  void prepareHIG_12_032(std::vector<double>& values, const char* type, double mass);
 
   /*
     Limits for comparison
@@ -165,7 +167,7 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
     if(std::string(type)==std::string("observed")){
       if(xsec){
 	// xsec limits
-	if(mass==90) {values.push_back(14.076); }
+	if(mass== 90) {values.push_back(14.076); }
 	if(mass==100) {values.push_back( 7.995); }
 	if(mass==120) {values.push_back( 4.501); }
 	if(mass==130) {values.push_back( 4.095); }
@@ -181,7 +183,7 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
       }
       else{
 	// tanb limits
-	if(mass==90) {values.push_back(8.50 ); }
+	if(mass== 90) {values.push_back(8.50 ); }
 	if(mass==100) {values.push_back(7.92 ); }
 	if(mass==120) {values.push_back(8.67 ); }
 	if(mass==130) {values.push_back(7.78 ); }
@@ -199,7 +201,7 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
     else if (std::string(type)==std::string("+2sigma")){
       if(xsec){
 	// xsec limits
-	if(mass==90) {values.push_back(34.598); }
+	if(mass== 90) {values.push_back(34.598); }
 	if(mass==100) {values.push_back(24.746); }
 	if(mass==120) {values.push_back(11.224); }
 	if(mass==130) {values.push_back( 9.260); }
@@ -215,7 +217,7 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
       }
       else{
 	// tanb limits
-	if(mass==90) {values.push_back(13.33); }
+	if(mass== 90) {values.push_back(13.33); }
 	if(mass==100) {values.push_back(13.90); }
 	if(mass==120) {values.push_back(13.86); }
 	if(mass==130) {values.push_back(13.16); }
@@ -233,7 +235,7 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
     else if (std::string(type)==std::string("+1sigma")){
       if(xsec){
 	/// xsec limits
-	if(mass==90) {values.push_back(24.864); }
+	if(mass== 90) {values.push_back(24.864); }
 	if(mass==100) {values.push_back(18.287); } 
 	if(mass==120) {values.push_back( 8.397); }
 	if(mass==130) {values.push_back( 6.899); }
@@ -249,7 +251,7 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
       }
       else{
 	// tanb limits
-	if(mass==90) {values.push_back(11.31); }
+	if(mass== 90) {values.push_back(11.31); }
 	if(mass==100) {values.push_back(11.99); }
 	if(mass==120) {values.push_back(12.02); }
 	if(mass==130) {values.push_back(11.05); }
@@ -267,7 +269,7 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
     else if(std::string(type)==std::string("expected")){
       if(xsec){
 	// xsec limits
-	if(mass==90) {values.push_back(17.802); masses_.push_back(mass);}
+	if(mass== 90) {values.push_back(17.802); masses_.push_back(mass);}
 	if(mass==100) {values.push_back(12.569); masses_.push_back(mass);}
 	if(mass==120) {values.push_back( 6.001); masses_.push_back(mass);}
 	if(mass==130) {values.push_back( 4.823); masses_.push_back(mass);}
@@ -283,7 +285,7 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
       }
       else{
 	// tanb limtis
-	if(mass==90) {values.push_back(9.56 ); masses_.push_back(mass);}
+	if(mass== 90) {values.push_back(9.56 ); masses_.push_back(mass);}
 	if(mass==100) {values.push_back(9.96 ); masses_.push_back(mass);}
 	if(mass==120) {values.push_back(10.12); masses_.push_back(mass);}
 	if(mass==130) {values.push_back(8.75 ); masses_.push_back(mass);}
@@ -301,7 +303,7 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
     else if (std::string(type)==std::string("-1sigma")){
       if(xsec){
 	// xsec limits
-	if(mass==90) {values.push_back(12.360); }
+	if(mass== 90) {values.push_back(12.360); }
 	if(mass==100) {values.push_back( 8.644); }
 	if(mass==120) {values.push_back( 4.062); }
 	if(mass==130) {values.push_back( 3.381); }
@@ -317,7 +319,7 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
       }
       else{
 	// tanb limits
-	if(mass==90) {values.push_back(7.98 ); }
+	if(mass== 90) {values.push_back(7.98 ); }
 	if(mass==100) {values.push_back(8.23 ); }
 	if(mass==120) {values.push_back(8.19 ); } 
 	if(mass==130) {values.push_back(6.68 ); }
@@ -335,7 +337,7 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
     else if (std::string(type)==std::string("-2sigma")){
       if(xsec){
 	// xsec limits
-	if(mass==90) {values.push_back( 9.211); }
+	if(mass== 90) {values.push_back( 9.211); }
 	if(mass==100) {values.push_back( 6.216); }
 	if(mass==120) {values.push_back( 2.891); }
 	if(mass==130) {values.push_back( 2.579); }
@@ -351,7 +353,7 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
       }
       else{
 	// tanb limits
-	if(mass==90) {values.push_back(6.85 ); }
+	if(mass== 90) {values.push_back(6.85 ); }
 	if(mass==100) {values.push_back(6.95 ); }
 	if(mass==120) {values.push_back(6.65 ); }
 	if(mass==130) {values.push_back(5.14 ); }
@@ -447,7 +449,7 @@ PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type, dou
 {
   if(mssm_){
     if(std::string(type)==std::string("observed")){
-      if(mass==90) {values.push_back(12.246); }
+      if(mass== 90) {values.push_back(12.246); }
       if(mass==100) {values.push_back(11.799); }
       if(mass==120) {values.push_back( 9.842); }
       if(mass==130) {values.push_back( 9.026); }
@@ -463,7 +465,7 @@ PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type, dou
       if(mass==500) {values.push_back(51.904); }
     } 
     else if (std::string(type)==std::string("-2sigma")){
-      if(mass==90) {values.push_back( 5.194); }
+      if(mass== 90) {values.push_back( 5.194); }
       if(mass==100) {values.push_back( 6.492); }
       if(mass==120) {values.push_back( 4.500); }
       if(mass==130) {values.push_back( 5.369); }
@@ -479,7 +481,7 @@ PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type, dou
       if(mass==500) {values.push_back(30.315); }
     }
     else if (std::string(type)==std::string("-1sigma")){
-      if(mass==90) {values.push_back( 7.009); }
+      if(mass== 90) {values.push_back( 7.009); }
       if(mass==100) {values.push_back( 7.450); }
       if(mass==120) {values.push_back( 6.475); }
       if(mass==130) {values.push_back( 6.710); }
@@ -495,7 +497,7 @@ PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type, dou
       if(mass==500) {values.push_back(35.739); }
     }
     else if(std::string(type)==std::string("expected")){
-      if(mass==90) {values.push_back( 8.371); masses_.push_back(mass);}
+      if(mass== 90) {values.push_back( 8.371); masses_.push_back(mass);}
       if(mass==100) {values.push_back( 8.777); masses_.push_back(mass);}
       if(mass==120) {values.push_back( 8.087); masses_.push_back(mass);}
       if(mass==130) {values.push_back( 7.847); masses_.push_back(mass);}
@@ -511,7 +513,7 @@ PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type, dou
       if(mass==500) {values.push_back(40.510); masses_.push_back(mass);}
     }
     else if (std::string(type)==std::string("+1sigma")){
-      if(mass==90) {values.push_back(10.605); }
+      if(mass== 90) {values.push_back(10.605); }
       if(mass==100) {values.push_back(10.828); }
       if(mass==120) {values.push_back( 9.889); }
       if(mass==130) {values.push_back( 9.691); }
@@ -527,7 +529,7 @@ PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type, dou
       if(mass==500) {values.push_back(47.145); }
     }
     else if (std::string(type)==std::string("+2sigma")){
-      if(mass==90) {values.push_back(12.836); }
+      if(mass== 90) {values.push_back(12.836); }
       if(mass==100) {values.push_back(13.418); }
       if(mass==120) {values.push_back(11.957); }
       if(mass==130) {values.push_back(11.453); }
@@ -618,7 +620,6 @@ PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type, dou
   return;
 }
 
-
 inline void 
 PlotLimits::prepareHIG_12_018(std::vector<double>& values, const char* type, double mass)
 {
@@ -686,6 +687,83 @@ PlotLimits::prepareHIG_12_018(std::vector<double>& values, const char* type, dou
       if(mass==135) {values.push_back(0.835); }
       if(mass==140) {values.push_back(0.979); }
       if(mass==145) {values.push_back( 1.28); }
+    }
+    else{
+      std::cout << "ERROR: picked wrong type. Available types are: +2sigma, +1sigma, mean, median, -1sigma, -2sigma" << std::endl
+		<< "       for the moment I'll stop here" << std::endl;
+      exit(1);
+    }
+  }
+  return;
+}
+
+inline void
+PlotLimits::prepareHIG_12_032(std::vector<double>& values, const char* type, double mass)
+{
+  if(mssm_){
+    std::cout << "HIG-12-032 contained only SM limits" << std::endl;
+    exit(1);
+  }
+  else{
+    if(std::string(type)==std::string("observed")){
+      if(mass==110) {values.push_back(0.939); }
+      if(mass==115) {values.push_back( 1.01); }
+      if(mass==120) {values.push_back(    1); }
+      if(mass==125) {values.push_back( 1.01); }
+      if(mass==130) {values.push_back( 1.09); }
+      if(mass==135) {values.push_back( 1.53); }
+      if(mass==140) {values.push_back( 1.78); }
+      if(mass==145) {values.push_back( 2.32); }
+    }
+    else if(std::string(type)==std::string("+2sigma")){
+      if(mass==110) {values.push_back(2.33); }
+      if(mass==115) {values.push_back( 2.3); }
+      if(mass==120) {values.push_back(2.23); }
+      if(mass==125) {values.push_back(2.24); }
+      if(mass==130) {values.push_back(2.36); }
+      if(mass==135) {values.push_back(2.66); }
+      if(mass==140) {values.push_back(3.24); }
+      if(mass==145) {values.push_back(3.76); }
+    }
+    else if(std::string(type)==std::string("+1sigma")){
+      if(mass==110) {values.push_back(1.75); }
+      if(mass==115) {values.push_back(1.73); }
+      if(mass==120) {values.push_back(1.68); }
+      if(mass==125) {values.push_back(1.69); }
+      if(mass==130) {values.push_back(1.77); }
+      if(mass==135) {values.push_back(   2); }
+      if(mass==140) {values.push_back(2.44); }
+      if(mass==145) {values.push_back(2.83); }
+    }
+    else if(std::string(type)==std::string("expected")){
+      if(mass==110) {values.push_back(1.26); masses_.push_back(mass);}
+      if(mass==115) {values.push_back(1.25); masses_.push_back(mass);}
+      if(mass==120) {values.push_back(1.21); masses_.push_back(mass);}
+      if(mass==125) {values.push_back(1.21); masses_.push_back(mass);}
+      if(mass==130) {values.push_back(1.28); masses_.push_back(mass);}
+      if(mass==135) {values.push_back(1.44); masses_.push_back(mass);}
+      if(mass==140) {values.push_back(1.76); masses_.push_back(mass);}
+      if(mass==145) {values.push_back(2.04); masses_.push_back(mass);}
+    }
+    else if(std::string(type)==std::string("-1sigma")){
+      if(mass==110) {values.push_back(0.911); }
+      if(mass==115) {values.push_back(0.899); }
+      if(mass==120) {values.push_back(0.871); }
+      if(mass==125) {values.push_back(0.877); }
+      if(mass==130) {values.push_back(0.922); }
+      if(mass==135) {values.push_back( 1.04); }
+      if(mass==140) {values.push_back( 1.27); }
+      if(mass==145) {values.push_back( 1.47); }
+    }
+    else if(std::string(type)==std::string("-2sigma")){
+      if(mass==110) {values.push_back(0.685); }
+      if(mass==115) {values.push_back(0.676); }
+      if(mass==120) {values.push_back(0.655); }
+      if(mass==125) {values.push_back(0.659); }
+      if(mass==130) {values.push_back(0.693); }
+      if(mass==135) {values.push_back(0.782); }
+      if(mass==140) {values.push_back(0.954); }
+      if(mass==145) {values.push_back( 1.11); }
     }
     else{
       std::cout << "ERROR: picked wrong type. Available types are: +2sigma, +1sigma, mean, median, -1sigma, -2sigma" << std::endl

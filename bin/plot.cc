@@ -19,6 +19,7 @@ int main(int argc, char* argv[])
   types.push_back(std::string("HIG-11-020"));
   types.push_back(std::string("HIG-11-029"));
   types.push_back(std::string("HIG-12-018"));
+  types.push_back(std::string("HIG-12-032"));
   types.push_back(std::string("significance"));
 
   // parse arguments
@@ -230,6 +231,27 @@ int main(int argc, char* argv[])
     /// 2-sigma uncertainty band
     TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
     plot.fillBand("HIG-12-018", outer, "HIG-12-018", false);
+    /// make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plot(*canv, inner, outer, expected, observed);
+  }
+  if( std::string(argv[1]) == std::string("HIG-12-032") ){
+    /// observed limit 
+    TGraph* observed  = 0; 
+    if(!expected_only){
+      observed = new TGraph();
+      plot.fillCentral("HIG-12-032", observed, "HIG-12-032-observed");
+    }
+    /// expected limit
+    TGraph* expected  = new TGraph();
+    plot.fillCentral("HIG-12-032", expected, "HIG-12-032-expected");
+    /// 1-sigma uncertainty band
+    TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
+    plot.fillBand("HIG-12-032", inner, "HIG-12-032", true);
+    /// 2-sigma uncertainty band
+    TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
+    plot.fillBand("HIG-12-032", outer, "HIG-12-032", false);
     /// make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);

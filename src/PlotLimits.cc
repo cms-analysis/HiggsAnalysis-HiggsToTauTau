@@ -261,6 +261,12 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
       else if(std::string(filename)==std::string("HIG-12-018-expected")){
 	prepareHIG_12_018(central, "expected", bins_[imass]);
       }
+      else if(std::string(filename)==std::string("HIG-12-032-observed")){
+	prepareHIG_12_032(central, "observed", bins_[imass]);
+      }
+      else if(std::string(filename)==std::string("HIG-12-032-expected")){
+	prepareHIG_12_032(central, "expected", bins_[imass]);
+      }
     }
   }
   else{
@@ -329,6 +335,11 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
 	prepareHIG_12_018(lower, innerBand ? "-1sigma" : "-2sigma", bins_[imass]);
       }
     }
+  }
+  else if(std::string(method) == std::string("HIG-12-032")){
+    prepareHIG_12_032(expected, "expected");
+    prepareHIG_12_032(upper, innerBand ? "+1sigma" : "+2sigma");
+    prepareHIG_12_032(lower, innerBand ? "-1sigma" : "-2sigma");
   }
   else{
     if(std::string(method) == std::string("Bayesian")){
