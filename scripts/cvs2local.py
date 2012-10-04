@@ -17,7 +17,7 @@ cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3
 cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 5", type="string", help="List et of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
 cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1", type="string", help="List of vhtt event categories. [Default: \"0 1\"]")
-cats1.add_option("--sm-categories-vhbb", dest="vhbb_sm_categories", default="0 1 2 3 4 5 6 7", type="string", help="List of tt event categories. [Default: \"0 1 2 3 4 5 6 7\"]")
+cats1.add_option("--sm-categories-vhbb", dest="vhbb_sm_categories", default="0 1 2 3 4 5 6 7 8 9", type="string", help="List of tt event categories. [Default: \"0 1 2 3 4 5 6 7 8 9\"]")
 parser.add_option_group(cats1)
 cats2 = OptionGroup(parser, "MSSM EVENT CATEGORIES", "Event categories to be used for the MSSM analysis.")
 cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="0 1 2 3 6 7", type="string", help="List mm of event categories. [Default: \"0 1 2 3 6 7\"]")
@@ -119,6 +119,7 @@ if options.analysis == "sm" :
         "et"   : (110, 145),
         "tt"   : (110, 145),
         "vhtt" : (110, 145),
+        "vhbb" : (110, 145),
     }
 if options.analysis == "mssm" :
     valid_masses = {
@@ -138,12 +139,13 @@ print
 ## valid run periods
 if options.analysis == "sm" :
     valid_periods = {
-        "mm"   : "7TeV 8TeV",
-        "em"   : "7TeV 8TeV",
-        "mt"   : "7TeV 8TeV",
-        "et"   : "7TeV 8TeV",
-        "tt"   : "8TeV",
-        "vhtt" : "7TeV 8TeV",
+        "mm"   : "7TeV 8TeV 14TeV",
+        "em"   : "7TeV 8TeV 14TeV",
+        "mt"   : "7TeV 8TeV 14TeV",
+        "et"   : "7TeV 8TeV 14TeV",
+        "tt"   :      "8TeV 14TeV",
+        "vhtt" : "7TeV 8TeV 14TeV",
+        "vhbb" : "7TeV 8TeV 14TeV",
         }
 if options.analysis == "mssm" :
     valid_periods = {
