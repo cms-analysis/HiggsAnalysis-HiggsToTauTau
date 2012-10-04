@@ -336,7 +336,10 @@ class DBuilder:
                     try:
                         uncert_val = uncert.vals[category_name][sample_name]
                         #print category_name,sample_name,uncert.name,uncert_val
-                        uncert_str += ("%4.3f" % uncert_val).ljust(self.cw)
+                        if uncert.type=="gmN":
+                            uncert_str += ("%7.6f" % uncert_val).ljust(self.cw)
+                        else:
+                            uncert_str += ("%4.3f" % uncert_val).ljust(self.cw)
                         uncertainty_is_used = True
                     except KeyError as e:
                         uncert_str += "-".ljust(self.cw)
