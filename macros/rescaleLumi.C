@@ -29,68 +29,56 @@
     run.
 */
 
-void rescaleLumi(const char* oldfilename, float oldLumi=4.9, float newLumi=10., bool armed=false, unsigned int debug=0)
+void rescaleLumi(const char* filename, float oldLumi=4.9, float newLumi=12., unsigned int debug=0)
 {
-  //float        oldLumi  = 4.9;
-  //float        newLumi  = 10.;
-  //unsigned int debug    = 2;
-
-  TFile* file = new TFile(oldfilename, "Update");
-  TIter nextDirectory(file->GetListOfKeys());
-  TIter nextDirectory2(file->GetListOfKeys());
+  std::vector<TString> paths, dirs;
+  TFile* old_file = new TFile(filename, "Read");
+  TIter nextDirectory(old_file->GetListOfKeys());
   TKey* idir;
-  std::vector<TString> paths;
-  // collect all histogram names
-  while((idir = (TKey*)nextDirectory())){;
+  // collect all folder and histogram names
+  while((idir = (TKey*)nextDirectory())){
+    old_file->cd();
     if(idir->IsFolder()){
-      file->cd(); // make sure to start in directory head 
+      dirs.push_back(idir->GetName());
       if(debug>0){ std::cout << "Found directory: " << idir->GetName() << std::endl; }
-      if(file->GetDirectory(idir->GetName())){
-	file->cd(idir->GetName()); // change to sub-directory
+      if(old_file->GetDirectory(idir->GetName())){
+	old_file->cd(idir->GetName());
 	TIter next(gDirectory->GetListOfKeys());
 	TKey* iobj;
 	while((iobj = (TKey*)next())){
 	  if(debug>2){ std::cout << " ...found object: " << iobj->GetName() << std::endl; }
 	  TString path = TString::Format("%s/%s", idir->GetName(), iobj->GetName());
-	  if(!std::count(paths.begin(), paths.end(), path, 0)){ 
+	  if(!std::count(paths.begin(), paths.end(), path)){ 
 	    paths.push_back(path);
 	  }
 	}
       }
     }    
   }
-  // do the rescaling
-  for(std::vector<TString>::const_iterator path2 = paths.begin(); path2!=paths.end(); ++path2){ 
-    TH1F* h = (TH1F*)file->Get(*path2);
-    if(debug>1){ std::cout << "histogram: " << *path2 << std::endl; }
+  // setup directory structure in new file
+  TFile* new_file = new TFile(TString::Format("%s_scaled", filename), "Update");
+  for(std::vector<TString>::const_iterator dir = dirs.begin(); dir!=dirs.end(); ++dir){
+    if(debug>2){ std::cout << " ...created directory: " << *dir << std::endl; }
+    new_file->mkdir(*dir);
+  } 
+  // do the rescaling and write new object to file
+  for(std::vector<TString>::const_iterator path = paths.begin(); path!=paths.end(); ++path){ 
+    TH1F* h = (TH1F*)old_file->Get(*path);
+    if(debug>1){ std::cout << "histogram: " << *path << std::endl; }
     if(debug>1){ std::cout << "...old scale : " << h->Integral() << std::endl; }
     h->Scale(newLumi/oldLumi);  
-    if(std::string(*path2).find("data_obs")!=std::string::npos){
-      // for(int i=0; i<h->GetSize(); i++){
-      //  	float x=h->GetBinContent(i)+0.5;
-      //  	h->SetBinContent(i, int(x));
-      //        }
+    if(std::string(*path).find("data_obs")!=std::string::npos){
       if (h->Integral() > 0)  h->Scale((int)h->Integral()/h->Integral());
     }
     if(debug>1){ std::cout << "...new scale : " << h->Integral() << std::endl; }
-    if(armed){
-      std::string str = std::string(*path2);
-      std::string dir = str.substr(0, str.find("/"));
-      std::string hist = str.substr(str.find("/")+1, std::string::npos);
-      file->cd();;
-      file->cd(dir.c_str());
-      h->Write(hist.c_str()); 
-    }
+    std::string str = std::string(*path);
+    std::string dir = str.substr(0, str.find("/"));
+    std::string hist = str.substr(str.find("/")+1, std::string::npos);
+    new_file->cd();;
+    new_file->cd(dir.c_str());
+    h->Write(hist.c_str()); 
   }
-  // remove unscaled histos from the root file to make sure the "right" histo is picked in limit calculation
-  TKey* idir2;
-  while((idir2 = (TKey*)nextDirectory2())){
-    file->cd();
-    if(file->GetDirectory(idir2->GetName())){ 
-      file->cd(idir2->GetName());
-      gDirectory->Delete("*;1"); // this only removes ;1 histos ... running twice on same input won't work proper
-    }
-  }
-  file->Close();
+  old_file->Close();
+  new_file->Close();
   return;
 }
