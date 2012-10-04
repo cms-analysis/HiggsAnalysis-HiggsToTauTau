@@ -242,30 +242,31 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
 {
   std::vector<double> central;
   if (std::string(filename).find("HIG")!=std::string::npos){
+    bool initial = masses_.empty();
     for(unsigned int imass=0; imass<bins_.size(); ++imass){
       if(std::string(filename)==std::string("HIG-11-020-observed")){
-	prepareHIG_11_020(central, "observed", false, bins_[imass]);
+	prepareHIG_11_020(central, "observed", false, bins_[imass], initial);
       }
       else if(std::string(filename)==std::string("HIG-11-020-expected")){
-	prepareHIG_11_020(central, "expected", false, bins_[imass]);
+	prepareHIG_11_020(central, "expected", false, bins_[imass], initial);
       }
       else if(std::string(filename)==std::string("HIG-11-029-observed")){
-	prepareHIG_11_029(central, "observed", bins_[imass]);
+	prepareHIG_11_029(central, "observed", bins_[imass], initial);
       }
       else if(std::string(filename)==std::string("HIG-11-029-expected")){
-	prepareHIG_11_029(central, "expected", bins_[imass]);
+	prepareHIG_11_029(central, "expected", bins_[imass], initial);
       }
       else if(std::string(filename)==std::string("HIG-12-018-observed")){
-	prepareHIG_12_018(central, "observed", bins_[imass]);
+	prepareHIG_12_018(central, "observed", bins_[imass], initial);
       }
       else if(std::string(filename)==std::string("HIG-12-018-expected")){
-	prepareHIG_12_018(central, "expected", bins_[imass]);
+	prepareHIG_12_018(central, "expected", bins_[imass], initial);
       }
       else if(std::string(filename)==std::string("HIG-12-032-observed")){
-	prepareHIG_12_032(central, "observed", bins_[imass]);
+	prepareHIG_12_032(central, "observed", bins_[imass], initial);
       }
       else if(std::string(filename)==std::string("HIG-12-032-expected")){
-	prepareHIG_12_032(central, "expected", bins_[imass]);
+	prepareHIG_12_032(central, "expected", bins_[imass], initial);
       }
     }
   }
@@ -294,13 +295,13 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
     }
     else{
       if(valid_[imass]){
-	for(unsigned int imassHIG=0; imassHIG<masses_.size(); ++imassHIG){
-	  if(masses_[imassHIG]==bins_[imass]){
-	    plot->SetPoint(ipoint, masses_[imassHIG], central[imassHIG]);
+	for(unsigned int jmass=0; jmass<masses_.size(); ++jmass){
+	  if(masses_[jmass]==bins_[imass]){
+	    plot->SetPoint(ipoint, masses_[jmass], central[jmass]);
 	    ++ipoint; // only add valid mass points to the TGraph
 	    if(verbosity_>1){
 	      // second verbosity level
-	      std::cout << "INFO: central [" << masses_[imassHIG] << "] = " << central[imassHIG] << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl;
+	      std::cout << "INFO: central [" << masses_[jmass] << "] = " << central[jmass] << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl;
 	    }
 	    break;
 	  }
@@ -317,29 +318,30 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
   std::vector<double> upper, lower, expected;
 
   if (std::string(method).find("HIG")!=std::string::npos){
+    bool initial = masses_.empty();
     for(unsigned int imass=0; imass<bins_.size(); ++imass){
       if(std::string(method) == std::string("HIG-11-020")){
 	bool xsec = false;
-	prepareHIG_11_020(expected, "expected", xsec, bins_[imass]);
-	prepareHIG_11_020(upper, innerBand ? "+1sigma" : "+2sigma", xsec, bins_[imass]);
-	prepareHIG_11_020(lower, innerBand ? "-1sigma" : "-2sigma", xsec, bins_[imass]);
+	prepareHIG_11_020(expected, "expected", xsec, bins_[imass], initial);
+	prepareHIG_11_020(upper, innerBand ? "+1sigma" : "+2sigma", xsec, bins_[imass], initial);
+	prepareHIG_11_020(lower, innerBand ? "-1sigma" : "-2sigma", xsec, bins_[imass], initial);
       }
       else if(std::string(method) == std::string("HIG-11-029")){
-	prepareHIG_11_029(expected, "expected", bins_[imass]);
-	prepareHIG_11_029(upper, innerBand ? "+1sigma" : "+2sigma", bins_[imass]);
-	prepareHIG_11_029(lower, innerBand ? "-1sigma" : "-2sigma", bins_[imass]);
+	prepareHIG_11_029(expected, "expected", bins_[imass], initial);
+	prepareHIG_11_029(upper, innerBand ? "+1sigma" : "+2sigma", bins_[imass], initial);
+	prepareHIG_11_029(lower, innerBand ? "-1sigma" : "-2sigma", bins_[imass], initial);
       }
       else if(std::string(method) == std::string("HIG-12-018")){
-	prepareHIG_12_018(expected, "expected", bins_[imass]);
-	prepareHIG_12_018(upper, innerBand ? "+1sigma" : "+2sigma", bins_[imass]);
-	prepareHIG_12_018(lower, innerBand ? "-1sigma" : "-2sigma", bins_[imass]);
+	prepareHIG_12_018(expected, "expected", bins_[imass], initial);
+	prepareHIG_12_018(upper, innerBand ? "+1sigma" : "+2sigma", bins_[imass], initial);
+	prepareHIG_12_018(lower, innerBand ? "-1sigma" : "-2sigma", bins_[imass], initial);
+      }
+      else if(std::string(method) == std::string("HIG-12-032")){
+	prepareHIG_12_032(expected, "expected", bins_[imass], initial);
+	prepareHIG_12_032(upper, innerBand ? "+1sigma" : "+2sigma", bins_[imass], initial);
+	prepareHIG_12_032(lower, innerBand ? "-1sigma" : "-2sigma", bins_[imass], initial);
       }
     }
-  }
-  else if(std::string(method) == std::string("HIG-12-032")){
-    prepareHIG_12_032(expected, "expected");
-    prepareHIG_12_032(upper, innerBand ? "+1sigma" : "+2sigma");
-    prepareHIG_12_032(lower, innerBand ? "-1sigma" : "-2sigma");
   }
   else{
     if(std::string(method) == std::string("Bayesian")){
@@ -379,18 +381,18 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
     }
     else{
       if(valid_[imass]){
-	for(unsigned int imassHIG=0; imassHIG<masses_.size(); ++imassHIG){
-	  if(masses_[imassHIG]==bins_[imass]){
-	    plot->SetPoint(ipoint, masses_[imassHIG], expected[imassHIG]);
-	    plot->SetPointEYhigh(ipoint, upper[imassHIG] - expected[imassHIG]);
-	    plot->SetPointEYlow (ipoint, expected[imassHIG] - lower[imassHIG]);
+	for(unsigned int jmass=0; jmass<masses_.size(); ++jmass){
+	  if(masses_[jmass]==bins_[imass]){
+	    plot->SetPoint(ipoint, masses_[jmass], expected[jmass]);
+	    plot->SetPointEYhigh(ipoint, upper[jmass] - expected[jmass]);
+	    plot->SetPointEYlow (ipoint, expected[jmass] - lower[jmass]);
 	    ++ipoint; // only add valid mass points to the TGraph
 	    if(verbosity_>1){
 	      // second verbosity level
 	      std::cout << "INFO: Calculating " << (innerBand ? "inner" : "outer") << " uncertainty band" << std::endl;
-	      std::cout << "INFO: upper    [" << masses_[imassHIG] << "] = " << " (" << upper[imassHIG] << ") " << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl;
-	      std::cout << "INFO: expected [" << masses_[imassHIG] << "] = " << expected[imassHIG]          << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl;
-	      std::cout << "INFO: lower    [" << masses_[imassHIG] << "] = " << " (" << lower[imassHIG] << ") " << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl;
+	      std::cout << "INFO: upper    [" << masses_[jmass] << "] = " << " (" << upper[jmass] << ") " << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl;
+	      std::cout << "INFO: expected [" << masses_[jmass] << "] = " << expected[jmass]          << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl;
+	      std::cout << "INFO: lower    [" << masses_[jmass] << "] = " << " (" << lower[jmass] << ") " << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl;
 	    }
 	    break;
 	  }
@@ -803,8 +805,8 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   //TGraph* innerAuxL = new TGraph();
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
     if(valid_[imass] && masses_.size()>0){
-      for (unsigned int imassHIG=0; imassHIG<masses_.size(); ++imassHIG){
-	  if(masses_[imassHIG]==bins_[imass]){
+      for (unsigned int jmass=0; jmass<masses_.size(); ++jmass){
+	  if(masses_[jmass]==bins_[imass]){
 	    outerHigh->SetPoint(ipoint, outerBand->GetX()[ipoint], outerBand->GetY()[ipoint]+outerBand->GetEYhigh()[ipoint]);
 	    innerHigh->SetPoint(ipoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]+innerBand->GetEYhigh()[ipoint]);
 	    outerLow ->SetPoint(ipoint, outerBand->GetX()[ipoint], outerBand->GetY()[ipoint]-outerBand->GetEYlow ()[ipoint]);

@@ -101,13 +101,13 @@ class PlotLimits {
   /// take these mass points out of consideration
   void prepareSimple(const char* directory, std::vector<double>& values, const char* filename);
   /// fill officially approved limits for LP2011 (NOTE: these are cross section also for MSSM)
-  void prepareHIG_11_020(std::vector<double>& values, const char* type, bool xsec, double mass);
+  void prepareHIG_11_020(std::vector<double>& values, const char* type, bool xsec, double mass, bool initial);
   /// fill officially approved limits for HIG-11-029 paper (NOTE: these are direct limits on tanb for MSSM)
-  void prepareHIG_11_029(std::vector<double>& values, const char* type, double mass);
+  void prepareHIG_11_029(std::vector<double>& values, const char* type, double mass, bool initial);
   /// fill officially approved limits for HIG-12-018 PAS and HIG-12-028 paper (NOTE: these are only SM limits)
-  void prepareHIG_12_018(std::vector<double>& values, const char* type, double mass);
+  void prepareHIG_12_018(std::vector<double>& values, const char* type, double mass, bool initial);
   /// fill officially approved limits for HIG-12-032 PAS (NOTE: these are only SM limits)
-  void prepareHIG_12_032(std::vector<double>& values, const char* type, double mass);
+  void prepareHIG_12_032(std::vector<double>& values, const char* type, double mass, bool initial);
 
   /*
     Limits for comparison
@@ -161,41 +161,41 @@ class PlotLimits {
 };
 
 inline void
-PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, bool xsec, double mass)
+PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, bool xsec, double mass, bool initial)
 {
   if(mssm_){
     if(std::string(type)==std::string("observed")){
       if(xsec){
 	// xsec limits
-	if(mass== 90) {values.push_back(14.076); }
-	if(mass==100) {values.push_back( 7.995); }
-	if(mass==120) {values.push_back( 4.501); }
-	if(mass==130) {values.push_back( 4.095); }
-	if(mass==140) {values.push_back( 3.834); }
-	if(mass==160) {values.push_back( 3.103); }
-	if(mass==180) {values.push_back( 2.296); }
-	if(mass==200) {values.push_back( 2.353); }
-	if(mass==250) {values.push_back( 1.700); }
-	if(mass==300) {values.push_back( 1.227); }
-	if(mass==400) {values.push_back( 0.600); }
-	if(mass==450) {values.push_back( 0.416); }
-	if(mass==400) {values.push_back( 0.335); }
+	if(mass== 90) {values.push_back(14.076); if(initial) masses_.push_back(mass);}
+	if(mass==100) {values.push_back( 7.995); if(initial) masses_.push_back(mass);}
+	if(mass==120) {values.push_back( 4.501); if(initial) masses_.push_back(mass);}
+	if(mass==130) {values.push_back( 4.095); if(initial) masses_.push_back(mass);}
+	if(mass==140) {values.push_back( 3.834); if(initial) masses_.push_back(mass);}
+	if(mass==160) {values.push_back( 3.103); if(initial) masses_.push_back(mass);}
+	if(mass==180) {values.push_back( 2.296); if(initial) masses_.push_back(mass);}
+	if(mass==200) {values.push_back( 2.353); if(initial) masses_.push_back(mass);}
+	if(mass==250) {values.push_back( 1.700); if(initial) masses_.push_back(mass);}
+	if(mass==300) {values.push_back( 1.227); if(initial) masses_.push_back(mass);}
+	if(mass==400) {values.push_back( 0.600); if(initial) masses_.push_back(mass);}
+	if(mass==450) {values.push_back( 0.416); if(initial) masses_.push_back(mass);}
+	if(mass==400) {values.push_back( 0.335); if(initial) masses_.push_back(mass);}
       }
       else{
 	// tanb limits
-	if(mass== 90) {values.push_back(8.50 ); }
-	if(mass==100) {values.push_back(7.92 ); }
-	if(mass==120) {values.push_back(8.67 ); }
-	if(mass==130) {values.push_back(7.78 ); }
-	if(mass==140) {values.push_back(10.99); }
-	if(mass==160) {values.push_back(12.69); }
-	if(mass==180) {values.push_back(14.00); }
-	if(mass==200) {values.push_back(17.66); }
-	if(mass==250) {values.push_back(24.46); }
-	if(mass==300) {values.push_back(31.68); }
-	if(mass==400) {values.push_back(44.82); }
-	if(mass==450) {values.push_back(50.62); }
-	if(mass==500) {values.push_back(59.53); }
+	if(mass== 90) {values.push_back(8.50 ); if(initial) masses_.push_back(mass);}
+	if(mass==100) {values.push_back(7.92 ); if(initial) masses_.push_back(mass);}
+	if(mass==120) {values.push_back(8.67 ); if(initial) masses_.push_back(mass);}
+	if(mass==130) {values.push_back(7.78 ); if(initial) masses_.push_back(mass);}
+	if(mass==140) {values.push_back(10.99); if(initial) masses_.push_back(mass);}
+	if(mass==160) {values.push_back(12.69); if(initial) masses_.push_back(mass);}
+	if(mass==180) {values.push_back(14.00); if(initial) masses_.push_back(mass);}
+	if(mass==200) {values.push_back(17.66); if(initial) masses_.push_back(mass);}
+	if(mass==250) {values.push_back(24.46); if(initial) masses_.push_back(mass);}
+	if(mass==300) {values.push_back(31.68); if(initial) masses_.push_back(mass);}
+	if(mass==400) {values.push_back(44.82); if(initial) masses_.push_back(mass);}
+	if(mass==450) {values.push_back(50.62); if(initial) masses_.push_back(mass);}
+	if(mass==500) {values.push_back(59.53); if(initial) masses_.push_back(mass);}
       }
     }
     else if (std::string(type)==std::string("+2sigma")){
@@ -269,35 +269,35 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
     else if(std::string(type)==std::string("expected")){
       if(xsec){
 	// xsec limits
-	if(mass== 90) {values.push_back(17.802); masses_.push_back(mass);}
-	if(mass==100) {values.push_back(12.569); masses_.push_back(mass);}
-	if(mass==120) {values.push_back( 6.001); masses_.push_back(mass);}
-	if(mass==130) {values.push_back( 4.823); masses_.push_back(mass);}
-	if(mass==140) {values.push_back( 3.655); masses_.push_back(mass);}
-	if(mass==160) {values.push_back( 2.630); masses_.push_back(mass);}
-	if(mass==180) {values.push_back( 1.883); masses_.push_back(mass);}
-	if(mass==200) {values.push_back( 1.543); masses_.push_back(mass);}
-	if(mass==250) {values.push_back( 0.957); masses_.push_back(mass);}
-	if(mass==300) {values.push_back( 0.661); masses_.push_back(mass);}
-	if(mass==400) {values.push_back( 0.376); masses_.push_back(mass);}
-	if(mass==450) {values.push_back( 0.294); masses_.push_back(mass);}
-	if(mass==500) {values.push_back( 0.254); masses_.push_back(mass);}
+	if(mass== 90) {values.push_back(17.802); if(initial) masses_.push_back(mass);}
+	if(mass==100) {values.push_back(12.569); if(initial) masses_.push_back(mass);}
+	if(mass==120) {values.push_back( 6.001); if(initial) masses_.push_back(mass);}
+	if(mass==130) {values.push_back( 4.823); if(initial) masses_.push_back(mass);}
+	if(mass==140) {values.push_back( 3.655); if(initial) masses_.push_back(mass);}
+	if(mass==160) {values.push_back( 2.630); if(initial) masses_.push_back(mass);}
+	if(mass==180) {values.push_back( 1.883); if(initial) masses_.push_back(mass);}
+	if(mass==200) {values.push_back( 1.543); if(initial) masses_.push_back(mass);}
+	if(mass==250) {values.push_back( 0.957); if(initial) masses_.push_back(mass);}
+	if(mass==300) {values.push_back( 0.661); if(initial) masses_.push_back(mass);}
+	if(mass==400) {values.push_back( 0.376); if(initial) masses_.push_back(mass);}
+	if(mass==450) {values.push_back( 0.294); if(initial) masses_.push_back(mass);}
+	if(mass==500) {values.push_back( 0.254); if(initial) masses_.push_back(mass);}
       }
       else{
 	// tanb limtis
-	if(mass== 90) {values.push_back(9.56 ); masses_.push_back(mass);}
-	if(mass==100) {values.push_back(9.96 ); masses_.push_back(mass);}
-	if(mass==120) {values.push_back(10.12); masses_.push_back(mass);}
-	if(mass==130) {values.push_back(8.75 ); masses_.push_back(mass);}
-	if(mass==140) {values.push_back(10.71); masses_.push_back(mass);}
-	if(mass==160) {values.push_back(11.69); masses_.push_back(mass);}
-	if(mass==180) {values.push_back(12.67); masses_.push_back(mass);}
-	if(mass==200) {values.push_back(14.37); masses_.push_back(mass);}
-	if(mass==250) {values.push_back(18.56); masses_.push_back(mass);}
-	if(mass==300) {values.push_back(23.75); masses_.push_back(mass);}
-	if(mass==400) {values.push_back(36.32); masses_.push_back(mass);}
-	if(mass==450) {values.push_back(43.41); masses_.push_back(mass);}
-	if(mass==500) {values.push_back(52.65); masses_.push_back(mass);}
+	if(mass== 90) {values.push_back(9.56 ); if(initial) masses_.push_back(mass);}
+	if(mass==100) {values.push_back(9.96 ); if(initial) masses_.push_back(mass);}
+	if(mass==120) {values.push_back(10.12); if(initial) masses_.push_back(mass);}
+	if(mass==130) {values.push_back(8.75 ); if(initial) masses_.push_back(mass);}
+	if(mass==140) {values.push_back(10.71); if(initial) masses_.push_back(mass);}
+	if(mass==160) {values.push_back(11.69); if(initial) masses_.push_back(mass);}
+	if(mass==180) {values.push_back(12.67); if(initial) masses_.push_back(mass);}
+	if(mass==200) {values.push_back(14.37); if(initial) masses_.push_back(mass);}
+	if(mass==250) {values.push_back(18.56); if(initial) masses_.push_back(mass);}
+	if(mass==300) {values.push_back(23.75); if(initial) masses_.push_back(mass);}
+	if(mass==400) {values.push_back(36.32); if(initial) masses_.push_back(mass);}
+	if(mass==450) {values.push_back(43.41); if(initial) masses_.push_back(mass);}
+	if(mass==500) {values.push_back(52.65); if(initial) masses_.push_back(mass);}
       }
     }
     else if (std::string(type)==std::string("-1sigma")){
@@ -376,14 +376,14 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
   }
   else{
     if(std::string(type)==std::string("observed")){
-      if(mass==110) {values.push_back( 5.984); }
-      if(mass==150) {values.push_back( 7.018); }
-      if(mass==120) {values.push_back( 7.618); }
-      if(mass==125) {values.push_back( 7.106); }
-      if(mass==130) {values.push_back(10.029); }
-      if(mass==135) {values.push_back(10.352); }
-      if(mass==140) {values.push_back(12.415); }
-      if(mass==145) {values.push_back(17.923); }
+      if(mass==110) {values.push_back( 5.984); if(initial) masses_.push_back(mass);}
+      if(mass==150) {values.push_back( 7.018); if(initial) masses_.push_back(mass);}
+      if(mass==120) {values.push_back( 7.618); if(initial) masses_.push_back(mass);}
+      if(mass==125) {values.push_back( 7.106); if(initial) masses_.push_back(mass);}
+      if(mass==130) {values.push_back(10.029); if(initial) masses_.push_back(mass);}
+      if(mass==135) {values.push_back(10.352); if(initial) masses_.push_back(mass);}
+      if(mass==140) {values.push_back(12.415); if(initial) masses_.push_back(mass);}
+      if(mass==145) {values.push_back(17.923); if(initial) masses_.push_back(mass);}
     }
     else if(std::string(type)==std::string("+2sigma")){
       if(mass==110) {values.push_back(10.971); }
@@ -406,14 +406,14 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
       if(mass==145) {values.push_back(17.708); }
     }
     else if(std::string(type)==std::string("expected")){
-      if(mass==110) {values.push_back( 5.402); masses_.push_back(mass);}
-      if(mass==115) {values.push_back( 6.139); masses_.push_back(mass);}
-      if(mass==120) {values.push_back( 5.606); masses_.push_back(mass);}
-      if(mass==125) {values.push_back( 5.706); masses_.push_back(mass);}
-      if(mass==130) {values.push_back( 6.439); masses_.push_back(mass);}
-      if(mass==135) {values.push_back( 7.430); masses_.push_back(mass);}
-      if(mass==140) {values.push_back( 9.124); masses_.push_back(mass);}
-      if(mass==145) {values.push_back(12.534); masses_.push_back(mass);}
+      if(mass==110) {values.push_back( 5.402); if(initial) masses_.push_back(mass);}
+      if(mass==115) {values.push_back( 6.139); if(initial) masses_.push_back(mass);}
+      if(mass==120) {values.push_back( 5.606); if(initial) masses_.push_back(mass);}
+      if(mass==125) {values.push_back( 5.706); if(initial) masses_.push_back(mass);}
+      if(mass==130) {values.push_back( 6.439); if(initial) masses_.push_back(mass);}
+      if(mass==135) {values.push_back( 7.430); if(initial) masses_.push_back(mass);}
+      if(mass==140) {values.push_back( 9.124); if(initial) masses_.push_back(mass);}
+      if(mass==145) {values.push_back(12.534); if(initial) masses_.push_back(mass);}
     }
     else if(std::string(type)==std::string("-1sigma")){
       if(mass==110) {values.push_back( 3.911); }
@@ -445,24 +445,24 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
 }
 
 inline void
-PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type, double mass)
+PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type, double mass, bool initial)
 {
   if(mssm_){
     if(std::string(type)==std::string("observed")){
-      if(mass== 90) {values.push_back(12.246); }
-      if(mass==100) {values.push_back(11.799); }
-      if(mass==120) {values.push_back( 9.842); }
-      if(mass==130) {values.push_back( 9.026); }
-      if(mass==140) {values.push_back( 8.031); }
-      if(mass==160) {values.push_back( 7.113); }
-      if(mass==180) {values.push_back( 7.504); }
-      if(mass==200) {values.push_back( 8.464); }
-      if(mass==250) {values.push_back(13.755); }
-      if(mass==300) {values.push_back(20.943); }
-      if(mass==350) {values.push_back(29.124); }
-      if(mass==400) {values.push_back(37.298); }
-      if(mass==450) {values.push_back(45.178); }
-      if(mass==500) {values.push_back(51.904); }
+      if(mass== 90) {values.push_back(12.246); if(initial) masses_.push_back(mass);}
+      if(mass==100) {values.push_back(11.799); if(initial) masses_.push_back(mass);}
+      if(mass==120) {values.push_back( 9.842); if(initial) masses_.push_back(mass);}
+      if(mass==130) {values.push_back( 9.026); if(initial) masses_.push_back(mass);}
+      if(mass==140) {values.push_back( 8.031); if(initial) masses_.push_back(mass);}
+      if(mass==160) {values.push_back( 7.113); if(initial) masses_.push_back(mass);}
+      if(mass==180) {values.push_back( 7.504); if(initial) masses_.push_back(mass);}
+      if(mass==200) {values.push_back( 8.464); if(initial) masses_.push_back(mass);}
+      if(mass==250) {values.push_back(13.755); if(initial) masses_.push_back(mass);}
+      if(mass==300) {values.push_back(20.943); if(initial) masses_.push_back(mass);}
+      if(mass==350) {values.push_back(29.124); if(initial) masses_.push_back(mass);}
+      if(mass==400) {values.push_back(37.298); if(initial) masses_.push_back(mass);}
+      if(mass==450) {values.push_back(45.178); if(initial) masses_.push_back(mass);}
+      if(mass==500) {values.push_back(51.904); if(initial) masses_.push_back(mass);}
     } 
     else if (std::string(type)==std::string("-2sigma")){
       if(mass== 90) {values.push_back( 5.194); }
@@ -497,20 +497,20 @@ PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type, dou
       if(mass==500) {values.push_back(35.739); }
     }
     else if(std::string(type)==std::string("expected")){
-      if(mass== 90) {values.push_back( 8.371); masses_.push_back(mass);}
-      if(mass==100) {values.push_back( 8.777); masses_.push_back(mass);}
-      if(mass==120) {values.push_back( 8.087); masses_.push_back(mass);}
-      if(mass==130) {values.push_back( 7.847); masses_.push_back(mass);}
-      if(mass==140) {values.push_back( 7.901); masses_.push_back(mass);}
-      if(mass==160) {values.push_back( 8.514); masses_.push_back(mass);}
-      if(mass==180) {values.push_back( 9.533); masses_.push_back(mass);}
-      if(mass==200) {values.push_back(10.519); masses_.push_back(mass);}
-      if(mass==250) {values.push_back(13.923); masses_.push_back(mass);}
-      if(mass==300) {values.push_back(18.378); masses_.push_back(mass);}
-      if(mass==350) {values.push_back(23.025); masses_.push_back(mass);}
-      if(mass==400) {values.push_back(27.886); masses_.push_back(mass);}
-      if(mass==450) {values.push_back(33.264); masses_.push_back(mass);}
-      if(mass==500) {values.push_back(40.510); masses_.push_back(mass);}
+      if(mass== 90) {values.push_back( 8.371); if(initial) masses_.push_back(mass);}
+      if(mass==100) {values.push_back( 8.777); if(initial) masses_.push_back(mass);}
+      if(mass==120) {values.push_back( 8.087); if(initial) masses_.push_back(mass);}
+      if(mass==130) {values.push_back( 7.847); if(initial) masses_.push_back(mass);}
+      if(mass==140) {values.push_back( 7.901); if(initial) masses_.push_back(mass);}
+      if(mass==160) {values.push_back( 8.514); if(initial) masses_.push_back(mass);}
+      if(mass==180) {values.push_back( 9.533); if(initial) masses_.push_back(mass);}
+      if(mass==200) {values.push_back(10.519); if(initial) masses_.push_back(mass);}
+      if(mass==250) {values.push_back(13.923); if(initial) masses_.push_back(mass);}
+      if(mass==300) {values.push_back(18.378); if(initial) masses_.push_back(mass);}
+      if(mass==350) {values.push_back(23.025); if(initial) masses_.push_back(mass);}
+      if(mass==400) {values.push_back(27.886); if(initial) masses_.push_back(mass);}
+      if(mass==450) {values.push_back(33.264); if(initial) masses_.push_back(mass);}
+      if(mass==500) {values.push_back(40.510); if(initial) masses_.push_back(mass);}
     }
     else if (std::string(type)==std::string("+1sigma")){
       if(mass== 90) {values.push_back(10.605); }
@@ -552,14 +552,14 @@ PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type, dou
   }
   else{ // SM Winter11 results
     if(std::string(type)==std::string("observed")){
-      if(mass==110) {values.push_back( 3.20); }
-      if(mass==115) {values.push_back( 3.19); }
-      if(mass==120) {values.push_back( 3.62); }
-      if(mass==125) {values.push_back( 4.27); }
-      if(mass==130) {values.push_back( 5.08); }
-      if(mass==135) {values.push_back( 5.39); }
-      if(mass==140) {values.push_back( 5.46); }
-      if(mass==145) {values.push_back( 7.00); }
+      if(mass==110) {values.push_back( 3.20); if(initial) masses_.push_back(mass);}
+      if(mass==115) {values.push_back( 3.19); if(initial) masses_.push_back(mass);}
+      if(mass==120) {values.push_back( 3.62); if(initial) masses_.push_back(mass);}
+      if(mass==125) {values.push_back( 4.27); if(initial) masses_.push_back(mass);}
+      if(mass==130) {values.push_back( 5.08); if(initial) masses_.push_back(mass);}
+      if(mass==135) {values.push_back( 5.39); if(initial) masses_.push_back(mass);}
+      if(mass==140) {values.push_back( 5.46); if(initial) masses_.push_back(mass);}
+      if(mass==145) {values.push_back( 7.00); if(initial) masses_.push_back(mass);}
     }
     else if(std::string(type)==std::string("+2sigma")){
       if(mass==110) {values.push_back( 6.63); }
@@ -582,14 +582,14 @@ PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type, dou
       if(mass==145) {values.push_back( 7.65); }
     }
     else if(std::string(type)==std::string("expected")){
-      if(mass==110) {values.push_back( 3.30); masses_.push_back(mass);}
-      if(mass==115) {values.push_back( 2.97); masses_.push_back(mass);}
-      if(mass==120) {values.push_back( 3.03); masses_.push_back(mass);}
-      if(mass==125) {values.push_back( 3.05); masses_.push_back(mass);}
-      if(mass==130) {values.push_back( 3.31); masses_.push_back(mass);}
-      if(mass==135) {values.push_back( 4.06); masses_.push_back(mass);}
-      if(mass==140) {values.push_back( 4.17); masses_.push_back(mass);}
-      if(mass==145) {values.push_back( 5.45); masses_.push_back(mass);}
+      if(mass==110) {values.push_back( 3.30); if(initial) masses_.push_back(mass);}
+      if(mass==115) {values.push_back( 2.97); if(initial) masses_.push_back(mass);}
+      if(mass==120) {values.push_back( 3.03); if(initial) masses_.push_back(mass);}
+      if(mass==125) {values.push_back( 3.05); if(initial) masses_.push_back(mass);}
+      if(mass==130) {values.push_back( 3.31); if(initial) masses_.push_back(mass);}
+      if(mass==135) {values.push_back( 4.06); if(initial) masses_.push_back(mass);}
+      if(mass==140) {values.push_back( 4.17); if(initial) masses_.push_back(mass);}
+      if(mass==145) {values.push_back( 5.45); if(initial) masses_.push_back(mass);}
     }
     else if(std::string(type)==std::string("-1sigma")){
       if(mass==110) {values.push_back( 2.36); }
@@ -621,7 +621,7 @@ PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type, dou
 }
 
 inline void 
-PlotLimits::prepareHIG_12_018(std::vector<double>& values, const char* type, double mass)
+PlotLimits::prepareHIG_12_018(std::vector<double>& values, const char* type, double mass, bool initial)
 {
   if(mssm_){
     std::cout << "HIG-12-018 contained only SM limits" << std::endl;
@@ -629,14 +629,14 @@ PlotLimits::prepareHIG_12_018(std::vector<double>& values, const char* type, dou
   }
   else{
     if(std::string(type)==std::string("observed")){
-      if(mass==110) {values.push_back(1.21); }
-      if(mass==115) {values.push_back( 1.2); }
-      if(mass==120) {values.push_back(1.19); }
-      if(mass==125) {values.push_back(1.06); }
-      if(mass==130) {values.push_back( 1.2); }
-      if(mass==135) {values.push_back(1.81); }
-      if(mass==140) {values.push_back( 2.2); }
-      if(mass==145) {values.push_back(3.36); }
+      if(mass==110) {values.push_back(1.21); if(initial) masses_.push_back(mass);}
+      if(mass==115) {values.push_back( 1.2); if(initial) masses_.push_back(mass);}
+      if(mass==120) {values.push_back(1.19); if(initial) masses_.push_back(mass);}
+      if(mass==125) {values.push_back(1.06); if(initial) masses_.push_back(mass);}
+      if(mass==130) {values.push_back( 1.2); if(initial) masses_.push_back(mass);}
+      if(mass==135) {values.push_back(1.81); if(initial) masses_.push_back(mass);}
+      if(mass==140) {values.push_back( 2.2); if(initial) masses_.push_back(mass);}
+      if(mass==145) {values.push_back(3.36); if(initial) masses_.push_back(mass);}
     }
     else if(std::string(type)==std::string("+2sigma")){
       if(mass==110) {values.push_back(2.52); }
@@ -659,14 +659,14 @@ PlotLimits::prepareHIG_12_018(std::vector<double>& values, const char* type, dou
       if(mass==145) {values.push_back(3.28); }
     }
     else if(std::string(type)==std::string("expected")){
-      if(mass==110) {values.push_back(1.37); masses_.push_back(mass);}
-      if(mass==115) {values.push_back(1.34); masses_.push_back(mass);}
-      if(mass==120) {values.push_back( 1.3); masses_.push_back(mass);}
-      if(mass==125) {values.push_back(1.28); masses_.push_back(mass);}
-      if(mass==130) {values.push_back(1.34); masses_.push_back(mass);}
-      if(mass==135) {values.push_back(1.54); masses_.push_back(mass);}
-      if(mass==140) {values.push_back( 1.8); masses_.push_back(mass);}
-      if(mass==145) {values.push_back(2.36); masses_.push_back(mass);}
+      if(mass==110) {values.push_back(1.37); if(initial) masses_.push_back(mass);}
+      if(mass==115) {values.push_back(1.34); if(initial) masses_.push_back(mass);}
+      if(mass==120) {values.push_back( 1.3); if(initial) masses_.push_back(mass);}
+      if(mass==125) {values.push_back(1.28); if(initial) masses_.push_back(mass);}
+      if(mass==130) {values.push_back(1.34); if(initial) masses_.push_back(mass);}
+      if(mass==135) {values.push_back(1.54); if(initial) masses_.push_back(mass);}
+      if(mass==140) {values.push_back( 1.8); if(initial) masses_.push_back(mass);}
+      if(mass==145) {values.push_back(2.36); if(initial) masses_.push_back(mass);}
     }
     else if(std::string(type)==std::string("-1sigma")){
       if(mass==110) {values.push_back(0.987); }
@@ -698,7 +698,7 @@ PlotLimits::prepareHIG_12_018(std::vector<double>& values, const char* type, dou
 }
 
 inline void
-PlotLimits::prepareHIG_12_032(std::vector<double>& values, const char* type, double mass)
+PlotLimits::prepareHIG_12_032(std::vector<double>& values, const char* type, double mass, bool initial)
 {
   if(mssm_){
     std::cout << "HIG-12-032 contained only SM limits" << std::endl;
@@ -706,14 +706,14 @@ PlotLimits::prepareHIG_12_032(std::vector<double>& values, const char* type, dou
   }
   else{
     if(std::string(type)==std::string("observed")){
-      if(mass==110) {values.push_back(0.939); }
-      if(mass==115) {values.push_back( 1.01); }
-      if(mass==120) {values.push_back(    1); }
-      if(mass==125) {values.push_back( 1.01); }
-      if(mass==130) {values.push_back( 1.09); }
-      if(mass==135) {values.push_back( 1.53); }
-      if(mass==140) {values.push_back( 1.78); }
-      if(mass==145) {values.push_back( 2.32); }
+      if(mass==110) {values.push_back(0.939); if(initial) masses_.push_back(mass);}
+      if(mass==115) {values.push_back( 1.01); if(initial) masses_.push_back(mass);}
+      if(mass==120) {values.push_back(    1); if(initial) masses_.push_back(mass);}
+      if(mass==125) {values.push_back( 1.01); if(initial) masses_.push_back(mass);}
+      if(mass==130) {values.push_back( 1.09); if(initial) masses_.push_back(mass);}
+      if(mass==135) {values.push_back( 1.53); if(initial) masses_.push_back(mass);}
+      if(mass==140) {values.push_back( 1.78); if(initial) masses_.push_back(mass);}
+      if(mass==145) {values.push_back( 2.32); if(initial) masses_.push_back(mass);}
     }
     else if(std::string(type)==std::string("+2sigma")){
       if(mass==110) {values.push_back(2.33); }
@@ -736,14 +736,14 @@ PlotLimits::prepareHIG_12_032(std::vector<double>& values, const char* type, dou
       if(mass==145) {values.push_back(2.83); }
     }
     else if(std::string(type)==std::string("expected")){
-      if(mass==110) {values.push_back(1.26); masses_.push_back(mass);}
-      if(mass==115) {values.push_back(1.25); masses_.push_back(mass);}
-      if(mass==120) {values.push_back(1.21); masses_.push_back(mass);}
-      if(mass==125) {values.push_back(1.21); masses_.push_back(mass);}
-      if(mass==130) {values.push_back(1.28); masses_.push_back(mass);}
-      if(mass==135) {values.push_back(1.44); masses_.push_back(mass);}
-      if(mass==140) {values.push_back(1.76); masses_.push_back(mass);}
-      if(mass==145) {values.push_back(2.04); masses_.push_back(mass);}
+      if(mass==110) {values.push_back(1.26); if(initial) masses_.push_back(mass);}
+      if(mass==115) {values.push_back(1.25); if(initial) masses_.push_back(mass);}
+      if(mass==120) {values.push_back(1.21); if(initial) masses_.push_back(mass);}
+      if(mass==125) {values.push_back(1.21); if(initial) masses_.push_back(mass);}
+      if(mass==130) {values.push_back(1.28); if(initial) masses_.push_back(mass);}
+      if(mass==135) {values.push_back(1.44); if(initial) masses_.push_back(mass);}
+      if(mass==140) {values.push_back(1.76); if(initial) masses_.push_back(mass);}
+      if(mass==145) {values.push_back(2.04); if(initial) masses_.push_back(mass);}
     }
     else if(std::string(type)==std::string("-1sigma")){
       if(mass==110) {values.push_back(0.911); }
