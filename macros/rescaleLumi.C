@@ -24,9 +24,8 @@
     to satisfy the combine limit calculation tool. The macro iterates only through
     one level of folders. These folders are expected to contain only histograms.
     Function arguments are the filename which is supposed to keep the input histo-
-    grams for the limit calculation and a boolean to indicate whether the rescaled
-    histograms should already be written to file, or whether this is just a test
-    run.
+    grams for the limit calculation the old and the new lumi. A new root file will 
+    be written out with file extension *_rescaled 
 */
 
 void rescaleLumi(const char* filename, float oldLumi=4.9, float newLumi=12., unsigned int debug=0)
