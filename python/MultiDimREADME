@@ -6,7 +6,7 @@
 
 text2workspace.py htt_cmb_7TeV-$MASS.txt -m $MASS -P HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs --PO modes=ggH,bbH [--PO tanb=30]
 
-combine -M MultiDimFit htt_cmb_7TeV-$MASS.root --robustFit 1 --algo=[singles]/[2dcontour]/[grid] [--points 50] --cl=[0.68][0.95][0.99]
+combine -M MultiDimFit htt_cmb_7TeV-$MASS.root -m $MASS --robustFit 1 --algo=[singles]/[contour2d]/[grid] [--points 50] --cl=[0.68][0.95][0.99]
 
 Afterwords making plots with macros ...
 
@@ -16,7 +16,7 @@ Afterwords making plots with macros ...
 
 text2workspace.py htt_cmb_7TeV-$MASS.txt -m $MASS -P HiggsAnalysis.HiggsToTauTau.HiggsCouplings:cVcF --PO modes=ggH,qqH
 
-combine -M MultiDimFit htt_cmb_7TeV-$MASS.root --robustFit 1 --algo=[singles]/[2dcontour]/[grid] [--points 50] --cl=[0.68][0.95][0.99]
+combine -M MultiDimFit htt_cmb_7TeV-$MASS.root -m $MASS --robustFit 1 --algo=[singles]/[contour2d]/[grid] [--points 50] --cl=[0.68][0.95][0.99]
 
 
 
@@ -24,7 +24,7 @@ combine -M MultiDimFit htt_cmb_7TeV-$MASS.root --robustFit 1 --algo=[singles]/[2
 
 text2workspace.py htt_cmb_7TeV-$MASS.txt -m $MASS -P HiggsAnalysis.CombinedLimit.PhysicsModel:floatingXSHiggs --PO modes=ggH,qqH 
 
-combine -M MultiDimFit htt_cmb_7TeV-$MASS.root --robustFit 1 --algo=[singles]/[2dcontour]/[grid] [--points 50] --cl=[0.68][0.95][0.99]
+combine -M MultiDimFit htt_cmb_7TeV-$MASS.root -m $MASS --robustFit 1 --algo=[singles]/[contour2d]/[grid] [--points 50] --cl=[0.68][0.95][0.99]
 
 
 
