@@ -36,17 +36,44 @@ TGraph* contour2D(TTree *t, TString x, TString y, double pmin, double pmax, TGra
     return gr;
 }
 
-void contours2D(const char *name, double ggH=0., double bbH=0.) {
-  TFile* file68_ = TFile::Open("higgsCombine68CL.MultiDimFit.mH120.root", "READ"); TTree *tree68_ = (TTree*) file68_->Get("limit");
-  TFile* file95_ = TFile::Open("higgsCombine95CL.MultiDimFit.mH120.root", "READ"); TTree *tree95_ = (TTree*) file95_->Get("limit");
+void contours2D(const char *name, double para1=0., double para2=0., string typ="ggHbbH", int mass=120) {
+  TFile* file68_ = TFile::Open(TString::Format("higgsCombineTest68CL.MultiDimFit.mH%d.root", mass), "READ"); TTree *tree68_ = (TTree*) file68_->Get("limit");
+  TFile* file95_ = TFile::Open(TString::Format("higgsCombineTest68CL.MultiDimFit.mH%d.root", mass), "READ"); TTree *tree95_ = (TTree*) file95_->Get("limit");
 
-  TGraph *grExp = expValue(ggH, bbH);
-  TGraph *grFit = bestFit(tree68_, "r_ggH", "r_bbH"); 
-  TGraph *gr68  = contour2D(tree68_, "r_ggH", "r_bbH", 0.310, 1, grFit);
-  TGraph *gr95  = contour2D(tree95_, "r_ggH", "r_bbH", 0.049, 1, grFit);
+  TGraph *grExp = expValue(para1, para2);
+  TGraph *grFit = new TGraph();
+  TGraph *gr68  = new TGraph();
+  TGraph *gr95  = new TGraph();
+  if(typ=="ggHbbH")
+    {
+      std::cout<< "typ " << typ << std::endl;
+      grFit = bestFit(tree68_, "r_ggH", "r_bbH"); 
+      gr68  = contour2D(tree68_, "r_ggH", "r_bbH", 0.310, 1, grFit);
+      gr95  = contour2D(tree95_, "r_ggH", "r_bbH", 0.049, 1, grFit);
+    }
+  else if(typ=="ggHqqH")
+    {
+      std::cout<< "typ " << typ << std::endl;
+      grFit = bestFit(tree68_, "r_ggH", "r_qqH"); 
+      gr68  = contour2D(tree68_, "r_ggH", "r_qqH", 0.310, 1, grFit);
+      gr95  = contour2D(tree95_, "r_ggH", "r_qqH", 0.049, 1, grFit);
+    }
+  else if(typ=="cVcF")
+    {
+      std::cout<< "typ " << typ << std::endl;
+      grFit = bestFit(tree68_, "CV", "CF"); 
+      gr68  = contour2D(tree68_, "CV", "CF", 0.310, 1, grFit);
+      gr95  = contour2D(tree95_, "CV", "CF", 0.049, 1, grFit);
+    }
+  else 
+    {
+      std::cout<< "Unknow typ " << typ << ". Possible typs: ggHbbH, ggHqqH, cVcF !" << std::endl;
+    }
+
+
   gr68->SetLineWidth(3); gr68->SetLineStyle(1); gr68->SetLineColor(4);
   gr95->SetLineWidth(3); gr95->SetLineStyle(7); gr95->SetLineColor(4);
-
+      
   TFile *file = TFile::Open(Form("%s.root", name), "RECREATE");
   file->cd();
   grFit->SetName(Form("%s_fit" , name)); gFile->WriteTObject(grFit);

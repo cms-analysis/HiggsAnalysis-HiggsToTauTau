@@ -10,7 +10,7 @@
 
 #include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
-void contourPlot2D(const char* path, const char* name, float xMax=20., float yMax=20.)
+void contourPlot2D(const char* path, const char* name, float xMax=20., float yMax=20., string typ="ggHbbH")
 {
   SetStyle();
 
@@ -23,12 +23,42 @@ void contourPlot2D(const char* path, const char* name, float xMax=20., float yMa
   TCanvas* canv = new TCanvas("canv", "canv", 600, 600);
   canv->SetGridx(); canv->SetGridy();
   TH1F* hr = canv->DrawFrame(0., 0., xMax, yMax);
-  hr->SetXTitle("#sigma(gg#rightarrow#phi)  (pb)");
+  if(typ=="ggHbbH")
+    {
+      hr->SetXTitle("#sigma(gg#rightarrow #phi)  (pb)");
+    }
+  else if(typ=="ggHqqH")
+    {
+      hr->SetXTitle("#sigma(gg#rightarrow H)  (pb)");
+    }
+  else if(typ=="cVcF")
+    {
+      hr->SetXTitle("#bf{cV}");
+    }
+  else
+    {
+      std::cout<< "Unknow typ " << typ << ". Possible typs: ggHbbH, ggHqqH, cVcF !" << std::endl;
+    }
   hr->GetXaxis()->SetLabelFont(62);
   hr->GetXaxis()->SetTitleFont(62);
   hr->GetXaxis()->SetTitleColor(1);
   hr->GetXaxis()->SetTitleOffset(1.05);
-  hr->SetYTitle("#bf{#sigma(gg#rightarrow bb#phi)  (pb)}");
+  if(typ=="ggHbbH")
+    {
+      hr->SetYTitle("#bf{#sigma(gg#rightarrow bb#phi)  (pb)}");
+    }
+  else if(typ=="ggHqqH")
+    {
+      hr->SetYTitle("#bf{#sigma(qq#rightarrow H)  (pb)}");
+    }
+  else if(typ=="cVcF")
+    {
+      hr->SetYTitle("#bf{cF}");
+    }
+  else
+    {
+      std::cout<< "Unknow typ " << typ << ". Possible typs: ggHbbH, ggHqqH, cVcF !" << std::endl;
+    }
   hr->GetYaxis()->SetNdivisions(505);
   hr->GetYaxis()->SetLabelFont(62);
   hr->GetYaxis()->SetTitleSize(0.05);
