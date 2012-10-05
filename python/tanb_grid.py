@@ -10,7 +10,7 @@ parser.add_option("-v", "--verbose", dest="verbose", default=False, action="stor
 parser.add_option("--sm-like", dest="sm_like", default=False, action="store_true", help="Do not divide by the value of tanb, but only scale to MSSM xsec according to tanb value. (Will result in typical SM limit on signal strength for given value of tanb). Used for debugging. [Default: False]")
 parser.add_option("--full-mass", dest="full_mass", default=False, action="store_true", help="Do not apply acceptance corrections for masswindow that has been applied for cross section calculation. Kept for legacy. [Default: False]")
 parser.add_option("--model", dest="model", default='HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-nnlo.root', type="string", help="Model to be applied for the limit calculation. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-nnlo.root']")
-parser.add_option("--interpolation", dest="interpolation_mode", default='mode-0', type="choice", help="Mode for mass interpolation for direct tanb limits. Choices are: mode-0 -- non-degenerate-masses for all htt channels, mode-1 -- non-degenerate-masses for classic htt channels non-degenerate-masses-light for htt_mm, mode-2 -- non-degenerate-masses for classic htt channels degenerate-masses for htt_mm, mode-3 -- non-degenerate-masses-light for all htt channels, mode-4 -- non-degenerate-masses-light for classic htt channels degenerate-masses for htt_mm, mode-5 -- degenerate-masses for all htt channels [Default: mode-0]", choices=["mode-0", "mode-1", "mode-2", "mode-3", "mode-4", "mode-5"])
+parser.add_option("--interpolation", dest="interpolation_mode", default='mode-1', type="choice", help="Mode for mass interpolation for direct tanb limits. Choices are: mode-0 -- non-degenerate-masses for all htt channels, mode-1 -- non-degenerate-masses for classic htt channels non-degenerate-masses-light for htt_mm, mode-2 -- non-degenerate-masses for classic htt channels degenerate-masses for htt_mm, mode-3 -- non-degenerate-masses-light for all htt channels, mode-4 -- non-degenerate-masses-light for classic htt channels degenerate-masses for htt_mm, mode-5 -- degenerate-masses for all htt channels [Default: mode-1]", choices=["mode-0", "mode-1", "mode-2", "mode-3", "mode-4", "mode-5"])
 (options, args) = parser.parse_args()
 
 import re
@@ -19,8 +19,6 @@ import math
 import sys
 import shutil
 import ROOT
-
-higgs_file = open("higgs_mass.dat", 'a') 
 
 ROOT.gSystem.Load('$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so') #can be removed after including interplolate2D to package
 #ROOT.gSystem.Load('$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/interpolate2D/th1fmorph_cc.so') ##- don't has to be included i guess
@@ -134,7 +132,7 @@ class MakeDatacard :
               ## mapping of production channels to uncertainty lines in the output datacard
               self.signal_channel_to_uncertainty_lines = {}
 
-       def interpolation_mode(self, mode="mode-0") :
+       def interpolation_mode(self, mode="mode-1") :
               """
               Configure interpolation mode for htt limits. Considered modes are:
 
@@ -235,7 +233,7 @@ class MakeDatacard :
                      self.decay_channel_to_interpolation_method["hww_2j_cut"    ] = "single-mass"
               print "using mass interpolation", mode, "for htt limits"
 
-       def init(self, interpolation_mode="mode-0") :
+       def init(self, interpolation_mode="mode-1") :
               ## load masses
               self.load_masses()
               ## setup interpolation mode for htt
@@ -245,7 +243,6 @@ class MakeDatacard :
                      print "preparing limit calculation for model input: feyn-higgs model="+self.feyn_higgs_model
               else :
                      print "preparing limit calculation for model input:", self.mssm_xsec_tools_input_path
-              higgs_file.write("%f  %f  %f  %f \n" % (self.tanb, self.mh, self.mA, self.mH)) 
 
        def decay_channels(self, words) :
               """
@@ -832,17 +829,17 @@ class MakeDatacard :
                             if hist_mh_value.Integral()>0 :
                                    norm_mh_value = cross_sections["h"]/self.tanb*self.scale(hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh)
                                    acc_mh = acceptance_correction(self.standardized_signal_process(process), self.mh) if self.acc_corr else 1.
-                                   hist_mh_value.Scale(norm_mh_value/hist_mh_value.Integral()*acc_mh) 
+                                   hist_mh_value.Scale(norm_mh_value/hist_mh_value.Integral()*acc_mh)
                      else:
                             norm_mh_value = cross_sections["h"]/self.tanb*self.scale(hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh)
-                            acc_mh = acceptance_correction(self.standardized_signal_process(process), self.mh) if self.acc_corr else 1.
+                            acc_mh = acceptance_correction(self.standardized_signal_process(process), self.mh) if self.acc_corr else 1.                            
                             if channel.find("htt_mm")>-1 :
                                    hist_mh_value = th1fmorph("I","mh_"+hist_name,hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh, norm_mh_value, 0)
                                    ##hist_mH_value = th2fmorph("I","mH_"+hist_name,hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, norm_mh_value, true) ## change to th2 morphing - not armed yet
                             else :
                                    hist_mh_value = th1fmorph("I","mh_"+hist_name,hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh, norm_mh_value, 0)
 
-                            hist_mh_value.Scale(acc_mh) 
+                            hist_mh_value.Scale(acc_mh)
               else :
                      hist_mh_value = hist_mA_value.Clone(hist_name)
                      acc_mh = acceptance_correction(self.standardized_signal_process(process), self.mh) if self.acc_corr else 1.
@@ -881,7 +878,7 @@ class MakeDatacard :
                             if hist_mH_value.Integral()>0 :
                                    norm_mH_value = cross_sections["H"]/self.tanb*self.scale(hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH)
                                    acc_mH = acceptance_correction(self.standardized_signal_process(process), self.mH) if self.acc_corr else 1.
-                                   hist_mH_value.Scale(norm_mH_value/hist_mH_value.Integral()*acc_mH) 
+                                   hist_mH_value.Scale(norm_mH_value/hist_mH_value.Integral()*acc_mH)
                      else :
                             norm_mH_value = cross_sections["H"]/self.tanb*self.scale(hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH)
                             acc_mH = acceptance_correction(self.standardized_signal_process(process), self.mH) if self.acc_corr else 1.
@@ -890,7 +887,7 @@ class MakeDatacard :
                                    ##hist_mH_value = th2fmorph("I","mH_"+hist_name,hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, norm_mH_value, true) ## change to th2 morphing - not armed yet
                             else :
                                  hist_mH_value = th1fmorph("I","mH_"+hist_name, hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH, norm_mH_value, 0)                              
-                            hist_mH_value.Scale(acc_mH) 
+                            hist_mH_value.Scale(acc_mH)
               else :
                      hist_mH_value = hist_mA_value.Clone(hist_name)
                      acc_mH = acceptance_correction(self.standardized_signal_process(process), self.mH) if self.acc_corr else 1.
@@ -1051,7 +1048,7 @@ class MakeDatacard :
                                                                masses,
                                                                self.signal_channel_to_cross_section[(std_prod+"_"+std_decay, period)],
                                                                self.decay_channels_[idx],
-                                                               ""
+                                                               "",
                                                                "light"
                                                                )
                                                  elif self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "degenerate-masses" :
@@ -1148,7 +1145,7 @@ class MakeDatacard :
                                                                                     masses,
                                                                                     self.signal_channel_to_cross_section[(std_prod+"_"+std_decay, period)],
                                                                                     self.decay_channels_[idx],
-                                                                                    uncertainty+"Down"
+                                                                                    uncertainty+"Down",
                                                                                     "light"
                                                                                     )
                                                                       elif self.decay_channel_to_interpolation_method[self.decay_channels_[idx]] == "degenerate-masses" :
@@ -1504,7 +1501,6 @@ for signal_channel, uncertainy_lines in datacard_creator.signal_channel_to_uncer
        output_file.write(datacard_creator.signal_channel_to_uncertainty_lines[signal_channel]+"\n")
 
 ##close files
-higgs_file.close() 
 input_file.close()
 output_file.close()
 print "done"
