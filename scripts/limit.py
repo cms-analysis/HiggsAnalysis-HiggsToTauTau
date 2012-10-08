@@ -30,9 +30,10 @@ parser.add_option("--expectedOnly", dest="expectedOnly", default=False, action="
 parser.add_option("--observedOnly", dest="observedOnly", default=False, action="store_true", help="Calculate the observed limit only. [Default: False]")
 parser.add_option("--userOpt", dest="userOpt", default="", type="string", help="Any kind of user options that should be passed on to combine. [Defaul: \"\"]")
 parser.add_option("--shape", dest="shape", default="shape2", type="string", help="Choose dedicated algorithm for shape uncertainties. [Default: 'shape2']")
-parser.add_option("-C", "--convidence-level", dest="confidenceLevel", default="0.95", type="string", help="Choose the actual confidence level. At this step this applies only to asymptotic methods like for option --prepTanB+ and --preAsym. It does not apply to toy based methods, which have to be configured accordingly in the submission step. [Default: '0.95']")
+parser.add_option("-C", "--confidence-level", dest="confidenceLevel", default="0.95", type="string", help="Choose the actual confidence level. At this step this applies only to asymptotic methods like for option --prepTanB+ and --preAsym. It does not apply to toy based methods, which have to be configured accordingly in the submission step. [Default: '0.95']")
 parser.add_option("--rMin", dest="rMin", default="-2", type="string", help="Minimum value of signal strenth. [Default: -2]")
 parser.add_option("--rMax", dest="rMax", default="2", type="string", help="Maximum value of signal strenth. [Default: 2]")
+parser.add_option("--name", dest="name", default="Test", type="string", help="Name of the output file, passed on to combine. [Default: \"Test\"]")
 parser.add_option("--no-repeat", dest="norepeat", default=False, action="store_true", help="Detect if command has already been run, and skip the job.")
 mgroup = OptionGroup(parser, "COMBINE (MAXIMUM LIKELIHOOD FIT) COMMAND OPTIONS", "Command options for the use of combine with the Maximum Likelihood method.")
 mgroup.add_option("--stable", dest="stable", default=False, action="store_true", help="Run maximum likelihood fit with a set of options that lead to stable results. Makes use of the common options --rMin and --rMax to define the boundaries of the fit. [Default: True]")
@@ -437,8 +438,8 @@ for directory in args :
         if options.fitAlgo == "grid" :
             gridpoints = "--points %s " % options.gridPoints
         ## run expected limits
-        print "Running maximum likelihood fit with options: ", "combine -M MultiDimFit -m {mass} --algo={algo} {points} {minuit} {stable} {user} tmp.root ".format(mass=mass, algo=options.fitAlgo, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt)
-        os.system("combine -M MultiDimFit -m {mass} --algo={algo} {points} {minuit} {stable} {user} tmp.root | grep -A 10 -E '\s*--- MultiDimFit ---\s*' > multi-dim.fitresult".format(mass=mass, algo=options.fitAlgo, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt))
+        print "Running maximum likelihood fit with options: ", "combine -M MultiDimFit -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} tmp.root ".format(mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt)
+        os.system("combine -M MultiDimFit -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} tmp.root | grep -A 10 -E '\s*--- MultiDimFit ---\s*' > multi-dim.fitresult".format(mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt))
     if options.prepPLSig :
         ifile=0
         directoryList = os.listdir(".")
