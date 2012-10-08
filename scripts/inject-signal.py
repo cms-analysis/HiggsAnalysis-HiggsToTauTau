@@ -73,10 +73,9 @@ def adjust_datacard(datacard, new_values) :
     os.system("mv tmp.txt %s" % datacard)
 
 def get_bins(datacard):
-    ''' Extract the name of the bins from a data card. Returns a list.
-
+    '''
+    Extract the name of the bins from a data card. Returns a list.
     Example of a bin: mumu_0jet_low
-
     The order is preserved.
     '''
     dc = open(datacard, 'r')
@@ -149,7 +148,9 @@ for idx in range(len(categories)) : categories[idx] = categories[idx].rstrip(','
 yields_map = {}
 
 def get_shape_file(channel, period):
-    ''' Map a channel + run period to a shape .root file '''
+    '''
+    Map a channel + run period to a shape .root file
+    '''
     if channel not in ['wh', 'zh']:
         return options.input+"/common/htt_"+channel+".input_"+period+".root"
     else:
@@ -178,15 +179,15 @@ for chn in channels :
             command = "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/blindData.C+\\(\\\"{FILE}\\\",\\\"{BACKGROUNDS}\\\",\\\"{SIGNALS}\\\",\\\"{DIRS}\\\",true,{RND},{SCALE},1\)"
             yields = subprocess.Popen(
                 shlex.split(command.format(
-                    CMSSW_BASE=os.environ["CMSSW_BASE"],
-                    FILE=histfile,
-                    BACKGROUNDS=backgrounds[chn],
-                    SIGNALS=signals[chn],
-                    DIRS=directories_to_randomize,
-                    RND=options.rnd,
-                    SCALE=options.signal_strength,
+                CMSSW_BASE=os.environ["CMSSW_BASE"],
+                FILE=histfile,
+                BACKGROUNDS=backgrounds[chn],
+                SIGNALS=signals[chn],
+                DIRS=directories_to_randomize,
+                RND=options.rnd,
+                SCALE=options.signal_strength,
                 )), stdout=subprocess.PIPE)
-
+            
             (stdout, _) = yields.communicate()
             data_obs_lines = []
             for line in stdout.split('\n'):
@@ -197,7 +198,9 @@ for chn in channels :
             print "...done"
 
 def get_card_file(channel, category, period, mass):
-    ''' Map a channel, category, period, and mass to a datacard .txt file'''
+    '''
+    Map a channel, category, period, and mass to a datacard .txt file
+    '''
     if channel not in ['wh', 'zh']:
         return os.path.join(options.input, str(mass),
                             "htt_"+channel+"_"+category+"_"+period+".txt")
