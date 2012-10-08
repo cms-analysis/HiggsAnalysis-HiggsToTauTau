@@ -16,25 +16,30 @@ parser.add_option("--getoutput", dest="getoutput", default=False, action="store_
 parser.add_option("--CLs", dest="prepCLs", default=False, action="store_true", help="Prepare CLs limits (expected and obeserved). [Default: False]")
 parser.add_option("--tanb", dest="prepTanB", default=False, action="store_true", help="Prepare CLs limits directly in tanb (expected and obeserved, based on the tang-grip.py script). For this option you must have run the submit.py script with option --method tanb for CLs type limit calculation via the grid. [Default: False]")
 parser.add_option("--tanb+", dest="prepTanB_fast", default=False, action="store_true", help="Prepare asymptotic limits directly in tanb (expected and obeserved, based on the tanb-grid.py script). For this option you must have run the submit.py script with options --method tanb+. A submission via grid is not necessary but can be run in parallel on the same derived datacards. [Default: False]")
-parser.add_option("--tanbparallel", dest="tanbparallel", type="int", default=-1, help="Run combine calls in parallel (supply nTasks) when scanning in tanBeta")
+parser.add_option("--tanb-parallel", dest="tanbparallel", type="int", default=-1, help="Run combine calls in parallel (supply nTasks) when scanning in tanBeta")
 parser.add_option("--single", dest="prepSingle", default=False, action="store_true", help="Prepare CLs limits directly in tanb(expected and obeserved, using Christians method). [Default: False]")
 parser.add_option("--bayesian", dest="prepBayesian", default=False, action="store_true", help="Prepare Bayesian limits (expected and obeserved). [Default: False]")
 parser.add_option("--asymptotic", dest="prepAsym", default=False, action="store_true", help="Prepare Asymptotic limits (expected and obeserved). [Default: False]")
 parser.add_option("--max-likelihood", dest="prepMLFit", default=False, action="store_true", help="Prepare Maximum Likelihood Fit (also used for postfit plots). [Default: False]")
-parser.add_option("--multi-dim-fit", dest="prepMDFit", default=False, action="store_true", help="Prepare MultiDimentional Fit (also used for postfit plots). [Default: False]")
-parser.add_option("--pl-significance", dest="prepPLSig", default=False, action="store_true", help="Calculate expected significance from Profile Likelihood method. [Default: False]")
+parser.add_option("--multidim-fit", dest="prepMDFit", default=False, action="store_true", help="Prepare MultiDimentional Fit (also used for postfit plots). [Default: False]")
+parser.add_option("--significance", dest="prepPLSig", default=False, action="store_true", help="Calculate expected significance from Profile Likelihood method. [Default: False]")
 parser.add_option("--refit", dest="refit", default=False, action="store_true", help="Do not run the asymptotic limits again, but only run the last step, the fit for the limit determination. (Only valid for option --tanb+, for all other options will have no effect.)  [Default: False]")
 parser.add_option("--cleanup", dest="cleanup", default=False, action="store_true", help="Remove all crab remainders from previous submissions. [Default: False]")
 parser.add_option("--kill", dest="kill", default=False, action="store_true", help="Kill all crab jobs in case of emergencies. [Default: False]")
 parser.add_option("--expectedOnly", dest="expectedOnly", default=False, action="store_true", help="Calculate the expected limit only. [Default: False]")
+parser.add_option("--observedOnly", dest="observedOnly", default=False, action="store_true", help="Calculate the observed limit only. [Default: False]")
 parser.add_option("--userOpt", dest="userOpt", default="", type="string", help="Any kind of user options that should be passed on to combine. [Defaul: \"\"]")
 parser.add_option("--shape", dest="shape", default="shape2", type="string", help="Choose dedicated algorithm for shape uncertainties. [Default: 'shape2']")
 parser.add_option("-C", "--convidence-level", dest="confidenceLevel", default="0.95", type="string", help="Choose the actual confidence level. At this step this applies only to asymptotic methods like for option --prepTanB+ and --preAsym. It does not apply to toy based methods, which have to be configured accordingly in the submission step. [Default: '0.95']")
 parser.add_option("--rMin", dest="rMin", default="-2", type="string", help="Minimum value of signal strenth. [Default: -2]")
 parser.add_option("--rMax", dest="rMax", default="2", type="string", help="Maximum value of signal strenth. [Default: 2]")
-parser.add_option("--norepeat", dest="norepeat", default=False, action="store_true", help="Detect if command has already been run, and skip the job.")
+parser.add_option("--no-repeat", dest="norepeat", default=False, action="store_true", help="Detect if command has already been run, and skip the job.")
 mgroup = OptionGroup(parser, "COMBINE (MAXIMUM LIKELIHOOD FIT) COMMAND OPTIONS", "Command options for the use of combine with the Maximum Likelihood method.")
 mgroup.add_option("--stable", dest="stable", default=False, action="store_true", help="Run maximum likelihood fit with a set of options that lead to stable results. Makes use of the common options --rMin and --rMax to define the boundaries of the fit. [Default: True]")
+mgroup.add_option("--algo", dest="fitAlgo", type="string", default="contour2d", help="Algorithm for multi-dimensional maximum likelihood fit (options are singles, contour2d, grid). Option grid will make use of the option --points to determine the number of grid points in the scan. [Default: \"\"]")
+mgroup.add_option("--points", dest="gridPoints", type="string", default="100", help="Number of grid points in case of option --algo=grid. [Default: \"100\"]")
+mgroup.add_option("--physics-model", dest="fitModel", type="string", default="", help="Physics model for multi-dimensional maximum likelihood. [Default: \"\"]")
+mgroup.add_option("--physics-model-options", dest="fitModelOptions", type="string", default="", help="Potential options for the used physics model for multi-dimensional maximum likelihood. More options can be passed on separated by ','. [Default: \"\"]")
 parser.add_option_group(mgroup)
 egroup = OptionGroup(parser, "COMBINE (MCMC/BAYESIAN) COMMAND OPTIONS", "Command options for the use of combine with the MarkovChainMC/Bayesian method.")
 egroup.add_option("--hint", dest="hint", default="Asymptotic", type="string", help="Name of the hint method that is used to guide the MarkovChainMC. [Default: Asymptotic]")
@@ -70,7 +75,7 @@ def get_hash_for_this_call():
     # Create the hash of the limit.py call
     hash = hashlib.md5()
     # Hash in the modification time of this script
-    hash.update(str(os.path.getmtime(os.path.realpath(__file__))))
+    #hash.update(str(os.path.getmtime(os.path.realpath(__file__))))
     # Hash in the arguments
     for x in sys.argv:
         # So we can enable norepeat after running the jobs
@@ -184,16 +189,17 @@ for directory in args :
         if not options.expectedOnly :
             ## observed limit
             os.system("combine batch.root -M HybridNew -m %s --freq --grid=batch_collected.root" % masspoint)
-        ## expected -2sigma
-        os.system("combine batch.root -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.0275" % masspoint)
-        ## expected -1sigma
-        os.system("combine batch.root -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.1600" % masspoint)
-        ## expected median
-        os.system("combine batch.root -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.5000" % masspoint)
-        ## expected +1sigma
-        os.system("combine batch.root -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.8400" % masspoint)
-        ## expected +2sigma
-        os.system("combine batch.root -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.9750" % masspoint)
+        if not options.observedOnly :
+            ## expected -2sigma
+            os.system("combine batch.root -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.0275" % masspoint)
+            ## expected -1sigma
+            os.system("combine batch.root -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.1600" % masspoint)
+            ## expected median
+            os.system("combine batch.root -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.5000" % masspoint)
+            ## expected +1sigma
+            os.system("combine batch.root -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.8400" % masspoint)
+            ## expected +2sigma
+            os.system("combine batch.root -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.9750" % masspoint)
     if options.prepTanB or options.prepSingle :
         ifile=0
         directoryList = os.listdir(".")
@@ -217,16 +223,17 @@ for directory in args :
                 if not options.expectedOnly :
                     ## observed limit
                     os.system("combine %s -M HybridNew -m %s --noUpdateGrid --freq --grid=batch_collected.root" % (wsp, masspoint))
-                ## expected -2sigma
-                os.system("combine %s -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.0275" % (wsp, masspoint))
-                ## expected -1sigma
-                os.system("combine %s -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.1600" % (wsp, masspoint))
-                ## expected median
-                os.system("combine %s -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.5000" % (wsp, masspoint))
-                ## expected +1sigma
-                os.system("combine %s -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.8400" % (wsp, masspoint))
-                ## expected +2sigma
-                os.system("combine %s -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.9750" % (wsp, masspoint))
+                if not options.observedOnly :
+                    ## expected -2sigma
+                    os.system("combine %s -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.0275" % (wsp, masspoint))
+                    ## expected -1sigma
+                    os.system("combine %s -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.1600" % (wsp, masspoint))
+                    ## expected median
+                    os.system("combine %s -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.5000" % (wsp, masspoint))
+                    ## expected +1sigma
+                    os.system("combine %s -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.8400" % (wsp, masspoint))
+                    ## expected +2sigma
+                    os.system("combine %s -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.9750" % (wsp, masspoint))
                 ## break after first success (assuming that all workspaces are fine to do the interpolation)
                 break
     if options.prepTanB_fast :
@@ -290,11 +297,12 @@ for directory in args :
         os.system("rm higgsCombineTest.HybridNew*")
         if not options.expectedOnly :
             os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.027.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.160.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.500.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.840.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
-        os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.975.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+        if not options.observedOnly :
+            os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.027.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+            os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.160.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+            os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.500.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+            os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.840.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
+            os.system(r"root -l -b -q {cmssw_base}/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+\(\"higgsCombineTest.HybridNew.mH{mass}.quant0.975.root\",\"{files}\",2\)".format(cmssw_base=CMSSW_BASE, mass=mass_value, files=tanb_inputfiles))
     if options.prepBayesian :
         ifile=0
         directoryList = os.listdir(".")
@@ -353,8 +361,9 @@ for directory in args :
         ## prepare mass options
         massopt = "-m %i " % int(mass_value)
         ## run expected limits
-        os.system("combine -M Asymptotic --run expected -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} -n '-exp' {mass} {user} tmp.root".format(
-            CL=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt, strategy=options.strategy, mass=massopt, user=options.userOpt))
+        if not options.observedOnly :
+            os.system("combine -M Asymptotic --run expected -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} -n '-exp' {mass} {user} tmp.root".format(
+                CL=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt, strategy=options.strategy, mass=massopt, user=options.userOpt))
         ## run observed limit
         if not options.expectedOnly :
             os.system("combine -M Asymptotic --run observed -C {CL} {minuit} --minimizerStrategy {strategy} -n '-obs' {qtilde} {mass} {user} tmp.root".format(
@@ -382,8 +391,7 @@ for directory in args :
             stableopt = "--robustFit=1 --stepSize=0.5  --minimizerStrategy=0 --minimizerTolerance=0.1 --preFitValue=0.1  --X-rtd FITTER_DYN_STEP  --cminFallbackAlgo=\"Minuit;0.001\" "
             stableopt+= "--rMin {MIN} --rMax {MAX} ".format(MIN=options.rMin, MAX=options.rMax)
         ## run expected limits
-        print "Running maximum likelihood fit with options: "
-        print "combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} tmp.txt --out=out".format(mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt)
+        print "Running maximum likelihood fit with options: ", "combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} tmp.txt --out=out".format(mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt)
         os.system("combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} tmp.txt --out=out".format(mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt))
         ## change to sub-directory out and prepare formated output
         os.chdir(os.path.join(subdirectory, "out"))
@@ -393,30 +401,44 @@ for directory in args :
     if options.prepMDFit :
         ## determine mass value from directory
         mass = directory[directory.rfind("/")+1:]
-        ## combine datacard from all datacards in this directory
-        ## if not done so already
-        if not os.path.exists("tmp.txt") :
-            os.system("combineCards.py *.txt > tmp.txt")
-        ## create sub-directory out from scratch
-        if os.path.exists("out") :
-            os.system("rm -r out")
-        os.system("mkdir out")
+        ## combine datacard from all datacards in this directory for the multi-dimensional fit it is of importance that the decay
+        ## channels and run periods are well defined from the channel names
+        if os.path.exists("tmp.txt") :
+            os.system("rm tmp.txt")
+        inputcards = ""
+        for card in os.listdir(".") :
+            if ".txt" in card :
+                inputcards+=card[:card.find('.')]+'='+card+' '
+        print inputcards
+        os.system("combineCards.py -S %s > tmp.txt" % inputcards)
+        ## create workspace to allow to incorporate dedicated physics models
+        workspaceOptions = "-m %s " % mass
+        if not options.fitModel == "" :
+            workspaceOptions+= "-P %s " % options.fitModel
+        if not options.fitModelOptions == "" :
+            ## break physics model options to list
+            opts = options.fitModelOptions.split()
+            for idx in range(len(opts)) : opts[idx] = opts[idx].rstrip(',')
+            for opt in opts :
+                workspaceOptions+="--PO %s" % opt
+        print "creating workspace with options:", "text2workspace.py tmp.txt %s" % workspaceOptions
+        os.system("text2workspace.py tmp.txt %s" % workspaceOptions)
         ## if it does not exist already, create link to executable
         if not os.path.exists("combine") :
             os.system("cp -s $(which combine) .")
-        ## prepare fit option
+        ## prepare fit options
         minuitopt = ""
         if options.minuit :
             minuitopt = "--minimizerAlgo minuit"
         stableopt = ""
         if options.stable :
             stableopt = "--robustFit=1 --stepSize=0.5  --minimizerStrategy=0 --minimizerTolerance=0.1 --preFitValue=0.1  --X-rtd FITTER_DYN_STEP  --cminFallbackAlgo=\"Minuit;0.001\" "
-            #stableopt = "--robustFit=1 --stepSize=0.1  --minimizerStrategy=2 --minimizerTolerance=0.1 --preFitValue=1  --X-rtd FITTER_DYN_STEP  --cminFallbackAlgo=\"Minuit;0.001\" "
-            stableopt+= "--rMin {MIN} --rMax {MAX} ".format(MIN=options.rMin, MAX=options.rMax)
+        gridpoints = ""
+        if options.fitAlgo == "grid" :
+            gridpoints = "--points %s " % options.gridPoints
         ## run expected limits
-        print "Running maximum likelihood fit with options: "
-        print "combine -M MultiDimFit -m {mass} --algo=grid --points=1000 {minuit} {stable} {user} tmp.txt ".format(mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt)
-        os.system("combine -M MultiDimFit -m {mass} --algo=grid --points=1000 {minuit} {stable} {user} tmp.txt ".format(mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt))
+        print "Running maximum likelihood fit with options: ", "combine -M MultiDimFit -m {mass} --algo={algo} {points} {minuit} {stable} {user} tmp.root ".format(mass=mass, algo=options.fitAlgo, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt)
+        os.system("combine -M MultiDimFit -m {mass} --algo={algo} {points} {minuit} {stable} {user} tmp.root | grep -A 10 -E '\s*--- MultiDimFit ---\s*' > multi-dim.fitresult".format(mass=mass, algo=options.fitAlgo, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt))
     if options.prepPLSig :
         ifile=0
         directoryList = os.listdir(".")
