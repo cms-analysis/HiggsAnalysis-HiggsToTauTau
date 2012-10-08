@@ -34,13 +34,14 @@ TGraph* contour(TTree *t, TString x, TString y, TString selection, TGraph *bestF
   return gr;
 }
 
-void contours2D(std::string outputName, std::string x="r_ggH", std::string y="r_bbH", std::string method="minos", std::string mass="120", double xExp=0., double yExp=0.) 
+void contours2D(std::string path, std::string outputName, std::string x="r_ggH", std::string y="r_bbH", std::string method="minos", std::string mass="120", double xExp=0., double yExp=0.) 
 {
   std::cout << " *******************************************************************************************************\n"
 	    << " * Usage     : root -l                                                                                  \n"
-	    << " *             .x MitLimits/Higgs2Tau/macros/contours2D.C+(outputName, x, y, method, mass, xExp, yExp)  \n"
+	    << " *             .x MitLimits/Higgs2Tau/macros/contours2D.C+(path, out, x, y, method, mass, xExp, yExp)   \n"
 	    << " *                                                                                                      \n"
-	    << " * Arguments :  + outputName  string        name of the output file. TGraphs in the output file will    \n"
+	    << " * Arguments :  + path        string        path to the input files.                                    \n"
+	    << " *              + output      string        name of the output file. TGraphs in the output file will    \n"
 	    << " *                                          have the same names with endings _fit, _cl68, _cl95, _exp   \n"
 	    << " *              + x           string        branch to be drawn on x-axis. Possible names are 'r_ggH',   \n"
 	    << " *                                          'r_bbH', 'r_qqH', 'CF' 'CV', depending on the model that    \n"
@@ -63,11 +64,11 @@ void contours2D(std::string outputName, std::string x="r_ggH", std::string y="r_
   std::vector<TTree*> trees_;
 
   if(method  == "minos"){
-    files_.push_back(TFile::Open(TString::Format("higgsCombine68CL.MultiDimFit.mH%s.root", mass.c_str()), "READ")); trees_.push_back((TTree*) files_.back()->Get("limit"));
-    files_.push_back(TFile::Open(TString::Format("higgsCombine95CL.MultiDimFit.mH%s.root", mass.c_str()), "READ")); trees_.push_back((TTree*) files_.back()->Get("limit"));
+    files_.push_back(TFile::Open(TString::Format("%s/higgsCombineCL68.MultiDimFit.mH%s.root", path.c_str(), mass.c_str()), "READ")); trees_.push_back((TTree*) files_.back()->Get("limit"));
+    files_.push_back(TFile::Open(TString::Format("%s/higgsCombineCL95.MultiDimFit.mH%s.root", path.c_str(), mass.c_str()), "READ")); trees_.push_back((TTree*) files_.back()->Get("limit"));
   }
   else if(method == "scan"){
-    files_.push_back(TFile::Open(TString::Format("higgsCombineScan.MultiDimFit.mH%s.root", mass.c_str()), "READ")); trees_.push_back((TTree*) files_.back()->Get("limit"));
+    files_.push_back(TFile::Open(TString::Format("%s/higgsCombineScan.MultiDimFit.mH%s.root", path.c_str(), mass.c_str()), "READ")); trees_.push_back((TTree*) files_.back()->Get("limit"));
   }
   else{
     std::cout<< "Unknow method " << method << ". Available methods: minos, scan." << std::endl;
