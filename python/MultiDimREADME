@@ -1,7 +1,6 @@
 ## This is just a stupid README for faster look up of commands needed for those MuldiDimFits!
 
 
-
 #### PhysicsBSMModel.py - for bbH, ggH plots
 
 text2workspace.py htt_cmb_7TeV-$MASS.txt -m $MASS -P HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs --PO modes=ggH,bbH [--PO tanb=30]
@@ -14,7 +13,7 @@ Afterwords making plots with macros ...
 
 #### HiggsCouplings.py - for cVcF plots
 
-text2workspace.py htt_cmb_7TeV-$MASS.txt -m $MASS -P HiggsAnalysis.HiggsToTauTau.HiggsCouplings:cVcF --PO modes=ggH,qqH
+text2workspace.py htt_cmb_7TeV-$MASS.txt -m $MASS -P HiggsAnalysis.CombineLimit.HiggsCouplings:cVcF --PO modes=ggH,qqH
 
 combine -M MultiDimFit htt_cmb_7TeV-$MASS.root -m $MASS --robustFit 1 --algo=[singles]/[contour2d]/[grid] [--points 50] --cl=[0.68][0.95][0.99]
 
