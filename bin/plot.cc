@@ -21,6 +21,7 @@ int main(int argc, char* argv[])
   types.push_back(std::string("HIG-12-018"));
   types.push_back(std::string("HIG-12-032"));
   types.push_back(std::string("significance"));
+  types.push_back(std::string("maxlikelihood"));
 
   // parse arguments
   if ( argc < 3 ) {
@@ -161,6 +162,21 @@ int main(int argc, char* argv[])
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plot(*canv, inner, outer, expected, observed);
   }
+
+  if( std::string(argv[1]) == std::string("maxlikelihood") ){
+    /// expected limit
+    TGraph* expected  = new TGraph();
+    plot.fillCentral(directory, expected, "higgsCombineTest.MaxLikelihoodFit.$MASS");
+    /// 1-sigma uncertainty band
+    TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
+    plot.fillBand(directory, inner, "higgsCombineTest.MaxLikelihoodFit.$MASS", true);
+    /// make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plot(*canv, inner, 0, expected, 0);
+  }
+
+
   if( std::string(argv[1]) == std::string("HIG-11-020") ){
     /// observed limit 
     TGraph* observed  = 0;

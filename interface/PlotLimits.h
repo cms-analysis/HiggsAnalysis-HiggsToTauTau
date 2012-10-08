@@ -95,6 +95,8 @@ class PlotLimits {
   void prepareCLs(const char* directory, std::vector<double>& values, const char* type) { 
     prepareSimple(directory, values, std::string("higgsCombineTest.HybridNew.$MASS").append(type).c_str()); 
   };
+  /// fill a single vector of values according to 1sigma from MaxLikelihoodFit limits;
+  void prepareMaxLikelihood(const char* directory, std::vector<double>& values, const char* filename, float ConLevel);
   /// fill a single vector of values from a file filename; ; in case files do not exists 
   /// or were corrupted for a given mass point the initial value of -1. will be filled 
   /// the member functions fillCentral and fillBand should check for values of -1. and 

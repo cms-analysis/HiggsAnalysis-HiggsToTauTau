@@ -49,12 +49,29 @@ PlotLimits::prepareSimple(const char* directory, std::vector<double>& values, co
 	valid_[imass]=false;
       }
       else{
-	double x;
-	limit->SetBranchAddress("limit", &x);
-	int nevent = limit->GetEntries();
-	for(int i=0; i<nevent; ++i){
-	  limit->GetEvent(i);
-	  value = x;
+	if(buffer.find("MaxLikelihoodFit")!=std::string::npos){	   
+	  double x;
+	  float y;
+	  
+	  limit->SetBranchAddress("limit", &x);
+	  limit->SetBranchAddress("quantileExpected", &y);
+	  int nevent = limit->GetEntries();
+	  for(int i=0; i<nevent; ++i){
+	    limit->GetEvent(i);
+	    if(y==0.5){
+	      value = x;
+	    }
+	  }
+	}
+	else{
+	  double x;
+	
+	  limit->SetBranchAddress("limit", &x);
+	  int nevent = limit->GetEntries();
+	  for(int i=0; i<nevent; ++i){
+	    limit->GetEvent(i);
+	    value = x;
+	  }
 	}
       }
       file->Close();
@@ -237,6 +254,54 @@ PlotLimits::prepareBayesian(const char* directory, std::vector<double>& values, 
   return;
 }
 
+void
+PlotLimits::prepareMaxLikelihood(const char* directory, std::vector<double>& values, const char* filename, float ConLevel)
+{
+  for(unsigned int imass=0; imass<bins_.size(); ++imass){
+    double value=-1.;
+    std::string buffer = std::string(filename);
+    std::string filehead = buffer.substr(0, buffer.find("$MASS"));
+    std::string filetail = buffer.substr(buffer.find("$MASS")+5, std::string::npos);
+    TString fullpath(TString::Format("%s/%d/%smH%d%s.root", directory, (int)bins_[imass], filehead.c_str(), (int)bins_[imass], filetail.c_str()));
+    if(verbosity_>0) std::cout << "INFO: opening file " << fullpath << std::endl;
+    TFile* file = new TFile(fullpath);
+    if(file->IsZombie()){
+      if(verbosity_>0){
+	std::cout << "INFO: file not found: " << fullpath  << std::endl
+		  << "      leave value at -1. to invalidate" << std::endl;
+      }
+      valid_[imass]=false;
+    }
+    else{
+      TTree* limit = (TTree*) file->Get("limit");
+      if(!limit){
+	if(verbosity_>0){
+	  std::cout << "INFO: tree not found: limit" << std::endl
+		    << "      leave value at -1. to invalidate" << std::endl;
+	}
+	valid_[imass]=false;
+      }
+      else{
+	double x;
+	float y;
+	limit->SetBranchAddress("limit", &x);
+	limit->SetBranchAddress("quantileExpected", &y);
+	int nevent = limit->GetEntries();
+	for(int i=0; i<nevent; ++i){
+	  limit->GetEvent(i);
+	  if(y==ConLevel){
+	    value = x;
+	  }
+	}
+      }
+      file->Close();
+    }
+    values.push_back(value);
+  }
+  return;
+}
+
+
 TGraph*
 PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filename)
 {
@@ -359,8 +424,13 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
       prepareCLs(directory, upper, innerBand ? ".quant0.840" : ".quant0.975");
       prepareCLs(directory, lower, innerBand ? ".quant0.160" : ".quant0.027");
     }
+    else if(std::string(method).find("MaxLikelihood") != std::string::npos){  
+      prepareMaxLikelihood(directory, expected, method, 0.50);
+      prepareMaxLikelihood(directory, upper, method, 0.84);
+      prepareMaxLikelihood(directory, lower, method, 0.16);
+    }
     else{
-      std::cout << "ERROR: chose wrong method to fill uncertainty band. Available methods are: Bayesian, CLs\n"
+      std::cout << "ERROR: chose wrong method to fill uncertainty band. Available methods are: Bayesian, CLs, MaxLikelihood\n"
 		<< "       for the moment I'll stop here" << std::endl;
       exit(1);
     }
@@ -410,24 +480,39 @@ PlotLimits::print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsym
     ofstream file;
     file.open (std::string(filename).append(".tex").c_str());
     file
-      << "   " << std::setw(15) << std::right << "    $m_{\\mathrm H}$"
-      << " & " << std::setw(15) << std::right << "$-2\\sigma$"
+      << "   " << std::setw(15) << std::right << "    $m_{\\mathrm H}$";
+    if(outerBand){
+      file
+	<< " & " << std::setw(15) << std::right << "$-2\\sigma$";
+    }
+    file
       << " & " << std::setw(15) << std::right << "$-1\\sigma$"
       << " & " << std::setw(15) << std::right << "     Median"
-      << " & " << std::setw(15) << std::right << "$+1\\sigma$"
-      << " & " << std::setw(15) << std::right << "$+2\\sigma$"
+      << " & " << std::setw(15) << std::right << "$+1\\sigma$";
+    if(outerBand){
+      file
+	<< " & " << std::setw(15) << std::right << "$+2\\sigma$";
+    }
+    file
       << " & " << std::setw(15) << std::right << "Obs. Limit"
       << std::right << "  \\\\"
       << std::endl << "\\hline" << std::endl;
     unsigned int precision = 2;
     for(int imass=0; imass<expected->GetN(); ++imass){
       file
-	<< "   " << std::setw(15) << std::setprecision(3) << std::resetiosflags(std::ios_base::fixed) << std::right << expected->GetX()[imass] << "~\\GeV"
-	<< " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << expected->GetY()[imass] - outerBand->GetEYlow()[imass]
+	<< "   " << std::setw(15) << std::setprecision(3) << std::resetiosflags(std::ios_base::fixed) << std::right << expected->GetX()[imass] << "~\\GeV";
+      if(outerBand){
+	file
+	  << " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << expected->GetY()[imass] - outerBand->GetEYlow()[imass];
+      }
+      file
 	<< " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << expected->GetY()[imass] - innerBand->GetEYlow()[imass]
 	<< " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << expected->GetY()[imass]
-	<< " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << expected->GetY()[imass] + innerBand->GetEYhigh()[imass]
-	<< " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << expected->GetY()[imass] + outerBand->GetEYhigh()[imass];
+	<< " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << expected->GetY()[imass] + innerBand->GetEYhigh()[imass];
+      if(outerBand){
+	file
+	  << " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << expected->GetY()[imass] + outerBand->GetEYhigh()[imass];
+      }
       if(observed){
 	file
 	  << " & " << std::setw(15) << std::right << observed->GetY()[imass];
@@ -443,22 +528,37 @@ PlotLimits::print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsym
     file.open (std::string(filename).append(".txt").c_str());
     file
       << "#"
-      << "   " << std::setw(15) << std::right << "         mX"
-      << "   " << std::setw(15) << std::right << "   -2 sigma"
+      << "   " << std::setw(15) << std::right << "         mX";
+    if(outerBand){
+      file
+	<< "   " << std::setw(15) << std::right << "   -2 sigma";
+    }
+    file
       << "   " << std::setw(15) << std::right << "   -1 sigma"
       << "   " << std::setw(15) << std::right << "     Median"
-      << "   " << std::setw(15) << std::right << "   +1 sigma"
-      << "   " << std::setw(15) << std::right << "   +2 sigma"
+      << "   " << std::setw(15) << std::right << "   +1 sigma";
+    if(outerBand){    
+      file  
+	<< "   " << std::setw(15) << std::right << "   +2 sigma";
+    }
+    file
       << "   " << std::setw(15) << std::right << "Obs. Limit [pb]"
       << std::endl;
     for(int imass=0; imass<expected->GetN(); ++imass){
       file
-	<< "   " << std::setw(15) << std::setprecision(3) << std::right << expected->GetX()[imass]
-	<< "   " << std::setw(15) << std::setprecision(3) << std::right << expected->GetY()[imass] - outerBand->GetEYlow()[imass]
+	<< "   " << std::setw(15) << std::setprecision(3) << std::right << expected->GetX()[imass];
+      if(outerBand){
+	file
+	  << "   " << std::setw(15) << std::setprecision(3) << std::right << expected->GetY()[imass] - outerBand->GetEYlow()[imass];
+      }
+      file
 	<< "   " << std::setw(15) << std::setprecision(3) << std::right << expected->GetY()[imass] - innerBand->GetEYlow()[imass]
 	<< "   " << std::setw(15) << std::setprecision(3) << std::right << expected->GetY()[imass]
-	<< "   " << std::setw(15) << std::setprecision(3) << std::right << expected->GetY()[imass] + innerBand->GetEYhigh()[imass]
-	<< "   " << std::setw(15) << std::setprecision(3) << std::right << expected->GetY()[imass] + outerBand->GetEYhigh()[imass];
+	<< "   " << std::setw(15) << std::setprecision(3) << std::right << expected->GetY()[imass] + innerBand->GetEYhigh()[imass];
+      if(outerBand){
+	file
+	  << "   " << std::setw(15) << std::setprecision(3) << std::right << expected->GetY()[imass] + outerBand->GetEYhigh()[imass];
+      }
       if(observed){
 	file
 	  << "   " << std::setw(15) << std::right << observed->GetY()[imass];
@@ -479,9 +579,11 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
   canv.cd();
   canv.SetGridx(1);
   canv.SetGridy(1);
-
+  
   // draw a frame to define the range
-  TH1F* hr = canv.DrawFrame(outerBand->GetX()[0]-.01, min_, outerBand->GetX()[outerBand->GetN()-1]+.01, max_);
+  TH1F* hr = new TH1F();
+  if(outerBand) canv.DrawFrame(outerBand->GetX()[0]-.01, min_, outerBand->GetX()[outerBand->GetN()-1]+.01, max_);
+  else canv.DrawFrame(innerBand->GetX()[0]-.01, min_, innerBand->GetX()[innerBand->GetN()-1]+.01, max_);
   hr->SetXTitle(xaxis_.c_str());
   hr->GetXaxis()->SetLabelFont(62);
   hr->GetXaxis()->SetLabelSize(0.045);
@@ -504,11 +606,13 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
     }
   }
 
+  if(outerBand){
   outerBand->SetLineColor(kBlack);
   //outerBand->SetLineStyle(11);
   outerBand->SetLineWidth(1.);
   outerBand->SetFillColor(kYellow);
   outerBand->Draw("3");
+  }
 
   innerBand->SetLineColor(kBlack);
   //innerBand->SetLineStyle(11);
@@ -516,10 +620,19 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
   innerBand->SetFillColor(kGreen);
   innerBand->Draw("3same");
 
+  if(outerBand){
   expected->SetLineColor(kRed);
   expected->SetLineWidth(3);
   expected->SetLineStyle(1);
   expected->Draw("L");
+  }
+  else{
+    expected->SetMarkerStyle(20);
+    expected->SetMarkerSize(1.0);
+    expected->SetMarkerColor(kBlack);
+    expected->SetLineWidth(3.);
+    expected->Draw("PLsame");
+  }
 
   if(!mssm_){
     unit->SetLineColor(kBlue);
@@ -544,10 +657,12 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
   //leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
   //leg->SetHeader( "95% CL Limits" );
-  if(observed){ leg->AddEntry( observed , "observed",  "PL" );}
-  leg->AddEntry( expected , "expected"             ,  "L" );
-  leg->AddEntry( innerBand, "#pm 1#sigma expected" ,  "F" );
-  leg->AddEntry( outerBand, "#pm 2#sigma expected" ,  "F" );
+  if(observed) leg->AddEntry( observed , "observed",  "PL" );
+  if(observed==0 && outerBand==0) leg->AddEntry( expected , "Best fit"             ,  "L" );
+  else leg->AddEntry( expected , "expected"             ,  "L" );
+  if(observed==0 && outerBand==0) leg->AddEntry( innerBand, "#pm 1#sigma Best fit" ,  "F" );
+  else leg->AddEntry( innerBand, "#pm 1#sigma expected" ,  "F" );
+  if(outerBand) leg->AddEntry( outerBand, "#pm 2#sigma expected" ,  "F" );
   leg->Draw("same");
   //canv.RedrawAxis("g");
   canv.RedrawAxis();
@@ -582,7 +697,7 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
     if(observed){ observed ->Write("observed" );}
     expected ->Write("expected" );
     innerBand->Write("innerBand");
-    outerBand->Write("outerBand");
+    if(outerBand){ outerBand->Write("outerBand");}
     output->Close();
   }
   return;
