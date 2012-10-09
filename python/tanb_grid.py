@@ -9,7 +9,7 @@ parser.add_option("-t", "--tanb",  dest="tanb",     default='20.',   type="strin
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode")
 parser.add_option("--sm-like", dest="sm_like", default=False, action="store_true", help="Do not divide by the value of tanb, but only scale to MSSM xsec according to tanb value. (Will result in typical SM limit on signal strength for given value of tanb). Used for debugging. [Default: False]")
 parser.add_option("--full-mass", dest="full_mass", default=False, action="store_true", help="Do not apply acceptance corrections for masswindow that has been applied for cross section calculation. Kept for legacy. [Default: False]")
-parser.add_option("--model", dest="model", default='HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-nnlo.root', type="string", help="Model to be applied for the limit calculation. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-nnlo.root']")
+parser.add_option("--model", dest="model", default='HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root', type="string", help="Model to be applied for the limit calculation. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root']")
 parser.add_option("--interpolation", dest="interpolation_mode", default='mode-1', type="choice", help="Mode for mass interpolation for direct tanb limits. Choices are: mode-0 -- non-degenerate-masses for all htt channels, mode-1 -- non-degenerate-masses for classic htt channels non-degenerate-masses-light for htt_mm, mode-2 -- non-degenerate-masses for classic htt channels degenerate-masses for htt_mm, mode-3 -- non-degenerate-masses-light for all htt channels, mode-4 -- non-degenerate-masses-light for classic htt channels degenerate-masses for htt_mm, mode-5 -- degenerate-masses for all htt channels [Default: mode-1]", choices=["mode-0", "mode-1", "mode-2", "mode-3", "mode-4", "mode-5"])
 (options, args) = parser.parse_args()
 
@@ -30,7 +30,7 @@ from HiggsAnalysis.HiggsToTauTau.acceptance_correction import interval
 from HiggsAnalysis.HiggsToTauTau.acceptance_correction import acceptance_correction 
 
 class MakeDatacard :
-       def __init__(self, tanb, mA, model="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-nnlo.root", feyn_higgs_model="", sm_like=False, acc_corr=True) :
+       def __init__(self, tanb, mA, model="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root", feyn_higgs_model="", sm_like=False, acc_corr=True) :
               ## full path for the input file for the htt xsec tools, expected in the data directory of the package
               ## This file is used to determine the cross sections and uncertainties for calculations for htt, as
               ## as for determining the masses for htt and hww
@@ -357,7 +357,11 @@ class MakeDatacard :
               else :
                      ## read masses from htt mssm cross section tools (default behavior); the
                      ## masses are taken from the 7TeV input files
-                     path = self.mssm_xsec_tools_input_path.format(PERIOD="7TeV")
+                     path = ""
+                     if(float(self.tanb)>=1) :
+                            path = self.mssm_xsec_tools_input_path.format(PERIOD="7TeV", tanbRegion="tanbHigh")
+                     else :
+                            path = self.mssm_xsec_tools_input_path.format(PERIOD="7TeV", tanbRegion="tanbLow")
                      scan = mssm_xsec_tools("{CMSSW_BASE}/src/{PATH}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], PATH=path))
                      htt_query = scan.query(self.mA, self.tanb)
                      self.mh = htt_query['higgses']['h']['mass']
@@ -427,7 +431,11 @@ class MakeDatacard :
                                    cross_sections[key] = 0
               else:
                      ## read cross section results for htt
-                     path = self.mssm_xsec_tools_input_path.format(PERIOD=period)
+                     path = ""
+                     if(float(self.tanb)>=1) :
+                            path = self.mssm_xsec_tools_input_path.format(PERIOD=period, tanbRegion="tanbHigh")
+                     else :
+                            path = self.mssm_xsec_tools_input_path.format(PERIOD=period, tanbRegion="tanbLow") 
                      scan = mssm_xsec_tools("{CMSSW_BASE}/src/{PATH}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], PATH=path))
                      htt_query = scan.query(self.mA, self.tanb)
                      ## fill cross section (central values)
@@ -546,7 +554,11 @@ class MakeDatacard :
               """
               cross_sections = {"A" : 0., "H" : 0., "h" : 0.}
               ## read cross section results for htt
-              path = self.mssm_xsec_tools_input_path.format(PERIOD=period)
+              path = ""
+              if(float(self.tanb)>=1) :
+                     path = self.mssm_xsec_tools_input_path.format(PERIOD=period, tanbRegion="tanbHigh")
+              else :
+                     path = self.mssm_xsec_tools_input_path.format(PERIOD=period, tanbRegion="tanbLow") 
               inputFileName="{CMSSW_BASE}/src/{PATH}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], PATH=path)
               scan = mssm_xsec_tools(inputFileName)
               htt_query = scan.query(self.mA, self.tanb)
