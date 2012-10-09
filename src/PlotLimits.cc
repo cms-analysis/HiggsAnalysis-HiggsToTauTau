@@ -234,8 +234,8 @@ PlotLimits::prepareBayesian(const char* directory, std::vector<double>& values, 
 	*/
 
 	// using standard deviations can result in bands that span below 0
-	// we therefore use quantiles here for +/-1 ans +/-2 sigma also for
-	// bayesian; the measn remains as it is
+	// we therefore use quantiles here for +/-1 and +/-2 sigma also for
+	// bayesian; the mean remains as it is
 	if(std::string(type)==std::string("mean"   ) ){ value= mean; }
 	else if(std::string(type)==std::string("+2sigma") ){ value= limits[(int)(0.975*limits.size())];}//+2*sqrt(var);}
 	else if(std::string(type)==std::string("+1sigma") ){ value= limits[(int)(0.840*limits.size())];}//+1*sqrt(var);}
