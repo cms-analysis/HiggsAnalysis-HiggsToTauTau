@@ -1055,7 +1055,8 @@ PlotLimits::plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErro
       unit->SetPoint(ipoint, bins_[imass], 1.); ++ipoint;
     }
   }
-
+   
+  char typ[20];   
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
     std::cout<< (int)bins_[imass] << std::endl;
     std::string fullpath;
@@ -1066,12 +1067,12 @@ PlotLimits::plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErro
     if (multidim.is_open())
       {
 	while ( multidim.good() )
-	  {
-	    char typ[20];	    
+	  {	    
 	    getline (multidim,line);
 	    sscanf (line.c_str(),"%s :    %f   %f/%f (68%%)", typ, &bestfit, &bestfit_down, &bestfit_up);
 	    if(typ==POI_)
-	      {		expected ->SetPoint(ipoint, bins_[imass], bestfit);
+	      {		
+		expected ->SetPoint(ipoint, bins_[imass], bestfit);
 		innerBand->SetPoint(ipoint, bins_[imass], bestfit);
 		innerBand->SetPointEYlow (ipoint, fabs(bestfit_down));
 		innerBand->SetPointEYhigh(ipoint, fabs(bestfit_up));
@@ -1112,8 +1113,8 @@ PlotLimits::plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErro
   //leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
   //leg->SetHeader( "95% CL Limits" );
-  if(observed==0 && outerBand==0) leg->AddEntry( expected , "Best fit"             ,  "L" );
-  if(observed==0 && outerBand==0) leg->AddEntry( innerBand, "#pm 1#sigma Best fit" ,  "F" );
+  if(observed==0 && outerBand==0) leg->AddEntry( expected , TString::Format("Best fit for %s", POI_.c_str()),  "L" );
+  if(observed==0 && outerBand==0) leg->AddEntry( innerBand, TString::Format("#pm 1#sigma Best fit for %s", POI_.c_str()),  "F" );
   leg->Draw("same");
   //canv.RedrawAxis("g");
   canv.RedrawAxis();
