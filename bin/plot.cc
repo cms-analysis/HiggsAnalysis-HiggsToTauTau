@@ -22,6 +22,7 @@ int main(int argc, char* argv[])
   types.push_back(std::string("HIG-12-032"));
   types.push_back(std::string("significance"));
   types.push_back(std::string("maxlikelihood"));
+  types.push_back(std::string("multidimfit"));
 
   // parse arguments
   if ( argc < 3 ) {
@@ -102,7 +103,7 @@ int main(int argc, char* argv[])
     /// make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
-    plot.plotTanb(*canv, inner, outer, expected, observed);
+    plot.plotTanb(*canv, inner, outer, expected, observed, directory);
   }
   if( std::string(argv[1]) == std::string("bayesian") ){
     /// observed limit 
@@ -162,7 +163,6 @@ int main(int argc, char* argv[])
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plot(*canv, inner, outer, expected, observed);
   }
-
   if( std::string(argv[1]) == std::string("maxlikelihood") ){
     /// expected limit
     TGraph* expected  = new TGraph();
@@ -175,8 +175,16 @@ int main(int argc, char* argv[])
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plot(*canv, inner, 0, expected, 0);
   }
-
-
+  if( std::string(argv[1]) == std::string("multidimfit") ){
+    /// best fit
+    TGraph* expected  = new TGraph();
+    /// +/- 1 sigma to bestfit
+    TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
+    /// make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plotMDF(*canv, inner, 0, expected, 0, directory);
+  }
   if( std::string(argv[1]) == std::string("HIG-11-020") ){
     /// observed limit 
     TGraph* observed  = 0;

@@ -76,9 +76,11 @@ class PlotLimits {
   /// print tabulated limits to a txt file, for inner band, outer band, expected and observed
   void print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* innerBand, TGraph* expected, TGraph* observed, const char* type="txt");
   /// plot limits on canvas, print out png, pdf, txt, root formats if desired 
-  void plot(TCanvas& canv, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* innerBand, TGraph* expected, TGraph* observed=0);
+  void plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0);
   /// plot limits for tanb on canvas, print out png, pdf, txt, root formats if desired 
-  void plotTanb(TCanvas& canv, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* innerBand, TGraph* expected, TGraph* observed=0, const char* directory="");
+  void plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0, const char* directory="");
+  /// plot bestfit values for different parameters dependend on mass 
+  void plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0, const char* directory="");
 
  private:
   /// fill a single vector of values according to 2sigma, 1sigma, median or observed 
@@ -152,14 +154,16 @@ class PlotLimits {
   /// additional output label 
   /// for png, pdf, txt 
   std::string outputLabel_;
+  /// print higgs125 bands?
+  bool higgs125_bands;
+  /// POI of multidimfit
+  std::string POI_;
   /// binning for limits
   std::vector<double> bins_;
   /// check whether mass point is available or not
   std::vector<bool> valid_; 
   /// mass for which a limit has been calculated (needed for plotting of HIG-XX-YYY results)
   std::vector<double> masses_; 
-  /// print higgs125 bands?
-  bool higgs125_bands;
 };
 
 inline void

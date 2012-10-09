@@ -15,7 +15,8 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) : outpu
   log_  (cfg.getParameter<int   >("log") ),
   verbosity_(cfg.getParameter<unsigned int>("verbosity")),
   outputLabel_(cfg.getParameter<std::string>("outputLabel")),
-  higgs125_bands (cfg.exists("higgs125_bands") ? cfg.getParameter<bool>("higgs125_bands") : false)
+  higgs125_bands (cfg.exists("higgs125_bands") ? cfg.getParameter<bool>("higgs125_bands") : false),
+  POI_  (cfg.exists("POI") ? cfg.getParameter<std::string>("POI") : "")
 {
   bins_=cfg.getParameter<std::vector<double> >("masspoints");
   for(unsigned int i=0; i<bins_.size(); ++i) valid_.push_back(true);
@@ -1015,6 +1016,137 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
     expected ->Write("expected" );
     innerBand->Write("innerBand");
     outerBand->Write("outerBand");
+    output->Close();
+  }
+  return;
+}
+
+
+void
+PlotLimits::plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, const char* directory)
+{
+  // set up styles
+  SetStyle();
+
+  canv.cd();
+  canv.SetGridx(1);
+  canv.SetGridy(1);
+  
+  // draw a frame to define the range
+  TH1F* hr = canv.DrawFrame(bins_[0]-.01, min_, bins_[bins_.size()-1]+.01, max_);
+  hr->SetXTitle(xaxis_.c_str());
+  hr->GetXaxis()->SetLabelFont(62);
+  hr->GetXaxis()->SetLabelSize(0.045);
+  hr->GetXaxis()->SetLabelOffset(0.015);
+  hr->GetXaxis()->SetTitleFont(62);
+  hr->GetXaxis()->SetTitleColor(1);
+  hr->GetXaxis()->SetTitleOffset(1.05);
+  hr->SetYTitle(yaxis_.c_str());
+  hr->GetYaxis()->SetLabelFont(62);
+  hr->GetYaxis()->SetTitleSize(0.05);
+  hr->GetYaxis()->SetTitleOffset(1.30);
+  hr->GetYaxis()->SetLabelSize(0.045);
+  if(log_){ canv.SetLogy(1); }
+
+  // create the unit line
+  TGraph* unit = new TGraph();
+  for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
+    if(valid_[imass]){
+      unit->SetPoint(ipoint, bins_[imass], 1.); ++ipoint;
+    }
+  }
+
+  for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
+    std::cout<< (int)bins_[imass] << std::endl;
+    std::string fullpath;
+    std::string line;
+    float bestfit, bestfit_down, bestfit_up;
+    fullpath = TString::Format("%s/%d/multi-dim.fitresult", directory, (int)bins_[imass]); // felix anpassen
+    ifstream multidim (fullpath.c_str());
+    if (multidim.is_open())
+      {
+	while ( multidim.good() )
+	  {
+	    char typ[20];	    
+	    getline (multidim,line);
+	    sscanf (line.c_str(),"%s :    %f   %f/%f (68%%)", typ, &bestfit, &bestfit_down, &bestfit_up);
+	    if(typ==POI_)
+	      {		expected ->SetPoint(ipoint, bins_[imass], bestfit);
+		innerBand->SetPoint(ipoint, bins_[imass], bestfit);
+		innerBand->SetPointEYlow (ipoint, fabs(bestfit_down));
+		innerBand->SetPointEYhigh(ipoint, fabs(bestfit_up));
+		ipoint++;
+	      }
+	  }
+	multidim.close();
+      }
+  }
+
+  innerBand->SetLineColor(kBlack);
+  //innerBand->SetLineStyle(11);
+  innerBand->SetLineWidth(1.);
+  innerBand->SetFillColor(kGreen);
+  innerBand->Draw("3same");
+
+
+  expected->SetMarkerStyle(20);
+  expected->SetMarkerSize(1.0);
+  expected->SetMarkerColor(kBlack);
+  expected->SetLineWidth(3.);
+  expected->Draw("PLsame");
+  
+
+  if(!mssm_){
+    unit->SetLineColor(kBlue);
+    unit->SetLineWidth(3.);
+    unit->Draw("Lsame");
+  }
+  
+  /// setup the CMS Preliminary
+  CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
+
+  /// add the proper legend
+  TLegend* leg = new TLegend(mssm_ ? 0.5625 : 0.18, 0.70, mssm_ ? 1.00 : 0.605, 0.90);
+  leg->SetBorderSize( 0 );
+  leg->SetFillStyle ( 1001 );
+  //leg->SetFillStyle ( 0 );
+  leg->SetFillColor (kWhite);
+  //leg->SetHeader( "95% CL Limits" );
+  if(observed==0 && outerBand==0) leg->AddEntry( expected , "Best fit"             ,  "L" );
+  if(observed==0 && outerBand==0) leg->AddEntry( innerBand, "#pm 1#sigma Best fit" ,  "F" );
+  leg->Draw("same");
+  //canv.RedrawAxis("g");
+  canv.RedrawAxis();
+
+  /*
+  TPaveText * channel = new TPaveText(0.81, 0.85, 0.90, 0.90, "NDC");
+  channel->SetBorderSize(   0 );
+  channel->SetFillStyle(    0 );
+  channel->SetTextAlign(   12 );
+  channel->SetTextSize ( 0.04 );
+  channel->SetTextColor(    1 );
+  channel->SetTextFont (   62 );
+  channel->AddText("H #rightarrow #tau #tau");
+  channel->Draw();
+  */
+
+  if(png_){
+    canv.Print(std::string(output_).append("_").append(outputLabel_).append(".png").c_str());
+    canv.Print(std::string(output_).append("_").append(outputLabel_).append(".pdf").c_str());
+    canv.Print(std::string(output_).append("_").append(outputLabel_).append(".eps").c_str());
+  }
+  if(txt_){
+    print(std::string(output_).append("_").append(outputLabel_).c_str(), outerBand, innerBand, expected, observed, "txt");
+    print(std::string(output_).append("_").append(outputLabel_).c_str(), outerBand, innerBand, expected, observed, "tex");
+  }
+  if(root_){
+    TFile* output = new TFile(std::string("limits_").append(outputLabel_).append(".root").c_str(), "update");
+    if(!output->cd(output_.c_str())){
+      output->mkdir(output_.c_str());
+      output->cd(output_.c_str());
+    }
+    expected ->Write("BestFit" );
+    innerBand->Write("innerBand");
     output->Close();
   }
   return;
