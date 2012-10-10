@@ -76,6 +76,7 @@ else:
         submit_script.write('export cmssw_base=$CMSSW_BASE\n')
         submit_script.write('export scram_arch=$SCRAM_ARCH\n')
         for idx in range(int(njob)):
+            rnd = random.randint(1, 999999)
             log.info("Generating script for limit.py with injected signal for job %g", idx)
             script_file_name = '%s_%i.sh' % (name, idx)
             with open(script_file_name, 'w') as script:
