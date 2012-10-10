@@ -583,8 +583,8 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
   
   // draw a frame to define the range
   TH1F* hr = new TH1F();
-  if(outerBand) canv.DrawFrame(outerBand->GetX()[0]-.01, min_, outerBand->GetX()[outerBand->GetN()-1]+.01, max_);
-  else canv.DrawFrame(innerBand->GetX()[0]-.01, min_, innerBand->GetX()[innerBand->GetN()-1]+.01, max_);
+  if(outerBand) hr=canv.DrawFrame(outerBand->GetX()[0]-.01, min_, outerBand->GetX()[outerBand->GetN()-1]+.01, max_);
+  else hr=canv.DrawFrame(innerBand->GetX()[0]-.01, min_, innerBand->GetX()[innerBand->GetN()-1]+.01, max_);
   hr->SetXTitle(xaxis_.c_str());
   hr->GetXaxis()->SetLabelFont(62);
   hr->GetXaxis()->SetLabelSize(0.045);
