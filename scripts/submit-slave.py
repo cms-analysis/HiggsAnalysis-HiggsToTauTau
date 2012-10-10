@@ -8,7 +8,7 @@ parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...",
 parser.add_option("-o", "--out", dest="out", default="batch", type="string", help="Name of the output files (.sh and .cfg). [Default: batch]")
 parser.add_option("-v", "--verbose", dest="v", default=0, type="int", help="Verbosity level of lands or combine. [Default: 0]")
 parser.add_option("--binary", dest="binary", default="combine", type="choice", help="Binary file to be used [Default: combine]",  choices=["lands", "combine"])
-parser.add_option("--method", dest="method", default="CLs", type="choice", help="Statistical method to be used [Default: CLs]",  choices=["bayesian", "CLs", "tanb", "single", "pl-significance"])
+parser.add_option("--method", dest="method", default="CLs", type="choice", help="Statistical method to be used [Default: CLs]",  choices=["bayesian", "CLs", "tanb", "single", "significance"])
 parser.add_option("--shape",           dest="shape",           default="shape2",  type="string",             help="Choose dedicated algorithm for shape uncertainties. [Default: 'shape2']")
 parser.add_option("--random", dest="random", default=False, action="store_true", help="Use random seeds. [Default: False]")
 parser.add_option("--model", dest="model", default="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-nnlo.root", type="string", help="The model that should be applied for direct limits on tanb (only applicable for --method tanb, for other methods this option will have no effect). The model should be given as the absolute path to the mssm_xsec_tool input file starting from CMSSW_BASE/src/, or feyn-higgs::saeffm , feyn-higgs::gluoph, ... in case the model is assumed to be picked from feyn-higgs. In the case of feyn-higgs the model tag following the \'::\' will be passed on the the feyn-higgs extration tool feyn-higgs-mssm. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-nnlo.root']")
@@ -401,7 +401,7 @@ for directory in args :
                     ## cleanup and return to the head directory to go on
                     os.system("rm tmp*")
                     os.chdir("%s/.." % os.getcwd())
-            if options.method == "pl-significance" :
+            if options.method == "significance" :
                 ## -----------------------------------------------------------------------------------------
                 ## Option: combine ProfileLikelihood (significance)
                 ## -----------------------------------------------------------------------------------------

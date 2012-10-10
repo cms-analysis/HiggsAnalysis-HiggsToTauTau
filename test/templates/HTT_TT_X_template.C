@@ -35,7 +35,7 @@ $DEFINE_MSSM
    are supposed to be made.
 */
 
-static const bool BLIND_DATA = false;
+static const bool BLIND_DATA = true; //false;
 
 TH1F* refill(TH1F* hin, const char* sample, bool data=false)
 /*
@@ -108,7 +108,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=2000., const 
 
   const char* dataset;
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "#sqrt{s} = 7 TeV, L = 4.9 fb^{-1}";}
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "#sqrt{s} = 8 TeV, L = 5.0 fb^{-1}";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "#sqrt{s} = 8 TeV, L = 12.0 fb^{-1}";}
 
   // open example histogram file
   TFile* input = new TFile(inputfile);

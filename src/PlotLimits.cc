@@ -213,7 +213,7 @@ PlotLimits::prepareBayesian(const char* directory, std::vector<double>& values, 
 	int nevent = limit->GetEntries();
 	for(int i=0; i<nevent; ++i){
 	  limit->GetEvent(i);
-	  if(x<999999){
+	  if(0<x && x<999999){
 	    // fill for median determination
 	    limits.push_back(x);
 	    // mean(x)
@@ -597,6 +597,7 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
   hr->GetYaxis()->SetTitleSize(0.05);
   hr->GetYaxis()->SetTitleOffset(1.30);
   hr->GetYaxis()->SetLabelSize(0.045);
+  hr->SetNdivisions(505);
   if(log_){ canv.SetLogy(1); }
 
   // create the unit line

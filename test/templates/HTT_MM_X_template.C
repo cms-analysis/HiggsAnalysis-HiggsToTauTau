@@ -13,9 +13,8 @@
 #include <TAttLine.h>
 #include <TPaveText.h>
 
-#include "/scratch/hh/lustre/cms/user/ffrensch/CMSSW_5_2_4_patch4/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
-#define BLIND
 $DEFINE_MSSM
 
 /**
@@ -36,7 +35,7 @@ $DEFINE_MSSM
    are supposed to be made.
 */
 
-static const bool BLIND_DATA = false;
+static const bool BLIND_DATA = true; //false;
 
 TH1F* refill(TH1F* hin, const char* sample, bool data=false)
 /*
@@ -107,8 +106,8 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=500., const c
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
 
   const char* dataset;
-  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "#sqrt{s} = 7 TeV, L = 4.8 fb^{-1}";}
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "#sqrt{s} = 8 TeV, L = 5.1 fb^{-1}";}
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "#sqrt{s} = 7 TeV, L = 4.9 fb^{-1}";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "#sqrt{s} = 8 TeV, L = 12.0 fb^{-1}";}
   
   TFile* input = new TFile(inputfile);
   TH1F* ZTT = refill((TH1F*)input->Get(TString::Format("%s/ZTT"   , directory)), "ZTT"); InitHist(ZTT, "", "", kGreen-4, 1001);

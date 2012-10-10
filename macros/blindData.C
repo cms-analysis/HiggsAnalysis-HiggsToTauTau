@@ -71,7 +71,7 @@ bool inPatterns(const std::string& test, const char* patterns)
   return false;
 }
 
-void blindData(const char* filename, const char* background_patterns="Fakes, EWK, ttbar, Ztt", const char* signal_patterns="ggH125, qqH125, VH125", const char* directory_patterns=".*", bool armed=false, int rnd=-1, float signal_scale=1., unsigned int debug=1)
+void blindData(const char* filename, const char* background_patterns="Fakes, EWK, ttbar, Ztt", const char* signal_patterns="ggH125, qqH125, VH125", const char* directory_patterns="*", bool armed=false, int rnd=-1, float signal_scale=1., unsigned int debug=1)
 {
   /// prepare input parameters
   std::vector<std::string> signals;

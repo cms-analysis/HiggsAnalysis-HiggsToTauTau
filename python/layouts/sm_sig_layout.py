@@ -19,33 +19,24 @@ layout = cms.PSet(
     ## print to root
     root = cms.bool(True),
     ## min for plotting
-    min = cms.double(0.),
+    min = cms.double(0.05),
     ## max for plotting
-    max = cms.double(20.), ## 10
+    max = cms.double(50.), ## 10
     ## min for plotting
-    log = cms.int32(0),
+    log = cms.int32(1),
     ## define verbosity level
     verbosity   = cms.uint32(2),
     ## define output label
-    outputLabel = cms.string("sm"), 
+    outputLabel = cms.string("significance"), 
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
     110.
    ,115.
-   ,118.
    ,120.
-   ,122.
-   ,124.
-   ,126.
-   ,128.
+   ,125.
    ,130.
    ,135.
    ,140.
-   ,150.
-   ,160.
-   ,170.
-   ,180.
-   ,190.
-   ,200.
+   ,145.
   ),
 )

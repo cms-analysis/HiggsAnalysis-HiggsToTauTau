@@ -6,14 +6,14 @@ parser = OptionParser(usage="usage: %prog [options]",
 ## direct options
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
-parser.add_option("-c", "--channels", dest="channels", default="em, et, mt", type="string", help="Channels, for which to make the postfit plots. [Default: 'em, et, mt']")
+parser.add_option("-c", "--channels", dest="channels", default="em, et, mt, mm", type="string", help="Channels, for which to make the postfit plots. [Default: 'em, et, mt, mm']")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 5", type="string", help="List em of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3 5", type="string", help="List mt of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 5", type="string", help="List et of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
-cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="1 2 3 4 5 6 7 8", type="string", help="List of tt event categories. [Default: \"1 2 3 4 5 6 7 8\"]")
+cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
 parser.add_option_group(cats1)
 cats2 = OptionGroup(parser, "MSSM EVENT CATEGORIES", "Event categories to be used for the MSSM analysis.")
 cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="0 1 2 3 6 7", type="string", help="List mm of event categories. [Default: \"0 1 2 3 6 7\"]")
@@ -94,36 +94,36 @@ log = {
     }
 
 max = {
-    ("em", "0") :  "500", #    if options.analysis == "sm" else "300",  
-    ("em", "1") :   "30", #    if options.analysis == "sm" else  "40",  
-    ("em", "2") :   "50", #    if options.analysis == "sm" else  "10",  
-    ("em", "3") :   "15", #    if options.analysis == "sm" else   "2",  
-    ("em", "5") :  "1.4",
-    ("em", "6") :    "8",
-    ("em", "7") :    "3",
-    ("mt", "0") : "2000",
-    ("mt", "1") :  "110", 
-    ("mt", "2") :  "160",
-    ("mt", "3") :   "60",
-    ("mt", "5") :    "3",
-    ("mt", "6") :   "20",
-    ("mt", "7") :    "5",
-    ("et", "0") :   "40"    if options.analysis == "sm" else  "40", 
-    ("et", "1") :   "16"    if options.analysis == "sm" else  "10", 
-    ("et", "2") :   "30"    if options.analysis == "sm" else  "40", 
-    ("et", "3") :   "10"    if options.analysis == "sm" else  "10", 
-    ("et", "5") :  "1.5",
-    ("et", "6") :   "10",
-    ("et", "7") :  "2.4",
-    ("tt", "0") :   "26",
-    ("tt", "1") :  "1.2",
-    ("mm", "0") : "2000",
-    ("mm", "1") :  "110", 
-    ("mm", "2") :  "160",
-    ("mm", "3") :   "60",
-    ("mm", "5") :    "3",
-    ("mm", "6") :   "20",
-    ("mm", "7") :    "5",
+    ("em", "0") :  "750", #    if options.analysis == "sm" else "300",  
+    ("em", "1") :   "60", #    if options.analysis == "sm" else  "40",  
+    ("em", "2") :  "120", #    if options.analysis == "sm" else  "10",  
+    ("em", "3") :   "30", #    if options.analysis == "sm" else   "2",  
+    ("em", "5") :  "3.0",
+    ("em", "6") :   "12",
+    ("em", "7") :    "5",
+    ("mt", "0") : "2800",
+    ("mt", "1") :  "220", 
+    ("mt", "2") :  "400",
+    ("mt", "3") :  "100",
+    ("mt", "5") :    "5",
+    ("mt", "6") :   "30",
+    ("mt", "7") :   "10",
+    ("et", "0") :   "70"    if options.analysis == "sm" else  "40", 
+    ("et", "1") :   "60"    if options.analysis == "sm" else  "10", 
+    ("et", "2") :   "70"    if options.analysis == "sm" else  "40", 
+    ("et", "3") :   "20"    if options.analysis == "sm" else  "10", 
+    ("et", "5") :  "3.0",
+    ("et", "6") :   "20",
+    ("et", "7") :  "4.0",
+    ("tt", "0") :   "40",
+    ("tt", "1") :  "2.0",
+    ("mm", "0") : "2400",
+    ("mm", "1") :  "180", 
+    ("mm", "2") :  "200",
+    ("mm", "3") :   "80",
+    ("mm", "5") :    "8",
+    ("mm", "6") :   "30",
+    ("mm", "7") :   "10",
     }
 
 min = {

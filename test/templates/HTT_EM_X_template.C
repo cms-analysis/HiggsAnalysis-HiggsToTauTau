@@ -15,7 +15,6 @@
 
 #include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
-#define BLIND
 $DEFINE_MSSM
 
 /**
@@ -35,7 +34,7 @@ $DEFINE_MSSM
    are supposed to be made.
 */
 
-static const bool BLIND_DATA = false;
+static const bool BLIND_DATA = true; //false;
 
 TH1F* refill(TH1F* hin, const char* sample, bool data=false)
 /*
@@ -103,7 +102,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=500., const c
 
   const char* dataset;
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "#sqrt{s} = 7 TeV, L = 4.9 fb^{-1}";}
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "#sqrt{s} = 8 TeV, L = 5.0 fb^{-1}";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "#sqrt{s} = 8 TeV, L = 12.0 fb^{-1}";}
   
   TFile* input = new TFile(inputfile);
   TH1F* Fakes  = refill((TH1F*)input->Get(TString::Format("%s/Fakes"   , directory)), "Fakes"); InitHist(Fakes, "", "", kMagenta-10, 1001);
@@ -247,7 +246,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=500., const c
   SetLegendStyle(leg);
   leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau"        , "L" );
 #else
-  TLegend* leg = new TLegend(0.57, 0.65, 0.95, 0.90);
+  TLegend* leg = new TLegend(0.52, 0.65, 0.95, 0.90);
   SetLegendStyle(leg);
   leg->AddEntry(ggH  , "(5#times) H#rightarrow#tau#tau  m_{H}=125" , "L" );
 #endif

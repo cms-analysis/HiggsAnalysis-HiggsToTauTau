@@ -7,7 +7,7 @@ parser = OptionParser(usage="usage: %prog [options]",
 parser.add_option("-f", "--fitresults", dest="fitresults", default="fitresults/mlfit_{ANALYSIS}.txt", type="string", help="Path to the pulls of the maximum likelihood fit. [Default: \"fitresults/mlfit_{ANALYSIS}.txt\"]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="List of run periods, for which postfit plots shuld be made. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
-parser.add_option("-c", "--channels", dest="channels", default="em, et, mt", type="string", help="Channels for which postfit plots should be made. Individual channels should be separated by comma or whitespace. [Default: 'em, et, mt']")
+parser.add_option("-c", "--channels", dest="channels", default="em, et, mt, mm", type="string", help="Channels for which postfit plots should be made. Individual channels should be separated by comma or whitespace. [Default: 'em, et, mt, mm']")
 parser.add_option("-y", "--yields", dest="yields", default="1", type="int", help="Shift yield uncertainties. [Default: '1']")
 parser.add_option("-s", "--shapes", dest="shapes", default="1", type="int", help="Shift shape uncertainties. [Default: '1']")
 parser.add_option("-u", "--uncertainties", dest="uncertainties", default="0", type="int", help="Set uncertainties of backgrounds. [Default: '0']")
@@ -17,7 +17,7 @@ cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3
 cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3 5", type="string", help="List mt of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 5", type="string", help="List et of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
-cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="1 2 3 4 5 6 7 8", type="string", help="List of tt event categories. [Default: \"1 2 3 4 5 6 7 8\"]")
+cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
 parser.add_option_group(cats1)
 cats2 = OptionGroup(parser, "MSSM EVENT CATEGORIES", "Event categories to be used for the MSSM analysis.")
 cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="0 1 2 3 6 7", type="string", help="List mm of event categories. [Default: \"0 1 2 3 6 7\"]")
@@ -33,10 +33,9 @@ if len(args) > 0 :
     parser.print_usage()
     exit(1)
 
-
+## use parse_dcard to get a dictionary mapping
+## sample name strings to fit weights
 from DatacardUtils import parse_dcard
-# use parse_dcard to get a dictionary mapping sample name strings to fit weights
-
 from ROOT import *
 import math
 
@@ -60,6 +59,9 @@ class Analysis:
          self.analysis       = analysis
 
     def high_stat_category(self, cat) :
+        """
+        This function defines the categories in which ZLL is split into ZL and ZJ in the et and mt channels.
+        """
         if "0jet" in cat :
             return True
         if "boost" in cat :

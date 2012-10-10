@@ -31,7 +31,7 @@ layout = cms.PSet(
     ## Set true if we want to skip observed limits
     expectedOnly = cms.bool(True),
     ## print mh=125GeV bands?
-    higgs125_bands = cms.bool(False),
+    higgs125_bands = cms.bool(True),
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
     #90.

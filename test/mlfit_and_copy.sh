@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ML-fit a directory of datcards and copy here for making plots
-# Usage: ./mlfit_and_copy.sh path/to/datacard/mass/dir
+# Usage: ./mlfit_and_copy.sh $CMSSW_BASE/src/MY-LIMITS/125
 
 set -o nounset
 set -o errexit
