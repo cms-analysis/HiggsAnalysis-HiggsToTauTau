@@ -2,12 +2,14 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string(" HPA #sqrt{s} = 7 TeV, L = 10 fb^{-1} (proj.)"),
+    dataset = cms.string(" Test #sqrt{s} = 7 TeV, L = 17 fb^{-1}"),
     #dataset = cms.string(", #sqrt{s} = 7 TeV, H #rightarrow #tau #tau, L = 4.6 fb^{-1}"),
     ## x-axis title
     xaxis = cms.string("m_{H} [GeV]"),
     ## x-axis title
     yaxis = cms.string("Significance"),
+    ## plot expected only
+    expectedOnly = cms.bool(True),
     ## is this mssm?
     mssm = cms.bool(False),
     ## print to png
