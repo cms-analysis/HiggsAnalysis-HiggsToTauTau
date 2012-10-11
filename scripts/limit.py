@@ -412,7 +412,7 @@ for directory in args :
             os.system("rm tmp%s.txt" % options.firstPoint)
         inputcards = ""
         for card in os.listdir(".") :
-            if ".txt" in card :
+            if "htt_" in card :
                 inputcards+=card[:card.find('.')]+'='+card+' '
         print "combineCards.py -S %s > tmp%s.txt" % (inputcards, options.firstPoint)
         os.system("combineCards.py -S %s > tmp%s.txt" % (inputcards, options.firstPoint))
