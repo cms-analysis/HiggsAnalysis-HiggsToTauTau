@@ -63,7 +63,7 @@ echo "with options {options}"
 echo "in directory {directory}"
 
 
-$cmssw_base/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} --firstPoint {FIRSTPOINT} --lastPoint {LASTPOINT} --points {GRIDPOINTS} --name {ROOTNAME} {directory}
+$cmssw_base/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} --firstPoint {FIRSTPOINT} --lastPoint {LASTPOINT} --points {GRIDPOINTS} --name _{ROOTNAME} {directory}
 
 '''
 
