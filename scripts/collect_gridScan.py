@@ -13,7 +13,7 @@ import os
 import sys
 
 mass = options.directory[options.directory.rfind("/")+1:]
-os.system("hadd {DIRECTORY}/higgsCombine.MultiDimFit.mH{MASS}.root {DIRECTORY}/higgsCombine_*.MultiDimFit.mH{MASS}.root".format(
+os.system("hadd {DIRECTORY}/higgsCombineScan.MultiDimFit.mH{MASS}.root {DIRECTORY}/higgsCombine_*.MultiDimFit.mH{MASS}.root".format(
     DIRECTORY=options.directory,
     MASS=mass
     ))
