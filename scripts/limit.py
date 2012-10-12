@@ -446,8 +446,8 @@ for directory in args :
                 gridpoints = "--points %s --firstPoint %s --lastPoint %s" % (options.gridPoints, options.firstPoint, options.lastPoint)
         ## run expected limits
         print "Running maximum likelihood fit with options: ", "combine -M MultiDimFit -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} tmp{FIRSTPOINT}.root ".format(mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt, FIRSTPOINT=options.firstPoint)
-        #os.system("combine -M MultiDimFit -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} tmp{FIRSTPOINT}.root | grep -A 10 -E '\s*--- MultiDimFit ---\s*' > multi-dim.fitresult".format(mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt, FIRSTPOINT=options.firstPoint))
-        os.system("combine -M MultiDimFit -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} tmp{FIRSTPOINT}.root".format(mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt, FIRSTPOINT=options.firstPoint))
+        os.system("combine -M MultiDimFit -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} tmp{FIRSTPOINT}.root | grep -A 10 -E '\s*--- MultiDimFit ---\s*' > multi-dim.fitresult".format(mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt, FIRSTPOINT=options.firstPoint))
+        #os.system("combine -M MultiDimFit -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} tmp{FIRSTPOINT}.root".format(mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt, FIRSTPOINT=options.firstPoint))
     if options.prepPLSig :
         ifile=0
         directoryList = os.listdir(".")
