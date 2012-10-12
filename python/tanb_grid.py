@@ -20,6 +20,8 @@ import sys
 import shutil
 import ROOT
 
+higgs_file = open("higgs_mass.dat", 'a')
+
 ROOT.gSystem.Load('$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so') #can be removed after including interplolate2D to package
 #ROOT.gSystem.Load('$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/interpolate2D/th1fmorph_cc.so') ##- don't has to be included i guess
 #ROOT.gSystem.Load('$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/interpolate2D/th2fmorph_cc.so') ##- th2 morphing not armed yet
@@ -243,6 +245,7 @@ class MakeDatacard :
                      print "preparing limit calculation for model input: feyn-higgs model="+self.feyn_higgs_model
               else :
                      print "preparing limit calculation for model input:", self.mssm_xsec_tools_input_path
+	      higgs_file.write("%f  %f  %f  %f \n" % (self.tanb, self.mh, self.mA, self.mH))	
 
        def decay_channels(self, words) :
               """
@@ -1513,6 +1516,7 @@ for signal_channel, uncertainy_lines in datacard_creator.signal_channel_to_uncer
        output_file.write(datacard_creator.signal_channel_to_uncertainty_lines[signal_channel]+"\n")
 
 ##close files
+higgs_file.close()
 input_file.close()
 output_file.close()
 print "done"
