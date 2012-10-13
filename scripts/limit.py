@@ -425,7 +425,7 @@ for directory in args :
             opts = options.fitModelOptions.split()
             for idx in range(len(opts)) : opts[idx] = opts[idx].rstrip(',')
             for opt in opts :
-                workspaceOptions+="--PO %s" % opt
+                workspaceOptions+="--PO %s " % opt
         print "creating workspace with options:", "text2workspace.py tmp%s.txt %s" % (options.firstPoint, workspaceOptions)
         os.system("text2workspace.py tmp%s.txt %s" % (options.firstPoint, workspaceOptions))
         ## if it does not exist already, create link to executable
