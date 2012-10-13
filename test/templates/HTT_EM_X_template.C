@@ -7,6 +7,7 @@
 #include <TSystem.h>
 #include <Rtypes.h>
 
+#include <TMath.h>
 #include <TAxis.h>
 #include <TCanvas.h>
 #include <TLegend.h>
@@ -35,6 +36,21 @@ $DEFINE_MSSM
 */
 
 static const bool BLIND_DATA = true; //false;
+float blinding_SM(float mass){ return (100<mass && mass<150); }
+float blinding_MSSM(float mass){ return (100<mass); }
+float maximum(TH1F* h, bool LOG=false){
+  if(LOG){
+    if(h->GetMaximum()>1000){ return 1000.*TMath::Nint(500*h->GetMaximum()/1000.); }
+    if(h->GetMaximum()>  10){ return   10.*TMath::Nint( 50*h->GetMaximum()/  10.); }
+    return 50*h->GetMaximum(); 
+  }
+  else{
+    if(h->GetMaximum()>  12){ return 10.*TMath::Nint((1.3*h->GetMaximum()/10.)); }
+    if(h->GetMaximum()> 1.2){ return TMath::Nint((1.3*h->GetMaximum())); }
+    return 1.3*h->GetMaximum(); 
+  }
+}
+
 
 TH1F* refill(TH1F* hin, const char* sample, bool data=false)
 /*
@@ -49,8 +65,13 @@ TH1F* refill(TH1F* hin, const char* sample, bool data=false)
   TH1F* hout = (TH1F*)hin->Clone(); hout->Clear();
   for(int i=0; i<hout->GetNbinsX(); ++i){
     if(data){
-      hout->SetBinContent(i+1, BLIND_DATA ? 0. : hin->GetBinContent(i+1)/hin->GetBinWidth(i+1));
-      hout->SetBinError  (i+1, BLIND_DATA ? 0. : hin->GetBinError(i+1)/hin->GetBinWidth(i+1));
+#if defined MSSM
+      hout->SetBinContent(i+1, BLIND_DATA && blinding_MSSM(hin->GetBinCenter(i+1)) ? 0. : hin->GetBinContent(i+1)/hin->GetBinWidth(i+1));
+      hout->SetBinError  (i+1, BLIND_DATA && blinding_MSSM(hin->GetBinCenter(i+1)) ? 0. : hin->GetBinError(i+1)/hin->GetBinWidth(i+1));
+#else
+      hout->SetBinContent(i+1, BLIND_DATA && blinding_SM(hin->GetBinCenter(i+1)) ? 0. : hin->GetBinContent(i+1)/hin->GetBinWidth(i+1));
+      hout->SetBinError  (i+1, BLIND_DATA && blinding_SM(hin->GetBinCenter(i+1)) ? 0. : hin->GetBinError(i+1)/hin->GetBinWidth(i+1));
+#endif
     }
     else{
       hout->SetBinContent(i+1, hin->GetBinContent(i+1)/hin->GetBinWidth(i+1));
@@ -78,16 +99,16 @@ void rescale(TH1F* hin, unsigned int idx)
   $Fakes
 #if defined MSSM
   case 5: // ggH
-  $ggH120
+  ${MSSM}ggH160
   case 6: // bbH
-  $bbH120
+  ${MSSM}bbH160
 #else
   case 5: // ggH
-  $ggH125
+  ${SM}ggH125
   case 6: // qqH
-  $qqH125
+  ${SM}qqH125
   case 7: // VH
-  $VH125
+  ${SM}VH125
 #endif
   default :
     std::cout << "error histograms not known?!?" << std::endl;
@@ -95,7 +116,7 @@ void rescale(TH1F* hin, unsigned int idx)
 }
 
 void 
-HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=500., const char* inputfile="root/$HISTFILE", const char* directory="emu_$CATEGORY")
+HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const char* inputfile="root/$HISTFILE", const char* directory="emu_$CATEGORY")
 {
   // define common canvas, axes pad styles
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
@@ -110,8 +131,11 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=500., const c
   TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/ttbar"   , directory)), "ttbar"); InitHist(ttbar, "", "", kBlue   - 8, 1001);
   TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/Ztt"     , directory)), "Ztt"  ); InitHist(Ztt  , "", "", kOrange - 4, 1001);
 #ifdef MSSM
-  TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH120"  , directory)), "ggH"  ); InitSignal(ggH); ggH->Scale(5);
-  TH1F* bbH    = refill((TH1F*)input->Get(TString::Format("%s/bbH120"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale(5);
+  float ggHScale = 1., bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=8
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){ ggHScale = 130.*0.11/1000.; bbHScale = 403.*0.11/1000.; }
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){ ggHScale = 169.*0.11/1000.; bbHScale = 537.*0.11/1000.; }
+  TH1F* ggH  = refill((TH1F*)input->Get(TString::Format("%s/ggH160"  , directory)), "ggH"  ); InitSignal(ggH); ggH->Scale(ggHScale);
+  TH1F* bbH  = refill((TH1F*)input->Get(TString::Format("%s/bbH160"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale(bbHScale);
 #else
   TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125"  , directory)), "ggH"  ); InitSignal(ggH); ggH->Scale(5);
   TH1F* qqH    = refill((TH1F*)input->Get(TString::Format("%s/qqH125"  , directory)), "qqH"  ); InitSignal(qqH); qqH->Scale(5);
@@ -185,7 +209,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=500., const c
   Ztt  ->Add(ttbar);
   if(log){
 #ifdef MSSM
-    bbH  ->Add(bbH);
+    ggH  ->Add(bbH);
 #else
     qqH  ->Add(VH );
     ggH  ->Add(qqH);
@@ -212,7 +236,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=500., const c
   //data->GetXaxis()->SetRange(0, 28);
   data->SetNdivisions(505);
   data->SetMinimum(min);
-  data->SetMaximum(max);
+  data->SetMaximum(max>0 ? max : maximum(Ztt, log));
   data->Draw("e");
 
   TH1F* errorBand = (TH1F*)Ztt ->Clone();
@@ -242,13 +266,13 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=500., const c
   CMSPrelim(dataset, "#tau_{e}#tau_{#mu}", 0.17, 0.835);
 
 #ifdef MSSM  
+  TLegend* leg = new TLegend(0.45, 0.65, 0.95, 0.90);
+  SetLegendStyle(leg);
+  leg->AddEntry(ggH  , "#phi(160 GeV)#rightarrow#tau#tau, tan#beta=8" , "L" );
+#else
   TLegend* leg = new TLegend(0.50, 0.65, 0.95, 0.90);
   SetLegendStyle(leg);
-  leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau"        , "L" );
-#else
-  TLegend* leg = new TLegend(0.52, 0.65, 0.95, 0.90);
-  SetLegendStyle(leg);
-  leg->AddEntry(ggH  , "(5#times) H#rightarrow#tau#tau  m_{H}=125" , "L" );
+  leg->AddEntry(ggH  , "5#timesH(125 GeV)#rightarrow#tau#tau" , "L" );
 #endif
   leg->AddEntry(data , "observed"                       , "LP");
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
@@ -266,7 +290,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=500., const c
 //  mssm->SetTextSize ( 0.03 );
 //  mssm->SetTextColor(    1 );
 //  mssm->SetTextFont (   62 );
-//  mssm->AddText("(m_{A}=120, tan#beta=10)");
+//  mssm->AddText("(m_{A}=250, tan#beta=5)");
 //  mssm->Draw();
 //#else
 //  TPaveText* mssm  = new TPaveText(0.83, 0.85, 0.95, 0.90, "NDC");

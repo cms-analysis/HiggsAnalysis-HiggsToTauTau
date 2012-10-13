@@ -69,6 +69,21 @@ class Analysis:
         #if "btag" in cat :
         #    return True
         return False
+
+    def signal_process(self, process) :
+        if "ggH" in process :
+            return True
+        if "qqH" in process :
+            return True
+        if "VH"  in process :
+            return True
+        if "WH"  in process :
+            return True
+        if "ZH"  in process :
+            return True
+        if "bbH" in process :
+            return True
+        return False
         
     def run(self):
          """
@@ -101,7 +116,10 @@ class Analysis:
              word_arr=line.split("\n")
              uncertainties_set=[]
              for process_name in self.process_weight.keys():
-                 cand_str = "$%s" % process_name
+                 if self.signal_process(process_name) :
+                     cand_str = "${%s}%s" % (options.analysis.upper() , process_name)
+                 else :
+                     cand_str = "$%s" % process_name
                  output_cand = ""
                  if line.strip().startswith(cand_str):
                      print word_arr[0]
@@ -145,9 +163,11 @@ class Analysis:
                          out_line=''
 			 value=1
 		         if shift>0 and hist.GetBinContent(bin)>0 and hist_up.GetBinContent(bin)!=hist.GetBinContent(bin):
-		             value = shift*(hist_up.GetBinContent(bin)/hist.GetBinContent(bin)-1)+1
+                             if hist.GetBinContent(bin) :
+                                 value = shift*(hist_up.GetBinContent(bin)/hist.GetBinContent(bin)-1)+1
 		         elif shift<0 and hist.GetBinContent(bin)>0 and hist_down.GetBinContent(bin)!=hist.GetBinContent(bin):
-		             value = shift*(hist.GetBinContent(bin)/hist_down.GetBinContent(bin)-1)+1
+                             if hist_down.GetBinContent(bin) :
+                                 value = shift*(hist.GetBinContent(bin)/hist_down.GetBinContent(bin)-1)+1
 			 if value!=1:
 		             print_me  = '''std::cout << "scaling bin %(bin)i by %(value)f" << std::endl;''' % {"bin":bin, "value":value}
 		             out_line  = print_me+"hin->SetBinContent(%(bin)i,hin->GetBinContent(%(bin)i)*%(value)f); \n" % {"bin":bin, "value":value}
@@ -226,6 +246,9 @@ for chn in channels :
     for per in periods :
         for cat in categories[chn] :
             histfile = "htt_{CHN}.input_{PER}.root".format(CHN=chn, PER=per) if options.analysis == "sm" else "htt_{CHN}.inputs-mssm-{PER}-0.root".format(CHN=chn, PER=per)
+            if chn == "mm" :
+                ## there is one speciality for mm, which need special input files
+                histfile.replace(".root", "-svfit.root")
 	    process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties = parse_dcard("datacards/htt_{CHN}_{CAT}_{PER}.txt".format(CHN=chn, CAT=cat, PER=per), fitresults, "ANYBIN")
             plots = Analysis(options.analysis, histfile, category_mapping[chn][cat],
                              process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
