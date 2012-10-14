@@ -39,11 +39,14 @@ parser.add_option("--no-repeat", dest="norepeat", default=False, action="store_t
 mgroup = OptionGroup(parser, "COMBINE (MAXIMUM LIKELIHOOD FIT) COMMAND OPTIONS", "Command options for the use of combine with the Maximum Likelihood method.")
 mgroup.add_option("--stable", dest="stable", default=False, action="store_true", help="Run maximum likelihood fit with a set of options that lead to stable results. Makes use of the common options --rMin and --rMax to define the boundaries of the fit. [Default: True]")
 mgroup.add_option("--algo", dest="fitAlgo", type="string", default="contour2d", help="Algorithm for multi-dimensional maximum likelihood fit (options are singles, contour2d, grid). Option grid will make use of the option --points to determine the number of grid points in the scan. [Default: \"\"]")
-mgroup.add_option("--points", dest="gridPoints", type="string", default="100", help="Number of grid points in case of option --algo=grid. [Default: \"100\"]")
-mgroup.add_option("--physics-model", dest="fitModel", type="string", default="", help="Physics model for multi-dimensional maximum likelihood. [Default: \"\"]")
+mgroup.add_option("--physics-model", dest="fitModel", type="string", default="", help="Physics model for multi-dimensional maximum likelihood. The physics model should be defined by a model name and a path to a python implementation of the model separated by '='. For example 'ggH-qqH-model=PATH-TO-IMPLEMENTATION'. In this case a workspace of the model with given model options will be created with the name 'ggH-qqH-model.root'. It is also possible to pass on only a name of a physics model, like 'ggH-qqH-model'. In this case it will be assumed that the model with name 'ggH-qqH-model' has been created beforehand. [Default: \"\"]")
 mgroup.add_option("--physics-model-options", dest="fitModelOptions", type="string", default="", help="Potential options for the used physics model for multi-dimensional maximum likelihood. More options can be passed on separated by ','. [Default: \"\"]")
-mgroup.add_option("--firstPoint", dest="firstPoint", type="string", default="", help="Potential options for splitting the gridPoints in different jobs. Only to be used with lxq/b_gridScan.py [Default: \"\"]") #felix
-mgroup.add_option("--lastPoint", dest="lastPoint", type="string", default="", help="Potential options for splitting the gridPoints in different jobs. Only to be used with lxq/b_gridScan.py [Default: \"\"]") #felix
+mgroup.add_option("--restrict-categories", dest="fitModelCategories", type="string", default="", help="Add a string to restrict the fit only to a subset of event categories. The string should contain the indexes of the allowed event categories then. The indexes should be separated by ':', example: '0:1:2:3'. If the string is empty the datacards from all event categories will be taken into account in the fit, that are located in the target directory. [Default: \"\"]")
+mgroup.add_option("--setup-only", dest="setupOnly", action="store_true", default=False, help="Only setup the model, do not start the minimization. To be used with job splitting for maximum likelihood scans. If False the model will be set up and the minimzation will be executed in one go. [Default: \"False\"]")
+mgroup.add_option("--points", dest="gridPoints", type="string", default="100", help="Number of grid points in case of option --algo=grid. [Default: \"100\"]")
+mgroup.add_option("--firstPoint", dest="firstPoint", type="string", default="", help="Potential options for splitting the gridPoints in different jobs. Only to be used with lxq/b_gridScan.py [Default: \"\"]")
+mgroup.add_option("--lastPoint", dest="lastPoint", type="string", default="", help="Potential options for splitting the gridPoints in different jobs. Only to be used with lxq/b_gridScan.py [Default: \"\"]")
+mgroup.add_option("--saveResults", dest="saveResults", action="store_true", default=False, help="Store the fit output directly in a text file called multi-dim.fitresult. [Default: \"False\"]")
 parser.add_option_group(mgroup)
 egroup = OptionGroup(parser, "COMBINE (MCMC/BAYESIAN) COMMAND OPTIONS", "Command options for the use of combine with the MarkovChainMC/Bayesian method.")
 egroup.add_option("--hint", dest="hint", default="Asymptotic", type="string", help="Name of the hint method that is used to guide the MarkovChainMC. [Default: Asymptotic]")
@@ -406,48 +409,70 @@ for directory in args :
     if options.prepMDFit :
         ## determine mass value from directory
         mass = directory[directory.rfind("/")+1:]
-        ## combine datacard from all datacards in this directory for the multi-dimensional fit it is of importance that the decay
-        ## channels and run periods are well defined from the channel names
-        if os.path.exists("tmp%s.txt" % options.firstPoint) :
-            os.system("rm tmp%s.txt" % options.firstPoint)
-        inputcards = ""
-        for card in os.listdir(".") :
-            if "htt_" in card :
-                inputcards+=card[:card.find('.')]+'='+card+' '
-        print "combineCards.py -S %s > tmp%s.txt" % (inputcards, options.firstPoint)
-        os.system("combineCards.py -S %s > tmp%s.txt" % (inputcards, options.firstPoint))
-        ## create workspace to allow to incorporate dedicated physics models
-        workspaceOptions = "-m %s " % mass
-        if not options.fitModel == "" :
-            workspaceOptions+= "-P %s " % options.fitModel
-        if not options.fitModelOptions == "" :
-            ## break physics model options to list
-            opts = options.fitModelOptions.split()
-            for idx in range(len(opts)) : opts[idx] = opts[idx].rstrip(',')
-            for opt in opts :
-                workspaceOptions+="--PO %s " % opt
-        print "creating workspace with options:", "text2workspace.py tmp%s.txt %s" % (options.firstPoint, workspaceOptions)
-        os.system("text2workspace.py tmp%s.txt %s" % (options.firstPoint, workspaceOptions))
-        ## if it does not exist already, create link to executable
-        if not os.path.exists("combine") :
-            os.system("cp -s $(which combine) .")
-        ## prepare fit options
-        minuitopt = ""
-        if options.minuit :
-            minuitopt = "--minimizerAlgo minuit"
-        stableopt = ""
-        if options.stable :
-            stableopt = "--robustFit=1 --stepSize=0.5  --minimizerStrategy=0 --minimizerTolerance=0.1 --preFitValue=0.1  --X-rtd FITTER_DYN_STEP  --cminFallbackAlgo=\"Minuit;0.001\" "
-        gridpoints = ""
-        if options.fitAlgo == "grid" :
-            if options.firstPoint == "" :
-                gridpoints = "--points %s --firstPoint 1 --lastPoint %s" % (options.gridPoints, options.gridPoints)
-            else :
-                gridpoints = "--points %s --firstPoint %s --lastPoint %s" % (options.gridPoints, options.firstPoint, options.lastPoint)
-        ## run expected limits
-        print "Running maximum likelihood fit with options: ", "combine -M MultiDimFit -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} tmp{FIRSTPOINT}.root ".format(mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt, FIRSTPOINT=options.firstPoint)
-        os.system("combine -M MultiDimFit -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} tmp{FIRSTPOINT}.root | grep -A 10 -E '\s*--- MultiDimFit ---\s*' > multi-dim.fitresult".format(mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt, FIRSTPOINT=options.firstPoint))
-        #os.system("combine -M MultiDimFit -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} tmp{FIRSTPOINT}.root".format(mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt, FIRSTPOINT=options.firstPoint))
+        model = []
+        if "=" in options.fitModel :
+            model = options.fitModel.split('=')
+            ## combine datacard from all datacards in this directory. For the multi-dimensional fit
+            ## it is of importance that the decay channels and run periods are well defined from the
+            ## channel names. Allow for a restriction of the event categories 
+            if os.path.exists("tmp.txt") :
+                os.system("rm tmp.txt")
+                inputcards = ""
+            if os.path.exists("%s.root" % model[0]) :
+                os.system("rm %s.root" % model[0])
+            ## collect all cards that should be combined into the model
+            inputcards = ""                
+            for card in os.listdir(".") :
+                if "htt_" in card :
+                    if options.fitModelCategories == "" :
+                        inputcards+=card[:card.find('.')]+'='+card+' '
+                    else :
+                        allowed_categories = options.fitModelCategories.split(':')
+                        for allowed in allowed_categories :
+                            if allowed in card :
+                                inputcards+=card[:card.find('.')]+'='+card+' '
+            print "combineCards.py -S %s > tmp.txt" % inputcards
+            os.system("combineCards.py -S %s > tmp.txt" % inputcards)
+            ## create workspace with dedicated physics model
+            workspaceOptions = "-m %s " % mass
+            workspaceOptions+= "-o %s.root " % model[0]
+            workspaceOptions+= "-P %s " % model[1]
+            if not options.fitModelOptions == "" :
+                ## break physics model options to list
+                opts = options.fitModelOptions.split()
+                for idx in range(len(opts)) : opts[idx] = opts[idx].rstrip(',')
+                for opt in opts :
+                    workspaceOptions+="--PO %s " % opt
+            print "creating workspace with options:", "text2workspace.py tmp.txt %s" % workspaceOptions
+            os.system("text2workspace.py tmp.txt %s" % workspaceOptions)
+        else :
+            model = [options.fitModel]
+        if not options.setupOnly :
+            ## if it does not exist already, create link to executable
+            if not os.path.exists("combine") :
+                os.system("cp -s $(which combine) .")
+            ## prepare fit options
+            minuitopt = ""
+            if options.minuit :
+                minuitopt = "--minimizerAlgo minuit"
+            stableopt = ""
+            if options.stable :
+                stableopt = "--robustFit=1 --stepSize=0.5  --minimizerStrategy=0 --minimizerTolerance=0.1 --preFitValue=0.1  --X-rtd FITTER_DYN_STEP  --cminFallbackAlgo=\"Minuit;0.001\" "            ## set up grid points in case of likelihood scan (option --grid)
+            gridpoints = ""
+            if options.fitAlgo == "grid" :
+                if options.firstPoint == "" :
+                    gridpoints = "--points %s --firstPoint 1 --lastPoint %s" % (options.gridPoints, options.gridPoints)
+                else :
+                    gridpoints = "--points %s --firstPoint %s --lastPoint %s" % (options.gridPoints, options.firstPoint, options.lastPoint)
+            ## run expected limits
+            print "Running maximum likelihood fit with options: "
+            print "combine -M MultiDimFit -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} {input}.root ".format(mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt, input=model[0])
+            fitresults=  ""
+            if options.saveResults :
+                fitresults = " | grep -A 10 -E '\s*--- MultiDimFit ---\s*' > multi-dim.fitresult" 
+            os.system("combine -M MultiDimFit -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} {input}.root {result}".format(mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt, input=model[0], result=fitresults))
+            if not options.firstPoint == "":
+                os.system("mv higgsCombine{name}.MultiDimFit.mH{mass}.root higgsCombine{name}.MultiDimFit.mH{mass}-{label}.root".format(name=options.name, mass=mass, label="%s-%s" % (options.firstPoint, options.lastPoint)))
     if options.prepPLSig :
         ifile=0
         directoryList = os.listdir(".")
