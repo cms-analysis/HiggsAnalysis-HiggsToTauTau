@@ -5,6 +5,17 @@ Add the bin-by-bin uncertainties to the H2Tau shape files.
 
 For usage, see --help
 
+Example:
+
+    add_bbb_errors.py mt,et,em:7TeV,8TeV:01,03,05:QCD,W
+
+will create a setup_bbb directory where the
+
+    mt,et,em
+
+channels, in 7,8 TeV, for the 1, 3, and 5 categories, have bbb systematics added
+for the QCD and W systematics.
+
 Author: Evan K. Friis, UW Madison
 
 '''
