@@ -40,7 +40,6 @@ def walk_and_copy(inputdir, outputdir, matchers, threshold, prefix):
             path = inputdir.GetPath().split(':')[1]
             full_path = os.path.join(path, histo)
             for pattern in matchers:
-                #print histo, full_path, pattern
                 if fnmatch.fnmatch(histo, pattern) or fnmatch.fnmatch(full_path, pattern):
                     do_shapes = True
                     break
