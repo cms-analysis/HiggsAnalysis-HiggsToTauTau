@@ -62,8 +62,10 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
     def __init__(self):
         MSSMLikeHiggsModel.__init__(self) # not using 'super(x,self).__init__' since I don't understand it
         #self.tanb   = None
-        self.mARange = []
-        self.modes   = [ "ggH", "bbH" ]
+        self.modes    = [ "ggH", "bbH" ]
+        self.mARange  = []
+        self.ggHRange = ['0','20']
+        self.bbHRange = ['0','20']
     def setPhysicsOptions(self,physOptions):
         """
         Options are: modes. Examples for options like mARange and tanb are given in comments. 
@@ -77,6 +79,18 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
                     raise RuntimeError, "Definition of mA range requires two extrema, separated by ':'"
                 elif float(self.mARange[0]) >= float(self.mARange[1]):
                     raise RuntimeError, "Extrema for mA range defined with inverterd order. Second element must be larger than first element"
+            if po.startswith("ggHRange="):
+                self.ggHRange = po.replace("ggHRange=","").split(":")
+                if len(self.ggHRange) != 2:
+                    raise RuntimeError, "ggH signal strength range requires minimal and maximal value"
+                elif float(self.ggHRange[0]) >= float(self.ggHRange[1]):
+                    raise RuntimeError, "minimal and maximal range swapped. Second value must be larger first one"
+            if po.startswith("qqHRange="):
+                self.qqHRange = po.replace("qqHRange=","").split(":")
+                if len(self.qqHRange) != 2:
+                    raise RuntimeError, "qqH signal strength range requires minimal and maximal value"
+                elif float(self.qqHRange[0]) >= float(self.qqHRange[1]):
+                    raise RuntimeError, "minimal and maximal range swapped. Second value must be larger first one"                 
     def doParametersOfInterest(self):
         """
         Create POI and other parameters, and define the POI set. E.g. Evaluate cross section for given values of mA and tanb
@@ -91,8 +105,8 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
         #self.modelBuilder.doVar("ggH_xsec[%g]" % (mssm_xsec['higgses']['A']['xsec']['ggF'      ]*mssm_xsec['higgses']['A']['BR']))
         #
         ## Define signal strengths on ggH and bbH as POI, NOTE: the range of the POIs is defined here
-        if "ggH" in self.modes: self.modelBuilder.doVar("r_ggH[10,0,20]");
-        if "bbH" in self.modes: self.modelBuilder.doVar("r_bbH[10,0,20]");
+        if "ggH" in self.modes: self.modelBuilder.doVar("r_ggH[10,%s,%s]" % (self.ggHRange[0], self.ggHRange[1]));
+        if "bbH" in self.modes: self.modelBuilder.doVar("r_bbH[10,%s,%s]" % (self.bbHRange[0], self.bbHRange[1]));
         poi = ",".join(["r_"+m for m in self.modes])
         ## Define Higgs boson mass as another parameter. It will be floating if mARange is set otherwise it will be treated
         ## as fixed. NOTE: this is only left here as an extended example. It's not useful to have mA floating at the moment.
