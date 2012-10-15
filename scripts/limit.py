@@ -576,11 +576,11 @@ for directory in args :
             os.system("rm -r crab*")
             os.chdir(subdirectory)
     ## always remove all tmp remainders from the parallelized harvesting
-    #tmps = os.listdir(os.getcwd())
-    #for tmp in tmps :
-        #if tmp.find("tmp")>-1 :
-            #if options.firstPoint == "" :
-                #os.system("rm %s" % tmp)
+    tmps = os.listdir(os.getcwd())
+    for tmp in tmps :
+        if tmp.find("tmp")>-1 :
+            if options.firstPoint == "" :
+                os.system("rm %s" % tmp)
     if os.path.exists("observed") :
         tmps = os.listdir("%s/observed" % os.getcwd())
         for tmp in tmps :
