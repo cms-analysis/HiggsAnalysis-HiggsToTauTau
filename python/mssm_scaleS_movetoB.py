@@ -5,11 +5,7 @@ from optparse import OptionParser
 parser = OptionParser(usage="usage: %prog [options] datacatd.txt",
                       description="Main script to create individual a modified datacard for given mass and tanb value.")
 parser.add_option("-m", "--mA",    dest="mA",       default=120.,  type="float",   help="Value of mA. [Default: 120.]")
-parser.add_option("-t", "--tanb",  dest="tanb",     default='20.',   type="string",   help="Values of tanb. [Default: 20.]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode")
-parser.add_option("--sm-like", dest="sm_like", default=False, action="store_true", help="Do not divide by the value of tanb, but only scale to MSSM xsec according to tanb value. (Will result in typical SM limit on signal strength for given value of tanb). Used for debugging. [Default: False]")
-parser.add_option("--full-mass", dest="full_mass", default=False, action="store_true", help="Do not apply acceptance corrections for masswindow that has been applied for cross section calculation. Kept for legacy. [Default: False]")
-parser.add_option("--model", dest="model", default='HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root', type="string", help="Model to be applied for the limit calculation. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root']")
 parser.add_option("--ggH", dest="ggH", default=False, action="store_true", help="Move ggH or bbH to background? true means ggH. [Default: False]")
 (options, args) = parser.parse_args()
 
@@ -19,42 +15,10 @@ import math
 import sys
 import shutil
 import ROOT
-
-ROOT.gSystem.Load('$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so') #can be removed after including interplolate2D to package
-#ROOT.gSystem.Load('$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/interpolate2D/th1fmorph_cc.so') ##- don't has to be included i guess
-#ROOT.gSystem.Load('$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/interpolate2D/th2fmorph_cc.so') ##- th2 morphing not armed yet
-from ROOT import th1fmorph
-# from ROOT import th1fmorph, th2fmorph - th2 morphing not armed yet
-from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools
-from HiggsAnalysis.HiggsToTauTau.acceptance_correction import interval 
-from HiggsAnalysis.HiggsToTauTau.acceptance_correction import acceptance_correction 
+import linecache
 
 class MakeDatacard :
-    def __init__(self, tanb, mA, model="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root", feyn_higgs_model="", sm_like=False, acc_corr=True) :
-        ## full path for the input file for the htt xsec tools, expected in the data directory of the package
-        ## This file is used to determine the cross sections and uncertainties for calculations for htt, as
-        ## as for determining the masses for htt and hww
-        self.mssm_xsec_tools_input_path = model
-        ## model to be used exploiting the feyn-higgs calculations also for htt. This is the case for model,
-        ## which have not been provided by the MSSM cross section group. In this cases the cross sections
-        ## are calculated from feyn-higgs, while the uncertainties are stil taken from the MSSM cross section
-        ## group on the basis of the default mhmax scenario
-        self.feyn_higgs_model = feyn_higgs_model
-        ## do not divide yields by value of tanb but only rescale by xsec for given value of tanb
-        self.sm_like = sm_like
-        ## apply acceptance corrections for restricted mass window in cross section calculation or not
-        self.acc_corr = acc_corr
-        ## tanb as float
-        self.tanb = tanb
-        ## mA as float
-        self.mA = mA
-        ## mH as float (filled from htt tools)
-        self.mH = 0.
-        ## mh as float (filled from htt tools)
-        self.mh = 0.
-        ## cross point in mA from where on for hww the contribution from h dominates over the contribution from H
-        self.hww_cross_point = 250
-        ## mapping of unique (standardized) production process names to all possible kinds of production processes (=histograms)
+    def __init__(self) :
         self.standardized_production_processes = {
             "ggH":["SM", "GGH", "ggH", "VH"
                    "GGHNoJet", "GGHJet", "Higgs_gg_mssm_"] ## patch for tests with old HIG-11-029 cards only 
@@ -239,7 +203,7 @@ class MakeDatacard :
         expanded_filename = filename
         if filename.find("$MASS")>-1 :
             if mass>0 :
-                expanded_filename = filename.replace("$MASS", "%.0f" % mass).replace("_%.0f_%.2f.root" % (self.mA, self.tanb), ".root")
+                expanded_filename = filename.replace("$MASS", "%.0f" % mass).replace("_%s.root" % ("ggH" if options.ggH else "bbH"), ".root")
             else :
                 expanded_filename =  filename.replace("../$MASS", ".")
         #print "mass: ", mass, " -- opening file: ", expanded_filename
@@ -255,17 +219,17 @@ class MakeDatacard :
         if uncertainty == "" :
             ## apply modifications which are common for all inputs
             if channel+"/*" in self.value_hist_extensions :
-                expanded_histname = self.value_hist_extensions[channel+"/*"].replace("$PROCESS", process).replace("$MASS", "%.0f" % self.mA)
+                expanded_histname = self.value_hist_extensions[channel+"/*"].replace("$PROCESS", process).replace("$MASS", "%.0f" % float(options.mA))
             ## apply modifications which are common for special inputs
             if channel+"/"+process in self.value_hist_extensions :
-                expanded_histname = self.value_hist_extensions[channel+"/"+process].replace("$PROCESS", process).replace("$MASS", "%.0f" % self.mA)
+                expanded_histname = self.value_hist_extensions[channel+"/"+process].replace("$PROCESS", process).replace("$MASS", "%.0f" % float(options.mA))
         else :
             ## apply modifications which are common for all inputs
             if channel+"/*" in self.shift_hist_extensions :
-                expanded_histname = self.shift_hist_extensions[channel+"/*"].replace("$PROCESS", process).replace("$MASS", "%.0f" % self.mA).replace("$SYSTEMATIC", uncertainty)
+                expanded_histname = self.shift_hist_extensions[channel+"/*"].replace("$PROCESS", process).replace("$MASS", "%.0f" % float(options.mA)).replace("$SYSTEMATIC", uncertainty)
             ## apply modifications which are common for special inputs
             if channel+"/"+process in self.shift_hist_extensions :
-                expanded_histname = self.shift_hist_extensions[channel+"/"+process].replace("$PROCESS", process).replace("$MASS", "%.0f" % self.mA).replace("$SYSTEMATIC", uncertainty)
+                expanded_histname = self.shift_hist_extensions[channel+"/"+process].replace("$PROCESS", process).replace("$MASS", "%.0f" % float(options.mA)).replace("$SYSTEMATIC", uncertainty)
         return expanded_histname
 
     def get_bestfit(self, nr) :
@@ -485,7 +449,7 @@ class MakeDatacard :
         """
         for (idx, word) in enumerate(words):
             if word.find(".root")>-1 :
-                output_histfile=word.replace(".root", "_%.0f_%.2f.root" % (self.mA, self.tanb))
+                output_histfile=word.replace(".root", "_%s.root" % ("ggH" if options.ggH else "bbH"))
                 output_line = output_line.replace(word, output_histfile)
                 if not self.output_histfiles.count(output_histfile)>0 :
                     self.output_histfiles.append(output_histfile)
@@ -537,21 +501,10 @@ class MakeDatacard :
                 period = self.decay_channels_[idx][self.decay_channels_[idx].rfind("_")+1:]
                 xsec=float(self.get_bestfit(2))
                 output_list = output_line.split()
-                new_rate = float(output_list[idx+1])*xsec/(1. if self.sm_like else self.tanb)
+                new_rate = float(output_list[idx+1])*xsec
                 output_list[idx+1] = str(new_rate)
                 output_line = '\t   '.join(output_list)+'\n'
         return output_line
-
-    def modify_process_line(self, words, output_line) :
-        """
-        Modify the rates in the 'rates' output line in the output datacard. The new rate is
-        read out from the rescaled histograms for the central values.
-        """
-        if options.ggH : ## is ggH always "-1"? may have to be made more robust! FELIX
-            output_line = output_line.replace("-1", "99");
-        else :
-            output_line = output_line.replace("0", "99");
-        return output_line  
 
     def add_uncertainty_lines(self) :
         """
@@ -615,24 +568,17 @@ if len(args) < 1 :
        parser.print_help()
        exit(1)
 
-## decide whether to run with acceptions or not 
-acc_corr = True if options.full_mass else False
 ## skip first pass of 'bin'
 first_pass_on_bin = True
 ## name of the input datacard
 input_name = args[0]
 ## setup datacard creator
-print "creating datacard for mA=%s, tanb=%s" % (options.mA, options.tanb)
-if options.model.find("feyn-higgs")>-1:
-       model = options.model[options.model.find("::")+2:]
-       datacard_creator = MakeDatacard(tanb=float(options.tanb), mA=float(options.mA), feyn_higgs_model=options.model[options.model.find("::")+2:], sm_like=options.sm_like, acc_corr=acc_corr)
-else:
-       datacard_creator = MakeDatacard(tanb=float(options.tanb), mA=float(options.mA), model=options.model, sm_like=options.sm_like, acc_corr=acc_corr)
+datacard_creator = MakeDatacard()
 
 ## first file parsing
 input_file = open(input_name,'r')
-output_file = open(input_name.replace(".txt", "_%.2f.txt" % float(options.tanb)), 'w')
-for input_line in input_file :
+output_file = open(input_name.replace(".txt", "_%s.txt" % ("ggH" if options.ggH else "bbH")), 'w')
+for index, input_line in enumerate(input_file) :
        words = input_line.split()
        output_line = input_line
        if len(words) < 1: continue
@@ -658,22 +604,27 @@ for input_line in input_file :
        ## kept in signal_indexes. These can be used to look up the signals in signal_processes and the according channel these
        ## belong to in signal_channels
        if words[0] == "process" :
+           help = ""
+           helper = ""
+           if words[1].isdigit() or words[1].lstrip("-").isdigit() :
+               help = linecache.getline(input_name, index)
+               helper = help.split()
            ## move ggH or bbH from signal to background
            for (idx, word) in enumerate(words) :
                if idx==0 :
                    continue
                if word.isdigit() or word.lstrip("-").isdigit() :
                    if int(word) <=0 :
-                       if options.ggH :
-                           if int(word)==-1 :
-                               datacard_creator.signal_indexes.append(idx-1)
+                       if options.ggH and helper[idx]=="ggH":
+                           datacard_creator.signal_indexes.append(idx-1)
+                           output_line = output_line.replace(word, "99")
                        if not options.ggH :
-                           if int(word)==0 :
+                           if helper[idx]=="bbH":
+                               print idx, word, helper[idx], options.ggH
                                datacard_creator.signal_indexes.append(idx-1)
+                               output_line = output_line.replace(word, "99")
                else :
-                       datacard_creator.production_processes.append(word)
-           if words[1].isdigit() or words[1].lstrip("-").isdigit() :
-               output_line = datacard_creator.modify_process_line(words, output_line)
+                   datacard_creator.production_processes.append(word)
        if words[0] == "rate" :
               ## manipulate histograms
               output_line = datacard_creator.modify_rates_line(words, output_line)
