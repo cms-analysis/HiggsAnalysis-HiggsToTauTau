@@ -175,7 +175,9 @@ MSSM Checklist:
 (8) Best fit calculation
 --------------------------------------
  - limit.py --multidim-fit [--stable] --saveResults --algo singles --confidence-level 0.68 --physics-model 
-   'HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH' HCP-LIMITS/*HCP-LIMITS/*
+   'HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH' 
+   HCP-LIMITS/*HCP-LIMITS/*
+   - ATTENTION: could also be useful to use lxq/b_limit.py
  - plot multidimfit HiggsAnalysis/HiggsToTauTau/python/layouts/mssm_bestfit_layout.py HCP-LIMITS
    - if you want to plot bestfit of ggH set POI in mssm_bestfit_layout.py to "r_ggH"
    - if you want to plot bestfit of bbH set POI in mssm_bestfit_layout.py to "r_bbH"
