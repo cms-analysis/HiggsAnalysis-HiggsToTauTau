@@ -24,6 +24,7 @@ parser.add_option("--asymptotic", dest="prepAsym", default=False, action="store_
 parser.add_option("--max-likelihood", dest="prepMLFit", default=False, action="store_true", help="Prepare Maximum Likelihood Fit (also used for postfit plots). [Default: False]")
 parser.add_option("--multidim-fit", dest="prepMDFit", default=False, action="store_true", help="Prepare MultiDimentional Fit (also used for postfit plots). [Default: False]")
 parser.add_option("--significance", dest="prepPLSig", default=False, action="store_true", help="Calculate expected significance from Profile Likelihood method. [Default: False]")
+parser.add_option("--mssm-xsec", dest="prepMSSMxsec", default=False, action="store_true", help="Prepare MSSM xsec limits (expected and obeserved). [Default: False]")
 parser.add_option("--refit", dest="refit", default=False, action="store_true", help="Do not run the asymptotic limits again, but only run the last step, the fit for the limit determination. (Only valid for option --tanb+, for all other options will have no effect.)  [Default: False]")
 parser.add_option("--cleanup", dest="cleanup", default=False, action="store_true", help="Remove all crab remainders from previous submissions. [Default: False]")
 parser.add_option("--kill", dest="kill", default=False, action="store_true", help="Kill all crab jobs in case of emergencies. [Default: False]")
@@ -36,6 +37,7 @@ parser.add_option("--rMin", dest="rMin", default="-2", type="string", help="Mini
 parser.add_option("--rMax", dest="rMax", default="2", type="string", help="Maximum value of signal strenth. [Default: 2]")
 parser.add_option("--name", dest="name", default="Test", type="string", help="Name of the output file, passed on to combine. [Default: \"Test\"]")
 parser.add_option("--no-repeat", dest="norepeat", default=False, action="store_true", help="Detect if command has already been run, and skip the job.")
+parser.add_option("--ggH", dest="ggH", default=False, action="store_true", help="Switch ggH or bbH to background. [Default: False]")
 mgroup = OptionGroup(parser, "COMBINE (MAXIMUM LIKELIHOOD FIT) COMMAND OPTIONS", "Command options for the use of combine with the Maximum Likelihood method.")
 mgroup.add_option("--stable", dest="stable", default=False, action="store_true", help="Run maximum likelihood fit with a set of options that lead to stable results. Makes use of the common options --rMin and --rMax to define the boundaries of the fit. [Default: True]")
 mgroup.add_option("--algo", dest="fitAlgo", type="string", default="contour2d", help="Algorithm for multi-dimensional maximum likelihood fit (options are singles, contour2d, grid). Option grid will make use of the option --points to determine the number of grid points in the scan. [Default: \"\"]")
@@ -499,6 +501,56 @@ for directory in args :
             ## calculate significance, batch_collected.root is the output file name expected by plot.cc
             os.system("combine -M ProfileLikelihood -t {toys} --significance --signalForSignificance={sig} -m {mass} -n batch_collected.root tmp.root".format(
                 toys=options.toys, sig=options.signal_strength, mass=mass_value))
+    if options.prepMSSMxsec :
+        ## prepare mass argument for limit calculation if configured such
+        idx = directory.rfind("/")
+        if idx == (len(directory) - 1):
+            idx = directory[:idx - 1].rfind("/")
+        mass_string  = directory[idx + 1:]
+        mass_regex   = r"(?P<mass>[\+\-0-9\s]+)[a-zA-Z0-9]*"
+        mass_matcher = re.compile(mass_regex)
+        mass_value   = mass_matcher.match(mass_string).group('mass')
+        ## combine datacard from all datacards in this directory
+        inputcards = ""                
+        for card in os.listdir(".") :
+            if "htt_" in card :
+                if options.fitModelCategories == "" :
+                    inputcards+=card[:card.find('.')]+'='+card+' '
+                else :
+                    allowed_categories = options.fitModelCategories.split(':')
+                    for allowed in allowed_categories :
+                        if allowed in card :
+                            inputcards+=card[:card.find('.')]+'='+card+' '
+        print "combineCards.py -S %s > tmp.txt" % inputcards
+        os.system("combineCards.py -S %s > tmp.txt" % inputcards)
+        ## move one signal to background
+        os.system("python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/python/mssm_scaleS_movetoB.py --%s -m %s tmp.txt" % (("ggH" if options.ggH else "bbH"), mass_value))        
+        ## prepare binary workspace
+        os.system("text2workspace.py --default-morphing=%s -m %s -b tmp_%s.txt -o tmp.root"% (options.shape, mass_value, ("ggH" if options.ggH else "bbH")))
+        ## if it does not exist already, create link to executable
+        if not os.path.exists("combine") :
+            os.system("cp -s $(which combine) .")
+        ## prepare prefit option
+        prefitopt = ""
+        if options.noprefit :
+            prefitopt = "-t -1"
+        ## prepare fit option
+        minuitopt = ""
+        if options.minuit :
+            minuitopt = "--minimizerAlgo minuit"
+        qtildeopt = ""
+        if options.qtilde :
+            qtildeopt = "--qtilde 0"
+        ## prepare mass options
+        massopt = "-m %i " % int(mass_value)
+        ## run expected limits
+        if not options.observedOnly :
+            os.system("combine -M Asymptotic --run expected -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} -n '-exp' {mass} {user} tmp.root".format(
+                CL=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt, strategy=options.strategy, mass=massopt, user=options.userOpt))
+        ## run observed limit
+        if not options.expectedOnly :
+            os.system("combine -M Asymptotic --run observed -C {CL} {minuit} --minimizerStrategy {strategy} -n '-obs' {qtilde} {mass} {user} tmp.root".format(
+                CL=options.confidenceLevel, minuit=minuitopt, qtilde=qtildeopt, strategy=options.strategy, mass=massopt, user=options.userOpt))
     if options.kill :
         directoryList = os.listdir(".")
         for name in directoryList :
@@ -524,11 +576,11 @@ for directory in args :
             os.system("rm -r crab*")
             os.chdir(subdirectory)
     ## always remove all tmp remainders from the parallelized harvesting
-    tmps = os.listdir(os.getcwd())
-    for tmp in tmps :
-        if tmp.find("tmp")>-1 :
-            if options.firstPoint == "" :
-                os.system("rm %s" % tmp)
+    #tmps = os.listdir(os.getcwd())
+    #for tmp in tmps :
+        #if tmp.find("tmp")>-1 :
+            #if options.firstPoint == "" :
+                #os.system("rm %s" % tmp)
     if os.path.exists("observed") :
         tmps = os.listdir("%s/observed" % os.getcwd())
         for tmp in tmps :
