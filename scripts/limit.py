@@ -524,7 +524,7 @@ for directory in args :
         print "combineCards.py -S %s > tmp.txt" % inputcards
         os.system("combineCards.py -S %s > tmp.txt" % inputcards)
         ## move one signal to background
-        os.system("python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/python/mssm_scaleS_movetoB.py --%s -m %s tmp.txt" % (("ggH" if options.ggH else "bbH"), mass_value))        
+        os.system("python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/python/mssm_scaleS_movetoB.py %s -m %s tmp.txt" % (("--ggH" if options.ggH else ""), mass_value))        
         ## prepare binary workspace
         os.system("text2workspace.py --default-morphing=%s -m %s -b tmp_%s.txt -o tmp.root"% (options.shape, mass_value, ("ggH" if options.ggH else "bbH")))
         ## if it does not exist already, create link to executable
