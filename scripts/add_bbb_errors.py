@@ -120,7 +120,7 @@ def create_systematics(channel, category, process, shape_file, threshold):
         command, stdout=subprocess.PIPE, stderr=sys.stderr).communicate()[0]
     added_systematics = []
     for line in stdout.split('\n'):
-        if line:
+        if line and 'CMS_htt' in line:
             added_systematics.append(line.strip())
     return channel_name, added_systematics
 
