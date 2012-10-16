@@ -34,7 +34,7 @@ TGraph* contour(TTree *t, TString x, TString y, TString selection, TGraph *bestF
   return gr;
 }
 
-void contours2D(std::string path, std::string outputName, std::string x="r_ggH", std::string y="r_bbH", std::string method="minos", std::string mass="120", double xExp=0., double yExp=0.) 
+void contours2D(std::string path, std::string outputName, std::string x="r_ggH", std::string y="r_bbH", std::string method="minos", std::string model="GGH-BBH", std::string mass="120", double xExp=0., double yExp=0.) 
 {
   std::cout << " *******************************************************************************************************\n"
 	    << " * Usage     : root -l                                                                                  \n"
@@ -53,6 +53,8 @@ void contours2D(std::string path, std::string outputName, std::string x="r_ggH",
 	    << " *                                          are 'minos' (default) and 'scan'. Note that scan needs to   \n"
 	    << " *                                          be tuned depending on the number of scan points to give     \n"
 	    << " *                                          smooth contours. The current tuning is for 40*40 points     \n"
+	    << " *              + model       string        name of the model that should be picked up, used for option \n"
+	    << " *                                          scan.                                                       \n"
 	    << " *              + mass        string        mass point for which to do the scan (for file opening).     \n"
 	    << " *                                                                                                      \n"
 	    << " *              + xExp        double        x value for expected signal.                                \n"
@@ -64,11 +66,14 @@ void contours2D(std::string path, std::string outputName, std::string x="r_ggH",
   std::vector<TTree*> trees_;
 
   if(method  == "minos"){
-    files_.push_back(TFile::Open(TString::Format("%s/higgsCombineCL68.MultiDimFit.mH%s.root", path.c_str(), mass.c_str()), "READ")); trees_.push_back((TTree*) files_.back()->Get("limit"));
-    files_.push_back(TFile::Open(TString::Format("%s/higgsCombineCL95.MultiDimFit.mH%s.root", path.c_str(), mass.c_str()), "READ")); trees_.push_back((TTree*) files_.back()->Get("limit"));
+    files_.push_back(TFile::Open(TString::Format("%s/higgsCombineCL68.MultiDimFit.mH%s.root", path.c_str(), mass.c_str()), "READ")); 
+    trees_.push_back((TTree*) files_.back()->Get("limit"));
+    files_.push_back(TFile::Open(TString::Format("%s/higgsCombineCL95.MultiDimFit.mH%s.root", path.c_str(), mass.c_str()), "READ")); 
+    trees_.push_back((TTree*) files_.back()->Get("limit"));
   }
   else if(method == "scan"){
-    files_.push_back(TFile::Open(TString::Format("%s/higgsCombineScan.MultiDimFit.mH%s.root", path.c_str(), mass.c_str()), "READ")); trees_.push_back((TTree*) files_.back()->Get("limit"));
+    files_.push_back(TFile::Open(TString::Format("%s/higgsCombine%s.MultiDimFit.mH%s.root", path.c_str(), model.c_str(), mass.c_str()), "READ")); 
+    trees_.push_back((TTree*) files_.back()->Get("limit"));
   }
   else{
     std::cout<< "Unknow method " << method << ". Available methods: minos, scan." << std::endl;
@@ -76,8 +81,8 @@ void contours2D(std::string path, std::string outputName, std::string x="r_ggH",
 
   TGraph *grExp = expValue(xExp, yExp);
   TGraph *grFit = bestFit(trees_.front(), x, y, method=="minos" ? "quantileExpected==1" : "deltaNLL==0"); 
-  TGraph *gr68  = contour(trees_.front(), x, y, method=="minos" ? "0.31 <=quantileExpected && quantileExpected<=1.0 && quantileExpected!=1.0" : "0.8<=deltaNLL && deltaNLL<=1.  ", grFit);
-  TGraph *gr95  = contour(trees_.back (), x, y, method=="minos" ? "0.049<=quantileExpected && quantileExpected<=1.0 && quantileExpected!=1.0" : "1.5<=deltaNLL && deltaNLL<=1.92", grFit);
+  TGraph *gr68  = contour(trees_.front(), x, y, method=="minos" ? "0.31 <=quantileExpected && quantileExpected<=1.0 && quantileExpected!=1.0" : "deltaNLL<=1.  ", grFit);
+  TGraph *gr95  = contour(trees_.back (), x, y, method=="minos" ? "0.049<=quantileExpected && quantileExpected<=1.0 && quantileExpected!=1.0" : "deltaNLL<=1.92", grFit);
 
   gr68->SetLineWidth(3); gr68->SetLineStyle(1); gr68->SetLineColor(4);
   gr95->SetLineWidth(3); gr95->SetLineStyle(7); gr95->SetLineColor(4);
