@@ -134,6 +134,10 @@ if options.setup == "htt-mssm" :
                 os.system("submit-slave.py --bin combine --method tanb -n  8 --min 1.0  --max 8.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 500, 550))))
                 os.system("submit-slave.py --bin combine --method tanb -n  12 --min 9.0  --max 42.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 500, 550))))
                 os.system("submit-slave.py --bin combine --method tanb -n  9 --min 45.0  --max 69.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 500, 550))))
+            if len(subvec(args, 501, 1000))>0 :
+                os.system("submit-slave.py --bin combine --method tanb -n  8 --min 1.0  --max 8.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 551, 1000))))
+                os.system("submit-slave.py --bin combine --method tanb -n  12 --min 9.0  --max 42.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 551, 1000))))
+                os.system("submit-slave.py --bin combine --method tanb -n  9 --min 45.0  --max 69.0 --interactive %s %s" % (options.opt, vec2str(subvec(args, 551, 1000))))
         if options.method == "CLs" :
             ## three submits depending on the mass
             if len(subvec(args,  90, 119))>0 :
