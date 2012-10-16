@@ -85,11 +85,11 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
                     raise RuntimeError, "ggH signal strength range requires minimal and maximal value"
                 elif float(self.ggHRange[0]) >= float(self.ggHRange[1]):
                     raise RuntimeError, "minimal and maximal range swapped. Second value must be larger first one"
-            if po.startswith("qqHRange="):
-                self.qqHRange = po.replace("qqHRange=","").split(":")
-                if len(self.qqHRange) != 2:
-                    raise RuntimeError, "qqH signal strength range requires minimal and maximal value"
-                elif float(self.qqHRange[0]) >= float(self.qqHRange[1]):
+            if po.startswith("bbHRange="):
+                self.bbHRange = po.replace("bbHRange=","").split(":")
+                if len(self.bbHRange) != 2:
+                    raise RuntimeError, "bbH signal strength range requires minimal and maximal value"
+                elif float(self.bbHRange[0]) >= float(self.bbHRange[1]):
                     raise RuntimeError, "minimal and maximal range swapped. Second value must be larger first one"                 
     def doParametersOfInterest(self):
         """
@@ -105,8 +105,8 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
         #self.modelBuilder.doVar("ggH_xsec[%g]" % (mssm_xsec['higgses']['A']['xsec']['ggF'      ]*mssm_xsec['higgses']['A']['BR']))
         #
         ## Define signal strengths on ggH and bbH as POI, NOTE: the range of the POIs is defined here
-        if "ggH" in self.modes: self.modelBuilder.doVar("r_ggH[10,%s,%s]" % (self.ggHRange[0], self.ggHRange[1]));
-        if "bbH" in self.modes: self.modelBuilder.doVar("r_bbH[10,%s,%s]" % (self.bbHRange[0], self.bbHRange[1]));
+        if "ggH" in self.modes: self.modelBuilder.doVar("r_ggH[%s,%s,%s]" % (str((float(sel.ggHRange[0])+float(ggHRange[1]))/2.), self.ggHRange[0], self.ggHRange[1]));
+        if "bbH" in self.modes: self.modelBuilder.doVar("r_bbH[%s,%s,%s]" % (str((float(sel.bbHRange[0])+float(bbHRange[1]))/2.), self.bbHRange[0], self.bbHRange[1]));
         poi = ",".join(["r_"+m for m in self.modes])
         ## Define Higgs boson mass as another parameter. It will be floating if mARange is set otherwise it will be treated
         ## as fixed. NOTE: this is only left here as an extended example. It's not useful to have mA floating at the moment.
