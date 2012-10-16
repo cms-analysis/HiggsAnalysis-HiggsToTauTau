@@ -54,6 +54,7 @@ if options.collect :
         DIR=input,
         MASS=input[input.rfind("/")+1:]
         ))
+    print "root -l -b -q HiggsAnalysis/HiggsToTauTau/macros/contours2D.C+\\(\\\"{DIR}\\\",\\\"{MODEL}-contours\\\",\\\"{XVAL}\\\",\\\"{YVAL}\\\",\\\"scan\\\",\\\"{MODEL}\\\",\\\"{MASS}\\\"\\)"
 else :
     os.system("limit.py --multidim-fit --setup-only --physics-model '{MODEL}' --physics-model-options '{OPT}' {DIR}".format(
         MODEL = options.fitModel,
