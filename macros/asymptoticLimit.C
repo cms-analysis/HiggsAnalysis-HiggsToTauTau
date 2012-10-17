@@ -17,7 +17,7 @@
 #include "TCanvas.h"
 #include "TSpline.h"
 
-#include "HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
+#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_3_3/src/HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
 
 
 /// typedef CrossPoint to a bin plus flag on falling or rising intercept, true for falling
@@ -109,7 +109,8 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
   bool filled = false;
   unsigned int np = 0;
   unsigned int steps = 10e6; 
-  limit = graph->GetX()[upper_exclusion ? points.begin()->first : points.end()->first];
+  if(points.size()>0) limit = graph->GetX()[upper_exclusion ? points.begin()->first : points.end()->first];
+
   for(std::vector<CrossPoint>::const_iterator point = points.begin(); point!=points.end(); ++point, ++np){
     double min = (point->first-dist)>0 ? graph->GetX()[point->first-dist] : graph->GetX()[0]; 
     double max = (point->first+dist)<graph->GetN() ? graph->GetX()[point->first+dist] : graph->GetX()[graph->GetN()-1];
@@ -133,8 +134,12 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
   // catch cases where no crossing point was found
   if(!filled){
     std::cout << "WARNING: no crossing found." << std::endl;
-    if(itype == minus_1sigma) { limit*=0.66; }
-    if(itype == minus_2sigma) { limit*=0.50; }
+    if(itype == observed) { limit=0.60; }
+    if(itype == plus_2sigma) { limit=0.70; }
+    if(itype == plus_1sigma) { limit=0.65; }
+    if(itype == expected) { limit=0.60; }
+    if(itype == minus_1sigma) { limit=0.55; }
+    if(itype == minus_2sigma) { limit=0.50; }
     tree->Fill();
   }
   if( verbosity>0 ){
