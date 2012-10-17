@@ -53,15 +53,15 @@ if __name__ == "__main__":
     parser.add_argument('input', help='Input .root file')
     parser.add_argument('--output-dir', default='shape_audit',
                         dest='outputdir', help='Output directory')
-    parser.add_argument('--signal-matcher', default='VH*0*',
+    parser.add_argument('--signal-matcher', default='*H*0*',
                         dest='sigmatch',
                         help='Shell glob-style matcher for signal processes')
-    parser.add_argument('--shape-unc-matcher', default='*CMS_vhtt_*',
+    parser.add_argument('--shape-unc-matcher', default='*CMS_*',
                         dest='shapematch',
-                        help='Shell glob-style matcher for shape errors')
-    parser.add_argument('--exclude', default='VH*',
+                        help='Shell glob-style matcher for shape errors.  These shapes arent shown.')
+    parser.add_argument('--exclude', default='*H*',
                         dest='exclude',
-                        help="Exclude shapes that don't match signal or unc")
+                        help="Exclude these shapes.  Shapes which match --signal-matcher are always shown")
 
     args = parser.parse_args()
 
