@@ -171,7 +171,7 @@ MSSM Checklist:
 
 (6) Limit calculation in tanb-mA plane
 --------------------------------------
- - submit.py --method tanb+ HCP-LIMITS/*
+ - submit.py --method tanb+ --full-mass HCP-LIMITS/*
  - limit.py --tanb+ [--tanb-parallel 4] [--noprefit] --userOpt '--minosAlgo stepping' HCP-LIMITS/*
  - plot tanb HiggsAnalysis/HiggsToTauTau/python/layouts/mssm_tanb_layout.py HCP-LIMITS
    - ATTENTION: limit calculation in MSSM is time intensive - therefore use lxq/b_submit.py and lxq/b_limit.py
