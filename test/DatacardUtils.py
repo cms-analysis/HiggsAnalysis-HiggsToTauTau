@@ -118,7 +118,11 @@ def parse_dcard(datacard,fitres,bin_name="ANYBIN"):
                    # subtract 1 to get a decimal representation of the "percent" uncertainty
                    uncert -= 1
                    svar = get_svar(factor_name,fitres) #obtain the sigma variation
+                   if type(svar).__name__=="NoneType" :
+                       svar = 0.0
                    sigma = get_sigma(factor_name,fitres) #obtain the sigma variation
+                   if type(sigma).__name__=="NoneType" :
+                       sigma = 0.0
                    print processes[index],factor_name,"Uncertainty: ",uncert,"Sigma variations: ",svar,"Total: ",1+uncert*svar
                    new_weight = 1 + uncert*svar
                    if new_weight<0:
