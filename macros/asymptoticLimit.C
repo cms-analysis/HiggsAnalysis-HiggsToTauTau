@@ -92,13 +92,16 @@ std::vector<CrossPoint> crossPoints(TGraph*& graph)
 
 void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, std::map<double, std::string>& tanb_values, bool upper_exclusion, unsigned int verbosity)
 {
+  double value=-99;
+  double tanb_help=-99;
   unsigned int ibin=0;
   // fill graph with scanned points
   for(std::map<double, std::string>::const_iterator tanb = tanb_values.begin(); tanb!=tanb_values.end(); ++tanb){
-    double value = singlePointLimit(tanb->second, tanb->first, itype, verbosity);
+    value = singlePointLimit(tanb->second, tanb->first, itype, verbosity);
     if( value>0 ){
       graph->SetPoint(ibin++, tanb->first, value); 
     }
+    tanb_help=tanb->first;
   }
   // determine smooth curve on graph for interpolation
   TSpline3* spline = new TSpline3("spline", graph);
@@ -133,14 +136,28 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
   }
   // catch cases where no crossing point was found
   if(!filled){
-    std::cout << "WARNING: no crossing found." << std::endl;
-    if(itype == observed) { limit=0.60; }
-    if(itype == plus_2sigma) { limit=0.70; }
-    if(itype == plus_1sigma) { limit=0.65; }
-    if(itype == expected) { limit=0.60; }
-    if(itype == minus_1sigma) { limit=0.55; }
-    if(itype == minus_2sigma) { limit=0.50; }
-    tree->Fill();
+    if(value<1)
+      {
+	std::cout << "WARNING: no crossing found - all tanb values excluded" << std::endl;
+	if(itype == observed)     { limit=0.60; }
+	if(itype == plus_2sigma)  { limit=0.70; }
+	if(itype == plus_1sigma)  { limit=0.65; }
+	if(itype == expected)     { limit=0.60; }
+	if(itype == minus_1sigma) { limit=0.55; }
+	if(itype == minus_2sigma) { limit=0.50; }
+	tree->Fill();
+      }
+    else
+      {
+	std::cout << "WARNING: no crossing found - no tanb value excluded" << std::endl;
+	if(itype == observed)     { limit=tanb_help*value; }
+	if(itype == plus_2sigma)  { limit=tanb_help*value; }
+	if(itype == plus_1sigma)  { limit=tanb_help*value; }
+	if(itype == expected)     { limit=tanb_help*value; }
+	if(itype == minus_1sigma) { limit=tanb_help*value; }
+	if(itype == minus_2sigma) { limit=tanb_help*value; }
+	tree->Fill();
+      }
   }
   if( verbosity>0 ){
     std::string monitor = std::string("SCAN-")+limitType(itype);
