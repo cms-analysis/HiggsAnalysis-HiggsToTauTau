@@ -61,7 +61,7 @@ Standard Model Checklist:
 (6) Postfit plots
 --------------------------------------
  - cd HiggsAnalysis/HiggsToTauTau/test/
- - ./mlfit_and_copy.sh $CMSSW_BASE/src/TEST/INJECTED/125
+ - ./mlfit_and_copy.sh SM $CMSSW_BASE/src/HCP-LIMITS/125
  - python produce_macros.py
    - check the defaults with --help. Be careful tt has to be done separately as it only exists 
      for 8TeV. 
@@ -123,6 +123,14 @@ MSSM Checklist:
  - naming conventions are: 
     * htt_[em,et,mt,mm].inputs-mssm-[7,8]TeV-0.root
 
+(1a) Blind datacards
+--------------------------------------
+ - root -l
+   > .x HiggsAnalysis/HiggsToTauTau.macros/blindData.C+(filename, background_patterns, signal_patterns, "*", true)
+   - if you leave signal_patterns empty you will only add BG
+   - if you want to inject signal add the corresponding signal (with mass information) to
+     the pattern (e.g. ggH130)
+
 (2) Set up new datacards
 --------------------------------------
  - setup-datacards.py [-i MY-SETUP] -o aux-HCP [-p '7TeV 8TeV'] -a sm -c 'em et mt mm' 110-145:5
@@ -159,7 +167,7 @@ MSSM Checklist:
 (5) Postfit plots
 --------------------------------------
  - cd HiggsAnalysis/HiggsToTauTau/test/
- - ./mlfit_and_copy.sh $CMSSW_BASE/src/TEST/INJECTED/130
+ - ./mlfit_and_copy.sh MSSM $CMSSW_BASE/src/HCP-LIMITS/130
  - python produce_macros.py
    - check the defaults with --help. 
    - ATTENTION: there is a few potential fixes needed, in case Josh finally renamed his datacards 
@@ -180,7 +188,7 @@ MSSM Checklist:
 (7) Xsec limit calculation
 --------------------------------------
  - limit.py --multidim-fit [--stable] --saveResults --algo singles --confidence-level 0.68 --physics-model 
-   'ggH-bbH-model=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH' 
+   'ggH-bbH-model=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH'
    HCP-LIMITS/* 
  - limit.py --mssm-xsec [--noprefit] [--ggH] --userOpt '--minosAlgo stepping' HCP-LIMITS/*
    - option ggH translates ggH into background and calculates xsec limit of bbH, if not specfied bbH is translated into 
