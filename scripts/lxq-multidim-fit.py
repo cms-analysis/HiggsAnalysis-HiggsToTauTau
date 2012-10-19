@@ -83,5 +83,7 @@ else :
                     OUTPUT = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))
                     ))
             os.system('chmod a+x %s' % script_file_name)
-            submit_script.write('qsub -l site=hh %s -v scram_arch -v cmssw_base %s/%s\n' % (options.qsub, os.getcwd(), script_file_name))
+            submit_script.write('qsub -l h_vmem=4000M -l site=hh %s -v scram_arch -v cmssw_base %s/%s\n' % (options.qsub, 
+os.getcwd(), 
+script_file_name))
     os.system('chmod 755 %s' % submit_name)
