@@ -71,7 +71,7 @@ bool inPatterns(const std::string& test, const char* patterns)
   return false;
 }
 
-void blindData(const char* filename, const char* background_patterns="Fakes, EWK, ttbar, Ztt", const char* signal_patterns="ggH125, qqH125, VH125", const char* directory_patterns="*", bool armed=false, int rnd=-1, float signal_scale=1., const char* outputName="", unsigned int debug=1)
+void blindData(const char* filename, const char* background_patterns="Fakes, EWK, ttbar, Ztt", const char* signal_patterns="ggH125, qqH125, VH125", const char* directory_patterns="*", bool armed=false, int rnd=-1, float signal_scale=1., const char* outputLabel="", unsigned int debug=1)
 {
   /// prepare input parameters
   std::vector<std::string> signals;
@@ -81,7 +81,11 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
   samples.insert(samples.end(), signals.begin(), signals.end());
 
   // in case data_obs is supposed to be written to an extra output file
-  TFile* outputFile = 0; if(!std::string(outputName).empty()){ outputFile = new TFile(outputName, "recreate"); }
+  TFile* outputFile = 0; 
+  if(!std::string(outputLabel).empty()){
+    std::string out = std::string(filename); 
+    outputFile = new TFile((out.substr(0, out.rfind("."))+"_"+outputLabel+".root").c_str(), "recreate"); 
+  }
 
   TKey* idir;
   TH1F* buffer = 0;
