@@ -14,7 +14,7 @@
 #include <TAttLine.h>
 #include <TPaveText.h>
 
-#include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_3_3/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
 $DEFINE_EXTRA_SAMPLES
 $DEFINE_MSSM
@@ -129,7 +129,7 @@ void rescale(TH1F* hin, unsigned int idx)
 }
 
 void 
-HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const char* inputfile="root/$HISTFILE", const char* directory="$PATCH_$CATEGORY")
+HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const char* inputfile="root/$HISTFILE", const char* directory="eleTau_$CATEGORY")
 {
   // defining the common canvas, axes pad styles
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
