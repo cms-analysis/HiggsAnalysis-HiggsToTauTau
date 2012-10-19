@@ -71,11 +71,11 @@ if options.analysis == "sm" :
     }
 if options.analysis == "mssm" :
     valid_masses = {
-        "mm"   : (100, 500),
-        "em"   : (100, 1000),
-        "mt"   : (100, 1000),
-        "et"   : (100, 1000),
-        "tt"   : (100, 500),
+        "mm"   : (90,  500),
+        "em"   : (90, 1000),
+        "mt"   : (90, 1000),
+        "et"   : (90, 1000),
+        "tt"   : (90,  500),
     }
 
 print "------------------------------------------------------"
@@ -102,7 +102,7 @@ if options.analysis == "mssm" :
         "em"   : "7TeV 8TeV",
         "mt"   : "7TeV 8TeV",
         "et"   : "7TeV 8TeV",
-        "tt"   : "8TeV",
+        "tt"   :      "8TeV",
         }
 
 print "------------------------------------------------------"
@@ -158,8 +158,8 @@ for channel in channels :
                     continue
                 print "creating datacard for:", options.analysis, period, channel, cat, mass
                 if options.analysis == "mssm" :
-                    os.system("create-datacard.py -i {CHN}.inputs-{ana}-{PER}-{MASSCAT}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
-                        CHN=prefix+channel, ana=options.analysis, PER=period, MASSCAT=mass_category(mass), CAT=cat, MASS=mass))
+                    os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{PER}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
+                        CHN=prefix+channel, ANA=options.analysis, PER=period, MASSCAT=mass_category(mass), CAT=cat, MASS=mass))
                 if options.analysis == "sm" :
                     if options.SM4 :
                         print "rescaling signal cross sections accoring to SM4 cross sections"
