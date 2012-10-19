@@ -45,7 +45,11 @@ echo "for directory {INPUT}"
 echo "for random seed {RND}"
 
 cp -r {INPUT} {INPUT}_{JOBID}
-inject-signal.py -i {INPUT}_{JOBID} -r {RND} {MASSES}
+rm -r {INPUT}_{JOBID}/common/*.*
+cd {INPUT}_{JOBID}/common
+cp -s ../../{INPUT}/common/*.* .
+cd ../../../
+inject-signal.py -i {INPUT}_{JOBID} -o {JOBID} -r {RND} {MASSES}
 limit.py --asymptotic {OPTIONS} {INPUT}_{JOBID}/*
 '''
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
