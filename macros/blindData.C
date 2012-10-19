@@ -71,7 +71,7 @@ bool inPatterns(const std::string& test, const char* patterns)
   return false;
 }
 
-void blindData(const char* filename, const char* background_patterns="Fakes, EWK, ttbar, Ztt", const char* signal_patterns="ggH125, qqH125, VH125", const char* directory_patterns="*", bool armed=false, int rnd=-1, float signal_scale=1., unsigned int debug=1)
+void blindData(const char* filename, const char* background_patterns="Fakes, EWK, ttbar, Ztt", const char* signal_patterns="ggH125, qqH125, VH125", const char* directory_patterns="*", bool armed=false, int rnd=-1, float signal_scale=1., const char* outputName="", unsigned int debug=1)
 {
   /// prepare input parameters
   std::vector<std::string> signals;
@@ -80,19 +80,22 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
   string2Vector(cleanupWhitespaces(background_patterns), samples);
   samples.insert(samples.end(), signals.begin(), signals.end());
 
+  // in case data_obs is supposed to be written to an extra output file
+  TFile* outputFile = 0; if(!std::string(outputName).empty()){ outputFile = new TFile(outputName, "recreate"); }
+
   TKey* idir;
   TH1F* buffer = 0;
   TH1F* blind_data_obs = 0;
   TFile* file = new TFile(filename, "update");
+  //TFile* file = new TFile(filename, "update");
   TIter nextDirectory(file->GetListOfKeys());
-  //std::vector<TH1F*> hists;
   while((idir = (TKey*)nextDirectory())){
     if( idir->IsFolder() ){
       file->cd(); // make sure to start in directory head 
       if( debug>0 ){ std::cerr << "Found directory: " << idir->GetName() << std::endl; }
-      // Check if we want to muck w/ this directory.  For the VHTT case, we have 
-      // different background types in the same root file, so we have to run
-      // blindData twice.
+      // check if we want to muck w/ this directory. For the vhtt case, we 
+      // have different background types in the same root file, so we have 
+      // to run blindData twice.
       if (!inPatterns(std::string(idir->GetName()), directory_patterns)) {
         if( debug>0 ){ std::cerr << "Skipping directory: " << idir->GetName() << " - matches no pattern in " << directory_patterns << std::endl; }
         continue;
@@ -100,12 +103,13 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
       if( file->GetDirectory(idir->GetName()) ){
 	file->cd(idir->GetName()); // change to sub-directory
 	buffer = (TH1F*)file->Get((std::string(idir->GetName())+"/data_obs").c_str()); 
-        blind_data_obs = (TH1F*)buffer->Clone("data_obs");
-	//if( debug>0 ){ std::cerr << "Old scale of blinded data_obs: " << blind_data_obs->Integral() << std::endl; }
-	blind_data_obs->Reset();
+        blind_data_obs = (TH1F*)buffer->Clone("data_obs"); blind_data_obs->Reset();
 	for(std::vector<std::string>::const_iterator sample = samples.begin(); sample!=samples.end(); ++sample){
 	  if( debug>0 ){ std::cerr << "Looking for histogram: " << (std::string(idir->GetName())+"/"+(*sample)) << std::endl; }
-	  // add special treatment for et/mt ZLL,ZJ,ZL here
+	  // add special treatment for et/mt ZLL,ZJ,ZL here. You can run the
+	  // macro with ZLL, ZL, ZJ in the background samples. Those samples,
+	  // which do not apply for one or the other event category are 
+	  // skipped here.
 	  if(std::string(idir->GetName()).find("vbf") != std::string::npos && (*sample == std::string("ZL") || *sample == std::string("ZJ"))){
 	    continue;
 	  }
@@ -115,7 +119,7 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
 	  buffer = (TH1F*)file->Get((std::string(idir->GetName())+"/"+(*sample)).c_str()); 
           if (!buffer) {
             std::cerr << "ERROR: Could not get histogram from: " << std::string(idir->GetName())+"/"+(*sample) << std::endl;
-            std::cerr << "ERROR: Histogram will be skipped   : " << std::string(idir->GetName())+"/"+(*sample) << std::endl;
+            std::cerr << "       Histogram will be skipped   : " << std::string(idir->GetName())+"/"+(*sample) << std::endl;
 	    continue;
           }
 	  if(inPatterns(*sample, signal_patterns)) {
@@ -130,7 +134,7 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
 	}
 	if(rnd>=0){
 	  // randomize histogram; this will automatically have integer integral
-	  std::cerr << "randomizing" << std::endl;
+	  std::cerr << "-- R A N D O M I Z I N G --" << std::endl;
 	  randomize(blind_data_obs, rnd, debug);
 	}
 	else{
@@ -140,14 +144,27 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
 	}
 	std::cout << "data_obs yield: " << idir->GetName() << "   " << TMath::Nint(blind_data_obs->Integral()) << std::endl;
 	if(armed){
-          if (debug > 1)
+          if (debug > 1){
             std::cerr << "Writing to file: " << blind_data_obs->GetName() << std::endl;
-	  blind_data_obs->Write("data_obs", TObject::kOverwrite); 
+	  }
+	  if(outputFile){
+	    // write to a dedicated new file with name output in case output has been specified
+	    outputFile->mkdir(idir->GetName()); outputFile->cd(idir->GetName());
+	    blind_data_obs->Write("data_obs");
+	  }
+	  else{
+	    // override old data_obs in the inputfile otherwise
+	    file->cd(idir->GetName());
+	    blind_data_obs->Write("data_obs", TObject::kOverwrite); 
+	  }
 	}
       }
     }
   }
   file->Close();
+  if(outputFile){
+    outputFile->Close();
+  }
   return;
 }
 
