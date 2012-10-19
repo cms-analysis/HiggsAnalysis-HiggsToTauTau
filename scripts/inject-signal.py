@@ -8,6 +8,7 @@ import shlex
 parser = OptionParser(usage="usage: %prog [options] ARGS",
                       description="Script to inject signal with fixed mH into a BG only hypothesis from simulation. The mass of the signal to be injected can be passed on by option --mass-injected (-m). The data_obs histograms of each event category found in the input root file is rescaled and the datacard is ajusted accordingly. The injected signal can be chosen to correspond to the expectation from BG and signal. In addition it can be randomized. The signal can be scaled before injection.")
 parser.add_option("-i", "--in", dest="input", default="test", type="string", help="Name of the input directory, where to find all inputfiles and datacards in the usual structure for limits calculation. [Default: test]")
+parser.add_option("-o", "--out", dest="output", default="", type="string", help="Extra label for an extra output file, in which the data_obs histograms with BG and injected signal will be written. If an empty string is passed on the modified data_obs histograms will be updated in the input file. [Default: \"\"]")
 parser.add_option("-m", "--mass-injected", dest="mass_injected", default="125", type="string", help="Masspoint to be injected into the background only hypothesis from simulation. [Default: 125]")
 parser.add_option("-s", "--signal-strength", dest="signal_strength", default="1", type="string", help="Signal strength to inject into the BG only expecation (in multiples of SM cross section). [Default: \"1\"]")
 parser.add_option("-r", "--random", dest="rnd", default="-1", type="int", help="Randomize data yield, enter random seed, -1 will switch randomization off. [Default: \"-1\"]")
@@ -57,8 +58,8 @@ def search_list(list, value) :
             return (list[idx], list[idx+1])
     return ("NONE", -999.)
 
-def adjust_datacard(datacard, new_values) :
-    print "doot", datacard, new_values
+def adjust_datacard(datacard, new_values, new_file) :
+    print "doot", datacard, new_values, new_file
     old = open(datacard, 'r')
     new = open("tmp.txt", 'w')
     for line in old :
@@ -67,6 +68,16 @@ def adjust_datacard(datacard, new_values) :
         ## determine a list of unique decay channels
         if words[0] == "observation" :
             line = " ".join(['observation'] + new_values)
+        ## bend input to new file containing injected signal
+        if words[0] == "shapes" :
+            if "*" in words[1] :
+                ## copy line for background samples
+                new_words = words
+                new_words[1] = "data_obs"
+                new_words[3] = words[3][0:words[3].rfind('.')]+'_'+new_file+'.root'
+                print words[3]
+                new_line = " ".join(new_words)
+                new.write(new_line + '\n')
         new.write(line + '\n')
     old.close()
     new.close()
@@ -166,17 +177,17 @@ for chn in channels :
         if os.path.exists(histfile) :
             if options.verbose :
                 print "randomizing all data_obs in histogram input file:", histfile
-            # Which channel directories in the .root file to randomize.
-            # For the normal H2Tau case, this doesn't matter - since every
-            # channel (directory) has the same backgrounds in it.
-            # For WH/ZH, both are in the same file, and the names of the bkgs.
-            # depend on which category (i.e. WH or ZH) it is.
+            ## which channel directories in the .root file to randomize.
+            ## For the normal htt case, this doesn't matter - since every
+            ## channel (directory) has the same backgrounds in it. For 
+            ## WH/ZH, both are in the same file, and the names of the BGs. 
+            ## depend on which category (i.e. WH or ZH) it is.
             directories_to_randomize = '*'
             if chn == 'zh':
                 directories_to_randomize = '*_zh'
             elif chn == 'wh':
                 directories_to_randomize = 'emt,mmt'
-            command = "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/blindData.C+\\(\\\"{FILE}\\\",\\\"{BACKGROUNDS}\\\",\\\"{SIGNALS}\\\",\\\"{DIRS}\\\",true,{RND},{SCALE},1\)"
+            command = "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/blindData.C+\\(\\\"{FILE}\\\",\\\"{BACKGROUNDS}\\\",\\\"{SIGNALS}\\\",\\\"{DIRS}\\\",true,{RND},{SCALE},\\\"{OUTPUT}\\\",1\)"
             yields = subprocess.Popen(
                 shlex.split(command.format(
                 CMSSW_BASE=os.environ["CMSSW_BASE"],
@@ -186,6 +197,7 @@ for chn in channels :
                 DIRS=directories_to_randomize,
                 RND=options.rnd,
                 SCALE=options.signal_strength,
+                OUTPUT=options.output,
                 )), stdout=subprocess.PIPE)
             
             (stdout, _) = yields.communicate()
@@ -194,7 +206,9 @@ for chn in channels :
                 if 'data_obs' in line:
                     data_obs_lines.append(line)
             yields_map[(chn,per)] = " ".join(data_obs_lines)
-            #print "%s ...done" % yields_map[(chn,per)]
+            #print "****************************************"
+            #print "chn: %s \t period: %s \t %s ...done" % (chn, per, yields_map[(chn,per)])
+            #print "****************************************"
             print "...done"
 
 def get_card_file(channel, category, period, mass):
@@ -231,8 +245,9 @@ for mass in parseArgs(args) :
                     for dir in directories:
                         #print directory, chn, per
                         #print yields_map[(chn,per)]
+                        print chn, per, search_list(yields_map[(chn,per)].split(), dir)
                         new_yield = search_list(yields_map[(chn,per)].split(), dir)[1]
                         new_values.append(new_yield)
                         #print search_list(yields_map[(chn,per)].split(), directory)
-                    adjust_datacard(datacard, new_values)
+                    adjust_datacard(datacard, new_values, options.output)
 
