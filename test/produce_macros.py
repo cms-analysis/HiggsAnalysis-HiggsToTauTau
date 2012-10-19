@@ -109,10 +109,10 @@ class Analysis:
 	     else:
                 line = line.replace("$DRAW_ERROR", '')
                 line = line.replace("$ERROR_LEGEND", '')
-             ## PATCH until Josh fixed his input files...
-             if "et" in self.output_fname :
-                 patch = "eTau" if "7TeV" in self.output_fname else "eleTau"
-                 line = line.replace("$PATCH", patch)
+             ## PATCH until Josh fixed his input files...   -> should be fixed now
+             ## if "et" in self.output_fname :
+##                  patch = "eTau" if "7TeV" in self.output_fname else "eleTau"
+##                  line = line.replace("$PATCH", patch)
              word_arr=line.split("\n")
              uncertainties_set=[]
              for process_name in self.process_weight.keys():
