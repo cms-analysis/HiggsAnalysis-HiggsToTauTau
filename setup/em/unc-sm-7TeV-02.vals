@@ -1,7 +1,7 @@
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 emu_boost_low	signal,EWK              	lumi_7TeV            			1.022
 emu_boost_low	signal,background 		CMS_eff_e 				1.02
-emu_boost_low 	signal,Ztt	 		CMS_scale_e7TeV				1.00
+emu_boost_low 	signal,Ztt	 		CMS_scale_e_7TeV			1.00
 emu_boost_low	signal,background 		CMS_eff_m 				1.02
 emu_boost_low	ggH				CMS_scale_j				1.05
 emu_boost_low	EWK,ttbar			CMS_scale_j				1.05
