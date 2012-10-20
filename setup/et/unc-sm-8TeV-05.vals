@@ -27,5 +27,5 @@ eleTau_vbf		W				CMS_htt_WNorm_etau_vbf_8TeV		1.30
 eleTau_vbf		ZTT				CMS_htt_extrap_ztt_vbf_8TeV		1.10
 eleTau_vbf		ZLL				CMS_htt_extrap_ztt_vbf_8TeV		1.10
 eleTau_vbf		QCD				CMS_htt_QCDSyst_etau_vbf_8TeV		1.30
-eleTau_vbf		ZLL				CMS_htt_ZLLNorm_etau_vbf_8TeV		1.20
-
+eleTau_vbf		ZLL				CMS_htt_ZLeptonFakeTau_etau_low_8TeV	1.15
+eleTau_vbf		ZLL				CMS_htt_ZLeptonFakeTau_etau_high_8TeV	1.05

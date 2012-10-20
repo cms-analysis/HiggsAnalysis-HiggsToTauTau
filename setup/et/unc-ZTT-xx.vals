@@ -15,6 +15,6 @@ eleTau_X			W				CMS_htt_eleTau_WNorm 			1.072
 eleTau_X			TT				CMS_htt_ttbarNorm			1.099
 eleTau_X			VV				CMS_htt_DiBosonNorm			1.304
 eleTau_X                      	QCD				CMS_htt_eleTau_SM0_QCDNorm		1.07
-eleTau_X			ZJ				CMS_htt_eleTau_SM0_ZJetFakeTau		1.102
-eleTau_X			ZL				CMS_htt_eleTau_SM0_ZLeptonFakeTau	1.101
+eleTau_X			ZJ				CMS_htt_eleTau_SM0_ZJetFakeleTau		1.102
+eleTau_X			ZL				CMS_htt_eleTau_SM0_ZLeptonFakeleTau	1.101
 
