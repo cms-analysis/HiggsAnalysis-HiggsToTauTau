@@ -38,6 +38,7 @@ if len(args) > 0 :
 from DatacardUtils import parse_dcard
 from ROOT import *
 import math
+import os
 
 class Analysis:
     """
