@@ -47,7 +47,7 @@ echo "for random seed {RND}"
 cp -r {INPUT} {INPUT}_{JOBID}
 rm -r {INPUT}_{JOBID}/common/*.*
 cd {INPUT}_{JOBID}/common
-cp -s ../../{INPUT}/common/*.* .
+cp -s ../../../{INPUT}/common/*.* .
 cd ../../../
 inject-signal.py -i {INPUT}_{JOBID} -o {JOBID} -r {RND} {MASSES}
 limit.py --asymptotic {OPTIONS} {INPUT}_{JOBID}/*
