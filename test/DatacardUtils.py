@@ -123,7 +123,7 @@ def parse_dcard(datacard,fitres,bin_name="ANYBIN"):
                    sigma = get_sigma(factor_name,fitres) #obtain the sigma variation
                    if type(sigma).__name__=="NoneType" :
                        sigma = 0.0
-                   print processes[index],factor_name,"Uncertainty: ",uncert,"Sigma variations: ",svar,"Total: ",1+uncert*svar
+                   #print processes[index],factor_name,"Uncertainty: ",uncert,"Sigma variations: ",svar,"Total: ",1+uncert*svar
                    new_weight = 1 + uncert*svar
                    if new_weight<0:
                        new_weight = 0
@@ -136,5 +136,5 @@ def parse_dcard(datacard,fitres,bin_name="ANYBIN"):
                        process_shape_uncertainties[processes[index]][factor_name] = sigma
    # return the dictionary of weights
                    factor_weights[factor_name]= "%f ; // 1+%f*%f " % (1+uncert*svar,uncert,svar)
-    print "the list of indices for bin %s is:" % bin_name,rel_indices
+    #print "the list of indices for bin %s is:" % bin_name,rel_indices
     return process_weights, process_shape_weights, process_uncertainties, process_shape_uncertainties

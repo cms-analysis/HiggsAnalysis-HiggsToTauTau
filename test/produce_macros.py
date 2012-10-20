@@ -11,6 +11,7 @@ parser.add_option("-c", "--channels", dest="channels", default="em, et, mt, mm",
 parser.add_option("-y", "--yields", dest="yields", default="1", type="int", help="Shift yield uncertainties. [Default: '1']")
 parser.add_option("-s", "--shapes", dest="shapes", default="1", type="int", help="Shift shape uncertainties. [Default: '1']")
 parser.add_option("-u", "--uncertainties", dest="uncertainties", default="0", type="int", help="Set uncertainties of backgrounds. [Default: '0']")
+parser.add_option("-v", "--verbose", dest="verbose", action="store_true", default=False, help="Run in verbose more. [Default: 'False']")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 5", type="string", help="List em of event categories. [Default: \"0 1 2 3 5\"]")
@@ -120,14 +121,16 @@ class Analysis:
                      cand_str = "$%s" % process_name
                  output_cand = ""
                  if line.strip().startswith(cand_str):
-                     print word_arr[0]
+                     if options.verbose :
+                         print word_arr[0]
                      curr_name = process_name
                      move_on   = True
                      if options.yields:
                          print_me  = '''std::cout << "scaling by %f" << std::endl;''' % self.process_weight[curr_name]
                          out_line  = print_me+"hin->Scale(%f); \n" % self.process_weight[curr_name]
                          output_file.write(out_line)
-                         print out_line
+                         if options.verbose :
+                             print out_line
                          if options.uncertainties:
                            for shape_name in self.process_shape_weight[curr_name]:
 		             input = TFile("root/"+self.histfile)
@@ -141,7 +144,8 @@ class Analysis:
 		                 uncertainty = math.sqrt(self.process_uncertainties[curr_name])
 		                 out_line  = "hin->SetBinError(%(bin)i,hin->GetBinContent(%(bin)i)*%(uncertainty)f); \n" % {"bin":bin, "uncertainty":uncertainty}
                                  output_file.write(out_line)
-                                 print out_line
+                                 if options.verbose :
+                                     print out_line
 	     if options.shapes:
                for process_name in self.process_shape_weight.keys():
                  cand_str = "$%s" % process_name
@@ -185,7 +189,9 @@ class Analysis:
 			   elif uncertainty!=0:
                                out_line  += "hin->SetBinError(%(bin)i,sqrt(pow(hin->GetBinError(%(bin)i),2)+pow(hin->GetBinContent(%(bin)i)*%(uncertainty)f,2))); \n" % {"bin":bin, "uncertainty":uncertainty}
                          output_file.write(out_line)
-                         print out_line
+                         if options.verbose :
+                             if out_line :
+                                 print out_line
              if not move_on:
                  output_file.write(line)
 	     else:
