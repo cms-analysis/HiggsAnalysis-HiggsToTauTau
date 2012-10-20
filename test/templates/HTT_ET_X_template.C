@@ -14,7 +14,7 @@
 #include <TAttLine.h>
 #include <TPaveText.h>
 
-#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_3_3/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "$CMSSW_BASE/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
 $DEFINE_EXTRA_SAMPLES
 $DEFINE_MSSM

@@ -98,6 +98,7 @@ class Analysis:
              template_name = self.template_fname[self.template_fname.find("/")+1:self.template_fname.rfind("_template.C")]
              output_name   = self.output_fname[:self.output_fname.rfind(".C")]
              ## prepare first lines of macro
+             line = line.replace("$CMSSW_BASE", os.environ['CMSSW_BASE'])
              line = line.replace("$DEFINE_MSSM", "#define MSSM" if self.analysis == "mssm" else "")
              line = line.replace("$DEFINE_EXTRA_SAMPLES", "#define EXTRA_SAMPLES" if self.high_stat_category(self.category) else "")
              line = line.replace(template_name, output_name)
