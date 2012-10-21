@@ -1,6 +1,5 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-<<<<<<< unc-sm-7TeV-00.vals
 eleTau_0jet_low			signal	  	            	lumi_7TeV            				1.022
 eleTau_0jet_low   		ggH				pdf_gg    					1.08
 eleTau_0jet_low		   	qqH				pdf_qqbar					1.03
@@ -30,35 +29,3 @@ eleTau_0jet_low                 QCD				CMS_htt_QCDNorm_etau_0jet_low_7TeV		1.00
 eleTau_0jet_low                 QCD				CMS_htt_QCDSyst_etau_0jet_low_7TeV		1.10
 eleTau_0jet_low			ZJ				CMS_htt_ZJetFakeleTau_etau_0jet_7TeV      	1.20
 eleTau_0jet_low			ZL				CMS_htt_ZLeptonFakeleTau_etau_low_7TeV		1.20
-=======
-eleTau_0jet_low		signal	  	            	lumi_7TeV            				1.022
-eleTau_0jet_low   	ggH				pdf_gg    					1.08
-eleTau_0jet_low		qqH				pdf_qqbar					1.03
-eleTau_0jet_low		VH				pdf_qqbar					1.02
-eleTau_0jet_low		ggH				QCDscale_ggH     				1.08
-eleTau_0jet_low     	qqH				QCDscale_qqH					1.035
-eleTau_0jet_low     	VH				QCDscale_VH					1.04
-eleTau_0jet_low		signal				UEPS						0.96
-eleTau_0jet_low		signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_e 					1.02
-eleTau_0jet_low		signal,ZTT,TT,VV 		CMS_eff_t 					1.07
-eleTau_0jet_low		signal,ZTT			CMS_scale_t 					1.00
-eleTau_0jet_low        	ggH				CMS_scale_j					0.94
-eleTau_0jet_low        	qqH				CMS_scale_j					0.92
-eleTau_0jet_low        	VH				CMS_scale_j					0.86
-eleTau_0jet_low        	TT				CMS_scale_j					0.99
-eleTau_0jet_low        	VV				CMS_scale_j					0.95
-eleTau_0jet_low	 	signal,ZL,ZJ	   		CMS_scale_met					1.05
-eleTau_0jet_low	 	TT		    		CMS_scale_met					1.07
-eleTau_0jet_low	 	VV    				CMS_scale_met					1.07
-eleTau_0jet_low		signal,background 		CMS_eff_b 					0.99
-eleTau_0jet_low		signal,background 		CMS_fake_b 					0.99
-eleTau_0jet_low		ZTT,ZL,ZJ			CMS_htt_zttNorm_7TeV 				1.03
-eleTau_0jet_low		TT				CMS_htt_ttbarNorm_7TeV				1.08
-eleTau_0jet_low		VV				CMS_htt_DiBosonNorm_7TeV			1.30
-eleTau_0jet_low		W				CMS_htt_WNorm_etau_0jet_low_7TeV 		1.10
-eleTau_0jet_low         QCD				CMS_htt_QCDNorm_etau_0jet_low_7TeV		1.00 
-eleTau_0jet_low         QCD				CMS_htt_QCDSyst_etau_0jet_low_7TeV		1.10
-eleTau_0jet_low		ZJ				CMS_htt_ZJetFakeleTau_etau_0jet_7TeV      	1.20
-eleTau_0jet_low		ZL				CMS_htt_ZLeptonFakeleTau_etau_0jet_7TeV		1.20
->>>>>>> 1.13
-
