@@ -11,7 +11,6 @@ parser.add_option("-c", "--channels", dest="channels", default="em, et, mt, mm",
 parser.add_option("-y", "--yields", dest="yields", default="1", type="int", help="Shift yield uncertainties. [Default: '1']")
 parser.add_option("-s", "--shapes", dest="shapes", default="1", type="int", help="Shift shape uncertainties. [Default: '1']")
 parser.add_option("-u", "--uncertainties", dest="uncertainties", default="0", type="int", help="Set uncertainties of backgrounds. [Default: '0']")
-parser.add_option("-v", "--verbose", dest="verbose", action="store_true", default=False, help="Run in verbose more. [Default: 'False']")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 5", type="string", help="List em of event categories. [Default: \"0 1 2 3 5\"]")
@@ -39,7 +38,6 @@ if len(args) > 0 :
 from DatacardUtils import parse_dcard
 from ROOT import *
 import math
-import os
 
 class Analysis:
     """
@@ -100,7 +98,6 @@ class Analysis:
              template_name = self.template_fname[self.template_fname.find("/")+1:self.template_fname.rfind("_template.C")]
              output_name   = self.output_fname[:self.output_fname.rfind(".C")]
              ## prepare first lines of macro
-             line = line.replace("$CMSSW_BASE", os.environ['CMSSW_BASE'])
              line = line.replace("$DEFINE_MSSM", "#define MSSM" if self.analysis == "mssm" else "")
              line = line.replace("$DEFINE_EXTRA_SAMPLES", "#define EXTRA_SAMPLES" if self.high_stat_category(self.category) else "")
              line = line.replace(template_name, output_name)
@@ -112,6 +109,10 @@ class Analysis:
 	     else:
                 line = line.replace("$DRAW_ERROR", '')
                 line = line.replace("$ERROR_LEGEND", '')
+             ## PATCH until Josh fixed his input files...   -> should be fixed now
+             ## if "et" in self.output_fname :
+##                  patch = "eTau" if "7TeV" in self.output_fname else "eleTau"
+##                  line = line.replace("$PATCH", patch)
              word_arr=line.split("\n")
              uncertainties_set=[]
              for process_name in self.process_weight.keys():
@@ -121,16 +122,14 @@ class Analysis:
                      cand_str = "$%s" % process_name
                  output_cand = ""
                  if line.strip().startswith(cand_str):
-                     if options.verbose :
-                         print word_arr[0]
+                     print word_arr[0]
                      curr_name = process_name
                      move_on   = True
                      if options.yields:
                          print_me  = '''std::cout << "scaling by %f" << std::endl;''' % self.process_weight[curr_name]
                          out_line  = print_me+"hin->Scale(%f); \n" % self.process_weight[curr_name]
                          output_file.write(out_line)
-                         if options.verbose :
-                             print out_line
+                         print out_line
                          if options.uncertainties:
                            for shape_name in self.process_shape_weight[curr_name]:
 		             input = TFile("root/"+self.histfile)
@@ -144,8 +143,7 @@ class Analysis:
 		                 uncertainty = math.sqrt(self.process_uncertainties[curr_name])
 		                 out_line  = "hin->SetBinError(%(bin)i,hin->GetBinContent(%(bin)i)*%(uncertainty)f); \n" % {"bin":bin, "uncertainty":uncertainty}
                                  output_file.write(out_line)
-                                 if options.verbose :
-                                     print out_line
+                                 print out_line
 	     if options.shapes:
                for process_name in self.process_shape_weight.keys():
                  cand_str = "$%s" % process_name
@@ -162,17 +160,14 @@ class Analysis:
                        hist_up = input.Get(histname+"_"+shape_name+"Up")
                        for bin in range(1,hist.GetNbinsX()+1):
 		         shift = self.process_shape_weight[curr_name][shape_name]
-                         out_line = ''
-			 value = 1
-                         upper = hist_up.GetBinContent(bin)
-                         lower = hist_down.GetBinContent(bin) if hist_down.GetBinContent(bin)>0.0001 else 0.
-                         central = hist.GetBinContent(bin)
-		         if shift>0 and central>0 and upper!=central:
-                             if central :
-                                 value = shift*(upper/central-1)+1
-		         elif shift<0 and central>0 and lower!=central:
-                             if lower :
-                                 value = shift*(central/lower-1)+1
+                         out_line=''
+			 value=1
+		         if shift>0 and hist.GetBinContent(bin)>0 and hist_up.GetBinContent(bin)!=hist.GetBinContent(bin):
+                             if hist.GetBinContent(bin) :
+                                 value = shift*(hist_up.GetBinContent(bin)/hist.GetBinContent(bin)-1)+1
+		         elif shift<0 and hist.GetBinContent(bin)>0 and hist_down.GetBinContent(bin)!=hist.GetBinContent(bin):
+                             if hist_down.GetBinContent(bin) :
+                                 value = shift*(hist.GetBinContent(bin)/hist_down.GetBinContent(bin)-1)+1
 			 if value!=1:
 		             print_me  = '''std::cout << "scaling bin %(bin)i by %(value)f" << std::endl;''' % {"bin":bin, "value":value}
 		             out_line  = print_me+"hin->SetBinContent(%(bin)i,hin->GetBinContent(%(bin)i)*%(value)f); \n" % {"bin":bin, "value":value}
@@ -189,9 +184,7 @@ class Analysis:
 			   elif uncertainty!=0:
                                out_line  += "hin->SetBinError(%(bin)i,sqrt(pow(hin->GetBinError(%(bin)i),2)+pow(hin->GetBinContent(%(bin)i)*%(uncertainty)f,2))); \n" % {"bin":bin, "uncertainty":uncertainty}
                          output_file.write(out_line)
-                         if options.verbose :
-                             if out_line :
-                                 print out_line
+                         print out_line
              if not move_on:
                  output_file.write(line)
 	     else:

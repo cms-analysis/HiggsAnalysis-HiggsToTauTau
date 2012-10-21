@@ -59,7 +59,7 @@ def walk_and_copy(inputdir, outputdir, matchers, threshold, prefix):
                             # Print to stdout, so we can capture the uncertainties
                             print "%s_%s_bin_%i" % (prefix, histo, ibin)
                             err_up.SetBinContent(ibin, val + error)
-                            err_down.SetBinContent(ibin, val - error if val > error else 0.)
+                            err_down.SetBinContent(ibin, val - error)
                             outputdir.cd()
                             err_up.Write()
                             err_down.Write()
