@@ -41,6 +41,8 @@ def get_channel_name(finalstate, category):
         '02' : 'boost_low',
         '03' : 'boost_high',
         '05' : 'vbf',
+        '06' : 'btag_low',
+        '07' : 'btag_high',
     }
     tt_cat_map = {
         '00' : 'boost',
@@ -52,22 +54,23 @@ def get_channel_name(finalstate, category):
         return '_'.join((fs_map[finalstate], cat_map[category]))
 
 
-def get_shape_file(sourcedir, channel, period):
+def get_shape_file(sourcedir, channel, period, ana='sm'):
     # Ex: shape file for mt lives in
     #  setup/mt/htt_mt.inputs-sm-7TeV.root
     return os.path.join(sourcedir, channel,
-                        'htt_' + channel + '.inputs-sm-' + period + '.root')
+                        'htt_' + channel + '.inputs-' +
+                        ana + '-' + period + '.root')
 
-def get_card_config_files(sourcedir, channel, period, category):
+def get_card_config_files(sourcedir, channel, period, category, ana='sm'):
     ''' Get the configuration files (cgs, unc.vals, etc)
 
     Returns a tuple of paths to the cgs, unc.conf, and unc.vals
 
     '''
     base_dir = os.path.join(sourcedir, channel)
-    cgs = 'cgs-sm-%s-%s.conf' % (period, category)
-    unc_c = 'unc-sm-%s-%s.conf' % (period, category)
-    unc_v = 'unc-sm-%s-%s.vals' % (period, category)
+    cgs = 'cgs-%s-%s-%s.conf' % (ana, period, category)
+    unc_c = 'unc-%s-%s-%s.conf' % (ana, period, category)
+    unc_v = 'unc-%s-%s-%s.vals' % (ana, period, category)
     return (
         os.path.join(base_dir, cgs),
         os.path.join(base_dir, unc_c),
@@ -97,6 +100,8 @@ def create_systematics(channel, category, process, shape_file, threshold):
     channel_name = get_channel_name(channel, category)
 
     root_path = os.path.join('/',channel_name, process)
+    if root_path[0] == '/':
+        root_path = root_path[1:]
 
     command = [
         'add_stat_shapes.py',
@@ -139,10 +144,15 @@ if __name__ == "__main__":
     parser.add_argument('--input-dir', dest='inputdir', default='setup',
                         help='Output directory for modified cars. Default: setup')
 
+    parser.add_argument('--mssm', dest='mssm', action='store_true',
+                        help='Modify MSSM cards')
+
     parser.add_argument('-f', dest='force', action='store_true',
                         help='Force creation of new output dir')
 
     args = parser.parse_args()
+
+    ana = 'mssm' if args.mssm else 'sm'
 
     log = logging.getLogger('bin-by-bin')
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
@@ -187,13 +197,13 @@ if __name__ == "__main__":
         channel, period, cat, proc = command
         log.info("Mangling: %s", ' '.join(command))
         # Create the systematics
-        shape_file = get_shape_file(args.outputdir, channel, period)
+        shape_file = get_shape_file(args.outputdir, channel, period, ana)
         nicename, systematics = create_systematics(
             channel, cat, proc, shape_file, args.threshold)
         log.info("Added systs for %i bins", len(systematics))
         total_added_systematics += len(systematics)
         cgs, unc_c, unc_v = get_card_config_files(
-            args.outputdir, channel, period, cat)
+            args.outputdir, channel, period, cat, ana)
         log.info("Adding systematics to files")
         with open(unc_c, 'a') as unc_c_file:
             with open(unc_v, 'a') as unc_v_file:
