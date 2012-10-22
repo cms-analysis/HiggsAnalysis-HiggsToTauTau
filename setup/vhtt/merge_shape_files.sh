@@ -9,13 +9,13 @@ lttCategories="ett_sm,mtt_sm"
 domorph() 
 {
   echo "Morphing file $1, samples $2, categories $3" 
-  echo "110->130, in 0.5"
+  echo "110->140, in 0.5"
   horizontal-morphing.py \
     --categories="$3"\
     --samples="$2" \
-    --uncerts="" --masses="110,120,130" --step-size=0.5 \
+    --uncerts="" --masses="110,120,130,140" --step-size=0.5 \
     -i $1 -v
-  echo "130->145, in 1.0"
+  echo "140->145, in 1.0"
   horizontal-morphing.py \
     --categories="$3"\
     --samples="$2" \
