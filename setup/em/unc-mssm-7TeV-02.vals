@@ -9,7 +9,7 @@ emu_boost_low	signal,EWK,ttbar      		CMS_scale_met				1.05
 emu_boost_low	signal,background	        CMS_eff_b		        	0.98
 emu_boost_low	signal,background	        CMS_fake_b		        	0.99
 emu_boost_low	Ztt				CMS_htt_zttNorm_7TeV 			1.03
-emu_boost_low	Ztt				CMS_htt_extrap_ztt_boost_low_7TeV	1.01
-emu_boost_low	ttbar				CMS_htt_ttbarNorm_7TeV			1.08
+emu_boost_low	Ztt				CMS_htt_extrap_ztt_boost_low_7TeV	1.03
+emu_boost_low	ttbar				CMS_htt_ttbarNorm_7TeV			1.10
 emu_boost_low	EWK				CMS_htt_DiBosonNorm_7TeV		1.15
 emu_boost_low	Fakes				CMS_hww_fakes_em_7TeV			1.30

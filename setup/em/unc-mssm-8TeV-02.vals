@@ -10,6 +10,6 @@ emu_boost_low	signal,background	        CMS_eff_b_8TeV		        0.97
 emu_boost_low	signal,background	        CMS_fake_b_8TeV		        0.98
 emu_boost_low	Ztt				CMS_htt_zttNorm_8TeV 		1.03
 emu_boost_low	Ztt				CMS_htt_extrap_ztt_boost_low_8TeV	1.03
-emu_boost_low	ttbar				CMS_htt_ttbarNorm_8TeV		1.08
+emu_boost_low	ttbar				CMS_htt_ttbarNorm_8TeV		1.12
 emu_boost_low	EWK				CMS_htt_DiBosonNorm_8TeV	1.30
 emu_boost_low	Fakes				CMS_hww_fakes_em_8TeV		1.30
