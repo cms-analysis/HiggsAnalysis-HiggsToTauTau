@@ -17,6 +17,7 @@ parser.add_option("--collect", dest="collect", default=False,  action="store_tru
 (options, args) = parser.parse_args()
 
 import random
+import string
 import logging
 import os
 import sys
@@ -34,32 +35,42 @@ opts     = options.opts
 random.seed()
 
 script_template = '''
-#!/usr/bin/bash
+#!/usr/bin/env python
 
-cd {WORKING_DIR}
-eval `scram runtime -sh`
+import os
+os.system("cd {PWD}")
+os.system("eval `scram runtime -sh`")
 
-echo "Running limit.py with signal injected:"
-echo "with options {OPTIONS}"
-echo "for directory {INPUT}"
-echo "for random seed {RND}"
+print "Running limit.py with signal injected:"
+print "with options {OPTS}"
+print "for directory {PATH}/{DIR}"
+print "for random seed {RND}"
+print "for masses {MASSES}"
 
-cp -r {INPUT} {INPUT}_{JOBID}
-rm -r {INPUT}_{JOBID}/common/*.*
-cd {INPUT}_{JOBID}/common
-cp -s ../../../../{INPUT}/common/*.* .
-cd ../../../../
-inject-signal.py -i {INPUT}_{JOBID} -o {JOBID} -r {RND} {MASSES}
-limit.py --asymptotic {OPTIONS} {INPUT}_{JOBID}/*
+os.system("cd /tmp/{USER}")
+os.system("cp -r {PWD}/{PATH}/{DIR} /tmp/{USER}/{DIR}_{JOBID}")
+os.system("inject-signal.py -i /tmp/{USER}/{DIR}_{JOBID} -o {JOBID} -r {RND} {MASSES}")
+os.system("limit.py --asymptotic {OPTS} /tmp/{USER}/{DIR}_{JOBID}/*")
+
+masses = "{MASSES}".split()
+print masses
+for m in masses :
+    os.system("cp /tmp/{USER}/{DIR}_{JOBID}/%s/higgsCombine-obs.Asymptotic.mH%s.root {PWD}/{PATH}/{DIR}/%s/higgsCombine-obs.Asymptotic.mH%s-{JOBID}.root" % (m, m, m, m))
 '''
+
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
 
+
+masses_str = []
+for mass in parseArgs([masses]) :
+    masses_str.append(str(mass))
+    
 if options.collect :
     for mass in parseArgs([masses]) :
         ## to allow for more files to be combined distinguish by first digit in a first
         ## iteration, than cpomine the resulting 10 files to the final output file.
-        for idx in range(10) :
-            os.system("hadd {INPUT}/{MASS}/batch_collected_{IDX}.root {INPUT}_*{IDX}/{MASS}/higgsCombine-obs.Asymptotic.mH{MASS}.root".format(
+        for idx in range(10 if int(options.njob)>10 else int(options.njob)) :
+            os.system("hadd {INPUT}/{MASS}/batch_collected_{IDX}.root {INPUT}/{MASS}/higgsCombine-obs.Asymptotic.mH{MASS}-*{IDX}.root".format(
                 INPUT=input,
                 MASS=mass,
                 IDX=idx
@@ -77,16 +88,21 @@ else:
         for idx in range(int(njob)):
             rnd = random.randint(1, 999999)
             log.info("Generating script for limit.py with injected signal for job %g", idx)
-            script_file_name = '%s/%s_%i.sh' % (name, name, idx)
+            script_file_name = '%s/%s_%i.py' % (name, name, idx)
             with open(script_file_name, 'w') as script:
                 script.write(script_template.format(
-                    WORKING_DIR = os.getcwd(),
-                    OPTIONS = opts,
-                    MASSES = masses,
-                    INPUT = input,
+                    PWD= os.getcwd(),
+                    MASSES = ' '.join(masses_str),
+                    USER = os.environ['USER'],
+                    OPTS = opts,
+                    PATH = input[:input.rfind('/')],
+                    DIR = input[input.rfind('/')+1:],
                     JOBID = idx,
                     RND = rnd
                     ))
-            os.system('chmod a+x %s' % script_file_name)
-            submit_script.write('bsub %s %s/%s\n' % (options.bsub, os.getcwd(), script_file_name))
+            #shell_script = "echo \"python "+script_file_name+"\" > "+script_file_name.replace('.py', '.sh')
+            os.system("echo \"python "+script_file_name+"\" > "+script_file_name.replace('.py', '.sh'))
+            #print shell_script
+            os.system('chmod a+x %s' % script_file_name.replace('.py', '.sh'))
+            submit_script.write('bsub %s %s/%s\n' % (options.bsub, os.getcwd(), script_file_name.replace('.py', '.sh')))
     os.system('chmod a+x %s' % submit_name)

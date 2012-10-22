@@ -58,7 +58,7 @@ def search_list(list, value) :
 def adjust_datacard(datacard, new_values, new_file) :
     #print "adjust:", datacard, new_values, new_file
     old = open(datacard, 'r')
-    new = open("tmp.txt", 'w')
+    new = open("%s-tmp.txt" % datacard[0:datacard.rfind('.txt')], 'w')
     for line in old :
         words = line.split()
         if len(words) < 1: continue
@@ -79,7 +79,7 @@ def adjust_datacard(datacard, new_values, new_file) :
         new.write(line + '\n')
     old.close()
     new.close()
-    os.system("mv tmp.txt %s" % datacard)
+    os.system("mv %s-tmp.txt %s" % (datacard[0:datacard.rfind('.txt')], datacard))
 
 def get_bins(datacard):
     '''
