@@ -6,15 +6,12 @@ import shlex
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGS",
-                      description="Script to inject signal with fixed mH into a BG only hypothesis from simulation. The mass of the signal to be injected can be passed on by option --mass-injected (-m). The data_obs histograms of each event category found in the input root file is rescaled and the datacard is ajusted accordingly. The injected signal can be chosen to correspond to the expectation from BG and signal. In addition it can be randomized. The signal can be scaled before injection.")
-parser.add_option("-i", "--in", dest="input", default="test", type="string", help="Name of the input directory, where to find all inputfiles and datacards in the usual structure for limits calculation. [Default: test]")
-parser.add_option("-o", "--out", dest="output", default="", type="string", help="Extra label for an extra output file, in which the data_obs histograms with BG and injected signal will be written. If an empty string is passed on the modified data_obs histograms will be updated in the input file. [Default: \"\"]")
-parser.add_option("-m", "--mass-injected", dest="mass_injected", default="125", type="string", help="Masspoint to be injected into the background only hypothesis from simulation. [Default: 125]")
-parser.add_option("-s", "--signal-strength", dest="signal_strength", default="1", type="string", help="Signal strength to inject into the BG only expecation (in multiples of SM cross section). [Default: \"1\"]")
-parser.add_option("-r", "--random", dest="rnd", default="-1", type="int", help="Randomize data yield, enter random seed, -1 will switch randomization off. [Default: \"-1\"]")
-parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
-parser.add_option("-c", "--channels", dest="channels", default="tt mm em mt et", type="string", help="List of channels, for whch the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt. [Default: \"mm em mt et\"]")
-parser.add_option("--categories", dest="categories", default="0 1 2 3 5", type="string", help="List of all principally available event categories. The script will internally pick all event categories, which are present in the corresponding mass directory, but this string indicated what event categories will be checked for.. [Default: \"0 1 2 3 5\"]")
+                      description="Script to inject signal with fixed mass into a BG only hypothesis from simulation. The mass of the signal to be injected can be determined by option --mass. The data_obs histogram for each event category found in the input root file is rescaled and the datacard is ajusted accordingly. The data_obs histogram can be randomized. The signal can be scaled before injection. ARGS will be the mass values for the limit calculation for which the signal should be injected. Usial syntax works on this, e.g. 110-145:5.")
+parser.add_option("-i", "--in", dest="input", default="MY-LIMITS/cmb", type="string", help="Name of the input directory, where to find all inputfiles and datacards in the usual structure for limits calculation. [Default: MY-LIMITS/cmb]")
+parser.add_option("-o", "--out", dest="output", default="", type="string", help="Per default the root input file will be updated with the injected signal histograms. If you want to created an extra root input file containing the data_obs injected signal histograms you can give an output label for this file here. It will have the same name as the input file then extended by this label. The datacards will be adapted accordingly. An empty string will update the original root input file. [Default: \"\"]")
+parser.add_option("-m", "--mass", dest="mass_injected", default="125", type="string", help="Mass of the signal that should be injected into the background only hypothesis from simulation. [Default: 125]")
+parser.add_option("-s", "--signal-strength", dest="signal_strength", default="1", type="string", help="Strength of the signal that should be injected into the BG only hypothesis. The signal strength should be given as a scale factor of the signal strength in the original root input file. [Default: \"1\"]")
+parser.add_option("-r", "--random", dest="rnd", default="-1", type="int", help="To randomize the obtained yields in the data_obs histograms, enter random seed here. The value -1 will switch the randomization off. [Default: \"-1\"]")
 sub1 = OptionGroup(parser, "BACKGROUNDS", "Backgrounds to be considered to replace data_obs.")
 sub1.add_option("--backgrounds-mm", dest="backgrounds_mm", default="ZTT,ZMM,QCD,TTJ,WJets,Dibosons", type="string", help="List of backgrounds for mm channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"ZTT,ZMM,QCD,TTJ,WJets,Dibosons\"]")
 sub1.add_option("--backgrounds-em", dest="backgrounds_em", default="Fakes,EWK,ttbar,Ztt", type="string", help="List of backgrounds for em channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"Fakes,EWK,ttbar,Ztt\"]")
@@ -43,7 +40,7 @@ if len(args) < 1 :
 import os
 import re
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
-
+from HiggsAnalysis.HiggsToTauTau.utils import contained
 
 def output_to_list(basket) :
     line=""
@@ -59,7 +56,7 @@ def search_list(list, value) :
     return ("NONE", -999.)
 
 def adjust_datacard(datacard, new_values, new_file) :
-    print "doot", datacard, new_values, new_file
+    #print "adjust:", datacard, new_values, new_file
     old = open(datacard, 'r')
     new = open("tmp.txt", 'w')
     for line in old :
@@ -75,9 +72,10 @@ def adjust_datacard(datacard, new_values, new_file) :
                 new_words = words
                 new_words[1] = "data_obs"
                 new_words[3] = words[3][0:words[3].rfind('.')]+'_'+new_file+'.root'
-                print words[3]
                 new_line = " ".join(new_words)
+                new.write(line + '\n')
                 new.write(new_line + '\n')
+                continue
         new.write(line + '\n')
     old.close()
     new.close()
@@ -146,15 +144,42 @@ signals = {
     "wh" : options.signals_vhtt,
     "zh" : options.signals_vhtt,
     }
-## run periods
-periods = options.periods.split()
-for idx in range(len(periods)) : periods[idx] = periods[idx].rstrip(',')
-## channels
-channels = options.channels.split()
-for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
-## categories
-categories = options.categories.split()
-for idx in range(len(categories)) : categories[idx] = categories[idx].rstrip(',')
+
+## pick up the lists of channels, categories and periods from the files in the
+## pointed to input directory. Add some communiation on what is actually done.
+categories = []
+channels   = []
+periods    = []
+
+## detemine list of channels and list of periods from the datacards in the input
+## directory
+files = os.listdir("%s/%s" % (options.input, "125"))
+expr = r"htt_(?P<CHANNEL>\w+)_(?P<CATEGORY>[0-9]*)_(?P<PERIOD>[a-zA-Z0-9]*).txt"
+matcher = re.compile(expr)
+for file in files :
+    if not ".txt" in file :
+        continue
+    cat = matcher.match(file).group('CATEGORY')
+    chn = matcher.match(file).group('CHANNEL')
+    per = matcher.match(file).group('PERIOD')
+    if not contained(cat, categories) :
+        categories.append(cat)
+    if not contained(chn, channels) :
+        channels.append(chn)
+    if not contained(per, periods) :
+        periods.append(per)
+
+print "Picking up channels, categories and periods from datacards in input directory:", options.input
+print "------------------------------------------------------------------------------" 
+print "Expecting datacards of type htt_chn_cat_per.txt, with the following valid "
+print "variables: "
+print " - chn : em, et, mt, mm, tt"
+print " - cat : 0, 1, 2, 3, 5, 6, 7"
+print " - per : 7TeV, 8TeV, 14TeV"
+print "------------------------------------------------------------------------------" 
+print "Picked up categories are:", categories
+print "Picked up channels   are:", channels
+print "Picked up periods    are:", periods
 ## mapping out the yields
 yields_map = {}
 
@@ -239,15 +264,10 @@ for mass in parseArgs(args) :
                         print "adapting observation yield in datacard:", datacard
                     # Get name of bins
                     directories = get_bins(datacard)
-                    print datacard, directories
-
                     new_values = []
                     for dir in directories:
-                        #print directory, chn, per
-                        #print yields_map[(chn,per)]
-                        print chn, per, search_list(yields_map[(chn,per)].split(), dir)
+                        #print chn, per, search_list(yields_map[(chn,per)].split(), dir)
                         new_yield = search_list(yields_map[(chn,per)].split(), dir)[1]
                         new_values.append(new_yield)
-                        #print search_list(yields_map[(chn,per)].split(), directory)
                     adjust_datacard(datacard, new_values, options.output)
 
