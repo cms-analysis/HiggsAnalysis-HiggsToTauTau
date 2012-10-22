@@ -4,7 +4,7 @@ from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options]",
-                      description="Script to setup a set of script for statistical signal injection. The source directory for individual signal injections can be given by the option --inputs. This directory will be cloned in N subdirectories. N can be changed by --njob. in each subdirectory signal is injected statistically. Afterwards the limit calculation is run for each mass that is found in the subdirectory.")
+                      description="Script to setup a set of scripts for statistical signal injection. The source directory for individual signal injections can be given by the option --inputs. This directory will be cloned in N subdirectories. N can be changed by --njob. in each subdirectory signal is injected statistically. Afterwards the limit calculation is run for each mass that is found in the subdirectory.")
 parser.add_option("-n", "--name", dest="name", default="test-injection", type="string", help="Name of the output scripts. [Default: \"test-injected\"]")
 parser.add_option("-i", "--input", dest="input", default="TEST/INJECT-SIGNAL", type="string", help="Input directory that should be used as starting point for signal injection. [Default: \"TEST/INJECT-SIGNAL\"]")
 parser.add_option("--bsub", dest="bsub", default="-q 8nh", type="string", help="Submission arguments for batch queue. [Default: \"-q 8nh\"]")
@@ -47,8 +47,8 @@ echo "for random seed {RND}"
 cp -r {INPUT} {INPUT}_{JOBID}
 rm -r {INPUT}_{JOBID}/common/*.*
 cd {INPUT}_{JOBID}/common
-cp -s ../../../{INPUT}/common/*.* .
-cd ../../../
+cp -s ../../../../{INPUT}/common/*.* .
+cd ../../../../
 inject-signal.py -i {INPUT}_{JOBID} -o {JOBID} -r {RND} {MASSES}
 limit.py --asymptotic {OPTIONS} {INPUT}_{JOBID}/*
 '''
@@ -71,12 +71,13 @@ if options.collect :
             ))
         os.system("rm -r {INPUT}/{MASS}/batch_collected_*.root".format(INPUT=input, MASS=mass))
 else:
+    os.system("mkdir %s" % name)
     submit_name = '%s_submit.sh' % name
     with open(submit_name, 'w') as submit_script:
         for idx in range(int(njob)):
             rnd = random.randint(1, 999999)
             log.info("Generating script for limit.py with injected signal for job %g", idx)
-            script_file_name = '%s_%i.sh' % (name, idx)
+            script_file_name = '%s/%s_%i.sh' % (name, name, idx)
             with open(script_file_name, 'w') as script:
                 script.write(script_template.format(
                     WORKING_DIR = os.getcwd(),
@@ -87,5 +88,5 @@ else:
                     RND = rnd
                     ))
             os.system('chmod a+x %s' % script_file_name)
-            submit_script.write('bsub %s %s\n' % (bsubargs, script_file_name))
+            submit_script.write('bsub %s %s/%s\n' % (options.bsub, os.getcwd(), script_file_name))
     os.system('chmod a+x %s' % submit_name)

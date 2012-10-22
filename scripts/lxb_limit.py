@@ -69,7 +69,8 @@ with open(submit_name, 'w') as submit_script:
         if 'LSFJOB' in dir:
             continue
         log.info("Generating limit.py script for %s", dir)
-        script_file_name = '%s_%i.sh' % (name, i)
+        os.system("mkdir %s" % name)
+        script_file_name = '%s/%s_%i.sh' % (name, name, i)
         with open(script_file_name, 'w') as script:
             script.write(script_template.format(
                 working_dir = os.getcwd(),
@@ -77,5 +78,5 @@ with open(submit_name, 'w') as submit_script:
                 directory = dir
             ))
         os.system('chmod 755 %s' % script_file_name)
-        submit_script.write('bsub %s %s\n' % (bsubargs, script_file_name))
+        submit_script.write('bsub %s %s/%s\n' % (options.bsub, os.getcwd(), script_file_name))
 os.system('chmod 755 %s' % submit_name)
