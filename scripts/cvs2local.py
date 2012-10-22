@@ -123,7 +123,7 @@ if options.analysis == "sm" :
     }
 if options.analysis == "mssm" :
     valid_masses = {
-        "mm"   : (100, 500),
+        "mm"   : (100, 1000),
         "em"   : (100, 1000),
         "mt"   : (100, 1000),
         "et"   : (100, 1000),
