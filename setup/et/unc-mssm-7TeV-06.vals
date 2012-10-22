@@ -3,7 +3,7 @@
 eleTau_btag_low		signal            	lumi_7TeV            			1.022
 eleTau_btag_low		signal,ZTT,ZLL,TT,VV  	CMS_eff_e 				1.02
 eleTau_btag_low		signal,ZTT,VV  		CMS_eff_t 				1.07
-eleTau_btag_low 		TT	          	CMS_eff_b 				1.10
+eleTau_btag_low 	TT	          	CMS_eff_b 				1.10
 eleTau_btag_low	 	ggH,VH,qqH	        CMS_fake_b 				1.15
 eleTau_btag_low		signal,ZTT		CMS_scale_t   	        		1.00
 eleTau_btag_low      	ggH,bbH	  		CMS_scale_j 				1.04	
@@ -19,6 +19,6 @@ eleTau_btag_low		TT     		  	CMS_htt_ttbarNorm_btag_low_7TeV 	1.10
 eleTau_btag_low	 	VV	          	CMS_htt_et_btag_DiBosonNorm_7TeV 	1.50
 eleTau_btag_low		W	          	CMS_htt_WNorm_etau_btag_low_7TeV 	1.30
 eleTau_btag_low		ZTT,ZLL	          	CMS_htt_extrap_ztt_btag_low_7TeV	1.03
-eleTau_btag_low          	QCD	          	CMS_htt_QCDSyst_etau_btag_low_7TeV	1.30
-eleTau_btag_low          	ZLL	          	CMS_htt_ZLLNorm_etau_btag_low_7TeV	1.25
+eleTau_btag_low         QCD	          	CMS_htt_QCDSyst_etau_btag_low_7TeV	1.30
+eleTau_btag_low         ZLL	          	CMS_htt_ZLLNorm_etau_btag_low_7TeV	1.25
 
