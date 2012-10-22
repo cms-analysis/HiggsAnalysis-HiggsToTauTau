@@ -15,7 +15,7 @@ eleTau_btag_low		signal,background       CMS_eff_b_8TeV                  	1.09
 eleTau_btag_low		signal,background       CMS_fake_b_8TeV                 	1.02
 eleTau_btag_low		ZTT,ZLL,TT        	CMS_htt_zttNorm_8TeV 			1.03
 eleTau_btag_low		TT     		  	CMS_htt_ttbarNorm_8TeV 			1.10
-eleTau_btag_low	 	VV	          	CMS_htt_DiBosonNorm_8TeV 		1.50
+eleTau_btag_low	 	VV	          	CMS_htt_DiBosonNorm_8TeV 		1.30
 eleTau_btag_low		W	          	CMS_htt_WNorm_etau_btag_8TeV 		1.30
 eleTau_btag_low		ZTT,ZLL	          	CMS_htt_extrap_ztt_btag_8TeV		1.03
 eleTau_btag_low         QCD	          	CMS_htt_QCDSyst_etau_btag_8TeV		1.30
