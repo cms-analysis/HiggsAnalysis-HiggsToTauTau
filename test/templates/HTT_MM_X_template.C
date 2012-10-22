@@ -14,7 +14,7 @@
 #include <TAttLine.h>
 #include <TPaveText.h>
 
-#include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_3_3/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
 $DEFINE_MSSM
 
@@ -149,7 +149,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   TH1F* VH     = refill((TH1F*)input->Get(TString::Format("%s/VH125"   , directory)), "VH"   ); InitSignal(VH ); VH ->Scale(5);
 #endif
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data", true);
-  InitHist(data, "#bf{N_{Bin}}", "#bf{dN/dN_{bin}}"); InitData(data);
+  InitHist(data, "#bf{m_{#tau#tau} [GeV]}", "#bf{dN/dm_{#tau#tau} [1/GeV]}"); InitData(data);
 
   TH1F* ref=(TH1F*)ZTT->Clone("ref");
   ref->Add(ZMM  );
@@ -358,7 +358,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   rat1->SetMinimum(-1.5);
   rat1->GetYaxis()->CenterTitle();
   rat1->GetYaxis()->SetTitle("#bf{Data/MC-1}");
-  rat1->GetXaxis()->SetTitle("#bf{N_{Bins}}"); //2D distribution of m(tt) over m(mm) flattened to 1D 
+  rat1->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}"); 
   rat1->Draw();
   zero->SetLineColor(kBlack);
   zero->Draw("same");
@@ -386,7 +386,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   rat2->SetMinimum(-0.3);
   rat2->GetYaxis()->SetTitle("#bf{Fit/Prefit-1}");
   rat2->GetYaxis()->CenterTitle();
-  rat2->GetXaxis()->SetTitle("#bf{N_{Bins}}");
+  rat2->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}");
   rat2->GetXaxis()->SetRange(0, 28);
   rat2->Draw();
   zero->SetLineColor(kBlack);
@@ -458,7 +458,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   canv2->Print(TString::Format("%s_sample_%sscaled_%s_%s.pdf", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
   canv2->Print(TString::Format("%s_sample_%sscaled_%s_%s.eps", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
 
-
+std::cout<<"hi"<<std::endl;
 
   TFile* output = new TFile(TString::Format("%s_%sscaled_%s_%s.root", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""), "update");
   output->cd();
@@ -477,5 +477,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   qqH  ->Write("qqH"     );
   VH   ->Write("VH"      );
 #endif
+std::cout<<"ho"<<std::endl;
   output->Close();
+std::cout<<"hu"<<std::endl;
 }
