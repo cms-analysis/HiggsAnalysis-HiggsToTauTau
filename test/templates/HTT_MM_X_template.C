@@ -14,7 +14,7 @@
 #include <TAttLine.h>
 #include <TPaveText.h>
 
-#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_3_3/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
 $DEFINE_MSSM
 
@@ -290,7 +290,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   data->Draw("esame");
   canv->RedrawAxis();
 
-  CMSPrelim(dataset, "#tau_{mu}#tau_{#mu}", 0.17, 0.835);
+  CMSPrelim(dataset, "#tau_{#mu}#tau_{#mu}", 0.17, 0.835);
   
 
 #ifdef MSSM  
