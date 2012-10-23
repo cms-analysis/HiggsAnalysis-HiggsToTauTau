@@ -98,7 +98,7 @@ void rescale(TH1F* hin, unsigned int idx)
   case  4: // ZJ [EWK2]
   $ZJ
   case  5: // ZL [EWK3]
-  $ZL
+//$ZL
   case  6: // VV [EWK ]
   $VV
   case  7: // QCD
@@ -136,7 +136,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   TH1F* Fakes  = refill((TH1F*)input->Get(TString::Format("%s/QCD"   , directory)), "QCD"); InitHist(Fakes, "", "", kMagenta-10, 1001);
   TH1F* EWK1   = refill((TH1F*)input->Get(TString::Format("%s/W"     , directory)), "W"  ); InitHist(EWK1 , "", "", kRed    + 2, 1001);
   TH1F* EWK2   = refill((TH1F*)input->Get(TString::Format("%s/ZJ"    , directory)), "ZJ" ); InitHist(EWK2 , "", "", kRed    + 2, 1001);
-  TH1F* EWK3   = refill((TH1F*)input->Get(TString::Format("%s/ZL"    , directory)), "ZL" ); InitHist(EWK3 , "", "", kRed    + 2, 1001);
+//TH1F* EWK3   = refill((TH1F*)input->Get(TString::Format("%s/ZL"    , directory)), "ZL" ); InitHist(EWK3 , "", "", kRed    + 2, 1001);
   TH1F* EWK    = refill((TH1F*)input->Get(TString::Format("%s/VV"    , directory)), "VV" ); InitHist(EWK  , "", "", kRed    + 2, 1001);
   TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/TT"    , directory)), "TT" ); InitHist(ttbar, "", "", kBlue   - 8, 1001);
   TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/ZTT"   , directory)), "ZTT"); InitHist(Ztt  , "", "", kOrange - 4, 1001);
@@ -157,7 +157,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   TH1F* ref=(TH1F*)Fakes->Clone("ref");
   ref->Add(EWK1 );
   ref->Add(EWK2 );
-  ref->Add(EWK3 );
+//ref->Add(EWK3 );
   ref->Add(ttbar);
   ref->Add(Ztt  );
 
@@ -166,7 +166,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   unscaled[1] = EWK  ->Integral();
   unscaled[1]+= EWK1 ->Integral();
   unscaled[1]+= EWK2 ->Integral();
-  unscaled[1]+= EWK3 ->Integral();
+//unscaled[1]+= EWK3 ->Integral();
   unscaled[2] = ttbar->Integral();
   unscaled[3] = Ztt  ->Integral();
 #ifdef MSSM
@@ -183,7 +183,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
     rescale(Fakes, 7); 
     rescale(EWK1 , 3); 
     rescale(EWK2 , 4); 
-    rescale(EWK3 , 5);
+  //rescale(EWK3 , 5);
     rescale(EWK  , 6); 
     rescale(ttbar, 2); 
     rescale(Ztt  , 1);
@@ -204,7 +204,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   scales[1]->SetBinContent(2, unscaled[1]>0 ? ((EWK  ->Integral()
 					       +EWK1 ->Integral()
 					       +EWK2 ->Integral()
-					       +EWK3 ->Integral()
+					      //+EWK3 ->Integral()
 						)/unscaled[1]-1.) : 0.);
   scales[2] = new TH1F("scales-ttbar", "", 7, 0, 7);
   scales[2]->SetBinContent(3, unscaled[2]>0 ? (ttbar->Integral()/unscaled[2]-1.) : 0.);
@@ -228,8 +228,9 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 
   EWK1 ->Add(Fakes);
   EWK2 ->Add(EWK1 );
-  EWK3 ->Add(EWK2 );
-  EWK  ->Add(EWK3 );
+//EWK3 ->Add(EWK2 );
+//EWK  ->Add(EWK3 );
+  EWK  ->Add(EWK2 );
   ttbar->Add(EWK  );
   Ztt  ->Add(ttbar);
   if(log){
