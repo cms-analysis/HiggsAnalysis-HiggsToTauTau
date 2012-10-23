@@ -3,14 +3,13 @@
 from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
-parser = OptionParser(usage="usage: %prog [options]",
-                      description="Script to setup a set of scripts for statistical signal injection. The source directory for individual signal injections can be given by the option --inputs. This directory will be cloned in N subdirectories. N can be changed by --njob. in each subdirectory signal is injected statistically. Afterwards the limit calculation is run for each mass that is found in the subdirectory.")
+parser = OptionParser(usage="usage: %prog [options] ARGS",
+                      description="Script to setup a set of scripts for statistical signal injection. The source directory for individual signal injections can be given by the option --inputs. This directory will be cloned in N subdirectories. N can be changed by --njob. in each subdirectory signal is injected statistically. Afterwards the limit calculation is run for each mass that is found in the subdirectory. ARGS corresponds to the masses which are to be analysed.")
 parser.add_option("-n", "--name", dest="name", default="test-injection", type="string", help="Name of the output scripts. [Default: \"test-injected\"]")
 parser.add_option("-i", "--input", dest="input", default="TEST/INJECT-SIGNAL", type="string", help="Input directory that should be used as starting point for signal injection. [Default: \"TEST/INJECT-SIGNAL\"]")
 parser.add_option("--bsub", dest="bsub", default="-q 8nh", type="string", help="Submission arguments for batch queue. [Default: \"-q 8nh\"]")
 
 parser.add_option("--njob", dest="njob", default="100", type="string", help="Number of jobs for which to inject signal. [Default: \"100\"]")
-parser.add_option("--masses", dest="masses", default="110-145:5", type="string", help="Masses argument for signal injection. [Default: \"100-145:5\"]")
 parser.add_option("--options", dest="opts", default="--observedOnly", type="string", help="Options for limit calculation with limit.py. [Default: \"--observedOnly\"]")
 parser.add_option("--collect", dest="collect", default=False,  action="store_true", help="Collect the individual jobs of a single batch submission. [Default: False)")
 ## check number of arguments; in case print usage
@@ -29,7 +28,6 @@ name     = options.name
 bsubargs = options.bsub
 input    = options.input
 njob     = options.njob
-masses   = options.masses
 opts     = options.opts
 
 random.seed()
@@ -38,8 +36,6 @@ script_template = '''
 #!/usr/bin/env python
 
 import os
-os.system("cd {PWD}")
-os.system("eval `scram runtime -sh`")
 
 print "Running limit.py with signal injected:"
 print "with options {OPTS}"
@@ -47,20 +43,19 @@ print "for directory {PATH}/{DIR}"
 print "for random seed {RND}"
 print "for masses {MASSES}"
 
-os.system("cd /tmp/{USER}")
 os.system("cp -r {PWD}/{PATH}/{DIR} /tmp/{USER}/{DIR}_{JOBID}")
 os.system("inject-signal.py -i /tmp/{USER}/{DIR}_{JOBID} -o {JOBID} -r {RND} {MASSES}")
 os.system("limit.py --asymptotic {OPTS} /tmp/{USER}/{DIR}_{JOBID}/*")
 
 masses = "{MASSES}".split()
-print masses
 for m in masses :
     os.system("cp /tmp/{USER}/{DIR}_{JOBID}/%s/higgsCombine-obs.Asymptotic.mH%s.root {PWD}/{PATH}/{DIR}/%s/higgsCombine-obs.Asymptotic.mH%s-{JOBID}.root" % (m, m, m, m))
+os.system("rm -r /tmp/{USER}/{DIR}_{JOBID}")
 '''
 
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
 
-
+masses = args[0]
 masses_str = []
 for mass in parseArgs([masses]) :
     masses_str.append(str(mass))
@@ -100,9 +95,8 @@ else:
                     JOBID = idx,
                     RND = rnd
                     ))
-            #shell_script = "echo \"python "+script_file_name+"\" > "+script_file_name.replace('.py', '.sh')
-            os.system("echo \"python "+script_file_name+"\" > "+script_file_name.replace('.py', '.sh'))
-            #print shell_script
+            os.system("echo \"cd {PWD}; eval \`scram runtime -sh\`\" >".format(PWD=os.getcwd())+script_file_name.replace('.py', '.sh'))
+            os.system(("#echo \"python %s/%s" % (os.getcwd(), script_file_name))+"\" >> "+script_file_name.replace('.py', '.sh'))
             os.system('chmod a+x %s' % script_file_name.replace('.py', '.sh'))
             submit_script.write('bsub %s %s/%s\n' % (options.bsub, os.getcwd(), script_file_name.replace('.py', '.sh')))
     os.system('chmod a+x %s' % submit_name)
