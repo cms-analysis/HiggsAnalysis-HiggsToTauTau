@@ -116,7 +116,7 @@ if options.setup == "htt-mssm" :
                 os.system("submit-slave.py --bin combine --method CLs -n 11 --min  0.005  --max  0.105 --toysH 100 -t 200 -j 100 --random --server --priority %s %s" % (options.opt, vec2str(subvec(args, 350, 500))))
                 os.system("submit-slave.py --bin combine --method CLs -n 11 --min  0.130  --max  0.380 --toysH 100 -t 200 -j 100 --random --server --priority %s %s" % (options.opt, vec2str(subvec(args, 350, 500))))
                 os.system("submit-slave.py --bin combine --method CLs -n 11 --min  0.500  --max  1.700 --toysH 100 -t 200 -j 100 --random --server --priority %s %s" % (options.opt, vec2str(subvec(args, 350, 500))))
-             if len(subvec(args, 600, 1000))>0 :
+            if len(subvec(args, 600, 1000))>0 :
                 os.system("submit-slave.py --bin combine --method CLs -n 11 --min  0.005  --max  0.105 --toysH 100 -t 200 -j 100 --random --server --priority %s %s" % (options.opt, vec2str(subvec(args, 600, 1000))))
                 os.system("submit-slave.py --bin combine --method CLs -n 11 --min  0.130  --max  0.380 --toysH 100 -t 200 -j 100 --random --server --priority %s %s" % (options.opt, vec2str(subvec(args, 600, 1000))))
                 os.system("submit-slave.py --bin combine --method CLs -n 11 --min  0.500  --max  1.700 --toysH 100 -t 200 -j 100 --random --server --priority %s %s" % (options.opt, vec2str(subvec(args, 600, 1000))))
