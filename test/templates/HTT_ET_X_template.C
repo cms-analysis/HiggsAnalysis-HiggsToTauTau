@@ -96,7 +96,7 @@ void rescale(TH1F* hin, unsigned int idx)
   case  2: // TT
   $TT
   case  3: // W  [EWK1]
-  $W"em" : "e#mu",
+  $W
 #if defined EXTRA_SAMPLES
   case  4: // ZJ [EWK2]
   $ZJ
