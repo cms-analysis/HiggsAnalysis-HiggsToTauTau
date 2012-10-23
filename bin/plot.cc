@@ -149,8 +149,12 @@ int main(int argc, char* argv[])
     plot.plot(*canv, inner, outer, expected, observed);
   }
   if( std::string(argv[1]) == std::string("significance") ){
-    /// observed limit remains empty for this execise; for 
-    /// expected limit 'median' and 'mean' are sensible parameters
+    /// observed limit 
+    TGraph* observed  = 0;
+    if(!expected_only){
+      observed = new TGraph();
+      plot.fillCentral(directory, observed, "higgsCombineTest.ProfileLikelihood.mH$MASS");
+    }
     TGraph* expected  = new TGraph();
     plot.fillCentral(directory, expected, "median");
     /// 1-sigma uncertainty band
@@ -162,7 +166,7 @@ int main(int argc, char* argv[])
     /// make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
-    plot.plot(*canv, inner, outer, expected);
+    plot.plot(*canv, inner, outer, expected, observed);
   }
   if( std::string(argv[1]) == std::string("asymptotic") ){
     /// observed limit 

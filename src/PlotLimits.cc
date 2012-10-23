@@ -30,7 +30,7 @@ PlotLimits::prepareSimple(const char* directory, std::vector<double>& values, co
     std::string buffer = std::string(filename);
     std::string filehead = buffer.substr(0, buffer.find("$MASS"));
     std::string filetail = buffer.substr(buffer.find("$MASS")+5, std::string::npos);
-    TString fullpath(TString::Format("%s/%d/%smH%d%s.root", directory, (int)bins_[imass], filehead.c_str(), (int)bins_[imass], filetail.c_str()));
+    TString fullpath(TString::Format("%s/%d/%s%d%s.root", directory, (int)bins_[imass], filehead.c_str(), (int)bins_[imass], filetail.c_str()));
     if(verbosity_>0) std::cout << "INFO: opening file " << fullpath << std::endl;
     TFile* file = new TFile(fullpath);
     if(file->IsZombie()){
@@ -263,7 +263,7 @@ PlotLimits::prepareMaxLikelihood(const char* directory, std::vector<double>& val
     std::string buffer = std::string(filename);
     std::string filehead = buffer.substr(0, buffer.find("$MASS"));
     std::string filetail = buffer.substr(buffer.find("$MASS")+5, std::string::npos);
-    TString fullpath(TString::Format("%s/%d/%smH%d%s.root", directory, (int)bins_[imass], filehead.c_str(), (int)bins_[imass], filetail.c_str()));
+    TString fullpath(TString::Format("%s/%d/%s%d%s.root", directory, (int)bins_[imass], filehead.c_str(), (int)bins_[imass], filetail.c_str()));
     if(verbosity_>0) std::cout << "INFO: opening file " << fullpath << std::endl;
     TFile* file = new TFile(fullpath);
     if(file->IsZombie()){
