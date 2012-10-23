@@ -283,8 +283,9 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 
   canv->cd();
   if(log){ canv->SetLogy(1); }
-  // reduce the axis range if necessary
-  //data->GetXaxis()->SetRange(0, 28);
+#if defined MSSM
+  data->GetXaxis()->SetRange(0, 25);
+#endif
   data->SetNdivisions(505);
   data->SetMinimum(min);
   data->SetMaximum(max>0 ? max : maximum(Ztt, log));
