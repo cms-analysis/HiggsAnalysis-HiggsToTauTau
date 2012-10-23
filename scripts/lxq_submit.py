@@ -13,11 +13,11 @@ a separate batch job.  NB the use of quotes about ARG_GLOB.
 
 Example:
 
-    submit.py --method tanb+ --options '--interpolation=mode-0' cmb/*
+    submit.py --method tanb+ --options '--interpolation=mode-1' cmb/*
 
 would become
 
-    lxq_submit.py cmb_create "cmb/*" "--method tanb+" "--options '--interpolation=mode-0'"
+    lxq_submit.py cmb_create "cmb/*" "--method tanb+" "--options '--interpolation=mode-1'"
 
 which is then submitted by:
 
@@ -30,7 +30,7 @@ import logging
 import os
 import sys
 
-log = logging.getLogger("lxb_submit")
+log = logging.getLogger("lxq_submit")
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 if len(sys.argv) < 4:
@@ -76,5 +76,5 @@ with open(submit_name, 'w') as submit_script:
                 directory = dir
             ))
         os.system('chmod 755 %s' % script_file_name)
-        submit_script.write('qsub -l site=hh -j y -o /dev/null -v scram_arch -v cmssw_base %s\n' % script_file_name)
+        submit_script.write('qsub -l site=hh -j y -o /dev/null -l h_vmem=4000M -v scram_arch -v cmssw_base %s\n' % script_file_name)
 os.system('chmod 755 %s' % submit_name)
