@@ -261,12 +261,18 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   canv->cd();
   if(log){ canv->SetLogy(1); }
 #if defined MSSM
-  data->GetXaxis()->SetRange(0, 25);
+  data->GetXaxis()->SetRange(0, data->FinBin(500));
 #endif
   data->SetNdivisions(505);
   data->SetMinimum(min);
   data->SetMaximum(max>0 ? max : maximum(WJets, log));
   data->Draw("e");
+
+  TH1F* errorBand = (TH1F*)ZTT ->Clone();
+  errorBand  ->SetMarkerSize(0);
+  errorBand  ->SetFillColor(1);
+  errorBand  ->SetFillStyle(3013);
+  errorBand  ->SetFillWidth(1);
 
   if(log){
     WJets->Draw("same");
@@ -459,8 +465,6 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   canv2->Print(TString::Format("%s_sample_%sscaled_%s_%s.pdf", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
   canv2->Print(TString::Format("%s_sample_%sscaled_%s_%s.eps", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
 
-std::cout<<"hi"<<std::endl;
-
   TFile* output = new TFile(TString::Format("%s_%sscaled_%s_%s.root", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""), "update");
   output->cd();
   data ->Write("data_obs");
@@ -478,7 +482,5 @@ std::cout<<"hi"<<std::endl;
   qqH  ->Write("qqH"     );
   VH   ->Write("VH"      );
 #endif
-std::cout<<"ho"<<std::endl;
   output->Close();
-std::cout<<"hu"<<std::endl;
 }

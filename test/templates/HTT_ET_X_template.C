@@ -284,12 +284,18 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   canv->cd();
   if(log){ canv->SetLogy(1); }
 #if defined MSSM
-  data->GetXaxis()->SetRange(0, 25);
+  data->GetXaxis()->SetRange(0, data->FinBin(500));
 #endif
   data->SetNdivisions(505);
   data->SetMinimum(min);
   data->SetMaximum(max>0 ? max : maximum(Ztt, log));
   data->Draw("e");
+
+  TH1F* errorBand = (TH1F*)Ztt ->Clone();
+  errorBand  ->SetMarkerSize(0);
+  errorBand  ->SetFillColor(1);
+  errorBand  ->SetFillStyle(3013);
+  errorBand  ->SetFillWidth(1);
 
   if(log){
     Ztt  ->Draw("histsame");

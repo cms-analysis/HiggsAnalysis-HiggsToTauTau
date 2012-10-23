@@ -136,8 +136,10 @@ class Analysis:
 		             input = TFile("root/"+self.histfile)
 		             for key in input.GetListOfKeys():
 		               if self.category in key.GetName():
-			           histname=key.GetName()+"/"+word_arr[0].strip("$ ")
+                                   remnant = cand_str.rstrip(process_name)
+			           histname=key.GetName()+"/"+word_arr[0][len(remnant)+2:]
                              hist = input.Get(histname)
+                             #print histname
                              for bin in range(1,hist.GetNbinsX()+1):
 		               if not process_name+str(bin) in uncertainties_set:
 			         uncertainties_set+=[process_name+str(bin)]
@@ -148,7 +150,10 @@ class Analysis:
                                      print out_line
 	     if options.shapes:
                for process_name in self.process_shape_weight.keys():
-                 cand_str = "$%s" % process_name
+                 if self.signal_process(process_name) :
+                     cand_str = "${%s}%s" % (options.analysis.upper() , process_name)
+                 else :
+                     cand_str = "$%s" % process_name
                  output_cand = ""
                  if line.strip().startswith(cand_str):
                      curr_name = process_name
@@ -156,10 +161,12 @@ class Analysis:
 		       input = TFile("root/"+self.histfile)
 		       for key in input.GetListOfKeys():
 		           if self.category in key.GetName():
-			       histname=key.GetName()+"/"+word_arr[0].strip("$ ")
+                               remnant = cand_str.rstrip(process_name)
+			       histname=key.GetName()+"/"+word_arr[0][len(remnant)+2:]
                        hist = input.Get(histname)
                        hist_down = input.Get(histname+"_"+shape_name+"Down")
                        hist_up = input.Get(histname+"_"+shape_name+"Up")
+                       #print histname
                        for bin in range(1,hist.GetNbinsX()+1):
 		         shift = self.process_shape_weight[curr_name][shape_name]
                          out_line = ''

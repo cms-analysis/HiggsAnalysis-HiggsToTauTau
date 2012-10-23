@@ -125,9 +125,11 @@ def parse_dcard(datacard,fitres,bin_name="ANYBIN"):
                        sigma = 0.0
                    #print processes[index],factor_name,"Uncertainty: ",uncert,"Sigma variations: ",svar,"Total: ",1+uncert*svar
                    new_weight = 1 + uncert*svar
+                   if fit_type.strip() == "gmN":
+                       new_weight = 1 + svar
                    if new_weight<0:
                        new_weight = 0
-                       print "SETTING WEIGHT TO 0... NEGATIVE WEIGHT FOUND"
+                       print "SETTING WEIGHT TO 0... NEGATIVE WEIGHT FOUND", processes[index], factor_name, uncert, svar
 		   if fit_type.strip() == "lnN":
                        process_weights[processes[index]]*= new_weight #multiply the existing weight by the new weight.
                        process_uncertainties[processes[index]]+= pow(uncert*sigma,2)
