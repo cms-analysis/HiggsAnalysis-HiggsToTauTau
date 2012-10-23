@@ -17,7 +17,7 @@
 #include "TCanvas.h"
 #include "TSpline.h"
 
-#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_3_3/src/HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
+#include "HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
 
 
 /// typedef CrossPoint to a bin plus flag on falling or rising intercept, true for falling
