@@ -17,8 +17,5 @@ mumu_0jet_high			TTJ				CMS_htt_ttbarNorm_8TeV			1.10
 mumu_0jet_high			Dibosons			CMS_htt_mm_DiBosonNorm_8TeV		2.00
 mumu_0jet_high			ZTT				CMS_htt_mm_zttLikelihood_8TeV		1.035
 mumu_0jet_high			ZMM				CMS_htt_mm_zmmNorm_8TeV			1.06
-#mumu_0jet_high			ggH				CMS_htt_mm_ggH_MCStat_01_8TeV		1.055
-#mumu_0jet_high			qqH				CMS_htt_mm_qqH_MCStat_01_8TeV		1.085
-#mumu_0jet_high			VH				CMS_htt_mm_VH_MCStat_01_8TeV		1.044
 mumu_0jet_high			QCD				CMS_htt_mm_QCDNorm_01_8TeV		1.13
 mumu_0jet_high			ZTT				CMS_htt_extrap_ztt_0jet_high_8TeV	1.03

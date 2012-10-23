@@ -7,10 +7,7 @@ mumu_0jet_low			signal,ZMM,TTJ,WJets,Dibosons 	CMS_eff_b_8TeV 				0.99
 mumu_0jet_low			signal,ZMM,TTJ,WJets,Dibosons 	CMS_fake_b_8TeV 			0.99
 mumu_0jet_low			ZTT				CMS_htt_zttNorm_8TeV 			1.03
 mumu_0jet_low			TTJ				CMS_htt_ttbarNorm_8TeV			1.10
-mumu_0jet_low			Dibosons			CMS_htt_mm_0jet_DiBosonNorm_8TeV		2.00
+mumu_0jet_low			Dibosons			CMS_htt_DiBosonNorm_8TeV		2.00
 mumu_0jet_low			ZTT				CMS_htt_mm_zttLikelihood_8TeV		1.034
 mumu_0jet_low			ZMM				CMS_htt_mm_zmmNorm_8TeV			1.06
-#mumu_0jet_low			ggH				CMS_htt_mm_ggH_MCStat_00_8TeV		1.09
-#mumu_0jet_low			qqH				CMS_htt_mm_qqH_MCStat_00_8TeV		1.08
-#mumu_0jet_low			VH				CMS_htt_mm_VH_MCStat_00_8TeV		1.17
 mumu_0jet_low			QCD				CMS_htt_mm_QCDNorm_00_8TeV		1.15
