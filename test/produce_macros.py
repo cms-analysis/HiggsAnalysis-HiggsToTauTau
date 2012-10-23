@@ -259,7 +259,7 @@ category_mapping = {
 for chn in channels :
     for per in periods :
         for cat in categories[chn] :
-            histfile = "htt_{CHN}.input_{PER}.root".format(CHN=chn, PER=per) if options.analysis == "sm" else "htt_{CHN}.inputs-mssm-{PER}-0.root".format(CHN=chn, PER=per)
+            histfile = "htt_{CHN}.input_{PER}.root".format(CHN=chn, PER=per) if options.analysis == "sm" else "htt_{CHN}.inputs-mssm-{PER}.root".format(CHN=chn, PER=per)
             if chn == "mm" :
                 ## there is one speciality for mm, which need special input files
                 histfile.replace(".root", "-svfit.root")
