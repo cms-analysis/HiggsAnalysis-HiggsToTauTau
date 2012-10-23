@@ -293,7 +293,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   errorBand  ->SetMarkerSize(0);
   errorBand  ->SetFillColor(1);
   errorBand  ->SetFillStyle(3013);
-  errorBand  ->SetFillWidth(1);
+  errorBand  ->SetLineWidth(1);
 
   if(log){
     Ztt  ->Draw("histsame");

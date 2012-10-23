@@ -131,12 +131,12 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "#sqrt{s} = 8 TeV, L = 12.0 fb^{-1}";}
   
   TFile* input = new TFile(inputfile);
-  TH1F* ZTT = refill((TH1F*)input->Get(TString::Format("%s/ZTT"   , directory)), "ZTT"); InitHist(ZTT, "", "", kGreen-4, 1001);
+  TH1F* ZTT = refill((TH1F*)input->Get(TString::Format("%s/ZTT"   , directory)), "ZTT"); InitHist(ZTT, "", "", kOrange-4, 1001);
   TH1F* ZMM    = refill((TH1F*)input->Get(TString::Format("%s/ZMM"     , directory)), "ZMM"); InitHist(ZMM  , "", "", kYellow-4, 1001);
-  TH1F* TTJ  = refill((TH1F*)input->Get(TString::Format("%s/TTJ"   , directory)), "TTJ"); InitHist(TTJ, "", "", kMagenta-10, 1001);
-  TH1F* QCD    = refill((TH1F*)input->Get(TString::Format("%s/QCD"     , directory)), "QCD"); InitHist(QCD  , "", "", kRed    + 2, 1001);
-  TH1F* Dibosons  = refill((TH1F*)input->Get(TString::Format("%s/Dibosons"   , directory)), "Dibosons"); InitHist(Dibosons, "", "", kBlue   - 8, 1001);
-  TH1F* WJets    = refill((TH1F*)input->Get(TString::Format("%s/WJets"     , directory)), "WJets"); InitHist(WJets  , "", "", kOrange - 4, 1001);
+  TH1F* TTJ  = refill((TH1F*)input->Get(TString::Format("%s/TTJ"   , directory)), "TTJ"); InitHist(TTJ, "", "", kBlue-8, 1001);
+  TH1F* QCD    = refill((TH1F*)input->Get(TString::Format("%s/QCD"     , directory)), "QCD"); InitHist(QCD  , "", "", kMagenta - 10, 1001);
+  TH1F* Dibosons  = refill((TH1F*)input->Get(TString::Format("%s/Dibosons"   , directory)), "Dibosons"); InitHist(Dibosons, "", "", kRed + 2, 1001);
+  TH1F* WJets    = refill((TH1F*)input->Get(TString::Format("%s/WJets"     , directory)), "WJets"); InitHist(WJets  , "", "", kGreen - 4, 1001);
 #ifdef MSSM
   float ggHScale = 1., bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=8
   if(std::string(inputfile).find("7TeV")!=std::string::npos){ ggHScale = 130.*0.11/1000.; bbHScale = 403.*0.11/1000.; }
@@ -268,11 +268,11 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   data->SetMaximum(max>0 ? max : maximum(WJets, log));
   data->Draw("e");
 
-  TH1F* errorBand = (TH1F*)ZTT ->Clone();
+  TH1F* errorBand = (TH1F*)WJets ->Clone();
   errorBand  ->SetMarkerSize(0);
   errorBand  ->SetFillColor(1);
   errorBand  ->SetFillStyle(3013);
-  errorBand  ->SetFillWidth(1);
+  errorBand  ->SetLineWidth(1);
 
   if(log){
     WJets->Draw("same");
