@@ -459,7 +459,9 @@ for directory in args :
                 minuitopt = "--minimizerAlgo minuit"
             stableopt = ""
             if options.stable :
-                stableopt = "--robustFit=1 --stepSize=0.5  --minimizerStrategy=0 --minimizerTolerance=0.1 --preFitValue=0.1  --X-rtd FITTER_DYN_STEP  --cminFallbackAlgo=\"Minuit;0.001\" "            ## set up grid points in case of likelihood scan (option --grid)
+                stableopt = "--robustFit=1 --stepSize=0.5  --minimizerStrategy=0 --minimizerTolerance=0.1 --preFitValue=0.1  --X-rtd FITTER_DYN_STEP  --cminFallbackAlgo=\"Minuit;0.001\" "
+                stableopt+= "--rMin {MIN} --rMax {MAX} ".format(MIN=options.rMin, MAX=options.rMax)
+            ## set up grid points in case of likelihood scan (option --grid)
             gridpoints = ""
             if options.fitAlgo == "grid" :
                 if options.firstPoint == "" :
