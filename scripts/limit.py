@@ -490,17 +490,20 @@ for directory in args :
             os.system("rm batch_collected.root")
         os.system("hadd batch_collected.root batch_collected_*.root")
         os.system("rm batch_collected_*.root")
+        ## in case there were no batch jobs run run interactively
+        ## combine datacard from all datacards in this directory
+        os.system("combineCards.py -S *.txt > tmp.txt")
+        ## prepare binary workspace
+        mass_value = directory[directory.rfind("/")+1:]
+        mass_fixed = options.fixed_mass if options.fixed_mass!="" else mass_value
+        os.system("text2workspace.py --default-morphing=%s -m %s -b tmp.txt -o tmp.root"% (options.shape, mass_fixed))
         if file==0 :
-            ## in case there were no batch jobs run run interactively
-            ## combine datacard from all datacards in this directory
-            os.system("combineCards.py -S *.txt > tmp.txt")
-            ## prepare binary workspace
-            mass_value = directory[directory.find("/")+1:]
-            mass_fixed = options.fixed_mass if options.fixed_mass!="" else mass_value
-            os.system("text2workspace.py --default-morphing=%s -m %s -b tmp.txt -o tmp.root"% (options.shape, mass_fixed))
             ## calculate significance, batch_collected.root is the output file name expected by plot.cc
             os.system("combine -M ProfileLikelihood -t {toys} --significance --signalForSignificance={sig} -m {mass} -n batch_collected.root tmp.root".format(
                 toys=options.toys, sig=options.signal_strength, mass=mass_value))
+        ## calc observed significance
+        print "combine -M ProfileLikelihood --significance -m {mass} tmp.root".format(mass=mass_value) 
+        os.system("combine -M ProfileLikelihood --significance -m {mass} tmp.root".format(mass=mass_value))
     if options.prepMSSMxsec :
         ## prepare mass argument for limit calculation if configured such
         idx = directory.rfind("/")
