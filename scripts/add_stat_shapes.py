@@ -39,8 +39,13 @@ def walk_and_copy(inputdir, outputdir, matchers, threshold, prefix):
             do_shapes = False
             path = inputdir.GetPath().split(':')[1]
             full_path = os.path.join(path, histo)
+            # A version without a leading slash
+            rel_path = full_path if full_path[0] != '/' else full_path[1:]
+            #print rel_path
             for pattern in matchers:
-                if fnmatch.fnmatch(histo, pattern) or fnmatch.fnmatch(full_path, pattern):
+                if fnmatch.fnmatch(histo, pattern) or \
+                   fnmatch.fnmatch(full_path, pattern) or \
+                   fnmatch.fnmatch(rel_path, pattern) :
                     do_shapes = True
                     break
             if do_shapes:
