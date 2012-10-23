@@ -96,7 +96,7 @@ else:
                     RND = rnd
                     ))
             os.system("echo \"cd {PWD}; eval \`scram runtime -sh\`\" >".format(PWD=os.getcwd())+script_file_name.replace('.py', '.sh'))
-            os.system(("#echo \"python %s/%s" % (os.getcwd(), script_file_name))+"\" >> "+script_file_name.replace('.py', '.sh'))
+            os.system(("echo \"python %s/%s" % (os.getcwd(), script_file_name))+"\" >> "+script_file_name.replace('.py', '.sh'))
             os.system('chmod a+x %s' % script_file_name.replace('.py', '.sh'))
             submit_script.write('bsub %s %s/%s\n' % (options.bsub, os.getcwd(), script_file_name.replace('.py', '.sh')))
     os.system('chmod a+x %s' % submit_name)
