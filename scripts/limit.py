@@ -232,18 +232,18 @@ for directory in args :
             if re.match(r"batch_\d+(.\d\d)?.root", wsp) :
                 if not options.expectedOnly :
                     ## observed limit
-                    os.system("combine %s -M HybridNew -m %s --noUpdateGrid --freq --grid=batch_collected.root" % (wsp, masspoint))
+                    os.system("combine %s -M HybridNew -m %s --fullGrid --noUpdateGrid --freq --grid=batch_collected.root" % (wsp, masspoint))
                 if not options.observedOnly :
                     ## expected -2sigma
-                    os.system("combine %s -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.0275" % (wsp, masspoint))
+                    os.system("combine %s -M HybridNew -m %s --freq --fullGrid --grid=batch_collected.root --expectedFromGrid 0.0275" % (wsp, masspoint))
                     ## expected -1sigma
-                    os.system("combine %s -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.1600" % (wsp, masspoint))
+                    os.system("combine %s -M HybridNew -m %s --freq --fullGrid --grid=batch_collected.root --expectedFromGrid 0.1600" % (wsp, masspoint))
                     ## expected median
-                    os.system("combine %s -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.5000" % (wsp, masspoint))
+                    os.system("combine %s -M HybridNew -m %s --freq --fullGrid --grid=batch_collected.root --expectedFromGrid 0.5000" % (wsp, masspoint))
                     ## expected +1sigma
-                    os.system("combine %s -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.8400" % (wsp, masspoint))
+                    os.system("combine %s -M HybridNew -m %s --freq --fullGrid --grid=batch_collected.root --expectedFromGrid 0.8400" % (wsp, masspoint))
                     ## expected +2sigma
-                    os.system("combine %s -M HybridNew -m %s --freq --grid=batch_collected.root --expectedFromGrid 0.9750" % (wsp, masspoint))
+                    os.system("combine %s -M HybridNew -m %s --freq --fullGrid --grid=batch_collected.root --expectedFromGrid 0.9750" % (wsp, masspoint))
                 ## break after first success (assuming that all workspaces are fine to do the interpolation)
                 break
     if options.prepTanB_fast :
