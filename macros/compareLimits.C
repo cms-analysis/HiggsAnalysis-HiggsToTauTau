@@ -278,7 +278,8 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       hexp[i]->GetXaxis()->SetTitleFont(62);
       hexp[i]->GetXaxis()->SetTitleColor(1);
       hexp[i]->GetXaxis()->SetTitleOffset(1.05);
-      
+      if(std::string(type) == std::string("mssm-tanb")) hexp[i]->GetYaxis()->SetRangeUser(0,70);
+
       // format y-axis
       std::string y_title;
       if( std::string(type) == std::string("mssm-xsec") ){
@@ -333,6 +334,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       hobs[i]->GetXaxis()->SetTitleFont(62);
       hobs[i]->GetXaxis()->SetTitleColor(1);
       hobs[i]->GetXaxis()->SetTitleOffset(1.05);
+      if(std::string(type) == std::string("mssm-tanb")) hexp[i]->GetYaxis()->SetRangeUser(0,70);
       
       // format y-axis
       std::string y_title;
@@ -368,14 +370,27 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     TLegend* leg1;
     if(expected && observed){
       /// setup the CMS Preliminary
-      if (firstLeg) CMSPrelim(label, "", 0.15, 0.835);
-      leg1 = new TLegend(firstLeg ? 0.60 : 0.20, hobs.size()<5 ? 0.90-0.06*hobs.size() : 0.6, firstLeg ? 0.93 : 0.60, 0.90);
+       if(std::string(type) == std::string("mssm-tanb")){
+	  if (firstLeg) CMSPrelim(label, "", 0.15, 0.835);
+	  leg1 = new TLegend(firstLeg ? 0.60 : 0.20, hobs.size()<5 ? 0.20-0.06*hobs.size() : 0.4, firstLeg ? 0.93 : 0.60, 0.20);
+       }
+       else{
+	  if (firstLeg) CMSPrelim(label, "", 0.15, 0.835);
+	  leg1 = new TLegend(firstLeg ? 0.50 : 0.20, hobs.size()<5 ? 0.90-0.06*hobs.size() : 0.6, firstLeg ? 0.93 : 0.60, 0.90);
+       }
     }
     else{
       /// setup the CMS Preliminary
-      CMSPrelim(label, "", 0.15, 0.835);
-      leg1 = new TLegend(legendOnRight ? 0.50 : 0.20, hobs.size()<5 ? 0.90-0.06*hobs.size() : 0.6, legendOnRight ? 0.93 : 0.63, 0.90);
+       if(std::string(type) == std::string("mssm-tanb")){
+	  CMSPrelim(label, "", 0.15, 0.835);
+	  leg1 = new TLegend(firstLeg ? 0.60 : 0.20, hobs.size()<5 ? 0.20-0.06*hobs.size() : 0.4, firstLeg ? 0.93 : 0.63, 0.20);
+       }
+       else{
+	  CMSPrelim(label, "", 0.15, 0.835);
+	  leg1 = new TLegend(firstLeg ? 0.50 : 0.20, hobs.size()<5 ? 0.90-0.06*hobs.size() : 0.6, firstLeg ? 0.93 : 0.63, 0.90);
+       }
     }
+    leg1->SetTextSize(0.02);
     leg1->SetBorderSize( 0 );
     leg1->SetFillStyle ( 1001 );
     leg1->SetFillColor ( 0 );
@@ -393,14 +408,27 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     TLegend* leg0;
     if(expected && observed){
       /// setup the CMS Preliminary
-      if (firstLeg) CMSPrelim(label, "", 0.15, 0.835);
-      leg0 = new TLegend(firstLeg ? 0.60 : 0.20, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.8, firstLeg ? 0.94 : 0.60, 0.90);
+      if(std::string(type) == std::string("mssm-tanb")){
+	CMSPrelim(label, "", 0.15, 0.835);
+	leg0 = new TLegend(legendOnRight ? 0.60 : 0.20, hexp.size()<5 ? 0.20-0.06*hexp.size() : 0.4, legendOnRight ? 0.94 : 0.63, 0.20);
+      }
+      else{
+	CMSPrelim(label, "", 0.15, 0.835);
+	leg0 = new TLegend(legendOnRight ? 0.50 : 0.20, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.6, legendOnRight ? 0.94 : 0.63, 0.90);
+      }
     }
     else{
       /// setup the CMS Preliminary
-      CMSPrelim(label, "", 0.15, 0.835);
-      leg0 = new TLegend(legendOnRight ? 0.50 : 0.20, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.6, legendOnRight ? 0.94 : 0.64, 0.90);
+      if(std::string(type) == std::string("mssm-tanb")){
+	CMSPrelim(label, "", 0.15, 0.835);
+	leg0 = new TLegend(legendOnRight ? 0.60 : 0.20, hexp.size()<5 ? 0.20-0.06*hexp.size() : 0.4, legendOnRight ? 0.94 : 0.63, 0.20);
+	   }
+      else{
+	CMSPrelim(label, "", 0.15, 0.835);
+	leg0 = new TLegend(legendOnRight ? 0.50 : 0.20, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.6, legendOnRight ? 0.94 : 0.63, 0.90);
+      }
     }
+    if(std::string(type) == std::string("mssm-tanb")) {leg0->SetTextSize(0.03);}
     leg0->SetBorderSize( 0 );
     leg0->SetFillStyle ( 1001 );
     leg0->SetFillColor (kWhite);
