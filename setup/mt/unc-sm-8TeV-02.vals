@@ -11,7 +11,6 @@ muTau_boost_low		signal				UEPS					1.04
 muTau_boost_low 	signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_m 				1.02
 muTau_boost_low 	signal,ZTT,TT,VV 		CMS_eff_t 				1.07
 muTau_boost_low		signal,ZTT			CMS_scale_t 				1.00
-muTau_boost_low		QCD   				CMS_q 				        1.00
 muTau_boost_low         ggH				CMS_scale_j_8TeV			1.04
 muTau_boost_low         qqH				CMS_scale_j_8TeV			1.02
 muTau_boost_low         VH				CMS_scale_j_8TeV			1.03
