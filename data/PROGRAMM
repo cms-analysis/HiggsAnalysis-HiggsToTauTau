@@ -188,7 +188,8 @@ MSSM Checklist:
 (7) Xsec limit calculation
 --------------------------------------
  - limit.py --multidim-fit [--stable] --saveResults --algo singles --confidence-level 0.68 --physics-model 
-   'ggH-bbH-model=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH'
+   'ggH-bbH-model=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH,
+   gHRange=0:20, bbHRange=0:20'
    HCP-LIMITS/* 
  - limit.py --mssm-xsec [--noprefit] [--ggH] --userOpt '--minosAlgo stepping' HCP-LIMITS/*
    - option ggH translates ggH into background and calculates xsec limit of bbH, if not specfied bbH is translated into 
@@ -200,7 +201,8 @@ MSSM Checklist:
 (8) Best fit calculation
 --------------------------------------
  - limit.py --multidim-fit [--stable] --saveResults --algo singles --confidence-level 0.68 --physics-model 
-   'ggH-bbH-model=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH' 
+   'ggH-bbH-model=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH,
+   ggHRange=0:20,bbHRange=0:20' 
    HCP-LIMITS/*
    - ATTENTION: could also be useful to use lxq/b_limit.py
  - plot multidimfit HiggsAnalysis/HiggsToTauTau/python/layouts/mssm_bestfit_layout.py HCP-LIMITS
@@ -209,8 +211,9 @@ MSSM Checklist:
 
 (9) Multidimensional fits (low mass point and high mass point)
 --------------------------------------
- - lxq-multidim-fit.py 20121012.cmb_mssm_78TeV_done3/cmb/160 --stable --rMin -20 --rMax 20 --njobs 10 --npoints 10 --physics-model 
-   'ggH-bbH-model=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH' 
+ - lxq-multidim-fit.py 20121012.cmb_mssm_78TeV_done3/cmb/160 --stable --njobs 10 --npoints 10 --physics-model 
+   'ggH-bbH-model=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH,
+   ggHRange=0:20, bbHRange=0:20 ' 
    [--collect]
    - first round without --collect second round with --collect
  - see TWiki
