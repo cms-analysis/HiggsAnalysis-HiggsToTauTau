@@ -69,7 +69,8 @@ with open(submit_name, 'w') as submit_script:
         if 'LSFJOB' in dir:
             continue
         log.info("Generating limit.py script for %s", dir)
-        os.system("mkdir %s" % name)
+        if not os.path.exists(name) :
+            os.system("mkdir %s" % name)
         script_file_name = '%s/%s_%i.sh' % (name, name, i)
         with open(script_file_name, 'w') as script:
             script.write(script_template.format(
