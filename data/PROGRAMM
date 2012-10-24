@@ -209,9 +209,9 @@ MSSM Checklist:
 
 (9) Multidimensional fits (low mass point and high mass point)
 --------------------------------------
- - lxq-multidim-fit.py 20121012.cmb_mssm_78TeV_done3/cmb/160 --njobs 10 --npoints 10 
-   --physics-model 'ggH-bbH-model=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 
-   'modes=ggH,bbH' [--collect]
+ - lxq-multidim-fit.py 20121012.cmb_mssm_78TeV_done3/cmb/160 --stable --rMin -20 --rMax 20 --njobs 10 --npoints 10 --physics-model 
+   'ggH-bbH-model=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH' 
+   [--collect]
    - first round without --collect second round with --collect
  - see TWiki
    - use lxq/b-multidim-fit.py
