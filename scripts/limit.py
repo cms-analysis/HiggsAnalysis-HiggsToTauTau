@@ -42,7 +42,7 @@ mgroup = OptionGroup(parser, "COMBINE (MAXIMUM LIKELIHOOD FIT) COMMAND OPTIONS",
 mgroup.add_option("--stable", dest="stable", default=False, action="store_true", help="Run maximum likelihood fit with a set of options that lead to stable results. Makes use of the common options --rMin and --rMax to define the boundaries of the fit. [Default: False]")
 mgroup.add_option("--algo", dest="fitAlgo", type="string", default="contour2d", help="Algorithm for multi-dimensional maximum likelihood fit (options are singles, contour2d, grid). Option grid will make use of the option --points to determine the number of grid points in the scan. [Default: \"\"]")
 mgroup.add_option("--physics-model", dest="fitModel", type="string", default="", help="Physics model for multi-dimensional maximum likelihood. The physics model should be defined by a model name and a path to a python implementation of the model separated by '='. For example 'ggH-qqH-model=PATH-TO-IMPLEMENTATION'. In this case a workspace of the model with given model options will be created with the name 'ggH-qqH-model.root'. It is also possible to pass on only a name of a physics model, like 'ggH-qqH-model'. In this case it will be assumed that the model with name 'ggH-qqH-model' has been created beforehand. [Default: \"\"]")
-mgroup.add_option("--physics-model-options", dest="fitModelOptions", type="string", default="", help="Potential options for the used physics model for multi-dimensional maximum likelihood. More options can be passed on separated by ','. [Default: \"\"]")
+mgroup.add_option("--physics-model-options", dest="fitModelOptions", type="string", default="", help="Potential options for the used physics model for multi-dimensional maximum likelihood. More options can be passed on separated by ';'. [Default: \"\"]")
 mgroup.add_option("--restrict-categories", dest="fitModelCategories", type="string", default="", help="Add a string to restrict the fit only to a subset of event categories. The string should contain the indexes of the allowed event categories then. The indexes should be separated by ':', example: '0:1:2:3'. If the string is empty the datacards from all event categories will be taken into account in the fit, that are located in the target directory. [Default: \"\"]")
 mgroup.add_option("--setup-only", dest="setupOnly", action="store_true", default=False, help="Only setup the model, do not start the minimization. To be used with job splitting for maximum likelihood scans. If False the model will be set up and the minimzation will be executed in one go. [Default: \"False\"]")
 mgroup.add_option("--points", dest="gridPoints", type="string", default="100", help="Number of grid points in case of option --algo=grid. [Default: \"100\"]")
@@ -441,7 +441,7 @@ for directory in args :
             workspaceOptions+= "-P %s " % model[1]
             if not options.fitModelOptions == "" :
                 ## break physics model options to list
-                opts = options.fitModelOptions.split()
+                opts = options.fitModelOptions.split(';')
                 for idx in range(len(opts)) : opts[idx] = opts[idx].rstrip(',')
                 for opt in opts :
                     workspaceOptions+="--PO %s " % opt
