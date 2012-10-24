@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
     TGraph* observed  = 0;
     if(!expected_only){
       observed = new TGraph();
-      plot.fillCentral(directory, observed, "higgsCombine-obs.Asymptotic.mH$MASS");
+      plot.fillCentral(directory, observed, "higgsCombine-obs.Asymptotic.$MASS");
     }
     /// expected limit (for Bayesian 'median' and 'mean' are sensible parameters)
     TGraph* expected  = new TGraph();
@@ -153,7 +153,7 @@ int main(int argc, char* argv[])
     TGraph* observed  = 0;
     if(!expected_only){
       observed = new TGraph();
-      plot.fillCentral(directory, observed, "higgsCombineTest.ProfileLikelihood.mH$MASS");
+      plot.fillCentral(directory, observed, "higgsCombineTest.ProfileLikelihood.$MASS");
     }
     TGraph* expected  = new TGraph();
     plot.fillCentral(directory, expected, "median");
