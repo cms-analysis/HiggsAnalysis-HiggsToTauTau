@@ -16,6 +16,13 @@ will create a setup_bbb directory where the
 channels, in 7,8 TeV, for the 1, 3, and 5 categories, have bbb systematics added
 for the QCD and W systematics.
 
+You can merge bin errors like so:
+
+    add_bbb_errors.py "mt,et,em:7TeV,8TeV:01,03,05:QCD+ZLL>W"
+
+the errors on the QCD and ZLL bins will be added to the W shape.
+NB you need the quotes to protect against the shell redirection ">" character.
+
 Author: Evan K. Friis, UW Madison
 
 '''
@@ -99,7 +106,17 @@ def create_systematics(channel, category, process, shape_file, threshold):
 
     channel_name = get_channel_name(channel, category)
 
-    root_path = os.path.join('/',channel_name, process)
+    # Parse process description in case we merge histograms
+    process_to_merge_in = []
+    # Default case -> process = target_process
+    target_process = process
+    if '>' in process:
+        log.info("Detected multi-error merge: %s", process)
+        target_process = process.split('>')[1].strip()
+        for x in process.split('>')[0].split('+'):
+            process_to_merge_in.append(x.strip())
+
+    root_path = os.path.join('/',channel_name, target_process)
     if root_path[0] == '/':
         root_path = root_path[1:]
 
@@ -118,6 +135,10 @@ def create_systematics(channel, category, process, shape_file, threshold):
         '--threshold',
         str(threshold),
     ]
+    if process_to_merge_in:
+        command.append('--merge-errors')
+        command.extend(process_to_merge_in)
+
     log.debug("Shape command:")
     log.debug(" ".join(command))
     # Run the command, get the list of new names (written to stdout)
