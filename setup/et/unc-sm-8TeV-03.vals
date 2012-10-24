@@ -1,6 +1,6 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-eleTau_boost_high	signal		             	lumi_8TeV            				1.05
+eleTau_boost_high	signal		             	lumi_8TeV            				1.042
 eleTau_boost_high	ggH				pdf_gg    					1.08
 eleTau_boost_high	qqH				pdf_qqbar					1.03
 eleTau_boost_high	VH				pdf_qqbar					1.02
@@ -17,9 +17,9 @@ eleTau_boost_high       qqH				CMS_scale_j_8TeV				1.02
 eleTau_boost_high       VH				CMS_scale_j_8TeV				1.05
 eleTau_boost_high       TT				CMS_scale_j_8TeV				1.02
 eleTau_boost_high       VV				CMS_scale_j_8TeV				1.05
-eleTau_boost_high	signal,ZJ,ZL	    		CMS_scale_met_8TeV				1.05
-eleTau_boost_high	TT		    		CMS_scale_met_8TeV				1.07
-eleTau_boost_high	VV		    		CMS_scale_met_8TeV				1.07
+eleTau_boost_high	signal,ZJ,ZL	    		CMS_htt_scale_met_8TeV				1.05
+eleTau_boost_high	TT		    		CMS_htt_scale_met_8TeV				1.07
+eleTau_boost_high	VV		    		CMS_htt_scale_met_8TeV				1.07
 eleTau_boost_high	signal,background	        CMS_eff_b_8TeV		        		0.97
 eleTau_boost_high	signal,background	        CMS_fake_b_8TeV		        		0.98
 eleTau_boost_high	ZTT,ZJ,ZL			CMS_htt_zttNorm_8TeV 				1.03
