@@ -15,6 +15,7 @@ parser.add_option("--options", dest="opts", default="", type="string", help="Add
 parser.add_option("--collect", dest="collect", default=False,  action="store_true", help="Collect the individual jobs of a single batch submission after completion. [Default: False)")
 parser.add_option("--rMin", dest="rMin", default="-5", type="string", help="Minimum value of signal strenth. [Default: -5]")
 parser.add_option("--rMax", dest="rMax", default="5", type="string", help="Maximum value of signal strenth. [Default: 5]")
+parser.add_option("--stable", dest="stable", default=False, action="store_true", help="Run maximum likelihood fit with a set of options that lead to stable results. Makes use of the common options --rMin and --rMax to define the boundaries of the fit. [Default: True]")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 
@@ -40,7 +41,7 @@ echo "Running limit.py with multidim-fit"
 echo "with options {OPTIONS}"
 echo "in directory {DIRECTORY}"
 
-limit.py --multidim-fit --rMax {RMAX} --rMin {RMIN} --algo grid --points {POINTS} --firstPoint {FIRST} --lastPoint {LAST} --physics-model {MODEL} --name {OUTPUT} {OPTIONS} {DIRECTORY}
+limit.py --multidim-fit {STABEL} --rMax {RMAX} --rMin {RMIN} --algo grid --points {POINTS} --firstPoint {FIRST} --lastPoint {LAST} --physics-model {MODEL} --name {OUTPUT} {OPTIONS} {DIRECTORY}
 '''
 
 input = args[0]
@@ -60,12 +61,13 @@ if options.collect :
         MASS=input[input.rfind("/")+1:]
         ))
 else :
-    os.system("limit.py --multidim-fit --rMax {RMAX} --rMin {RMIN} --setup-only --physics-model '{MODEL}' --physics-model-options '{OPT}' {DIR}".format(
+    os.system("limit.py --multidim-fit {STABEL} --rMax {RMAX} --rMin {RMIN} --setup-only --physics-model '{MODEL}' --physics-model-options '{OPT}' {DIR}".format(
         RMAX= options.rMax,
         RMIN= options.rMin,
         MODEL = options.fitModel,
         OPT = options.fitModelOptions,
-        DIR = input
+        DIR = input,
+        STABEL = "--stable" if options.stable else ""
         ))
     os.system("mkdir %s" % options.name)
     submit_name = '%s_submit.sh' % options.name
@@ -77,6 +79,7 @@ else :
             script_file_name = '%s/submit_%i.sh' % (options.name, idx)
             with open(script_file_name, 'w') as script:
                 script.write(script_template.format(
+                    STABEL = "--stable" if options.stable else "",
                     RMAX= options.rMax,
                     RMIN= options.rMin,
                     WORKING_DIR = os.getcwd(),
