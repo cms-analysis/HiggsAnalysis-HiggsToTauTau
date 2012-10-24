@@ -20,8 +20,8 @@ muTau_0jet_high        	        VV				CMS_scale_j					0.98
 muTau_0jet_high	 		signal,ZL,ZJ	   		CMS_scale_met					1.05
 muTau_0jet_high	 		TT		    		CMS_scale_met					1.07
 muTau_0jet_high	 		VV    				CMS_scale_met					1.07
-muTau_0jet_high			signal,background 		CMS_eff_b 					0.99
-muTau_0jet_high			signal,background 		CMS_fake_b 					0.99
+muTau_0jet_high			signal,ZJ,ZL,TT,VV 		CMS_eff_b 					0.99
+muTau_0jet_high			signal,ZJ,ZL,TT,VV 		CMS_fake_b 					0.99
 muTau_0jet_high			ZTT,ZL,ZJ			CMS_htt_zttNorm_7TeV 				1.03
 muTau_0jet_high        		ZTT,ZJ,ZL			CMS_htt_extrap_ztt_0jet_high_7TeV		1.03
 muTau_0jet_high			TT				CMS_htt_ttbarNorm_7TeV				1.08

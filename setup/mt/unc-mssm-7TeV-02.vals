@@ -10,8 +10,8 @@ muTau_boost_low         VV				CMS_scale_j				1.02
 muTau_boost_low	   	signal,ZJ,ZL	    		CMS_scale_met				1.05
 muTau_boost_low	   	TT		    		CMS_scale_met				1.07
 muTau_boost_low	   	VV		    		CMS_scale_met				1.07
-muTau_boost_low		signal,background	        CMS_eff_b		        	0.98
-muTau_boost_low		signal,background	        CMS_fake_b		        	0.99
+muTau_boost_low		signal,ZJ,ZL,TT,VV	        CMS_eff_b		        	0.98
+muTau_boost_low		signal,ZJ,ZL,TT,VV	        CMS_fake_b		        	0.99
 muTau_boost_low		ZTT,ZJ,ZL			CMS_htt_zttNorm_7TeV 			1.03
 muTau_boost_low         ZTT,ZJ,ZL			CMS_htt_extrap_ztt_boost_7TeV		1.03
 muTau_boost_low		TT				CMS_htt_ttbarNorm_7TeV			1.10
