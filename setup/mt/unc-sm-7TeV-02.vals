@@ -8,7 +8,7 @@ muTau_boost_low		ggH				QCDscale_ggH1in 			1.10
 muTau_boost_low		qqH				QCDscale_qqH				1.04
 muTau_boost_low		VH 	                        QCDscale_VH				1.04
 muTau_boost_low		signal				UEPS					1.04
-muTau_boost_low 	signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_m 				1.01
+muTau_boost_low 	signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_m 				1.02
 muTau_boost_low 	signal,ZTT,TT,VV 		CMS_eff_t 				1.07
 muTau_boost_low		signal,ZTT   			CMS_scale_t 				1.00
 muTau_boost_low         ggH				CMS_scale_j				1.05
@@ -24,7 +24,7 @@ muTau_boost_low		ZTT,ZJ,ZL			CMS_htt_zttNorm_7TeV 			1.03
 muTau_boost_low         ZTT,ZJ,ZL			CMS_htt_extrap_ztt_boost_low_7TeV	1.03
 muTau_boost_low		TT				CMS_htt_ttbarNorm_7TeV			1.10
 muTau_boost_low		VV				CMS_htt_DiBosonNorm_7TeV		1.30
-muTau_boost_low		W				CMS_htt_WNorm_mutau_boost_low_7TeV	1.20
-muTau_boost_low         QCD				CMS_htt_QCDSyst_mutau_boost_low_7TeV	1.30
-muTau_boost_low 	ZJ				CMS_htt_ZJetFakeTau_mutau_boost_7TeV	1.20
-muTau_boost_low 	ZL				CMS_htt_ZLeptonFakeTau_mutau_boost_7TeV	1.30
+muTau_boost_low		W				CMS_htt_WNorm_mutau_boost_low_7TeV	1.10
+muTau_boost_low         QCD				CMS_htt_QCDSyst_mutau_boost_low_7TeV	1.10
+muTau_boost_low 	ZJ				CMS_htt_ZJetFakeTau_mutau_boost_low_7TeV	1.20
+muTau_boost_low 	ZL				CMS_htt_ZLeptonFakeTau_mutau_low_7TeV	1.30

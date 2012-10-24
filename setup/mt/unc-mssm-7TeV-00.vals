@@ -1,7 +1,7 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 muTau_0jet_low			signal	  	            	lumi_7TeV            				1.022
-muTau_0jet_low		 	signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_m 					1.01
+muTau_0jet_low		 	signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_m 					1.02
 muTau_0jet_low		 	signal,ZTT,TT,VV 		CMS_eff_t 					1.07
 muTau_0jet_low		 	signal,ZTT			CMS_scale_t 					1.00
 muTau_0jet_low        	        ggH				CMS_scale_j					0.98
@@ -18,7 +18,7 @@ muTau_0jet_low			TT				CMS_htt_ttbarNorm_7TeV				1.08
 muTau_0jet_low			W				CMS_htt_WNorm_mutau_0jet_7TeV 			1.20
 muTau_0jet_low			VV				CMS_htt_DiBosonNorm_7TeV			1.30
 muTau_0jet_low                  QCD				CMS_htt_QCDNorm_mutau_0jet_low_7TeV		1.00 
-muTau_0jet_low                  QCD				CMS_htt_QCDSyst_mutau_0jet_7TeV			1.20
-muTau_0jet_low			ZJ				CMS_htt_ZJetFakeTau_mutau_0jet_7TeV      	1.20
-muTau_0jet_low			ZL				CMS_htt_ZLeptonFakeTau_mutau_0jet_7TeV		1.30
+muTau_0jet_low                  QCD				CMS_htt_QCDSyst_mutau_0jet_7TeV			1.10
+muTau_0jet_low			ZJ				CMS_htt_ZJetFakeTau_mutau_0jet_low_7TeV      	1.20
+muTau_0jet_low			ZL				CMS_htt_ZLeptonFakeTau_mutau_low_7TeV		1.30
 

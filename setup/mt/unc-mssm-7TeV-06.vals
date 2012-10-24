@@ -1,7 +1,7 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 muTau_btag_low		signal            	lumi_7TeV            			1.022
-muTau_btag_low		signal,ZTT,ZLL,TT,VV  	CMS_eff_m 				1.01
+muTau_btag_low		signal,ZTT,ZLL,TT,VV  	CMS_eff_m 				1.02
 muTau_btag_low		signal,ZTT,VV  		CMS_eff_t 				1.07
 muTau_btag_low 		TT	          	CMS_eff_b 				1.11
 muTau_btag_low	 	ggH,qqH,VH          	CMS_fake_b 				1.14
@@ -12,13 +12,13 @@ muTau_btag_low      	TT		  	CMS_scale_j 				1.10
 muTau_btag_low      	VV		  	CMS_scale_j 				1.03
 muTau_btag_low      	signal		  	CMS_scale_met				1.05
 muTau_btag_low      	TT,VV		  	CMS_scale_met				1.07
-muTau_btag_low		signal,background       CMS_eff_b               	   	1.06
-muTau_btag_low		signal,background       CMS_fake_b              	   	1.01
+muTau_btag_low		signal,TT,VV,ZLL        CMS_eff_b_7TeV                  	1.06
+muTau_btag_low		signal,TT,VV,ZLL        CMS_fake_b_7TeV                 	1.01
 muTau_btag_low		ZTT,ZLL,TT        	CMS_htt_zttNorm_7TeV 			1.03
 muTau_btag_low		ZTT,ZLL	          	CMS_htt_extrap_ztt_btag_7TeV		1.03
 muTau_btag_low		TT     		  	CMS_htt_ttbarNorm_7TeV 			1.10
 muTau_btag_low	 	VV	          	CMS_htt_DiBosonNorm_7TeV 		1.30
-muTau_btag_low		W	          	CMS_htt_WNorm_mutau_btag_low_7TeV 	1.30
-muTau_btag_low          QCD	          	CMS_htt_QCDSyst_mutau_btag_low_7TeV	1.30
-muTau_btag_low          ZLL	          	CMS_htt_ZLLNorm_mutau_btag_low_7TeV	1.30
+muTau_btag_low		W	          	CMS_htt_WNorm_mutau_btag_low_7TeV 	1.10
+muTau_btag_low          QCD	          	CMS_htt_QCDSyst_mutau_btag_low_7TeV	1.10
+muTau_btag_low          ZLL	          	CMS_htt_ZLLNorm_mutau_low_7TeV		1.30
 
