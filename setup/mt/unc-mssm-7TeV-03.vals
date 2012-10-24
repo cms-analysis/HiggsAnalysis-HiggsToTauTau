@@ -9,9 +9,9 @@ muTau_boost_high        ggH				CMS_scale_j				1.03
 muTau_boost_high        bbH				CMS_scale_j				0.99
 muTau_boost_high        TT				CMS_scale_j				0.99
 muTau_boost_high        VV				CMS_scale_j				1.04
-muTau_boost_high	signal,ZJ,ZL	    		CMS_scale_met				1.05
-muTau_boost_high	TT		    		CMS_scale_met				1.07
-muTau_boost_high	VV		    		CMS_scale_met				1.07
+muTau_boost_high	signal,ZJ,ZL	    		CMS_scale_met_7TeV			1.05
+muTau_boost_high	TT		    		CMS_scale_met_7TeV			1.07
+muTau_boost_high	VV		    		CMS_scale_met_7TeV			1.07
 muTau_boost_high	signal,ZJ,ZL,TT,VV	        CMS_eff_b		        	0.98
 muTau_boost_high	signal,ZJ,ZL,TT,VV	        CMS_fake_b		        	0.99
 muTau_boost_high	ZTT,ZJ,ZL			CMS_htt_zttNorm_7TeV 			1.03
