@@ -38,6 +38,26 @@ float maximum(TH1F* h, bool LOG=false){
   }
 }
 
+TH1F* refill(TH1F* hin, const char* sample)
+/*
+  refill histograms, for MC histograms set bin errors to zero.
+*/
+{
+  if(hin==0){
+    std::cout << "hist not found: " << sample << "  -- close here" << std::endl;
+    exit(1);  
+  }
+  TH1F* hout = (TH1F*)hin->Clone(); hout->Clear();
+  for(int i=0; i<hout->GetNbinsX(); ++i){
+    // simple refill, histograms are already devided by bin width
+    // but for a useful lotting the bin errors for MC need to be 
+    // set to zero.
+    hout->SetBinContent(i+1, hin->GetBinContent(i+1));
+    hout->SetBinError(i+1, 0.);
+  }
+  return hout;
+}
+
 void 
 postfit(const char* inputfile, const char* analysis = "SM", const char* dataset = "2011+2012", const char* extra="", float min=0.1, float max=-1., bool log=true)
 {
@@ -51,17 +71,17 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   if (std::string(dataset) == std::string("2011+2012")){ dataset = ", #sqrt{s} = 7-8 TeV, L = 17 fb^{-1}"; }
 
   TFile* input = new TFile(inputfile);
-  TH1F* Fakes  = (TH1F*)input->Get("Fakes"   ); 
-  TH1F* EWK    = (TH1F*)input->Get("EWK"     ); 
-  TH1F* ttbar  = (TH1F*)input->Get("ttbar"   ); 
-  TH1F* Ztt    = (TH1F*)input->Get("Ztt"     ); 
-  TH1F* ggH    = (TH1F*)input->Get("ggH"     ); 
+  TH1F* Fakes  = refill((TH1F*)input->Get("Fakes"   ), "Fakes/QCD"); 
+  TH1F* EWK    = refill((TH1F*)input->Get("EWK"     ), "EWK"      ); 
+  TH1F* ttbar  = refill((TH1F*)input->Get("ttbar"   ), "ttbar"    ); 
+  TH1F* Ztt    = refill((TH1F*)input->Get("Ztt"     ), "Ztt"      ); 
+  TH1F* ggH    = refill((TH1F*)input->Get("ggH"     ), "ggH"      ); 
   TH1F* data   = (TH1F*)input->Get("data_obs"); 
   // determine channel for etau Z->ee (EWK) will be shown separated from the rest (EWK1)
   TH1F* EWK1   = 0;
   std::cout << extra << std::endl;
   if(std::string(extra) == std::string("#tau_{e}#tau_{h}")){
-    EWK1 = (TH1F*)input->Get("EWK1");
+    EWK1 = refill((TH1F*)input->Get("EWK1"),  "EWK1");
   }
 
   /*
