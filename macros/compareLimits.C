@@ -99,6 +99,7 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("2jet"      )) title = std::string("V(jj)H(#tau#tau)");
   if(channel==std::string("vbf"       )) title = std::string("VBF");
   if(channel==std::string("boost"     )) title = std::string("Boost");
+  if(channel==std::string("btag"      )) title = std::string("Btag");
   if(channel==std::string("hgg"       )) title = std::string("H#rightarrow#gamma#gamma");
   if(channel==std::string("hww"       )) title = std::string("H#rightarrowWW#rightarrow2l2#nu");
   if(channel==std::string("ltt"       )) title = std::string("WH#rightarrow#tau_{h}#tau_{h}+l");
@@ -136,10 +137,11 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("HIG-11-029")) title = std::string("HIG-11-029 (4.9 fb^{-1})");
   if(channel==std::string("HIG-12-018")) title = std::string("HIG-12-018 (10 fb^{-1})");
   if(channel==std::string("HIG-12-032")) title = std::string("HIG-12-032 (5-10 fb^{-1})");
+  if(channel==std::string("20121023.cmb_mssm_78TeV_cmb"       )) title = std::string("Combined");
   return title;
 }
 
-void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label=" Preliminary, H#rightarrow#tau#tau, #sqrt{s} = 7-8 TeV, L=5-10 fb^{-1}", bool legendOnRight = true)
+void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label=" Preliminary, H#rightarrow#tau#tau, #sqrt{s} = 7-8 TeV, L=17 fb^{-1}", bool legendOnRight = true)
 {
   SetStyle();
 
@@ -149,6 +151,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["2jet"      ] = kMagenta;
   colors["vbf"       ] = kRed;
   colors["boost"     ] = kGreen;
+  colors["btag"      ] = kRed;
   colors["emu"       ] = kBlue;
   colors["em"        ] = kBlue;
   colors["etau"      ] = kRed;
@@ -203,6 +206,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["HIG-11-029"] = kRed+2;
   colors["HIG-12-018"] = kBlue;
   colors["HIG-12-032"] = kRed+2;
+  colors["20121023.cmb_mssm_78TeV_cmb"] = kBlack;
 
   std::cout << " *******************************************************************************************************\n"
 	    << " * Usage     : root -l                                                                                  \n"
