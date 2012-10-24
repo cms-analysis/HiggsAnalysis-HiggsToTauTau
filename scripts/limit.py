@@ -407,6 +407,10 @@ for directory in args :
         os.chdir(os.path.join(subdirectory, "out"))
         os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f text mlfit.root > mlfit.txt")
         os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f latex mlfit.root > mlfit.tex")
+        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f html mlfit.root > mlfit.html")
+        # Versions with only problematic values
+        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A  -f latex mlfit.root > mlfit_pulled.tex")
+        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A  -f html mlfit.root > mlfit_pulled.html")
         os.chdir(subdirectory)
     if options.prepMDFit :
         ## determine mass value from directory
@@ -416,14 +420,14 @@ for directory in args :
             model = options.fitModel.split('=')
             ## combine datacard from all datacards in this directory. For the multi-dimensional fit
             ## it is of importance that the decay channels and run periods are well defined from the
-            ## channel names. Allow for a restriction of the event categories 
+            ## channel names. Allow for a restriction of the event categories
             if os.path.exists("tmp.txt") :
                 os.system("rm tmp.txt")
                 inputcards = ""
             if os.path.exists("%s.root" % model[0]) :
                 os.system("rm %s.root" % model[0])
             ## collect all cards that should be combined into the model
-            inputcards = ""                
+            inputcards = ""
             for card in os.listdir(".") :
                 if "htt_" in card :
                     if options.fitModelCategories == "" :
@@ -472,7 +476,7 @@ for directory in args :
             print "combine -M MultiDimFit -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} {input}.root ".format(mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt, input=model[0])
             fitresults=  ""
             if options.saveResults :
-                fitresults = " | grep -A 10 -E '\s*--- MultiDimFit ---\s*' > multi-dim.fitresult" 
+                fitresults = " | grep -A 10 -E '\s*--- MultiDimFit ---\s*' > multi-dim.fitresult"
             os.system("combine -M MultiDimFit -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} {input}.root {result}".format(mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt, input=model[0], result=fitresults))
             if not options.firstPoint == "":
                 os.system("mv higgsCombine{name}.MultiDimFit.mH{mass}.root higgsCombine{name}.MultiDimFit.mH{mass}-{label}.root".format(name=options.name, mass=mass, label="%s-%s" % (options.firstPoint, options.lastPoint)))
@@ -503,7 +507,7 @@ for directory in args :
             os.system("combine -M ProfileLikelihood -t {toys} --significance --signalForSignificance={sig} -m {mass} -n batch_collected.root tmp.root".format(
                 toys=options.toys, sig=options.signal_strength, mass=mass_value))
         ## calc observed significance
-        print "combine -M ProfileLikelihood --significance -m {mass} tmp.root".format(mass=mass_value) 
+        print "combine -M ProfileLikelihood --significance -m {mass} tmp.root".format(mass=mass_value)
         os.system("combine -M ProfileLikelihood --significance -m {mass} tmp.root".format(mass=mass_value))
     if options.prepMSSMxsec :
         ## prepare mass argument for limit calculation if configured such
@@ -515,7 +519,7 @@ for directory in args :
         mass_matcher = re.compile(mass_regex)
         mass_value   = mass_matcher.match(mass_string).group('mass')
         ## combine datacard from all datacards in this directory
-        inputcards = ""                
+        inputcards = ""
         for card in os.listdir(".") :
             if "htt_" in card :
                 if options.fitModelCategories == "" :
@@ -528,7 +532,7 @@ for directory in args :
         print "combineCards.py -S %s > tmp.txt" % inputcards
         os.system("combineCards.py -S %s > tmp.txt" % inputcards)
         ## move one signal to background
-        os.system("python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/python/mssm_scaleS_movetoB.py %s -m %s tmp.txt" % (("--ggH" if options.ggH else ""), mass_value))        
+        os.system("python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/python/mssm_scaleS_movetoB.py %s -m %s tmp.txt" % (("--ggH" if options.ggH else ""), mass_value))
         ## prepare binary workspace
         os.system("text2workspace.py --default-morphing=%s -m %s -b tmp_%s.txt -o tmp.root"% (options.shape, mass_value, ("ggH" if options.ggH else "bbH")))
         ## if it does not exist already, create link to executable
