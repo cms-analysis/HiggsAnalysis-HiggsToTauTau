@@ -8,7 +8,7 @@
 #include "TGraph.h"
 #include "TString.h"
 
-#include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_3_3/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
 void scan2D(const char* path, std::string xval="r_ggH", int xbin=10, float xmin=0., float xmax=20., std::string yval="r_bbH", int ybin=10, float ymin=0., float ymax=20., bool mssm=true)
 {
@@ -25,7 +25,7 @@ void scan2D(const char* path, std::string xval="r_ggH", int xbin=10, float xmin=
   int nevent = limit->GetEntries();
   for(int i=0; i<nevent; ++i){
     limit->GetEvent(i);
-    scan->Fill(x, y, nll);
+    if(scan->GetBinContent(scan->FindBin(x,y))==0){scan->Fill(x, y, nll);}
   }
 
   std::map<std::pair<std::string, bool>, const char*> axis_titles;
@@ -38,6 +38,7 @@ void scan2D(const char* path, std::string xval="r_ggH", int xbin=10, float xmin=
 
   TCanvas* canv = new TCanvas("canv", "canv", 600, 600);
   canv->cd();
+  canv->SetLogz();
   canv->SetGridx();
   canv->SetGridy();
   canv->SetRightMargin(0.14);
