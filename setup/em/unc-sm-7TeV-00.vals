@@ -20,4 +20,4 @@ emu_0jet_low	signal				UEPS					0.96
 emu_0jet_low	Ztt				CMS_htt_zttNorm_7TeV 			1.03
 emu_0jet_low	ttbar				CMS_htt_ttbarNorm_7TeV			1.08
 emu_0jet_low	EWK				CMS_htt_DiBosonNorm_7TeV		1.15
-emu_0jet_low	Fakes				CMS_hww_fakes_em_7TeV			1.30
+emu_0jet_low	Fakes				CMS_htt_fakes_em_7TeV			1.30

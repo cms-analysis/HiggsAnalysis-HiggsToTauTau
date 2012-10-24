@@ -12,4 +12,4 @@ emu_boost_high	Ztt				CMS_htt_zttNorm_7TeV 			1.03
 emu_boost_high	Ztt				CMS_htt_extrap_ztt_boost_high_7TeV	1.05
 emu_boost_high	ttbar				CMS_htt_ttbarNorm_7TeV			1.10
 emu_boost_high	EWK				CMS_htt_DiBosonNorm_7TeV		1.15
-emu_boost_high	Fakes				CMS_hww_fakes_em_7TeV			1.30
+emu_boost_high	Fakes				CMS_htt_fakes_em_7TeV			1.30

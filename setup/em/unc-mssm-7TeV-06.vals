@@ -8,7 +8,8 @@ emu_btag_low	signal,background               CMS_eff_b               	   	1.06
 emu_btag_low	signal,background               CMS_fake_b              	   	1.01
 emu_btag_low	signal,EWK,ttbar      		CMS_scale_met				1.05
 emu_btag_low	Ztt				CMS_htt_zttNorm_7TeV 			1.03
-emu_btag_low	Ztt                             CMS_htt_extrap_ztt_btag_7TeV		1.01
+emu_btag_low	Ztt                             CMS_htt_extrap_ztt_btag_low_7TeV	1.01
 emu_btag_low	ttbar				CMS_htt_ttbarNorm_7TeV			1.08
 emu_btag_low	EWK				CMS_htt_DiBosonNorm_7TeV		1.15
-emu_btag_low	Fakes				CMS_hww_fakes_em_7TeV			1.30
+emu_btag_low	Fakes				CMS_htt_fakes_em_7TeV			1.30
+emu_btag_low	Fakes				CMS_htt_fakes_em_btag_low_7TeV		1.13

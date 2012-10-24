@@ -13,4 +13,5 @@ emu_0jet_high	Ztt				CMS_htt_zttNorm_7TeV 			1.03
 emu_0jet_high	Ztt				CMS_htt_extrap_ztt_0jet_high_7TeV	1.03
 emu_0jet_high	ttbar				CMS_htt_ttbarNorm_7TeV			1.08
 emu_0jet_high	EWK				CMS_htt_DiBosonNorm_7TeV		1.15
-emu_0jet_high	Fakes				CMS_hww_fakes_em_7TeV			1.30
+emu_0jet_high	Fakes				CMS_htt_fakes_em_7TeV			1.30
+emu_0jet_high   Fakes                           CMS_htt_fakes_em_0jet_high_7TeV         1.20

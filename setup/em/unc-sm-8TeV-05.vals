@@ -1,5 +1,5 @@
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-emu_vbf		signal,EWK              	lumi_8TeV            		1.05
+emu_vbf		signal,EWK              	lumi_8TeV            		1.042
 emu_vbf		signal,background 		CMS_eff_e 			1.02
 emu_vbf 	signal,Ztt	 		CMS_scale_e_8TeV 		1.00
 emu_vbf		signal,background 		CMS_eff_m 			1.02
@@ -21,4 +21,5 @@ emu_vbf		Ztt				CMS_htt_zttNorm_8TeV 		1.03
 emu_vbf		Ztt				CMS_htt_extrap_ztt_vbf_8TeV	1.10
 emu_vbf		ttbar				CMS_htt_ttbarNorm_8TeV		1.20
 emu_vbf		EWK				CMS_htt_DiBosonNorm_8TeV	1.15
-emu_vbf		Fakes				CMS_hww_fakes_em_8TeV		1.30
+emu_vbf		Fakes				CMS_htt_fakes_em_8TeV		1.30
+emu_vbf		Fakes				CMS_htt_fakes_em_vbf_8TeV	1.06
