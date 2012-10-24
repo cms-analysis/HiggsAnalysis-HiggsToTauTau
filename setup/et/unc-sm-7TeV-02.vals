@@ -15,9 +15,9 @@ eleTau_boost_low          	ggH				CMS_scale_j				1.02
 eleTau_boost_low          	qqH				CMS_scale_j				1.03
 eleTau_boost_low          	VH				CMS_scale_j				1.02
 eleTau_boost_low          	VV				CMS_scale_j				1.01
-eleTau_boost_low	   	signal,ZJ,ZL	    		CMS_htt_scale_met				1.05
-eleTau_boost_low	   	TT		    		CMS_htt_scale_met				1.07
-eleTau_boost_low	   	VV		    		CMS_htt_scale_met				1.07
+eleTau_boost_low	   	signal,ZJ,ZL	    		CMS_htt_scale_met_7TeV			1.05
+eleTau_boost_low	   	TT		    		CMS_htt_scale_met_7TeV			1.07
+eleTau_boost_low	   	VV		    		CMS_htt_scale_met_7TeV			1.07
 eleTau_boost_low		signal,ZJ,ZL,TT,VV	        CMS_eff_b		        	0.98
 eleTau_boost_low		signal,ZJ,ZL,TT,VV	        CMS_fake_b		        	0.99
 eleTau_boost_low		ZTT,ZJ,ZL			CMS_htt_zttNorm_7TeV 			1.03
