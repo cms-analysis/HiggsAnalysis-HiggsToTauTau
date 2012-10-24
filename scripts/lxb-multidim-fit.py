@@ -13,6 +13,8 @@ parser.add_option("--physics-model", dest="fitModel", type="string", default="",
 parser.add_option("--physics-model-options", dest="fitModelOptions", type="string", default="", help="Potential options for the used physics model for multi-dimensional maximum likelihood. More options can be passed on separated by ','. [Default: \"\"]")
 parser.add_option("--options", dest="opts", default="", type="string", help="Additional options for limit.py. [Default: \"\"]")
 parser.add_option("--collect", dest="collect", default=False,  action="store_true", help="Collect the individual jobs of a single batch submission after completion. [Default: False)")
+parser.add_option("--rMin", dest="rMin", default="-5", type="string", help="Minimum value of signal strenth. [Default: -5]")
+parser.add_option("--rMax", dest="rMax", default="5", type="string", help="Maximum value of signal strenth. [Default: 5]")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 
@@ -35,7 +37,7 @@ echo "Running limit.py with multidim-fit"
 echo "with options {OPTIONS}"
 echo "in directory {DIRECTORY}"
 
-limit.py --multidim-fit --algo grid --points {POINTS} --firstPoint {FIRST} --lastPoint {LAST} --physics-model {MODEL} --name {OUTPUT} {OPTIONS} {DIRECTORY}
+limit.py --multidim-fit --rMax {RMAX} --rMin {RMIN} --algo grid --points {POINTS} --firstPoint {FIRST} --lastPoint {LAST} --physics-model {MODEL} --name {OUTPUT} {OPTIONS} {DIRECTORY}
 '''
 
 input = args[0]
@@ -56,7 +58,9 @@ if options.collect :
         ))
     print "root -l -b -q HiggsAnalysis/HiggsToTauTau/macros/contours2D.C+\\(\\\"{DIR}\\\",\\\"{MODEL}-contours\\\",\\\"{XVAL}\\\",\\\"{YVAL}\\\",\\\"scan\\\",\\\"{MODEL}\\\",\\\"{MASS}\\\"\\)"
 else :
-    os.system("limit.py --multidim-fit --setup-only --physics-model '{MODEL}' --physics-model-options '{OPT}' {DIR}".format(
+    os.system("limit.py --multidim-fit --rMax {RMAX} --rMin {RMIN} --setup-only --physics-model '{MODEL}' --physics-model-options '{OPT}' {DIR}".format(
+        RMAX= options.rMax,
+        RMIN= options.rMin,
         MODEL = options.fitModel,
         OPT = options.fitModelOptions,
         DIR = input
@@ -69,6 +73,8 @@ else :
             script_file_name = '%s/submit_%i.sh' % (options.name, idx)
             with open(script_file_name, 'w') as script:
                 script.write(script_template.format(
+                    RMAX= options.rMax,
+                    RMIN= options.rMin,
                     WORKING_DIR = os.getcwd(),
                     DIRECTORY = input,
                     OPTIONS = options.opts,
