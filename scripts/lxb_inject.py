@@ -7,7 +7,7 @@ parser = OptionParser(usage="usage: %prog [options] ARGS",
                       description="Script to setup a set of scripts for statistical signal injection. The source directory for individual signal injections can be given by the option --inputs. This directory will be cloned in N subdirectories. N can be changed by --njob. in each subdirectory signal is injected statistically. Afterwards the limit calculation is run for each mass that is found in the subdirectory. ARGS corresponds to the masses which are to be analysed.")
 parser.add_option("-n", "--name", dest="name", default="test-injection", type="string", help="Name of the output scripts. [Default: \"test-injected\"]")
 parser.add_option("-i", "--input", dest="input", default="TEST/INJECT-SIGNAL", type="string", help="Input directory that should be used as starting point for signal injection. [Default: \"TEST/INJECT-SIGNAL\"]")
-parser.add_option("--bsub", dest="bsub", default="-q 8nh", type="string", help="Submission arguments for batch queue. [Default: \"-q 8nh\"]")
+parser.add_option("--bsub", dest="bsub", default="-q 1nd", type="string", help="Submission arguments for batch queue. [Default: \"-q 1nd\"]")
 
 parser.add_option("--njob", dest="njob", default="100", type="string", help="Number of jobs for which to inject signal. [Default: \"100\"]")
 parser.add_option("--options", dest="opts", default="--observedOnly", type="string", help="Options for limit calculation with limit.py. [Default: \"--observedOnly\"]")
