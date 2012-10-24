@@ -23,6 +23,7 @@ static const double MARKER_SIZE = 1.3;  // 0.7
 bool
 channel(std::string& label){
   return (label==std::string("cmb")        ||
+	  label==std::string("cmb+")       ||
 	  label==std::string("htt")        ||
 	  label==std::string("htt+")       ||
 	  label==std::string("vhtt")       ||
@@ -33,10 +34,15 @@ channel(std::string& label){
 	  label==std::string("0jet")       ||
 	  label==std::string("2jet")       ||
 	  label==std::string("boost")      ||
+	  label==std::string("btag")       ||
 	  label==std::string("vbf")        ||
 	  label==std::string("hgg")        ||	  
 	  label==std::string("hww")        ||
 	  label==std::string("tt")         ||
+	  label==std::string("em")         ||
+	  label==std::string("et")         ||
+	  label==std::string("mt")         ||
+	  label==std::string("mm")         ||
 	  label==std::string("ltt") 	   ||
 	  label==std::string("llt") 	   ||
 	  label==std::string("4l") 	   ||
@@ -83,8 +89,8 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("et"        )) title = std::string("e#tau_{h}");
   if(channel==std::string("mutau"     )) title = std::string("#mu#tau_{h}");
   if(channel==std::string("mt"        )) title = std::string("#mu#tau_{h}");
-  if(channel==std::string("tautau"    )) title = std::string("#tau_{h}#tau_{h} (5 fb^{-1})");
-  if(channel==std::string("tt"        )) title = std::string("#tau_{h}#tau_{h} (5 fb^{-1})");
+  if(channel==std::string("tautau"    )) title = std::string("#tau_{h}#tau_{h}");
+  if(channel==std::string("tt"        )) title = std::string("#tau_{h}#tau_{h}");
   if(channel==std::string("mumu"      )) title = std::string("#mu#mu");
   if(channel==std::string("mm"        )) title = std::string("#mu#mu");
   if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau+l(l)");
@@ -94,15 +100,16 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("htt"       )) title = std::string("e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu");
   if(channel==std::string("htt+"      )) title = std::string("e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu+#tau_{h}#tau_{h}");
   if(channel==std::string("cmb"       )) title = std::string("Combined");
+  if(channel==std::string("cmb+"      )) title = std::string("H#rightarrow#tau#tau + VH#rightarrow#tau#tau+l");
   if(channel==std::string("incl"      )) title = std::string("Inclusive");
   if(channel==std::string("0jet"      )) title = std::string("0-Jet");
   if(channel==std::string("2jet"      )) title = std::string("V(jj)H(#tau#tau)");
-  if(channel==std::string("vbf"       )) title = std::string("VBF");
-  if(channel==std::string("boost"     )) title = std::string("Boost");
-  if(channel==std::string("btag"      )) title = std::string("Btag");
+  if(channel==std::string("vbf"       )) title = std::string("2-Jet (VBF)");
+  if(channel==std::string("boost"     )) title = std::string("1-Jet");
+  if(channel==std::string("btag"      )) title = std::string("B-Tag");
   if(channel==std::string("hgg"       )) title = std::string("H#rightarrow#gamma#gamma");
   if(channel==std::string("hww"       )) title = std::string("H#rightarrowWW#rightarrow2l2#nu");
-  if(channel==std::string("ltt"       )) title = std::string("WH#rightarrow#tau_{h}#tau_{h}+l");
+  if(channel==std::string("ltt"       )) title = std::string("WH#rightarrow#tau_{h}#tau_{h}");
   if(channel==std::string("llt"       )) title = std::string("WH#rightarrow#tau_{h}+2l (10 fb^{-1})");
   if(channel==std::string("4l"        )) title = std::string("ZH#rightarrow2l2#tau (10 fb^{-1})");
   if(channel==std::string("hzz4l"     )) title = std::string("H#rightarrowZZ#rightarrow4l");
@@ -112,7 +119,7 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("ggH"       )) title = std::string("gg#rightarrowH");
   if(channel==std::string("bbH"       )) title = std::string("bb#rightarrowHbb");
   if(channel==std::string("test-0"    )) title = std::string("Limit on 2011 Data");
-  if(channel==std::string("test-1"    )) title = std::string("Limit on 2012 Data");
+  if(channel==std::string("test-1"    )) title = std::string("Old analysis");
   if(channel==std::string("test-2"    )) title = std::string("Test-2");
   if(channel==std::string("test-3"    )) title = std::string("Test-3");
   if(channel==std::string("test-4"    )) title = std::string("Test-4");
@@ -167,6 +174,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["zhtt"      ] = kCyan+2;
   colors["whhh"      ] = kBlue;
   colors["cmb"       ] = kBlack;
+  colors["cmb+"      ] = kGray+2;
   colors["htt"       ] = kBlack;
   colors["htt+"      ] = kBlue;
   colors["hgg"       ] = kRed;
