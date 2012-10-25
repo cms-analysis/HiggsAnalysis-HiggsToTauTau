@@ -1,10 +1,10 @@
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 mumu_0jet_high		  	bbH,ggH,Dibosons,WJets			lumi_7TeV            		1.022
 mumu_0jet_high			bbH,ggH,ZTT,TTJ,WJets,Dibosons 		CMS_eff_m 			1.04
-mumu_0jet_high			bbH,ggH,ZMM,TTJ,WJets,Dibosons		CMS_scale_j			0.96
-mumu_0jet_high			bbH,ggH,ZMM,TTJ,WJets,Dibosons   	CMS_scale_met			1.03
-mumu_0jet_high			bbH,ggH,ZMM,TTJ,WJets,Dibosons 		CMS_eff_b 			0.99
-mumu_0jet_high			bbH,ggH,ZMM,TTJ,WJets,Dibosons 		CMS_fake_b 			0.99
+mumu_0jet_high			bbH,ggH,ZMM,TTJ,WJets,Dibosons		CMS_scale_j_7TeV		0.96
+mumu_0jet_high			bbH,ggH,ZMM,TTJ,WJets,Dibosons   	CMS_scale_met_7TeV		1.03
+mumu_0jet_high			bbH,ggH,ZMM,TTJ,WJets,Dibosons 		CMS_eff_b_7TeV 			0.99
+mumu_0jet_high			bbH,ggH,ZMM,TTJ,WJets,Dibosons 		CMS_fake_b_7TeV			0.99
 mumu_0jet_high			ZTT					CMS_htt_zttNorm_7TeV 		1.03
 mumu_0jet_high			TTJ					CMS_htt_ttbarNorm_7TeV		1.08
 mumu_0jet_high			Dibosons				CMS_htt_mm_DiBosonNorm_7TeV	1.30
