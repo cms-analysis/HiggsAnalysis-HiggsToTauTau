@@ -8,9 +8,9 @@ eleTau_btag_low      	ggH		  	CMS_scale_j_8TeV 			1.04
 eleTau_btag_low      	ggH,bbH		  	CMS_scale_j_8TeV 			1.06	
 eleTau_btag_low      	TT		  	CMS_scale_j_8TeV 			1.10
 eleTau_btag_low      	VV		  	CMS_scale_j_8TeV 			1.03
-eleTau_btag_low      	signal		  	CMS_scale_met_8TeV			1.07
-eleTau_btag_low      	TT		  	CMS_scale_met_8TeV			1.03
-eleTau_btag_low      	VV		  	CMS_scale_met_8TeV			1.09
+eleTau_btag_low      	signal		  	CMS_htt_scale_met_8TeV			1.07
+eleTau_btag_low      	TT		  	CMS_htt_scale_met_8TeV			1.03
+eleTau_btag_low      	VV		  	CMS_htt_scale_met_8TeV			1.09
 eleTau_btag_low		signal,ZLL,TT,VV        CMS_eff_b_8TeV                  	1.09
 eleTau_btag_low		signal,ZLL,TT,VV        CMS_fake_b_8TeV                 	1.02
 eleTau_btag_low		ZTT,ZLL,TT        	CMS_htt_zttNorm_8TeV 			1.03
