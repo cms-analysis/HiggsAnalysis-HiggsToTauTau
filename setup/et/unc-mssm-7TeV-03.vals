@@ -19,6 +19,6 @@ eleTau_boost_high		VV				CMS_htt_DiBosonNorm_7TeV		1.30
 eleTau_boost_high		W				CMS_htt_WNorm_etau_boost_high_7TeV	1.20
 eleTau_boost_high         	ZTT,ZJ,ZL			CMS_htt_extrap_ztt_boost_high_7TeV	1.05
 eleTau_boost_high         	QCD				CMS_htt_QCDSyst_etau_boost_high_7TeV	1.20
-eleTau_boost_high		ZJ				CMS_htt_ZJetFakeleTau_etau_boost_7TeV	1.20
+eleTau_boost_high		ZJ				CMS_htt_ZJetFakeleTau_etau_boost_high_7TeV	1.20
 eleTau_boost_high		ZL				CMS_htt_ZLeptonFakeleTau_etau_high_7TeV	1.20
 eleTau_boost_high		ZL				CMS_htt_ZLeptonFakeleTau_etau_met_7TeV	1.30
