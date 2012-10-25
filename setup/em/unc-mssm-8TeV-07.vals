@@ -3,13 +3,13 @@ emu_btag_high	signal,EWK              	lumi_8TeV            		1.042
 emu_btag_high	signal,background 		CMS_eff_e 			1.02
 emu_btag_high 	signal,Ztt	 		CMS_scale_e_8TeV 		1.00
 emu_btag_high	signal,background 		CMS_eff_m 			1.02
-emu_btag_high	signal,background               CMS_scale_j_8TeV                1.045
-emu_btag_high	signal,background               CMS_eff_b_8TeV                  1.09
-emu_btag_high	signal,background               CMS_fake_b_8TeV                 1.02
+emu_btag_high	signal,EWK,ttbar                CMS_scale_j_8TeV                1.045
+emu_btag_high	signal,EWK,ttbar                CMS_eff_b_8TeV                  1.09
+emu_btag_high	signal,EWK,ttbar                CMS_fake_b_8TeV                 1.02
 emu_btag_high	signal,EWK,ttbar      		CMS_scale_met_8TeV		1.05
 emu_btag_high	Ztt				CMS_htt_zttNorm_8TeV 		1.03
 emu_btag_high	Ztt                             CMS_htt_extrap_ztt_btag_high_8TeV	1.01
-emu_btag_high	ttbar				CMS_htt_ttbarNorm_8TeV		1.08
+emu_btag_high	ttbar				CMS_htt_ttbarNorm_8TeV		1.10
 emu_btag_high	EWK				CMS_htt_DiBosonNorm_8TeV	1.15
 emu_btag_high	Fakes				CMS_htt_fakes_em_8TeV		1.30
 emu_btag_high	Fakes				CMS_htt_fakes_em_btag_high_8TeV	1.33

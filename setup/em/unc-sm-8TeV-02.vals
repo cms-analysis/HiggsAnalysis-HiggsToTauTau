@@ -17,7 +17,7 @@ emu_boost_low	VH 	                        QCDscale_VH			1.04
 emu_boost_low	signal				UEPS				1.04
 emu_boost_low	Ztt				CMS_htt_zttNorm_8TeV 		1.03
 emu_boost_low	Ztt				CMS_htt_extrap_ztt_boost_low_8TeV	1.03
-emu_boost_low	ttbar				CMS_htt_ttbarNorm_8TeV		1.12
+emu_boost_low	ttbar				CMS_htt_ttbarNorm_8TeV		1.10
 emu_boost_low	EWK				CMS_htt_DiBosonNorm_8TeV	1.15
 emu_boost_low	Fakes				CMS_htt_fakes_em_8TeV		1.30
 emu_boost_low	Fakes				CMS_htt_fakes_em_boost_low_8TeV	1.05
