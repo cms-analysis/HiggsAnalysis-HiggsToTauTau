@@ -20,5 +20,5 @@ tauTau_boost			W				CMS_htt_WNorm_tautau_boost_8TeV			1.30
 tauTau_boost			ZTT,ZL,ZJ			CMS_htt_zttNorm_8TeV 				1.033           
 tauTau_boost			ZTT,ZL,ZJ			CMS_htt_extrap_ztt_boost_8TeV			1.030           
 tauTau_boost			TT				CMS_htt_ttbarNorm_8TeV				1.10
-tauTau_boost			VV				CMS_htt_DiBosonNorm_8TeV			1.30
+tauTau_boost			VV				CMS_htt_DiBosonNorm_8TeV			1.15
 tauTau_boost         		ZJ                      	CMS_htt_ZJetFakeTau_tautau_boost_8TeV		1.20
