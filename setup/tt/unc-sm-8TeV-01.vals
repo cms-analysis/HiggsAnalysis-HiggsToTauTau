@@ -20,5 +20,7 @@ tauTau_vbf         		QCD				CMS_htt_QCDSyst_tautau_vbf_8TeV		1.19
 tauTau_vbf			W				CMS_htt_WNorm_tautau_vbf_8TeV		1.30
 tauTau_vbf			ZTT,ZL,ZJ			CMS_htt_zttNorm_8TeV 			1.03
 tauTau_vbf			TT				CMS_htt_ttbarNorm_8TeV			1.10
+tauTau_vbf			TT				CMS_htt_ttbarNorm_tautau_vbf_8TeV	1.24
 tauTau_vbf			VV				CMS_htt_DiBosonNorm_8TeV		1.15
+tauTau_vbf			VV				CMS_htt_DiBosonNorm_tautau_vbf_8TeV	1.13
 tauTau_vbf         		ZJ                      	CMS_htt_ZJetFakeTau_tautau_vbf_8TeV	1.20
