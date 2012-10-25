@@ -18,6 +18,17 @@ if len(args) < 1 :
 import os
 import re
 
+## determine the center of mass energy from the name of the input file
+matcher = re.compile('v?htt_\w*.inputs-\w*-(?P<PERIOD>[0-9]*\w*)-?_?\w*.root')
+ecms_str = matcher.match(options.input).group('PERIOD')
+ecms_str = ecms_str[:ecms_str.find('TeV')]
+ecms = float(ecms_str)
+
+print " You are running with configuration: "
+print "-------------------------------------"
+print " input   : ", options.input
+print " samples : ", options.samples
+print " ecms    : ", ecms
 
 class RescaleSamples:
     def __init__(self, input_file, production_channels, masspoints) :
@@ -49,12 +60,12 @@ class RescaleSamples:
             sub_channels = production_channel.split('+')
             for sub_channel in sub_channels :
                 xs += float(os.popen("xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(
-                    CHANNEL=sub_channel, MA=mass, ECMS=options.ecms)).read().split()[2])
+                    CHANNEL=sub_channel, MA=mass, ECMS=ecms)).read().split()[2])
         else :
             print "xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(
-                CHANNEL=production_channel, MA=mass, ECMS=options.ecms)
+                CHANNEL=production_channel, MA=mass, ECMS=ecms)
             xs += float(os.popen("xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(
-                CHANNEL=production_channel, MA=mass, ECMS=options.ecms)).read().split()[2])
+                CHANNEL=production_channel, MA=mass, ECMS=ecms)).read().split()[2])
         return xs
 
     def BR(self, mass) :
