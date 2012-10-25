@@ -22,6 +22,6 @@ eleTau_btag_high	 	VV	          	CMS_htt_DiBosonNorm_7TeV 		1.30
 eleTau_btag_high		W	          	CMS_htt_WNorm_etau_btag_high_7TeV 	1.20
 eleTau_btag_high		ZTT,ZLL	          	CMS_htt_extrap_ztt_btag_high_7TeV	1.05
 eleTau_btag_high         	QCD	          	CMS_htt_QCDSyst_etau_btag_high_7TeV	1.10
-eleTau_btag_high         	ZLL	          	CMS_htt_ZLeptonFakeTau_etau_low_8TeV 	1.20
+eleTau_btag_high         	ZLL	          	CMS_htt_ZLeptonFakeTau_etau_low_7TeV 	1.20
 
 
