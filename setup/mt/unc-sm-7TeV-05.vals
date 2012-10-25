@@ -12,11 +12,11 @@ muTau_vbf 		signal,ZTT,ZLL,TT,VV 		CMS_eff_m 				1.02
 muTau_vbf 		signal,ZTT,TT,VV 		CMS_eff_t 				1.07
 muTau_vbf 		signal,ZTT,TT,VV 		CMS_eff_t_high 				1.015
 muTau_vbf		signal,ZTT			CMS_scale_t 				1.00
-muTau_vbf         	ggH				CMS_scale_j				1.20
-muTau_vbf         	qqH				CMS_scale_j				1.05
-muTau_vbf         	VH				CMS_scale_j				1.20
-muTau_vbf         	TT				CMS_scale_j				1.10
-muTau_vbf         	VV				CMS_scale_j				1.15
+muTau_vbf         	ggH				CMS_scale_j_7TeV			1.20
+muTau_vbf         	qqH				CMS_scale_j_7TeV			1.05
+muTau_vbf         	VH				CMS_scale_j_7TeV			1.20
+muTau_vbf         	TT				CMS_scale_j_7TeV			1.10
+muTau_vbf         	VV				CMS_scale_j_7TeV			1.15
 muTau_vbf   		signal,ZLL	    		CMS_htt_scale_met_7TeV			1.05
 muTau_vbf	   	TT,VV		    		CMS_htt_scale_met_7TeV			1.07
 muTau_vbf		ZTT,ZLL				CMS_htt_zttNorm_7TeV 			1.03
