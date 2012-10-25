@@ -23,9 +23,9 @@ eleTau_boost_high	VV		    		CMS_htt_scale_met_8TeV				1.07
 eleTau_boost_high	signal,background	        CMS_eff_b_8TeV		        		0.97
 eleTau_boost_high	signal,background	        CMS_fake_b_8TeV		        		0.98
 eleTau_boost_high	ZTT,ZJ,ZL			CMS_htt_zttNorm_8TeV 				1.03
-eleTau_boost_high	TT				CMS_htt_ttbarNorm_8TeV				1.12
+eleTau_boost_high	TT				CMS_htt_ttbarNorm_8TeV				1.10
 eleTau_boost_high	W				CMS_htt_WNorm_etau_boost_high_8TeV		1.10
-eleTau_boost_high	VV				CMS_htt_DiBosonNorm_8TeV			1.30
+eleTau_boost_high	VV				CMS_htt_DiBosonNorm_8TeV			1.15
 eleTau_boost_high       ZTT,ZJ,ZL			CMS_htt_extrap_ztt_boost_high_8TeV		1.05
 eleTau_boost_high       QCD				CMS_htt_QCDSyst_etau_boost_high_8TeV		1.10
 eleTau_boost_high	ZJ				CMS_htt_ZJetFakeTau_etau_boost_high_8TeV	1.20

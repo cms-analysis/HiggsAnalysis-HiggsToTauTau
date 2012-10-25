@@ -23,7 +23,7 @@ eleTau_0jet_low		signal,ZJ,ZL,TT,VV 		CMS_eff_b_8TeV 					0.98
 eleTau_0jet_low		signal,ZJ,ZL,TT,VV 		CMS_fake_b_8TeV 				0.98
 eleTau_0jet_low		ZTT,ZL,ZJ			CMS_htt_zttNorm_8TeV 				1.03
 eleTau_0jet_low		TT				CMS_htt_ttbarNorm_8TeV				1.10
-eleTau_0jet_low		VV				CMS_htt_DiBosonNorm_8TeV			1.30
+eleTau_0jet_low		VV				CMS_htt_DiBosonNorm_8TeV			1.15
 eleTau_0jet_low		W				CMS_htt_WNorm_etau_0jet_low_8TeV 		1.20
 eleTau_0jet_low         QCD				CMS_htt_QCDSyst_etau_0jet_low_8TeV		1.10
 eleTau_0jet_low		ZJ				CMS_htt_ZJetFakeTau_etau_0jet_low_8TeV      	1.20

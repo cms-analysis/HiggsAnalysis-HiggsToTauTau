@@ -16,9 +16,9 @@ eleTau_btag_high	signal,ZJ,ZLL,TT,VV     CMS_fake_b_8TeV                 	1.02
 eleTau_btag_high	ZTT,ZLL,TT        	CMS_htt_zttNorm_8TeV 			1.03
 eleTau_btag_high	TT     		  	CMS_htt_ttbarNorm_8TeV 			1.10
 eleTau_btag_high	TT     		  	CMS_htt_ttbar_emb_8TeV 			1.18
-eleTau_btag_high	VV	          	CMS_htt_DiBosonNorm_8TeV 		1.30
-eleTau_btag_high	W	          	CMS_htt_WNorm_etau_btag_8TeV 		1.10
-eleTau_btag_high	ZTT,ZLL	          	CMS_htt_extrap_ztt_btag_8TeV		1.03
-eleTau_btag_high        QCD	          	CMS_htt_QCDSyst_etau_btag_8TeV		1.10
-eleTau_btag_high        ZLL	          	CMS_htt_ZLeptonFakeTau_etau_low_8TeV	1.20
+eleTau_btag_high	VV	          	CMS_htt_DiBosonNorm_8TeV 		1.10
+eleTau_btag_high	W	          	CMS_htt_WNorm_etau_btag_high_8TeV 	1.10
+eleTau_btag_high	ZTT,ZLL	          	CMS_htt_extrap_ztt_btag_high_8TeV	1.03
+eleTau_btag_high        QCD	          	CMS_htt_QCDSyst_etau_btag_high_8TeV	1.10
+eleTau_btag_high        ZLL	          	CMS_htt_ZLeptonFakeTau_etau_high_8TeV	1.20
 
