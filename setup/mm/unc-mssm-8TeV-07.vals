@@ -1,10 +1,10 @@
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 mumu_btag_high		  	signal,Dibosons,WJets           lumi_8TeV				1.045
 mumu_btag_high			signal,ZTT,TTJ,WJets,Dibosons 	CMS_eff_m 				1.04
-mumu_btag_high			signal,ZMM,TTJ,WJets,Dibosons	CMS_scale_j				1.04
-mumu_btag_high			signal,ZMM,TTJ,WJets,Dibosons   CMS_scale_met				1.04
-mumu_btag_high			signal,ZMM,TTJ,WJets,Dibosons 	CMS_eff_b 				1.07
-mumu_btag_high			signal,ZMM,TTJ,WJets,Dibosons 	CMS_fake_b 				1.02
+mumu_btag_high			signal,ZMM,TTJ,WJets,Dibosons	CMS_scale_j_8TeV			1.04
+mumu_btag_high			signal,ZMM,TTJ,WJets,Dibosons   CMS_scale_met_8TeV			1.04
+mumu_btag_high			signal,ZMM,TTJ,WJets,Dibosons 	CMS_eff_b_8TeV 				1.07
+mumu_btag_high			signal,ZMM,TTJ,WJets,Dibosons 	CMS_fake_b_8TeV				1.02
 mumu_btag_high			ZTT				CMS_htt_zttNorm_8TeV 			1.033
 mumu_btag_high			TTJ				CMS_htt_ttbarNorm_8TeV			1.075
 mumu_btag_high			Dibosons			CMS_htt_mm_DiBosonNorm_8TeV		1.30

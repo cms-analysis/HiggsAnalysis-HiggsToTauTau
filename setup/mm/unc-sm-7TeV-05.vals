@@ -24,4 +24,8 @@ mumu_vbf			ggH					CMS_htt_mm_ggH_MCStat_05_7TeV		1.24
 mumu_vbf			WJets					CMS_htt_mm_WJetsNorm_05_7TeV		2.00
 mumu_vbf			TTJ					CMS_htt_mm_ttbarMCStat_05_7TeV		1.20
 mumu_vbf			Dibosons				CMS_htt_mm_DiBosonMCStat_05_7TeV	1.32
+mumu_vbf			ZMM					CMS_htt_mm_ZMMbin3_7TeV			1.00
+mumu_vbf			ZMM					CMS_htt_mm_ZMMbin4_7TeV			1.00
+mumu_vbf			ZTT					CMS_htt_mm_ZTTbin5_7TeV			1.00
+mumu_vbf			TTJ					CMS_htt_mm_TTJbin5_7TeV			1.00
 
