@@ -11,8 +11,8 @@ mumu_boost_low			ggH				QCDscale_ggH1in				1.17
 mumu_boost_low			qqH				QCDscale_qqH				1.035
 mumu_boost_low			VH 	                        QCDscale_VH				1.04
 mumu_boost_low			signal				UEPS					1.04
-mumu_boost_low			ZTT				CMS_htt_zttNorm_8TeV			1.033
-mumu_boost_low			TTJ				CMS_htt_ttbarNorm_8TeV			1.075
+mumu_boost_low			ZTT				CMS_htt_zttNorm_8TeV			1.03
+mumu_boost_low			TTJ				CMS_htt_ttbarNorm_8TeV			1.10
 mumu_boost_low			Dibosons			CMS_htt_mm_DiBosonNorm_8TeV		1.30
 mumu_boost_low			ZTT				CMS_htt_mm_zttLikelihood_8TeV		1.04
 mumu_boost_low			ZMM				CMS_htt_mm_zmmNorm_8TeV			1.07

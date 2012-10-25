@@ -11,8 +11,8 @@ mumu_vbf			ggH					QCDscale_ggH2in     			1.50
 mumu_vbf			qqH					QCDscale_qqH				1.06
 mumu_vbf			VH 	                        	QCDscale_VH				1.04
 mumu_vbf			qqH,ggH,VH				UEPS					1.04
-mumu_vbf			ZTT					CMS_htt_zttNorm_7TeV 			1.033
-mumu_vbf			TTJ					CMS_htt_ttbarNorm_7TeV			1.075
+mumu_vbf			ZTT					CMS_htt_zttNorm_7TeV 			1.03
+mumu_vbf			TTJ					CMS_htt_ttbarNorm_7TeV			1.08
 mumu_vbf			Dibosons				CMS_htt_mm_DiBosonNorm_7TeV		1.30
 mumu_vbf			ZMM					CMS_htt_mm_zmmNorm_7TeV			1.06
 mumu_vbf			QCD					CMS_htt_mm_QCDNorm_05_7TeV		2.00

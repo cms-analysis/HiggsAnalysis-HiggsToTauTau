@@ -5,8 +5,8 @@ mumu_btag_low			signal,ZMM,TTJ,WJets,Dibosons	CMS_scale_j_7TeV			1.04
 mumu_btag_low			signal,ZMM,TTJ,WJets,Dibosons   CMS_scale_met_7TeV			1.04
 mumu_btag_low			signal,ZMM,TTJ,WJets,Dibosons 	CMS_eff_b_7TeV				1.07
 mumu_btag_low			signal,ZMM,TTJ,WJets,Dibosons 	CMS_fake_b_7TeV				1.02
-mumu_btag_low			ZTT				CMS_htt_zttNorm_7TeV			1.033
-mumu_btag_low			TTJ				CMS_htt_ttbarNorm_7TeV			1.075
+mumu_btag_low			ZTT				CMS_htt_zttNorm_7TeV			1.03
+mumu_btag_low			TTJ				CMS_htt_ttbarNorm_7TeV			1.08
 mumu_btag_low			Dibosons			CMS_htt_mm_DiBosonNorm_7TeV		1.30
 mumu_btag_low			ZMM				CMS_htt_mm_zmmNorm_7TeV			1.06
 mumu_btag_low			QCD				CMS_htt_mm_QCDNorm_06_7TeV		2.00

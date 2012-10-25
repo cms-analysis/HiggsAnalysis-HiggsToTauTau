@@ -1,4 +1,4 @@
-mumu_0jet_low		  	signal,Dibosons,WJets           lumi_8TeV            		1.045
+mumu_0jet_low		  	signal,Dibosons,WJets           lumi_8TeV            		1.042
 mumu_0jet_low			signal,ZTT,TTJ,WJets,Dibosons 	CMS_eff_m 			1.04
 mumu_0jet_low			signal,ZMM,TTJ,WJets,Dibosons	CMS_scale_j_8TeV		0.96
 mumu_0jet_low			signal,ZMM,TTJ,WJets,Dibosons   CMS_htt_scale_met_8TeV		1.035
@@ -11,8 +11,8 @@ mumu_0jet_low			ggH				QCDscale_ggH     		1.12
 mumu_0jet_low			qqH				QCDscale_qqH			1.035
 mumu_0jet_low			VH 	                        QCDscale_VH			1.04
 mumu_0jet_low			signal				UEPS				0.96
-mumu_0jet_low			ZTT				CMS_htt_zttNorm_8TeV 		1.033
-mumu_0jet_low			TTJ				CMS_htt_ttbarNorm_8TeV		1.075
+mumu_0jet_low			ZTT				CMS_htt_zttNorm_8TeV 		1.03
+mumu_0jet_low			TTJ				CMS_htt_ttbarNorm_8TeV		1.10
 mumu_0jet_low			Dibosons			CMS_htt_mm_DiBosonNorm_8TeV	1.30
 mumu_0jet_low			ZTT				CMS_htt_mm_zttLikelihood_8TeV	1.04
 mumu_0jet_low			ZMM				CMS_htt_mm_zmmNorm_8TeV		1.07
