@@ -17,7 +17,7 @@ muTau_btag_low		ZTT,ZLL	          	CMS_htt_extrap_ztt_btag_7TeV		1.03
 muTau_btag_low		TT     		  	CMS_htt_ttbarNorm_7TeV 			1.10
 muTau_btag_low		TT     		  	CMS_htt_ttbar_emb_7TeV 			1.14
 muTau_btag_low	 	VV	          	CMS_htt_DiBosonNorm_7TeV 		1.30
-muTau_btag_low		W	          	CMS_htt_WNorm_mutau_btag_low_7TeV 	1.10
+muTau_btag_low		W	          	CMS_htt_WNorm_mutau_btag_low_7TeV 	1.30
 muTau_btag_low          QCD	          	CMS_htt_QCDSyst_mutau_btag_low_7TeV	1.10
 muTau_btag_low          ZLL	          	CMS_htt_ZLLNorm_mutau_low_7TeV		1.30
 
