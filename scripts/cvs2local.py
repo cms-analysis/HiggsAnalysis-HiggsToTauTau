@@ -123,11 +123,11 @@ if options.analysis == "sm" :
     }
 if options.analysis == "mssm" :
     valid_masses = {
-        "mm"   : (100, 1000),
-        "em"   : (100, 1000),
-        "mt"   : (100, 1000),
-        "et"   : (100, 1000),
-        "tt"   : (100, 500),
+        "mm"   : (90, 1000),
+        "em"   : (90, 1000),
+        "mt"   : (90, 1000),
+        "et"   : (90, 1000),
+        "tt"   : (90, 500),
     }
 print "------------------------------------------------------"
 print " Valid mass ranges per channel:"
