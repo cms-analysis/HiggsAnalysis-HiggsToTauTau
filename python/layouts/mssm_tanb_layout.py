@@ -18,6 +18,8 @@ layout = cms.PSet(
     txt  = cms.bool(True),
     ## print to root
     root = cms.bool(True),
+    ## print the +/- 2 sigma band?
+    outerband = cms.bool(True),
     ## min for plotting
     min = cms.double(0.),
     ## max for plotting

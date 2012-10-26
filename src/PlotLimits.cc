@@ -10,6 +10,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) : outpu
   pdf_  (cfg.getParameter<bool  >("pdf" )),
   txt_  (cfg.getParameter<bool  >("txt" )),
   root_ (cfg.getParameter<bool  >("root")),
+  outerband_ (cfg.getParameter<bool  >("outerband")),
   min_  (cfg.getParameter<double>("min" )),
   max_  (cfg.getParameter<double>("max" )),
   log_  (cfg.getParameter<int   >("log") ),
@@ -944,7 +945,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
 
   outerHigh->SetLineStyle(11);
   outerHigh->SetLineColor(kGray+1);
-  outerHigh->Draw("Lsame");
+  if (outerband_) outerHigh->Draw("Lsame");
 
   innerHigh->SetFillStyle(3005);
   innerHigh->SetFillColor(kGray+1);
@@ -960,7 +961,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
 
   outerLow ->SetLineStyle(11);
   outerLow ->SetLineColor(kGray+1);
-  outerLow ->Draw("Lsame");
+  if (outerband_) outerLow ->Draw("Lsame");
 
   expected->SetLineColor(kGray+2);
   expected->SetLineWidth(3);
@@ -989,7 +990,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   if(observed){ leg->AddEntry( observed , "observed" ,  "L" );}
   leg->AddEntry( expected , "expected"               ,  "L" );
   leg->AddEntry( innerHigh, "#pm 1#sigma expected"   ,  "L" );
-  leg->AddEntry( outerHigh, "#pm 2#sigma expected"   ,  "L" );
+  if(outerband_) leg->AddEntry( outerHigh, "#pm 2#sigma expected"   ,  "L" );
   if(higgs125_bands) leg->AddEntry( higgs125_2 , "mh=125GeV #pm 2GeV",  "F");
   if(higgs125_bands) leg->AddEntry( higgs125_3 , "mh=125GeV #pm 3GeV",  "F");
   if(higgs125_bands) leg->AddEntry( higgs125_4 , "mh=125GeV #pm 4GeV",  "F");

@@ -143,6 +143,8 @@ class PlotLimits {
   bool txt_;
   /// print out root format?
   bool root_;
+  /// print the +/- 2 sigma band?
+  bool outerband_;
   /// minimum for plotting
   double min_; 
   /// maximum for plotting
