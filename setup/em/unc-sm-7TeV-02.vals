@@ -3,9 +3,9 @@ emu_boost_low	signal,EWK              	lumi_7TeV            			1.022
 emu_boost_low	signal,background 		CMS_eff_e 				1.02
 emu_boost_low 	signal,Ztt	 		CMS_scale_e_7TeV			1.00
 emu_boost_low	signal,background 		CMS_eff_m 				1.02
-emu_boost_low	ggH				CMS_scale_j				1.05
-emu_boost_low	EWK,ttbar			CMS_scale_j				1.05
-emu_boost_low	signal,EWK,ttbar      		CMS_scale_met				1.05
+emu_boost_low	ggH				CMS_scale_j_7TeV			1.05
+emu_boost_low	EWK,ttbar			CMS_scale_j_7TeV			1.05
+emu_boost_low	signal,EWK,ttbar      		CMS_htt_scale_met_7TeV			1.05
 emu_boost_low	signal,EWK,ttbar	        CMS_eff_b_7TeV		        	0.98
 emu_boost_low	signal,EWK,ttbar	        CMS_fake_b_7TeV		        	0.99
 emu_boost_low	ggH				pdf_gg    				1.08

@@ -3,10 +3,10 @@ emu_btag_low	signal,EWK              	lumi_7TeV            			1.022
 emu_btag_low	signal,background 		CMS_eff_e 				1.02
 emu_btag_low 	signal,Ztt	 		CMS_scale_e_7TeV 			1.00
 emu_btag_low	signal,background 		CMS_eff_m 				1.02
-emu_btag_low	signal,background               CMS_scale_j             	   	1.045
+emu_btag_low	signal,background               CMS_scale_j_7TeV             	   	1.045
 emu_btag_low	signal,EWK,ttbar                CMS_eff_b_7TeV               	   	1.06
 emu_btag_low	signal,EWK,ttbar                CMS_fake_b_7TeV              	   	1.01
-emu_btag_low	signal,EWK,ttbar      		CMS_scale_met				1.05
+emu_btag_low	signal,EWK,ttbar      		CMS_htt_scale_met_7TeV			1.05
 emu_btag_low	Ztt				CMS_htt_zttNorm_7TeV 			1.03
 emu_btag_low	Ztt                             CMS_htt_extrap_ztt_btag_low_7TeV	1.01
 emu_btag_low	ttbar				CMS_htt_ttbarNorm_7TeV			1.08
