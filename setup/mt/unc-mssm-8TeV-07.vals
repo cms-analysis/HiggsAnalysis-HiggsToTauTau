@@ -14,7 +14,7 @@ muTau_btag_high      	VV		  	CMS_htt_scale_met_8TeV			1.07
 muTau_btag_high		signal,TT,ZLL,VV        CMS_eff_b_8TeV                  	1.09
 muTau_btag_high		signal,TT,ZLL,VV        CMS_fake_b_8TeV                 	1.02
 muTau_btag_high		ZTT,ZLL,TT        	CMS_htt_zttNorm_8TeV 			1.03
-muTau_btag_high		ZTT,ZLL	          	CMS_htt_extrap_ztt_btag_8TeV		1.03
+muTau_btag_high		ZTT,ZLL	          	CMS_htt_extrap_ztt_btag_high_8TeV	1.03
 muTau_btag_high		TT     		  	CMS_htt_ttbarNorm_8TeV 			1.10
 muTau_btag_high		TT     		  	CMS_htt_ttbar_emb_8TeV 			1.20
 muTau_btag_high	 	VV	          	CMS_htt_DiBosonNorm_8TeV 		1.15

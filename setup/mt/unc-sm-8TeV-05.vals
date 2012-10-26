@@ -20,7 +20,8 @@ muTau_vbf         	VV				CMS_scale_j_8TeV			1.10
 muTau_vbf   		signal,ZLL	    		CMS_htt_scale_met_8TeV			1.05
 muTau_vbf	   	TT,VV		    		CMS_htt_scale_met_8TeV			1.07
 muTau_vbf		ZTT,ZLL				CMS_htt_zttNorm_8TeV 			1.03
-muTau_vbf		TT				CMS_htt_ttbarNorm_8TeV			1.10
+muTau_vbf		TT				CMS_htt_ttbarNorm_8TeV			1.08
+muTau_vbf		TT				CMS_htt_ttbarNorm_mutau_vbf_8TeV	1.33
 muTau_vbf		VV				CMS_htt_DiBosonNorm_8TeV		1.15
 muTau_vbf		VV				CMS_htt_DiBosonNorm_mutau_vbf_8TeV	1.28
 muTau_vbf		W				CMS_htt_WNorm_mutau_vbf_8TeV		1.124

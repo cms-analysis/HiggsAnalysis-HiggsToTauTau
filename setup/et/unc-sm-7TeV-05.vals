@@ -20,7 +20,7 @@ eleTau_vbf         	VV				CMS_scale_j_7TeV			1.25
 eleTau_vbf   		signal,ZLL	    		CMS_htt_scale_met_7TeV			1.05
 eleTau_vbf	   	TT,VV		    		CMS_htt_scale_met_7TeV			1.07
 eleTau_vbf		ZTT,ZLL				CMS_htt_zttNorm_7TeV 			1.03
-eleTau_vbf		TT				CMS_htt_ttbarNorm_7TeV			1.10
+eleTau_vbf		TT				CMS_htt_ttbarNorm_7TeV			1.08
 eleTau_vbf		TT				CMS_htt_ttbarNorm_etau_vbf_7TeV		1.15
 eleTau_vbf		VV				CMS_htt_DiBosonNorm_7TeV		2.00
 eleTau_vbf		W				CMS_htt_WNorm_etau_vbf_7TeV		1.23
