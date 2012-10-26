@@ -8,8 +8,8 @@ emu_vbf		qqH				CMS_scale_j			1.05
 emu_vbf		VH				CMS_scale_j			1.15
 emu_vbf		ttbar,EWK			CMS_scale_j			1.20
 emu_vbf		signal,EWK,ttbar      		CMS_scale_met			1.05
-emu_vbf      	signal,background               CMS_eff_b                  	0.98
-emu_vbf      	signal,background               CMS_fake_b                 	0.99
+emu_vbf      	signal,EWK,ttbar                CMS_eff_b_7TeV                 	0.98
+emu_vbf      	signal,EWK,ttbar                CMS_fake_b_7TeV                	0.99
 emu_vbf		ggH				pdf_gg    			1.08
 emu_vbf		qqH				pdf_qqbar			1.03
 emu_vbf		VH				pdf_qqbar			1.02

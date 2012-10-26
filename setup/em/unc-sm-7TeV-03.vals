@@ -6,8 +6,8 @@ emu_boost_high	signal,background 		CMS_eff_m 				1.02
 emu_boost_high	ggH				CMS_scale_j				1.05
 emu_boost_high	EWK,ttbar			CMS_scale_j				1.05
 emu_boost_high	signal,EWK,ttbar      		CMS_scale_met				1.05
-emu_boost_high	signal,background	        CMS_eff_b		        	0.98
-emu_boost_high	signal,background	        CMS_fake_b		        	0.99
+emu_boost_high	signal,EWK,ttbar	        CMS_eff_b_7TeV		        	0.98
+emu_boost_high	signal,EWK,ttbar	        CMS_fake_b_7TeV		        	0.99
 emu_boost_high	ggH				pdf_gg    				1.08
 emu_boost_high	qqH				pdf_qqbar				1.03
 emu_boost_high	VH				pdf_qqbar				1.02
