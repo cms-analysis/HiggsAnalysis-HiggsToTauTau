@@ -59,6 +59,7 @@ channel(std::string& label){
 	  label==std::string("test-3")     ||
 	  label==std::string("test-4")     ||
 	  label==std::string("test-5")     ||
+	  label==std::string("old")        ||
 	  label==std::string("cmb-5fb")    ||
 	  label==std::string("hpa-5fb")    ||
 	  label==std::string("hpa-10fb")   ||
@@ -109,6 +110,9 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("btag"      )) title = std::string("B-Tag");
   if(channel==std::string("hgg"       )) title = std::string("H#rightarrow#gamma#gamma");
   if(channel==std::string("hww"       )) title = std::string("H#rightarrowWW#rightarrow2l2#nu");
+  if(channel==std::string("ltt"       )) title = std::string("WH#rightarrow#tau_{h}#tau_{h}+l");
+  if(channel==std::string("llt"       )) title = std::string("WH#rightarrow#tau_{h}+2l");
+  if(channel==std::string("4l"        )) title = std::string("ZH#rightarrow2l2#tau");
   if(channel==std::string("ltt"       )) title = std::string("WH#rightarrow#tau_{h}#tau_{h}");
   if(channel==std::string("llt"       )) title = std::string("WH#rightarrow#tau_{h}+2l (10 fb^{-1})");
   if(channel==std::string("4l"        )) title = std::string("ZH#rightarrow2l2#tau (10 fb^{-1})");
@@ -124,6 +128,7 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("test-3"    )) title = std::string("Test-3");
   if(channel==std::string("test-4"    )) title = std::string("Test-4");
   if(channel==std::string("test-5"    )) title = std::string("Test-5");
+  if(channel==std::string("old"       )) title = std::string("Old Limit");
   if(channel==std::string("cmb-5fb"   )) title = std::string("All channels (5 fb^{-1})");
   if(channel==std::string("hpa-5fb"   )) title = std::string("HPA analyses (5 fb^{-1})");
   if(channel==std::string("hpa-10fb"  )) title = std::string("HPA analyses (10 fb^{-1})");
@@ -195,6 +200,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["test-3"    ] = kRed+2;
   colors["test-4"    ] = kBlue;
   colors["test-5"    ] = kViolet-6;
+  colors["old"       ] = kViolet-6;
   colors["cmb-5fb"   ] = kBlue;
   colors["hpa-5fb"   ] = kRed;
   colors["hpa-10fb"  ] = kBlack;
