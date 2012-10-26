@@ -8,32 +8,42 @@ lttCategories="ett_sm,mtt_sm"
 
 domorph() 
 {
-  echo "Morphing file $1, samples $2, categories $3" 
+  echo "Morphing file $1, samples tau tau $2, WW $3, categories $4" 
   echo "110->140, in 0.5"
   horizontal-morphing.py \
-    --categories="$3"\
+    --categories="$4"\
     --samples="$2" \
+    --uncerts="" --masses="110,115,120,125,130,135,140" --step-size=0.5 \
+    -i $1 
+  horizontal-morphing.py \
+    --categories="$4"\
+    --samples="$3" \
     --uncerts="" --masses="110,120,130,140" --step-size=0.5 \
-    -i $1 -v
+    -i $1 
   echo "140->145, in 1.0"
   horizontal-morphing.py \
-    --categories="$3"\
-    --samples="$2" \
+    --categories="$4"\
+    --samples="$3" \
     --uncerts="" --masses="130,140" --step-size=1 \
-    -i $1 -v --extrapolate="141,142,143,144,145"
+    -i $1 #--extrapolate="141,142,143,144,145"
+  horizontal-morphing.py \
+    --categories="$4"\
+    --samples="$2" \
+    --uncerts="" --masses="135,140" --step-size=1 \
+    -i $1 #--extrapolate="141,142,143,144,145"
   echo "124.5->126.5, in 0.1"
   horizontal-morphing.py \
-    --categories="$3"\
-    --samples="$2" \
+    --categories="$4"\
+    --samples="$2,$3" \
     --uncerts="" --masses="124,127" --step-size=0.1 \
-    -i $1 -v 
+    -i $1 
 }
 
 morph() 
 {
   echo "LLT channels"
-  domorph $1 "WH{MASS},WH_hww{MASS}"  "${lltCategories}"
-  domorph $1 "VH{MASS},VH_hww{MASS}"  "${zhCategories}"
+  domorph $1 "WH{MASS}" "WH_hww{MASS}"  "${lltCategories}"
+  domorph $1 "ZH_htt{MASS}" "ZH_hww{MASS}"  "${zhCategories}"
 }
 
 echo "Combining 7TeV"

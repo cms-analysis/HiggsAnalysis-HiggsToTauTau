@@ -13,10 +13,22 @@ eeem_zh      ZZ                    CMS_vhtt_ZZ                                  
 eeem_zh      signal,ZZ             pdf_qqbar                                         1.034
 eeem_zh      signal                QCDscale_VH                                          1.004
 eeem_zh      ZZ                    CMS_zh2l2tau_ZZBkg_extrap            1.10
-eeem_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap_8TeV      1.30
+eeem_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap      1.30
 eeem_zh      Zjets                 CMS_zh2l2tau_ZjetBkgEEEM_8TeV        1
-eeem_zh      VH                    CMS_zh2l2tau_Signal_htt_EEEM_8TeV        1.21
-eeem_zh      VH_hww                CMS_zh2l2tau_Signal_hww_EEEM_8TeV        1.15
+eeem_zh      Zjets CMS_zhtt_eeem_8TeV_Zjets_b_1 1.0
+eeem_zh      Zjets CMS_zhtt_eeem_8TeV_Zjets_b_4 1.0
+eeem_zh      Zjets CMS_zhtt_eeem_8TeV_Zjets_b_5 1.0
+eeem_zh      Zjets CMS_zhtt_eeem_8TeV_Zjets_b_6 1.0
+eeem_zh      Zjets CMS_zhtt_eeem_8TeV_Zjets_b_7 1.0
+eeem_zh      Zjets CMS_zhtt_eeem_8TeV_Zjets_b_8 1.0
+eeem_zh      Zjets CMS_zhtt_eeem_8TeV_Zjets_b_9 1.0
+eeem_zh      Zjets CMS_zhtt_eeem_8TeV_Zjets_b_10 1.0
+eeem_zh      Zjets CMS_zhtt_eeem_8TeV_Zjets_b_11 1.0
+eeem_zh      Zjets CMS_zhtt_eeem_8TeV_Zjets_b_12 1.0
+eeem_zh      Zjets CMS_zhtt_eeem_8TeV_Zjets_b_13 1.0
+eeem_zh      Zjets CMS_zhtt_eeem_8TeV_Zjets_b_14 1.0
+
+
 
 
 ###########################################################################
@@ -34,12 +46,13 @@ eeet_zh      ZZ                    CMS_vhtt_ZZ                                  
 eeet_zh      signal,ZZ             pdf_qqbar                                         1.034
 eeet_zh      signal                QCDscale_VH                                          1.004
 eeet_zh      ZZ                    CMS_zh2l2tau_ZZBkg_extrap            1.10
-eeet_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap_8TeV      1.20
-eeet_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap_8TeV      1.30
+eeet_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap      1.20
+eeet_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap      1.30
 eeet_zh      Zjets                 CMS_zh2l2tau_ZjetBkgEEET_8TeV        1
-eeet_zh      VH                    CMS_zh2l2tau_Signal_htt_EEET_8TeV        1.17
-eeet_zh      VH_hww                CMS_zh2l2tau_Signal_hww_EEET_8TeV        1.71
-
+eeet_zh      Zjets CMS_zhtt_eeet_8TeV_Zjets_b_11 1.0
+eeet_zh      Zjets CMS_zhtt_eeet_8TeV_Zjets_b_12 1.0
+eeet_zh      Zjets CMS_zhtt_eeet_8TeV_Zjets_b_13 1.0
+eeet_zh      Zjets CMS_zhtt_eeet_8TeV_Zjets_b_14 1.0
 
 
 
@@ -60,11 +73,18 @@ eemt_zh      ZZ                    CMS_vhtt_ZZ                                  
 eemt_zh      signal,ZZ             pdf_qqbar                                         1.034
 eemt_zh      signal                QCDscale_VH                                          1.004
 eemt_zh      ZZ                    CMS_zh2l2tau_ZZBkg_extrap            1.10
-eemt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap_8TeV      1.20
-eemt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap_8TeV      1.30
+eemt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap      1.20
+eemt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap      1.30
 eemt_zh      Zjets                 CMS_zh2l2tau_ZjetBkgEEMT_8TeV        1
-eemt_zh      VH                    CMS_zh2l2tau_Signal_htt_EEMT_8TeV        1.16
-eemt_zh      VH_hww                CMS_zh2l2tau_Signal_hww_EEMT_8TeV        1.29
+eemt_zh      Zjets CMS_zhtt_eemt_8TeV_Zjets_b_1 1.0
+eemt_zh      Zjets CMS_zhtt_eemt_8TeV_Zjets_b_9 1.0
+eemt_zh      Zjets CMS_zhtt_eemt_8TeV_Zjets_b_10 1.0
+eemt_zh      Zjets CMS_zhtt_eemt_8TeV_Zjets_b_11 1.0
+eemt_zh      Zjets CMS_zhtt_eemt_8TeV_Zjets_b_12 1.0
+eemt_zh      Zjets CMS_zhtt_eemt_8TeV_Zjets_b_13 1.0
+eemt_zh      Zjets CMS_zhtt_eemt_8TeV_Zjets_b_14 1.0
+
+
 
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
@@ -81,21 +101,20 @@ eett_zh      ZZ                    CMS_vhtt_ZZ                                  
 eett_zh      signal,ZZ             pdf_qqbar                                         1.034
 eett_zh      signal                QCDscale_VH                                          1.004
 eett_zh      ZZ                    CMS_zh2l2tau_ZZBkg_extrap            1.10
-eett_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap_8TeV      1.20
+eett_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap      1.20
 eett_zh      Zjets                 CMS_zh2l2tau_ZjetBkgEETT_8TeV        1
-eett_zh      VH                    CMS_zh2l2tau_Signal_htt_EETT_8TeV        1.25
-eett_zh      VH_hww                CMS_zh2l2tau_Signal_hww_EETT_8TeV        2.0
+eett_zh      Zjets CMS_zhtt_eett_8TeV_Zjets_b_1 1.0
 
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 
 
 mmet_zh      signal,ZZ             lumi_8TeV                                 1.044
-mmet_zh      signal,ZZ             CMS_eff_e                            1.04
-mmet_zh      signal,ZZ             CMS_eff_m                            1.02
+mmet_zh      signal,ZZ             CMS_eff_e                            1.02
+mmet_zh      signal,ZZ             CMS_eff_m                            1.04
 mmet_zh      signal,ZZ             CMS_eff_t                            1.06
 mmet_zh      signal,ZZ             CMS_scale_e                          1.02
-mmet_zh      signal,ZZ             CMS_scale_m                          1.01
+mmet_zh      signal,ZZ             CMS_scale_m                          1.02
 mmet_zh      signal,ZZ             CMS_scale_t                          1.03
 mmet_zh      signal,ZZ             CMS_trigger_m                        1.01
 mmet_zh      signal,ZZ             CMS_fake_b                           1.01
@@ -103,31 +122,44 @@ mmet_zh      ZZ                    CMS_vhtt_ZZ                                  
 mmet_zh      signal,ZZ             pdf_qqbar                                         1.034
 mmet_zh      signal                QCDscale_VH                                          1.004
 mmet_zh      ZZ                    CMS_zh2l2tau_ZZBkg_extrap            1.10
-mmet_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap_8TeV      1.20
-mmet_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap_8TeV      1.30
+mmet_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap      1.20
+mmet_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap      1.30
 mmet_zh      Zjets                 CMS_zh2l2tau_ZjetBkgMMET_8TeV        1
-mmet_zh      VH                    CMS_zh2l2tau_Signal_htt_MMET_8TeV        1.21
-mmet_zh      VH_hww                CMS_zh2l2tau_Signal_hww_MMET_8TeV        1.29
+mmme_zh      Zjets CMS_zhtt_mmme_8TeV_Zjets_b_1 1.0
+mmme_zh      Zjets CMS_zhtt_mmme_8TeV_Zjets_b_5 1.0
+mmme_zh      Zjets CMS_zhtt_mmme_8TeV_Zjets_b_6 1.0
+mmme_zh      Zjets CMS_zhtt_mmme_8TeV_Zjets_b_7 1.0
+mmme_zh      Zjets CMS_zhtt_mmme_8TeV_Zjets_b_8 1.0
+mmme_zh      Zjets CMS_zhtt_mmme_8TeV_Zjets_b_9 1.0
+mmme_zh      Zjets CMS_zhtt_mmme_8TeV_Zjets_b_10 1.0
+mmme_zh      Zjets CMS_zhtt_mmme_8TeV_Zjets_b_11 1.0
+mmme_zh      Zjets CMS_zhtt_mmme_8TeV_Zjets_b_12 1.0
+mmme_zh      Zjets CMS_zhtt_mmme_8TeV_Zjets_b_13 1.0
+
 
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 
 
 mmme_zh      signal,ZZ             lumi_8TeV                                 1.044
-mmme_zh      signal,ZZ             CMS_eff_e                            1.06
-mmme_zh      signal,ZZ             CMS_eff_m                            1.02
-mmme_zh      signal,ZZ             CMS_scale_e                          1.03
-mmme_zh      signal,ZZ             CMS_scale_m                          1.01
+mmme_zh      signal,ZZ             CMS_eff_e                            1.02
+mmme_zh      signal,ZZ             CMS_eff_m                            1.06
+mmme_zh      signal,ZZ             CMS_scale_e                          1.02
+mmme_zh      signal,ZZ             CMS_scale_m                          1.03
 mmme_zh      signal,ZZ             CMS_trigger_m                        1.01
 mmme_zh      signal,ZZ             CMS_fake_b                           1.01
 mmme_zh      ZZ                    CMS_vhtt_ZZ                                   1.023
 mmme_zh      signal,ZZ             pdf_qqbar                                         1.034
 mmme_zh      signal                QCDscale_VH                                          1.004
 mmme_zh      ZZ                    CMS_zh2l2tau_ZZBkg_extrap            1.10
-mmme_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap_8TeV      1.30
+mmme_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap      1.30
 mmme_zh      Zjets                 CMS_zh2l2tau_ZjetBkgMMME_8TeV        1
-mmme_zh      VH                    CMS_zh2l2tau_Signal_htt_MMME_8TeV        1.22
-mmme_zh      VH_hww                CMS_zh2l2tau_Signal_hww_MMME_8TeV        1.14
+mmet_zh      Zjets CMS_zhtt_mmet_8TeV_Zjets_b_11 1.0
+mmet_zh      Zjets CMS_zhtt_mmet_8TeV_Zjets_b_12 1.0
+mmet_zh      Zjets CMS_zhtt_mmet_8TeV_Zjets_b_13 1.0
+mmet_zh      Zjets CMS_zhtt_mmet_8TeV_Zjets_b_14 1.0
+
+
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 
@@ -143,11 +175,18 @@ mmmt_zh      ZZ                    CMS_vhtt_ZZ                                  
 mmmt_zh      signal,ZZ             pdf_qqbar                                         1.034
 mmmt_zh      signal                QCDscale_VH                                          1.004
 mmmt_zh      ZZ                    CMS_zh2l2tau_ZZBkg_extrap            1.10
-mmmt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap_8TeV      1.20
-mmmt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap_8TeV      1.30
+mmmt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap      1.20
+mmmt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_emu_extrap      1.30
 mmmt_zh      Zjets                 CMS_zh2l2tau_ZjetBkgMMMT_8TeV        1
-mmmt_zh      VH                    CMS_zh2l2tau_Signal_htt_MMMT_8TeV        1.16
-mmmt_zh      VH_hww                CMS_zh2l2tau_Signal_hww_MMMT_8TeV        1.36
+mmmt_zh      Zjets CMS_zhtt_mmmt_8TeV_Zjets_b_1 1.0
+mmmt_zh      Zjets CMS_zhtt_mmmt_8TeV_Zjets_b_9 1.0
+mmmt_zh      Zjets CMS_zhtt_mmmt_8TeV_Zjets_b_10 1.0
+mmmt_zh      Zjets CMS_zhtt_mmmt_8TeV_Zjets_b_11 1.0
+mmmt_zh      Zjets CMS_zhtt_mmmt_8TeV_Zjets_b_12 1.0
+mmmt_zh      Zjets CMS_zhtt_mmmt_8TeV_Zjets_b_13 1.0
+mmmt_zh      Zjets CMS_zhtt_mmmt_8TeV_Zjets_b_14 1.0
+
+
 
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
@@ -164,7 +203,6 @@ mmtt_zh      ZZ                    CMS_vhtt_ZZ                                  
 mmtt_zh      signal,ZZ             pdf_qqbar                                         1.034
 mmtt_zh      signal                QCDscale_VH                                          1.004
 mmtt_zh      ZZ                    CMS_zh2l2tau_ZZBkg_extrap            1.10
-mmtt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap_8TeV      1.20
+mmtt_zh      Zjets                 CMS_zh2l2tau_ZjetBkg_tau_extrap      1.20
 mmtt_zh      Zjets                 CMS_zh2l2tau_ZjetBkgMMTT_8TeV        1
-mmtt_zh      VH                    CMS_zh2l2tau_Signal_htt_MMTT_8TeV        1.17
-mmtt_zh      VH_hww                CMS_zh2l2tau_Signal_hww_MMTT_8TeV        2.0
+mmtt_zh      Zjets CMS_zhtt_mmtt_8TeV_Zjets_b_1 1.0
