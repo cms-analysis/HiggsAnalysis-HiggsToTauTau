@@ -1,8 +1,10 @@
 #To run you need to do:
-#create directory NEWFILES where modified card files will be stored
 #python modify.py
+#NEWFILES will be created where modified card files will be stored
 
 import os, sys, re
+
+os.system("mkdir NEWFILES")
 
 modes = ["mu", "ele"]
 energies = ["7TeV", "8TeV"]
