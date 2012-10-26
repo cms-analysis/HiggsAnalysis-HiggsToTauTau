@@ -21,8 +21,7 @@ import re
 ## determine the center of mass energy from the name of the input file
 filename = options.input
 if '/' in filename :
-    filename = filename[filename.find('/')+1:]
-print filename
+    filename = filename[filename.rfind('/')+1:]
 matcher = re.compile('v?htt_\w*.inputs-\w*-(?P<PERIOD>[0-9]*\w*)-?_?\w*.root')
 ecms_str = matcher.match(filename).group('PERIOD')
 ecms_str = ecms_str[:ecms_str.find('TeV')]
