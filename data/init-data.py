@@ -20,7 +20,7 @@ for line in f:
         words = line.strip().split()
         #print "cp {CMSSW_BASE}/src/{source} {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/data/{target}".format(
         #    CMSSW_BASE=os.environ['CMSSW_BASE'], source=words[1], target=words[0])
-        os.system("cp -s {CMSSW_BASE}/src/{source} ./{target}".format(
+        os.system("cp {CMSSW_BASE}/src/{source} ./{target}".format(
             CMSSW_BASE=os.environ['CMSSW_BASE'], source=words[1], target=words[0]))
 f.close()
 
