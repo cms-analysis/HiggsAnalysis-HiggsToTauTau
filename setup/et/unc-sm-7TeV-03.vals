@@ -9,9 +9,9 @@ eleTau_boost_high		qqH				QCDscale_qqH				1.04
 eleTau_boost_high		VH				QCDscale_VH				1.04
 eleTau_boost_high		signal				UEPS					1.04
 eleTau_boost_high 		signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_e 				1.02
-eleTau_boost_high 		signal,ZTT,TT,VV 		CMS_eff_t 				1.08
-eleTau_boost_high 		signal,ZTT,VV 			CMS_eff_t_high 				1.03
-eleTau_boost_high		signal,ZTT   			CMS_scale_t 				1.00
+eleTau_boost_high 		signal,ZTT,TT,VV 		CMS_eff_t_7TeV 				1.08
+eleTau_boost_high 		signal,ZTT,VV 			CMS_eff_t_high_7TeV 			1.03
+eleTau_boost_high		signal,ZTT   			CMS_scale_t_etau_7TeV 			1.00
 eleTau_boost_high         	ggH				CMS_scale_j_7TeV			1.06
 eleTau_boost_high         	qqH				CMS_scale_j_7TeV			1.02
 eleTau_boost_high         	VH				CMS_scale_j_7TeV			1.06

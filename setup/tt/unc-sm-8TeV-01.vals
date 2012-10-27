@@ -6,10 +6,10 @@ tauTau_vbf			ggH				QCDscale_ggH2in	 			1.30
 tauTau_vbf			qqH				QCDscale_qqH				1.10
 tauTau_vbf			VH				QCDscale_VH	 			1.04 
 tauTau_vbf		    	signal				UEPS					1.04
-tauTau_vbf 			signal,ZTT,TT,VV		CMS_eff_t 				1.16
-tauTau_vbf 			signal,ZTT,TT,VV		CMS_eff_t_high 				1.06
+tauTau_vbf 			signal,ZTT,TT,VV		CMS_eff_t_8TeV 				1.16
+tauTau_vbf 			signal,ZTT,TT,VV		CMS_eff_t_high_8TeV 			1.06
 tauTau_vbf 			signal,ZTT,TT,VV		CMS_htt_tt_trigeff_t			1.09
-tauTau_vbf			signal,ZTT   			CMS_scale_t 				1.00
+tauTau_vbf			signal,ZTT   			CMS_scale_t_tautau_8TeV  		1.00
 tauTau_vbf         		ggH				CMS_scale_j_8TeV			1.03
 tauTau_vbf         		qqH				CMS_scale_j_8TeV			1.02
 tauTau_vbf         		VH				CMS_scale_j_8TeV			1.01

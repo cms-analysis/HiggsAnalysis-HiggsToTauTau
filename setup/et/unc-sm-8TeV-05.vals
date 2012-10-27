@@ -9,9 +9,9 @@ eleTau_vbf		qqH				QCDscale_qqH				1.10
 eleTau_vbf		VH 	                        QCDscale_VH				1.04
 eleTau_vbf		signal				UEPS					1.04
 eleTau_vbf 		signal,ZTT,ZLL,TT,VV 		CMS_eff_e 				1.02
-eleTau_vbf 		signal,ZTT,TT,VV 		CMS_eff_t 				1.08
-eleTau_vbf 		signal,ZTT,TT,VV 		CMS_eff_t_high 				1.015
-eleTau_vbf		signal,ZTT			CMS_scale_t 				1.00
+eleTau_vbf 		signal,ZTT,TT,VV 		CMS_eff_t_8TeV 				1.08
+eleTau_vbf 		signal,ZTT,TT,VV 		CMS_eff_t_high_8TeV 			1.015
+eleTau_vbf		signal,ZTT			CMS_scale_t_etau_8TeV 			1.00
 eleTau_vbf         	ggH				CMS_scale_j_8TeV			1.20
 eleTau_vbf         	qqH				CMS_scale_j_8TeV			1.05
 eleTau_vbf         	VH				CMS_scale_j_8TeV			1.15

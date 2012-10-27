@@ -6,10 +6,10 @@ tauTau_boost			ggH				QCDscale_ggH1in	 				1.15
 tauTau_boost			qqH				QCDscale_qqH					1.04            
 tauTau_boost			VH				QCDscale_VH	 				1.04            
 tauTau_boost		   	signal				UEPS						1.04
-tauTau_boost 			signal,ZTT,TT,VV		CMS_eff_t 					1.16
-tauTau_boost 			signal,ZTT,TT,VV		CMS_eff_t_high 					1.06
+tauTau_boost 			signal,ZTT,TT,VV		CMS_eff_t_8TeV 					1.16
+tauTau_boost 			signal,ZTT,TT,VV		CMS_eff_t_high_8TeV 				1.06
 tauTau_boost 			signal,ZTT,TT,VV		CMS_htt_tt_trigeff_t				1.09
-tauTau_boost			signal,ZTT   			CMS_scale_t 					1.00        
+tauTau_boost			signal,ZTT   			CMS_scale_t_tautau_8TeV 			1.00        
 tauTau_boost         		ggH				CMS_scale_j_8TeV				1.05
 tauTau_boost			qqH				CMS_scale_j_8TeV				1.06
 tauTau_boost         		VH				CMS_scale_j_8TeV				1.05
