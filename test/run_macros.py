@@ -61,7 +61,7 @@ for key in categories :
     for idx in range(len(categories[key])) : categories[key][idx] = categories[key][idx].rstrip(',')
 
 log = {
-    ("em", "0") : "true",  #   if options.analysis == "sm" else  "true" ,
+    ("em", "0") : "false", #   if options.analysis == "sm" else  "true" ,
     ("em", "1") : "false", #   if options.analysis == "sm" else  "false",
     ("em", "2") : "false", #   if options.analysis == "sm" else  "true" ,
     ("em", "3") : "false", #   if options.analysis == "sm" else  "false",
