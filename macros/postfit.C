@@ -33,7 +33,7 @@ float maximum(TH1F* h, bool LOG=false){
   }
   else{
     if(h->GetMaximum()>  12){ return 10.*TMath::Nint((1.3*h->GetMaximum()/10.)); }
-    if(h->GetMaximum()> 1.2){ return TMath::Nint((1.3*h->GetMaximum())); }
+    if(h->GetMaximum()> 1.2){ return TMath::Nint((1.6*h->GetMaximum())); }
     return 1.3*h->GetMaximum(); 
   }
 }
