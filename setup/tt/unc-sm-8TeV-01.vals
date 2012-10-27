@@ -24,3 +24,17 @@ tauTau_vbf			TT				CMS_htt_ttbarNorm_tautau_vbf_8TeV	1.24
 tauTau_vbf			VV				CMS_htt_DiBosonNorm_8TeV		1.15
 tauTau_vbf			VV				CMS_htt_DiBosonNorm_tautau_vbf_8TeV	1.13
 tauTau_vbf         		ZJ                      	CMS_htt_ZJetFakeTau_tautau_vbf_8TeV	1.20
+tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_1 1.00
+tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_2 1.00
+tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_3 1.00
+tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_4 1.00
+tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_5 1.00
+tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_6 1.00
+tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_7 1.00
+tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_8 1.00
+tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_9 1.00
+tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_10 1.00
+tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_11 1.00
+tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_12 1.00
+tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_13 1.00
+tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_14 1.00
