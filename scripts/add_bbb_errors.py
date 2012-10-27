@@ -97,7 +97,7 @@ def add_systematics(cat_name, process, systematics, unc_conf_file, unc_val_file)
         unc_val_file.write(
             '%s %s %s 1.00\n' % (cat_name, process, systematic_name))
 
-def create_systematics(channel, category, process, shape_file, threshold):
+def create_systematics(channel, category, process, period, shape_file, threshold):
     ''' Create the bin-by-bin systematics in the shape file.
 
     Returns a tuple with (channel name, list of added systs)
@@ -131,14 +131,14 @@ def create_systematics(channel, category, process, shape_file, threshold):
         # string-to-long bug
         # This prefix is needed so the systematics names don't overlap
         # between ET/MT, boost/VBF, etc.
-        'CMS_htt_%s%i' % (channel, int(category)),
+        'CMS_htt_%s_%s_%s' % (channel, category, period),
         '--threshold',
         str(threshold),
     ]
     if process_to_merge_in:
         command.append('--merge-errors')
         command.extend(process_to_merge_in)
-
+    
     log.debug("Shape command:")
     log.debug(" ".join(command))
     # Run the command, get the list of new names (written to stdout)
@@ -220,7 +220,7 @@ if __name__ == "__main__":
         # Create the systematics
         shape_file = get_shape_file(args.outputdir, channel, period, ana)
         nicename, systematics = create_systematics(
-            channel, cat, proc, shape_file, args.threshold)
+            channel, cat, proc, period, shape_file, args.threshold)
         log.info("Added systs for %i bins", len(systematics))
         total_added_systematics += len(systematics)
         cgs, unc_c, unc_v = get_card_config_files(
