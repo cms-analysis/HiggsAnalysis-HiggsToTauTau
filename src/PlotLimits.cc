@@ -10,7 +10,6 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) : outpu
   pdf_  (cfg.getParameter<bool  >("pdf" )),
   txt_  (cfg.getParameter<bool  >("txt" )),
   root_ (cfg.getParameter<bool  >("root")),
-  outerband_ (cfg.getParameter<bool  >("outerband")),
   min_  (cfg.getParameter<double>("min" )),
   max_  (cfg.getParameter<double>("max" )),
   log_  (cfg.getParameter<int   >("log") ),
@@ -19,6 +18,9 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) : outpu
   higgs125_bands (cfg.exists("higgs125_bands") ? cfg.getParameter<bool>("higgs125_bands") : false),
   POI_  (cfg.exists("POI") ? cfg.getParameter<std::string>("POI") : "")
 {
+  if(cfg.existsAs<bool>("outerband")){
+    outerband_=cfg.getParameter<bool>("outerband");
+  }
   bins_=cfg.getParameter<std::vector<double> >("masspoints");
   for(unsigned int i=0; i<bins_.size(); ++i) valid_.push_back(true);
 }
