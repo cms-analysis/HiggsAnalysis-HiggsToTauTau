@@ -9,7 +9,7 @@ muTau_0jet_low     		qqH				QCDscale_qqH					1.035
 muTau_0jet_low     		VH				QCDscale_VH					1.04
 muTau_0jet_low		        signal				UEPS						0.96
 muTau_0jet_low		 	signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_m 					1.02
-muTau_0jet_low		 	signal,ZTT,TT,VV 		CMS_eff_t 					1.07
+muTau_0jet_low		 	signal,ZTT,TT,VV 		CMS_eff_t 					1.08
 muTau_0jet_low			signal,ZTT			CMS_scale_t 					1.00
 muTau_0jet_low        	        ggH				CMS_scale_j_8TeV				0.98
 muTau_0jet_low        	        qqH				CMS_scale_j_8TeV				0.90

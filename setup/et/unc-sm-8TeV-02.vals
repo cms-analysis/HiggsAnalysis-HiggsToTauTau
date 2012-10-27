@@ -9,7 +9,7 @@ eleTau_boost_low	qqH				QCDscale_qqH					1.04
 eleTau_boost_low	VH				QCDscale_VH					1.04
 eleTau_boost_low	signal				UEPS						1.04
 eleTau_boost_low 	signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_e 					1.02
-eleTau_boost_low 	signal,ZTT,TT,VV 		CMS_eff_t 					1.07
+eleTau_boost_low 	signal,ZTT,TT,VV 		CMS_eff_t 					1.08
 eleTau_boost_low	signal,ZTT   			CMS_scale_t 					1.00
 eleTau_boost_low        ggH				CMS_scale_j_8TeV				1.06
 eleTau_boost_low        qqH				CMS_scale_j_8TeV				1.02

@@ -2,7 +2,7 @@
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 eleTau_0jet_high	signal	  	            	lumi_8TeV            				1.042
 eleTau_0jet_high	signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_e 					1.02
-eleTau_0jet_high	signal,ZTT,TT,VV 		CMS_eff_t 					1.07
+eleTau_0jet_high	signal,ZTT,TT,VV 		CMS_eff_t 					1.08
 eleTau_0jet_high	signal,ZTT,TT,VV 		CMS_eff_t_high 					1.03
 eleTau_0jet_high        TT				CMS_scale_j_8TeV				0.85
 eleTau_0jet_high        VV				CMS_scale_j_8TeV				0.97
