@@ -93,6 +93,8 @@ def add_systematics(cat_name, process, systematics, unc_conf_file, unc_val_file)
     '''
     # Write to the unc.conf file
     for systematic_name in systematics:
+        if '>' in process :
+            process = process[process.find('>')+1:]
         unc_conf_file.write('%s shape\n' % systematic_name)
         unc_val_file.write(
             '%s %s %s 1.00\n' % (cat_name, process, systematic_name))
