@@ -38,10 +38,10 @@ for mode in modes:
         file = open("produce.C", "w")
         file.write("void produce(){\n")
         
-        fileName = "htt_mt.inputs-mssm-"+energy+"-0.root"
+        fileName = "htt_mt.inputs-mssm-"+energy+".root"
         specialDirs = ["muTau_btag_high","muTau_btag_low","muTau_boost_high"]
         if mode == "ele":
-            fileName = "htt_et.inputs-mssm-"+energy+"-0.root"
+            fileName = "htt_et.inputs-mssm-"+energy+".root"
             specialDirs = ["eleTau_btag_high","eleTau_btag_low","eleTau_boost_high"]
         file.write("  TH1F* tmp;\n")
         file.write("  TFile* in   = TFile::Open(\"" + fileName + "\");\n")

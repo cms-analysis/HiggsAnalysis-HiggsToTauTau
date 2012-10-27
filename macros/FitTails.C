@@ -423,10 +423,10 @@ void FitTails(TString mode = "mu", TString energy = "8TeV") {
   char* fitFormulaExp1 = "[0]*exp([1]*TMath::Power(x,[2]))";
   char* fitFormulaExp2 = "[0]*exp([1]*x)";
   char* fitFormulaHyp = "[0]/TMath::Power(x,[1])";
-  TString file = "htt_mt.inputs-mssm-" + energy + "-0.root";
+  TString file = "htt_mt.inputs-mssm-" + energy + ".root";
   
   if ( mode == "ele" ){    
-    file = "htt_et.inputs-mssm-" + energy + "-0.root";
+    file = "htt_et.inputs-mssm-" + energy + ".root";
   }
   
   TString hName[3] = {"QCD", "W", "TT"};
