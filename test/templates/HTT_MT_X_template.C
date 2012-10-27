@@ -48,7 +48,7 @@ float maximum(TH1F* h, bool LOG=false){
   }
   else{
     if(h->GetMaximum()>  12){ return 10.*TMath::Nint((1.3*h->GetMaximum()/10.)); }
-    if(h->GetMaximum()> 1.2){ return TMath::Nint((1.3*h->GetMaximum())); }
+    if(h->GetMaximum()> 1.2){ return TMath::Nint((1.6*h->GetMaximum())); }
     return 1.3*h->GetMaximum(); 
   }
 }
@@ -151,9 +151,9 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/TT"    , directory)), "TT" ); InitHist(ttbar, "", "", kBlue   - 8, 1001);
   TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/ZTT"   , directory)), "ZTT"); InitHist(Ztt  , "", "", kOrange - 4, 1001);
 #ifdef MSSM
-  float ggHScale = 1., bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=8
-  if(std::string(inputfile).find("7TeV")!=std::string::npos){ ggHScale = 130.*0.11/1000.; bbHScale = 403.*0.11/1000.; }
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){ ggHScale = 169.*0.11/1000.; bbHScale = 537.*0.11/1000.; }
+  float ggHScale = 1., bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=8, times 10 for the time being
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){ ggHScale = 10*130.*0.11/1000.; bbHScale = 10*403.*0.11/1000.; }
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){ ggHScale = 10*169.*0.11/1000.; bbHScale = 10*537.*0.11/1000.; }
   TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH160", directory)), "ggH"); InitSignal(ggH); ggH ->Scale(ggHScale);
   TH1F* bbH    = refill((TH1F*)input->Get(TString::Format("%s/bbH160", directory)), "bbH"); InitSignal(bbH); bbH ->Scale(bbHScale);
 #else
