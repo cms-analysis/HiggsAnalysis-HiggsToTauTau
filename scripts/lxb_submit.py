@@ -70,5 +70,5 @@ with open(submit_name, 'w') as submit_script:
                 directory = dir
             ))
         os.system('chmod 755 %s' % script_file_name)
-        submit_script.write('bsub -q 1nh %s\n' % script_file_name)
+        submit_script.write('bsub -q 8nh %s\n' % script_file_name)
 os.system('chmod 755 %s' % submit_name)
