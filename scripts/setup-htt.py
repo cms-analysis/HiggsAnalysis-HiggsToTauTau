@@ -9,7 +9,9 @@ parser.add_option("-o", "--out", dest="out", default="htt-limits", type="string"
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="Choose between run periods [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
 parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string", help="List of channels, for which datacards should be created. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt. [Default: \"mm em mt et\"]")
+parser.add_option("-l", "--label", dest="label", default="", type="string", help="Add a label to the subdirectories that belong to each corresponding sub-channel. [Default: \"\"]")
 parser.add_option("-s", "--setup", dest="setup", default="all", type="choice", help="Setup in which to run. Choises are between cmb only (cmb), split by channels (chn), split by event category (cat), all (all). The combiend limit will always be calculated. [Default: all]", choices=["cmb", "chn", "cat", "all"])
+parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode. [Default: False]")
 parser.add_option("--SM4", dest="SM4", default=False, action="store_true", help="Copy datacards for SM4 (for SM only). [Default: False]")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
@@ -33,7 +35,8 @@ parser.add_option_group(cats2)
 
 import os
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
-
+## label
+label = "" if options.label == "" else "-"+options.label
 ## periods
 periods = options.periods.split()
 for idx in range(len(periods)) : periods[idx] = periods[idx].rstrip(',')
@@ -66,14 +69,14 @@ if options.analysis == "mssm" :
 ## setup directory structure in case it does not exist, yet
 if not os.path.exists(options.out) :
     os.system("mkdir {OUTPUT}/".format(OUTPUT=options.out))
-if not os.path.exists("{OUTPUT}/cmb".format(OUTPUT=options.out, ANA=options.analysis)) :
-    os.system("mkdir {OUTPUT}/cmb".format(OUTPUT=options.out, ANA=options.analysis))
+if not os.path.exists("{OUTPUT}/cmb{LABEL}".format(OUTPUT=options.out, ANA=options.analysis, LABEL=label)) :
+    os.system("mkdir {OUTPUT}/cmb{LABEL}".format(OUTPUT=options.out, ANA=options.analysis, LABEL=label))
 for channel in channels :
-    if not os.path.exists("{OUTPUT}/{CHN}".format(OUTPUT=options.out, CHN=channel)) :
-        os.system("mkdir {OUTPUT}/{CHN}".format(OUTPUT=options.out, CHN=channel))
+    if not os.path.exists("{OUTPUT}/{CHN}{LABEL}".format(OUTPUT=options.out, CHN=channel, LABEL=label)) :
+        os.system("mkdir {OUTPUT}/{CHN}{LABEL}".format(OUTPUT=options.out, CHN=channel, LABEL=label))
 for category in categories :
-    if not os.path.exists("{OUTPUT}/{CAT}".format(OUTPUT=options.out, CAT=category)) :
-        os.system("mkdir {OUTPUT}/{CAT}".format(OUTPUT=options.out, CAT=category))
+    if not os.path.exists("{OUTPUT}/{CAT}{LABEL}".format(OUTPUT=options.out, CAT=category, LABEL=label)) :
+        os.system("mkdir {OUTPUT}/{CAT}{LABEL}".format(OUTPUT=options.out, CAT=category, LABEL=label))
 
 directories = {
     "0"  : ["0jet", "fermionic"],
@@ -82,22 +85,24 @@ directories = {
     "3"  : ["boost", "fermionic"],
     "4"  : ["2jet"],
     "5"  : ["vbf", "gauge"],
-    "6"  : "btag",
-    "7"  : "btag",
+    "6"  : ["btag"],
+    "7"  : ["btag"],
 }
 
-# The categories are different for the vhtt case
+## categories are different for the vhtt case
 vhtt_directories = {
     "0" : ["llt", "gauge"],
     "1" : ["4l", "gauge"],
     "2" : ["ltt", "gauge"],
 }
 
-# For tau_h tau_h, 0 = boost, 1 = vbf
+## for htt_tt, 0 = boost, 1 = vbf
 tt_directories = {
     "0"  : ["boost", "fermionic"],
     "1"  : ["vbf", "gauge"],
 }
+
+verb = "-v" if options.verbose else ""
 
 for channel in channels :
     for period in periods :
@@ -108,16 +113,17 @@ for channel in channels :
             if channel == 'tt':
                 category_names = tt_directories
             for mass in parseArgs(args) :
+                print "setup directory structure for", options.analysis, period, channel, cat, mass
                 ## setup combined
-                os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} -v {MASS}".format(
-                    INPUT=options.input, OUTPUT=options.out+"/cmb", PER=period, ANA=options.analysis, CHN=channel, MASS=mass))
+                os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --no-update {VERB} {MASS}".format(
+                    INPUT=options.input, OUTPUT=options.out+"/cmb"+label, PER=period, ANA=options.analysis, CHN=channel, VERB=verb, MASS=mass))
                 if options.setup == "all" or options.setup == "chn" :
                     ## setup channel-wise
-                    os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} -v {MASS}".format(
-                        INPUT=options.input, OUTPUT=options.out+"/"+channel, PER=period, ANA=options.analysis, CHN=channel, MASS=mass))
+                    os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --no-update {VERB} {MASS}".format(
+                        INPUT=options.input, OUTPUT=options.out+"/"+channel+label, PER=period, ANA=options.analysis, CHN=channel, VERB=verb, MASS=mass))
                 if options.setup == "all" or options.setup == "cat" :
                     ## setup category-wise
                     for category in category_names[cat]:
-                        os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --{ANA}-categories-{CHN} {CAT} --v {MASS}".format(
-                            INPUT=options.input, OUTPUT=options.out+"/"+category, PER=period, ANA=options.analysis, CHN=channel, CAT=cat, MASS=mass))
+                        os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --no-update  --{ANA}-categories-{CHN} {CAT} {VERB} {MASS}".format(
+                            INPUT=options.input, OUTPUT=options.out+"/"+category+label, PER=period, ANA=options.analysis, CHN=channel, CAT=cat, VERB=verb, MASS=mass))
 
