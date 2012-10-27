@@ -23,4 +23,4 @@ emu_vbf		ttbar				CMS_htt_ttbarNorm_8TeV		1.08
 emu_vbf		ttbar				CMS_htt_ttbarNorm_vbf_8TeV	1.10
 emu_vbf		EWK				CMS_htt_DiBosonNorm_8TeV	1.15
 emu_vbf		Fakes				CMS_htt_fakes_em_8TeV		1.30
-emu_vbf		Fakes				CMS_htt_fakes_em_vbf_8TeV	1.06
+emu_vbf		Fakes				CMS_htt_fakes_em_vbf_8TeV	1.05

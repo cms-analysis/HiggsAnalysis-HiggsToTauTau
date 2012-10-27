@@ -12,5 +12,5 @@ emu_btag_high	Ztt                             CMS_htt_extrap_ztt_btag_high_8TeV	
 emu_btag_high	ttbar				CMS_htt_ttbarNorm_8TeV		1.10
 emu_btag_high	EWK				CMS_htt_DiBosonNorm_8TeV	1.15
 emu_btag_high	Fakes				CMS_htt_fakes_em_8TeV		1.30
-emu_btag_high	Fakes				CMS_htt_fakes_em_btag_high_8TeV	1.33
+emu_btag_high	Fakes				CMS_htt_fakes_em_btag_high_8TeV	1.23
 emu_btag_high	ttbar     		  	CMS_htt_ttbar_emb_8TeV 		1.01

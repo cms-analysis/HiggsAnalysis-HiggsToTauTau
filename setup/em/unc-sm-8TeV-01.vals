@@ -22,4 +22,4 @@ emu_0jet_high	Ztt				CMS_htt_extrap_ztt_0jet_high_8TeV	1.03
 emu_0jet_high	ttbar				CMS_htt_ttbarNorm_8TeV			1.10
 emu_0jet_high	EWK				CMS_htt_DiBosonNorm_8TeV		1.15
 emu_0jet_high	Fakes				CMS_htt_fakes_em_8TeV			1.30
-emu_0jet_high   Fakes                           CMS_htt_fakes_em_0jet_high_8TeV 	1.11
+emu_0jet_high   Fakes                           CMS_htt_fakes_em_0jet_high_8TeV 	1.10
