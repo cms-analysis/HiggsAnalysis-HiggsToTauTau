@@ -10,6 +10,7 @@ parser.add_option("-o", "--out", dest="out", default="ichep2012", type="string",
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
 parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string", help="List of channels, for whch the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt. [Default: \"mm em mt et\"]")
+parser.add_option("-u", "--no-update", dest="no_update", default=False, action="store_true", help="If there are already root file in common, do not recopy them. This should be used by other tools only to speed up copy jobs. [Default: False]")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 5", type="string", help="List em of event categories. [Default: \"0 1 2 3 5\"]")
@@ -129,12 +130,13 @@ if options.analysis == "mssm" :
         "et"   : (90, 1000),
         "tt"   : (90, 500),
     }
-print "------------------------------------------------------"
-print " Valid mass ranges per channel:"
-print "------------------------------------------------------"
-for chn in channels :
-    print "chn: ", chn, "valid mass range:", valid_masses[chn]
-print
+if options.verbose :
+    print "------------------------------------------------------"
+    print " Valid mass ranges per channel:"
+    print "------------------------------------------------------"
+    for chn in channels :
+        print "chn: ", chn, "valid mass range:", valid_masses[chn]
+    print
 
 ## valid run periods
 if options.analysis == "sm" :
@@ -155,12 +157,14 @@ if options.analysis == "mssm" :
         "et"   : "7TeV 8TeV",
         "tt"   : "8TeV",
         }
-print "------------------------------------------------------"
-print " Valid mass run periods per channel:"
-print "------------------------------------------------------"
-for chn in channels :
-    print "chn: ", chn, "valid run periods:", valid_periods[chn]
-print
+if options.verbose :
+    print "------------------------------------------------------"
+    print " Valid mass run periods per channel:"
+    print "------------------------------------------------------"
+    for chn in channels :
+        print "chn: ", chn, "valid run periods:", valid_periods[chn]
+    print
+    print "copy datacards for:", options.analysis, options.channels, options.periods 
 
 ## setup directory structure in case it does not exist, yet
 if not os.path.exists(options.out) :
@@ -198,15 +202,37 @@ for period in periods :
                         print "copying datacards for:", period, channel, category, mass
                     if options.analysis == "mssm" :
                         add_mass("htt_{CHN}_{CAT}_{PERIOD}".format(CHN=channel, CAT=category, PERIOD=period), mass)
-                        os.system("cp {INPUT}/htt_{CHN}/{PRE}htt_{CHN}.inputs-{ANA}-{PERIOD}*.root {OUTPUT}/common/".format(
-                            INPUT=input, CHN=channel, ANA=options.analysis, PERIOD=period, OUTPUT=options.out, PRE=prefix))
+                        if options.no_update:
+                            files = ' '.join(os.listdir("{OUTPUT}/common/".format(OUTPUT=options.out)))
+                            if not "htt_"+channel+'.inputs-mssm-'+period in files :
+                                os.system("cp {INPUT}/htt_{CHN}/{PRE}htt_{CHN}.inputs-{ANA}-{PERIOD}*.root {OUTPUT}/common/".format(
+                                    INPUT=input, CHN=channel, ANA=options.analysis, PERIOD=period, OUTPUT=options.out, PRE=prefix))
+                            else :
+                                pass
+                                #print "no update of files needed."
+                        else :
+                            os.system("cp {INPUT}/htt_{CHN}/{PRE}htt_{CHN}.inputs-{ANA}-{PERIOD}*.root {OUTPUT}/common/".format(
+                                INPUT=input, CHN=channel, ANA=options.analysis, PERIOD=period, OUTPUT=options.out, PRE=prefix))
                         os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
                             INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
                         os.system("perl -pi -e 's/htt_{CHN}.inputs/..\/common\/{PRE}htt_{CHN}.inputs/g' {OUTPUT}/{MASS}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
                             CHN=channel, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period))
                     else :
-                        os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}.inputs-{ANA}-{PERIOD}.root {OUTPUT}/common/{PRE}htt_{CHN}.input_{PERIOD}.root".format(
-                            INPUT=input, CHN=channel, ANA=options.analysis, OUTPUT=options.out, PRE=prefix, PERIOD=period))
+                        if options.no_update:
+                            files = ' '.join(os.listdir("{OUTPUT}/common/".format(OUTPUT=options.out)))
+                            if not "htt_"+channel+'.input_'+period in files :
+                                os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}.inputs-{ANA}-{PERIOD}.root {OUTPUT}/common/{PRE}htt_{CHN}.input_{PERIOD}.root".format(
+                                    INPUT=input, CHN=channel, ANA=options.analysis, OUTPUT=options.out, PRE=prefix, PERIOD=period))
+                            else :
+                                if not period in files:
+                                    os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}.inputs-{ANA}-{PERIOD}.root {OUTPUT}/common/{PRE}htt_{CHN}.input_{PERIOD}.root".format(
+                                        INPUT=input, CHN=channel, ANA=options.analysis, OUTPUT=options.out, PRE=prefix, PERIOD=period))
+                                else :
+                                    pass
+                                    #print "no update of files needed."                                    
+                        else :
+                            os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}.inputs-{ANA}-{PERIOD}.root {OUTPUT}/common/{PRE}htt_{CHN}.input_{PERIOD}.root".format(
+                                INPUT=input, CHN=channel, ANA=options.analysis, OUTPUT=options.out, PRE=prefix, PERIOD=period))
                         os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
                             INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
                         os.system("perl -pi -e 's/htt_{CHN}.inputs-{ANA}-{PERIOD}.root/..\/common\/{PRE}htt_{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASS}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
