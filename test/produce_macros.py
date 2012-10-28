@@ -182,7 +182,6 @@ class Analysis:
                              if lower :
                                  value = shift*(central/lower-1)+1
 			 if value!=1:
- 			     print shift,value,lower,central,upper
 		             print_me  = '''std::cout << "scaling bin %(bin)i by %(value)f" << std::endl;''' % {"bin":bin, "value":value}
 		             out_line  = print_me+"hin->SetBinContent(%(bin)i,hin->GetBinContent(%(bin)i)*%(value)f); \n" % {"bin":bin, "value":value}
 			 if options.uncertainties:
