@@ -2,9 +2,9 @@
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 muTau_btag_high		signal            	lumi_7TeV            			1.022
 muTau_btag_high		signal,ZTT,ZLL,TT,VV  	CMS_eff_m 				1.02
-muTau_btag_high		signal,ZTT,VV  		CMS_eff_t 				1.08
-muTau_btag_high		signal,ZTT,VV  		CMS_eff_t_high 				1.03
-muTau_btag_high		signal,ZTT		CMS_scale_t   	        		1.00
+muTau_btag_high		signal,ZTT,VV  		CMS_eff_t_7TeV 				1.08
+muTau_btag_high		signal,ZTT,VV  		CMS_eff_t_high_7TeV 			1.03
+muTau_btag_high		signal,ZTT		CMS_scale_t_mutau_7TeV 	       		1.00
 muTau_btag_high      	ggH		  	CMS_scale_j_7TeV			0.94	
 muTau_btag_high      	bbH		  	CMS_scale_j_7TeV			1.04	
 muTau_btag_high      	TT		  	CMS_scale_j_7TeV			1.10
