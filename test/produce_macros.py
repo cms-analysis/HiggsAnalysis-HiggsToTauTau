@@ -172,9 +172,9 @@ class Analysis:
 		         shift = self.process_shape_weight[curr_name][shape_name]
                          out_line = ''
 			 value = 1
-                         upper = hist_up.GetBinContent(bin)
-                         lower = hist_down.GetBinContent(bin) if hist_down.GetBinContent(bin)>0.0001 else 0.
-                         central = hist.GetBinContent(bin)
+                         upper = hist_up.GetBinContent(bin) if hist_up.GetBinContent(bin)>0.01 else 0.
+                         lower = hist_down.GetBinContent(bin) if hist_down.GetBinContent(bin)>0.01 else 0.
+                         central = hist.GetBinContent(bin) if hist.GetBinContent(bin)>0.01 else 0.
 		         if shift>0 and central>0 and upper!=central:
                              if central :
                                  value = shift*(upper/central-1)+1
@@ -182,13 +182,14 @@ class Analysis:
                              if lower :
                                  value = shift*(central/lower-1)+1
 			 if value!=1:
+ 			     print shift,value,lower,central,upper
 		             print_me  = '''std::cout << "scaling bin %(bin)i by %(value)f" << std::endl;''' % {"bin":bin, "value":value}
 		             out_line  = print_me+"hin->SetBinContent(%(bin)i,hin->GetBinContent(%(bin)i)*%(value)f); \n" % {"bin":bin, "value":value}
 			 if options.uncertainties:
 			   uncertainty=1
-			   if hist_down.GetBinContent(bin) and hist.GetBinContent(bin):
+			   if hist_down.GetBinContent(bin)>0.01 and hist.GetBinContent(bin)>0.01:
 			     uncertainty=max(uncertainty,hist.GetBinContent(bin)/hist_down.GetBinContent(bin),hist_down.GetBinContent(bin)/hist.GetBinContent(bin))
-			   if hist_up.GetBinContent(bin) and hist.GetBinContent(bin):
+			   if hist_up.GetBinContent(bin)>0.01 and hist.GetBinContent(bin)>0.01:
 			     uncertainty=max(uncertainty,hist.GetBinContent(bin)/hist_up.GetBinContent(bin),hist_up.GetBinContent(bin)/hist.GetBinContent(bin))
 			   uncertainty = self.process_shape_uncertainties[curr_name][shape_name]*min(2,uncertainty-1)
 		           if not process_name+str(bin) in uncertainties_set:
