@@ -175,7 +175,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 #else
     rescale(ggH,   5);
     rescale(qqH,   6);
-    rescale(qqH,   7);
+    rescale(VH,    7);
 #endif
   }
 
