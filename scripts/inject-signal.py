@@ -143,6 +143,7 @@ signals = {
     "tt" : options.signals_tt,
     "wh" : options.signals_vhtt,
     "zh" : options.signals_vhtt,
+    "vhtt" : options.signals_vhtt,
     }
 
 ## pick up the lists of channels, categories and periods from the files in the
@@ -154,14 +155,27 @@ periods    = []
 ## detemine list of channels and list of periods from the datacards in the input
 ## directory
 files = os.listdir("%s/%s" % (options.input, "125"))
-expr = r"htt_(?P<CHANNEL>\w+)_(?P<CATEGORY>[0-9]*)_(?P<PERIOD>[a-zA-Z0-9]*).txt"
-matcher = re.compile(expr)
+#expr1  = r"(?P<ANALYSIS>v?htt)_^.*
+expr   = r"(?P<ANALYSIS>v?htt)_(?P<CHANNEL>\w+)_(?P<CATEGORY>[a-z0-9]+)_(?P<PERIOD>[0-9][a-zA-Z]*).txt"
+exprV  = r"(?P<CHANNEL>v?htt)_(?P<CATEGORY>[a-z0-9]+)_(?P<PERIOD>[0-9][a-zA-Z]*).txt"
+exprB  = r"(?P<ANALYSIS>v?htt)_(?P<CHANNEL>\w+)_(?P<CATEGORY>[a-z0-9]+)_?(?P<PERIOD>[a-zA-Z0-9]*).txt"
 for file in files :
+    matcher = re.compile(exprB)
     if not ".txt" in file :
         continue
+    an  = matcher.match(file).group('ANALYSIS')
+    print "an:",an
+    matcher = re.compile(exprV)
+    if an != 'vhtt' :
+        matcher = re.compile(expr)
     cat = matcher.match(file).group('CATEGORY')
     chn = matcher.match(file).group('CHANNEL')
     per = matcher.match(file).group('PERIOD')
+    print "an:",an,"chn:",chn,"cat:",cat,"per:",per
+    if an == 'vhtt' and cat == '0' :
+        chn = 'wh'
+    if an == 'vhtt' and cat == '1' :
+        chn = 'zh'
     if not contained(cat, categories) :
         categories.append(cat)
     if not contained(chn, channels) :
@@ -187,7 +201,8 @@ def get_shape_file(channel, period):
     '''
     Map a channel + run period to a shape .root file
     '''
-    if channel not in ['wh', 'zh']:
+    print "XXXXXXXXX",channel
+    if channel not in ['zh' or 'wh']:
         return options.input+"/common/htt_"+channel+".input_"+period+".root"
     else:
         return options.input+"/common/vhtt.input_"+period+".root"
@@ -195,10 +210,12 @@ def get_shape_file(channel, period):
 ## randomize observation for all potential hist input files
 for chn in channels :
     for per in periods :
+        print "Randomize channel",chn,'per:',per
         re.sub(r'\s', '', signals[chn])
         signals[chn] = signals[chn].format(MASS=options.mass_injected)
         re.sub(r'\s', '', backgrounds[chn])
         histfile = get_shape_file(chn, per)
+        print "hist",histfile
         if os.path.exists(histfile) :
             if options.verbose :
                 print "randomizing all data_obs in histogram input file:", histfile
@@ -231,9 +248,9 @@ for chn in channels :
                 if 'data_obs' in line:
                     data_obs_lines.append(line)
             yields_map[(chn,per)] = " ".join(data_obs_lines)
-            #print "****************************************"
-            #print "chn: %s \t period: %s \t %s ...done" % (chn, per, yields_map[(chn,per)])
-            #print "****************************************"
+            print "****************************************"
+            print "chn: %s \t period: %s \t %s ...done" % (chn, per, yields_map[(chn,per)])
+            print "****************************************"
             print "...done"
 
 def get_card_file(channel, category, period, mass):
@@ -267,7 +284,9 @@ for mass in parseArgs(args) :
                     new_values = []
                     for dir in directories:
                         #print chn, per, search_list(yields_map[(chn,per)].split(), dir)
+                        print yields_map
                         new_yield = search_list(yields_map[(chn,per)].split(), dir)[1]
+                        print new_yield
                         new_values.append(new_yield)
                     adjust_datacard(datacard, new_values, options.output)
 

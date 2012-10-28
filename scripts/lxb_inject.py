@@ -82,6 +82,7 @@ else:
     with open(submit_name, 'w') as submit_script:
         for idx in range(int(njob)):
             rnd = random.randint(1, 999999)
+            print "Random: ",rnd
             log.info("Generating script for limit.py with injected signal for job %g", idx)
             script_file_name = '%s/%s_%i.py' % (name, name, idx)
             with open(script_file_name, 'w') as script:
