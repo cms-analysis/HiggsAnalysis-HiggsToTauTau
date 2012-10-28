@@ -212,7 +212,7 @@ void CMSPrelim(const char* dataset, const char* channel, double lowX, double low
   cmsprel->SetTextSize ( 0.04 );
   cmsprel->SetTextColor(    1 );
   cmsprel->SetTextFont (   62 );
-  cmsprel->AddText("CMS Preliminary");
+  cmsprel->AddText("CMS");
   cmsprel->Draw();
 
   TPaveText* lumi     = new TPaveText(lowX+0.08, lowY+0.061, lowX+0.45, lowY+0.161, "NDC");
