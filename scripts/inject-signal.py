@@ -164,7 +164,6 @@ for file in files :
     if not ".txt" in file :
         continue
     an  = matcher.match(file).group('ANALYSIS')
-    print "an:",an
     matcher = re.compile(exprV)
     if an != 'vhtt' :
         matcher = re.compile(expr)
@@ -201,7 +200,6 @@ def get_shape_file(channel, period):
     '''
     Map a channel + run period to a shape .root file
     '''
-    print "XXXXXXXXX",channel
     if channel not in ['zh' or 'wh']:
         return options.input+"/common/htt_"+channel+".input_"+period+".root"
     else:
@@ -215,7 +213,7 @@ for chn in channels :
         signals[chn] = signals[chn].format(MASS=options.mass_injected)
         re.sub(r'\s', '', backgrounds[chn])
         histfile = get_shape_file(chn, per)
-        print "hist",histfile
+        #print "hist",histfile
         if os.path.exists(histfile) :
             if options.verbose :
                 print "randomizing all data_obs in histogram input file:", histfile
@@ -248,9 +246,9 @@ for chn in channels :
                 if 'data_obs' in line:
                     data_obs_lines.append(line)
             yields_map[(chn,per)] = " ".join(data_obs_lines)
-            print "****************************************"
-            print "chn: %s \t period: %s \t %s ...done" % (chn, per, yields_map[(chn,per)])
-            print "****************************************"
+            #print "****************************************"
+            #print "chn: %s \t period: %s \t %s ...done" % (chn, per, yields_map[(chn,per)])
+            #print "****************************************"
             print "...done"
 
 def get_card_file(channel, category, period, mass):
@@ -284,9 +282,7 @@ for mass in parseArgs(args) :
                     new_values = []
                     for dir in directories:
                         #print chn, per, search_list(yields_map[(chn,per)].split(), dir)
-                        print yields_map
                         new_yield = search_list(yields_map[(chn,per)].split(), dir)[1]
-                        print new_yield
                         new_values.append(new_yield)
                     adjust_datacard(datacard, new_values, options.output)
 
