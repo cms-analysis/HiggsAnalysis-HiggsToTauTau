@@ -21,3 +21,4 @@ eleTau_boost_low        QCD				CMS_htt_QCDSyst_etau_boost_low_8TeV		1.10
 eleTau_boost_low	ZJ				CMS_htt_ZJetFakeTau_etau_boost_low_8TeV		1.20
 eleTau_boost_low	ZL				CMS_htt_ZLeptonFakeTau_etau_low_8TeV		1.20
 eleTau_boost_low	ZL				CMS_htt_ZLeptonFakeTau_etau_met_8TeV		1.30
+eleTau_boost_low	ZL,ZLL				CMS_htt_ZEEShape_etau_8TeV			1.00    

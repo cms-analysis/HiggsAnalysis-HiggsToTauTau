@@ -21,4 +21,4 @@ eleTau_btag_high	W	          	CMS_htt_WNorm_etau_btag_high_8TeV 	1.10
 eleTau_btag_high	ZTT,ZLL	          	CMS_htt_extrap_ztt_btag_high_8TeV	1.03
 eleTau_btag_high        QCD	          	CMS_htt_QCDSyst_etau_btag_high_8TeV	1.10
 eleTau_btag_high        ZLL	          	CMS_htt_ZLeptonFakeTau_etau_high_8TeV	1.20
-
+eleTau_btag_high	ZL,ZLL			CMS_htt_ZEEShape_etau_8TeV		1.00    
