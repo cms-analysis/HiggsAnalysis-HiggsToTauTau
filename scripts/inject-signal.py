@@ -170,7 +170,7 @@ for file in files :
     cat = matcher.match(file).group('CATEGORY')
     chn = matcher.match(file).group('CHANNEL')
     per = matcher.match(file).group('PERIOD')
-    print "an:",an,"chn:",chn,"cat:",cat,"per:",per
+    #print "an:",an,"chn:",chn,"cat:",cat,"per:",per
     if an == 'vhtt' and cat == '0' :
         chn = 'wh'
     if an == 'vhtt' and cat == '1' :
@@ -208,12 +208,10 @@ def get_shape_file(channel, period):
 ## randomize observation for all potential hist input files
 for chn in channels :
     for per in periods :
-        print "Randomize channel",chn,'per:',per
         re.sub(r'\s', '', signals[chn])
         signals[chn] = signals[chn].format(MASS=options.mass_injected)
         re.sub(r'\s', '', backgrounds[chn])
         histfile = get_shape_file(chn, per)
-        #print "hist",histfile
         if os.path.exists(histfile) :
             if options.verbose :
                 print "randomizing all data_obs in histogram input file:", histfile
@@ -249,7 +247,7 @@ for chn in channels :
             #print "****************************************"
             #print "chn: %s \t period: %s \t %s ...done" % (chn, per, yields_map[(chn,per)])
             #print "****************************************"
-            print "...done"
+            #print "...done"
 
 def get_card_file(channel, category, period, mass):
     '''
