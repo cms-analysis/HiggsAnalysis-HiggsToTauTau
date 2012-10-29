@@ -132,7 +132,6 @@ class Analysis:
                          if options.verbose :
                              print out_line
                          if options.uncertainties:
-                           for shape_name in self.process_shape_weight[curr_name]:
 		             input = TFile("root/"+self.histfile)
                              print "file: ", input.GetName()
 		             for key in input.GetListOfKeys():

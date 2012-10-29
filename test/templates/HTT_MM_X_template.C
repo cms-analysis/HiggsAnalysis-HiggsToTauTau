@@ -275,23 +275,23 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   errorBand  ->SetLineWidth(1);
 
   if(log){
-    WJets->Draw("same");
-    Dibosons->Draw("same");
-    QCD->Draw("same");
-    TTJ->Draw("same");
-    ZMM->Draw("same");
-    ZTT->Draw("same");
-    ggH->Draw("same");
+    WJets->Draw("histsame");
+    Dibosons->Draw("histsame");
+    QCD->Draw("histsame");
+    TTJ->Draw("histsame");
+    ZMM->Draw("histsame");
+    ZTT->Draw("histsame");
+    ggH->Draw("histsame");
     $DRAW_ERROR
   }
   else{
-    ggH  ->Draw("same");
-    WJets->Draw("same");
-    Dibosons->Draw("same");
-    QCD->Draw("same");
-    TTJ->Draw("same");
-    ZMM->Draw("same");
-    ZTT->Draw("same");
+    ggH  ->Draw("histsame");
+    WJets->Draw("histsame");
+    Dibosons->Draw("histsame");
+    QCD->Draw("histsame");
+    TTJ->Draw("histsame");
+    ZMM->Draw("histsame");
+    ZTT->Draw("histsame");
     $DRAW_ERROR
   }
   data->Draw("esame");
