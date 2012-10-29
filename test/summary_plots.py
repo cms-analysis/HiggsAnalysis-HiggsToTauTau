@@ -37,7 +37,6 @@ categories_mssm = [
     "boost",
     "btag_low",
     "btag_high",
-    "btag",
     ] 
 
 extra = {
@@ -56,7 +55,6 @@ log = {
     ("emu"    , "boost"     ) : "false",
     ("emu"    , "btag_low"  ) : "false",
     ("emu"    , "btag_high" ) : "false",
-    ("emu"    , "btag"      ) : "false",
     ("emu"    , "vbf"       ) : "false",
     ("muTau"  , "0jet_low"  ) : "false",
     ("muTau"  , "0jet_high" ) : "false",
@@ -66,7 +64,6 @@ log = {
     ("muTau"  , "boost"     ) : "false",
     ("muTau"  , "btag_low"  ) : "false",
     ("muTau"  , "btag_high" ) : "false",
-    ("muTau"  , "btag"      ) : "false",    
     ("muTau"  , "vbf"       ) : "false",
     ("eleTau" , "0jet_low"  ) : "false",
     ("eleTau" , "0jet_high" ) : "false",
@@ -76,7 +73,6 @@ log = {
     ("eleTau" , "boost"     ) : "false",
     ("eleTau" , "btag_low"  ) : "false",
     ("eleTau" , "btag_high" ) : "false",
-    ("eleTau" , "btag"      ) : "false",
     ("eleTau" , "vbf"       ) : "false",
     ("mumu"   , "0jet_low"  ) : "true",
     ("mumu"   , "0jet_high" ) : "true",
@@ -86,7 +82,6 @@ log = {
     ("mumu"   , "boost"     ) : "true",
     ("mumu"   , "btag_low"  ) : "true",
     ("mumu"   , "btag_high" ) : "true",
-    ("mumu"   , "btag"      ) : "true",
     ("mumu"   , "vbf"       ) : "false",    
     }
 
@@ -99,7 +94,6 @@ max = {
     ("emu"    , "boost"     ) : "-1",
     ("emu"    , "btag_low"  ) : "-1",
     ("emu"    , "btag_high" ) : "-1",
-    ("emu"    , "btag"      ) : "-1",
     ("emu"    , "vbf"       ) : "-1",
     ("muTau"  , "0jet_low"  ) : "-1",
     ("muTau"  , "0jet_high" ) : "-1",
@@ -109,7 +103,6 @@ max = {
     ("muTau"  , "boost"     ) : "-1",
     ("muTau"  , "btag_low"  ) : "-1",
     ("muTau"  , "btag_high" ) : "-1",
-    ("muTau"  , "btag"      ) : "-1",
     ("muTau"  , "vbf"       ) : "-1", 
     ("eleTau" , "0jet_low"  ) : "-1",
     ("eleTau" , "0jet_high" ) : "-1",
@@ -119,7 +112,6 @@ max = {
     ("eleTau" , "boost"     ) : "-1",
     ("eleTau" , "btag_low"  ) : "-1",
     ("eleTau" , "btag_high" ) : "-1",
-    ("eleTau" , "btag"      ) : "-1",
     ("eleTau" , "vbf"       ) : "-1",
     ("mumu"   , "0jet_low"  ) : "-1",
     ("mumu"   , "0jet_high" ) : "-1",
@@ -129,7 +121,6 @@ max = {
     ("mumu"   , "boost"     ) : "-1",
     ("mumu"   , "btag_low"  ) : "-1",
     ("mumu"   , "btag_high" ) : "-1",
-    ("mumu"   , "btag"      ) : "-1",
     ("mumu"   , "vbf"       ) : "-1",
     }
 
@@ -142,7 +133,6 @@ min = {
     ("emu"    , "boost"     ) : "0",
     ("emu"    , "btag_low"  ) : "0",
     ("emu"    , "btag_high" ) : "0",
-    ("emu"    , "btag"      ) : "0",
     ("emu"    , "vbf"       ) : "0",
     ("muTau"  , "0jet_low"  ) : "0",
     ("muTau"  , "0jet_high" ) : "0",
@@ -152,7 +142,6 @@ min = {
     ("muTau"  , "boost"     ) : "0",
     ("muTau"  , "btag_low"  ) : "0",
     ("muTau"  , "btag_high" ) : "0",
-    ("muTau"  , "btag"      ) : "0",
     ("muTau"  , "vbf"       ) : "0",
     ("eleTau" , "0jet_low"  ) : "0",
     ("eleTau" , "0jet_high" ) : "0",
@@ -162,7 +151,6 @@ min = {
     ("eleTau" , "boost"     ) : "0",
     ("eleTau" , "btag_low"  ) : "0",
     ("eleTau" , "btag_high" ) : "0",
-    ("eleTau" , "btag"      ) : "0",
     ("eleTau" , "vbf"       ) : "0",
     ("mumu"   , "0jet_low"  ) : "0.1",
     ("mumu"   , "0jet_high" ) : "0",
@@ -172,7 +160,6 @@ min = {
     ("mumu"   , "boost"     ) : "0",
     ("mumu"   , "btag_low"  ) : "0",
     ("mumu"   , "btag_high" ) : "0",
-    ("mumu"   , "btag"      ) : "0",
     ("mumu"   , "vbf"       ) : "0",    
     }
 
