@@ -66,7 +66,9 @@ bool inPatterns(const std::string& test, const char* patterns)
   string2Vector(cleanupWhitespaces(patterns), samples);
   for(std::vector<std::string>::const_iterator sample = samples.begin(); sample!=samples.end(); ++sample){
     TRegexp matcher(sample->c_str(), true);  // true = make it "glob-style" i.e. "*" instead of ".*"
-    if(TString(test).Index(matcher) > -1) return true;
+    if(TString(test).Index(matcher) > -1){
+      return true;
+    }
   }
   return false;
 }
@@ -106,7 +108,12 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
       }
       if( file->GetDirectory(idir->GetName()) ){
 	file->cd(idir->GetName()); // change to sub-directory
-	buffer = (TH1F*)file->Get((std::string(idir->GetName())+"/data_obs").c_str()); 
+	buffer = (TH1F*)file->Get((std::string(idir->GetName())+"/data_obs").c_str());
+	if(!buffer){
+	  std::cout << "WARNING: did not find histogram data_obs in directory " << idir->GetName() << std::endl;
+	  std::cout << "WARNING: will skip directory" << std::endl;
+	  continue;
+	}
         blind_data_obs = (TH1F*)buffer->Clone("data_obs"); blind_data_obs->Reset();
 	for(std::vector<std::string>::const_iterator sample = samples.begin(); sample!=samples.end(); ++sample){
 	  if( debug>0 ){ std::cerr << "Looking for histogram: " << (std::string(idir->GetName())+"/"+(*sample)) << std::endl; }
