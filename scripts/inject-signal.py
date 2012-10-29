@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# flake8: noqa
 
 from optparse import OptionParser, OptionGroup
 import subprocess
@@ -27,7 +28,7 @@ sub1.add_option("--signals-em", dest="signals_em", default="ggH{MASS},qqH{MASS},
 sub1.add_option("--signals-et", dest="signals_et", default="ggH{MASS},qqH{MASS},VH{MASS}", type="string", help="List of signal for em channel. NOTE: should be comma separated, NO spaces allowed. The keyword {MASS} will be replaced by the mass to be injected (--mass-injected). It has to be present in the signal sample string. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
 sub1.add_option("--signals-mt", dest="signals_mt", default="ggH{MASS},qqH{MASS},VH{MASS}", type="string", help="List of signal for em channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
 sub1.add_option("--signals-tt", dest="signals_tt", default="ggH{MASS},qqH{MASS},VH{MASS}", type="string", help="List of signal for em channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
-sub1.add_option("--signals-vhtt", dest="signals_vhtt", default="VH{MASS},VH_hww{MASS}", type="string", help="List of signal for the VH (WH & ZH) channels. NOTE: should be comma separated, NO spaces allowed. [Default: \"VH{MASS},VH_hww{MASS}\"]")
+sub1.add_option("--signals-vhtt", dest="signals_vhtt", default="WH{MASS},WH_hww{MASS},ZH_htt{MASS},ZH_hww{MASS}", type="string", help="List of signal for the VH (WH & ZH) channels. NOTE: should be comma separated, NO spaces allowed. [Default: \"VH{MASS},VH_hww{MASS}\"]")
 parser.add_option_group(sub1)
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode. [Default: False]")
 ## check number of arguments; in case print usage
@@ -183,13 +184,13 @@ for file in files :
         periods.append(per)
 
 print "Picking up channels, categories and periods from datacards in input directory:", options.input
-print "------------------------------------------------------------------------------" 
+print "------------------------------------------------------------------------------"
 print "Expecting datacards of type htt_chn_cat_per.txt, with the following valid "
 print "variables: "
 print " - chn : em, et, mt, mm, tt"
 print " - cat : 0, 1, 2, 3, 5, 6, 7"
 print " - per : 7TeV, 8TeV, 14TeV"
-print "------------------------------------------------------------------------------" 
+print "------------------------------------------------------------------------------"
 print "Picked up categories are:", categories
 print "Picked up channels   are:", channels
 print "Picked up periods    are:", periods
@@ -200,7 +201,7 @@ def get_shape_file(channel, period):
     '''
     Map a channel + run period to a shape .root file
     '''
-    if channel not in ['zh' or 'wh']:
+    if channel not in ['zh', 'wh']:
         return options.input+"/common/htt_"+channel+".input_"+period+".root"
     else:
         return options.input+"/common/vhtt.input_"+period+".root"
@@ -208,6 +209,8 @@ def get_shape_file(channel, period):
 ## randomize observation for all potential hist input files
 for chn in channels :
     for per in periods :
+        if options.verbose:
+            print "Channel: %s Per: %s" % (chn, per)
         re.sub(r'\s', '', signals[chn])
         signals[chn] = signals[chn].format(MASS=options.mass_injected)
         re.sub(r'\s', '', backgrounds[chn])
@@ -217,8 +220,8 @@ for chn in channels :
                 print "randomizing all data_obs in histogram input file:", histfile
             ## which channel directories in the .root file to randomize.
             ## For the normal htt case, this doesn't matter - since every
-            ## channel (directory) has the same backgrounds in it. For 
-            ## WH/ZH, both are in the same file, and the names of the BGs. 
+            ## channel (directory) has the same backgrounds in it. For
+            ## WH/ZH, both are in the same file, and the names of the BGs.
             ## depend on which category (i.e. WH or ZH) it is.
             directories_to_randomize = '*'
             if chn == 'zh':
@@ -237,17 +240,18 @@ for chn in channels :
                 SCALE=options.signal_strength,
                 OUTPUT=options.output,
                 )), stdout=subprocess.PIPE)
-            
+
             (stdout, _) = yields.communicate()
             data_obs_lines = []
             for line in stdout.split('\n'):
                 if 'data_obs' in line:
                     data_obs_lines.append(line)
             yields_map[(chn,per)] = " ".join(data_obs_lines)
-            #print "****************************************"
-            #print "chn: %s \t period: %s \t %s ...done" % (chn, per, yields_map[(chn,per)])
-            #print "****************************************"
-            #print "...done"
+            if options.verbose:
+                print "****************************************"
+                print "chn: %s \t period: %s \t %s ...done" % (chn, per, yields_map[(chn,per)])
+                print "****************************************"
+                print "...done"
 
 def get_card_file(channel, category, period, mass):
     '''
@@ -280,6 +284,7 @@ for mass in parseArgs(args) :
                     new_values = []
                     for dir in directories:
                         #print chn, per, search_list(yields_map[(chn,per)].split(), dir)
+                        #import pdb; pdb.set_trace()
                         new_yield = search_list(yields_map[(chn,per)].split(), dir)[1]
                         new_values.append(new_yield)
                     adjust_datacard(datacard, new_values, options.output)
