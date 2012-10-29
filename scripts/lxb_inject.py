@@ -45,10 +45,10 @@ print "for masses {MASSES}"
 
 os.system("cp -r {PWD}/{PATH}/{DIR} /tmp/{USER}/{DIR}_{JOBID}")
 os.system("inject-signal.py -i /tmp/{USER}/{DIR}_{JOBID} -o {JOBID} -r {RND} {MASSES}")
-os.system("limit.py --asymptotic {OPTS} /tmp/{USER}/{DIR}_{JOBID}/*")
 
 masses = "{MASSES}".split()
 for m in masses :
+    os.system("limit.py --asymptotic {OPTS} /tmp/{USER}/{DIR}_{JOBID}/%s" % m)
     os.system("cp /tmp/{USER}/{DIR}_{JOBID}/%s/higgsCombine-obs.Asymptotic.mH%s.root {PWD}/{PATH}/{DIR}/%s/higgsCombine-obs.Asymptotic.mH%s-{JOBID}.root" % (m, m, m, m))
 os.system("rm -r /tmp/{USER}/{DIR}_{JOBID}")
 '''
