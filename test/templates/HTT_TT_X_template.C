@@ -264,7 +264,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 #endif
   data->SetNdivisions(505);
   data->SetMinimum(min);
-  data->SetMaximum(max>0 ? max : maximum(Ztt, log));
+  data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(Ztt, log)));
   data->Draw("e");
 
   TH1F* errorBand = (TH1F*)Ztt ->Clone();
