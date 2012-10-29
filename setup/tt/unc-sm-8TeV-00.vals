@@ -50,9 +50,6 @@ tauTau_boost QCD CMS_htt_tt0_QCD_bin_23 1.00
 tauTau_boost QCD CMS_htt_tt0_QCD_bin_24 1.00
 tauTau_boost QCD CMS_htt_tt0_QCD_bin_25 1.00
 tauTau_boost QCD CMS_htt_tt0_QCD_bin_26 1.00
-tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_1 1.00
-tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_2 1.00
-tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_3 1.00
 tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_4 1.00
 tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_5 1.00
 tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_6 1.00
@@ -65,14 +62,3 @@ tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_12 1.00
 tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_13 1.00
 tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_14 1.00
 tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_15 1.00
-tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_16 1.00
-tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_17 1.00
-tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_18 1.00
-tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_19 1.00
-tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_20 1.00
-tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_21 1.00
-tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_22 1.00
-tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_23 1.00
-tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_24 1.00
-tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_25 1.00
-tauTau_boost ZTT CMS_htt_tt0_ZTT_bin_26 1.00

@@ -37,7 +37,6 @@ tauTau_vbf QCD CMS_htt_tt1_QCD_bin_10 1.00
 tauTau_vbf QCD CMS_htt_tt1_QCD_bin_11 1.00
 tauTau_vbf QCD CMS_htt_tt1_QCD_bin_12 1.00
 tauTau_vbf QCD CMS_htt_tt1_QCD_bin_13 1.00
-tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_1 1.00
 tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_2 1.00
 tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_3 1.00
 tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_4 1.00
@@ -45,6 +44,3 @@ tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_5 1.00
 tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_6 1.00
 tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_7 1.00
 tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_8 1.00
-tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_9 1.00
-tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_10 1.00
-tauTau_vbf ZTT CMS_htt_tt1_ZTT_bin_11 1.00
