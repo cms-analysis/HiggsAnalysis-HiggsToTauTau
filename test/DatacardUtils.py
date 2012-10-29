@@ -4,12 +4,16 @@ def get_svar(factor,fname):
     '''Obtains the sigma variation of fit parameter (factor) from the fit result file ffile'''
     ffile = open(fname,'r')
     for line in ffile.readlines():
+        DO_BACKGROUND_ONLY=False
         if line.strip().lower().startswith(factor.lower()):
-            res = re.search("[+-]\d+\.\d+(?=sig)",line)
-            svar = float(res.group(0))
-            #svar = float(line.strip().split()[1].split(",")[0])
+            matcher = re.compile('[+-]\d+\.\d+(?=sig)')
+            matches = matcher.findall(line)
+            svar = 0
+            if matches:
+                #print "Factor: ", factor, "Name:", fname, "B:", matches[0], "S+B:", matches[1]
+                svar = float(matches[0]) if DO_BACKGROUND_ONLY else float(matches[1])
+            #print svar
             return svar
-            #return float(res.group(0))
             
 def get_sigma(factor,fname):
     '''Obtains the sigma of fit parameter (factor) from the fit result file ffile'''
