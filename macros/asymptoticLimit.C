@@ -114,7 +114,7 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
   unsigned int steps = 10e6; 
   if(points.size()>0) limit = graph->GetX()[upper_exclusion ? points.begin()->first : points.end()->first];
 
-  for(std::vector<CrossPoint>::const_iterator point = points.begin(); point!=points.end(); ++point, ++np){
+  for(std::vector<CrossPoint>::const_reverse_iterator point = points.rbegin(); point!=points.rend(); ++point, ++np){
     double min = (point->first-dist)>0 ? graph->GetX()[point->first-dist] : graph->GetX()[0]; 
     double max = (point->first+dist)<graph->GetN() ? graph->GetX()[point->first+dist] : graph->GetX()[graph->GetN()-1];
 
@@ -127,29 +127,30 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
       }
     }
     std::cout << "****************************************************************" << std::endl;
-    std::cout << "* [" << np+1 << "|" << point->second << "] asymptotic limit(" 
-	      << limitType(itype) << ") :" << limit << " deltaM : " << deltaM << std::endl;
-    std::cout << "****************************************************************" << std::endl;
+    std::cout << "* [" << np+1 << "|" << point->second << "] asymptotic limit(";
+    std::cout << limitType(itype) << ") :" << limit << " deltaM : " << deltaM;
     if(((upper_exclusion && point->second) || (!upper_exclusion && !(point->second))) && !filled){
-      std::cout << " [to file]"; filled=true; tree->Fill();
+      std::cout << "    [-->to file]"; filled=true; tree->Fill();
     }
+    std::cout << endl;
+    std::cout << "****************************************************************" << std::endl;
   }
   // catch cases where no crossing point was found
   if(!filled){
     if(value<1)
       {
-	std::cout << "WARNING: no crossing found - all tanb values excluded" << std::endl;
-	if(itype == observed)     { limit=0.60; }
-	if(itype == plus_2sigma)  { limit=0.70; }
-	if(itype == plus_1sigma)  { limit=0.65; }
-	if(itype == expected)     { limit=0.60; }
-	if(itype == minus_1sigma) { limit=0.55; }
-	if(itype == minus_2sigma) { limit=0.50; }
+	std::cout << "WARNING: no crossing found - all tanb values excluded: " << value << std::endl;
+	if(itype == observed)     { limit=3.00; }
+	if(itype == plus_2sigma)  { limit=5.00; }
+	if(itype == plus_1sigma)  { limit=4.00; }
+	if(itype == expected)     { limit=3.00; }
+	if(itype == minus_1sigma) { limit=2.00; }
+	if(itype == minus_2sigma) { limit=1.00; }
 	tree->Fill();
       }
     else
       {
-	std::cout << "WARNING: no crossing found - no tanb value excluded" << std::endl;
+	std::cout << "WARNING: no crossing found - no tanb value excluded" << value << " -- " << tanb_help << std::endl;
 	if(itype == observed)     { limit=tanb_help*value; }
 	if(itype == plus_2sigma)  { limit=tanb_help*value; }
 	if(itype == plus_1sigma)  { limit=tanb_help*value; }
