@@ -196,7 +196,7 @@ class Analysis:
 			     uncertainty=max(uncertainty,hist.GetBinContent(bin)/hist_down.GetBinContent(bin),hist_down.GetBinContent(bin)/hist.GetBinContent(bin))
 			   if hist_up.GetBinContent(bin) and hist.GetBinContent(bin):
 			     uncertainty=max(uncertainty,hist.GetBinContent(bin)/hist_up.GetBinContent(bin),hist_up.GetBinContent(bin)/hist.GetBinContent(bin))
-			   uncertainty = self.process_shape_uncertainties[curr_name][shape_name]*(uncertainty-1)
+			   uncertainty = self.process_shape_uncertainties[curr_name][shape_name]*min(1,uncertainty-1)
 			   if options.verbose and uncertainty>1:
 			       print "WARNING: There is a bin-by-bin uncertainty larger than 100%. Make sure there is no problem with the bin-by-bin uncertainties in the root file",histfile,"in",self.analysis,self.category,". Please check:",shape_name,"bin-down:",hist_down.GetBinContent(bin),"bin-center:",hist.GetBinContent(bin),"bin-up:",hist_up.GetBinContent(bin)
 		           if not process_name+str(bin) in uncertainties_set:
