@@ -191,19 +191,19 @@ class Analysis:
 		             print_me  = '''std::cout << "scaling bin %(bin)i by %(value)f" << std::endl;''' % {"bin":bin, "value":value}
 		             out_line  = print_me+"hin->SetBinContent(%(bin)i,hin->GetBinContent(%(bin)i)*%(value)f); \n" % {"bin":bin, "value":value}
 			 if options.uncertainties:
-			   uncertainty=1
+			   uncertainty=0
 			   if hist_down.GetBinContent(bin) and hist.GetBinContent(bin):
-			     uncertainty=max(uncertainty,hist.GetBinContent(bin)/hist_down.GetBinContent(bin),hist_down.GetBinContent(bin)/hist.GetBinContent(bin))
+			     uncertainty=max(uncertainty,abs(hist.GetBinContent(bin)-hist_down.GetBinContent(bin))/hist.GetBinWidth(bin))
 			   if hist_up.GetBinContent(bin) and hist.GetBinContent(bin):
-			     uncertainty=max(uncertainty,hist.GetBinContent(bin)/hist_up.GetBinContent(bin),hist_up.GetBinContent(bin)/hist.GetBinContent(bin))
-			   uncertainty = self.process_shape_uncertainties[curr_name][shape_name]*min(1,uncertainty-1)
-			   if options.verbose and uncertainty>1:
+			     uncertainty=max(uncertainty,abs(hist_up.GetBinContent(bin)-hist.GetBinContent(bin))/hist.GetBinWidth(bin))
+			   uncertainty = self.process_shape_uncertainties[curr_name][shape_name]*uncertainty
+			   if options.verbose and uncertainty>hist.GetBinContent(bin)*value:
 			       print "WARNING: There is a bin-by-bin uncertainty larger than 100%. Make sure there is no problem with the bin-by-bin uncertainties in the root file",histfile,"in",self.analysis,self.category,". Please check:",shape_name,"bin-down:",hist_down.GetBinContent(bin),"bin-center:",hist.GetBinContent(bin),"bin-up:",hist_up.GetBinContent(bin)
 		           if not process_name+str(bin) in uncertainties_set:
    		               uncertainties_set+=[process_name+str(bin)]
-                               out_line  += "hin->SetBinError(%(bin)i,hin->GetBinContent(%(bin)i)*%(uncertainty)f); \n" % {"bin":bin, "uncertainty":uncertainty}
+                               out_line  += "hin->SetBinError(%(bin)i,%(uncertainty)f); \n" % {"bin":bin, "uncertainty":uncertainty}
 			   elif uncertainty!=0:
-                               out_line  += "hin->SetBinError(%(bin)i,sqrt(pow(hin->GetBinError(%(bin)i),2)+pow(hin->GetBinContent(%(bin)i)*%(uncertainty)f,2))); \n" % {"bin":bin, "uncertainty":uncertainty}
+                               out_line  += "hin->SetBinError(%(bin)i,sqrt(pow(hin->GetBinError(%(bin)i),2)+pow(%(uncertainty)f,2))); \n" % {"bin":bin, "uncertainty":uncertainty}
                          output_file.write(out_line)
                          if options.verbose :
                              if out_line :
