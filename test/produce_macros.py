@@ -126,13 +126,12 @@ class Analysis:
                      curr_name = process_name
                      move_on   = True
                      if options.yields:
-                         print_me  = '''std::cout << "scaling by %f" << std::endl;''' % self.process_weight[curr_name]
+                         print_me  = '''std::cout << "scaling by %(value)f %(name)s" << std::endl;''' % {"value":self.process_weight[curr_name],"name":curr_name}
                          out_line  = print_me+"hin->Scale(%f); \n" % self.process_weight[curr_name]
                          output_file.write(out_line)
                          if options.verbose :
                              print out_line
                          if options.uncertainties:
-
 		             input = TFile("root/"+self.histfile)
                              #print "file: ", input.GetName()
 		             for key in input.GetListOfKeys():
@@ -161,8 +160,12 @@ class Analysis:
                      cand_str = "$%s" % process_name
                  output_cand = ""
                  if line.strip().startswith(cand_str):
+		     if options.verbose:
+		         print cand_str
                      curr_name = process_name
                      for shape_name in self.process_shape_weight[curr_name]:
+		       if options.verbose:
+		         print shape_name
 		       input = TFile("root/"+self.histfile)
 		       for key in input.GetListOfKeys():
 		           if self.category in key.GetName():
@@ -171,33 +174,22 @@ class Analysis:
                        hist = input.Get(histname)
                        hist_down = input.Get(histname+"_"+shape_name+"Down")
                        hist_up = input.Get(histname+"_"+shape_name+"Up")
-                       #print histname, self.histfile
                        if not hist:
                          continue
                        for bin in range(1,hist.GetNbinsX()+1):
 		         shift = self.process_shape_weight[curr_name][shape_name]
                          out_line = ''
-			 value = 1
-                         upper = hist_up.GetBinContent(bin)
-                         lower = hist_down.GetBinContent(bin) if hist_down.GetBinContent(bin)>0.01 else 0.
-                         central = hist.GetBinContent(bin)
-		         if shift>0 and central>0 and upper!=central:
-                             if central :
-                                 value = shift*(upper/central-1)+1
-		         elif shift<0 and central>0 and lower!=central:
-                             if lower :
-                                 value = shift*(central/lower-1)+1
-			 if value!=1:
-		             print_me  = '''std::cout << "scaling bin %(bin)i by %(value)f" << std::endl;''' % {"bin":bin, "value":value}
-		             out_line  = print_me+"hin->SetBinContent(%(bin)i,hin->GetBinContent(%(bin)i)*%(value)f); \n" % {"bin":bin, "value":value}
+			 value = 0
+		         if shift>0:
+                             value = (hist_up.GetBinContent(bin)-hist.GetBinContent(bin))/hist.GetBinWidth(bin)
+		         elif shift<0:
+                             value = (hist.GetBinContent(bin)-hist_down.GetBinContent(bin))/hist.GetBinWidth(bin)
+			 if value!=0:
+		             print_me  = '''std::cout << "scaling bin %(bin)i by %(shift)f %(name)s" << std::endl;''' % {"bin":bin, "shift":shift, "name":shape_name}
+		             out_line  = print_me+"hin->SetBinContent(%(bin)i,hin->GetBinContent(%(bin)i)+%(value)f); \n" % {"bin":bin, "value":value*shift}
 			 if options.uncertainties:
-			   uncertainty=0
-			   if hist_down.GetBinContent(bin) and hist.GetBinContent(bin):
-			     uncertainty=max(uncertainty,abs(hist.GetBinContent(bin)-hist_down.GetBinContent(bin))/hist.GetBinWidth(bin))
-			   if hist_up.GetBinContent(bin) and hist.GetBinContent(bin):
-			     uncertainty=max(uncertainty,abs(hist_up.GetBinContent(bin)-hist.GetBinContent(bin))/hist.GetBinWidth(bin))
-			   uncertainty = self.process_shape_uncertainties[curr_name][shape_name]*uncertainty
-			   if options.verbose and uncertainty>hist.GetBinContent(bin)*value:
+			   uncertainty = self.process_shape_uncertainties[curr_name][shape_name]*abs(value)
+			   if options.verbose and uncertainty>max(hist_down.GetBinContent(bin)/hist.GetBinWidth(bin),hist.GetBinContent(bin)/hist.GetBinWidth(bin),hist_up.GetBinContent(bin)/hist.GetBinWidth(bin)):
 			       print "WARNING: There is a bin-by-bin uncertainty larger than 100%. Make sure there is no problem with the bin-by-bin uncertainties in the root file",histfile,"in",self.analysis,self.category,". Please check:",shape_name,"bin-down:",hist_down.GetBinContent(bin),"bin-center:",hist.GetBinContent(bin),"bin-up:",hist_up.GetBinContent(bin)
 		           if not process_name+str(bin) in uncertainties_set:
    		               uncertainties_set+=[process_name+str(bin)]
