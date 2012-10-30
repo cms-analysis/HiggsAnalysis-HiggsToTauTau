@@ -155,7 +155,8 @@ periods    = []
 
 ## detemine list of channels and list of periods from the datacards in the input
 ## directory
-files = os.listdir("%s/%s" % (options.input, "125"))
+
+files = os.listdir("%s/%s" % (options.input, parseArgs(args)[0]))
 #expr1  = r"(?P<ANALYSIS>v?htt)_^.*
 expr   = r"(?P<ANALYSIS>v?htt)_(?P<CHANNEL>\w+)_(?P<CATEGORY>[a-z0-9]+)_(?P<PERIOD>[0-9][a-zA-Z]*).txt"
 exprV  = r"(?P<CHANNEL>v?htt)_(?P<CATEGORY>[a-z0-9]+)_(?P<PERIOD>[0-9][a-zA-Z]*).txt"
