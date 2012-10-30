@@ -234,7 +234,10 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   if(log){ canv->SetLogy(1); }
 #if defined MSSM
   data->GetXaxis()->SetRange(0, data->FindBin(500));
+#else
+  data->GetXaxis()->SetRange(0, data->FindBin(350));
 #endif
+
   data->SetNdivisions(505);
   data->SetMinimum(min);
   data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(Ztt, log)));
@@ -270,7 +273,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 #ifdef MSSM  
   TLegend* leg = new TLegend(0.45, 0.65, 0.95, 0.90);
   SetLegendStyle(leg);
-  leg->AddEntry(ggH  , "#phi(160 GeV)#rightarrow#tau#tau, tan#beta=8" , "L" );
+  leg->AddEntry(ggH  , "10#times#phi(160 GeV)#rightarrow#tau#tau, tan#beta=8" , "L" );
 #else
   TLegend* leg = new TLegend(0.50, 0.65, 0.95, 0.90);
   SetLegendStyle(leg);

@@ -132,7 +132,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   
   TFile* input = new TFile(inputfile);
   TH1F* ZTT = refill((TH1F*)input->Get(TString::Format("%s/ZTT"   , directory)), "ZTT"); InitHist(ZTT, "", "", kOrange-4, 1001);
-  TH1F* ZMM    = refill((TH1F*)input->Get(TString::Format("%s/ZMM"     , directory)), "ZMM"); InitHist(ZMM  , "", "", kYellow-4, 1001);
+  TH1F* ZMM    = refill((TH1F*)input->Get(TString::Format("%s/ZMM"     , directory)), "ZMM"); InitHist(ZMM  , "", "", kAzure+2, 1001);
   TH1F* TTJ  = refill((TH1F*)input->Get(TString::Format("%s/TTJ"   , directory)), "TTJ"); InitHist(TTJ, "", "", kBlue-8, 1001);
   TH1F* QCD    = refill((TH1F*)input->Get(TString::Format("%s/QCD"     , directory)), "QCD"); InitHist(QCD  , "", "", kMagenta - 10, 1001);
   TH1F* Dibosons  = refill((TH1F*)input->Get(TString::Format("%s/Dibosons"   , directory)), "Dibosons"); InitHist(Dibosons, "", "", kRed + 2, 1001);
@@ -221,11 +221,11 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   scales[8]->SetBinContent(9, unscaled[8]>0 ? (VH   ->Integral()/unscaled[6]-1.) : 0.);
 #endif
 
-  ZMM  ->Add(ZTT);
-  TTJ->Add(ZMM  );
-  QCD  ->Add(TTJ);
-  Dibosons->Add(QCD  );
-  WJets  ->Add(Dibosons);
+  ZMM->Add(ZTT);
+  TTJ->Add(ZMM);
+  QCD->Add(TTJ);
+  WJets->Add(TTJ);
+  Dibosons->Add(Dibosons);
   if(log){
 #ifdef MSSM
     ggH  ->Add(bbH);
@@ -262,6 +262,8 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   if(log){ canv->SetLogy(1); }
 #if defined MSSM
   data->GetXaxis()->SetRange(0, data->FindBin(500));
+#else
+  data->GetXaxis()->SetRange(0, data->FindBin(350));
 #endif
   data->SetNdivisions(505);
   data->SetMinimum(min);
@@ -275,7 +277,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   errorBand  ->SetLineWidth(1);
 
   if(log){
-    WJets->Draw("histsame");
+    //WJets->Draw("histsame");
     Dibosons->Draw("histsame");
     QCD->Draw("histsame");
     TTJ->Draw("histsame");
@@ -286,7 +288,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   }
   else{
     ggH  ->Draw("histsame");
-    WJets->Draw("histsame");
+    //WJets->Draw("histsame");
     Dibosons->Draw("histsame");
     QCD->Draw("histsame");
     TTJ->Draw("histsame");
@@ -303,7 +305,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 #ifdef MSSM  
   TLegend* leg = new TLegend(0.45, 0.65, 0.95, 0.90);
   SetLegendStyle(leg);
-  leg->AddEntry(ggH  , "#phi(160 GeV)#rightarrow#tau#tau tan#beta=8" , "L" );
+  leg->AddEntry(ggH  , "10#times#phi(160 GeV)#rightarrow#tau#tau tan#beta=8" , "L" );
 #else
   TLegend* leg = new TLegend(0.50, 0.65, 0.95, 0.90);
   SetLegendStyle(leg);
@@ -315,7 +317,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   leg->AddEntry(TTJ  , "t#bar{t}"                    , "F" );
   leg->AddEntry(QCD, "QCD"                           , "F" );
   leg->AddEntry(Dibosons  , "Dibosons"               , "F" );
-  leg->AddEntry(WJets, "WJets"                       , "F" );
+  //leg->AddEntry(WJets, "WJets"                       , "F" );
   $ERROR_LEGEND
   leg->Draw();
 
