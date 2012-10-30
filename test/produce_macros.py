@@ -2,7 +2,7 @@ from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options]",
-                      description="Script to produce postfit plots from a set of inputs cards (datacards), input histograms (root) and maximum likelihood fits for niussance parameter pulls (fitresults)")
+                      description="Script to produce postfit plos from a set of inputs cards (datacards), input histograms (root) and maximum likelihood fits for niussance parameter pulls (fitresults)")
 ## direct options
 parser.add_option("-f", "--fitresults", dest="fitresults", default="fitresults/mlfit_{ANALYSIS}.txt", type="string", help="Path to the pulls of the maximum likelihood fit. [Default: \"fitresults/mlfit_{ANALYSIS}.txt\"]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="List of run periods, for which postfit plots shuld be made. [Default: \"7TeV 8TeV\"]")
@@ -132,6 +132,7 @@ class Analysis:
                          if options.verbose :
                              print out_line
                          if options.uncertainties:
+
 		             input = TFile("root/"+self.histfile)
                              #print "file: ", input.GetName()
 		             for key in input.GetListOfKeys():
@@ -195,7 +196,9 @@ class Analysis:
 			     uncertainty=max(uncertainty,hist.GetBinContent(bin)/hist_down.GetBinContent(bin),hist_down.GetBinContent(bin)/hist.GetBinContent(bin))
 			   if hist_up.GetBinContent(bin) and hist.GetBinContent(bin):
 			     uncertainty=max(uncertainty,hist.GetBinContent(bin)/hist_up.GetBinContent(bin),hist_up.GetBinContent(bin)/hist.GetBinContent(bin))
-			   uncertainty = self.process_shape_uncertainties[curr_name][shape_name]*min(2,uncertainty-1)
+			   uncertainty = self.process_shape_uncertainties[curr_name][shape_name]*(uncertainty-1)
+			   if options.verbose and uncertainty>1:
+			       print "WARNING: There is a bin-by-bin uncertainty larger than 200%. Make sure there is no problem with the bin-by-bin uncertainties in the root file",histfile,"in",self.analysis,self.category,". Please check:",shape_name,"bin-down:",hist_down.GetBinContent(bin),"bin-center:",hist.GetBinContent(bin),"bin-up:",hist_up.GetBinContent(bin)
 		           if not process_name+str(bin) in uncertainties_set:
    		               uncertainties_set+=[process_name+str(bin)]
                                out_line  += "hin->SetBinError(%(bin)i,hin->GetBinContent(%(bin)i)*%(uncertainty)f); \n" % {"bin":bin, "uncertainty":uncertainty}
