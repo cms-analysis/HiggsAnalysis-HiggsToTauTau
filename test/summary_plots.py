@@ -29,12 +29,12 @@ categories_sm = [
     ]
 
 categories_mssm = [
-    "0jet_low",
-    "0jet_high",
-    "0jet",
-    "boost_low",
-    "boost_high",
-    "boost",
+    #"0jet_low",
+    #"0jet_high",
+    #"0jet",
+    #"boost_low",
+    #"boost_high",
+    #"boost",
     "btag_low",
     "btag_high",
     ] 
