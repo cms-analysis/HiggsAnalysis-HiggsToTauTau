@@ -86,7 +86,7 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
   TFile* outputFile = 0; 
   if(!std::string(outputLabel).empty()){
     std::string out = std::string(filename); 
-    outputFile = new TFile((out.substr(0, out.rfind("."))+"_"+outputLabel+".root").c_str(), "recreate"); 
+    outputFile = new TFile((out.substr(0, out.rfind("."))+"_"+outputLabel+".root").c_str(), "update"); 
   }
 
   TKey* idir;
