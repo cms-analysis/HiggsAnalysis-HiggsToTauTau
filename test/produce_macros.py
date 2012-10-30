@@ -171,6 +171,8 @@ class Analysis:
                        hist_down = input.Get(histname+"_"+shape_name+"Down")
                        hist_up = input.Get(histname+"_"+shape_name+"Up")
                        #print histname, self.histfile
+                       if not hist:
+                         continue
                        for bin in range(1,hist.GetNbinsX()+1):
 		         shift = self.process_shape_weight[curr_name][shape_name]
                          out_line = ''
