@@ -133,12 +133,16 @@ class Analysis:
                              print out_line
                          if options.uncertainties:
 		             input = TFile("root/"+self.histfile)
-                             print "file: ", input.GetName()
+                             #print "file: ", input.GetName()
 		             for key in input.GetListOfKeys():
 		               if self.category in key.GetName():
                                    remnant = cand_str.rstrip(process_name)
 			           histname=key.GetName()+"/"+word_arr[0][len(remnant)+2:].strip().rstrip()
                              hist = input.Get(histname)
+                             ## it can happen that histograms, which are present in SM
+                             ## are not present in MSSM; in this case just skip hist
+                             if not hist :
+                                 continue
                              #print histname, self.histfile
                              for bin in range(1,hist.GetNbinsX()+1):
 		               if not process_name+str(bin) in uncertainties_set:
