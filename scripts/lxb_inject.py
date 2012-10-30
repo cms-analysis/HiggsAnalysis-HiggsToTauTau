@@ -43,6 +43,7 @@ print "for directory {PATH}/{DIR}"
 print "for random seed {RND}"
 print "for masses {MASSES}"
 
+print "Copying limit folder {PWD}/{PATH}/{DIR} => /tmp/{USER}/{DIR}_{JOBID}"
 os.system("cp -r {PWD}/{PATH}/{DIR} /tmp/{USER}/{DIR}_{JOBID}")
 os.system("inject-signal.py -i /tmp/{USER}/{DIR}_{JOBID} -o {JOBID} -r {RND} {MASSES}")
 
@@ -59,7 +60,7 @@ masses = args[0]
 masses_str = []
 for mass in parseArgs([masses]) :
     masses_str.append(str(mass))
-    
+
 if options.collect :
     for mass in parseArgs([masses]) :
         ## to allow for more files to be combined distinguish by first digit in a first
