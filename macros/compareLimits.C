@@ -23,6 +23,8 @@ static const double MARKER_SIZE = 1.3;  // 0.7
 bool
 channel(std::string& label){
   return (label==std::string("cmb")        ||
+	  label==std::string("cmb-mvis")   ||
+	  label==std::string("cmb-ichep")  ||
 	  label==std::string("cmb+")       ||
 	  label==std::string("htt")        ||
 	  label==std::string("htt+")       ||
@@ -32,17 +34,33 @@ channel(std::string& label){
 	  label==std::string("whhh")       ||
 	  label==std::string("incl")       ||
 	  label==std::string("0jet")       ||
+	  label==std::string("0jet-mvis")  ||
+	  label==std::string("0jet-ichep") ||
 	  label==std::string("2jet")       ||
 	  label==std::string("boost")      ||
+	  label==std::string("boost-mvis") ||
+	  label==std::string("boost-ichep")||
 	  label==std::string("btag")       ||
 	  label==std::string("vbf")        ||
+	  label==std::string("vbf-mvis")   ||
+	  label==std::string("vbf-ichep")  ||
 	  label==std::string("hgg")        ||	  
 	  label==std::string("hww")        ||
 	  label==std::string("tt")         ||
+	  label==std::string("tt-mvis")    ||
+	  label==std::string("tt-ichep")   ||
 	  label==std::string("em")         ||
+	  label==std::string("em-mvis")    ||
+	  label==std::string("em-ichep")   ||
 	  label==std::string("et")         ||
+	  label==std::string("et-mvis")    ||
+	  label==std::string("et-ichep")   ||
 	  label==std::string("mt")         ||
+	  label==std::string("mt-mvis")    ||
+	  label==std::string("mt-ichep")   ||
 	  label==std::string("mm")         ||
+	  label==std::string("mm-mvis")    ||
+	  label==std::string("mm-ichep")   ||
 	  label==std::string("ltt") 	   ||
 	  label==std::string("llt") 	   ||
 	  label==std::string("4l") 	   ||
@@ -53,6 +71,8 @@ channel(std::string& label){
 	  label==std::string("hzz2l2n")    ||
 	  label==std::string("ggH")        ||
 	  label==std::string("bbH")        ||
+	  label==std::string("mvis")       ||
+	  label==std::string("ichep")      ||
 	  label==std::string("test-0")     ||
 	  label==std::string("test-1")     ||
 	  label==std::string("test-2")     ||
@@ -86,14 +106,24 @@ std::string legendEntry(const std::string& channel){
   std::string title;
   if(channel==std::string("emu"       )) title = std::string("e#mu");
   if(channel==std::string("em"        )) title = std::string("e#mu");
+  if(channel==std::string("em-mvis"   )) title = std::string("e#mu (with m_{vis})");
+  if(channel==std::string("em-ichep"  )) title = std::string("e#mu (HCP on ICHEP dataset)");
   if(channel==std::string("etau"      )) title = std::string("e#tau_{h}");
   if(channel==std::string("et"        )) title = std::string("e#tau_{h}");
+  if(channel==std::string("et-mvis"   )) title = std::string("e#tau_{h} (with m_{vis})");
+  if(channel==std::string("et-ichep"  )) title = std::string("e#tau_{h} (HCP in ICHEP dataset)");
   if(channel==std::string("mutau"     )) title = std::string("#mu#tau_{h}");
   if(channel==std::string("mt"        )) title = std::string("#mu#tau_{h}");
+  if(channel==std::string("mt-mvis"   )) title = std::string("#mu#tau_{h} (with m_{vis})");
+  if(channel==std::string("mt-ichep"  )) title = std::string("#mu#tau_{h} (HCP on ICHEP dataset)");
   if(channel==std::string("tautau"    )) title = std::string("#tau_{h}#tau_{h}");
   if(channel==std::string("tt"        )) title = std::string("#tau_{h}#tau_{h}");
+  if(channel==std::string("tt-mvis"   )) title = std::string("#tau_{h}#tau_{h} (with m_{vis})");
+  if(channel==std::string("tt-ichep"  )) title = std::string("#tau_{h}#tau_{h} (HCP on ICHEP dataset)");
   if(channel==std::string("mumu"      )) title = std::string("#mu#mu");
   if(channel==std::string("mm"        )) title = std::string("#mu#mu");
+  if(channel==std::string("mm-mvis"   )) title = std::string("#mu#mu (with m_{vis})");
+  if(channel==std::string("mm-ichep"  )) title = std::string("#mu#mu (HCP on ICHEP dataset)");
   if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau+l(l)");
   if(channel==std::string("whtt"      )) title = std::string("WH#rightarrow#tau_{l}#tau_{l}+l");
   if(channel==std::string("zhtt"      )) title = std::string("ZH#rightarrow#tau_{l}#tau_{l}+ll");
@@ -101,12 +131,20 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("htt"       )) title = std::string("e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu");
   if(channel==std::string("htt+"      )) title = std::string("e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu+#tau_{h}#tau_{h}");
   if(channel==std::string("cmb"       )) title = std::string("Combined");
+  if(channel==std::string("cmb-mvis"  )) title = std::string("Combined (with m_{vis})");
+  if(channel==std::string("cmb-ichep" )) title = std::string("Combined (HCP on ICHEP dataset)");
   if(channel==std::string("cmb+"      )) title = std::string("H#rightarrow#tau#tau + VH#rightarrow#tau#tau+l");
   if(channel==std::string("incl"      )) title = std::string("Inclusive");
   if(channel==std::string("0jet"      )) title = std::string("0-Jet");
+  if(channel==std::string("0jet-mvis" )) title = std::string("0-Jet (with m_{vis})");
+  if(channel==std::string("0jet-ichep")) title = std::string("0-Jet (HCP on ICHEP dataset)");
   if(channel==std::string("2jet"      )) title = std::string("V(jj)H(#tau#tau)");
   if(channel==std::string("vbf"       )) title = std::string("2-Jet (VBF)");
+  if(channel==std::string("vbf-mvis"  )) title = std::string("2-Jet (VBF) (with m_{vis})");
+  if(channel==std::string("vbf-ichep" )) title = std::string("2-Jet (VBF) (HCP on ICHEP dataset)");
   if(channel==std::string("boost"     )) title = std::string("1-Jet");
+  if(channel==std::string("boost-mvis")) title = std::string("1-Jet (with m_{vis})");
+  if(channel==std::string("boost-ichep")) title = std::string("1-Jet (HCP on ICHEP dataset)");
   if(channel==std::string("btag"      )) title = std::string("B-Tag");
   if(channel==std::string("hgg"       )) title = std::string("H#rightarrow#gamma#gamma");
   if(channel==std::string("hww"       )) title = std::string("H#rightarrowWW#rightarrow2l2#nu");
@@ -122,7 +160,9 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("hzz2l2n"   )) title = std::string("H#rightarrowZZ#rightarrow2l2#nu");
   if(channel==std::string("ggH"       )) title = std::string("gg#rightarrowH");
   if(channel==std::string("bbH"       )) title = std::string("bb#rightarrowHbb");
-  if(channel==std::string("test-0"    )) title = std::string("Limit on 2011 Data");
+  if(channel==std::string("mvis"      )) title = std::string("Visible mass");
+  if(channel==std::string("ichep"     )) title = std::string("On ICHEP dataset");
+  if(channel==std::string("test-0"    )) title = std::string("Combined (w/o bin-by-bin)");
   if(channel==std::string("test-1"    )) title = std::string("Old analysis");
   if(channel==std::string("test-2"    )) title = std::string("Test-2");
   if(channel==std::string("test-3"    )) title = std::string("Test-3");
@@ -149,7 +189,6 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("HIG-11-029")) title = std::string("HIG-11-029 (4.9 fb^{-1})");
   if(channel==std::string("HIG-12-018")) title = std::string("HIG-12-018 (10 fb^{-1})");
   if(channel==std::string("HIG-12-032")) title = std::string("HIG-12-032 (5-10 fb^{-1})");
-  if(channel==std::string("20121023.cmb_mssm_78TeV_cmb"       )) title = std::string("Combined");
   return title;
 }
 
@@ -158,69 +197,88 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   SetStyle();
 
   std::map<std::string, unsigned int> colors;
-  colors["incl"      ] = kBlue;
-  colors["0jet"      ] = kBlue;
-  colors["2jet"      ] = kMagenta;
-  colors["vbf"       ] = kRed;
-  colors["boost"     ] = kGreen;
-  colors["btag"      ] = kRed;
-  colors["emu"       ] = kBlue;
-  colors["em"        ] = kBlue;
-  colors["etau"      ] = kRed;
-  colors["et"        ] = kRed;
-  colors["mutau"     ] = kGreen;
-  colors["mt"        ] = kGreen;
-  colors["mumu"      ] = kMagenta;
-  colors["mm"        ] = kMagenta;
-  colors["tautau"    ] = kOrange;
-  colors["tt"        ] = kOrange;
-  colors["vhtt"      ] = kMagenta+2;
-  colors["whtt"      ] = kMagenta+0;
-  colors["zhtt"      ] = kCyan+2;
-  colors["whhh"      ] = kBlue;
-  colors["cmb"       ] = kBlack;
-  colors["cmb+"      ] = kGray+2;
-  colors["htt"       ] = kBlack;
-  colors["htt+"      ] = kBlue;
-  colors["hgg"       ] = kRed;
-  colors["hww"       ] = kGreen;
-  colors["4l"        ] = kGreen;
-  colors["llt"       ] = kRed;
-  colors["ltt"       ] = kBlue;
-  colors["hzz4l"     ] = kBlue;
-  colors["hzz2l2q"   ] = kMagenta;
-  colors["hzz2l2q+"  ] = kMagenta;
-  colors["hzz2l2t"   ] = kOrange;
-  colors["hzz2l2n"   ] = kPink;
-  colors["ggH"       ] = kRed;
-  colors["bbH"       ] = kBlue;
-  colors["test-0"    ] = kBlue+2;
-  colors["test-1"    ] = kRed+2;
-  colors["test-2"    ] = kGreen;
-  colors["test-3"    ] = kRed+2;
-  colors["test-4"    ] = kBlue;
-  colors["test-5"    ] = kViolet-6;
-  colors["old"       ] = kViolet-6;
-  colors["cmb-5fb"   ] = kBlue;
-  colors["hpa-5fb"   ] = kRed;
-  colors["hpa-10fb"  ] = kBlack;
-  colors["saeff"     ] = kGreen;
-  colors["gluph"     ] = kOrange-3;
-  colors["nomix-200" ] = kBlue-10;
-  colors["nomix+200" ] = kBlue +2;
-  colors["mhmax-400" ] = kGray +2;
-  colors["mhmax-200" ] = kGray +1;
-  colors["mhmax+200" ] = kMagenta+ 4;
-  colors["mhmax+400" ] = kMagenta+ 3;
-  colors["mhmax+600" ] = kMagenta- 2;
-  colors["mhmax+800" ] = kMagenta-10;
-  colors["MSSM-7TeV" ] = kBlue+2;
-  colors["MSSM-8TeV" ] = kBlue+4;
-  colors["HIG-11-020"] = kBlue+2;
-  colors["HIG-11-029"] = kRed+2;
-  colors["HIG-12-018"] = kBlue;
-  colors["HIG-12-032"] = kRed+2;
-  colors["20121023.cmb_mssm_78TeV_cmb"] = kBlack;
+  colors["incl"       ] = kBlue;
+  colors["0jet"       ] = kBlue;
+  colors["0jet-mvis"  ] = kBlue+2;
+  colors["0jet-ichep" ] = kBlue+2;
+  colors["2jet"       ] = kMagenta;
+  colors["vbf"        ] = kRed;
+  colors["vbf-mvis"   ] = kRed+2;
+  colors["vbf-ichep"  ] = kRed+2;
+  colors["boost"      ] = kGreen;
+  colors["boost-mvis" ] = kGreen+2;
+  colors["boost-ichep"] = kGreen+2;
+  colors["btag"       ] = kRed;
+  colors["emu"        ] = kBlue;
+  colors["em"         ] = kBlue;
+  colors["em-mvis"    ] = kBlue+2;
+  colors["em-ichep"   ] = kBlue+2;
+  colors["etau"       ] = kRed;
+  colors["et"         ] = kRed;
+  colors["et-mvis"    ] = kRed+2;
+  colors["et-ichep"   ] = kRed+2;
+  colors["mutau"      ] = kGreen;
+  colors["mt"         ] = kGreen;
+  colors["mt-mvis"    ] = kGreen+2;
+  colors["mt-ichep"   ] = kGreen+2;
+  colors["mumu"       ] = kMagenta;
+  colors["mm"         ] = kMagenta;
+  colors["mm-mvis"    ] = kMagenta+2;
+  colors["mm-ichep"   ] = kMagenta+2;
+  colors["tautau"     ] = kOrange;
+  colors["tt"         ] = kOrange;
+  colors["tt-mvis"    ] = kOrange+2;
+  colors["tt-ichep"   ] = kOrange+2;
+  colors["vhtt"       ] = kMagenta+2;
+  colors["whtt"       ] = kMagenta+0;
+  colors["zhtt"       ] = kCyan+2;
+  colors["whhh"       ] = kBlue;
+  colors["cmb"        ] = kBlack;
+  colors["cmb-mvis"   ] = kGray+2;
+  colors["cmb-ichep"  ] = kGray+2;
+  colors["cmb+"       ] = kGray+2;
+  colors["htt"        ] = kBlack;
+  colors["htt+"       ] = kBlue;
+  colors["hgg"        ] = kRed;
+  colors["hww"        ] = kGreen;
+  colors["4l"         ] = kGreen;
+  colors["llt"        ] = kRed;
+  colors["ltt"        ] = kBlue;
+  colors["hzz4l"      ] = kBlue;
+  colors["hzz2l2q"    ] = kMagenta;
+  colors["hzz2l2q+"   ] = kMagenta;
+  colors["hzz2l2t"    ] = kOrange;
+  colors["hzz2l2n"    ] = kPink;
+  colors["ggH"        ] = kRed;
+  colors["bbH"        ] = kBlue;
+  colors["mvis"       ] = kBlue+2;
+  colors["ichep"      ] = kBlue+2;
+  colors["test-0"     ] = kRed+2;
+  colors["test-1"     ] = kGreen+2;
+  colors["test-2"     ] = kGreen;
+  colors["test-3"     ] = kRed+2;
+  colors["test-4"     ] = kBlue;
+  colors["test-5"     ] = kViolet-6;
+  colors["old"        ] = kViolet-6;
+  colors["cmb-5fb"    ] = kBlue;
+  colors["hpa-5fb"    ] = kRed;
+  colors["hpa-10fb"   ] = kBlack;
+  colors["saeff"      ] = kGreen;
+  colors["gluph"      ] = kOrange-3;
+  colors["nomix-200"  ] = kBlue-10;
+  colors["nomix+200"  ] = kBlue +2;
+  colors["mhmax-400"  ] = kGray +2;
+  colors["mhmax-200"  ] = kGray +1;
+  colors["mhmax+200"  ] = kMagenta+ 4;
+  colors["mhmax+400"  ] = kMagenta+ 3;
+  colors["mhmax+600"  ] = kMagenta- 2;
+  colors["mhmax+800"  ] = kMagenta-10;
+  colors["MSSM-7TeV"  ] = kBlue+2;
+  colors["MSSM-8TeV"  ] = kBlue+4;
+  colors["HIG-11-020" ] = kBlue+2;
+  colors["HIG-11-029" ] = kRed+2;
+  colors["HIG-12-018" ] = kBlue;
+  colors["HIG-12-032" ] = kRed+2;
 
   std::cout << " *******************************************************************************************************\n"
 	    << " * Usage     : root -l                                                                                  \n"
