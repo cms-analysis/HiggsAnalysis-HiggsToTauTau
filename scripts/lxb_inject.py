@@ -26,7 +26,7 @@ logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 name     = options.name
 bsubargs = options.bsub
-input    = options.input
+input    = options.input.rstrip('/')
 njob     = options.njob
 opts     = options.opts
 
@@ -45,10 +45,11 @@ print "for masses {MASSES}"
 
 print "Copying limit folder {PWD}/{PATH}/{DIR} => /tmp/{USER}/{DIR}_{JOBID}"
 os.system("cp -r {PWD}/{PATH}/{DIR} /tmp/{USER}/{DIR}_{JOBID}")
-os.system("inject-signal.py -i /tmp/{USER}/{DIR}_{JOBID} -o {JOBID} -r {RND} {MASSES}")
+os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/inject-signal.py -i /tmp/{USER}/{DIR}_{JOBID} -o {JOBID} -r {RND} {MASSES}")
 
 masses = "{MASSES}".split()
 for m in masses :
+    print "limit.py --asymptotic {OPTS} /tmp/{USER}/{DIR}_{JOBID}/%s" % m
     os.system("limit.py --asymptotic {OPTS} /tmp/{USER}/{DIR}_{JOBID}/%s" % m)
     os.system("cp /tmp/{USER}/{DIR}_{JOBID}/%s/higgsCombine-obs.Asymptotic.mH%s.root {PWD}/{PATH}/{DIR}/%s/higgsCombine-obs.Asymptotic.mH%s-{JOBID}.root" % (m, m, m, m))
 os.system("rm -r /tmp/{USER}/{DIR}_{JOBID}")
@@ -88,6 +89,7 @@ else:
             script_file_name = '%s/%s_%i.py' % (name, name, idx)
             with open(script_file_name, 'w') as script:
                 script.write(script_template.format(
+                    CMSSW_BASE=os.environ["CMSSW_BASE"],
                     PWD= os.getcwd(),
                     MASSES = ' '.join(masses_str),
                     USER = os.environ['USER'],
