@@ -41,7 +41,7 @@ def walk_and_copy(inputdir, outputdir, pattern, mergers, threshold, prefix):
             full_path = os.path.join(path, histo)
             # A version without a leading slash
             rel_path = full_path if full_path[0] != '/' else full_path[1:]
-            #print rel_path
+            #print "rel path: ", rel_path
             log.debug("Testing path %s against pattern %s", full_path, pattern)
             if fnmatch.fnmatch(histo, pattern) or \
                fnmatch.fnmatch(full_path, pattern) or \
