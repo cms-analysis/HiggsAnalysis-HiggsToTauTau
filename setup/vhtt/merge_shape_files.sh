@@ -13,7 +13,7 @@ domorph()
   horizontal-morphing.py \
     --categories="$4"\
     --samples="$2" \
-    --uncerts="" --masses="110,115,120,125,130,135,140" --step-size=0.5 \
+    --uncerts="" --masses="110,120,130,140" --step-size=0.5 \
     -i $1 
   horizontal-morphing.py \
     --categories="$4"\
@@ -25,12 +25,12 @@ domorph()
     --categories="$4"\
     --samples="$3" \
     --uncerts="" --masses="130,140" --step-size=1 \
-    -i $1 #--extrapolate="141,142,143,144,145"
+    -i $1 --extrapolate="141,142,143,144,145"
   horizontal-morphing.py \
     --categories="$4"\
     --samples="$2" \
-    --uncerts="" --masses="135,140" --step-size=1 \
-    -i $1 #--extrapolate="141,142,143,144,145"
+    --uncerts="" --masses="130,140" --step-size=1 \
+    -i $1 --extrapolate="141,142,143,144,145"
   echo "124.5->126.5, in 0.1"
   horizontal-morphing.py \
     --categories="$4"\
