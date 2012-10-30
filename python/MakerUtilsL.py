@@ -1,5 +1,6 @@
 import re
 import ROOT
+ROOT.gROOT.SetBatch(True)
 from ROOT import TFile,TH1F,TH1D
 
 def main():
@@ -199,6 +200,8 @@ class DBuilder:
         #print hist
         if hist:
             rate = hist.Integral()
+            if rate < 0:
+                rate = 0
         else:
             wsPath = category + '/' + self.wsName
             ws = f.Get(wsPath)
