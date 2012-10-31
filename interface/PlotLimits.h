@@ -2,7 +2,7 @@
 #define PlotLimits_h
 
 #include <math.h>
-#include <vector> 
+#include <vector>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -27,14 +27,14 @@
 
    \brief   Class to draw official plots for HiggsToTauTau limits
 
-   This is a class for drawing the official plots for HiggsToTauTau limits. It is instantiated from 
-   the tool plot that can be found in the bin directory of this package. The class requires a layout 
-   file in the style of CMSSW cfi python files to pick up certain layout parameters and a particular 
-   directory structure containing the limit output files (as provided by combine) as input to pick 
+   This is a class for drawing the official plots for HiggsToTauTau limits. It is instantiated from
+   the tool plot that can be found in the bin directory of this package. The class requires a layout
+   file in the style of CMSSW cfi python files to pick up certain layout parameters and a particular
+   directory structure containing the limit output files (as provided by combine) as input to pick
    up the limit results from there. The input directory should point to the head directory containing
-   all mass points as subdirectories. In the subdirectories the limits ouptut files from combine 
-   looked for. This structure can be achieved automatically when using the other (wrapper) tools 
-   for limit calculation provided in the same package. Pre-defined layout files can be found in the 
+   all mass points as subdirectories. In the subdirectories the limits ouptut files from combine
+   looked for. This structure can be achieved automatically when using the other (wrapper) tools
+   for limit calculation provided in the same package. Pre-defined layout files can be found in the
    python/layout sub-directory of this package.
 
    Depending on the layout the class provides plots for SM limits (on signal strength), on the MSSM
@@ -42,25 +42,25 @@
 
     - a plot in png format
     - a plot in pdf format
-    - a machiene readable txt file containing the observed and expected limit and the uncertainty 
+    - a machiene readable txt file containing the observed and expected limit and the uncertainty
       bands
     - a tex file containing the observed and expected limit and the uncertainty bands
     - a root output file with name limit_mssm/sm.root containing the observed and expected limit
       and uncertainty bands in TGraph format.
 
-    in the directory in which the tool plot has been executed. The names of the png/pdf/txt/tex output 
-    files will be derived from the laypout and from the input directory. The output in the 
-    limits_mssm/sm.root file will be updated in case a file with similar file is already present in 
+    in the directory in which the tool plot has been executed. The names of the png/pdf/txt/tex output
+    files will be derived from the laypout and from the input directory. The output in the
+    limits_mssm/sm.root file will be updated in case a file with similar file is already present in
     the directory where the tool plot has been executed or the file will be created otherwise. In the
-    limits_mssm/sm.root the limits for a given input directory will be safed in a directory 
-    corresponding to the name of the input directory. The file is suited for further processing with 
-    the macro compareLimits.C in the macros directory of the same package. For more details on how 
-    to run the tool plot have a look in the bin dorectory of this package or just execute the tool 
+    limits_mssm/sm.root the limits for a given input directory will be safed in a directory
+    corresponding to the name of the input directory. The file is suited for further processing with
+    the macro compareLimits.C in the macros directory of the same package. For more details on how
+    to run the tool plot have a look in the bin dorectory of this package or just execute the tool
     w/o any aditional arguments given.
 */
 
 class PlotLimits {
-  
+
  public:
   /// contructor from cfg file (not yet implemented)
   PlotLimits(const char* output, const edm::ParameterSet& cfg);
@@ -70,38 +70,38 @@ class PlotLimits {
   /// fill LP plots for SM or MSSM
   TGraphAsymmErrors* fillLP2011(TGraphAsymmErrors* graph, bool mssm, bool inner);
   /// fill the central value either for observed or expected
-  TGraph* fillCentral(const char* directory, TGraph* plot, const char* filename);  
+  TGraph* fillCentral(const char* directory, TGraph* plot, const char* filename);
   /// fill the +/-1sigma and +/-2sigma uncertainty band
   TGraphAsymmErrors* fillBand(const char* directory, TGraphAsymmErrors* plot, const char* method, bool innerBand);
   /// print tabulated limits to a txt file, for inner band, outer band, expected and observed
   void print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* innerBand, TGraph* expected, TGraph* observed, const char* type="txt");
-  /// plot limits on canvas, print out png, pdf, txt, root formats if desired 
+  /// plot limits on canvas, print out png, pdf, txt, root formats if desired
   void plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0);
-  /// plot limits for tanb on canvas, print out png, pdf, txt, root formats if desired 
+  /// plot limits for tanb on canvas, print out png, pdf, txt, root formats if desired
   void plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0, const char* directory="");
-  /// plot bestfit values for different parameters dependend on mass 
+  /// plot bestfit values for different parameters dependend on mass
   void plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0, const char* directory="");
 
  private:
-  /// fill a single vector of values according to 2sigma, 1sigma, median or observed 
-  /// from Asymptotic limits 
+  /// fill a single vector of values according to 2sigma, 1sigma, median or observed
+  /// from Asymptotic limits
   void prepareAsymptotic(const char* directory, std::vector<double>& values, const char* type);
-  /// fill a single vector of values according to 2sigma, 1sigma, mean or median from 
+  /// fill a single vector of values according to 2sigma, 1sigma, mean or median from
   /// Bayesian limits; in case files do not exists or were corrupted for a given mass
-  /// point the initial value of -1. will be filled the member functions fillCentral 
-  /// and fillBand should check for values of -1. and take these mass points out of 
-  /// consideration  
+  /// point the initial value of -1. will be filled the member functions fillCentral
+  /// and fillBand should check for values of -1. and take these mass points out of
+  /// consideration
   void prepareBayesian(const char* directory, std::vector<double>& values, const char* type);
-  /// fill a single vector of values according to 2sigma, 1sigma or median from CLs 
-  /// limits; 
-  void prepareCLs(const char* directory, std::vector<double>& values, const char* type) { 
-    prepareSimple(directory, values, std::string("higgsCombineTest.HybridNew.$MASS").append(type).c_str()); 
+  /// fill a single vector of values according to 2sigma, 1sigma or median from CLs
+  /// limits;
+  void prepareCLs(const char* directory, std::vector<double>& values, const char* type) {
+    prepareSimple(directory, values, std::string("higgsCombineTest.HybridNew.$MASS").append(type).c_str());
   };
   /// fill a single vector of values according to 1sigma from MaxLikelihoodFit limits;
   void prepareMaxLikelihood(const char* directory, std::vector<double>& values, const char* filename, float ConLevel);
-  /// fill a single vector of values from a file filename; ; in case files do not exists 
-  /// or were corrupted for a given mass point the initial value of -1. will be filled 
-  /// the member functions fillCentral and fillBand should check for values of -1. and 
+  /// fill a single vector of values from a file filename; ; in case files do not exists
+  /// or were corrupted for a given mass point the initial value of -1. will be filled
+  /// the member functions fillCentral and fillBand should check for values of -1. and
   /// take these mass points out of consideration
   void prepareSimple(const char* directory, std::vector<double>& values, const char* filename);
   /// fill officially approved limits for LP2011 (NOTE: these are cross section also for MSSM)
@@ -122,11 +122,11 @@ class PlotLimits {
   void limitsHWW(TGraph* graph, const char* type);
   /// fill the limits from the CMS hgg SM Higgs search
   void limitsHGG(TGraph* graph, const char* type);
- 
+
  private:
-  /// output name and directory 
+  /// output name and directory
   /// name in root file
-  std::string output_; 
+  std::string output_;
   /// string for luminosity and cms label
   std::string dataset_;
   /// x-axis title?
@@ -146,26 +146,28 @@ class PlotLimits {
   /// print the +/- 2 sigma band?
   bool outerband_;
   /// minimum for plotting
-  double min_; 
+  double min_;
   /// maximum for plotting
-  double max_; 
+  double max_;
   /// log scale for plotting
-  int log_; 
+  int log_;
   /// define verbosity level
   unsigned int verbosity_;
-  /// additional output label 
-  /// for png, pdf, txt 
+  /// additional output label
+  /// for png, pdf, txt
   std::string outputLabel_;
   /// print higgs125 bands?
   bool higgs125_bands;
   /// POI of multidimfit
   std::string POI_;
+  /// Whether or not we have signal injection
+  bool isInjected_;
   /// binning for limits
   std::vector<double> bins_;
   /// check whether mass point is available or not
-  std::vector<bool> valid_; 
+  std::vector<bool> valid_;
   /// mass for which a limit has been calculated (needed for plotting of HIG-XX-YYY results)
-  std::vector<double> masses_; 
+  std::vector<double> masses_;
 };
 
 inline void
@@ -235,8 +237,8 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
 	if(mass==200) {values.push_back(19.64); }
 	if(mass==250) {values.push_back(25.48); }
 	if(mass==300) {values.push_back(32.29); }
-	if(mass==400) {values.push_back(49.22); } 
-	if(mass==450) {values.push_back(58.79); } 
+	if(mass==400) {values.push_back(49.22); }
+	if(mass==450) {values.push_back(58.79); }
 	if(mass==500) {values.push_back(69.25); }
       }
     }
@@ -244,7 +246,7 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
       if(xsec){
 	/// xsec limits
 	if(mass== 90) {values.push_back(24.864); }
-	if(mass==100) {values.push_back(18.287); } 
+	if(mass==100) {values.push_back(18.287); }
 	if(mass==120) {values.push_back( 8.397); }
 	if(mass==130) {values.push_back( 6.899); }
 	if(mass==140) {values.push_back( 5.134); }
@@ -329,7 +331,7 @@ PlotLimits::prepareHIG_11_020(std::vector<double>& values, const char* type, boo
 	// tanb limits
 	if(mass== 90) {values.push_back(7.98 ); }
 	if(mass==100) {values.push_back(8.23 ); }
-	if(mass==120) {values.push_back(8.19 ); } 
+	if(mass==120) {values.push_back(8.19 ); }
 	if(mass==130) {values.push_back(6.68 ); }
 	if(mass==140) {values.push_back(8.95 ); }
 	if(mass==160) {values.push_back(9.87 ); }
@@ -471,7 +473,7 @@ PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type, dou
       if(mass==400) {values.push_back(37.298); if(initial) masses_.push_back(mass);}
       if(mass==450) {values.push_back(45.178); if(initial) masses_.push_back(mass);}
       if(mass==500) {values.push_back(51.904); if(initial) masses_.push_back(mass);}
-    } 
+    }
     else if (std::string(type)==std::string("-2sigma")){
       if(mass== 90) {values.push_back( 5.194); }
       if(mass==100) {values.push_back( 6.492); }
@@ -628,7 +630,7 @@ PlotLimits::prepareHIG_11_029(std::vector<double>& values, const char* type, dou
   return;
 }
 
-inline void 
+inline void
 PlotLimits::prepareHIG_12_018(std::vector<double>& values, const char* type, double mass, bool initial)
 {
   if(mssm_){
@@ -881,7 +883,7 @@ PlotLimits::limitsHWW(TGraph* graph, const char* type)
     graph->SetPoint( 8,    180.,  1.80079);
     graph->SetPoint( 9,    190.,  1.49742);
     graph->SetPoint(10,    200.,  1.20681);
-    graph->SetPoint(11,    201.,  0.);    
+    graph->SetPoint(11,    201.,  0.);
   }
   if(std::string(type) == std::string("mh-calc-expected")){
     graph->SetPoint( 0,    229.,  100.);

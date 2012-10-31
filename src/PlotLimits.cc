@@ -16,13 +16,16 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) : outpu
   verbosity_(cfg.getParameter<unsigned int>("verbosity")),
   outputLabel_(cfg.getParameter<std::string>("outputLabel")),
   higgs125_bands (cfg.exists("higgs125_bands") ? cfg.getParameter<bool>("higgs125_bands") : false),
-  POI_  (cfg.exists("POI") ? cfg.getParameter<std::string>("POI") : "")
+  POI_  (cfg.exists("POI") ? cfg.getParameter<std::string>("POI") : ""),
+  isInjected_ (cfg.exists("injected") ? cfg.getParameter<bool>("injected") : false)
 {
   if(cfg.existsAs<bool>("outerband")){
     outerband_=cfg.getParameter<bool>("outerband");
   }
   bins_=cfg.getParameter<std::vector<double> >("masspoints");
   for(unsigned int i=0; i<bins_.size(); ++i) valid_.push_back(true);
+  if (isInjected_)
+    outputLabel_ += "_injected";
 }
 
 void
@@ -617,6 +620,8 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
   //outerBand->SetLineStyle(11);
   outerBand->SetLineWidth(1.);
   outerBand->SetFillColor(kYellow);
+  if (isInjected_)
+    outerBand->SetFillColor(kAzure-9);
   outerBand->Draw("3");
   }
 
@@ -624,6 +629,8 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
   //innerBand->SetLineStyle(11);
   innerBand->SetLineWidth(1.);
   innerBand->SetFillColor(kGreen);
+  if (isInjected_)
+    innerBand->SetFillColor(kAzure-4);
   innerBand->Draw("3same");
 
   if(outerBand){
@@ -664,11 +671,17 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
   leg->SetFillColor (kWhite);
   //leg->SetHeader( "95% CL Limits" );
   if(observed) leg->AddEntry( observed , "observed",  "PL" );
-  if(observed==0 && outerBand==0) leg->AddEntry( expected , "Best fit"             ,  "L" );
-  else leg->AddEntry( expected , "expected"             ,  "L" );
-  if(observed==0 && outerBand==0) leg->AddEntry( innerBand, "#pm 1#sigma Best fit" ,  "F" );
-  else leg->AddEntry( innerBand, "#pm 1#sigma expected" ,  "F" );
-  if(outerBand) leg->AddEntry( outerBand, "#pm 2#sigma expected" ,  "F" );
+  if (!isInjected_) {
+    if(observed==0 && outerBand==0) leg->AddEntry( expected , "Best fit"             ,  "L" );
+    else leg->AddEntry( expected , "expected"             ,  "L" );
+    if(observed==0 && outerBand==0) leg->AddEntry( innerBand, "#pm 1#sigma Best fit" ,  "F" );
+    else leg->AddEntry( innerBand, "#pm 1#sigma expected" ,  "F" );
+    if(outerBand) leg->AddEntry( outerBand, "#pm 2#sigma expected" ,  "F" );
+  } else {
+    leg->AddEntry( expected , "signal injected"             ,  "L" );
+    leg->AddEntry( innerBand, "#pm 1#sigma injected" ,  "F" );
+    leg->AddEntry( outerBand, "#pm 2#sigma injected" ,  "F" );
+  }
   leg->Draw("same");
   //canv.RedrawAxis("g");
   canv.RedrawAxis();
