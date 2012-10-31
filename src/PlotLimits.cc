@@ -47,16 +47,17 @@ PlotLimits::prepareSimple(const char* directory, std::vector<double>& values, co
       TTree* limit = (TTree*) file->Get("limit");
       if(!limit){
 	if(verbosity_>0){
-	  std::cout << "INFO: tree not found: limit" << std::endl
+	  std::cout << "INFO: tree 'limit' not found in file: "
+                    << filename << std::endl
 		    << "      leave value at -1. to invalidate" << std::endl;
 	}
 	valid_[imass]=false;
       }
       else{
-	if(buffer.find("MaxLikelihoodFit")!=std::string::npos){	   
+	if(buffer.find("MaxLikelihoodFit")!=std::string::npos){
 	  double x;
 	  float y;
-	  
+
 	  limit->SetBranchAddress("limit", &x);
 	  limit->SetBranchAddress("quantileExpected", &y);
 	  int nevent = limit->GetEntries();
@@ -69,7 +70,7 @@ PlotLimits::prepareSimple(const char* directory, std::vector<double>& values, co
 	}
 	else{
 	  double x;
-	
+
 	  limit->SetBranchAddress("limit", &x);
 	  int nevent = limit->GetEntries();
 	  for(int i=0; i<nevent; ++i){
@@ -428,7 +429,7 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
       prepareCLs(directory, upper, innerBand ? ".quant0.840" : ".quant0.975");
       prepareCLs(directory, lower, innerBand ? ".quant0.160" : ".quant0.027");
     }
-    else if(std::string(method).find("MaxLikelihood") != std::string::npos){  
+    else if(std::string(method).find("MaxLikelihood") != std::string::npos){
       prepareMaxLikelihood(directory, expected, method, 0.50);
       prepareMaxLikelihood(directory, upper, method, 0.84);
       prepareMaxLikelihood(directory, lower, method, 0.16);
@@ -541,8 +542,8 @@ PlotLimits::print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsym
       << "   " << std::setw(15) << std::right << "   -1 sigma"
       << "   " << std::setw(15) << std::right << "     Median"
       << "   " << std::setw(15) << std::right << "   +1 sigma";
-    if(outerBand){    
-      file  
+    if(outerBand){
+      file
 	<< "   " << std::setw(15) << std::right << "   +2 sigma";
     }
     file
@@ -583,7 +584,7 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
   canv.cd();
   canv.SetGridx(1);
   canv.SetGridy(1);
-  
+
   // draw a frame to define the range
   TH1F* hr = new TH1F();
   if(outerBand) hr=canv.DrawFrame(outerBand->GetX()[0]-.01, min_, outerBand->GetX()[outerBand->GetN()-1]+.01, max_);
@@ -1035,7 +1036,7 @@ PlotLimits::plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErro
   canv.cd();
   canv.SetGridx(1);
   canv.SetGridy(1);
-  
+
   // draw a frame to define the range
   TH1F* hr = canv.DrawFrame(bins_[0]-.01, min_, bins_[bins_.size()-1]+.01, max_);
   hr->SetXTitle(xaxis_.c_str());
@@ -1059,8 +1060,8 @@ PlotLimits::plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErro
       unit->SetPoint(ipoint, bins_[imass], 1.); ++ipoint;
     }
   }
-   
-  char typ[20];   
+
+  char typ[20];
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
     std::cout<< (int)bins_[imass] << std::endl;
     std::string fullpath;
@@ -1071,11 +1072,11 @@ PlotLimits::plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErro
     if (multidim.is_open())
       {
 	while ( multidim.good() )
-	  {	    
+	  {
 	    getline (multidim,line);
 	    sscanf (line.c_str(),"%s :    %f   %f/%f (68%%)", typ, &bestfit, &bestfit_down, &bestfit_up);
 	    if(typ==POI_)
-	      {		
+	      {
 		expected ->SetPoint(ipoint, bins_[imass], bestfit);
 		innerBand->SetPoint(ipoint, bins_[imass], bestfit);
 		innerBand->SetPointEYlow (ipoint, fabs(bestfit_down));
@@ -1099,14 +1100,14 @@ PlotLimits::plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErro
   expected->SetMarkerColor(kBlack);
   expected->SetLineWidth(3.);
   expected->Draw("PLsame");
-  
+
 
   if(!mssm_){
     unit->SetLineColor(kBlue);
     unit->SetLineWidth(3.);
     unit->Draw("Lsame");
   }
-  
+
   /// setup the CMS Preliminary
   CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
 
