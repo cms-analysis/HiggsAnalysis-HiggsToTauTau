@@ -2,8 +2,10 @@
 
 # Copy over Abdollah's results.
 
-basedir7=/afs/cern.ch/user/a/abdollah/public/For_Evan/HCP/SMOOTH_7TeV
-basedir8=/afs/cern.ch/user/a/abdollah/public/For_Evan/HCP/SMOOTH_8TeV
+#basedir7=/afs/cern.ch/user/a/abdollah/public/For_Evan/HCP/SMOOTH_7TeV
+#basedir8=/afs/cern.ch/user/a/abdollah/public/For_Evan/HCP/SMOOTH_8TeV
+basedir7=/afs/cern.ch/user/a/abdollah/public/For_Evan/HCP/Final_7TeV_2
+basedir8=/afs/cern.ch/user/a/abdollah/public/For_Evan/HCP/Final_8TeV_2
 
 cp $basedir7/cgs-sm-7TeV-01.conf .
 cp $basedir7/unc-sm-7TeV-01.conf .
