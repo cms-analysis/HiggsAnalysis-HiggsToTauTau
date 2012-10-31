@@ -19,5 +19,5 @@ muTau_boost_low		VV				CMS_htt_DiBosonNorm_8TeV		1.15
 muTau_boost_low		W				CMS_htt_WNorm_mutau_boost_low_8TeV	1.10
 muTau_boost_low         QCD				CMS_htt_QCDSyst_mutau_boost_low_8TeV	1.10
 muTau_boost_low		ZJ				CMS_htt_ZJetFakeTau_mutau_boost_low_8TeV	1.20
-muTau_boost_low		ZL				CMS_htt_ZLeptonFakeTau_mutau_low_8TeV	1.30
+muTau_boost_low		ZL				CMS_htt_ZLeptonFakeTau_mutau_8TeV	1.30
 muTau_boost_low         QCD                             CMS_htt_QCDShape_mutau_boost_low_8TeV  	1.00

@@ -28,5 +28,5 @@ muTau_vbf		W				CMS_htt_WNorm_mutau_vbf_8TeV		1.124
 muTau_vbf		ZTT				CMS_htt_extrap_ztt_vbf_8TeV		1.10
 muTau_vbf		ZLL				CMS_htt_extrap_ztt_vbf_8TeV		1.07
 muTau_vbf		QCD			        CMS_htt_QCDSyst_mutau_vbf_8TeV		1.19
-muTau_vbf		ZLL				CMS_htt_ZLeptonFakeTau_mutau_low_8TeV	1.20
-muTau_vbf		ZLL				CMS_htt_ZLeptonFakeTau_mutau_low_8TeV	1.10
+muTau_vbf		ZLL				CMS_htt_ZLeptonFakeTau_mutau_8TeV	1.30
+

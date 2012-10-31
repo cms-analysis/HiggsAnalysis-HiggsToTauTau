@@ -22,6 +22,6 @@ muTau_btag_high	 	VV	          	CMS_htt_DiBosonNorm_7TeV 		1.15
 muTau_btag_high		W	          	CMS_htt_WNorm_mutau_btag_high_7TeV 	1.30
 muTau_btag_high         QCD	          	CMS_htt_QCDSyst_mutau_btag_high_7TeV	1.20
 muTau_btag_high		ZLL			CMS_htt_ZJetFakeTau_mutau_btag_high_7TeV	1.20
-muTau_btag_high		ZLL			CMS_htt_ZLeptonFakeTau_mutau_high_7TeV	1.30
+muTau_btag_high		ZLL			CMS_htt_ZLeptonFakeTau_mutau_7TeV	1.30
 
 
