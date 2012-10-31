@@ -18,6 +18,7 @@ parser.add_option("--extrapolate", dest="extrapolate", default="", type="string"
 import os
 import re
 import ROOT
+ROOT.gROOT.SetBatch(True)
 
 ROOT.gSystem.Load('$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so')
 from ROOT import th1fmorph
