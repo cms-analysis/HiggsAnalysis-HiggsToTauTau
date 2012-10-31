@@ -513,7 +513,7 @@ for directory in args :
         directoryList = os.listdir(".")
         ## create a hadd'ed file per crab directory
         for name in directoryList :
-            if name.find("crab_0")>-1 and not name.find(".")>-1 :
+            if "crab_0" in name and not "." in name :
                 if os.path.exists("batch_collected_%s.root" % ifile) :
                     os.system("rm batch_collected_%s.root" % ifile)
                 os.system("hadd batch_collected_%s.root %s/res/*.root" % (ifile, name))
@@ -532,9 +532,10 @@ for directory in args :
         mass_fixed = options.fixed_mass if options.fixed_mass!="" else mass_value
         os.system("text2workspace.py --default-morphing=%s -m %s -b tmp.txt -o tmp.root"% (options.shape, mass_fixed))
         if not options.observedOnly :
-            ## calculate significance, batch_collected.root is the output file name expected by plot.cc
-            os.system("combine -M ProfileLikelihood -t {toys} --significance --signalForSignificance={sig} -m {mass} -n batch_collected.root tmp.root".format(
-                toys=options.toys, sig=options.signal_strength, mass=mass_value))
+            if ifile == 0 :
+                ## calculate significance, batch_collected.root is the output file name expected by plot.cc
+                os.system("combine -M ProfileLikelihood -t {toys} --significance --signalForSignificance={sig} -m {mass} -n batch_collected.root tmp.root".format(
+                    toys=options.toys, sig=options.signal_strength, mass=mass_value))
         if not options.expectedOnly :
             ## calc observed significance
             #print "combine -M ProfileLikelihood --significance -m {mass} tmp.root".format(mass=mass_value)
