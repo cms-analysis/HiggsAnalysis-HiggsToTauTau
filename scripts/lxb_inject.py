@@ -67,12 +67,12 @@ if options.collect :
         ## to allow for more files to be combined distinguish by first digit in a first
         ## iteration, than cpomine the resulting 10 files to the final output file.
         for idx in range(10 if int(options.njob)>10 else int(options.njob)) :
-            os.system("hadd {INPUT}/{MASS}/batch_collected_{IDX}.root {INPUT}/{MASS}/higgsCombine-obs.Asymptotic.mH{MASS}-*{IDX}.root".format(
+            os.system("hadd -f {INPUT}/{MASS}/batch_collected_{IDX}.root {INPUT}/{MASS}/higgsCombine-obs.Asymptotic.mH{MASS}-*{IDX}.root".format(
                 INPUT=input,
                 MASS=mass,
                 IDX=idx
                 ))
-        os.system("hadd {INPUT}/{MASS}/batch_collected.root {INPUT}/{MASS}/batch_collected_*.root".format(
+        os.system("hadd -f {INPUT}/{MASS}/batch_collected.root {INPUT}/{MASS}/batch_collected_*.root".format(
             INPUT=input,
             MASS=mass,
             IDX=idx
