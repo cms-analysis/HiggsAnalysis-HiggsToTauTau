@@ -3,9 +3,6 @@ emu_nobtag	signal,EWK              	lumi_8TeV            		1.042
 emu_nobtag	signal,background 		CMS_eff_e 			1.02
 emu_nobtag 	signal,Ztt	 		CMS_scale_e_8TeV 		1.00
 emu_nobtag	signal,background 		CMS_eff_m 			1.02
-emu_nobtag	ggH				CMS_scale_j_8TeV		0.98
-emu_nobtag	bbH				CMS_scale_j_8TeV		0.95
-emu_nobtag	EWK,ttbar			CMS_scale_j_8TeV		0.99
 emu_nobtag	signal,EWK,ttbar      		CMS_htt_scale_met_8TeV		1.05
 emu_nobtag	signal,EWK,ttbar 		CMS_eff_b_8TeV 			0.98
 emu_nobtag	signal,EWK,ttbar 		CMS_fake_b_8TeV 		0.98

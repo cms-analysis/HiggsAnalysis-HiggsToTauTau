@@ -9,8 +9,8 @@ emu_btag	signal,EWK,ttbar                CMS_fake_b_8TeV                 1.02
 emu_btag	signal,EWK,ttbar      		CMS_htt_scale_met_8TeV		1.05
 emu_btag	Ztt				CMS_htt_zttNorm_8TeV 		1.03
 emu_btag	Ztt                             CMS_htt_extrap_ztt_btag_8TeV	1.01
-emu_btag	ttbar				CMS_htt_ttbarNorm_8TeV		1.075
-emu_btag	EWK				CMS_htt_DiBosonNorm_8TeV	1.10
+emu_btag	ttbar				CMS_htt_ttbarNorm_8TeV		1.10
+emu_btag	EWK				CMS_htt_DiBosonNorm_8TeV	1.15
 emu_btag	Fakes				CMS_htt_fakes_em_8TeV		1.30
 emu_btag	Fakes				CMS_htt_fakes_em_btag_8TeV	1.09
 emu_btag	ttbar     		  	CMS_htt_ttbar_emb_8TeV 		1.02
