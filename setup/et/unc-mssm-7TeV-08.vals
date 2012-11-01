@@ -4,10 +4,6 @@ eleTau_nobtag			signal	  	            	lumi_7TeV            				1.022
 eleTau_nobtag		 	signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_e 					1.02
 eleTau_nobtag		 	signal,ZTT,TT,VV 			CMS_eff_t_7TeV 					1.08
 eleTau_nobtag		 	signal,ZTT			CMS_scale_t_etau_7TeV 				1.00
-eleTau_nobtag        	        ggH				CMS_scale_j_7TeV				0.94
-eleTau_nobtag        	        bbH				CMS_scale_j_7TeV				0.92
-eleTau_nobtag        	        TT				CMS_scale_j_7TeV				0.99
-eleTau_nobtag        	        VV				CMS_scale_j_7TeV				0.95
 eleTau_nobtag	 		signal,ZL,ZJ	   		CMS_htt_scale_met_7TeV				1.05
 eleTau_nobtag	 		TT		    		CMS_htt_scale_met_7TeV				1.07
 eleTau_nobtag	 		VV    				CMS_htt_scale_met_7TeV				1.07
@@ -16,9 +12,9 @@ eleTau_nobtag			signal,ZJ,ZL,TT,VV 		CMS_fake_b_7TeV					0.99
 eleTau_nobtag			ZTT,ZL,ZJ			CMS_htt_zttNorm_7TeV 				1.03
 eleTau_nobtag			TT				CMS_htt_ttbarNorm_7TeV				1.08
 eleTau_nobtag			VV				CMS_htt_DiBosonNorm_7TeV			1.15
-eleTau_nobtag			W				CMS_htt_WNorm_etau_nobtag_7TeV 		1.20
+eleTau_nobtag			W				CMS_htt_WNorm_etau_nobtag_7TeV 		1.10
 eleTau_nobtag                 QCD				CMS_htt_QCDSyst_etau_nobtag_7TeV		1.10
 eleTau_nobtag			ZJ				CMS_htt_ZJetFakeTau_etau_nobtag_7TeV      	1.20
-eleTau_nobtag			ZL				CMS_htt_ZLeptonFakeTau_etau_low_7TeV		1.20
+eleTau_nobtag			ZL				CMS_htt_ZLeptonFakeTau_etau_7TeV		1.20
 #eleTau_nobtag			ZL				CMS_htt_ZEEShape_etau_7TeV			1.00    
 
