@@ -319,7 +319,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   canv0->cd();
 
   TH1F* zero = (TH1F*)ref ->Clone("zero"); zero->Clear();
-  TH1F* rat1 = (TH1F*)data->Clone("rat1"); 
+  TH1F* rat1 = (TH1F*)data->Clone("rat"); 
   rat1->Divide(Ztt);
   for(int ibin=0; ibin<rat1->GetNbinsX(); ++ibin){
     if(rat1->GetBinContent(ibin+1)>0){
