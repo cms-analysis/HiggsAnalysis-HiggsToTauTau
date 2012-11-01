@@ -16,6 +16,7 @@
 
 #include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
+$DEFINE_DROP_SIGNAL
 $DEFINE_MSSM
 
 /**
@@ -108,12 +109,14 @@ void rescale(TH1F* hin, unsigned int idx)
   case 8: // bbH
   ${MSSM}bbH160
 #else
+#ifndef DROP_SIGNAL
   case 7: // ggH
   ${SM}ggH125
   case 8: // qqH
   ${SM}qqH125
   case 9: // VH
   ${SM}VH125
+#endif
 #endif
   default :
     std::cout << "error histograms not known?!?" << std::endl;
@@ -144,9 +147,11 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH160"  , directory)), "ggH"  ); InitSignal(ggH); ggH->Scale(ggHScale);
   TH1F* bbH    = refill((TH1F*)input->Get(TString::Format("%s/bbH160"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale(bbHScale);
 #else
+#ifndef DROP_SIGNAL
   TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125"  , directory)), "ggH"  ); InitSignal(ggH); //ggH->Scale(5);
   TH1F* qqH    = refill((TH1F*)input->Get(TString::Format("%s/qqH125"  , directory)), "qqH"  ); InitSignal(qqH); //qqH->Scale(5);
   TH1F* VH     = refill((TH1F*)input->Get(TString::Format("%s/VH125"   , directory)), "VH"   ); InitSignal(VH ); //VH ->Scale(5);
+#endif
 #endif
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data", true);
   InitHist(data, "#bf{m_{#tau#tau} [GeV]}", "#bf{dN/dm_{#tau#tau} [1/GeV]}"); InitData(data);
@@ -170,9 +175,11 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   unscaled[7] = bbH  ->Integral();
   unscaled[8] = 0;
 #else
+#ifndef DROP_SIGNAL
   unscaled[6] = ggH  ->Integral();
   unscaled[7] = qqH  ->Integral();
   unscaled[8] = VH   ->Integral();
+#endif
 #endif
   
   if(scaled){
@@ -186,9 +193,11 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
     rescale(ggH,   7);
     rescale(bbH,   8);
 #else
+#ifndef DROP_SIGNAL
     rescale(ggH,   7);
     rescale(qqH,   8);
     rescale(VH,   9);
+#endif
 #endif
   }
 
@@ -213,12 +222,14 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   scales[8] = new TH1F("scales-NONE" , "", 9, 0, 9);
   scales[8]->SetBinContent(9, 0.);
 #else
+#ifndef DROP_SIGNAL
   scales[6] = new TH1F("scales-ggH"  , "", 9, 0, 9);
   scales[6]->SetBinContent(7, unscaled[6]>0 ? (ggH  ->Integral()/unscaled[4]-1.) : 0.);
   scales[7] = new TH1F("scales-qqH"  , "", 9, 0, 9);
   scales[7]->SetBinContent(8, unscaled[7]>0 ? (qqH  ->Integral()/unscaled[5]-1.) : 0.);
   scales[8] = new TH1F("scales-VH"   , "", 9, 0, 9);
   scales[8]->SetBinContent(9, unscaled[8]>0 ? (VH   ->Integral()/unscaled[6]-1.) : 0.);
+#endif
 #endif
 
   ZMM->Add(ZTT);
@@ -230,8 +241,10 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 #ifdef MSSM
     ggH  ->Add(bbH);
 #else
+#ifndef DROP_SIGNAL
     qqH  ->Add(VH );
     ggH  ->Add(qqH);
+#endif
 #endif
   }
   else{
@@ -239,9 +252,11 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
     bbH  ->Add(WJets);
     ggH  ->Add(bbH);
 #else
+#ifndef DROP_SIGNAL
     VH   ->Add(WJets);
     qqH  ->Add(VH );
     ggH  ->Add(qqH);
+#endif
 #endif
   }
 
@@ -283,11 +298,15 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
     TTJ->Draw("histsame");
     ZMM->Draw("histsame");
     ZTT->Draw("histsame");
+#ifndef DROP_SIGNAL
     ggH->Draw("histsame");
+#endif
     $DRAW_ERROR
   }
   else{
+#ifndef DROP_SIGNAL
     ggH  ->Draw("histsame");
+#endif
     //WJets->Draw("histsame");
     Dibosons->Draw("histsame");
     QCD->Draw("histsame");
@@ -309,7 +328,9 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 #else
   TLegend* leg = new TLegend(0.50, 0.65, 0.95, 0.90);
   SetLegendStyle(leg);
+#ifndef DROP_SIGNAL
   leg->AddEntry(ggH  , "H(125 GeV)#rightarrow#tau#tau" , "L" );
+#endif
   //leg->AddEntry(ggH  , "5#timesH(125 GeV)#rightarrow#tau#tau" , "L" );
 #endif
   leg->AddEntry(data , "observed"                    , "LP");
@@ -416,10 +437,11 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   InitHist  (scales[3], "", "", kRed    + 2, 1001);
   InitHist  (scales[4], "", "", kBlue   - 8, 1001);
   InitHist  (scales[5], "", "", kOrange - 4, 1001);  
+#ifndef DROP_SIGNAL
   InitSignal(scales[6]);
   InitSignal(scales[7]);
   InitSignal(scales[8]);
-
+#endif
   scales[0]->Draw();
   scales[0]->GetXaxis()->SetBinLabel(1, "#bf{ZTT}");
   scales[0]->GetXaxis()->SetBinLabel(2, "#bf{ZMM}"  );
@@ -445,9 +467,11 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   scales[3]->Draw("same");
   scales[4]->Draw("same");
   scales[5]->Draw("same");
+#ifndef DROP_SIGNAL
   scales[6]->Draw("same");
   scales[7]->Draw("same");
   scales[8]->Draw("same");
+#endif
   zero->Draw("same");
   canv2->RedrawAxis();
 
@@ -481,9 +505,11 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   ggH  ->Write("ggH"     );
   bbH  ->Write("bbH"     );
 #else
+#ifndef DROP_SIGNAL
   ggH  ->Write("ggH"     );
   qqH  ->Write("qqH"     );
   VH   ->Write("VH"      );
+#endif
 #endif
   if(errorBand){
     errorBand->Write("errorBand");
