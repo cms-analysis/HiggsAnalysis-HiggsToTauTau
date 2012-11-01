@@ -4,10 +4,6 @@ muTau_nobtag			signal	  	            	lumi_7TeV            				1.022
 muTau_nobtag		 	signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_m 					1.02
 muTau_nobtag		 	signal,ZTT,TT,VV 		CMS_eff_t_7TeV 					1.08
 muTau_nobtag		 	signal,ZTT			CMS_scale_t_mutau_7TeV 				1.00
-muTau_nobtag        	        ggH				CMS_scale_j_7TeV				0.98
-muTau_nobtag        	        bbH				CMS_scale_j_7TeV				0.92
-muTau_nobtag        	        TT				CMS_scale_j_7TeV				1.01
-muTau_nobtag        	        VV				CMS_scale_j_7TeV				0.97
 muTau_nobtag	 		signal,ZL,ZJ	   		CMS_htt_scale_met_7TeV				1.05
 muTau_nobtag	 		TT		    		CMS_htt_scale_met_7TeV				1.07
 muTau_nobtag	 		VV    				CMS_htt_scale_met_7TeV				1.07
@@ -15,7 +11,7 @@ muTau_nobtag			signal,ZJ,ZL,TT,VV 		CMS_eff_b_7TeV 					0.99
 muTau_nobtag			signal,ZJ,ZL,TT,VV 		CMS_fake_b_7TeV					0.99
 muTau_nobtag			ZTT,ZL,ZJ			CMS_htt_zttNorm_7TeV 				1.03
 muTau_nobtag			TT				CMS_htt_ttbarNorm_7TeV				1.08
-muTau_nobtag			W				CMS_htt_WNorm_mutau_nobtag_7TeV 		1.20
+muTau_nobtag			W				CMS_htt_WNorm_mutau_nobtag_7TeV 		1.10
 muTau_nobtag			VV				CMS_htt_DiBosonNorm_7TeV			1.15
 muTau_nobtag                  QCD				CMS_htt_QCDSyst_mutau_nobtag_7TeV		1.10
 muTau_nobtag			ZJ				CMS_htt_ZJetFakeTau_mutau_nobtag_7TeV      	1.20
