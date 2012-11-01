@@ -21,10 +21,10 @@ cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1", t
 cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
 parser.add_option_group(cats1)
 cats2 = OptionGroup(parser, "MSSM EVENT CATEGORIES", "Event categories to be used for the MSSM analysis.")
-cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="0 1 2 3 6 7", type="string", help="List mm of event categories. [Default: \"0 1 2 3 6 7\"]")
-cats2.add_option("--mssm-categories-em", dest="em_mssm_categories", default="0 1 2 3 6 7", type="string", help="List em of event categories. [Default: \"0 1 2 3 6 7\"]")
-cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="0 1 2 3 6 7", type="string", help="List mt of event categories. [Default: \"0 1 2 3 6 7\"]")
-cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="0 1 2 3 6 7", type="string", help="List et of event categories. [Default: \"0 1 2 3 6 7\"]")
+cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="8 9", type="string", help="List mm of event categories. [Default: \"8 9\"]")
+cats2.add_option("--mssm-categories-em", dest="em_mssm_categories", default="8 9", type="string", help="List em of event categories. [Default: \"8 9\"]")
+cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="8 9", type="string", help="List mt of event categories. [Default: \"8 9\"]")
+cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9", type="string", help="List et of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
 cats2.add_option("--mssm-categories-hmm", dest="hmm_mssm_categories", default="0 1", type="string", help="List of hmm event categories. [Default: \"0 1\"]")
 parser.add_option_group(cats2)
@@ -102,6 +102,7 @@ class Analysis:
              ## prepare first lines of macro
              line = line.replace("$CMSSW_BASE", os.environ['CMSSW_BASE'])
              line = line.replace("$DEFINE_MSSM", "#define MSSM" if self.analysis == "mssm" else "")
+             line = line.replace("$DEFINE_DROP_SIGNAL", "#define DROP_SIGNAL" if '0jet' in self.category else "")
              line = line.replace("$DEFINE_EXTRA_SAMPLES", "#define EXTRA_SAMPLES" if self.high_stat_category(self.category) else "")
              line = line.replace(template_name, output_name)
              line = line.replace("$HISTFILE", self.histfile)
@@ -174,7 +175,7 @@ class Analysis:
                        hist = input.Get(histname)
                        hist_down = input.Get(histname+"_"+shape_name+"Down")
                        hist_up = input.Get(histname+"_"+shape_name+"Up")
-                       if not hist:
+                       if not hist or not hist_down or not hist_up :
                          continue
                        for bin in range(1,hist.GetNbinsX()+1):
 		         shift = self.process_shape_weight[curr_name][shape_name]
