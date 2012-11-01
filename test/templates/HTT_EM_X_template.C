@@ -16,6 +16,7 @@
 
 #include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
+$DEFINE_DROP_SIGNAL
 $DEFINE_MSSM
 
 /**
@@ -47,7 +48,7 @@ float maximum(TH1F* h, bool LOG=false){
   else{
     if(h->GetMaximum()>  12){ return 10.*TMath::Nint((1.3*h->GetMaximum()/10.)); }
     if(h->GetMaximum()> 1.2){ return TMath::Nint((1.6*h->GetMaximum())); }
-    return 1.3*h->GetMaximum(); 
+    return 1.6*h->GetMaximum(); 
   }
 }
 
@@ -103,12 +104,14 @@ void rescale(TH1F* hin, unsigned int idx)
   case 6: // bbH
   ${MSSM}bbH160
 #else
+#ifndef DROP_SIGNAL
   case 5: // ggH
   ${SM}ggH125
   case 6: // qqH
   ${SM}qqH125
   case 7: // VH
   ${SM}VH125
+#endif
 #endif
   default :
     std::cout << "error histograms not known?!?" << std::endl;
@@ -132,14 +135,16 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/Ztt"     , directory)), "Ztt"  ); InitHist(Ztt  , "", "", kOrange - 4, 1001);
 #ifdef MSSM
   float ggHScale = 1., bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=8, times 10 for the time being
-  if(std::string(inputfile).find("7TeV")!=std::string::npos){ ggHScale = 10*130.*0.11/1000.; bbHScale = 10*403.*0.11/1000.; }
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){ ggHScale = 10*169.*0.11/1000.; bbHScale = 10*537.*0.11/1000.; }
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){ ggHScale = 10*1300.*0.11/1000.; bbHScale = 10*4030.*0.11/1000.; }
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){ ggHScale = 10*1690.*0.11/1000.; bbHScale = 10*5370.*0.11/1000.; }
   TH1F* ggH  = refill((TH1F*)input->Get(TString::Format("%s/ggH160"  , directory)), "ggH"  ); InitSignal(ggH); ggH->Scale(ggHScale);
   TH1F* bbH  = refill((TH1F*)input->Get(TString::Format("%s/bbH160"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale(bbHScale);
 #else
+#ifndef DROP_SIGNAL
   TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125"  , directory)), "ggH"  ); InitSignal(ggH); //ggH->Scale(5);
   TH1F* qqH    = refill((TH1F*)input->Get(TString::Format("%s/qqH125"  , directory)), "qqH"  ); InitSignal(qqH); //qqH->Scale(5);
   TH1F* VH     = refill((TH1F*)input->Get(TString::Format("%s/VH125"   , directory)), "VH"   ); InitSignal(VH ); //VH ->Scale(5);
+#endif
 #endif
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data", true);
   InitHist(data, "#bf{m_{#tau#tau} [GeV]}", "#bf{dN/dm_{#tau#tau} [1/GeV]}"); InitData(data);
@@ -159,9 +164,11 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   unscaled[5] = bbH  ->Integral();
   unscaled[6] = 0;
 #else
+#ifndef DROP_SIGNAL
   unscaled[4] = ggH  ->Integral();
   unscaled[5] = qqH  ->Integral();
   unscaled[6] = VH   ->Integral();
+#endif
 #endif
 
   if(scaled){
@@ -173,9 +180,11 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
     rescale(ggH,   5);
     rescale(bbH,   6);
 #else
+#ifndef DROP_SIGNAL
     rescale(ggH,   5);
     rescale(qqH,   6);
     rescale(VH,    7);
+#endif
 #endif
   }
 
@@ -196,12 +205,14 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   scales[6] = new TH1F("scales-NONE" , "", 7, 0, 7);
   scales[6]->SetBinContent(7, 0.);
 #else
+#ifndef DROP_SIGNAL
   scales[4] = new TH1F("scales-ggH"  , "", 7, 0, 7);
   scales[4]->SetBinContent(5, unscaled[4]>0 ? (ggH  ->Integral()/unscaled[4]-1.) : 0.);
   scales[5] = new TH1F("scales-qqH"  , "", 7, 0, 7);
   scales[5]->SetBinContent(6, unscaled[5]>0 ? (qqH  ->Integral()/unscaled[5]-1.) : 0.);
   scales[6] = new TH1F("scales-VH"   , "", 7, 0, 7);
   scales[6]->SetBinContent(7, unscaled[6]>0 ? (VH   ->Integral()/unscaled[6]-1.) : 0.);
+#endif
 #endif
 
   EWK  ->Add(Fakes);
@@ -211,8 +222,10 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 #ifdef MSSM
     ggH  ->Add(bbH);
 #else
+#ifndef DROP_SIGNAL
     qqH  ->Add(VH );
     ggH  ->Add(qqH);
+#endif
 #endif
   }
   else{
@@ -220,9 +233,11 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
     bbH  ->Add(Ztt);
     ggH  ->Add(bbH);
 #else
+#ifndef DROP_SIGNAL
     VH   ->Add(Ztt);
     qqH  ->Add(VH );
     ggH  ->Add(qqH);
+#endif
 #endif
   }
 
@@ -233,7 +248,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   canv->cd();
   if(log){ canv->SetLogy(1); }
 #if defined MSSM
-  data->GetXaxis()->SetRange(0, data->FindBin(500));
+  data->GetXaxis()->SetRange(0, data->FindBin(1000));
 #else
   data->GetXaxis()->SetRange(0, data->FindBin(350));
 #endif
@@ -254,11 +269,15 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
     ttbar->Draw("histsame");
     EWK  ->Draw("histsame");
     Fakes->Draw("histsame");
+#ifndef DROP_SIGNAL
     ggH  ->Draw("histsame");
+#endif
     $DRAW_ERROR
   }
   else{
+#ifndef DROP_SIGNAL
     ggH  ->Draw("histsame");
+#endif
     Ztt  ->Draw("histsame");
     ttbar->Draw("histsame");
     EWK  ->Draw("histsame");
@@ -277,7 +296,9 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 #else
   TLegend* leg = new TLegend(0.50, 0.65, 0.95, 0.90);
   SetLegendStyle(leg);
+#ifndef DROP_SIGNAL
   leg->AddEntry(ggH  , "H(125 GeV)#rightarrow#tau#tau" , "L" );
+#endif
   //leg->AddEntry(ggH  , "5#timesH(125 GeV)#rightarrow#tau#tau" , "L" );
 #endif
   leg->AddEntry(data , "observed"                       , "LP");
@@ -381,10 +402,11 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   InitHist  (scales[1], "", "", kRed    + 2, 1001);
   InitHist  (scales[2], "", "", kBlue   - 8, 1001);
   InitHist  (scales[3], "", "", kOrange - 4, 1001);
+#ifndef DROP_SIGNAL
   InitSignal(scales[4]);
   InitSignal(scales[5]);
   InitSignal(scales[6]);
-
+#endif
   scales[0]->Draw();
   scales[0]->GetXaxis()->SetBinLabel(1, "#bf{Fakes}");
   scales[0]->GetXaxis()->SetBinLabel(2, "#bf{EWK}"  );
@@ -406,9 +428,11 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   scales[1]->Draw("same");
   scales[2]->Draw("same");
   scales[3]->Draw("same");
+#ifndef DROP_SIGNAL
   scales[4]->Draw("same");
   scales[5]->Draw("same");
   scales[6]->Draw("same");
+#endif
   zero->Draw("same");
   canv2->RedrawAxis();
 
@@ -439,9 +463,14 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   ggH  ->Write("ggH"     );
   bbH  ->Write("bbH"     );
 #else
+#ifndef DROP_SIGNAL
   ggH  ->Write("ggH"     );
   qqH  ->Write("qqH"     );
   VH   ->Write("VH"      );
 #endif
+#endif
+  if(errorBand){
+    errorBand->Write("errorBand");
+  }
   output->Close();
 }

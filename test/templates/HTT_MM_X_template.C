@@ -48,7 +48,7 @@ float maximum(TH1F* h, bool LOG=false){
   else{
     if(h->GetMaximum()>  12){ return 10.*TMath::Nint((1.3*h->GetMaximum()/10.)); }
     if(h->GetMaximum()> 1.2){ return TMath::Nint((1.6*h->GetMaximum())); }
-    return 1.3*h->GetMaximum(); 
+    return 1.6*h->GetMaximum(); 
   }
 }
 
@@ -261,7 +261,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   canv->cd();
   if(log){ canv->SetLogy(1); }
 #if defined MSSM
-  data->GetXaxis()->SetRange(0, data->FindBin(500));
+  data->GetXaxis()->SetRange(0, data->FindBin(1000));
 #else
   data->GetXaxis()->SetRange(0, data->FindBin(350));
 #endif
@@ -485,5 +485,8 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   qqH  ->Write("qqH"     );
   VH   ->Write("VH"      );
 #endif
+  if(errorBand){
+    errorBand->Write("errorBand");
+  }
   output->Close();
 }
