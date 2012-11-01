@@ -171,7 +171,7 @@ if not options.skip_limits :
     #os.system("mkdir {DIR}/sm".format(DIR=limits))
     #if os.path.exists(limits+'/mssm') :
     #    os.system("rm -r {DIR}/mssm".format(DIR=limits))
-    os.system("mkdir {DIR}/mssm".format(DIR=limits))
+    #os.system("mkdir {DIR}/mssm".format(DIR=limits))
     for ana in ['hcp', 'hcp-bin-by-bin', 'hcp-mvis', 'hcp-ichep', 'hcp-mssm'] :
         label = ""
         if not ana == 'hcp-mssm':
@@ -185,6 +185,15 @@ if not options.skip_limits :
                     OUTPUT=limits,
                     MASSES=masses
                     ))
+                if ana == 'hcp-bin-by-bin' :
+                    for per in ['7TeV', '8TeV'] :
+                        os.system("setup-htt.py -i aux/sm/{ANA} -o {OUTPUT}/sm/{ANA}-{PER} -p {PER} -a sm -c 'em et mt mm tt' {LABEL} {MASSES}".format(
+                            ANA=ana,
+                            PER=per,
+                            LABEL=label,
+                            OUTPUT=limits,
+                            MASSES=masses
+                            ))                    
         else:
             if not options.skip_mssm :    
                 print "setup limits structure for:", ana, "mssm"
