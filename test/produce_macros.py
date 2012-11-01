@@ -245,6 +245,8 @@ category_mapping_classic = {
     "5" : "vbf",
     "6" : "btag_low",
     "7" : "btag_high",
+    "8" : "nobtag",
+    "9" : "btag",
     }
 category_mapping_tautau = {
     "0" : "boost",
