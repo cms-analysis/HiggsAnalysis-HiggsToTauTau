@@ -145,7 +145,7 @@ if not options.skip_datacards :
     #if os.path.exists(datacards+'/mssm') :
     #    os.system("rm -r {DIR}/mssm".format(DIR=datacards))
     #os.system("mkdir {DIR}/mssm".format(DIR=datacards))
-    for ana in ['hcp', 'hcp-bin-by-bin', 'hcp-mvis', 'hcp-ichep'] :
+    for ana in ['hcp', 'hcp-bin-by-bin', 'hcp-mvis', 'hcp-ichep', 'hcp-mssm'] :
         if not options.skip_sm :
             print "setup datacards for:", ana, "sm"  
             os.system("setup-datacards.py -i setups/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt mm tt' {MASSES}".format(
@@ -153,7 +153,7 @@ if not options.skip_datacards :
                 OUTPUT=datacards,
                 MASSES=masses
                 ))
-        if ana == 'hcp-bin-by-bin' :
+        if ana == 'hcp-mssm' :
             if not options.skip_mssm :
                 print "setup datacards for:", ana, "mssm"  
                 os.system("setup-datacards.py -i setups/{ANA} -o {OUTPUT}/mssm/{ANA} -a mssm -c 'em et mt mm' 90 100-200:20 130 250-500:50 600-1000:100".format(
