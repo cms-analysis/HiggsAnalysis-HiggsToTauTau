@@ -34,7 +34,7 @@ float maximum(TH1F* h, bool LOG=false){
   else{
     if(h->GetMaximum()>  12){ return 10.*TMath::Nint((1.3*h->GetMaximum()/10.)); }
     if(h->GetMaximum()> 1.2){ return TMath::Nint((1.6*h->GetMaximum())); }
-    return 1.3*h->GetMaximum(); 
+    return 1.6*h->GetMaximum(); 
   }
 }
 
@@ -44,8 +44,14 @@ TH1F* refill(TH1F* hin, const char* sample)
 */
 {
   if(hin==0){
-    std::cout << "hist not found: " << sample << "  -- close here" << std::endl;
-    exit(1);  
+    std::cout << "hist not found: " << sample << " -- this may happen for samples of type signal." << std::endl;
+    if(std::string(sample).find("ggH")==std::string::npos){
+      std::cout << "hist is not of type signal, close here" << std::endl;
+      exit(1);
+    }
+    else{
+      return hin;
+    }
   }
   TH1F* hout = (TH1F*)hin->Clone(); hout->Clear();
   for(int i=0; i<hout->GetNbinsX(); ++i){
@@ -79,10 +85,10 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   TH1F* data   = (TH1F*)input->Get("data_obs"); 
   // determine channel for etau Z->ee (EWK) will be shown separated from the rest (EWK1)
   TH1F* EWK1   = 0;
-  std::cout << extra << std::endl;
   if(std::string(extra) == std::string("#tau_{e}#tau_{h}")){
     EWK1 = refill((TH1F*)input->Get("EWK1"),  "EWK1");
   }
+  TH1F* errorBand = (TH1F*)input->Get("errorBand");
 
   /*
     mass plot before and after fit
@@ -93,7 +99,7 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   //data->GetXaxis()->SetRange(0, 28);
   data->SetNdivisions(505);
   data->SetMinimum(min);
-  data->SetMaximum(max>0 ? max : maximum(Ztt, log));
+  data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(Ztt, log)));
   data->Draw("e");
 
   if(log){
@@ -104,10 +110,10 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
       EWK1->Draw("same");
     }
     Fakes->Draw("same");
-    ggH  ->Draw("same");
+    if(ggH){ ggH  ->Draw("same"); }
   }
   else{
-    ggH  ->Draw("same");
+    if(ggH){ ggH  ->Draw("same"); }
     Ztt  ->Draw("same");
     ttbar->Draw("same");
     EWK  ->Draw("same");
@@ -115,6 +121,9 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
       EWK1->Draw("same");
     }
     Fakes->Draw("same");
+  }
+  if(errorBand){
+    errorBand->Draw("e2same");
   }
   data->Draw("esame");
   canv->RedrawAxis();
@@ -128,7 +137,7 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
     leg->AddEntry(ggH  , "#phi(160 GeV)#rightarrow#tau#tau, tan#beta=8" , "L" );
   }
   else{
-    leg->AddEntry(ggH  , "5#timesH(125)#rightarrow#tau#tau" , "L" );
+    if(ggH){ leg->AddEntry(ggH  , "H(125)#rightarrow#tau#tau" , "L" ); }
   }
   leg->AddEntry(data , "observed"                       , "LP");
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
@@ -141,6 +150,9 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   }
   leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
   leg->AddEntry(Fakes, "QCD"                            , "F" );
+  if(errorBand){
+    leg->AddEntry(errorBand, "bkg. uncertainty" , "F" );
+  }
   leg->Draw();
 
   /*
