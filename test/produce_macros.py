@@ -149,10 +149,13 @@ class Analysis:
 		               if not process_name+str(bin) in uncertainties_set:
 			         uncertainties_set+=[process_name+str(bin)]
 		                 uncertainty = math.sqrt(self.process_uncertainties[curr_name])
-		                 out_line  = "hin->SetBinError(%(bin)i,hin->GetBinContent(%(bin)i)*%(uncertainty)f); \n" % {"bin":bin, "uncertainty":uncertainty}
-                                 output_file.write(out_line)
-                                 if options.verbose :
-                                     print out_line
+				 if uncertainty>0:
+		                   out_line  = "hin->SetBinError(%(bin)i,hin->GetBinContent(%(bin)i)*%(uncertainty)f); \n" % {"bin":bin, "uncertainty":uncertainty}
+                                   output_file.write(out_line)
+                                   if options.verbose :
+                                       print out_line
+				 elif options.verbose:
+			            print "WARNING: There is a zero yield uncertainty. Maybe you are missing uncertainties in the datacards which are in the fitresult in",self.analysis,self.category,". Please check."
 	     if options.shapes:
                for process_name in self.process_shape_weight.keys():
                  if self.signal_process(process_name) :
