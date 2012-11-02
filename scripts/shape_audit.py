@@ -12,6 +12,9 @@ import fnmatch
 import os
 import ROOT
 
+ROOT.gROOT.SetBatch(True)
+ROOT.gStyle.SetOptStat('111111111')
+
 def walk(inputdir):
     ''' Recursive function which generates (path, subdirs, histos) '''
     directories = []
@@ -96,6 +99,7 @@ if __name__ == "__main__":
 
         for i, shape in enumerate(bkgs + signals):
             histo = input_file.Get(os.path.join(path, shape))
+            histo.SetStats(True)
             histo.SetLineColor(ROOT.EColor.kBlack)
             # Different color for signals
             if shape in signals:
