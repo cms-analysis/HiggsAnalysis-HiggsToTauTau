@@ -8,7 +8,7 @@
 #include "TGraph.h"
 #include "TString.h"
 
-#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_3_3/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
 void scan2D(const char* path, std::string xval="r_ggH", int xbin=10, float xmin=0., float xmax=20., std::string yval="r_bbH", int ybin=10, float ymin=0., float ymax=20., bool mssm=true)
 {
