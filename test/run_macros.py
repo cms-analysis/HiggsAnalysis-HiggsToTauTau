@@ -16,10 +16,10 @@ cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1", t
 cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
 parser.add_option_group(cats1)
 cats2 = OptionGroup(parser, "MSSM EVENT CATEGORIES", "Event categories to be used for the MSSM analysis.")
-cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="0 1 2 3 6 7", type="string", help="List mm of event categories. [Default: \"0 1 2 3 6 7\"]")
-cats2.add_option("--mssm-categories-em", dest="em_mssm_categories", default="0 1 2 3 6 7", type="string", help="List em of event categories. [Default: \"0 1 2 3 6 7\"]")
-cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="0 1 2 3 6 7", type="string", help="List mt of event categories. [Default: \"0 1 2 3 6 7\"]")
-cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="0 1 2 3 6 7", type="string", help="List et of event categories. [Default: \"0 1 2 3 6 7\"]")
+cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="8 9", type="string", help="List mm of event categories. [Default: \"8 9\"]")
+cats2.add_option("--mssm-categories-em", dest="em_mssm_categories", default="8 9", type="string", help="List em of event categories. [Default: \"8 9\"]")
+cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="8 9", type="string", help="List mt of event categories. [Default: \"8 9\"]")
+cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9", type="string", help="List et of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
 cats2.add_option("--mssm-categories-hmm", dest="hmm_mssm_categories", default="0 1", type="string", help="List of hmm event categories. [Default: \"0 1\"]")
 parser.add_option_group(cats2)
@@ -68,8 +68,8 @@ log = {
     ("em", "5") : "false",
     ("em", "6") : "false",
     ("em", "7") : "false",
-    ("em", "8") : "false",
-    ("em", "9") : "false", 
+    ("em", "8") : "true",
+    ("em", "9") : "true", 
     ("mt", "0") : "false", 
     ("mt", "1") : "false", 
     ("mt", "2") : "false",
@@ -77,8 +77,8 @@ log = {
     ("mt", "5") : "false",
     ("mt", "6") : "false",
     ("mt", "7") : "false",
-    ("mt", "8") : "false",
-    ("mt", "9") : "false",
+    ("mt", "8") : "true",
+    ("mt", "9") : "true",
     ("et", "0") : "false"   if options.analysis == "sm" else  "false",
     ("et", "1") : "false"   if options.analysis == "sm" else  "false", 
     ("et", "2") : "false"   if options.analysis == "sm" else  "false", 
@@ -86,8 +86,8 @@ log = {
     ("et", "5") : "false",
     ("et", "6") : "false",
     ("et", "7") : "false",
-    ("et", "8") : "false",
-    ("et", "9") : "false",
+    ("et", "8") : "true",
+    ("et", "9") : "true",
     ("tt", "0") : "false",
     ("tt", "1") : "false",
     ("mm", "0") : "false", 
@@ -97,8 +97,8 @@ log = {
     ("mm", "5") : "false",
     ("mm", "6") : "false",
     ("mm", "7") : "false",
-    ("mm", "8") : "false",
-    ("mm", "9") : "false",
+    ("mm", "8") : "true",
+    ("mm", "9") : "true",
     }
 
 max = {
@@ -150,8 +150,8 @@ min = {
     ("em", "5") : "0.",
     ("em", "6") : "0.",
     ("em", "7") : "0.",
-    ("em", "8") : "0.",
-    ("em", "9") : "0.",
+    ("em", "8") : "1e-3",
+    ("em", "9") : "1e-3",
     ("mt", "0") : "0.",
     ("mt", "1") : "0.", 
     ("mt", "2") : "0.",
@@ -159,8 +159,8 @@ min = {
     ("mt", "5") : "0.",
     ("mt", "6") : "0.",
     ("mt", "7") : "0.",
-    ("mt", "8") : "0.",
-    ("mt", "9") : "0.",
+    ("mt", "8") : "1e-3",
+    ("mt", "9") : "1e-3",
     ("et", "0") : "0."     if options.analysis == "sm" else  "0.",
     ("et", "1") : "0."     if options.analysis == "sm" else  "0.",
     ("et", "2") : "0."     if options.analysis == "sm" else  "0.",
@@ -168,8 +168,8 @@ min = {
     ("et", "5") : "0.",
     ("et", "6") : "0.",
     ("et", "7") : "0.",
-    ("et", "8") : "0.",
-    ("et", "9") : "0.",
+    ("et", "8") : "1e-3",
+    ("et", "9") : "1e-3",
     ("tt", "0") : "0.",
     ("tt", "1") : "0.",
     ("mm", "0") : "0.",
@@ -179,8 +179,8 @@ min = {
     ("mm", "5") : "0.",
     ("mm", "6") : "0.",
     ("mm", "7") : "0.",
-    ("mm", "8") : "0.",
-    ("mm", "9") : "0.",
+    ("mm", "8") : "1e-3",
+    ("mm", "9") : "1e-3",
     }
 
 for chn in channels :

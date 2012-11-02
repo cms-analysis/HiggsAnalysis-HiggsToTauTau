@@ -35,8 +35,8 @@ categories_mssm = [
     #"boost_low",
     #"boost_high",
     #"boost",
-    "btag_low",
-    "btag_high",
+    "nobtag",
+    "btag",
     ] 
 
 extra = {
@@ -47,14 +47,16 @@ extra = {
     }
 
 log = {
-    ("emu"    , "0jet_low"  ) : "true",
+    ("emu"    , "0jet_low"  ) : "false",
     ("emu"    , "0jet_high" ) : "false",
-    ("emu"    , "0jet"      ) : "true", 
+    ("emu"    , "0jet"      ) : "false", 
     ("emu"    , "boost_low" ) : "false",
     ("emu"    , "boost_high") : "false",
     ("emu"    , "boost"     ) : "false",
     ("emu"    , "btag_low"  ) : "false",
     ("emu"    , "btag_high" ) : "false",
+    ("emu"    , "nobtag"    ) : "true",
+    ("emu"    , "btag"      ) : "true",
     ("emu"    , "vbf"       ) : "false",
     ("muTau"  , "0jet_low"  ) : "false",
     ("muTau"  , "0jet_high" ) : "false",
@@ -64,6 +66,8 @@ log = {
     ("muTau"  , "boost"     ) : "false",
     ("muTau"  , "btag_low"  ) : "false",
     ("muTau"  , "btag_high" ) : "false",
+    ("muTau"  , "nobtag"    ) : "true",
+    ("muTau"  , "btag"      ) : "true",
     ("muTau"  , "vbf"       ) : "false",
     ("eleTau" , "0jet_low"  ) : "false",
     ("eleTau" , "0jet_high" ) : "false",
@@ -73,6 +77,8 @@ log = {
     ("eleTau" , "boost"     ) : "false",
     ("eleTau" , "btag_low"  ) : "false",
     ("eleTau" , "btag_high" ) : "false",
+    ("eleTau" , "nobtag"    ) : "true",
+    ("eleTau" , "btag"      ) : "true",
     ("eleTau" , "vbf"       ) : "false",
     ("mumu"   , "0jet_low"  ) : "true",
     ("mumu"   , "0jet_high" ) : "true",
@@ -82,6 +88,8 @@ log = {
     ("mumu"   , "boost"     ) : "true",
     ("mumu"   , "btag_low"  ) : "true",
     ("mumu"   , "btag_high" ) : "true",
+    ("mumu"   , "nobtag"    ) : "true",
+    ("mumu"   , "btag"      ) : "true",
     ("mumu"   , "vbf"       ) : "false",    
     }
 
@@ -94,6 +102,8 @@ max = {
     ("emu"    , "boost"     ) : "-1",
     ("emu"    , "btag_low"  ) : "-1",
     ("emu"    , "btag_high" ) : "-1",
+    ("emu"    , "nobtag"    ) : "-1",
+    ("emu"    , "btag"      ) : "-1",
     ("emu"    , "vbf"       ) : "-1",
     ("muTau"  , "0jet_low"  ) : "-1",
     ("muTau"  , "0jet_high" ) : "-1",
@@ -103,6 +113,8 @@ max = {
     ("muTau"  , "boost"     ) : "-1",
     ("muTau"  , "btag_low"  ) : "-1",
     ("muTau"  , "btag_high" ) : "-1",
+    ("muTau"  , "nobtag"    ) : "-1",
+    ("muTau"  , "btag"      ) : "-1",
     ("muTau"  , "vbf"       ) : "-1", 
     ("eleTau" , "0jet_low"  ) : "-1",
     ("eleTau" , "0jet_high" ) : "-1",
@@ -112,6 +124,8 @@ max = {
     ("eleTau" , "boost"     ) : "-1",
     ("eleTau" , "btag_low"  ) : "-1",
     ("eleTau" , "btag_high" ) : "-1",
+    ("eleTau" , "nobtag"    ) : "-1",
+    ("eleTau" , "btag"      ) : "-1",
     ("eleTau" , "vbf"       ) : "-1",
     ("mumu"   , "0jet_low"  ) : "-1",
     ("mumu"   , "0jet_high" ) : "-1",
@@ -121,6 +135,8 @@ max = {
     ("mumu"   , "boost"     ) : "-1",
     ("mumu"   , "btag_low"  ) : "-1",
     ("mumu"   , "btag_high" ) : "-1",
+    ("mumu"   , "nobtag"    ) : "-1",
+    ("mumu"   , "btag"      ) : "-1",
     ("mumu"   , "vbf"       ) : "-1",
     }
 
@@ -133,6 +149,8 @@ min = {
     ("emu"    , "boost"     ) : "0",
     ("emu"    , "btag_low"  ) : "0",
     ("emu"    , "btag_high" ) : "0",
+    ("emu"    , "nobtag"    ) : "1e-3",
+    ("emu"    , "btag"      ) : "1e-3",
     ("emu"    , "vbf"       ) : "0",
     ("muTau"  , "0jet_low"  ) : "0",
     ("muTau"  , "0jet_high" ) : "0",
@@ -142,6 +160,8 @@ min = {
     ("muTau"  , "boost"     ) : "0",
     ("muTau"  , "btag_low"  ) : "0",
     ("muTau"  , "btag_high" ) : "0",
+    ("muTau"  , "nobtag"    ) : "1e-3",
+    ("muTau"  , "btag"      ) : "1e-3",
     ("muTau"  , "vbf"       ) : "0",
     ("eleTau" , "0jet_low"  ) : "0",
     ("eleTau" , "0jet_high" ) : "0",
@@ -151,6 +171,8 @@ min = {
     ("eleTau" , "boost"     ) : "0",
     ("eleTau" , "btag_low"  ) : "0",
     ("eleTau" , "btag_high" ) : "0",
+    ("eleTau" , "nobtag"    ) : "1e-3",
+    ("eleTau" , "btag"      ) : "1e-3",
     ("eleTau" , "vbf"       ) : "0",
     ("mumu"   , "0jet_low"  ) : "0.1",
     ("mumu"   , "0jet_high" ) : "0",
@@ -160,6 +182,8 @@ min = {
     ("mumu"   , "boost"     ) : "0",
     ("mumu"   , "btag_low"  ) : "0",
     ("mumu"   , "btag_high" ) : "0",
+    ("mumu"   , "nobtag"    ) : "1e-3",
+    ("mumu"   , "btag"      ) : "1e-3",
     ("mumu"   , "vbf"       ) : "0",    
     }
 
@@ -177,7 +201,7 @@ for chn in channels :
     for cat in categories :
         ## combine high and low pt categories, make sure in your 
         ## list that {CAT}_low and {CAT}_high are run beforehand
-        if cat == "0jet" or cat == "boost" or cat == "btag":
+        if cat == "0jet" or cat == "boost" :
             #print "hadd {CHN}_{CAT}_{TYPE}_7+8TeV.root {CHN}_{CAT}_low_{TYPE}_7+8TeV.root {CHN}_{CAT}_high_{TYPE}_7+8TeV.root".format(CHN=chn, CAT=cat, TYPE=type)
             os.system("hadd -f {CHN}_{CAT}_{TYPE}_7+8TeV.root {CHN}_{CAT}_low_{TYPE}_7+8TeV.root {CHN}_{CAT}_high_{TYPE}_7+8TeV.root".format(CHN=chn, CAT=cat, TYPE=type))
         else :
