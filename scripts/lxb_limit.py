@@ -48,8 +48,7 @@ bsubargs = sys.argv[2]
 dirglob = sys.argv[3]
 option_str = sys.argv[4:]
 
-script_template = '''
-#!/usr/bin/bash
+script_template = '''#!/bin/bash
 
 cd {working_dir}
 eval `scram runtime -sh`
@@ -62,8 +61,23 @@ $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} {director
 
 '''
 
+condor_sub_template = '''
+log = condor.log
+notification = never
+getenv = true
+# make sure AFS is accessible and suppress Condor's default FilesystemDomain requirements
+requirements = HasAFS_OSG && TARGET.FilesystemDomain =!= UNDEFINED
+
+'''
+
+if not glob.glob(dirglob):
+    print "No limit directories found in glob %s" % dirglob
+    sys.exit(1)
+
 submit_name = '%s_submit.sh' % name
 with open(submit_name, 'w') as submit_script:
+    if bsubargs == "condor":
+        submit_script.write(condor_sub_template)
     if not os.path.exists(name) :
         os.system("mkdir %s" % name)
     for i, dir in enumerate(glob.glob(dirglob)):
@@ -81,5 +95,13 @@ with open(submit_name, 'w') as submit_script:
                 directory = dir
             ))
         os.system('chmod 755 %s' % script_file_name)
-        submit_script.write('bsub %s %s/%s\n' % (bsubargs, os.getcwd(), script_file_name))
+        if bsubargs == "condor":
+            submit_script.write("\n")
+            submit_script.write("executable = %s/%s\n" % (os.getcwd(), script_file_name))
+            submit_script.write("output = %s/%s\n" % (os.getcwd(), script_file_name.replace('.sh', '.stdout')))
+            submit_script.write("error = %s/%s\n" % (os.getcwd(), script_file_name.replace('.sh', '.stderr')))
+            submit_script.write("queue")
+        else:
+            submit_script.write('bsub %s %s/%s\n' % (bsubargs, os.getcwd(), script_file_name))
+
 os.system('chmod 755 %s' % submit_name)
