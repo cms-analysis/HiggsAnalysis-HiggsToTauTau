@@ -105,10 +105,10 @@ Standard Model Checklist:
    - once models are created they can be picked up by there names e.g. ggH-qqh, ggh-bbH, cV-cF. It can be any other 
      name that has been defined beforehand.
  - run ggH-qqH (spacing 0.02 from 0...5, square) [for a fine scan we can go with half the spacing]
-   lxb-multidim-fit.py -n ggH-qqH --njob 100 --npoints 625 --physics-model 'ggH-qqH=HiggsAnalysis.CombinedLimit.PhysicsModel:floatingXSHiggs' --physics-model-options 'modes=ggH,qqH, ggHRange=0:5, qqHRange=0:5' HCP-LIMITS/125
+   lxb-multidim-fit.py -n ggH-QQH --njob 100 --npoints 625 --physics-model 'ggH-qqH=HiggsAnalysis.CombinedLimit.PhysicsModel:floatingXSHiggs' --physics-model-options 'modes=ggH,qqH ggHRange=0:5 qqHRange=0:5' HCP-LIMITS/125
    lxb-multidim-fit.py --collect --name 
  - run cV-cF (spacing 0.02 from 0...3, square) [for a fine scan we can go with half the spacing]
-   lxb-multidim-fit.py -n cV-cF --njob 100 --npoints 225 --physics-model 'cV-cF=HiggsAnalysis.CombineLimit.HiggsCouplings:cVcF' --physics-model-options 'modes=ggH,qqH, cVRange=0:3, cFRange=0:3' HCP-LIMITS/125
+   lxb-multidim-fit.py -n CV-CF --njob 100 --npoints 225 --physics-model 'cV-cF=HiggsAnalysis.CombineLimit.HiggsCouplings:cVcF' --physics-model-options 'modes=ggH,qqH cVRange=0:3 cFRange=0:3' HCP-LIMITS/125
  - run ggH-bbH (spacing 0.1 from 0...20, square) [for a fine scan we can go with half the spacing]
    lxb-multilimit.py dim-fit.py -n ggH-bbH --njob 100 --npoints 400 --physics-model 'ggH-bbH=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH, ggHRange=0:20, bbHRange=0:20' HCP-LIMITS/125
 
