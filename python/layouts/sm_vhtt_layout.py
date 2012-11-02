@@ -4,7 +4,7 @@ layout = cms.PSet(
     ## dataset
     #dataset = cms.string(" 2012, #sqrt{s} = 8 TeV, H #rightarrow #tau #tau, L = 5.0 fb^{-1}"),
     #dataset = cms.string(" 2011, #sqrt{s} = 7 TeV, H #rightarrow #tau #tau, L = 4.9 fb^{-1}"),
-    dataset = cms.string(", #sqrt{s} = 7-8 TeV, VH #rightarrow #tau #tau, L = 17 fb^{-1}"),
+    dataset = cms.string(", #sqrt{s} = 7-8 TeV, VH #rightarrow V#tau #tau, L = 17 fb^{-1}"),
     ## x-axis title
     xaxis = cms.string("m_{H} [GeV]"),
     ## x-axis title
