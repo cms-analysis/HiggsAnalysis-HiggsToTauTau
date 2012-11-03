@@ -32,9 +32,11 @@ float maximum(TH1F* h, bool LOG=false){
     return 50*h->GetMaximum(); 
   }
   else{
+    std::cout << "WHERE IS MY MAX? -- " << h->GetName() << " -- " << h->GetMaximum() << std::endl;
     if(h->GetMaximum()>  12){ return 10.*TMath::Nint((1.3*h->GetMaximum()/10.)); }
     if(h->GetMaximum()> 1.2){ return TMath::Nint((1.6*h->GetMaximum())); }
     return 1.6*h->GetMaximum(); 
+
   }
 }
 
@@ -45,8 +47,12 @@ TH1F* refill(TH1F* hin, const char* sample)
 {
   if(hin==0){
     std::cout << "hist not found: " << sample << " -- this may happen for samples of type signal." << std::endl;
-    if(std::string(sample).find("ggH")==std::string::npos){
-      std::cout << "hist is not of type signal, close here" << std::endl;
+    bool skip = false;
+    if(std::string(sample).find("ggH")==std::string::npos){ skip == true ; }
+    if(skip || std::string(sample).find("Zmm")==std::string::npos){ skip == true; }
+    if(skip || std::string(sample).find("Fakes/QCD")==std::string::npos){ skip == true; }
+    if(skip){
+      std::cout << "hist is not of type signal, Fakes/QCD, Zmm in mumu, close here" << std::endl;
       exit(1);
     }
     else{
@@ -72,15 +78,16 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   // switch for MSSM/SM
   bool MSSM = std::string(analysis) == std::string("MSSM");
  
-  if (std::string(dataset) == std::string("2011"     )){ dataset = "2011, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}"; }
-  if (std::string(dataset) == std::string("2012"     )){ dataset = "2012, #sqrt{s} = 8 TeV, L = 12.0 fb^{-1}"; }
-  if (std::string(dataset) == std::string("2011+2012")){ dataset = ", #sqrt{s} = 7-8 TeV, L = 17 fb^{-1}"; }
+  if (std::string(dataset) == std::string("2011"     )){ dataset = "Preliminary, 2011, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}"; }
+  if (std::string(dataset) == std::string("2012"     )){ dataset = "Preliminary, 2012, #sqrt{s} = 8 TeV, L = 12.0 fb^{-1}"; }
+  if (std::string(dataset) == std::string("2011+2012")){ dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 17 fb^{-1}"; }
 
   TFile* input = new TFile(inputfile);
   TH1F* Fakes  = refill((TH1F*)input->Get("Fakes"   ), "Fakes/QCD"); 
   TH1F* EWK    = refill((TH1F*)input->Get("EWK"     ), "EWK"      ); 
   TH1F* ttbar  = refill((TH1F*)input->Get("ttbar"   ), "ttbar"    ); 
   TH1F* Ztt    = refill((TH1F*)input->Get("Ztt"     ), "Ztt"      ); 
+  TH1F* Zmm    = refill((TH1F*)input->Get("Zmm"     ), "Zmm"      ); 
   TH1F* ggH    = refill((TH1F*)input->Get("ggH"     ), "ggH"      ); 
   TH1F* data   = (TH1F*)input->Get("data_obs"); 
   // determine channel for etau Z->ee (EWK) will be shown separated from the rest (EWK1)
@@ -95,32 +102,57 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   */
   TCanvas *canv = MakeCanvas("canv", "histograms", 600, 600);
   if(log) canv->SetLogy(1);
-  // reduce the axis range if necessary
-  //data->GetXaxis()->SetRange(0, 28);
+  // reduce the axis range if necessary for linea plots and SM
+  if(MSSM && !log){ data->GetXaxis()->SetRange(0, data->FindBin(350)); }
   data->SetNdivisions(505);
   data->SetMinimum(min);
-  data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(Ztt, log)));
+  if(Zmm){
+    data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(EWK, log)));
+  }
+  else{
+    data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(Ztt, log)));
+  }
   data->Draw("e");
 
   if(log){
-    Ztt  ->Draw("same");
-    ttbar->Draw("same");
-    EWK  ->Draw("same");
-    if(EWK1){
-      EWK1->Draw("same");
+    if(Zmm){
+      EWK  ->Draw("same");
+      Fakes->Draw("same");
+      ttbar->Draw("same");
+      Zmm  ->Draw("same");
+      Ztt  ->Draw("same");
+      if(ggH){ ggH  ->Draw("same"); }
     }
-    Fakes->Draw("same");
-    if(ggH){ ggH  ->Draw("same"); }
+    else{
+      Ztt  ->Draw("same");
+      ttbar->Draw("same");
+      EWK  ->Draw("same");
+      if(EWK1){
+	EWK1->Draw("same");
+      }
+      if(Fakes){ Fakes->Draw("same"); }
+      if(ggH  ){ ggH  ->Draw("same"); }
+    }
   }
   else{
-    if(ggH){ ggH  ->Draw("same"); }
-    Ztt  ->Draw("same");
-    ttbar->Draw("same");
-    EWK  ->Draw("same");
-    if(EWK1){
-      EWK1->Draw("same");
+    if(Zmm){
+      if(ggH) ggH  ->Draw("histsame");
+      EWK->Draw("same");
+      Fakes->Draw("same");
+      ttbar->Draw("same");
+      Zmm->Draw("same");
+      Ztt->Draw("same");
     }
-    Fakes->Draw("same");
+    else{
+      if(ggH){ ggH  ->Draw("same"); }
+      Ztt  ->Draw("same");
+      ttbar->Draw("same");
+      EWK  ->Draw("same");
+      if(EWK1){
+	EWK1->Draw("same");
+      }
+      if(Fakes){ Fakes->Draw("same"); }
+    }
   }
   if(errorBand){
     errorBand->Draw("e2same");
@@ -134,13 +166,14 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   TLegend* leg = new TLegend(MSSM ? 0.45 : 0.50, lower_bound, 0.93, 0.90);
   SetLegendStyle(leg);
   if(MSSM){
-    leg->AddEntry(ggH  , "#phi(160 GeV)#rightarrow#tau#tau, tan#beta=8" , "L" );
+    leg->AddEntry(ggH  , "10#times#phi(160 GeV)#rightarrow#tau#tau, tan#beta=8" , "L" );
   }
   else{
     if(ggH){ leg->AddEntry(ggH  , "H(125)#rightarrow#tau#tau" , "L" ); }
   }
   leg->AddEntry(data , "observed"                       , "LP");
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
+  if(Zmm){ leg->AddEntry(Zmm  , "Z#rightarrow#mu#mu"    , "F" ); }
   if(EWK1){
     leg->AddEntry(EWK  , "Z#rightarrow ee"              , "F" );
     leg->AddEntry(EWK1 , "electroweak"                  , "F" );
@@ -149,7 +182,7 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
     leg->AddEntry(EWK  , "electroweak"                  , "F" );
   }
   leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
-  leg->AddEntry(Fakes, "QCD"                            , "F" );
+  if(Fakes){ leg->AddEntry(Fakes, "QCD"                 , "F" ); }
   if(errorBand){
     leg->AddEntry(errorBand, "bkg. uncertainty" , "F" );
   }
@@ -159,7 +192,7 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
     prepare output
   */
   std::string newName = std::string(inputfile).substr(0, std::string(inputfile).find(".root"));
-  canv->Print(TString::Format("%s.png", newName.c_str())); 
-  canv->Print(TString::Format("%s.pdf", newName.c_str())); 
-  canv->Print(TString::Format("%s.eps", newName.c_str())); 
+  canv->Print(TString::Format("%s%s.png", newName.c_str(), log ? "_LOG" : "")); 
+  canv->Print(TString::Format("%s%s.pdf", newName.c_str(), log ? "_LOG" : "")); 
+  canv->Print(TString::Format("%s%s.eps", newName.c_str(), log ? "_LOG" : "")); 
 }
