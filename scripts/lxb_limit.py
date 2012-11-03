@@ -57,6 +57,8 @@ echo "Running limit.py:"
 echo "with options {options}"
 echo "in directory {directory}"
 
+echo "Running"
+#/cvmfs/cms.hep.wisc.edu/osg/app/cmssoft/cms/slc5_amd64_gcc462/cms/cmssw/CMSSW_5_2_5/external/slc5_amd64_gcc462/bin/python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} {directory}
 $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} {directory}
 
 '''
@@ -66,7 +68,7 @@ log = condor.log
 notification = never
 getenv = true
 # make sure AFS is accessible and suppress Condor's default FilesystemDomain requirements
-requirements = HasAFS_OSG && TARGET.FilesystemDomain =!= UNDEFINED
+requirements = HasAFS_OSG && TARGET.FilesystemDomain =!= UNDEFINED && TARGET.UWCMS_CVMFS_Revision >= 0
 
 '''
 
@@ -78,7 +80,7 @@ submit_name = '%s_submit.sh' % name
 with open(submit_name, 'w') as submit_script:
     if bsubargs == "condor":
         submit_script.write(condor_sub_template)
-    if not os.path.exists(name) :
+    if not os.path.exists(name):
         os.system("mkdir %s" % name)
     for i, dir in enumerate(glob.glob(dirglob)):
         ## don't submit jobs on old LSF output
@@ -90,18 +92,24 @@ with open(submit_name, 'w') as submit_script:
         script_file_name = '%s/%s_%i.sh' % (name, name, i)
         with open(script_file_name, 'w') as script:
             script.write(script_template.format(
-                working_dir = os.getcwd(),
-                options = ' '.join(option_str),
-                directory = dir
+                working_dir=os.getcwd(),
+                options=' '.join(option_str),
+                directory=dir
             ))
         os.system('chmod 755 %s' % script_file_name)
         if bsubargs == "condor":
             submit_script.write("\n")
-            submit_script.write("executable = %s/%s\n" % (os.getcwd(), script_file_name))
-            submit_script.write("output = %s/%s\n" % (os.getcwd(), script_file_name.replace('.sh', '.stdout')))
-            submit_script.write("error = %s/%s\n" % (os.getcwd(), script_file_name.replace('.sh', '.stderr')))
-            submit_script.write("queue")
+            submit_script.write(
+                "executable = %s/%s\n" % (os.getcwd(), script_file_name))
+            submit_script.write(
+                "output = %s/%s\n" % (
+                    os.getcwd(), script_file_name.replace('.sh', '.stdout')))
+            submit_script.write(
+                "error = %s/%s\n"
+                % (os.getcwd(), script_file_name.replace('.sh', '.stderr')))
+            submit_script.write("queue\n")
         else:
-            submit_script.write('bsub %s %s/%s\n' % (bsubargs, os.getcwd(), script_file_name))
+            submit_script.write('bsub %s %s/%s\n'
+                                % (bsubargs, os.getcwd(), script_file_name))
 
 os.system('chmod 755 %s' % submit_name)
