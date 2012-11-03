@@ -70,14 +70,14 @@ class MakeDatacard :
               self.standardized_decay_channels = {
                      "hmm"    : ["hmm_0", "hmm_1",
                                  ],
-                     "htt"    : ["htt_em_0_7TeV", "htt_em_1_7TeV", "htt_em_2_7TeV", "htt_em_3_7TeV", "htt_em_4_7TeV", "htt_em_5_7TeV", "htt_em_6_7TeV", "htt_em_7_7TeV",
-                                 "htt_et_0_7TeV", "htt_et_1_7TeV", "htt_et_2_7TeV", "htt_et_3_7TeV", "htt_et_4_7TeV", "htt_et_5_7TeV", "htt_et_6_7TeV", "htt_et_7_7TeV",
-                                 "htt_mt_0_7TeV", "htt_mt_1_7TeV", "htt_mt_2_7TeV", "htt_mt_3_7TeV", "htt_mt_4_7TeV", "htt_mt_5_7TeV", "htt_mt_6_7TeV", "htt_mt_7_7TeV",
-                                 "htt_mm_0_7TeV", "htt_mm_1_7TeV", "htt_mm_2_7TeV", "htt_mm_3_7TeV", "htt_mm_4_7TeV", "htt_mm_5_7TeV", "htt_mm_6_7TeV", "htt_mm_7_7TeV",
-                                 "htt_em_0_8TeV", "htt_em_1_8TeV", "htt_em_2_8TeV", "htt_em_3_8TeV", "htt_em_4_8TeV", "htt_em_5_8TeV", "htt_em_6_8TeV", "htt_em_7_8TeV",
-                                 "htt_et_0_8TeV", "htt_et_1_8TeV", "htt_et_2_8TeV", "htt_et_3_8TeV", "htt_et_4_8TeV", "htt_et_5_8TeV", "htt_et_6_8TeV", "htt_et_7_8TeV",
-                                 "htt_mt_0_8TeV", "htt_mt_1_8TeV", "htt_mt_2_8TeV", "htt_mt_3_8TeV", "htt_mt_4_8TeV", "htt_mt_5_8TeV", "htt_mt_6_8TeV", "htt_mt_7_8TeV",
-                                 "htt_mm_0_8TeV", "htt_mm_1_8TeV", "htt_mm_2_8TeV", "htt_mm_3_8TeV", "htt_mm_4_8TeV", "htt_mm_5_8TeV", "htt_mm_6_8TeV", "htt_mm_7_8TeV",
+                     "htt"    : ["htt_em_0_7TeV", "htt_em_1_7TeV", "htt_em_2_7TeV", "htt_em_3_7TeV", "htt_em_4_7TeV", "htt_em_5_7TeV", "htt_em_6_7TeV", "htt_em_7_7TeV", "htt_em_8_7TeV", "htt_em_9_7TeV",
+                                 "htt_et_0_7TeV", "htt_et_1_7TeV", "htt_et_2_7TeV", "htt_et_3_7TeV", "htt_et_4_7TeV", "htt_et_5_7TeV", "htt_et_6_7TeV", "htt_et_7_7TeV", "htt_et_8_7TeV", "htt_et_9_7TeV",
+                                 "htt_mt_0_7TeV", "htt_mt_1_7TeV", "htt_mt_2_7TeV", "htt_mt_3_7TeV", "htt_mt_4_7TeV", "htt_mt_5_7TeV", "htt_mt_6_7TeV", "htt_mt_7_7TeV", "htt_mt_8_7TeV", "htt_mt_9_7TeV",
+                                 "htt_mm_0_7TeV", "htt_mm_1_7TeV", "htt_mm_2_7TeV", "htt_mm_3_7TeV", "htt_mm_4_7TeV", "htt_mm_5_7TeV", "htt_mm_6_7TeV", "htt_mm_7_7TeV", "htt_mm_8_7TeV", "htt_mm_9_7TeV",
+                                 "htt_em_0_8TeV", "htt_em_1_8TeV", "htt_em_2_8TeV", "htt_em_3_8TeV", "htt_em_4_8TeV", "htt_em_5_8TeV", "htt_em_6_8TeV", "htt_em_7_8TeV", "htt_em_8_8TeV", "htt_em_9_8TeV",
+                                 "htt_et_0_8TeV", "htt_et_1_8TeV", "htt_et_2_8TeV", "htt_et_3_8TeV", "htt_et_4_8TeV", "htt_et_5_8TeV", "htt_et_6_8TeV", "htt_et_7_8TeV", "htt_et_8_8TeV", "htt_et_9_8TeV",
+                                 "htt_mt_0_8TeV", "htt_mt_1_8TeV", "htt_mt_2_8TeV", "htt_mt_3_8TeV", "htt_mt_4_8TeV", "htt_mt_5_8TeV", "htt_mt_6_8TeV", "htt_mt_7_8TeV", "htt_mt_8_8TeV", "htt_mt_9_8TeV",
+                                 "htt_mm_0_8TeV", "htt_mm_1_8TeV", "htt_mm_2_8TeV", "htt_mm_3_8TeV", "htt_mm_4_8TeV", "htt_mm_5_8TeV", "htt_mm_6_8TeV", "htt_mm_7_8TeV", "htt_mm_8_8TeV", "htt_mm_9_8TeV",
                                  ],
                      "hww"    : ["hwwof_0j_shape", "hwwof_1j_shape",
                                  "hwwsf_0j_shape", "hwwsf_1j_shape",
@@ -148,7 +148,7 @@ class MakeDatacard :
               """
               if mode == "mode-0" :
                      for chn in ["mm", "em", "et", "mt"] :
-                            for cat in ["0", "1", "2", "3", "4", "5", "6", "7"] :
+                            for cat in ["8", "9"] : #"0", "1", "2", "3", "4", "5", "6", "7"] :
                                    for period in ["7TeV", "8TeV"] :
                                           decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
                                           self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses"
@@ -161,7 +161,7 @@ class MakeDatacard :
                      self.decay_channel_to_interpolation_method["hww_2j_cut"    ] = "single-mass"
               if mode == "mode-1" :
                      for chn in ["mm", "em", "et", "mt"] :
-                            for cat in ["0", "1", "2", "3", "4", "5", "6", "7"] :
+                            for cat in ["8", "9"] : #"0", "1", "2", "3", "4", "5", "6", "7"] :
                                    for period in ["7TeV", "8TeV"] :
                                           decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
                                           if chn == "mm" :
@@ -177,7 +177,7 @@ class MakeDatacard :
                      self.decay_channel_to_interpolation_method["hww_2j_cut"    ] = "single-mass"
               if mode == "mode-2" :
                      for chn in ["mm", "em", "et", "mt"] :
-                            for cat in ["0", "1", "2", "3", "4", "5", "6", "7"] :
+                            for cat in ["8", "9"] : #"0", "1", "2", "3", "4", "5", "6", "7"] :
                                    for period in ["7TeV", "8TeV"] :
                                           decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
                                           if chn == "mm" :
@@ -193,7 +193,7 @@ class MakeDatacard :
                      self.decay_channel_to_interpolation_method["hww_2j_cut"    ] = "single-mass"
               if mode == "mode-3" :
                      for chn in ["mm", "em", "et", "mt"] :
-                            for cat in ["0", "1", "2", "3", "4", "5", "6", "7"] :
+                            for cat in ["8", "9"] : #"0", "1", "2", "3", "4", "5", "6", "7"] :
                                    for period in ["7TeV", "8TeV"] :
                                           decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
                                           self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses-light"
@@ -206,7 +206,7 @@ class MakeDatacard :
                      self.decay_channel_to_interpolation_method["hww_2j_cut"    ] = "single-mass"
               if mode == "mode-4" :
                      for chn in ["mm", "em", "et", "mt"] :
-                            for cat in ["0", "1", "2", "3", "4", "5", "6", "7"] :
+                            for cat in ["8", "9"] : #"0", "1", "2", "3", "4", "5", "6", "7"] :
                                    for period in ["7TeV", "8TeV"] :
                                           decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
                                           if chn == "mm" :
@@ -222,7 +222,7 @@ class MakeDatacard :
                      self.decay_channel_to_interpolation_method["hww_2j_cut"    ] = "single-mass"
               if mode == "mode-5" :
                      for chn in ["mm", "em", "et", "mt"] :
-                            for cat in ["0", "1", "2", "3", "4", "5", "6", "7"] :
+                            for cat in ["8", "9"] : #"0", "1", "2", "3", "4", "5", "6", "7"] :
                                    for period in ["7TeV", "8TeV"] :
                                           decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
                                           self.decay_channel_to_interpolation_method[decay_channel] = "degenerate-masses"
@@ -241,7 +241,7 @@ class MakeDatacard :
               ## setup interpolation mode for htt
               self.interpolation_mode(interpolation_mode)
               ## announce model
-              if self.feyn_higgs_model != "" :
+              if self.feyn_higgs_model != "0" :
                      print "preparing limit calculation for model input: feyn-higgs model="+self.feyn_higgs_model
               else :
                      print "preparing limit calculation for model input:", self.mssm_xsec_tools_input_path
