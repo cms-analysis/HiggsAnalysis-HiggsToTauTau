@@ -503,7 +503,7 @@ for directory in args :
                     gridpoints = "--points %s --firstPoint %s --lastPoint %s" % (options.gridPoints, options.firstPoint, options.lastPoint)
             ## run expected limits
             print "Running maximum likelihood fit with options: "
-            print "combine -M MultiDimFit -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} {input}.root ".format(mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt, input=model[0])
+            print "combine -M MultiDimFit --fastScan -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} {input}.root ".format(mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt, input=model[0])
             fitresults=  ""
             if options.saveResults :
                 fitresults = " | grep -A 10 -E '\s*--- MultiDimFit ---\s*' > multi-dim.fitresult"
