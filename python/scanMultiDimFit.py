@@ -34,6 +34,9 @@ def extract_band(filename, deltaNLLTarget=0.5):
         if not best_r:
             best_r = r
             continue
+        if ROOT.TMath.IsNaN(deltaNLL):
+            #print "skipping nan"
+            continue
         full_graph.SetPoint(i-1, r, deltaNLL)
         if r < best_r:
             #print 'L %0.2f => %0.2f' % (r, deltaNLL)
