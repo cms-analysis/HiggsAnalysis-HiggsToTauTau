@@ -17,7 +17,8 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) : outpu
   outputLabel_(cfg.getParameter<std::string>("outputLabel")),
   higgs125_bands (cfg.exists("higgs125_bands") ? cfg.getParameter<bool>("higgs125_bands") : false),
   POI_  (cfg.exists("POI") ? cfg.getParameter<std::string>("POI") : ""),
-  isInjected_ (cfg.exists("injected") ? cfg.getParameter<bool>("injected") : false)
+  isInjected_ (cfg.exists("injected") ? cfg.getParameter<bool>("injected") : false),
+  isSignificance_ (cfg.exists("significance") ? cfg.getParameter<bool>("significance") : false)
 {
   if(cfg.existsAs<bool>("outerband")){
     outerband_=cfg.getParameter<bool>("outerband");
@@ -579,6 +580,73 @@ PlotLimits::print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsym
 }
 
 void
+PlotLimits::print(const char* filename, TGraph* expected, TGraph* observed, const char* type)
+{
+  if(std::string(type) == std::string("tex")){
+    ofstream file;
+    file.open (std::string(filename).append(".tex").c_str());
+    file
+      << "   " << std::setw(15) << std::right << "    $m_{\\mathrm H}$"
+      << " & " << std::setw(15) << std::right << "$-2\\sigma$"
+      << " & " << std::setw(15) << std::right << "$-1\\sigma$"
+      << " & " << std::setw(15) << std::right << "     Median"
+      << " & " << std::setw(15) << std::right << "$+1\\sigma$"
+      << " & " << std::setw(15) << std::right << "$+2\\sigma$"
+      << " & " << std::setw(15) << std::right << "Obs. Limit"
+      << std::right << "  \\\\"
+      << std::endl << "\\hline" << std::endl;
+    unsigned int precision = 2;
+    for(int imass=0; imass<expected->GetN(); ++imass){
+      file
+	<< "   " << std::setw(15) << std::setprecision(3) << std::resetiosflags(std::ios_base::fixed) << std::right << expected->GetX()[imass] << "~\\GeV"
+	<< " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << " - "
+	<< " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << " - "
+	<< " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << expected->GetY()[imass]
+	<< " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << " - "
+	<< " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << " - ";
+      if(observed){
+	file
+	  << " & " << std::setw(15) << std::right << observed->GetY()[imass];
+      }
+      file
+	<< std::right << "  \\\\"
+	<< std::endl << "\\hline" << std::endl;
+    }
+    file.close();
+  }
+  if(std::string(type) == std::string("txt")){
+    ofstream file;
+    file.open (std::string(filename).append(".txt").c_str());
+    file
+      << "#"
+      << "   " << std::setw(15) << std::right << "         mX"
+      << "   " << std::setw(15) << std::right << "   -2 sigma"
+      << "   " << std::setw(15) << std::right << "   -1 sigma"
+      << "   " << std::setw(15) << std::right << "     Median"
+      << "   " << std::setw(15) << std::right << "   +1 sigma"
+      << "   " << std::setw(15) << std::right << "   +2 sigma"
+      << "   " << std::setw(15) << std::right << "Obs. Limit [pb]"
+      << std::endl;
+    for(int imass=0; imass<expected->GetN(); ++imass){
+      file
+	<< "   " << std::setw(15) << std::setprecision(3) << std::right << expected->GetX()[imass]
+	<< "   " << std::setw(15) << std::setprecision(3) << std::right << " - "
+	<< "   " << std::setw(15) << std::setprecision(3) << std::right << " - "
+	<< "   " << std::setw(15) << std::setprecision(3) << std::right << expected->GetY()[imass]
+	<< "   " << std::setw(15) << std::setprecision(3) << std::right << " - "
+	<< "   " << std::setw(15) << std::setprecision(3) << std::right << " - ";
+      if(observed){
+	file
+	  << "   " << std::setw(15) << std::right << observed->GetY()[imass];
+      }
+      file
+	<< std::endl;
+    }
+    file.close();
+  }
+}
+
+void
 PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed)
 {
   // set up styles
@@ -588,10 +656,24 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
   canv.SetGridx(1);
   canv.SetGridy(1);
 
+  double maximum = -1;
+  if(max_<0){
+    for(int ibin=0; ibin<expected->GetN(); ++ibin){
+      if(maximum<0 || expected->GetY()[ibin+1]>maximum){
+	maximum=expected->GetY()[ibin+1];
+      }
+    }
+    maximum*=2.5;
+  }
+  else{
+    maximum=max_;
+  }
+  std::cout << "M A X I M U M   I S : " << maximum << std::endl;
+
   // draw a frame to define the range
   TH1F* hr = new TH1F();
-  if(outerBand) hr=canv.DrawFrame(outerBand->GetX()[0]-.01, min_, outerBand->GetX()[outerBand->GetN()-1]+.01, max_);
-  else hr=canv.DrawFrame(innerBand->GetX()[0]-.01, min_, innerBand->GetX()[innerBand->GetN()-1]+.01, max_);
+  if(outerBand) hr=canv.DrawFrame(outerBand->GetX()[0]-.01, min_, outerBand->GetX()[outerBand->GetN()-1]+.01, maximum);
+  else hr=canv.DrawFrame(innerBand->GetX()[0]-.01, min_, innerBand->GetX()[innerBand->GetN()-1]+.01, maximum);
   hr->SetXTitle(xaxis_.c_str());
   hr->GetXaxis()->SetLabelFont(62);
   hr->GetXaxis()->SetLabelSize(0.045);
@@ -634,10 +716,10 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
   innerBand->Draw("3same");
 
   if(outerBand){
-  expected->SetLineColor(kRed);
-  expected->SetLineWidth(3);
-  expected->SetLineStyle(1);
-  expected->Draw("L");
+    expected->SetLineColor(isSignificance_ ? kBlue : kRed);
+    expected->SetLineWidth(3);
+    expected->SetLineStyle(1);
+    expected->Draw("L");
   }
   else{
     expected->SetMarkerStyle(20);
@@ -647,7 +729,7 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
     expected->Draw("PLsame");
   }
 
-  if(!mssm_){
+  if(!mssm_ && !isSignificance_){
     unit->SetLineColor(kBlue);
     unit->SetLineWidth(3.);
     unit->Draw("Lsame");
@@ -662,6 +744,48 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
   }
   /// setup the CMS Preliminary
   CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
+
+  if(isSignificance_){
+    // create the unit line
+    TGraph* unit3 = new TGraph();
+    TGraph* unit5 = new TGraph();
+    for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
+      if(valid_[imass]){
+	unit3->SetPoint(ipoint, bins_[imass], 3.);
+	unit5->SetPoint(ipoint, bins_[imass], 5.);
+	++ipoint;
+      }
+    }
+    unit3->SetLineColor(kRed);
+    unit3->SetLineWidth(3.);
+    unit3->SetLineStyle(11);
+    unit3->Draw("Lsame");
+    
+    TPaveText * threeSigma = new TPaveText(0.955, 0.575, 1.0, 0.63, "NDC");
+    threeSigma->SetBorderSize(   0 );
+    threeSigma->SetFillStyle(    0 );
+    threeSigma->SetTextAlign(   12 );
+    threeSigma->SetTextSize ( 0.04 );
+    threeSigma->SetTextColor(    2 );
+    threeSigma->SetTextFont (   62 );
+    threeSigma->AddText("3#sigma");
+    threeSigma->Draw();
+    
+    unit5->SetLineColor(kRed);
+    unit5->SetLineWidth(3.);
+    unit5->SetLineStyle(11);
+    unit5->Draw("Lsame");
+    
+    TPaveText * fiveSigma = new TPaveText(0.955, 0.635, 1.0, 0.69, "NDC");
+    fiveSigma->SetBorderSize(   0 );
+    fiveSigma->SetFillStyle(    0 );
+    fiveSigma->SetTextAlign(   12 );
+    fiveSigma->SetTextSize ( 0.04 );
+    fiveSigma->SetTextColor(    2 );
+    fiveSigma->SetTextFont (   62 );
+    fiveSigma->AddText("5#sigma");
+    fiveSigma->Draw();
+  }
 
   /// add the proper legend
   TLegend* leg = new TLegend(mssm_ ? 0.5625 : 0.18, 0.70, mssm_ ? 1.00 : 0.605, 0.90);
@@ -723,6 +847,124 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
 }
 
 void
+PlotLimits::plotSignificance(TCanvas& canv, TGraph* expected, TGraph* observed)
+{
+  // set up styles
+  SetStyle();
+
+  canv.cd();
+  canv.SetGridx(1);
+  canv.SetGridy(1);
+
+  // draw a frame to define the range
+  TH1F* hr =canv.DrawFrame(expected->GetX()[0]-.01, min_, expected->GetX()[expected->GetN()-1]+.01, max_);
+  hr->SetXTitle(xaxis_.c_str());
+  hr->GetXaxis()->SetLabelFont(62);
+  hr->GetXaxis()->SetLabelSize(0.045);
+  hr->GetXaxis()->SetLabelOffset(0.015);
+  hr->GetXaxis()->SetTitleFont(62);
+  hr->GetXaxis()->SetTitleColor(1);
+  hr->GetXaxis()->SetTitleOffset(1.05);
+  hr->SetYTitle(yaxis_.c_str());
+  hr->GetYaxis()->SetLabelFont(62);
+  hr->GetYaxis()->SetTitleSize(0.05);
+  hr->GetYaxis()->SetTitleOffset(1.30);
+  hr->GetYaxis()->SetLabelSize(0.045);
+  hr->SetNdivisions(505);
+  if(log_){ canv.SetLogy(1); }
+
+  // create the unit line
+  TGraph* unit3 = new TGraph();
+  TGraph* unit5 = new TGraph();
+  for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
+    if(valid_[imass]){
+      unit3->SetPoint(ipoint, bins_[imass], 3.);
+      unit5->SetPoint(ipoint, bins_[imass], 5.);
+      ++ipoint;
+    }
+  }
+
+  expected->SetLineColor(kBlue);
+  expected->SetLineWidth(3);
+  expected->SetLineStyle(1);
+  expected->Draw("L");
+
+  unit3->SetLineColor(kRed);
+  unit3->SetLineWidth(3.);
+  unit3->SetLineStyle(11);
+  unit3->Draw("Lsame");
+
+  TPaveText * threeSigma = new TPaveText(0.955, 0.575, 1.0, 0.63, "NDC");
+  threeSigma->SetBorderSize(   0 );
+  threeSigma->SetFillStyle(    0 );
+  threeSigma->SetTextAlign(   12 );
+  threeSigma->SetTextSize ( 0.04 );
+  threeSigma->SetTextColor(    2 );
+  threeSigma->SetTextFont (   62 );
+  threeSigma->AddText("3#sigma");
+  threeSigma->Draw();
+
+  unit5->SetLineColor(kRed);
+  unit5->SetLineWidth(3.);
+  unit5->SetLineStyle(11);
+  unit5->Draw("Lsame");
+
+  TPaveText * fiveSigma = new TPaveText(0.955, 0.635, 1.0, 0.69, "NDC");
+  fiveSigma->SetBorderSize(   0 );
+  fiveSigma->SetFillStyle(    0 );
+  fiveSigma->SetTextAlign(   12 );
+  fiveSigma->SetTextSize ( 0.04 );
+  fiveSigma->SetTextColor(    2 );
+  fiveSigma->SetTextFont (   62 );
+  fiveSigma->AddText("5#sigma");
+  fiveSigma->Draw();
+
+  if(observed){
+    observed->SetMarkerStyle(20);
+    observed->SetMarkerSize(1.0);
+    observed->SetMarkerColor(kBlack);
+    observed->SetLineWidth(3.);
+    observed->Draw("PLsame");
+  }
+  /// setup the CMS Preliminary
+  CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
+
+  /// add the proper legend
+  TLegend* leg = new TLegend(mssm_ ? 0.5625 : 0.18, 0.80, mssm_ ? 1.00 : 0.605, 0.90);
+  leg->SetBorderSize( 0 );
+  leg->SetFillStyle ( 1001 );
+  //leg->SetFillStyle ( 0 );
+  leg->SetFillColor (kWhite);
+  //leg->SetHeader( "95% CL Limits" );
+  if(observed) leg->AddEntry( observed , "observed",  "PL" );
+  leg->AddEntry( expected , "expected"             ,  "L" );
+  leg->Draw("same");
+  //canv.RedrawAxis("g");
+  canv.RedrawAxis();
+  
+  if(png_){
+    canv.Print(std::string(output_).append("_").append(outputLabel_).append(".png").c_str());
+    canv.Print(std::string(output_).append("_").append(outputLabel_).append(".pdf").c_str());
+    canv.Print(std::string(output_).append("_").append(outputLabel_).append(".eps").c_str());
+  }
+  if(txt_){
+    print(std::string(output_).append("_").append(outputLabel_).c_str(), expected, observed, "txt");
+    print(std::string(output_).append("_").append(outputLabel_).c_str(), expected, observed, "tex");
+  }
+  if(root_){
+    TFile* output = new TFile(std::string("limits_").append(outputLabel_).append(".root").c_str(), "update");
+    if(!output->cd(output_.c_str())){
+      output->mkdir(output_.c_str());
+      output->cd(output_.c_str());
+    }
+    if(observed){ observed ->Write("observed" );}
+    expected ->Write("expected" );
+    output->Close();
+  }
+  return;
+}
+
+void
 PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, const char* directory)
 {
   // set up styles
@@ -763,7 +1005,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
 	//}
       }
     }
-    plain->SetPoint(bins_.size(), observed->GetX()[observed->GetN()-1]+500., 70.);
+    plain->SetPoint(bins_.size(), observed->GetX()[observed->GetN()-1]+100., 55.);
   }
   // create LEP exclusion plot
   TGraph* LEP = new TGraph();
