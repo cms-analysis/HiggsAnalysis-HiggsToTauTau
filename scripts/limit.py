@@ -435,8 +435,9 @@ for directory in args :
         if options.stable :
             stableopt = "--robustFit=1 --stepSize=0.5  --minimizerStrategy=0 --minimizerTolerance=0.1 --preFitValue=0.1  --X-rtd FITTER_DYN_STEP  --cminFallbackAlgo=\"Minuit;0.001\" "
         ## run expected limits
-        command = "combine -M MultiDimFit -m {mass} --points 75 --saveNLL --algo={algo} {minuit} {stable} {user} tmp.txt".format(mass=mass, algo=options.fitAlgo,  minuit=minuitopt, stable=stableopt, user=options.userOpt)
+        command = "combine -M MultiDimFit -m {mass} --points={points} --saveNLL --algo={algo} {minuit} {stable} {user} tmp.txt".format(mass=mass, points=options.gridPoints, algo=options.fitAlgo,  minuit=minuitopt, stable=stableopt, user=options.userOpt)
         command += " --rMin {MIN} --rMax {MAX} ".format(MIN=options.rMin, MAX=options.rMax)
+        command += " &> /dev/null"
         print "Running likelihood scan with options: ", command
         os.system(command)
         ## change to sub-directory out and prepare formated output
@@ -529,7 +530,9 @@ for directory in args :
         os.system("combineCards.py -S *.txt > tmp.txt")
         ## prepare binary workspace
         mass_value = directory[directory.rfind("/")+1:]
-        mass_fixed = options.fixed_mass if options.fixed_mass!="" else mass_value
+        mass_fixed = options.fixed_mass
+        if options.fixed_mass == "":
+            mass_fixed = mass_value
         os.system("text2workspace.py --default-morphing=%s -m %s -b tmp.txt -o tmp.root"% (options.shape, mass_fixed))
         if not options.observedOnly :
             if ifile == 0 :
