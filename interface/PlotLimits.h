@@ -73,7 +73,9 @@ class PlotLimits {
   TGraph* fillCentral(const char* directory, TGraph* plot, const char* filename);
   /// fill the +/-1sigma and +/-2sigma uncertainty band
   TGraphAsymmErrors* fillBand(const char* directory, TGraphAsymmErrors* plot, const char* method, bool innerBand);
-  /// print tabulated limits to a txt file, for inner band, outer band, expected and observed
+  /// print tabulated limits to a txt file, for inner band, outer band, expected and observed, w/o inner and outer band
+  void print(const char* filename, TGraph* expected, TGraph* observed, const char* type="txt");
+  /// print tabulated limits to a txt file, for inner band, outer band, expected and observed, with inner and outer band
   void print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* innerBand, TGraph* expected, TGraph* observed, const char* type="txt");
   /// plot limits on canvas, print out png, pdf, txt, root formats if desired
   void plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0);
@@ -81,6 +83,8 @@ class PlotLimits {
   void plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0, const char* directory="");
   /// plot bestfit values for different parameters dependend on mass
   void plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0, const char* directory="");
+  /// plot significance in linear scale and w/o band
+  void plotSignificance(TCanvas& canv, TGraph* expected, TGraph* observed=0);
 
  private:
   /// fill a single vector of values according to 2sigma, 1sigma, median or observed
@@ -160,8 +164,10 @@ class PlotLimits {
   bool higgs125_bands;
   /// POI of multidimfit
   std::string POI_;
-  /// Whether or not we have signal injection
+  /// whether or not we have signal injection
   bool isInjected_;
+  /// whether or not this is significance
+  bool isSignificance_;
   /// binning for limits
   std::vector<double> bins_;
   /// check whether mass point is available or not
@@ -829,7 +835,12 @@ PlotLimits::limitsLEP(TGraph* graph)
   graph->SetPoint(39, 452.3417, 2.421473);
   graph->SetPoint(40, 487.6996, 2.405361);
   graph->SetPoint(41, 550     , 2.405361);
-  graph->SetPoint(42, 600     , 0.      );
+  graph->SetPoint(42, 600     , 2.405361);
+  graph->SetPoint(43, 700     , 2.405361);
+  graph->SetPoint(44, 800     , 2.405361);
+  graph->SetPoint(45, 900     , 2.405361);
+  graph->SetPoint(46,1000     , 2.405361);
+  graph->SetPoint(47,1100     , 0.      );
 }
 
 inline void

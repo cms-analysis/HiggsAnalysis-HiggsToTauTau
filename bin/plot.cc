@@ -42,6 +42,7 @@ int main(int argc, char* argv[])
     std::cout << " Error: ParameterSet 'layout' is missing in your configuration file" << std::endl; exit(0);
   }
   bool mssm = edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").getParameter<bool>("mssm");
+  bool significance = edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").existsAs<bool>("significance") ? edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").getParameter<bool>("significance") : false;
   bool expected_only = edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").existsAs<bool>("expectedOnly") ? edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").getParameter<bool>("expectedOnly") : false;
 
   /// get intput directory up to one before mass points
@@ -166,7 +167,13 @@ int main(int argc, char* argv[])
     /// make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
-    plot.plot(*canv, inner, outer, expected, observed);
+    if(significance){
+      //plot.plot(*canv, inner, outer, expected, observed);
+      plot.plotSignificance(*canv, expected, observed);
+    }
+    else{
+      plot.plot(*canv, inner, outer, expected, observed);
+    }
   }
   if( std::string(argv[1]) == std::string("asymptotic") ){
     /// observed limit 
