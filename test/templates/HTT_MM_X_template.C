@@ -130,8 +130,8 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
 
   const char* dataset;
-  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "#sqrt{s} = 7 TeV, L = 4.9 fb^{-1}";}
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "#sqrt{s} = 8 TeV, L = 12.0 fb^{-1}";}
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 12.0 fb^{-1}";}
   
   TFile* input = new TFile(inputfile);
   TH1F* ZTT = refill((TH1F*)input->Get(TString::Format("%s/ZTT"   , directory)), "ZTT"); InitHist(ZTT, "", "", kOrange-4, 1001);
@@ -142,8 +142,8 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   TH1F* WJets    = refill((TH1F*)input->Get(TString::Format("%s/WJets"     , directory)), "WJets"); InitHist(WJets  , "", "", kGreen - 4, 1001);
 #ifdef MSSM
   float ggHScale = 1., bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=8, times 10 for the time being
-  if(std::string(inputfile).find("7TeV")!=std::string::npos){ ggHScale = 10*130.*0.11/1000.; bbHScale = 10*403.*0.11/1000.; }
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){ ggHScale = 10*169.*0.11/1000.; bbHScale = 10*537.*0.11/1000.; }
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){ ggHScale = 10*1300.*0.11/1000.; bbHScale = 10*4030.*0.11/1000.; }
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){ ggHScale = 10*1690.*0.11/1000.; bbHScale = 10*5370.*0.11/1000.; }
   TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH160"  , directory)), "ggH"  ); InitSignal(ggH); ggH->Scale(ggHScale);
   TH1F* bbH    = refill((TH1F*)input->Get(TString::Format("%s/bbH160"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale(bbHScale);
 #else
@@ -235,8 +235,8 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   ZMM->Add(ZTT);
   TTJ->Add(ZMM);
   QCD->Add(TTJ);
-  WJets->Add(TTJ);
-  Dibosons->Add(Dibosons);
+  Dibosons->Add(TTJ);
+  WJets->Add(Dibosons);
   if(log){
 #ifdef MSSM
     ggH  ->Add(bbH);
@@ -292,8 +292,8 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   errorBand  ->SetLineWidth(1);
 
   if(log){
-    //WJets->Draw("histsame");
-    Dibosons->Draw("histsame");
+    WJets->Draw("histsame");
+    //Dibosons->Draw("histsame");
     QCD->Draw("histsame");
     TTJ->Draw("histsame");
     ZMM->Draw("histsame");
@@ -307,8 +307,8 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 #ifndef DROP_SIGNAL
     ggH  ->Draw("histsame");
 #endif
-    //WJets->Draw("histsame");
-    Dibosons->Draw("histsame");
+    WJets->Draw("histsame");
+    //Dibosons->Draw("histsame");
     QCD->Draw("histsame");
     TTJ->Draw("histsame");
     ZMM->Draw("histsame");
@@ -335,11 +335,11 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 #endif
   leg->AddEntry(data , "observed"                    , "LP");
   leg->AddEntry(ZTT  , "Z#rightarrow#tau#tau"        , "F" );
-  leg->AddEntry(ZMM, "Z#rightarrow#mu#mu"            , "F" );
+  leg->AddEntry(ZMM  , "Z#rightarrow#mu#mu"          , "F" );
   leg->AddEntry(TTJ  , "t#bar{t}"                    , "F" );
-  leg->AddEntry(QCD, "QCD"                           , "F" );
-  leg->AddEntry(Dibosons  , "Dibosons"               , "F" );
-  //leg->AddEntry(WJets, "WJets"                       , "F" );
+  leg->AddEntry(QCD  , "QCD"                         , "F" );
+  //leg->AddEntry(Dibosons  , "Dibosons"             , "F" );
+  leg->AddEntry(WJets, "electroweak"                 , "F" );
   $ERROR_LEGEND
   leg->Draw();
 
@@ -495,12 +495,12 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   TFile* output = new TFile(TString::Format("%s_%sscaled_%s_%s.root", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""), "update");
   output->cd();
   data ->Write("data_obs");
-  ZTT->Write("ZTT"   );
-  ZMM->Write("ZMM"     );
-  TTJ->Write("TTJ"   );
-  QCD->Write("QCD"     );
+  ZTT->Write("Ztt"   );
+  ZMM->Write("Zmm"     );
+  TTJ->Write("ttbar"   );
+  QCD->Write("Fakes"     );
   Dibosons->Write("Dibosons"   );
-  WJets->Write("WJets"     );
+  WJets->Write("EWK"     );
 #ifdef MSSM
   ggH  ->Write("ggH"     );
   bbH  ->Write("bbH"     );

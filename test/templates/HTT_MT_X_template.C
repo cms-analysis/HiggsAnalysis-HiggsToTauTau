@@ -137,8 +137,8 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
 
   const char* dataset;
-  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "#sqrt{s} = 7 TeV, L = 4.9 fb^{-1}";}
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "#sqrt{s} = 8 TeV, L = 12.0 fb^{-1}";}
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 12.0 fb^{-1}";}
 
   // open example histogram file
   TFile* input = new TFile(inputfile);
@@ -155,8 +155,8 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/ZTT"   , directory)), "ZTT"); InitHist(Ztt  , "", "", kOrange - 4, 1001);
 #ifdef MSSM
   float ggHScale = 1., bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=8, times 10 for the time being
-  if(std::string(inputfile).find("7TeV")!=std::string::npos){ ggHScale = 10*130.*0.11/1000.; bbHScale = 10*403.*0.11/1000.; }
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){ ggHScale = 10*169.*0.11/1000.; bbHScale = 10*537.*0.11/1000.; }
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){ ggHScale = 10*1300.*0.11/1000.; bbHScale = 10*4030.*0.11/1000.; }
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){ ggHScale = 10*1690.*0.11/1000.; bbHScale = 10*5370.*0.11/1000.; }
   TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH160", directory)), "ggH"); InitSignal(ggH); ggH ->Scale(ggHScale);
   TH1F* bbH    = refill((TH1F*)input->Get(TString::Format("%s/bbH160", directory)), "bbH"); InitSignal(bbH); bbH ->Scale(bbHScale);
 #else
