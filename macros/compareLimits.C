@@ -38,10 +38,13 @@ channel(std::string& label){
 	  label==std::string("0jet-ichep") ||
 	  label==std::string("2jet")       ||
 	  label==std::string("boost")      ||
+	  label==std::string("boost+0jet") ||
 	  label==std::string("boost-mvis") ||
 	  label==std::string("boost-ichep")||
 	  label==std::string("btag")       ||
+	  label==std::string("nobtag")     ||
 	  label==std::string("vbf")        ||
+	  label==std::string("vbf_0jet")   ||
 	  label==std::string("vbf-mvis")   ||
 	  label==std::string("vbf-ichep")  ||
 	  label==std::string("hgg")        ||	  
@@ -140,12 +143,15 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("0jet-ichep")) title = std::string("0-Jet (HCP on ICHEP dataset)");
   if(channel==std::string("2jet"      )) title = std::string("V(jj)H(#tau#tau)");
   if(channel==std::string("vbf"       )) title = std::string("2-Jet (VBF)");
+  if(channel==std::string("vbf+0jet"  )) title = std::string("2-Jet (VBF)");
   if(channel==std::string("vbf-mvis"  )) title = std::string("2-Jet (VBF) (with m_{vis})");
   if(channel==std::string("vbf-ichep" )) title = std::string("2-Jet (VBF) (HCP on ICHEP dataset)");
   if(channel==std::string("boost"     )) title = std::string("1-Jet");
+  if(channel==std::string("boost+0jet")) title = std::string("1-Jet");
   if(channel==std::string("boost-mvis")) title = std::string("1-Jet (with m_{vis})");
   if(channel==std::string("boost-ichep")) title = std::string("1-Jet (HCP on ICHEP dataset)");
   if(channel==std::string("btag"      )) title = std::string("B-Tag");
+  if(channel==std::string("nobtag"    )) title = std::string("No B-Tag");
   if(channel==std::string("hgg"       )) title = std::string("H#rightarrow#gamma#gamma");
   if(channel==std::string("hww"       )) title = std::string("H#rightarrowWW#rightarrow2l2#nu");
   if(channel==std::string("ltt"       )) title = std::string("WH#rightarrow#tau_{h}#tau_{h}+l");
@@ -163,7 +169,7 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("mvis"      )) title = std::string("Visible mass");
   if(channel==std::string("ichep"     )) title = std::string("On ICHEP dataset");
   if(channel==std::string("test-0"    )) title = std::string("Combined (w/o bin-by-bin)");
-  if(channel==std::string("test-1"    )) title = std::string("Old analysis");
+  if(channel==std::string("test-1"    )) title = std::string("By unblinding");
   if(channel==std::string("test-2"    )) title = std::string("Test-2");
   if(channel==std::string("test-3"    )) title = std::string("Test-3");
   if(channel==std::string("test-4"    )) title = std::string("Test-4");
@@ -192,7 +198,7 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label=" Preliminary, H#rightarrow#tau#tau, #sqrt{s} = 7-8 TeV, L=17 fb^{-1}", bool legendOnRight = true)
+void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label=" Preliminary, H#rightarrow#tau#tau, #sqrt{s} = 7-8 TeV, L=17 fb^{-1}", bool legendOnRight = true, bool legendOnTop = true)
 {
   SetStyle();
 
@@ -203,12 +209,15 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["0jet-ichep" ] = kBlue+2;
   colors["2jet"       ] = kMagenta;
   colors["vbf"        ] = kRed;
+  colors["vbf+0jet"   ] = kRed;
   colors["vbf-mvis"   ] = kRed+2;
   colors["vbf-ichep"  ] = kRed+2;
   colors["boost"      ] = kGreen;
+  colors["boost+0jet" ] = kGreen;
   colors["boost-mvis" ] = kGreen+2;
   colors["boost-ichep"] = kGreen+2;
   colors["btag"       ] = kRed;
+  colors["nobtag"     ] = kBlue;
   colors["emu"        ] = kBlue;
   colors["em"         ] = kBlue;
   colors["em-mvis"    ] = kBlue+2;
@@ -235,7 +244,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["whhh"       ] = kBlue;
   colors["cmb"        ] = kBlack;
   colors["cmb-mvis"   ] = kGray+2;
-  colors["cmb-ichep"  ] = kGray+2;
+  colors["cmb-ichep"  ] = kGray+3;
   colors["cmb+"       ] = kGray+2;
   colors["htt"        ] = kBlack;
   colors["htt+"       ] = kBlue;
@@ -493,7 +502,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       /// setup the CMS Preliminary
       if(std::string(type) == std::string("mssm-tanb")){
 	CMSPrelim(label, "", 0.15, 0.835);
-	leg0 = new TLegend(legendOnRight ? 0.60 : 0.20, hexp.size()<5 ? 0.20-0.06*hexp.size() : 0.4, legendOnRight ? 0.94 : 0.63, 0.20);
+	leg0 = new TLegend(legendOnRight?0.60:0.20, hexp.size()<5 ? (legendOnTop?0.90:0.20)-0.06*hexp.size() : (legendOnTop?0.6:0.4), legendOnRight?0.94:0.45, (legendOnTop?0.90:0.20));
 	   }
       else{
 	CMSPrelim(label, "", 0.15, 0.835);
