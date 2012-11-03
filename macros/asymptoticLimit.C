@@ -104,7 +104,7 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
     tanb_help=tanb->first;
   }
   // determine smooth curve on graph for interpolation
-  TSpline3* spline = new TSpline3("spline", graph);
+  TSpline3* spline = new TSpline3("spline", graph, "r", 3., 10.);
   // determine all crossing points with y==1 
   std::vector<CrossPoint> points = crossPoints(graph);
 
@@ -118,6 +118,10 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
     double min = (point->first-dist)>0 ? graph->GetX()[point->first-dist] : graph->GetX()[0]; 
     double max = (point->first+dist)<graph->GetN() ? graph->GetX()[point->first+dist] : graph->GetX()[graph->GetN()-1];
 
+    double y_min = (point->first-dist)>0 ? graph->GetY()[point->first-dist] : graph->GetY()[0]; 
+    double y_max = (point->first+dist)<graph->GetN() ? graph->GetY()[point->first+dist] : graph->GetY()[graph->GetN()-1];
+    double crossing  = (1.-y_min)/(y_max-y_min)*(max-min);
+				  
     double deltaM = -999.;
     double offset = min; double step_size = (max-min)/steps;
     for(unsigned int scan=0; scan<=steps; ++scan){
@@ -128,8 +132,10 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
     }
     std::cout << "****************************************************************" << std::endl;
     std::cout << "* [" << np+1 << "|" << point->second << "] asymptotic limit(";
-    std::cout << limitType(itype) << ") :" << limit << " deltaM : " << deltaM;
+    std::cout << limitType(itype) << ") :" << crossing << " -- " << limit << " deltaM : " << deltaM;
     if(((upper_exclusion && point->second) || (!upper_exclusion && !(point->second))) && !filled){
+      //std::cout << "limit is taken from linear interpolation at the moment" << std::endl;
+      //limit = crossing;
       std::cout << "    [-->to file]"; filled=true; tree->Fill();
     }
     std::cout << endl;
