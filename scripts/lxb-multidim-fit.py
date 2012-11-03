@@ -46,15 +46,15 @@ points = njobs*npoints
 model = options.fitModel.split('=')
     
 if options.collect :
-    os.system("hadd {DIR}/higgsCombine{MODEL}.MultiDimFit.mH{MASS}.root {DIR}/higgsCombine*.MultiDimFit.mH{MASS}[0-9]*-[0-9]*.root".format(
+    os.system("hadd {DIR}/higgsCombine{MODEL}.MultiDimFit.mH{MASS}.root {DIR}/higgsCombine*.MultiDimFit.mH{MASS}-[0-9]*-[0-9]*.root".format(
         DIR=input,
         MASS=input[input.rfind("/")+1:],
         MODEL=options.name
         ))
-    os.system("rm {DIR}/higgsCombine*.MultiDimFit.mH{MASS}[0-9]*-[0-9]*.root".format(
-        DIR=input,
-        MASS=input[input.rfind("/")+1:]
-        ))
+    #os.system("rm {DIR}/higgsCombine*.MultiDimFit.mH{MASS}-[0-9]*-[0-9]*.root".format(
+    #    DIR=input,
+    #    MASS=input[input.rfind("/")+1:]
+    #    ))
     print "root -l -b -q HiggsAnalysis/HiggsToTauTau/macros/contours2D.C+\\(\\\"{DIR}\\\",\\\"{MODEL}-contours\\\",\\\"{XVAL}\\\",\\\"{YVAL}\\\",\\\"scan\\\",\\\"{MODEL}\\\",\\\"{MASS}\\\"\\)"
 else :
     os.system("limit.py --multidim-fit {STABEL} --setup-only --physics-model '{MODEL}' --physics-model-options '{OPT}' {DIR}".format(
