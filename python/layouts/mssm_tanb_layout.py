@@ -31,18 +31,18 @@ layout = cms.PSet(
     ## define output label
     outputLabel = cms.string("mA-tanb"),
     ## Set true if we want to skip observed limits
-    expectedOnly = cms.bool(True),
+    #expectedOnly = cms.bool(True),
     ## print mh=125GeV bands?
     higgs125_bands = cms.bool(False),
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
-    #90.
-    100.
-   ,120.
+     90.
+   #,100.
+   #,120.
    ,130.
    ,140.
-   ,160.
-   ,180.
+   #,160.
+   #,180.
    ,200.
    ,250.  
    ,300.
@@ -53,7 +53,7 @@ layout = cms.PSet(
    ,600.
    ,700.
    ,800.
-   ,900.
-   ,1000.
+   #,900.
+   #,1000.
   ),
 )
