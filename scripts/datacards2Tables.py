@@ -7,6 +7,7 @@ parser = OptionParser(usage="usage: %prog [options]",
 parser.add_option("-i", "--input", dest="input", default="datacards", type="string", help="Path to the complete set of datacards. [Default: datacards]")
 parser.add_option("-p", "--period", dest="period", default="7TeV 8TeV", type="choice", help="Data taking period. [Default: \"7TeV, 8TeV\"]", choices=["7TeV", "8TeV", "7TeV 8TeV"])
 parser.add_option("-m", "--mass", dest="mass", default="125", type="string", help="Mass for signal sample to be included in the table. [Default: 125]")
+parser.add_option("-a", "--analysis", dest="analysis", type="string", default="sm", help="analysis type. [Default: \"sm\"]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="increase verbosity. [Default: False]")
 parser.add_option("--channels", dest="channels", default="mt, et, em, mm", type="string", help="Channels to produce the tables for. [Default: \"mt, et, em, mm\"]")
 parser.add_option("--categories", dest="categories", default="0, 1, 2, 3, 5", type="string", help="Categories to produce the tables for. [Default: \"0, 1, 2, 3, 5\"]")
@@ -33,19 +34,29 @@ import math
 from HiggsAnalysis.HiggsToTauTau.utils import contained
 
 
-def cross_section_sm (process, mass, ecms) :
+def cross_section(process, mass, ecms) :
     """
     Determine the SM cross section for given process, higgs boson mass and center of mass energy.
+    For MSSM the mass will be accompanied by the tanb value in format ma:tanb, the MSSM BR is
+    also expected to be of format BR:[AHh]tt.
     """
     xs = 0.
-    if process.find('+')>-1 :
-        sub_channels = process.split('+')
-        for sub_channel in sub_channels :
-            xs += float(os.popen("xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(
-                CHANNEL=sub_channel, MA=mass, ECMS=ecms)).read().split()[2])
+    if options.analysis == "sm" :
+        if process.find('+')>-1 :
+            sub_channels = process.split('+')
+            for sub_channel in sub_channels :
+                xs += float(os.popen("xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(
+                    CHANNEL=sub_channel, MA=mass, ECMS=ecms)).read().split()[2])
+            else :
+                xs += float(os.popen("xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(
+                    CHANNEL=process, MA=mass, ECMS=ecms)).read().split()[2])
     else :
-        xs += float(os.popen("xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(
-            CHANNEL=process, MA=mass, ECMS=ecms)).read().split()[2])
+        if "BR" in  process :
+            xs = float(os.popen("feyn-higgs-mssm br mssm {CHANNEL} {MA} {TB} model=mhmax-{ECMS}TeV | grep value".format(
+                CHANNEL=process[process.find(':')+1:], MA=mass[:mass.find(':')], TB=mass[mass.find(':')+1:], ECMS='%0.f' % ecms)).read().split()[2])/1000.
+        else :
+            xs = float(os.popen("feyn-higgs-mssm xs mssm {CHANNEL} {MA} {TB} model=mhmax-{ECMS}TeV | grep value".format(
+                CHANNEL=process[:process.find('H')]+'A', MA=mass[:mass.find(':')], TB=mass[mass.find(':')+1:], ECMS='%0.f' % ecms)).read().split()[2])/1000.
     return xs
 
 def digit(x) :
@@ -143,16 +154,27 @@ def extractor(path, period):
         category = 'btag_low'
     if '_7_' in  path:
         category = 'btag_high'
+    if '_8_' in  path:
+        category = 'nobtag'
+    if '_9_' in  path:
+        category = 'btag'        
 
     ## determine cross section for SM Higgs (in pb)
-    xsec = {
-        "ggH" : cross_section_sm("ggH"      , options.mass, float(period[:period.find("TeV")])),
-        "qqH" : cross_section_sm("qqH"      , options.mass, float(period[:period.find("TeV")])),
-        "VH"  : cross_section_sm("WH+ZH+ttH", options.mass, float(period[:period.find("TeV")])),
-        }
-    ## determine BR for SM Higgs signal
-    BR = cross_section_sm("BR", options.mass, float(period[:period.find("TeV")]))
-
+    if options.analysis == "sm" :
+        xsec = {
+            "ggH" : cross_section("ggH"      , options.mass, float(period[:period.find("TeV")])),
+            "qqH" : cross_section("qqH"      , options.mass, float(period[:period.find("TeV")])),
+            "VH"  : cross_section("WH+ZH+ttH", options.mass, float(period[:period.find("TeV")])),
+            }
+        ## determine BR for SM Higgs signal
+        BR = cross_section("BR", options.mass, float(period[:period.find("TeV")]))
+    else :
+        xsec = {
+            "ggH" : cross_section("ggA"      , options.mass, float(period[:period.find("TeV")])),
+            "bbH" : cross_section("bbA"      , options.mass, float(period[:period.find("TeV")])),
+            }
+        BR = cross_section("BR:Att", options.mass, float(period[:period.find("TeV")]))
+        
     ## number of observed events
     observed = 0
     ## rate of signal processes
@@ -200,8 +222,10 @@ def extractor(path, period):
             if first_process_line :
                 range_bkg = len(values)
                 for idx in range(len(values)) :
-                    if values[idx].isdigit() and int(values[idx]) == 0 :
-                        range_sig = idx+1
+                    ## if correct this change can catch categories where there is no
+                    ## signal included
+                    if values[idx].isdigit() and int(values[idx]) == 1 : # == 0
+                        range_sig = idx #idx+1
                         break
                 first_process_line = False
                 continue
@@ -263,6 +287,9 @@ def extractor(path, period):
     uncert_sig_split = []
     uncert_sig_summed = 0
     for i in range(0, len(rate_sig)):
+        ## the newest is that we can have categories w/o signal
+        #if len(uncert_sig) == 0 :
+        #    break
         uncert_sig_split.append(math.sqrt(uncert_sig[2+i])*rate_sig[i])
         uncert_sig_summed+=uncert_sig_split[i]*uncert_sig_split[i]
     uncert_sig_summed = math.sqrt(uncert_sig_summed)
@@ -293,9 +320,16 @@ def extractor(path, period):
 
     efficiencies = open('eff_'+channel+'_'+period+'.tmp','a')
     efficiencies.write(channel+'_'+category+"\n")
-    efficiencies.write("ggH \t %f \t %f \n" % (rate_sig[0], xsec["ggH"]*BR*lumi[channel]))
-    efficiencies.write("qqH \t %f \t %f \n" % (rate_sig[1], xsec["qqH"]*BR*lumi[channel]))
-    efficiencies.write("VH  \t %f \t %f \n" % (rate_sig[2], xsec["VH" ]*BR*lumi[channel]))
+    if options.analysis == "mssm" :
+        if len(rate_sig)>1 :
+            ## for mssm the yield needs to be multiplied with xsec*BR
+            efficiencies.write("ggH \t %f \t %f \n" % (xsec["ggH"]*BR*rate_sig[0], xsec["ggH"]*BR*lumi[channel]))
+            efficiencies.write("bbH \t %f \t %f \n" % (xsec["bbH"]*BR*rate_sig[1], xsec["bbH"]*BR*lumi[channel]))
+    else :
+        if len(rate_sig)>2 :
+            efficiencies.write("ggH \t %f \t %f \n" % (rate_sig[0], xsec["ggH"]*BR*lumi[channel]))
+            efficiencies.write("qqH \t %f \t %f \n" % (rate_sig[1], xsec["qqH"]*BR*lumi[channel]))
+            efficiencies.write("VH  \t %f \t %f \n" % (rate_sig[2], xsec["VH" ]*BR*lumi[channel]))
     efficiencies.close()
     return
 
@@ -406,7 +440,9 @@ def merge_efficiencies(channel, categories, periods) :
     lines = dict([(sub, []) for sub in subsets])
     ## combine sub-categories
     file = open('eff_'+channel+'_split.tmp')
+    file_empty = True
     for line in file :
+        file_empty = False
         values = line.split()
         if len(values) == 1 :
             subset = values[0]
@@ -414,28 +450,47 @@ def merge_efficiencies(channel, categories, periods) :
             for value in values :
                 lines[subset].append(value)
     file.close()
-
-    file = open('eff_'+channel+'.tmp', 'w')
-    for cat, subsets in categories.iteritems() :
-        file.write(channel+'_'+cat+'\n')
-        if len(subsets) == 0 :
-            file.write("%s \t %s \t %s \n" % (lines[channel+'_'+cat][0], lines[channel+'_'+cat][1], lines[channel+'_'+cat][2]))
-            file.write("%s \t %s \t %s \n" % (lines[channel+'_'+cat][3], lines[channel+'_'+cat][4], lines[channel+'_'+cat][5]))
-            file.write("%s \t %s \t %s \n" % (lines[channel+'_'+cat][6], lines[channel+'_'+cat][7], lines[channel+'_'+cat][8]))
-        else :
-            lines_summed = {
-                'ggH' : 0.,
-                'qqH' : 0.,
-                'VH'  : 0.,
-                }
-            for sub in subsets :
-                lines_summed['ggH']+=float(lines[channel+'_'+cat+'_'+sub][1])
-                lines_summed['qqH']+=float(lines[channel+'_'+cat+'_'+sub][4])
-                lines_summed['VH' ]+=float(lines[channel+'_'+cat+'_'+sub][7])
-            file.write("%s \t %f \t %s \n" % (lines[channel+'_'+cat+'_'+sub][0], lines_summed['ggH'], lines[channel+'_'+cat+'_'+sub][2]))
-            file.write("%s \t %f \t %s \n" % (lines[channel+'_'+cat+'_'+sub][3], lines_summed['qqH'], lines[channel+'_'+cat+'_'+sub][5]))
-            file.write("%s \t %f \t %s \n" % (lines[channel+'_'+cat+'_'+sub][6], lines_summed['VH' ], lines[channel+'_'+cat+'_'+sub][8]))
-    file.close()
+    if not file_empty :
+        file = open('eff_'+channel+'.tmp', 'w')
+        for cat, subsets in categories.iteritems() :
+            file.write(channel+'_'+cat+'\n')
+            if len(subsets) == 0 :
+                if options.analysis == "mssm" : 
+                    file.write("%s \t %s \t %s \n" % (lines[channel+'_'+cat][0], lines[channel+'_'+cat][1], lines[channel+'_'+cat][2]))
+                    file.write("%s \t %s \t %s \n" % (lines[channel+'_'+cat][3], lines[channel+'_'+cat][4], lines[channel+'_'+cat][5]))
+                else :
+                    file.write("%s \t %s \t %s \n" % (lines[channel+'_'+cat][0], lines[channel+'_'+cat][1], lines[channel+'_'+cat][2]))
+                    file.write("%s \t %s \t %s \n" % (lines[channel+'_'+cat][3], lines[channel+'_'+cat][4], lines[channel+'_'+cat][5]))
+                    file.write("%s \t %s \t %s \n" % (lines[channel+'_'+cat][6], lines[channel+'_'+cat][7], lines[channel+'_'+cat][8]))
+            else :
+                lines_summed = {}
+                if options.analysis == "mssm" :
+                    lines_summed = {
+                        'ggH' : 0.,
+                        'qqH' : 0.,
+                        'VH'  : 0.,
+                        }
+                else:
+                    lines_summed = {
+                        'ggH' : 0.,
+                        'bbH' : 0.,
+                        }
+                for sub in subsets :
+                    if options.analysis == "mssm" :
+                        lines_summed['ggH']+=float(lines[channel+'_'+cat+'_'+sub][1])
+                        lines_summed['bbH']+=float(lines[channel+'_'+cat+'_'+sub][4])
+                    else : 
+                        lines_summed['ggH']+=float(lines[channel+'_'+cat+'_'+sub][1])
+                        lines_summed['qqH']+=float(lines[channel+'_'+cat+'_'+sub][4])
+                        lines_summed['VH' ]+=float(lines[channel+'_'+cat+'_'+sub][7])
+                if options.analysis == "mssm" :
+                    file.write("%s \t %f \t %s \n" % (lines[channel+'_'+cat+'_'+sub][0], lines_summed['ggH'], lines[channel+'_'+cat+'_'+sub][2]))
+                    file.write("%s \t %f \t %s \n" % (lines[channel+'_'+cat+'_'+sub][3], lines_summed['bbH'], lines[channel+'_'+cat+'_'+sub][5]))
+                else :
+                    file.write("%s \t %f \t %s \n" % (lines[channel+'_'+cat+'_'+sub][0], lines_summed['ggH'], lines[channel+'_'+cat+'_'+sub][2]))
+                    file.write("%s \t %f \t %s \n" % (lines[channel+'_'+cat+'_'+sub][3], lines_summed['qqH'], lines[channel+'_'+cat+'_'+sub][5]))
+                    file.write("%s \t %f \t %s \n" % (lines[channel+'_'+cat+'_'+sub][6], lines_summed['VH' ], lines[channel+'_'+cat+'_'+sub][8]))
+        file.close()
 
 def make_tables(channel, categories, category_labels):
     """
@@ -514,6 +569,7 @@ def make_tables(channel, categories, category_labels):
         "Data"     : 'Data                         ',
         "ggH"      : 'gg$\\rightarrow$ H           ',
         "qqH"      : 'qq$\\rightarrow$ H           ',
+        "bbH"      : 'bb$\\rightarrow$ H           ',
         "VH"       : 'qq$\\rightarrow$ Ht$\overline{\\rm{t}}$ or VH ',
                 }
     ## add yields for all samples, sum of all backgrounds and summed signal
@@ -555,15 +611,28 @@ def make_tables(channel, categories, category_labels):
 
     effs = {}
     lines = {}
-    for sig in ['ggH', 'qqH', 'VH'] :
+    signals_samples = []
+    if options.analysis == 'mssm' :
+        signal_samples = ['ggH', 'bbH']
+    else :
+        signal_samples = ['ggH', 'qqH', 'VH']
+    for sig in signal_samples :
         lines[sig]  = sample_labels[sig]
     for cat, values in records.iteritems() :
-        effs['ggH'] = '%.2e' % (float(values[1])/float(values[2]))
-        effs['qqH'] = '%.2e' % (float(values[4])/float(values[5]))
-        effs['VH' ] = '%.2e' % (float(values[7])/float(values[8]))
-        for sig in ['ggH', 'qqH', 'VH'] :
-            lines[sig] += "\t & \t \multicolumn{2}{|c|}{%s $\cdot 10^{-%d}$}" % (effs[sig][:effs[sig].find('e')], int(effs[sig][effs[sig].find('-')+1:]))
-    for sig in ['ggH', 'qqH', 'VH'] :
+        if len(values)>0 :
+            if options.analysis == "mssm" :
+                effs['ggH'] = '%.2e' % (float(values[1])/float(values[2]))
+                effs['bbH'] = '%.2e' % (float(values[4])/float(values[5]))
+            else :
+                effs['ggH'] = '%.2e' % (float(values[1])/float(values[2]))
+                effs['qqH'] = '%.2e' % (float(values[4])/float(values[5]))
+                effs['VH' ] = '%.2e' % (float(values[7])/float(values[8]))
+            for sig in signal_samples :
+                lines[sig] += "\t & \t \multicolumn{2}{|c|}{%s $\cdot 10^{-%d}$}" % (effs[sig][:effs[sig].find('e')], int(effs[sig][effs[sig].find('-')+1:]))
+        else :
+            for sig in signal_samples :
+                lines[sig] += "\t & \t \multicolumn{2}{|c|}{ - }"
+    for sig in signal_samples :
         lines[sig] += "\\\\ \n"
         output.write(lines[sig])
         output.write("\\hline \n")
@@ -572,7 +641,6 @@ def make_tables(channel, categories, category_labels):
     output.write("\\label{tab:cutflow-%s-%s} \n" % (channel, "7+8TeV"))
     output.write("\\end{center} \n")
     output.write("\\end{table*} \n")
-
     return
     
 
@@ -588,47 +656,53 @@ for idx in range(len(periods)) : periods[idx] = periods[idx].rstrip(',')
 ## extended dictionary of subsets to be contracted (used for merging of table yields)
 if len(periods) == 1 and contained('7TeV', periods) :
     subsets_extended = {
-        "0jet"  : ["low_7TeV", "high_7TeV"],
-        "boost" : ["low_7TeV", "high_7TeV"],
-        "vbf"   : ["7TeV"],
-       #"btag"  : ["low_7TeV", "high_7TeV"],
+       #"0jet"  : ["low_7TeV", "high_7TeV"],
+       #"boost" : ["low_7TeV", "high_7TeV"],
+       #"vbf"   : ["7TeV"],
+        "btag"  : ["7TeV"],
+        "nobtag": ["7TeV"],
         }
 if len(periods) == 1 and contained('8TeV', periods) :
     subsets_extended = {
        #"0jet"     : ["low_8TeV", "high_8TeV"],
        #"boost"    : ["low_8TeV", "high_8TeV"],
-        "boost" : ["8TeV"], ##for tt
-        "vbf"   : ["8TeV"],
-       #"btag"  : ["low_8TeV", "high_8TeV"],
+       #"boost" : ["8TeV"], ##for tt
+       #"vbf"   : ["8TeV"],
+        "btag"  : ["8TeV"],
+        "nobtag": ["8TeV"],
         }
 if contained('7TeV', periods) and contained('8TeV', periods) :
     subsets_extended = {
-        "0jet"  : ["low_7TeV", "low_8TeV", "high_7TeV", "high_8TeV"],
-        "boost" : ["low_7TeV", "low_8TeV", "high_7TeV", "high_8TeV"],
-        "vbf"   : ["7TeV", "8TeV"],
-       #"btag"  : ["low_7TeV", "low_8TeV", "high_7TeV", "high_8TeV"],
+       #"0jet"  : ["low_7TeV", "low_8TeV", "high_7TeV", "high_8TeV"],
+       #"boost" : ["low_7TeV", "low_8TeV", "high_7TeV", "high_8TeV"],
+       #"vbf"   : ["7TeV", "8TeV"],
+        "btag"  : ["7TeV", "8TeV"],
+        "nobtag": ["7TeV", "8TeV"],
         }
 ## compact dictionary of subsets to be contraced (used fro mergin of efficiencies)
 subsets_compact  = {
    #'0jet'     : ['low', 'high'],
    #'boost'    : ['low', 'high'],
-    'boost'    : [], ##for tt
-    'vbf'      : [],
-   #'btag'  : ['low', 'high'],
+   #'boost'    : [], ##for tt
+   #'vbf'      : [],
+    'btag'     : [],
+    'nobtag'   : [],
     }
 ## categories to be shown in the table(s)
 categories_in_table = [
    #'0jet',
-   'boost',
-   'vbf',
-   #'btag'
+   #'boost',
+   #'vbf',
+    'btag',
+    'nobtag',
     ]
 ## category labels for categories to be shown in table(s)
 category_labels_in_table = {
-    '0jet'     : "\emph{0-Jet}",
-    'boost'    : "\emph{1-Jet}",
-    'vbf'      : "\emph{VBF}",
+   #'0jet'     : "\emph{0-Jet}",
+   #'boost'    : "\emph{1-Jet}",
+   #'vbf'      : "\emph{VBF}",
     'btag'     : "\emph{B-Tag}",
+    'nobtag'   : "\emph{No B-Tag}",
     }
 
 os.system("rm -f *.tmp")
@@ -645,4 +719,4 @@ for chn in channels :
     merge_efficiencies(chn, subsets_compact, periods)
     ## make formated tex tables from compactified input 
     make_tables(chn, categories_in_table, category_labels_in_table)
-#os.system("rm *.tmp")
+os.system("rm *.tmp")
