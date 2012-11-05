@@ -348,10 +348,11 @@ for directory in args :
         idx = directory.rfind("/")
         if idx == (len(directory) - 1):
             idx = directory[:idx - 1].rfind("/")
-        mass_string  = directory[idx + 1:]
-        mass_regex   = r"(?P<mass>[\+\-0-9\s]+)[a-zA-Z0-9]*"
-        mass_matcher = re.compile(mass_regex)
-        mass_value   = mass_matcher.match(mass_string).group('mass')
+        mass_value  = directory[idx + 1:]
+        #mass_string  = directory[idx + 1:]
+        #mass_regex   = r"(?P<mass>[\+\-0-9\s]+)[a-zA-Z0-9]*"
+        #mass_matcher = re.compile(mass_regex)
+        #mass_value   = mass_matcher.match(mass_string).group('mass')
         ## combine datacard from all datacards in this directory
         os.system("combineCards.py -S *.txt > tmp.txt")
         ## prepare binary workspace
@@ -549,10 +550,11 @@ for directory in args :
         idx = directory.rfind("/")
         if idx == (len(directory) - 1):
             idx = directory[:idx - 1].rfind("/")
-        mass_string  = directory[idx + 1:]
-        mass_regex   = r"(?P<mass>[\+\-0-9\s]+)[a-zA-Z0-9]*"
-        mass_matcher = re.compile(mass_regex)
-        mass_value   = mass_matcher.match(mass_string).group('mass')
+        mass_value  = directory[idx + 1:]
+        #mass_string  = directory[idx + 1:]
+        #mass_regex   = r"(?P<mass>[\+\-0-9\s]+)[a-zA-Z0-9]*"
+        #mass_matcher = re.compile(mass_regex)
+        #mass_value   = mass_matcher.match(mass_string).group('mass')
         ## combine datacard from all datacards in this directory
         inputcards = ""
         for card in os.listdir(".") :
