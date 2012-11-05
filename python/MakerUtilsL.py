@@ -195,7 +195,7 @@ class DBuilder:
         histName = category + "/" + sample
         if mass>0 :
             histName += mass
-        #print "histName = %s" % histName
+        #print "histogram name =", histName
         hist = f.Get(histName)
         #print hist
         if hist:
@@ -220,6 +220,7 @@ class DBuilder:
                     raise Exception('Failed to find sample %s in RooWorkspace %s in file %s' % (sample, wsPath, self.rootfile))
         #print "type of hist is:",type(hist)
         #print "rate of %s in category %s is " % (sample,category),hist.Integral()
+        #print "histogram normalization = ", rate
         return rate
 
     def write(self):
