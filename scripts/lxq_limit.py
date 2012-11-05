@@ -13,11 +13,11 @@ a separate NAF batch job.  NB the use of quotes about ARG_GLOB.
 
 Note also you may need to escape the quotes around sub-arguments.  For example,
 
-    limit.py --tanb+ --userOpt '--minosAlgo stepping' cmb/*
+    limit.py --tanb+ --tanb-parallel 4 --userOpt '--minosAlgo stepping' cmb/*
 
 would be
 
-    lxq_limit.py my_limits "-j y -o /dev/null" "cmb/*"  "--tanb+ --tanbparallel 4 --userOpt '--minosAlgo stepping'"
+    lxq_limit.py my_limits "-j y -o /dev/null" "cmb/*"  "--tanb+ --tanb-parallel 4 --userOpt '--minosAlgo stepping'"
 
 will produce
 
