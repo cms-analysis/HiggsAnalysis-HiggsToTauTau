@@ -36,7 +36,7 @@ import logging
 import os
 import sys
 
-log = logging.getLogger("lxb_limit")
+log = logging.getLogger("lxq_limit")
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 if len(sys.argv) < 5:
