@@ -11,6 +11,7 @@ parser.add_option("-o", "--out", dest="out", default="auxiliaries/datacards", ty
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="Choose between run periods [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
 parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string", help="List of channels, for which datacards should be created. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt. [Default: \"mm em mt et\"]")
+parser.add_option("-m", "--merge-no-signal", dest="merge", default=False, action="store_true", help="Merge the 0-Jet event categories, which are  w/o signal into the boost low pt event category. [Default: \"True\"]")
 parser.add_option("--SM4", dest="SM4", default=False, action="store_true", help="Re-scale signal samples in input file according to SM4 cross section*BR before datacard creation. [Default: False]")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
@@ -137,6 +138,16 @@ if options.analysis == "mssm" :
         #"hmm"  : options.hmm_mssm_categories.split(),
         }
 
+## return closest simulated masspoint to value
+def closest_simulated_masspoint(value) :
+    delta = -1
+    closest = 150
+    for mass in [110, 115, 120, 125, 130, 135, 140, 150] :
+        if delta<0 or abs(float(value)-mass)<delta :
+            delta = abs(float(value)-mass)
+            closest = mass
+    return closest
+    
 ## start the process here
 base = os.getcwd()
 for channel in channels :
@@ -152,22 +163,69 @@ for channel in channels :
             os.system("datacard-project.py -i {PATH} -c {CHN} -e {ANA}-{PER}-0{CAT} {PER}-0{CAT}".format(PATH="%s/src/%s" % (os.environ["CMSSW_BASE"], options.input), CHN=channel, ANA=options.analysis, PER=period, CAT=cat))
             os.chdir("{PWD}/{CHN}/{PER}-0{CAT}".format(CHN=prefix+channel, PER=period, PWD=base, CAT=cat))
             for mass in parseArgs(args) :
+                ## fudge masspoints for mm, which cannot use 1d-horizontal template morphing
+                fudge_mass = mass
+                fudge_mm_datacards = False
+                if "mm" in channel :
+                    mass = closest_simulated_masspoint(mass)
+                    fudge_mm_datacards = float(fudge_mass)-float(mass)!=0
                 ## check validity of mass
                 if (float(mass)< valid_masses[channel][0] or float(mass)> valid_masses[channel][1]) :
                     #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass
                     continue
-                print "creating datacard for:", options.analysis, period, channel, cat, mass
+                print "creating datacard for:", options.analysis, period, channel, cat, fudge_mass
                 if options.analysis == "mssm" :
                     os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{PER}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
-                        CHN=prefix+channel, ANA=options.analysis, PER=period, MASSCAT=mass_category(mass), CAT=cat, MASS=mass))
+                        CHN=prefix+channel,
+                        ANA=options.analysis,
+                        PER=period,
+                        #MASSCAT=mass,
+                        CAT=cat,
+                        MASS=mass
+                        ))
                 if options.analysis == "sm" :
                     if options.SM4 :
                         print "rescaling signal cross sections accoring to SM4 cross sections"
                         os.system(r"root -q -l -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescale2SM4.C+\(true,\"{CHN}.inputs-{per}.root\"\)".format(
-                            CMSSW_BASE=os.environ['CMSSW_BASE'], CHN=channel, per=period.lowe()))
+                            CMSSW_BASE=os.environ['CMSSW_BASE'],
+                            CHN=channel,
+                            per=period.lower()
+                            ))
                     os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{per}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
-                        CHN=prefix+channel, ANA=options.analysis, per=period, CAT=cat, PER=period, MASS=mass))
+                        CHN=prefix+channel,
+                        ANA=options.analysis,
+                        per=period,
+                        CAT=cat,
+                        PER=period,
+                        MASS=mass
+                        ))
+                    if "mm" in channel and fudge_mm_datacards :
+                        os.system("cp {CHN}_{CAT}_{PER}-{MASS}.txt {CHN}_{CAT}_{PER}-{FUDGE_MASS}.txt".format(
+                            CHN=prefix+channel,
+                            CAT=cat,
+                            PER=period,
+                            MASS=mass,
+                            FUDGE_MASS=fudge_mass
+                            ))
+                        os.system("perl -pi -e 's/\$MASS/{MASS}/g' {CHN}_{CAT}_{PER}-{FUDGE_MASS}.txt".format(
+                            MASS=mass,
+                            CHN=prefix+channel,
+                            CAT=cat,
+                            PER=period,
+                            FUDGE_MASS=fudge_mass
+                            )) 
             os.system("mv *.* ../")
             os.chdir("{PWD}/{CHN}".format(CHN=prefix+channel, PWD=base))
             os.system("rm -r {PER}-0{CAT}".format(PER=period, CAT=cat))
             os.system("rm -r cgs.* unc.*")
+if options.merge :
+    for channel in channels :
+        for period in periods :
+            if "tt" in channel :
+                continue
+            prefix = "" if (channel == "vhtt" or channel == "vhbb") else "htt_"
+            os.chdir("{PWD}/{CHN}".format(CHN=prefix+channel, PWD=base))
+            for mass in parseArgs(args) :
+                os.system("combineCards.py -S {CHN}_0_{PER}-{MASS}.txt {CHN}_1_{PER}-{MASS}.txt {CHN}_2_{PER}-{MASS}.txt {CHN}_3_{PER}-{MASS}.txt > {CHN}_4_{PER}-{MASS}.txt".format(
+                    CHN=prefix+channel, PER=period, MASS=mass))
+                
