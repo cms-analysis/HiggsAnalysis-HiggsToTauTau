@@ -248,7 +248,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   canv->cd();
   if(log){ canv->SetLogy(1); }
 #if defined MSSM
-  data->GetXaxis()->SetRange(0, data->FindBin(1000));
+  if(!log){ data->GetXaxis()->SetRange(0, data->FindBin(350)); } else{ data->GetXaxis()->SetRange(0, data->FindBin(1000)); };
 #else
   data->GetXaxis()->SetRange(0, data->FindBin(350));
 #endif
