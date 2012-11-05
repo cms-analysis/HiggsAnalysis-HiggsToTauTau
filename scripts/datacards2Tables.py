@@ -608,7 +608,7 @@ def make_tables(channel, categories, category_labels):
             for value in values :
                 records[cat].append(value)
     file.close()
-
+    
     effs = {}
     lines = {}
     signals_samples = []
@@ -618,7 +618,8 @@ def make_tables(channel, categories, category_labels):
         signal_samples = ['ggH', 'qqH', 'VH']
     for sig in signal_samples :
         lines[sig]  = sample_labels[sig]
-    for cat, values in records.iteritems() :
+    for cat in categories :
+        values = records[cat]
         if len(values)>0 :
             if options.analysis == "mssm" :
                 effs['ggH'] = '%.2e' % (float(values[1])/float(values[2]))
@@ -719,4 +720,4 @@ for chn in channels :
     merge_efficiencies(chn, subsets_compact, periods)
     ## make formated tex tables from compactified input 
     make_tables(chn, categories_in_table, category_labels_in_table)
-os.system("rm *.tmp")
+#os.system("rm *.tmp")
