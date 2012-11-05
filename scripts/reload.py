@@ -133,7 +133,23 @@ if not options.skip_setup :
                         CHN=chn,
                         ANA=ana,
                         PER=per
-                        ))                    
+                        ))
+    ## setup ichep-on-hcp
+    if os.path.exists("{DIR}/hcp-ichep-on-hcp".format(DIR=source)) :
+        os.system("rm -r {DIR}/hcp-ichep-on-hcp".format(DIR=source))
+    os.system("cp -r {DIR}/hcp {DIR}/hcp-ichep-on-hcp".format(
+        DIR=source
+        ))
+    for chn in aux :
+        for ana in ['sm'] :
+            for per in ['7TeV', '8TeV'] :
+                if chn == 'em' or chn == 'mt' or chn == 'et':
+                    os.system("mv {DIR}/hcp-ichep-on-hcp/{CHN}/htt_{CHN}.inputs-{ANA}-{PER}-ichep-on-hcp.root {DIR}/hcp-ichep-on-hcp/{CHN}/htt_{CHN}.inputs-{ANA}-{PER}.root".format(
+                        DIR=source,
+                        CHN=chn,
+                        ANA=ana,
+                        PER=per
+                        ))
 if not options.skip_datacards :
     ## setup datacards
     datacards = "{CMSSW_BASE}/src/aux".format(CMSSW_BASE=cmssw_base)
@@ -145,7 +161,7 @@ if not options.skip_datacards :
     #if os.path.exists(datacards+'/mssm') :
     #    os.system("rm -r {DIR}/mssm".format(DIR=datacards))
     #os.system("mkdir {DIR}/mssm".format(DIR=datacards))
-    for ana in ['hcp', 'hcp-bin-by-bin', 'hcp-mvis', 'hcp-ichep', 'hcp-mssm'] :
+    for ana in ['hcp', 'hcp-bin-by-bin', 'hcp-mvis', 'hcp-ichep', 'hcp-ichep-on-hcp', 'hcp-mssm'] :
         if not options.skip_sm :
             print "setup datacards for:", ana, "sm"  
             os.system("setup-datacards.py -i setups/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt mm tt' {MASSES}".format(
@@ -172,7 +188,7 @@ if not options.skip_limits :
     #if os.path.exists(limits+'/mssm') :
     #    os.system("rm -r {DIR}/mssm".format(DIR=limits))
     #os.system("mkdir {DIR}/mssm".format(DIR=limits))
-    for ana in ['hcp', 'hcp-bin-by-bin', 'hcp-mvis', 'hcp-ichep', 'hcp-mssm'] :
+    for ana in ['hcp', 'hcp-bin-by-bin', 'hcp-mvis', 'hcp-ichep', 'hcp-ichep-on-hcp', 'hcp-mssm'] :
         label = ""
         if not ana == 'hcp-mssm':
             if 'mvis' in ana or 'ichep' in ana :
