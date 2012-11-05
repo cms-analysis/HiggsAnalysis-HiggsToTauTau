@@ -11,7 +11,7 @@ parser.add_option("-o", "--out", dest="out", default="auxiliaries/datacards", ty
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="Choose between run periods [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
 parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string", help="List of channels, for which datacards should be created. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt. [Default: \"mm em mt et\"]")
-parser.add_option("-m", "--merge-no-signal", dest="merge", default=False, action="store_true", help="Merge the 0-Jet event categories, which are  w/o signal into the boost low pt event category. [Default: \"True\"]")
+parser.add_option("-m", "--merge-no-signal", dest="merge", default=False, action="store_true", help="Merge the 0-Jet event categories, which are  w/o signal into the boost low pt event category. [Default: \"False\"]")
 parser.add_option("--SM4", dest="SM4", default=False, action="store_true", help="Re-scale signal samples in input file according to SM4 cross section*BR before datacard creation. [Default: False]")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
@@ -166,7 +166,7 @@ for channel in channels :
                 ## fudge masspoints for mm, which cannot use 1d-horizontal template morphing
                 fudge_mass = mass
                 fudge_mm_datacards = False
-                if "mm" in channel :
+                if options.analysis == "sm" and "mm" in channel :
                     mass = closest_simulated_masspoint(mass)
                     fudge_mm_datacards = float(fudge_mass)-float(mass)!=0
                 ## check validity of mass
@@ -218,6 +218,7 @@ for channel in channels :
             os.chdir("{PWD}/{CHN}".format(CHN=prefix+channel, PWD=base))
             os.system("rm -r {PER}-0{CAT}".format(PER=period, CAT=cat))
             os.system("rm -r cgs.* unc.*")
+
 if options.merge :
     for channel in channels :
         for period in periods :
