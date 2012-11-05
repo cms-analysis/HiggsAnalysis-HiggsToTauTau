@@ -1,3 +1,4 @@
+
 ## ------------------------------------------------------------------------------------------------------
 ## This is the input card to copy all necessary input root files to calculate htt limits for SM and MSSM 
 ## into the local copy of the cvs HiggsAnalysis/HiggsToTauTau package. These files can not be stored in
@@ -19,11 +20,13 @@ feyn-higgs-mssm-scan-gluph-7TeV.root       auxiliaries/models/feyn-higgs-mssm-67
 feyn-higgs-mssm-scan-gluph-7TeV-fine.root  auxiliaries/models/feyn-higgs-mssm-8736-mA50-1000-tb1-10-gluph-7TeV.root
 out.mhmax-mu-400-7TeV-nnlo.root		   auxiliaries/models/out.mhmax-mu-400-7TeV-nnlo.root
 out.mhmax-mu-200-7TeV-nnlo.root            auxiliaries/models/out.mhmax-mu-200-7TeV-nnlo.root
-out.mhmax-mu+200-7TeV-nnlo.root            auxiliaries/models/out.mhmax-mu+200-7TeV-nnlo.root
+out.mhmax-mu+200-7TeV-tanbHigh-nnlo.root   auxiliaries/models/out.mhmax-mu+200-7TeV-tanbHigh-nnlo.root
+out.mhmax-mu+200-7TeV-tanbLow-nnlo.root	   auxiliaries/models/out.mhmax-mu+200-7TeV-tanbLow-nnlo.root
 out.mhmax-mu+400-7TeV-nnlo.root            auxiliaries/models/out.mhmax-mu+400-7TeV-nnlo.root
 out.mhmax-mu+600-7TeV-nnlo.root            auxiliaries/models/out.mhmax-mu+600-7TeV-nnlo.root
 out.mhmax-mu+800-7TeV-nnlo.root            auxiliaries/models/out.mhmax-mu+800-7TeV-nnlo.root
 out.nomix-mu+200-7TeV-nnlo.root            auxiliaries/models/out.nomix-mu+200-7TeV-nnlo.root
 out.nomix-mu-200-7TeV-nnlo.root            auxiliaries/models/out.nomix-mu-200-7TeV-nnlo.root
-out.mhmax-mu+200-8TeV-nnlo.root            auxiliaries/models/out.mhmax-mu+200-8TeV-nnlo.root
+out.mhmax-mu+200-8TeV-tanbHigh-nnlo.root   auxiliaries/models/out.mhmax-mu+200-7TeV-tanbHigh-nnlo.root
+out.mhmax-mu+200-8TeV-tanbLow-nnlo.root    auxiliaries/models/out.mhmax-mu+200-7TeV-tanbLow-nnlo.root
 out.nomix-mu+200-8TeV-nnlo.root            auxiliaries/models/out.nomix-mu+200-8TeV-nnlo.root
