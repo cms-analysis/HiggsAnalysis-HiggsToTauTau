@@ -33,8 +33,9 @@ def is_integer(elem):
 
 def parseArgs(args) :
     """
-    parse a list of arguments which can be intergers or of type intA-intB
-    where intA<=intB and fill this list of arguments into a list if ints
+    parse a list of arguments which can be floats, intergers or of type
+    intA-intB where intA<=intB and both intA and intB have to be integers
+    and fill this list of arguments into a list
     """
     list = []
     for elem in args :
