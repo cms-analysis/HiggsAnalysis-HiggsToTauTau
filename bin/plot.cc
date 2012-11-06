@@ -1,4 +1,5 @@
 #include <vector>
+#include <sstream>
 
 #include "HiggsAnalysis/HiggsToTauTau/interface/PlotLimits.h"
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
@@ -9,7 +10,37 @@ void help()
   return;
 }
 
-int main(int argc, char* argv[]) 
+
+// http://www.cplusplus.com/articles/D9j2Nwbp/
+template <typename T> T StringToNumber (const std::string& Text) {
+  std::istringstream ss(Text);
+  T result;
+  ss >> result;
+  return result;
+}
+
+// Add a parameter to parameterset, in a string key=value format.
+void addParameter(edm::ParameterSet& pset, const std::string& key, const std::string& value) {
+  std::cout << "Updating parameter " << key << " to " << value << " in layout." << std::endl;
+  if (pset.existsAs<int>(key))
+    pset.addParameter<int>(key, StringToNumber<int>(value));
+  else if (pset.existsAs<unsigned int>(key))
+    pset.addParameter<unsigned int>(key, StringToNumber<unsigned int>(value));
+  else if (pset.existsAs<bool>(key))
+    // We use 0 or 1 for bool
+    pset.addParameter<unsigned int>(key, StringToNumber<unsigned int>(value));
+  else if (pset.existsAs<double>(key))
+    // We use 0 or 1 for bool
+    pset.addParameter<double>(key, StringToNumber<double>(value));
+  else if (pset.existsAs<std::string>(key))
+    pset.addParameter<std::string>(key, StringToNumber<std::string>(value));
+  else {
+    std::cout << "Adding new parameter " << key << " to layout."  << std::endl;
+    pset.addParameter<std::string>(key, StringToNumber<std::string>(value));
+  }
+}
+
+int main(int argc, char* argv[])
 {
   std::vector<std::string> types;
   types.push_back(std::string("CLs"));
@@ -27,7 +58,7 @@ int main(int argc, char* argv[])
 
   // parse arguments
   if ( argc < 3 ) {
-    std::cout << "Usage : " << argv[0] << " [limit-type] [layout.py] [target-dir]" << std::endl;
+    std::cout << "Usage : " << argv[0] << " [limit-type] [layout.py] [target-dir] [option1=value1 [option2=value2]]" << std::endl;
     return 0;
   }
   if( std::find(types.begin(), types.end(), std::string(argv[1])) == types.end() ){
@@ -41,9 +72,27 @@ int main(int argc, char* argv[])
   if( !edm::readPSetsFrom(argv[2])->existsAs<edm::ParameterSet>("layout") ){
     std::cout << " Error: ParameterSet 'layout' is missing in your configuration file" << std::endl; exit(0);
   }
-  bool mssm = edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").getParameter<bool>("mssm");
-  bool significance = edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").existsAs<bool>("significance") ? edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").getParameter<bool>("significance") : false;
-  bool expected_only = edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").existsAs<bool>("expectedOnly") ? edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout").getParameter<bool>("expectedOnly") : false;
+  edm::ParameterSet layout =  edm::readPSetsFrom(argv[2])->getParameterSet("layout");
+
+  // Update layout with overridden options
+  if (argc > 4) {
+    for (int i = 4; i < argc; ++i) {
+      std::string argument(argv[i]);
+      size_t equals_pos = argument.find("=");
+      if (equals_pos == std::string::npos) {
+        std::cerr << "I don't understand the layout override: " << argument <<
+          " The format should be key=value" << std::endl;
+        exit(1);
+      }
+      std::string key = argument.substr(0, equals_pos);
+      std::string value = argument.substr(equals_pos+1, argument.length() - equals_pos+1);
+      addParameter(layout, key, value);
+    }
+  }
+
+  bool mssm = layout.getParameter<bool>("mssm");
+  bool significance = layout.existsAs<bool>("significance") ? layout.getParameter<bool>("significance") : false;
+  bool expected_only = layout.existsAs<bool>("expectedOnly") ? layout.getParameter<bool>("expectedOnly") : false;
 
   /// get intput directory up to one before mass points
   const char* directory ((std::string(argv[1]).find("HIG")==std::string::npos) ? argv[3] : argv[1]);
@@ -53,7 +102,7 @@ int main(int argc, char* argv[])
     directory_string = directory_string.substr(0, directory_string.rfind("/"));
   }
   std::string out(directory_string.substr(directory_string.rfind("/")+1));
-  PlotLimits plot(out.c_str(), edm::readPSetsFrom(argv[2])->getParameter<edm::ParameterSet>("layout"));
+  PlotLimits plot(out.c_str(), layout);
 
   /*
     Implementations (as dirty hardcoded list)
@@ -61,10 +110,10 @@ int main(int argc, char* argv[])
 
   if( std::string(argv[1]) == std::string("CLs") ){
     /*
-    Plotting of CLs type limits 
+    Plotting of CLs type limits
     */
-    /// observed limit 
-    TGraph* observed  = 0; 
+    /// observed limit
+    TGraph* observed  = 0;
     if(!expected_only){
       observed = new TGraph();
       plot.fillCentral(directory, observed, "higgsCombineTest.HybridNew.$MASS");
@@ -87,7 +136,7 @@ int main(int argc, char* argv[])
     /*
       Plotting of CLs or asymptotic limits in tanb style
     */
-    /// observed limit 
+    /// observed limit
     TGraph* observed  = 0;
     if(!expected_only){
       observed = new TGraph();
@@ -108,7 +157,7 @@ int main(int argc, char* argv[])
     plot.plotTanb(*canv, inner, outer, expected, observed, directory);
   }
   if( std::string(argv[1]) == std::string("bayesian") ){
-    /// observed limit 
+    /// observed limit
     TGraph* observed  = 0;
     if(!expected_only){
       observed = new TGraph();
@@ -129,7 +178,7 @@ int main(int argc, char* argv[])
     plot.plot(*canv, inner, outer, expected, observed);
   }
   if( std::string(argv[1]) == std::string("injected") ){
-    /// observed limit 
+    /// observed limit
     TGraph* observed  = 0;
     if(!expected_only){
       observed = new TGraph();
@@ -150,7 +199,7 @@ int main(int argc, char* argv[])
     plot.plot(*canv, inner, outer, expected, observed);
   }
   if( std::string(argv[1]) == std::string("significance") ){
-    /// observed limit 
+    /// observed limit
     TGraph* observed  = 0;
     if(!expected_only){
       observed = new TGraph();
@@ -176,7 +225,7 @@ int main(int argc, char* argv[])
     }
   }
   if( std::string(argv[1]) == std::string("asymptotic") ){
-    /// observed limit 
+    /// observed limit
     TGraph* observed  = 0;
     if(!expected_only){
       observed = new TGraph();
@@ -219,7 +268,7 @@ int main(int argc, char* argv[])
     plot.plotMDF(*canv, inner, 0, expected, 0, directory);
   }
   if( std::string(argv[1]) == std::string("HIG-11-020") ){
-    /// observed limit 
+    /// observed limit
     TGraph* observed  = 0;
     if(!expected_only){
       observed = new TGraph();
@@ -238,17 +287,17 @@ int main(int argc, char* argv[])
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     /*
-      plots the layout corresponding to cross sectino limits 
+      plots the layout corresponding to cross sectino limits
     */
-    //plot.plot(*canv, inner, outer, expected, observed);  
+    //plot.plot(*canv, inner, outer, expected, observed);
     /*
       plots the layout corresponding to the direct tanb limits
     */
-    plot.plotTanb(*canv, inner, outer, expected, observed);  
+    plot.plotTanb(*canv, inner, outer, expected, observed);
   }
   if( std::string(argv[1]) == std::string("HIG-11-029") ){
-    /// observed limit 
-    TGraph* observed  = 0; 
+    /// observed limit
+    TGraph* observed  = 0;
     if(!expected_only){
       observed = new TGraph();
       plot.fillCentral("HIG-11-029", observed, "HIG-11-029-observed");
@@ -273,8 +322,8 @@ int main(int argc, char* argv[])
     }
   }
   if( std::string(argv[1]) == std::string("HIG-12-018") ){
-    /// observed limit 
-    TGraph* observed  = 0; 
+    /// observed limit
+    TGraph* observed  = 0;
     if(!expected_only){
       observed = new TGraph();
       plot.fillCentral("HIG-12-018", observed, "HIG-12-018-observed");
@@ -294,8 +343,8 @@ int main(int argc, char* argv[])
     plot.plot(*canv, inner, outer, expected, observed);
   }
   if( std::string(argv[1]) == std::string("HIG-12-032") ){
-    /// observed limit 
-    TGraph* observed  = 0; 
+    /// observed limit
+    TGraph* observed  = 0;
     if(!expected_only){
       observed = new TGraph();
       plot.fillCentral("HIG-12-032", observed, "HIG-12-032-observed");
