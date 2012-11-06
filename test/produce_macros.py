@@ -136,7 +136,7 @@ class Analysis:
 		             input = TFile("root/"+self.histfile)
                              #print "file: ", input.GetName()
 		             for key in input.GetListOfKeys():
-		               if self.category in key.GetName():
+		               if "_"+self.category in key.GetName():
                                    remnant = cand_str.rstrip(process_name)
 			           histname=key.GetName()+"/"+word_arr[0][len(remnant)+2:].strip().rstrip()
                              hist = input.Get(histname)
@@ -172,7 +172,7 @@ class Analysis:
 		         print shape_name
 		       input = TFile("root/"+self.histfile)
 		       for key in input.GetListOfKeys():
-		           if self.category in key.GetName():
+		           if "_"+self.category in key.GetName():
                                remnant = cand_str.rstrip(process_name)
 			       histname=key.GetName()+"/"+word_arr[0][len(remnant)+2:].strip().rstrip()
                        hist = input.Get(histname)
