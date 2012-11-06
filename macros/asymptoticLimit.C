@@ -105,6 +105,8 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
   }
   // determine smooth curve on graph for interpolation
   TSpline3* spline = new TSpline3("spline", graph, "r", 3., 10.);
+  // linear polarisation func
+  TF1 *fnc;
   // determine all crossing points with y==1 
   std::vector<CrossPoint> points = crossPoints(graph);
 
@@ -115,6 +117,7 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
   if(points.size()>0) limit = graph->GetX()[upper_exclusion ? points.begin()->first : points.end()->first];
 
   for(std::vector<CrossPoint>::const_reverse_iterator point = points.rbegin(); point!=points.rend(); ++point, ++np){
+  //for(std::vector<CrossPoint>::iterator point = points.begin(); point!=points.end(); ++point, ++np){
     //double min = (point->first-dist)>0 ? graph->GetX()[point->first-dist] : graph->GetX()[0]; 
     double min = (point->first)>0 ? graph->GetX()[point->first] : graph->GetX()[0]; 
     double max = (point->first+dist)<graph->GetN() ? graph->GetX()[point->first+dist] : graph->GetX()[graph->GetN()-1];
@@ -123,7 +126,6 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
     double y_min = (point->first)>0 ? graph->GetY()[point->first] : graph->GetY()[0];
     double y_max = (point->first+dist)<graph->GetN() ? graph->GetY()[point->first+dist] : graph->GetY()[graph->GetN()-1];
 
-    std::cout << min << " " << y_min << "   " << max << " " << y_max << std::endl;
     vector<double> crossing;
     crossing.push_back((min-max-y_max*min+y_min*max)/(y_min-y_max));
     std::cout << "np: " << np << std::endl;
@@ -146,7 +148,10 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
 //       //limit = crossing;
 //       std::cout << "    [-->to file]"; filled=true; tree->Fill();
 //     }
-    if(point==points.rend()-1){
+    if(np==0){
+      fnc = new TF1("fnc", "[0]*x+[1]", min, max);
+      fnc->SetParameter(0, (y_min-y_max)/(min-max));
+      fnc->SetParameter(1, (y_max*min-y_min*max)/(min-max));
       std::cout << std::endl;
       std::cout << "limit is taken from linear interpolation at the moment" << std::endl;
       limit = crossing[np];
@@ -193,8 +198,12 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
     spline->SetLineColor(kBlue); 
     spline->SetLineWidth(3.); 
     spline->Draw("same");
+    if(filled) fnc->SetLineColor(kRed);
+    if(filled) fnc->SetLineWidth(3.);
+    if(filled) fnc->Draw("same");
     canv->Print(monitor.append(".png").c_str(), "png");
     delete frame; delete canv; delete spline;
+    if(filled) delete fnc;
   }
   return;
 }
