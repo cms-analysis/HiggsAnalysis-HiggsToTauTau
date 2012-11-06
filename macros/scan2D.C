@@ -73,7 +73,7 @@ void scan2D(const char* path, std::string xval="r_ggH", int xbin=10, float xmin=
   //scan->SetMaximum(2);
   scan->Draw("colz");
 
-  canv->Print("scan-ggH-qqH-125.png");
-  canv->Print("scan-ggH-qqH-125.eps");
-  canv->Print("scan-ggH-qqH-125.pdf");
+  canv->Print("scan-cv-cf-125.png");
+  canv->Print("scan-cv-cf-125.eps");
+  canv->Print("scan-cv-cf-125.pdf");
 }

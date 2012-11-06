@@ -70,6 +70,10 @@ if not options.skip_setup :
     os.system("add_bbb_errors.py 'et,mt,em:7TeV,8TeV:01,03,05:ZL,ZLL,Fakes,QCD>W' --input-dir {DIR}/hcp --output-dir {DIR}/hcp-bin-by-bin --threshold 0.10".format(
         DIR=source
         ))
+    ## setup bin-by-bin
+    os.system("add_bbb_errors.py 'et,mt,em:7TeV,8TeV:08,09:ZL,ZLL,Fakes,QCD>W' --mssm --input-dir {DIR}/hcp --output-dir {DIR}/hcp-mssm --threshold 0.10".format(
+        DIR=source
+        ))
     ## setup mvis
     if os.path.exists("{DIR}/hcp-mvis".format(DIR=source)) :
         os.system("rm -r {DIR}/hcp-mvis".format(DIR=source))
@@ -162,13 +166,6 @@ if not options.skip_datacards :
     #    os.system("rm -r {DIR}/mssm".format(DIR=datacards))
     #os.system("mkdir {DIR}/mssm".format(DIR=datacards))
     for ana in ['hcp', 'hcp-bin-by-bin', 'hcp-mvis', 'hcp-ichep', 'hcp-ichep-on-hcp', 'hcp-mssm'] :
-        if not options.skip_sm :
-            print "setup datacards for:", ana, "sm"  
-            os.system("setup-datacards.py -i setups/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt mm tt' {MASSES}".format(
-                ANA=ana,
-                OUTPUT=datacards,
-                MASSES=masses
-                ))
         if ana == 'hcp-mssm' :
             if not options.skip_mssm :
                 print "setup datacards for:", ana, "mssm"  
@@ -177,6 +174,21 @@ if not options.skip_datacards :
                     OUTPUT=datacards,
                     MASSES=masses
                     ))
+        else :
+            if not options.skip_sm :
+                print "setup datacards for:", ana, "sm"
+                if ana == 'hcp-ichep-on-hcp' :
+                    os.system("setup-datacards.py -i setups/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt' {MASSES}".format(
+                    ANA=ana,
+                    OUTPUT=datacards,
+                    MASSES=masses
+                    ))
+                else: 
+                    os.system("setup-datacards.py -i setups/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt mm tt' {MASSES}".format(
+                        ANA=ana,
+                        OUTPUT=datacards,
+                        MASSES=masses
+                        ))
 if not options.skip_limits :
     ## setup limit calculation
     limits = "{CMSSW_BASE}/src/HCP-Limits".format(CMSSW_BASE=cmssw_base)
@@ -194,13 +206,21 @@ if not options.skip_limits :
             if 'mvis' in ana or 'ichep' in ana :
                 label = "-l "+ana[ana.find('-')+1:]
             if not options.skip_sm :
-                print "setup limits structure for:", ana, "sm"  
-                os.system("setup-htt.py -i aux/sm/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt mm tt' {LABEL} {MASSES}".format(
-                    ANA=ana,
-                    LABEL=label,
-                    OUTPUT=limits,
-                    MASSES=masses
-                    ))
+                print "setup limits structure for:", ana, "sm"
+                if ana == 'hcp-ichep-on-hcp' :
+                    os.system("setup-htt.py -i aux/sm/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt' {LABEL} {MASSES}".format(
+                        ANA=ana,
+                        LABEL=label,
+                        OUTPUT=limits,
+                        MASSES=masses
+                        ))
+                else :
+                    os.system("setup-htt.py -i aux/sm/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt mm tt' {LABEL} {MASSES}".format(
+                        ANA=ana,
+                        LABEL=label,
+                        OUTPUT=limits,
+                        MASSES=masses
+                        ))
                 if ana == 'hcp-bin-by-bin' :
                     for per in ['7TeV', '8TeV'] :
                         os.system("setup-htt.py -i aux/sm/{ANA} -o {OUTPUT}/sm/{ANA}-{PER} -p {PER} -a sm -c 'em et mt mm tt' {LABEL} {MASSES}".format(

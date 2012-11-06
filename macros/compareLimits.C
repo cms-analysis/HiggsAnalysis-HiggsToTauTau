@@ -169,9 +169,9 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("mvis"      )) title = std::string("Visible mass");
   if(channel==std::string("ichep"     )) title = std::string("On ICHEP dataset");
   if(channel==std::string("test-0"    )) title = std::string("Combined (w/o bin-by-bin)");
-  if(channel==std::string("test-1"    )) title = std::string("By unblinding");
-  if(channel==std::string("test-2"    )) title = std::string("Test-2");
-  if(channel==std::string("test-3"    )) title = std::string("Test-3");
+  if(channel==std::string("test-1"    )) title = std::string("Data 2011, 7TeV");
+  if(channel==std::string("test-2"    )) title = std::string("Data 2012, 8TeV");
+  if(channel==std::string("test-3"    )) title = std::string("Combined (w/o prefit)");
   if(channel==std::string("test-4"    )) title = std::string("Test-4");
   if(channel==std::string("test-5"    )) title = std::string("Test-5");
   if(channel==std::string("old"       )) title = std::string("Old Limit");
