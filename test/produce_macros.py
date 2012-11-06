@@ -139,7 +139,6 @@ class Analysis:
 		               if self.category=="_".join(key.GetName().split("_")[1:]):
                                    remnant = cand_str.rstrip(process_name)
 			           histname=key.GetName()+"/"+word_arr[0][len(remnant)+2:].strip().rstrip()
-                             print histname
 			     hist = input.Get(histname)
                              ## it can happen that histograms, which are present in SM
                              ## are not present in MSSM; in this case just skip hist
