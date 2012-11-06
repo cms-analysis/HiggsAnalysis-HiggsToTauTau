@@ -136,10 +136,11 @@ class Analysis:
 		             input = TFile("root/"+self.histfile)
                              #print "file: ", input.GetName()
 		             for key in input.GetListOfKeys():
-		               if "_"+self.category in key.GetName():
+		               if self.category=="_".join(key.GetName().split("_")[1:]):
                                    remnant = cand_str.rstrip(process_name)
 			           histname=key.GetName()+"/"+word_arr[0][len(remnant)+2:].strip().rstrip()
-                             hist = input.Get(histname)
+                             print histname
+			     hist = input.Get(histname)
                              ## it can happen that histograms, which are present in SM
                              ## are not present in MSSM; in this case just skip hist
                              if not hist :
@@ -172,7 +173,7 @@ class Analysis:
 		         print shape_name
 		       input = TFile("root/"+self.histfile)
 		       for key in input.GetListOfKeys():
-		           if "_"+self.category in key.GetName():
+		           if self.category=="_".join(key.GetName().split("_")[1:]):
                                remnant = cand_str.rstrip(process_name)
 			       histname=key.GetName()+"/"+word_arr[0][len(remnant)+2:].strip().rstrip()
                        hist = input.Get(histname)
