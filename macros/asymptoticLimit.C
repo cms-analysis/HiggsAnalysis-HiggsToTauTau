@@ -17,7 +17,7 @@
 #include "TCanvas.h"
 #include "TSpline.h"
 
-#include "HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
+#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_3_3/src/HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
 
 
 /// typedef CrossPoint to a bin plus flag on falling or rising intercept, true for falling
@@ -115,12 +115,20 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
   if(points.size()>0) limit = graph->GetX()[upper_exclusion ? points.begin()->first : points.end()->first];
 
   for(std::vector<CrossPoint>::const_reverse_iterator point = points.rbegin(); point!=points.rend(); ++point, ++np){
-    double min = (point->first-dist)>0 ? graph->GetX()[point->first-dist] : graph->GetX()[0]; 
+    //double min = (point->first-dist)>0 ? graph->GetX()[point->first-dist] : graph->GetX()[0]; 
+    double min = (point->first)>0 ? graph->GetX()[point->first] : graph->GetX()[0]; 
     double max = (point->first+dist)<graph->GetN() ? graph->GetX()[point->first+dist] : graph->GetX()[graph->GetN()-1];
 
-    double y_min = (point->first-dist)>0 ? graph->GetY()[point->first-dist] : graph->GetY()[0]; 
+    //double y_min = (point->first-dist)>0 ? graph->GetY()[point->first-dist] : graph->GetY()[0]; 
+    double y_min = (point->first)>0 ? graph->GetY()[point->first] : graph->GetY()[0];
     double y_max = (point->first+dist)<graph->GetN() ? graph->GetY()[point->first+dist] : graph->GetY()[graph->GetN()-1];
-    double crossing  = (1.-y_min)/(y_max-y_min)*(max-min);
+
+    std::cout << min << " " << y_min << "   " << max << " " << y_max << std::endl;
+    vector<double> crossing;
+    crossing.push_back((min-max-y_max*min+y_min*max)/(y_min-y_max));
+    std::cout << "np: " << np << std::endl;
+    //double crossing;
+    //crossing = (1.-y_min)/(y_max-y_min)*(max-min); 
 				  
     double deltaM = -999.;
     double offset = min; double step_size = (max-min)/steps;
@@ -132,10 +140,17 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
     }
     std::cout << "****************************************************************" << std::endl;
     std::cout << "* [" << np+1 << "|" << point->second << "] asymptotic limit(";
-    std::cout << limitType(itype) << ") :" << crossing << " -- " << limit << " deltaM : " << deltaM;
-    if(((upper_exclusion && point->second) || (!upper_exclusion && !(point->second))) && !filled){
-      //std::cout << "limit is taken from linear interpolation at the moment" << std::endl;
-      //limit = crossing;
+    std::cout << limitType(itype) << ") :" << crossing[np] << " -- " << limit << " deltaM : " << deltaM;
+    // if(((upper_exclusion && point->second) || (!upper_exclusion && !(point->second))) && !filled){
+//       //std::cout << "limit is taken from linear interpolation at the moment" << std::endl;
+//       //limit = crossing;
+//       std::cout << "    [-->to file]"; filled=true; tree->Fill();
+//     }
+    if(point==points.rend()-1){
+      std::cout << std::endl;
+      std::cout << "limit is taken from linear interpolation at the moment" << std::endl;
+      limit = crossing[np];
+      std::cout << limit << std::endl;
       std::cout << "    [-->to file]"; filled=true; tree->Fill();
     }
     std::cout << endl;
@@ -156,7 +171,7 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
       }
     else
       {
-	std::cout << "WARNING: no crossing found - no tanb value excluded" << value << " -- " << tanb_help << std::endl;
+	std::cout << "WARNING: no crossing found - no tanb value excluded: " << value << " -- " << tanb_help << std::endl;
 	if(itype == observed)     { limit=tanb_help*value; }
 	if(itype == plus_2sigma)  { limit=tanb_help*value; }
 	if(itype == plus_1sigma)  { limit=tanb_help*value; }
