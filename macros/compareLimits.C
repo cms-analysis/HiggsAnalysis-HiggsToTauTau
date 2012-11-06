@@ -15,8 +15,8 @@
 #include "TPaveLabel.h"
 #include "TGraphAsymmErrors.h"
 
-#include "HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
-#include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "../HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
+#include "../HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
 static const double MARKER_SIZE = 1.3;  // 0.7
 
