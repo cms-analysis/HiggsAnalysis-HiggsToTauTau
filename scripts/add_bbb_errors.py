@@ -50,6 +50,8 @@ def get_channel_name(finalstate, category):
         '05' : 'vbf',
         '06' : 'btag_low',
         '07' : 'btag_high',
+        '08' : 'nobtag',
+        '09' : 'btag',
     }
     tt_cat_map = {
         '00' : 'boost',
