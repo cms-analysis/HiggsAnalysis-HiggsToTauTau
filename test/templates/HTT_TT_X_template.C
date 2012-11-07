@@ -280,16 +280,16 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
     ttbar->Draw("histsame");
     EWK  ->Draw("histsame");
     Fakes->Draw("histsame");
-    ggH  ->Draw("histsame");
     $DRAW_ERROR
+    ggH  ->Draw("histsame");
   }
   else{
-    ggH  ->Draw("histsame");
     Ztt  ->Draw("histsame");
     ttbar->Draw("histsame");
     EWK  ->Draw("histsame");
     Fakes->Draw("histsame");
     $DRAW_ERROR
+    ggH  ->Draw("histsame");
   }
   data->Draw("esame");
   canv->RedrawAxis();

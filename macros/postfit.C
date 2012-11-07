@@ -117,11 +117,10 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   if(log){
     if(Zmm){
       EWK  ->Draw("same");
-      Fakes->Draw("same");
       ttbar->Draw("same");
+      Fakes->Draw("same");
       Zmm  ->Draw("same");
       Ztt  ->Draw("same");
-      if(ggH){ ggH  ->Draw("same"); }
     }
     else{
       Ztt  ->Draw("same");
@@ -131,12 +130,10 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
 	EWK1->Draw("same");
       }
       if(Fakes){ Fakes->Draw("same"); }
-      if(ggH  ){ ggH  ->Draw("same"); }
     }
   }
   else{
     if(Zmm){
-      if(ggH) ggH  ->Draw("histsame");
       EWK->Draw("same");
       Fakes->Draw("same");
       ttbar->Draw("same");
@@ -144,7 +141,6 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
       Ztt->Draw("same");
     }
     else{
-      if(ggH){ ggH  ->Draw("same"); }
       Ztt  ->Draw("same");
       ttbar->Draw("same");
       EWK  ->Draw("same");
@@ -157,6 +153,7 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   if(errorBand){
     errorBand->Draw("e2same");
   }
+  if(ggH) ggH  ->Draw("histsame");
   data->Draw("esame");
   canv->RedrawAxis();
 

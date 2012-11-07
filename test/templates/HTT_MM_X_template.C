@@ -233,8 +233,8 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 #endif
 
   ZMM->Add(ZTT);
-  TTJ->Add(ZMM);
-  QCD->Add(TTJ);
+  QCD->Add(ZMM);
+  TTJ->Add(QCD);
   Dibosons->Add(TTJ);
   WJets->Add(Dibosons);
   if(log){
@@ -294,26 +294,27 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   if(log){
     WJets->Draw("histsame");
     //Dibosons->Draw("histsame");
-    QCD->Draw("histsame");
     TTJ->Draw("histsame");
+    QCD->Draw("histsame");
     ZMM->Draw("histsame");
     ZTT->Draw("histsame");
+    $DRAW_ERROR
 #ifndef DROP_SIGNAL
     ggH->Draw("histsame");
 #endif
-    $DRAW_ERROR
+
   }
   else{
-#ifndef DROP_SIGNAL
-    ggH  ->Draw("histsame");
-#endif
     WJets->Draw("histsame");
     //Dibosons->Draw("histsame");
-    QCD->Draw("histsame");
     TTJ->Draw("histsame");
+    QCD->Draw("histsame");
     ZMM->Draw("histsame");
     ZTT->Draw("histsame");
     $DRAW_ERROR
+#ifndef DROP_SIGNAL
+    ggH  ->Draw("histsame");
+#endif
   }
   data->Draw("esame");
   canv->RedrawAxis();

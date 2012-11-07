@@ -321,21 +321,21 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
     EWK  ->Draw("histsame");
     EWK1 ->Draw("histsame");
     Fakes->Draw("histsame");
+    $DRAW_ERROR
 #ifndef DROP_SIGNAL
     ggH  ->Draw("histsame");
 #endif
-    $DRAW_ERROR
   }
   else{
-#ifndef DROP_SIGNAL
-    ggH  ->Draw("histsame");
-#endif
     Ztt  ->Draw("histsame");
     ttbar->Draw("histsame");
     EWK  ->Draw("histsame");
     EWK1 ->Draw("histsame");
     Fakes->Draw("histsame");
     $DRAW_ERROR
+#ifndef DROP_SIGNAL
+    ggH  ->Draw("histsame");
+#endif
   }
   data->Draw("esame");
   canv->RedrawAxis();

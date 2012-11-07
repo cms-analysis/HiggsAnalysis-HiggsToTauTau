@@ -10,7 +10,7 @@ parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choic
 parser.add_option("-c", "--channels", dest="channels", default="em, et, mt, mm", type="string", help="Channels for which postfit plots should be made. Individual channels should be separated by comma or whitespace. [Default: 'em, et, mt, mm']")
 parser.add_option("-y", "--yields", dest="yields", default="1", type="int", help="Shift yield uncertainties. [Default: '1']")
 parser.add_option("-s", "--shapes", dest="shapes", default="1", type="int", help="Shift shape uncertainties. [Default: '1']")
-parser.add_option("-u", "--uncertainties", dest="uncertainties", default="0", type="int", help="Set uncertainties of backgrounds. [Default: '0']")
+parser.add_option("-u", "--uncertainties", dest="uncertainties", default="1", type="int", help="Set uncertainties of backgrounds. [Default: '1']")
 parser.add_option("-v", "--verbose", dest="verbose", action="store_true", default=False, help="Run in verbose more. [Default: 'False']")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
@@ -25,8 +25,8 @@ cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="8 9
 cats2.add_option("--mssm-categories-em", dest="em_mssm_categories", default="8 9", type="string", help="List em of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="8 9", type="string", help="List mt of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9", type="string", help="List et of event categories. [Default: \"8 9\"]")
-cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
-cats2.add_option("--mssm-categories-hmm", dest="hmm_mssm_categories", default="0 1", type="string", help="List of hmm event categories. [Default: \"0 1\"]")
+#cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
+#cats2.add_option("--mssm-categories-hmm", dest="hmm_mssm_categories", default="0 1", type="string", help="List of hmm event categories. [Default: \"0 1\"]")
 parser.add_option_group(cats2)
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -236,8 +236,8 @@ if options.analysis == "mssm" :
         "em"   : options.em_mssm_categories.split(),
         "mt"   : options.mt_mssm_categories.split(),
         "et"   : options.et_mssm_categories.split(),
-        "tt"   : options.tt_mssm_categories.split(),
-        "hmm"  : options.hmm_mssm_categories.split(),
+        #"tt"   : options.tt_mssm_categories.split(),
+        #"hmm"  : options.hmm_mssm_categories.split(),
         }
 for key in categories :
     for idx in range(len(categories[key])) : categories[key][idx] = categories[key][idx].rstrip(',')
