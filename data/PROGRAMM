@@ -104,13 +104,24 @@ Standard Model Checklist:
      - ggH-bbH=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs
    - once models are created they can be picked up by there names e.g. ggH-qqh, ggh-bbH, cV-cF. It can be any other 
      name that has been defined beforehand.
+
  - run ggH-qqH (spacing 0.02 from 0...5, square) [for a fine scan we can go with half the spacing]
-   lxb-multidim-fit.py -n GGH-QQH --njob 100 --npoints 625 --physics-model 'ggH-qqH=HiggsAnalysis.CombinedLimit.PhysicsModel:floatingXSHiggs' --physics-model-options 'modes=ggH,qqH ggHRange=0:5 qqHRange=0:5' HCP-LIMITS/125
-   lxb-multidim-fit.py --collect --name 
+   lxb-multidim-fit.py -n GGH-QQH --njob 100 --npoints 625 --physics-model 'ggH-qqH=HiggsAnalysis.CombinedLimit.PhysicsModel:floatingXSHiggs' --physics-model-options 'modes=ggH,qqH ggHRange=0:5 qqHRange=0:5' HCP-Limits/sm/hcp-fit/ggH-qqH/125
+   lxb-multidim-fit.py --collect --name GGH-QQH
+
  - run cV-cF (spacing 0.02 from 0...3, square) [for a fine scan we can go with half the spacing]
-   lxb-multidim-fit.py -n CV-CF --njob 500 --npoints 45 --physics-model 'cV-cF=HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcF' --physics-model-options 'modes=ggH,qqH cVRange=0:3 cFRange=0:3' HCP-LIMITS/125
+   lxb-multidim-fit.py -n CV-CF --njob 100 --npoints 225 --physics-model 'cV-cF=HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcF' --physics-model-options 'modes=ggH,qqH cVRange=0:3 cFRange=0:3' HCP-Limits/sm/hcp-fit/cv-cf/125
+
  - run ggH-bbH (spacing 0.1 from 0...20, square) [for a fine scan we can go with half the spacing]
-   lxb-multilimit.py dim-fit.py -n ggH-bbH --njob 100 --npoints 400 --physics-model 'ggH-bbH=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH ggHRange=0:20 bbHRange=0:20' HCP-LIMITS/125
+
+   lxb-multidim-fit.py -n GGH-BBH-120 --njob 100 --npoints 400 --physics-model 'ggH-bbH=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH ggHRange=0:5 bbHRange=0:5' HCP-Limits/mssm/hcp-fit/120
+
+
+   lxb-multidim-fit.py -n GGH-BBH-160 --njob 100 --npoints 400 --physics-model 'ggH-bbH=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH ggHRange=0:2 bbHRange=0:2' HCP-Limits/mssm/hcp-fit/160
+
+   lxb-multidim-fit.py -n GGH-BBH-250 --njob 100 --npoints 400 --physics-model 'ggH-bbH=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH ggHRange=0:0.2 bbHRange=0:0.2' HCP-Limits/mssm/hcp-fit/250
+
+   lxb-multidim-fit.py -n GGH-BBH-500 --njob 100 --npoints 400 --physics-model 'ggH-bbH=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH ggHRange=0:0.05 bbHRange=0:0.05' HCP-Limits/mssm/hcp-fit/500
 
 
 ---------------------------------------------------------------------------------------------------
