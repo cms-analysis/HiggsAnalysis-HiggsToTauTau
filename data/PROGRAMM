@@ -117,6 +117,10 @@ Standard Model Checklist:
 MSSM Checklist:
 ---------------------------------------------------------------------------------------------------
 
+(0) Bin-by-bin uncertainties + scaling(SM case) + setup-directory structure
+--------------------------------------
+ - reload.py (options) (massses) 
+
 (1) Copy datacard inputs into package
 --------------------------------------
  - HiggsAnalysis/HiggsToTauTau/setup/[em,et,mt,mm,tt]
@@ -167,7 +171,7 @@ MSSM Checklist:
 (5) Postfit plots
 --------------------------------------
  - cd HiggsAnalysis/HiggsToTauTau/test/
- - ./mlfit_and_copy.sh MSSM $CMSSW_BASE/src/HCP-LIMITS/130
+ - ./mlfit_and_copy.py MSSM $CMSSW_BASE/src/HCP-LIMITS/130
  - python produce_macros.py
    - check the defaults with --help. 
    - ATTENTION: there is a few potential fixes needed, in case Josh finally renamed his datacards 
@@ -202,8 +206,7 @@ MSSM Checklist:
 --------------------------------------
  - limit.py --multidim-fit [--stable] --saveResults --algo singles --confidence-level 0.68 --physics-model 
    'ggH-bbH-model=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH;
-   ggHRange=0:20;bbHRange=0:20' 
-   HCP-LIMITS/*
+   ggHRange=0:20;bbHRange=0:20' HCP-LIMITS/*
    - ATTENTION: could also be useful to use lxq/b_limit.py
  - plot multidimfit HiggsAnalysis/HiggsToTauTau/python/layouts/mssm_bestfit_layout.py HCP-LIMITS
    - if you want to plot bestfit of ggH set POI in mssm_bestfit_layout.py to "r_ggH"
@@ -211,9 +214,10 @@ MSSM Checklist:
 
 (9) Multidimensional fits (low mass point and high mass point)
 --------------------------------------
- - lxq-multidim-fit.py 20121012.cmb_mssm_78TeV_done3/cmb/160 --stable --njobs 10 --npoints 10 --physics-model 
-   'ggH-bbH-model=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH;    ggHRange=0:20;bbHRange=0:20' 
-   [--collect]
+ - lxq-multidim-fit.py HCP-Limits/<MASS> --stable --njobs 10 --npoints 10 --physics-model 
+   'ggH-bbH-model=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH;    
+   ggHRange=0:20;bbHRange=0:20' [--collect]
    - first round without --collect second round with --collect
  - see TWiki
    - use lxq/b-multidim-fit.py
+
