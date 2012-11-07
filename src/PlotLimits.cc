@@ -1165,12 +1165,6 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
     plain->SetFillStyle(1001.);
     plain->SetFillColor(obs->GetNumber());
     plain->Draw("Fsame");
-
-    observed->SetMarkerStyle(20);
-    observed->SetMarkerSize(1.0);
-    observed->SetMarkerColor(kBlack);
-    observed->SetLineWidth(3.);
-    observed->Draw("Lsame");
   }
 
   TGraph* outerHigh = new TGraph();
@@ -1225,6 +1219,14 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   expected->SetLineWidth(3);
   expected->SetLineStyle(1);
   expected->Draw("Lsame");
+
+  if(observed){
+    observed->SetMarkerStyle(20);
+    observed->SetMarkerSize(1.0);
+    observed->SetMarkerColor(kBlack);
+    observed->SetLineWidth(3.);
+    observed->Draw("Lsame");
+  }
 
   /// setup the CMS Preliminary
   CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
