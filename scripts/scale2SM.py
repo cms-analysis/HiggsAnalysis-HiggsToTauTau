@@ -22,7 +22,7 @@ import re
 filename = options.input
 if '/' in filename :
     filename = filename[filename.rfind('/')+1:]
-matcher = re.compile('v?htt_\w*.inputs-\w*-(?P<PERIOD>[0-9]*\w*)-?_?\w*.root')
+matcher = re.compile('v?htt_\w*.inputs-\w*-(?P<PERIOD>[0-9]*\w*)(-?_?\w*)*.root')
 ecms_str = matcher.match(filename).group('PERIOD')
 ecms_str = ecms_str[:ecms_str.find('TeV')]
 ecms = float(ecms_str)
