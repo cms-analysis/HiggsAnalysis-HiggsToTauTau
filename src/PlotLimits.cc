@@ -1005,7 +1005,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
 	//}
       }
     }
-    plain->SetPoint(bins_.size(), observed->GetX()[observed->GetN()-1]+100., 55.);
+    plain->SetPoint(bins_.size(), observed->GetX()[observed->GetN()-1], observed->GetY()[observed->GetN()-1]);
   }
   // create LEP exclusion plot
   TGraph* LEP = new TGraph();
@@ -1165,6 +1165,11 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
     plain->SetFillStyle(1001.);
     plain->SetFillColor(obs->GetNumber());
     plain->Draw("Fsame");
+
+    observed->SetMarkerStyle(20);
+    observed->SetMarkerSize(1.0);
+    observed->SetMarkerColor(kBlack);
+    observed->SetLineWidth(3.);
   }
 
   TGraph* outerHigh = new TGraph();
@@ -1221,10 +1226,10 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   expected->Draw("Lsame");
 
   if(observed){
-    observed->SetMarkerStyle(20);
-    observed->SetMarkerSize(1.0);
-    observed->SetMarkerColor(kBlack);
-    observed->SetLineWidth(3.);
+    //observed->SetMarkerStyle(20);
+    //observed->SetMarkerSize(1.0);
+    //observed->SetMarkerColor(kBlack);
+    //observed->SetLineWidth(3.);
     observed->Draw("Lsame");
   }
 
