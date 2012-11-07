@@ -129,9 +129,9 @@ if options.setup == "htt-sm" :
         if options.method == "CLs" :
             ## three submits depending on the mass
             if len(subvec(args, 90, 150))>0 :
-                os.system("submit-slave.py --bin combine --method CLs -n 11 --min   0.5  --max   5.5 --toysH 50 -t 1000 -j 500 --random --server %s %s" % (options.opt, vec2str(subvec(args,  90, 150))))
-                os.system("submit-slave.py --bin combine --method CLs -n 11 --min   8.5  --max  38.5 --toysH 50 -t 1000 -j 500 --random --server %s %s" % (options.opt, vec2str(subvec(args,  90, 150))))
-                os.system("submit-slave.py --bin combine --method CLs -n 11 --min  68.5  --max 368.5 --toysH 50 -t 1000 -j 500 --random --server %s %s" % (options.opt, vec2str(subvec(args,  90, 150))))
+                os.system("submit-slave.py --bin combine --method CLs -n 5 --min   0.3  --max   1.5 --toysH 50 -t 1000 -j 500 --random --server %s %s" % (options.opt, vec2str(subvec(args,  90, 150))))
+                os.system("submit-slave.py --bin combine --method CLs -n 5 --min   2.0  --max   4.0 --toysH 50 -t 1000 -j 500 --random --server %s %s" % (options.opt, vec2str(subvec(args,  90, 150))))
+                #os.system("submit-slave.py --bin combine --method CLs -n 11 --min  68.5  --max 368.5 --toysH 50 -t 1000 -j 500 --random --server %s %s" % (options.opt, vec2str(subvec(args,  90, 150))))
         if options.method == "Bayesian" :
             if len(subvec(args, 90, 150))>0 :
                 os.system("submit-slave.py --bin combine --method Bayesian -t 1000 -j 100 --server --random --priority %s %s" % (options.opt, vec2str(subvec(args, 90, 150))))
