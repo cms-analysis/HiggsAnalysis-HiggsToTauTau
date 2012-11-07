@@ -27,7 +27,7 @@ layout = cms.PSet(
     ## min for plotting
     min = cms.double(0.),
     ## max for plotting
-    max = cms.double(5.), ##5.
+    max = cms.double(-1.), ##5.
     ## min for plotting
     log = cms.int32(0),
     ## define verbosity level
