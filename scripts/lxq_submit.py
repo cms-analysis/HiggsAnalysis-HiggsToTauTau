@@ -43,7 +43,7 @@ option_str = sys.argv[3:]
 
 script_template = '''
 #!/usr/bin/bash
-#$ -l h_cpu=4:00:00
+#$ -l h_cpu=1:00:00
 export SCRAM_ARCH=$scram_arch
 ini cmssw
 ini autoproxy
