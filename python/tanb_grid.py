@@ -8,7 +8,7 @@ parser.add_option("-m", "--mA",    dest="mA",       default=120.,  type="float",
 parser.add_option("-t", "--tanb",  dest="tanb",     default='20.',   type="string",   help="Values of tanb. [Default: 20.]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode")
 parser.add_option("--sm-like", dest="sm_like", default=False, action="store_true", help="Do not divide by the value of tanb, but only scale to MSSM xsec according to tanb value. (Will result in typical SM limit on signal strength for given value of tanb). Used for debugging. [Default: False]")
-parser.add_option("--full-mass", dest="full_mass", default=False, action="store_true", help="Do not apply acceptance corrections for masswindow that has been applied for cross section calculation. Kept for legacy. [Default: False]")
+parser.add_option("--no-acc-corr", dest="no_acc_corr", default=False, action="store_true", help="Do not apply acceptance corrections for masswindow that has been applied for cross section calculation. Kept for legacy. [Default: False]")
 parser.add_option("--model", dest="model", default='HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root', type="string", help="Model to be applied for the limit calculation. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root']")
 parser.add_option("--interpolation", dest="interpolation_mode", default='mode-1', type="choice", help="Mode for mass interpolation for direct tanb limits. Choices are: mode-0 -- non-degenerate-masses for all htt channels, mode-1 -- non-degenerate-masses for classic htt channels non-degenerate-masses-light for htt_mm, mode-2 -- non-degenerate-masses for classic htt channels degenerate-masses for htt_mm, mode-3 -- non-degenerate-masses-light for all htt channels, mode-4 -- non-degenerate-masses-light for classic htt channels degenerate-masses for htt_mm, mode-5 -- degenerate-masses for all htt channels [Default: mode-1]", choices=["mode-0", "mode-1", "mode-2", "mode-3", "mode-4", "mode-5"])
 (options, args) = parser.parse_args()
@@ -1441,7 +1441,7 @@ if len(args) < 1 :
        exit(1)
 
 ## decide whether to run with acceptions or not 
-acc_corr = True if options.full_mass else False
+acc_corr = False if options.no_acc_corr else True
 ## skip first pass of 'bin'
 first_pass_on_bin = True
 ## name of the input datacard

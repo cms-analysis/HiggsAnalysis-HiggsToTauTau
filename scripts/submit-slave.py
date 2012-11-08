@@ -13,7 +13,7 @@ parser.add_option("--shape",           dest="shape",           default="shape2",
 parser.add_option("--random", dest="random", default=False, action="store_true", help="Use random seeds. [Default: False]")
 parser.add_option("--model", dest="model", default="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root", type="string", help="The model that should be applied for direct limits on tanb (only applicable for --method tanb, for other methods this option will have no effect). The model should be given as the absolute path to the mssm_xsec_tool input file starting from CMSSW_BASE/src/, or feyn-higgs::saeffm , feyn-higgs::gluoph, ... in case the model is assumed to be picked from feyn-higgs. In the case of feyn-higgs the model tag following the \'::\' will be passed on the the feyn-higgs extration tool feyn-higgs-mssm. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root']")
 parser.add_option("--interpolation", dest="interpolation_mode", default='mode-1', type="choice", help="Mode for mass interpolation for direct limits tanb (only applicable for --method tanb, for other methods this option will have no effect). [Default: mode-1]", choices=["mode-0", "mode-1", "mode-2", "mode-3", "mode-4", "mode-5"])
-parser.add_option("--full-mass", dest="full_mass", default=False, action="store_true", help="Do not apply acceptance corrections for masswindow that has been applied for cross section calculation. Kept for legacy. [Default: False]")
+parser.add_option("--no-acc-corr", dest="no_acc_corr", default=False, action="store_true", help="Do not apply acceptance corrections for masswindow that has been applied for cross section calculation. Kept for legacy. [Default: False]")
 parser.add_option("--noSystematics", dest="nosys", default=False, action="store_true", help="Use statistical uncertainties only (currently only implemented for combine). [Default: False]")
 ## lands options for Bayesian
 lgroup = OptionGroup(parser, "LANDS (Bayesian) COMMAND OPTIONS", "Command options for the use of lands with method -M bayesian.")
@@ -203,8 +203,8 @@ for directory in args :
                 points = [ float(options.min) + dx*i for i in range(options.points) ]
                 ## create additional workspaces
                 for tanb in points :
-                    os.system("python tanb_grid.py -m {mass} -t {tanb} --model {model} --interpolation {interpolation} {full_mass} tmp.txt".format(
-                        mass=masspoint, tanb=tanb, model=options.model, interpolation=options.interpolation_mode, full_mass="--full-mass" if options.full_mass else "" ))
+                    os.system("python tanb_grid.py -m {mass} -t {tanb} --model {model} --interpolation {interpolation} {no_acc_corr} tmp.txt".format(
+                        mass=masspoint, tanb=tanb, model=options.model, interpolation=options.interpolation_mode, no_acc_corr="--no-acc-corr" if options.no_acc_corr else "" ))
                 ## setup the batchjob creation for combine -M CLs with tanb grid points instead of cross section grid points
                 opts = "-o {out} -n {points} -m {mass} -O {options} -T {toysH} -t {toys} -j {jobs} -q {queue}".format(
                     out=options.out, points=options.points, mass=masspoint, options=options.options, toysH=options.T,
