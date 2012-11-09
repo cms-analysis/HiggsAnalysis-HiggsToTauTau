@@ -87,8 +87,8 @@ directories = {
     "5"  : ["vbf", "gauge"],
     "6"  : ["btag"],
     "7"  : ["btag"],
-    "8"  : ["btag"],
-    "9"  : ["nobtag"],
+    "8"  : ["nobtag"],
+    "9"  : ["btag"],
 }
 
 ## categories are different for the vhtt case
