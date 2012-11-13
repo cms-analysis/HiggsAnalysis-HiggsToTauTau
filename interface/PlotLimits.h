@@ -122,6 +122,8 @@ class PlotLimits {
   */
   /// fill the LEP exclusion plot
   void limitsLEP(TGraph* graph);
+  /// fill the LEP exclusion plot (low tanb free space)
+  void limitsLEP2(TGraph* graph); 
   /// fill the limits from the CMS hww SM Higgs search
   void limitsHWW(TGraph* graph, const char* type);
   /// fill the limits from the CMS hgg SM Higgs search
@@ -841,6 +843,29 @@ PlotLimits::limitsLEP(TGraph* graph)
   graph->SetPoint(45, 900     , 2.405361);
   graph->SetPoint(46,1000     , 2.405361);
   graph->SetPoint(47,1100     , 0.      );
+}
+
+inline void
+PlotLimits::limitsLEP2(TGraph* graph)
+{
+  graph->SetPoint( 0, 246.4   ,   0     );
+  graph->SetPoint( 1, 243.3   ,   0.2   ); //246.3, 0.4
+  graph->SetPoint( 2, 241     ,   0.3   ); //239  , 0.43
+  graph->SetPoint( 3, 240     ,   0.45  ); //239   , 0.45
+  graph->SetPoint( 4, 250     ,   0.53  );
+  graph->SetPoint( 5, 259.3   ,   0.6   );
+  graph->SetPoint( 6, 300     ,   0.7   );
+  graph->SetPoint( 7, 350     ,   0.78  );
+  graph->SetPoint( 8, 400     ,   0.8   );
+  graph->SetPoint( 9, 450     ,   0.82  );
+  graph->SetPoint(10, 500     ,   0.83  );
+  graph->SetPoint(11, 550     ,   0.835 );
+  graph->SetPoint(12, 600     ,   0.835 );
+  graph->SetPoint(13, 700     ,   0.835 );
+  graph->SetPoint(14, 800     ,   0.835 );
+  graph->SetPoint(15, 900     ,   0.835 );
+  graph->SetPoint(16,1000     ,   0.835 );
+  graph->SetPoint(17,1100     ,   0.    ); 
 }
 
 inline void

@@ -1017,6 +1017,15 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   LEP->SetLineWidth(4.);
   LEP->Draw("F");
 
+  TGraph* LEP2 = new TGraph();
+  limitsLEP2(LEP2);
+  LEP2->SetFillStyle(1001.);
+  LEP2->SetFillColor(kWhite);
+  LEP2->SetLineColor(kWhite);
+  LEP2->SetLineStyle(1.);
+  LEP2->SetLineWidth(4.);
+  LEP2->Draw("F");
+
   //
   // --- 80% ggH CL Limits from H->WW moriond12 combination
   //
