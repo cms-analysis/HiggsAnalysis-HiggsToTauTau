@@ -18,7 +18,7 @@ for dir in args:
     limit = dir[len(ana)+1:]
     jobname = ana[ana.rfind('/')+1:]+'-'+limit
     ## create submission scripts
-    os.system("lxq_limit.py {JOBNAME} \"-q {QSUB}\" \"{DIR}/*\" {METHOD} {OPTS}".format(
+    os.system("lxq_limit.py {JOBNAME} \"{QSUB}\" \"{DIR}/*\" {METHOD} {OPTS}".format(
         JOBNAME=jobname,
         DIR=dir,
         QSUB=options.qsub,
