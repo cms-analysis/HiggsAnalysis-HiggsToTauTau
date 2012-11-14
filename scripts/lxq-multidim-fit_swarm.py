@@ -20,14 +20,32 @@ parser.add_option("--stable", dest="stable", default=False, action="store_true",
 import os
 
 if options.collect :
-    os.system("hadd {DIR}/higgsCombine{MODEL}.MultiDimFit.mH{MASS}.root {DIR}/higgsCombine*.MultiDimFit.mH{MASS}-[0-9]*-[0-9]*.root".format(
-        DIR=input,
-        MASS=input[input.rfind("/")+1:],
-        MODEL=options.name
-        ))
-    os.system("rm {DIR}/higgsCombine*.MultiDimFit.mH{MASS}-[0-9]*-[0-9]*.root".format(
-        DIR=input,
-        MASS=input[input.rfind("/")+1:]
+    files = ""
+    for dir in args:
+        if dir != "common" :
+            os.system("hadd {DIR}/higgsCombine{MODEL}.MultiDimFit.mH{MASS}.root {DIR}/higgsCombine*.MultiDimFit.mH{MASS}-[0-9]*-[0-9]*.root".format(
+                DIR=dir,
+                MASS=dir[dir.rfind("/")+1:],
+                MODEL=options.name
+                ))
+            os.system("rm {DIR}/higgsCombine*.MultiDimFit.mH{MASS}-[0-9]*-[0-9]*.root".format(
+                DIR=dir,
+                MASS=dir[dir.rfind("/")+1:]
+                ))
+            files += " {DIR}/higgsCombine{MODEL}.MultiDimFit.mH{MASS}.root".format(
+                DIR=dir,
+                MASS=dir[dir.rfind("/")+1:],
+                MODEL=options.name
+                )
+            #print files
+        else :
+            continue
+    #print files
+    os.system("hadd higgsCombine{MODEL}.MultiDimFit.mHALL.root {FILES}".format(
+        DIR=dir,
+        MASS=dir[dir.rfind("/")+1:],
+        MODEL=options.name,
+        FILES=files
         ))
 else :
     for dir in args:
