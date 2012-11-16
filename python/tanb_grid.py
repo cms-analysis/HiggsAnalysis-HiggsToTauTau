@@ -143,8 +143,7 @@ class MakeDatacard :
               mode-1 :            non-degenerate-masses                 non-degenerate-masses-light
               mode-2 :            non-degenerate-masses                 degenerate-masses
               mode-3 :            non-degenerate-masses-light           non-degenerate-masses-light
-              mode-4 :            non-d
-       print "hallo"egenerate-masses-light           non-degenerate-masses
+              mode-4 :            non-degenerate-masses-light           non-degenerate-masses
               mode-5 :            degenerate-masses                     degenerate-masses
               """
               if mode == "mode-0" :
