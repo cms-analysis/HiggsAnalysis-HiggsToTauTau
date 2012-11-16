@@ -143,7 +143,8 @@ class MakeDatacard :
               mode-1 :            non-degenerate-masses                 non-degenerate-masses-light
               mode-2 :            non-degenerate-masses                 degenerate-masses
               mode-3 :            non-degenerate-masses-light           non-degenerate-masses-light
-              mode-4 :            non-degenerate-masses-light           non-degenerate-masses
+              mode-4 :            non-d
+       print "hallo"egenerate-masses-light           non-degenerate-masses
               mode-5 :            degenerate-masses                     degenerate-masses
               """
               if mode == "mode-0" :
@@ -241,7 +242,7 @@ class MakeDatacard :
               ## setup interpolation mode for htt
               self.interpolation_mode(interpolation_mode)
               ## announce model
-              if self.feyn_higgs_model != "0" :
+              if self.feyn_higgs_model != "" :
                      print "preparing limit calculation for model input: feyn-higgs model="+self.feyn_higgs_model
               else :
                      print "preparing limit calculation for model input:", self.mssm_xsec_tools_input_path
