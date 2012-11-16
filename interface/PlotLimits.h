@@ -795,54 +795,79 @@ PlotLimits::prepareHIG_12_032(std::vector<double>& values, const char* type, dou
 inline void
 PlotLimits::limitsLEP(TGraph* graph)
 {
-  graph->SetPoint( 0, 80      ,   0.    );
-  graph->SetPoint( 1, 91      , 100.    );
-  graph->SetPoint( 2, 91.8    , 30.02624);
-  graph->SetPoint( 3, 91.845  , 22.07032);
-  graph->SetPoint( 4, 91.845  , 17.12491);
-  graph->SetPoint( 5, 91.84523, 13.64727);
-  graph->SetPoint( 6, 92.61388, 11.94143);
-  graph->SetPoint( 7, 93.38253, 10.03852);
-  graph->SetPoint( 8, 94.91982, 9.021481);
-  graph->SetPoint( 9, 95.68846, 8.107481);
-  graph->SetPoint(10, 97.22578, 7.141608);
-  graph->SetPoint(11, 99.5317 , 6.680381);
-  graph->SetPoint(12, 103.375 , 7.189448);
-  graph->SetPoint(13, 104.1436, 7.841313);
-  graph->SetPoint(14, 106.4496, 8.326916);
-  graph->SetPoint(15, 109.5242, 8.609568);
-  graph->SetPoint(16, 112.5988, 8.438845);
-  graph->SetPoint(17, 115.6733, 8.107481);
-  graph->SetPoint(18, 118.748 , 7.384029);
-  graph->SetPoint(19, 122.5912, 6.547911);
-  graph->SetPoint(20, 126.4344, 5.963618);
-  graph->SetPoint(21, 131.815 , 5.359424);
-  graph->SetPoint(22, 138.7328, 4.752558);
-  graph->SetPoint(23, 144.1134, 4.445624);
-  graph->SetPoint(24, 149.4939, 4.186368);
-  graph->SetPoint(25, 156.4118, 3.968637);
-  graph->SetPoint(26, 164.8669, 3.687628);
-  graph->SetPoint(27, 177.1653, 3.472575);
-  graph->SetPoint(28, 187.9264, 3.29197 );
-  graph->SetPoint(29, 203.2994, 3.141663);
-  graph->SetPoint(30, 221.7469, 2.978266);
-  graph->SetPoint(31, 241.7318, 2.861322);
-  graph->SetPoint(32, 261.7167, 2.767383);
-  graph->SetPoint(33, 283.2388, 2.676528);
-  graph->SetPoint(34, 304.761 , 2.641027);
-  graph->SetPoint(35, 334.7383, 2.554322);
-  graph->SetPoint(36, 357.0292, 2.50367 );
-  graph->SetPoint(37, 383.9319, 2.48701 );
-  graph->SetPoint(38, 420.8271, 2.454023);
-  graph->SetPoint(39, 452.3417, 2.421473);
-  graph->SetPoint(40, 487.6996, 2.405361);
-  graph->SetPoint(41, 550     , 2.405361);
-  graph->SetPoint(42, 600     , 2.405361);
-  graph->SetPoint(43, 700     , 2.405361);
-  graph->SetPoint(44, 800     , 2.405361);
-  graph->SetPoint(45, 900     , 2.405361);
-  graph->SetPoint(46,1000     , 2.405361);
-  graph->SetPoint(47,1100     , 0.      );
+ /*  graph->SetPoint( 0, 80      ,   0.    ); */
+/*   graph->SetPoint( 1, 91      , 100.    ); */
+/*   graph->SetPoint( 2, 91.8    , 30.02624); */
+/*   graph->SetPoint( 3, 91.845  , 22.07032); */
+/*   graph->SetPoint( 4, 91.845  , 17.12491); */
+/*   graph->SetPoint( 5, 91.84523, 13.64727); */
+/*   graph->SetPoint( 6, 92.61388, 11.94143); */
+/*   graph->SetPoint( 7, 93.38253, 10.03852); */
+/*   graph->SetPoint( 8, 94.91982, 9.021481); */
+/*   graph->SetPoint( 9, 95.68846, 8.107481); */
+/*   graph->SetPoint(10, 97.22578, 7.141608); */
+/*   graph->SetPoint(11, 99.5317 , 6.680381); */
+/*   graph->SetPoint(12, 103.375 , 7.189448); */
+/*   graph->SetPoint(13, 104.1436, 7.841313); */
+/*   graph->SetPoint(14, 106.4496, 8.326916); */
+/*   graph->SetPoint(15, 109.5242, 8.609568); */
+/*   graph->SetPoint(16, 112.5988, 8.438845); */
+/*   graph->SetPoint(17, 115.6733, 8.107481); */
+/*   graph->SetPoint(18, 118.748 , 7.384029); */
+/*   graph->SetPoint(19, 122.5912, 6.547911); */
+/*   graph->SetPoint(20, 126.4344, 5.963618); */
+/*   graph->SetPoint(21, 131.815 , 5.359424); */
+/*   graph->SetPoint(22, 138.7328, 4.752558); */
+/*   graph->SetPoint(23, 144.1134, 4.445624); */
+/*   graph->SetPoint(24, 149.4939, 4.186368); */
+/*   graph->SetPoint(25, 156.4118, 3.968637); */
+/*   graph->SetPoint(26, 164.8669, 3.687628); */
+/*   graph->SetPoint(27, 177.1653, 3.472575); */
+/*   graph->SetPoint(28, 187.9264, 3.29197 ); */
+/*   graph->SetPoint(29, 203.2994, 3.141663); */
+/*   graph->SetPoint(30, 221.7469, 2.978266); */
+/*   graph->SetPoint(31, 241.7318, 2.861322); */
+/*   graph->SetPoint(32, 261.7167, 2.767383); */
+/*   graph->SetPoint(33, 283.2388, 2.676528); */
+/*   graph->SetPoint(34, 304.761 , 2.641027); */
+/*   graph->SetPoint(35, 334.7383, 2.554322); */
+/*   graph->SetPoint(36, 357.0292, 2.50367 ); */
+/*   graph->SetPoint(37, 383.9319, 2.48701 ); */
+/*   graph->SetPoint(38, 420.8271, 2.454023); */
+/*   graph->SetPoint(39, 452.3417, 2.421473); */
+/*   graph->SetPoint(40, 487.6996, 2.405361); */
+/*   graph->SetPoint(41, 550     , 2.405361); */
+/*   graph->SetPoint(42, 600     , 2.405361); */
+/*   graph->SetPoint(43, 700     , 2.405361); */
+/*   graph->SetPoint(44, 800     , 2.405361); */
+/*   graph->SetPoint(45, 900     , 2.405361); */
+/*   graph->SetPoint(46,1000     , 2.405361); */
+/*   graph->SetPoint(47,1100     , 0.      ); */
+  graph->SetPoint( 0,  80     ,   0.    );
+  graph->SetPoint( 1,  88     , 100.    );
+  graph->SetPoint( 2,  90     ,   7.    );
+  graph->SetPoint( 3,  95     ,   5.3   );
+  graph->SetPoint( 4,  97     ,   5.    );
+  graph->SetPoint( 5, 107     ,   4.3   );
+  graph->SetPoint( 6, 112     ,   5.    );
+  graph->SetPoint( 7, 115     ,   5.3   );
+  graph->SetPoint( 8, 122.3   ,   5.    );
+  graph->SetPoint( 9, 133.3   ,   4.3   );
+  graph->SetPoint(10, 150     ,   3.25  );
+  graph->SetPoint(11, 200     ,   2.25  );
+  graph->SetPoint(12, 250     ,   1.92  );
+  graph->SetPoint(13, 300     ,   1.8   );
+  graph->SetPoint(14, 350     ,   1.65  );
+  graph->SetPoint(15, 400     ,   1.58  );
+  graph->SetPoint(16, 450     ,   1.53  );
+  graph->SetPoint(17, 500     ,   1.51  );
+  graph->SetPoint(18, 550     ,   1.51  );
+  graph->SetPoint(19, 600     ,   1.51  );
+  graph->SetPoint(20, 700     ,   1.51  );
+  graph->SetPoint(21, 800     ,   1.51  );
+  graph->SetPoint(22, 900     ,   1.51  );
+  graph->SetPoint(23,1000     ,   1.51  );
+  graph->SetPoint(24,1100     ,   0.    );
 }
 
 inline void
