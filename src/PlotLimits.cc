@@ -6,6 +6,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) : outpu
   xaxis_(cfg.getParameter<std::string>("xaxis")),
   yaxis_(cfg.getParameter<std::string>("yaxis")),
   mssm_ (cfg.getParameter<bool  >("mssm")),
+  ecms_ (cfg.getParameter<int   >("ecms")),
   png_  (cfg.getParameter<bool  >("png" )),
   pdf_  (cfg.getParameter<bool  >("pdf" )),
   txt_  (cfg.getParameter<bool  >("txt" )),
@@ -742,6 +743,95 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
     observed->SetLineWidth(3.);
     observed->Draw("PLsame");
   }
+
+  TGraph* mA_tanb5_mhmax200_7TeV = new TGraph();
+  TGraph* mA_tanb20_mhmax200_7TeV = new TGraph();
+  TGraph* mA_tanb50_mhmax200_7TeV = new TGraph();
+  TGraph* mA_tanb70_mhmax200_7TeV = new TGraph();
+  TGraph* mA_tanb5_nomix200_7TeV = new TGraph();
+  TGraph* mA_tanb20_nomix200_7TeV = new TGraph();
+  TGraph* mA_tanb50_nomix200_7TeV = new TGraph();
+  TGraph* mA_tanb70_nomix200_7TeV = new TGraph();
+  if(mssm_ && ecms_==7){
+    xs_mA_tanb5_mhmax200_7TeV(mA_tanb5_mhmax200_7TeV);
+    mA_tanb5_mhmax200_7TeV->SetLineColor(kBlue);
+    mA_tanb5_mhmax200_7TeV->SetLineStyle(1.);
+    mA_tanb5_mhmax200_7TeV->SetLineWidth(2.);
+    mA_tanb5_mhmax200_7TeV->Draw("PLsame"); 
+
+    xs_mA_tanb20_mhmax200_7TeV(mA_tanb20_mhmax200_7TeV);
+    mA_tanb20_mhmax200_7TeV->SetLineColor(kBlue);
+    mA_tanb20_mhmax200_7TeV->SetLineStyle(1.);
+    mA_tanb20_mhmax200_7TeV->SetLineWidth(2.);
+    mA_tanb20_mhmax200_7TeV->Draw("PLsame"); 
+
+    xs_mA_tanb50_mhmax200_7TeV(mA_tanb50_mhmax200_7TeV);
+    mA_tanb50_mhmax200_7TeV->SetLineColor(kBlue);
+    mA_tanb50_mhmax200_7TeV->SetLineStyle(1.);
+    mA_tanb50_mhmax200_7TeV->SetLineWidth(2.);
+    mA_tanb50_mhmax200_7TeV->Draw("PLsame"); 
+
+    xs_mA_tanb70_mhmax200_7TeV(mA_tanb70_mhmax200_7TeV);
+    mA_tanb70_mhmax200_7TeV->SetLineColor(kBlue);
+    mA_tanb70_mhmax200_7TeV->SetLineStyle(1.);
+    mA_tanb70_mhmax200_7TeV->SetLineWidth(2.);
+    mA_tanb70_mhmax200_7TeV->Draw("PLsame"); 
+
+    xs_mA_tanb5_nomix200_7TeV(mA_tanb5_nomix200_7TeV);
+    mA_tanb5_nomix200_7TeV->SetLineColor(kViolet);
+    mA_tanb5_nomix200_7TeV->SetLineStyle(1.);
+    mA_tanb5_nomix200_7TeV->SetLineWidth(2.);
+    mA_tanb5_nomix200_7TeV->Draw("PLsame"); 
+
+    xs_mA_tanb20_nomix200_7TeV(mA_tanb20_nomix200_7TeV);
+    mA_tanb20_nomix200_7TeV->SetLineColor(kViolet);
+    mA_tanb20_nomix200_7TeV->SetLineStyle(1.);
+    mA_tanb20_nomix200_7TeV->SetLineWidth(2.);
+    mA_tanb20_nomix200_7TeV->Draw("PLsame"); 
+
+    xs_mA_tanb50_nomix200_7TeV(mA_tanb50_nomix200_7TeV);
+    mA_tanb50_nomix200_7TeV->SetLineColor(kViolet);
+    mA_tanb50_nomix200_7TeV->SetLineStyle(1.);
+    mA_tanb50_nomix200_7TeV->SetLineWidth(2.);
+    mA_tanb50_nomix200_7TeV->Draw("PLsame"); 
+
+    xs_mA_tanb70_nomix200_7TeV(mA_tanb70_nomix200_7TeV);
+    mA_tanb70_nomix200_7TeV->SetLineColor(kViolet);
+    mA_tanb70_nomix200_7TeV->SetLineStyle(1.);
+    mA_tanb70_nomix200_7TeV->SetLineWidth(2.);
+    mA_tanb70_nomix200_7TeV->Draw("PLsame"); 
+  }
+
+  TGraph* mA_tanb5_mhmax200_8TeV = new TGraph();
+  TGraph* mA_tanb20_mhmax200_8TeV = new TGraph();
+  TGraph* mA_tanb50_mhmax200_8TeV = new TGraph();
+  TGraph* mA_tanb70_mhmax200_8TeV = new TGraph();
+  if(mssm_ && ecms_==8){
+    xs_mA_tanb5_mhmax200_8TeV(mA_tanb5_mhmax200_8TeV);
+    mA_tanb5_mhmax200_8TeV->SetLineColor(kBlue);
+    mA_tanb5_mhmax200_8TeV->SetLineStyle(1.);
+    mA_tanb5_mhmax200_8TeV->SetLineWidth(2.);
+    mA_tanb5_mhmax200_8TeV->Draw("PLsame"); 
+
+    xs_mA_tanb20_mhmax200_8TeV(mA_tanb20_mhmax200_8TeV);
+    mA_tanb20_mhmax200_8TeV->SetLineColor(kBlue);
+    mA_tanb20_mhmax200_8TeV->SetLineStyle(1.);
+    mA_tanb20_mhmax200_8TeV->SetLineWidth(2.);
+    mA_tanb20_mhmax200_8TeV->Draw("PLsame"); 
+
+    xs_mA_tanb50_mhmax200_8TeV(mA_tanb50_mhmax200_8TeV);
+    mA_tanb50_mhmax200_8TeV->SetLineColor(kBlue);
+    mA_tanb50_mhmax200_8TeV->SetLineStyle(1.);
+    mA_tanb50_mhmax200_8TeV->SetLineWidth(2.);
+    mA_tanb50_mhmax200_8TeV->Draw("PLsame"); 
+
+    xs_mA_tanb70_mhmax200_8TeV(mA_tanb70_mhmax200_8TeV);
+    mA_tanb70_mhmax200_8TeV->SetLineColor(kBlue);
+    mA_tanb70_mhmax200_8TeV->SetLineStyle(1.);
+    mA_tanb70_mhmax200_8TeV->SetLineWidth(2.);
+    mA_tanb70_mhmax200_8TeV->Draw("PLsame");  
+  }
+
   /// setup the CMS Preliminary
   CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
 
@@ -788,7 +878,7 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
   }
 
   /// add the proper legend
-  TLegend* leg = new TLegend(mssm_ ? 0.5625 : 0.18, 0.70, mssm_ ? 1.00 : 0.605, 0.90);
+  TLegend* leg = new TLegend(mssm_ ? 0.5625 : 0.18, 0.50, mssm_ ? 1.00 : 0.605, 0.90);
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 1001 );
   //leg->SetFillStyle ( 0 );
@@ -806,6 +896,18 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
     leg->AddEntry( innerBand, "#pm 1#sigma injected" ,  "F" );
     leg->AddEntry( outerBand, "#pm 2#sigma injected" ,  "F" );
   }
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb5_mhmax200_7TeV , "xs(m_{A}/tan#beta)=5, mhmax"             ,  "L" );
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb20_mhmax200_7TeV , "xs(m_{A}/tan#beta)=20, mhmax"             ,  "L" );
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb50_mhmax200_7TeV , "xs(m_{A}/tan#beta)=50, mhmax"             ,  "L" );
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb70_mhmax200_7TeV , "xs(m_{A}/tan#beta)=70, mhmax"             ,  "L" );
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb5_nomix200_7TeV , "xs(m_{A}/tan#beta)=5, nomix"             ,  "L" );
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb20_nomix200_7TeV , "xs(m_{A}/tan#beta)=20, nomix"             ,  "L" );
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb50_nomix200_7TeV , "xs(m_{A}/tan#beta)=50, nomix"             ,  "L" );
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb70_nomix200_7TeV , "xs(m_{A}/tan#beta)=70, nomix"             ,  "L" );
+  if(mssm_ && ecms_==8) leg->AddEntry( mA_tanb5_mhmax200_8TeV , "xs(m_{A}/tan#beta)=5, mhmax"             ,  "L" );
+  if(mssm_ && ecms_==8) leg->AddEntry( mA_tanb20_mhmax200_8TeV , "xs(m_{A}/tan#beta)=20, mhmax"             ,  "L" );
+  if(mssm_ && ecms_==8) leg->AddEntry( mA_tanb50_mhmax200_8TeV , "xs(m_{A}/tan#beta)=50, mhmax"             ,  "L" );
+  if(mssm_ && ecms_==8) leg->AddEntry( mA_tanb70_mhmax200_8TeV , "xs(m_{A}/tan#beta)=70, mhmax"             ,  "L" );
   leg->Draw("same");
   //canv.RedrawAxis("g");
   canv.RedrawAxis();
@@ -1181,53 +1283,71 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
     observed->SetLineWidth(3.);
   }
 
-  TGraph* outerHigh = new TGraph();
-  TGraph* innerHigh = new TGraph();
-  TGraph* outerLow  = new TGraph();
-  TGraph* innerLow  = new TGraph();
-  //TGraph* innerAuxH = new TGraph();
-  //TGraph* innerAuxL = new TGraph();
-  for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
-    if(valid_[imass] && masses_.size()>0){
-      for (unsigned int jmass=0; jmass<masses_.size(); ++jmass){
-	  if(masses_[jmass]==bins_[imass]){
-	    outerHigh->SetPoint(ipoint, outerBand->GetX()[ipoint], outerBand->GetY()[ipoint]+outerBand->GetEYhigh()[ipoint]);
-	    innerHigh->SetPoint(ipoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]+innerBand->GetEYhigh()[ipoint]);
-	    outerLow ->SetPoint(ipoint, outerBand->GetX()[ipoint], outerBand->GetY()[ipoint]-outerBand->GetEYlow ()[ipoint]);
-	    innerLow ->SetPoint(ipoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]-innerBand->GetEYlow ()[ipoint]);
-	    ++ipoint;
-	    break;
-	  }
-      }
-    }
-    if(valid_[imass] && masses_.size()==0){
-      outerHigh->SetPoint(ipoint, outerBand->GetX()[ipoint], outerBand->GetY()[ipoint]+outerBand->GetEYhigh()[ipoint]);
-      innerHigh->SetPoint(ipoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]+innerBand->GetEYhigh()[ipoint]);
-      outerLow ->SetPoint(ipoint, outerBand->GetX()[ipoint], outerBand->GetY()[ipoint]-outerBand->GetEYlow ()[ipoint]);
-      innerLow ->SetPoint(ipoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]-innerBand->GetEYlow ()[ipoint]);
-      ++ipoint;
-    }
-  }
+  higgs125_2->SetLineColor(kRed);
+    //higgs125_2->SetLineStyle(20.);
+    higgs125_2->SetFillColor(kRed);
+    if(higgs125_bands) higgs125_2->Draw("3same");
+  
 
-  outerHigh->SetLineStyle(11);
-  outerHigh->SetLineColor(kGray+1);
-  if (outerband_) outerHigh->Draw("Lsame");
+  outerBand->SetFillColor(kGray);
+  outerBand->SetLineColor(kGray);
+  outerBand->SetLineWidth(-702); 
+  outerBand->Draw("3same");
 
-  innerHigh->SetFillStyle(3005);
-  innerHigh->SetFillColor(kGray+1);
-  innerHigh->SetLineColor(kGray+1);
-  innerHigh->SetLineWidth(-702);
-  innerHigh->Draw("Lsame");
 
-  innerLow ->SetFillStyle(3005);
-  innerLow ->SetFillColor(kGray+1);
-  innerLow ->SetLineColor(kGray+1);
-  innerLow ->SetLineWidth( 702);
-  innerLow ->Draw("Lsame");
+  innerBand->SetFillColor(kGray+1);
+  innerBand->SetLineColor(kGray+1);
+  innerBand->SetLineWidth(-702);
+  innerBand->Draw("3same");
 
-  outerLow ->SetLineStyle(11);
-  outerLow ->SetLineColor(kGray+1);
-  if (outerband_) outerLow ->Draw("Lsame");
+
+//   TGraph* outerHigh = new TGraph();
+//   TGraph* innerHigh = new TGraph();
+//   TGraph* outerLow  = new TGraph();
+//   TGraph* innerLow  = new TGraph();
+//   //TGraph* innerAuxH = new TGraph();
+//   //TGraph* innerAuxL = new TGraph();
+//   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
+//     if(valid_[imass] && masses_.size()>0){
+//       for (unsigned int jmass=0; jmass<masses_.size(); ++jmass){
+// 	  if(masses_[jmass]==bins_[imass]){
+// 	    outerHigh->SetPoint(ipoint, outerBand->GetX()[ipoint], outerBand->GetY()[ipoint]+outerBand->GetEYhigh()[ipoint]);
+// 	    innerHigh->SetPoint(ipoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]+innerBand->GetEYhigh()[ipoint]);
+// 	    outerLow ->SetPoint(ipoint, outerBand->GetX()[ipoint], outerBand->GetY()[ipoint]-outerBand->GetEYlow ()[ipoint]);
+// 	    innerLow ->SetPoint(ipoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]-innerBand->GetEYlow ()[ipoint]);
+// 	    ++ipoint;
+// 	    break;
+// 	  }
+//       }
+//     }
+//     if(valid_[imass] && masses_.size()==0){
+//       outerHigh->SetPoint(ipoint, outerBand->GetX()[ipoint], outerBand->GetY()[ipoint]+outerBand->GetEYhigh()[ipoint]);
+//       innerHigh->SetPoint(ipoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]+innerBand->GetEYhigh()[ipoint]);
+//       outerLow ->SetPoint(ipoint, outerBand->GetX()[ipoint], outerBand->GetY()[ipoint]-outerBand->GetEYlow ()[ipoint]);
+//       innerLow ->SetPoint(ipoint, innerBand->GetX()[ipoint], innerBand->GetY()[ipoint]-innerBand->GetEYlow ()[ipoint]);
+//       ++ipoint;
+//     }
+//   }
+
+//   outerHigh->SetLineStyle(11);
+//   outerHigh->SetLineColor(kGray+1);
+//   if (outerband_) outerHigh->Draw("Lsame");
+
+//   innerHigh->SetFillStyle(3005);
+//   innerHigh->SetFillColor(kGray+1);
+//   innerHigh->SetLineColor(kGray+1);
+//   innerHigh->SetLineWidth(-702);
+//   innerHigh->Draw("Lsame");
+
+//   innerLow ->SetFillStyle(3005);
+//   innerLow ->SetFillColor(kGray+1);
+//   innerLow ->SetLineColor(kGray+1);
+//   innerLow ->SetLineWidth( 702);
+//   innerLow ->Draw("Lsame");
+
+//   outerLow ->SetLineStyle(11);
+//   outerLow ->SetLineColor(kGray+1);
+//   if (outerband_) outerLow ->Draw("Lsame");
 
   expected->SetLineColor(kGray+2);
   expected->SetLineWidth(3);
@@ -1256,15 +1376,20 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   theory->Draw();
 
   /// add the proper legend
-  TLegend* leg = new TLegend(0.18, 0.70, 0.605, 0.90);
-  leg->SetBorderSize( 0 );
-  leg->SetFillStyle ( 0 );
+  TLegend* leg = new TLegend(0.18, 0.60, 0.50, 0.90);
+  leg->SetBorderSize( 1 );  //0
+  leg->SetFillStyle ( 1001); //0
+  leg->SetTextSize  (0.04);
+  leg->SetTextFont  (    62 ); 
   leg->SetFillColor (kWhite);
-  //leg->SetHeader( "95% CL Limits" );
-  if(observed){ leg->AddEntry( observed , "observed" ,  "L" );}
-  leg->AddEntry( expected , "expected"               ,  "L" );
-  leg->AddEntry( innerHigh, "#pm 1#sigma expected"   ,  "L" );
-  if(outerband_) leg->AddEntry( outerHigh, "#pm 2#sigma expected"   ,  "L" );
+  leg->SetLineColor (kBlack);
+  leg->SetHeader( "95% CL Excluded:" );
+  if(observed){ leg->AddEntry( observed , "Observed" ,  "L" );}
+  leg->AddEntry( expected , "Expected"               ,  "L" );
+  //leg->AddEntry( innerHigh, "#pm 1#sigma Expected"   ,  "L" );
+  leg->AddEntry( innerBand, "#pm 1#sigma Expected"   ,  "F" );
+  //if(outerband_) leg->AddEntry( outerHigh, "#pm 2#sigma Expected"   ,  "F" );
+  if(outerband_) leg->AddEntry( outerBand, "#pm 2#sigma Expected"   ,  "F" );
   if(higgs125_bands) leg->AddEntry( higgs125_2 , "mh=125GeV #pm 2GeV",  "F");
   if(higgs125_bands) leg->AddEntry( higgs125_3 , "mh=125GeV #pm 3GeV",  "F");
   if(higgs125_bands) leg->AddEntry( higgs125_4 , "mh=125GeV #pm 4GeV",  "F");

@@ -117,6 +117,40 @@ class PlotLimits {
   /// fill officially approved limits for HIG-12-032 PAS (NOTE: these are only SM limits)
   void prepareHIG_12_032(std::vector<double>& values, const char* type, double mass, bool initial);
 
+
+  /// fill the mA-tanb20-xsec curve (only for mA mssm 8TeV mhmax mu=200GeV)
+  void xs_mA_tanb1_mhmax200_8TeV(TGraph* graph);
+  // fill the mA-tanb20-xsec curve (only for mA mssm 8TeV mhmax mu=200GeV)
+  void xs_mA_tanb5_mhmax200_8TeV(TGraph* graph);
+  /// fill the mA-tanb20-xsec curve (only for mA mssm 8TeV mhmax mu=200geV)
+  void xs_mA_tanb20_mhmax200_8TeV(TGraph* graph);
+  /// fill the mA-tanb50-xsec curve (only for mA mssm 8TeV mhmax mu=200GeV)
+  void xs_mA_tanb50_mhmax200_8TeV(TGraph* graph);
+  /// fill the mA-tanb50-xsec curve (only for mA mssm 8TeV mhmax mu=200GeV)
+  void xs_mA_tanb70_mhmax200_8TeV(TGraph* graph);
+
+  /// fill the mA-tanb20-xsec curve (only for mA mssm 7TeV mhmax mu=200GeV)
+  void xs_mA_tanb1_mhmax200_7TeV(TGraph* graph);
+  /// fill the mA-tanb20-xsec curve (only for mA mssm 7TeV mhmax mu=200GeV)
+  void xs_mA_tanb5_mhmax200_7TeV(TGraph* graph);
+  /// fill the mA-tanb20-xsec curve (only for mA mssm 7TeV mhmax mu=200geV)
+  void xs_mA_tanb20_mhmax200_7TeV(TGraph* graph);
+  /// fill the mA-tanb50-xsec curve (only for mA mssm 7TeV mhmax mu=200GeV)
+  void xs_mA_tanb50_mhmax200_7TeV(TGraph* graph);
+  /// fill the mA-tanb50-xsec curve (only for mA mssm 7TeV mhmax mu=200GeV)
+  void xs_mA_tanb70_mhmax200_7TeV(TGraph* graph); 
+
+  /// fill the mA-tanb20-xsec curve (only for mA mssm 7TeV nomix mu=200GeV)
+  void xs_mA_tanb1_nomix200_7TeV(TGraph* graph);
+  /// fill the mA-tanb20-xsec curve (only for mA mssm 7TeV nomix mu=200GeV)
+  void xs_mA_tanb5_nomix200_7TeV(TGraph* graph);
+  /// fill the mA-tanb20-xsec curve (only for mA mssm 7TeV nomix mu=200geV)
+  void xs_mA_tanb20_nomix200_7TeV(TGraph* graph);
+  /// fill the mA-tanb50-xsec curve (only for mA mssm 7TeV nomix mu=200GeV)
+  void xs_mA_tanb50_nomix200_7TeV(TGraph* graph);
+  /// fill the mA-tanb50-xsec curve (only for mA mssm 7TeV nomix mu=200GeV)
+  void xs_mA_tanb70_nomix200_7TeV(TGraph* graph); 
+
   /*
     Limits for comparison
   */
@@ -141,6 +175,8 @@ class PlotLimits {
   std::string yaxis_;
   /// mssm or sm plots for LP11?
   bool mssm_;
+  /// center of mass energy (7, 8, 78 for combined)
+  int ecms_;
   /// print out png format?
   bool png_;
   /// print out pdf format?
@@ -1018,7 +1054,365 @@ PlotLimits::limitsHWW(TGraph* graph, const char* type)
 inline void
 PlotLimits::limitsHGG(TGraph* graph, const char* type)
 {
-
 }
 
+inline void
+PlotLimits::xs_mA_tanb1_mhmax200_7TeV(TGraph* graph)
+{
+  graph->SetPoint( 0,  90,   5.03737      );
+  graph->SetPoint( 1, 100,   4.05932      );
+  graph->SetPoint( 2, 120,   2.72635      );
+  graph->SetPoint( 3, 130,   2.26197      );
+  graph->SetPoint( 4, 140,   1.88807      );
+  graph->SetPoint( 5, 160,   0.0850906    );
+  graph->SetPoint( 6, 180,   0.049619     );
+  graph->SetPoint( 7, 200,   0.0335455    );
+  graph->SetPoint( 8, 250,   0.0059505    );
+  graph->SetPoint( 9, 300,   0.00304282   );
+  graph->SetPoint(10, 350,   0.00043453   ); 
+  graph->SetPoint(11, 400,   0.000246734  );
+  graph->SetPoint(12, 450,   0.000119678  );
+  graph->SetPoint(13, 500,   6.17626e-05  );
+  graph->SetPoint(14, 600,   1.82368e-05  );
+  graph->SetPoint(15, 700,   6.30971e-06  );  
+  graph->SetPoint(16, 800,   2.46535e-06  );
+  graph->SetPoint(17, 900,   1.04774e-06  );
+  graph->SetPoint(18,1000,   4.74643e-07  );
+}
+
+inline void
+PlotLimits::xs_mA_tanb5_mhmax200_7TeV(TGraph* graph)
+{
+  graph->SetPoint( 0,  90,   2.32008      );
+  graph->SetPoint( 1, 100,   1.53305      );
+  graph->SetPoint( 2, 120,   0.755909     );
+  graph->SetPoint( 3, 130,   0.557006     );
+  graph->SetPoint( 4, 140,   0.421449     );
+  graph->SetPoint( 5, 160,   0.257686     );
+  graph->SetPoint( 6, 180,   0.119339     );
+  graph->SetPoint( 7, 200,   0.0727759    );
+  graph->SetPoint( 8, 250,   0.0204587    );
+  graph->SetPoint( 9, 300,   0.00531448   );
+  graph->SetPoint(10, 350,   0.00394508   ); 
+  graph->SetPoint(11, 400,   0.00178724   );
+  graph->SetPoint(12, 450,   0.000840864  );
+  graph->SetPoint(13, 500,   0.000421924  );
+  graph->SetPoint(14, 600,   0.000107309  );
+  graph->SetPoint(15, 700,   3.53824e-056 );  
+  graph->SetPoint(16, 800,   1.35272e-05  );
+  graph->SetPoint(17, 900,   5.68732e-06  );
+  graph->SetPoint(18,1000,   2.5632e-06   );
+}
+
+inline void
+PlotLimits::xs_mA_tanb20_mhmax200_7TeV(TGraph* graph)
+{
+  graph->SetPoint( 0,  90,  39.6771      );
+  graph->SetPoint( 1, 100,  26.0723      );
+  graph->SetPoint( 2, 120,  12.5467      );
+  graph->SetPoint( 3, 130,   9.07742     );
+  graph->SetPoint( 4, 140,   6.71448     );
+  graph->SetPoint( 5, 160,   3.87902     );
+  graph->SetPoint( 6, 180,   2.34993     );
+  graph->SetPoint( 7, 200,   1.48495     );
+  graph->SetPoint( 8, 250,   0.534015    );
+  graph->SetPoint( 9, 300,   0.203777    );
+  graph->SetPoint(10, 350,   0.0800728   ); 
+  graph->SetPoint(11, 400,   0.0401585   );
+  graph->SetPoint(12, 450,   0.0207661   );
+  graph->SetPoint(13, 500,   0.0111621   );
+  graph->SetPoint(14, 600,   0.00335704  );
+  graph->SetPoint(15, 700,   0.00123363  );  
+  graph->SetPoint(16, 800,   0.000509851 );
+  graph->SetPoint(17, 900,   0.000228426 );
+  graph->SetPoint(18,1000,   0.000108744 );
+}
+
+inline void
+PlotLimits::xs_mA_tanb50_mhmax200_7TeV(TGraph* graph)
+{
+  graph->SetPoint( 0,  90, 256.219       );
+  graph->SetPoint( 1, 100, 168.231       );
+  graph->SetPoint( 2, 120,  80.8628      );
+  graph->SetPoint( 3, 130,  58.4781      );
+  graph->SetPoint( 4, 140,  43.2407      );
+  graph->SetPoint( 5, 160,  24.967       );
+  graph->SetPoint( 6, 180,  15.2534      );
+  graph->SetPoint( 7, 200,   9.73877     );
+  graph->SetPoint( 8, 250,   3.65872     );
+  graph->SetPoint( 9, 300,   1.57715     );
+  graph->SetPoint(10, 350,   0.720407    ); 
+  graph->SetPoint(11, 400,   0.371131    );
+  graph->SetPoint(12, 450,   0.20122     );
+  graph->SetPoint(13, 500,   0.113781    );
+  graph->SetPoint(14, 600,   0.0394261   );
+  graph->SetPoint(15, 700,   0.0155948   );  
+  graph->SetPoint(16, 800,   0.0067519   );
+  graph->SetPoint(17, 900,   0.00312654  );
+  graph->SetPoint(18,1000,   0.00152628  );
+}
+
+inline void
+PlotLimits::xs_mA_tanb70_mhmax200_7TeV(TGraph* graph)
+{
+  graph->SetPoint( 0,  90, 516.275       );
+  graph->SetPoint( 1, 100, 230.585       );
+  graph->SetPoint( 2, 120, 162.234       );
+  graph->SetPoint( 3, 130, 117.195       );
+  graph->SetPoint( 4, 140,  86.5736      );
+  graph->SetPoint( 5, 160,  49.9037      );
+  graph->SetPoint( 6, 180,  30.4588      );
+  graph->SetPoint( 7, 200,  19.4482      );
+  graph->SetPoint( 8, 250,   7.32204     );
+  graph->SetPoint( 9, 300,   3.18955     );
+  graph->SetPoint(10, 350,   1.48791     ); 
+  graph->SetPoint(11, 400,   0.770453    );
+  graph->SetPoint(12, 450,   0.42099     );
+  graph->SetPoint(13, 500,   0.240205    );
+  graph->SetPoint(14, 600,   0.0855247   );
+  graph->SetPoint(15, 700,   0.0343697   );  
+  graph->SetPoint(16, 800,   0.0150405   );
+  graph->SetPoint(17, 900,   0.00701982  );
+  graph->SetPoint(18,1000,   0.00344803  );
+}
+
+inline void
+PlotLimits::xs_mA_tanb1_mhmax200_8TeV(TGraph* graph)
+{
+  graph->SetPoint( 0,  90,   6.29776      );
+  graph->SetPoint( 1, 100,   5.10649      );
+  graph->SetPoint( 2, 120,   3.4696       );
+  graph->SetPoint( 3, 130,   2.89448      );
+  graph->SetPoint( 4, 140,   2.42866      );
+  graph->SetPoint( 5, 160,   0.110562     );
+  graph->SetPoint( 6, 180,   0.065083     );
+  graph->SetPoint( 7, 200,   0.0443984    );
+  graph->SetPoint( 8, 250,   0.00804336   );
+  graph->SetPoint( 9, 300,   0.00419446   );
+  graph->SetPoint(10, 350,   0.000610095  ); 
+  graph->SetPoint(11, 400,   0.00035264   );
+  graph->SetPoint(12, 450,   0.000174092  );
+  graph->SetPoint(13, 500,   9.14083e-05  );
+  graph->SetPoint(14, 600,   2.79148e-05  );
+  graph->SetPoint(15, 700,   9.97944e-06  );  
+  graph->SetPoint(16, 800,   4.02823e-06  );
+  graph->SetPoint(17, 900,   1.76803e-06  );
+  graph->SetPoint(18,1000,   8.27238e-07  );
+}
+
+inline void
+PlotLimits::xs_mA_tanb5_mhmax200_8TeV(TGraph* graph)
+{
+  graph->SetPoint( 0,  90,   2.92386      );
+  graph->SetPoint( 1, 100,   1.9484       );
+  graph->SetPoint( 2, 120,   0.975688     );
+  graph->SetPoint( 3, 130,   0.724179     );
+  graph->SetPoint( 4, 140,   0.551404     );
+  graph->SetPoint( 5, 160,   0.341302     );
+  graph->SetPoint( 6, 180,   0.159729     );
+  graph->SetPoint( 7, 200,   0.098293     );
+  graph->SetPoint( 8, 250,   0.0281775    );
+  graph->SetPoint( 9, 300,   0.00743153   );
+  graph->SetPoint(10, 350,   0.00556961   ); 
+  graph->SetPoint(11, 400,   0.00257001   );
+  graph->SetPoint(12, 450,   0.00123146   );
+  graph->SetPoint(13, 500,   0.000629016  );
+  graph->SetPoint(14, 600,   0.000165679  );
+  graph->SetPoint(15, 700,   5.65292e-05  );  
+  graph->SetPoint(16, 800,   2.23601e-05  );
+  graph->SetPoint(17, 900,   9.72377e-06  );
+  graph->SetPoint(18,1000,   4.53274e-06  );
+}
+
+inline void
+PlotLimits::xs_mA_tanb20_mhmax200_8TeV(TGraph* graph)
+{
+  graph->SetPoint( 0,  90,  49.836       );
+  graph->SetPoint( 1, 100,  33.0219      );
+  graph->SetPoint( 2, 120,  16.1375      );
+  graph->SetPoint( 3, 130,  11.7591      );
+  graph->SetPoint( 4, 140,   8.75759     );
+  graph->SetPoint( 5, 160,   5.12514     );
+  graph->SetPoint( 6, 180,   3.14237     );
+  graph->SetPoint( 7, 200,   2.00832     );
+  graph->SetPoint( 8, 250,   0.741488    );
+  graph->SetPoint( 9, 300,   0.289943    );
+  graph->SetPoint(10, 350,   0.116522    ); 
+  graph->SetPoint(11, 400,   0.0596247   );
+  graph->SetPoint(12, 450,   0.0314678   );
+  graph->SetPoint(13, 500,   0.0172561   );
+  graph->SetPoint(14, 600,   0.0053973   );
+  graph->SetPoint(15, 700,   0.00206059  );  
+  graph->SetPoint(16, 800,   0.000884066 );
+  graph->SetPoint(17, 900,   0.000410902 );
+  graph->SetPoint(18,1000,   0.000202822 );
+}
+
+inline void
+PlotLimits::xs_mA_tanb50_mhmax200_8TeV(TGraph* graph)
+{
+  graph->SetPoint( 0,  90, 321.752       );
+  graph->SetPoint( 1, 100, 213.021       );
+  graph->SetPoint( 2, 120, 103.972       );
+  graph->SetPoint( 3, 130,  75.7267      );
+  graph->SetPoint( 4, 140,  56.3766      );
+  graph->SetPoint( 5, 160,  32.9719      );
+  graph->SetPoint( 6, 180,  20.386       );
+  graph->SetPoint( 7, 200,  13.1633      );
+  graph->SetPoint( 8, 250,   5.07616     );
+  graph->SetPoint( 9, 300,   2.2417      );
+  graph->SetPoint(10, 350,   1.04757     ); 
+  graph->SetPoint(11, 400,   0.55137     );
+  graph->SetPoint(12, 450,   0.305267    );
+  graph->SetPoint(13, 500,   0.176171    );
+  graph->SetPoint(14, 600,   0.0635114   );
+  graph->SetPoint(15, 700,   0.0261058   );  
+  graph->SetPoint(16, 800,   0.0117348   );
+  graph->SetPoint(17, 900,   0.00563758  );
+  graph->SetPoint(18,1000,   0.00285359  );
+}
+
+inline void
+PlotLimits::xs_mA_tanb70_mhmax200_8TeV(TGraph* graph)
+{
+  graph->SetPoint( 0,  90, 648.309       );
+  graph->SetPoint( 1, 100, 428.512       );
+  graph->SetPoint( 2, 120, 208.592       );
+  graph->SetPoint( 3, 130, 151.757       );
+  graph->SetPoint( 4, 140, 112.869       );
+  graph->SetPoint( 5, 160,  65.9007      );
+  graph->SetPoint( 6, 180,  40.7057      );
+  graph->SetPoint( 7, 200,  26.2853      );
+  graph->SetPoint( 8, 250,  10.1578      );
+  graph->SetPoint( 9, 300,   4.53294     );
+  graph->SetPoint(10, 350,   2.16329     ); 
+  graph->SetPoint(11, 400,   1.1446      );
+  graph->SetPoint(12, 450,   0.6387      );
+  graph->SetPoint(13, 500,   0.371947    );
+  graph->SetPoint(14, 600,   0.137788    );
+  graph->SetPoint(15, 700,   0.0575433   );  
+  graph->SetPoint(16, 800,   0.0261445   );
+  graph->SetPoint(17, 900,   0.0126598   );
+  graph->SetPoint(18,1000,   0.00644764  );
+}
+
+inline void
+PlotLimits::xs_mA_tanb1_nomix200_7TeV(TGraph* graph)
+{
+  graph->SetPoint( 0,  90,   1.8          ); //number interpolated
+  graph->SetPoint( 1, 100,   0.777065     );
+  graph->SetPoint( 2, 120,   0.570059     );
+  graph->SetPoint( 3, 130,   0.432182     );
+  graph->SetPoint( 4, 140,   0.337103     );
+  graph->SetPoint( 5, 160,   0.219854     );
+  graph->SetPoint( 6, 180,   0.0870783    );
+  graph->SetPoint( 7, 200,   0.0546187    );
+  graph->SetPoint( 8, 250,   0.0157798    );
+  graph->SetPoint( 9, 300,   0.00431867   );
+  graph->SetPoint(10, 350,   0.00310969   ); 
+  graph->SetPoint(11, 400,   0.00141805   );
+  graph->SetPoint(12, 450,   0.000661938  );
+  graph->SetPoint(13, 500,   0.000331838  );
+  graph->SetPoint(14, 600,   8.50743e-05  );
+  graph->SetPoint(15, 700,   2.79244e-05  );  
+  graph->SetPoint(16, 800,   1.06313e-05  );
+  graph->SetPoint(17, 900,   4.4507e-06   );
+  graph->SetPoint(18,1000,   1.99744e-06  );
+}
+
+inline void
+PlotLimits::xs_mA_tanb5_nomix200_7TeV(TGraph* graph)
+{
+  graph->SetPoint( 0,  90,   2.32335      ); //number interpolated
+  graph->SetPoint( 1, 100,   1.53421      );
+  graph->SetPoint( 2, 120,   0.755294     );
+  graph->SetPoint( 3, 130,   0.556054     );
+  graph->SetPoint( 4, 140,   0.420324     );
+  graph->SetPoint( 5, 160,   0.256454     );
+  graph->SetPoint( 6, 180,   0.118953     );
+  graph->SetPoint( 7, 200,   0.0724268    );
+  graph->SetPoint( 8, 250,   0.0202821    );
+  graph->SetPoint( 9, 300,   0.00526867   );
+  graph->SetPoint(10, 350,   0.00389071   ); 
+  graph->SetPoint(11, 400,   0.00176561   );
+  graph->SetPoint(12, 450,   0.000830987  );
+  graph->SetPoint(13, 500,   0.000416989  );
+  graph->SetPoint(14, 600,   0.000106047  );
+  graph->SetPoint(15, 700,   3.49724e-05  );  
+  graph->SetPoint(16, 800,   1.33739e-05  );
+  graph->SetPoint(17, 900,   5.62468e-06  );
+  graph->SetPoint(18,1000,   2.53594e-06  );
+}
+
+inline void
+PlotLimits::xs_mA_tanb20_nomix200_7TeV(TGraph* graph)
+{
+  graph->SetPoint( 0,  90,  39.9296      );
+  graph->SetPoint( 1, 100,  26.2436      );
+  graph->SetPoint( 2, 120,  12.6331      );
+  graph->SetPoint( 3, 130,   9.14097     );
+  graph->SetPoint( 4, 140,   6.76233     );
+  graph->SetPoint( 5, 160,   3.90732     );
+  graph->SetPoint( 6, 180,   2.36931     );
+  graph->SetPoint( 7, 200,   1.49863     );
+  graph->SetPoint( 8, 250,   0.540856    );
+  graph->SetPoint( 9, 300,   0.208179    );
+  graph->SetPoint(10, 350,   0.0826232   ); 
+  graph->SetPoint(11, 400,   0.0415116   );
+  graph->SetPoint(12, 450,   0.0215237   );
+  graph->SetPoint(13, 500,   0.0116003   );
+  graph->SetPoint(14, 600,   0.00351274  );
+  graph->SetPoint(15, 700,   0.00129491  );  
+  graph->SetPoint(16, 800,   0.000536177 );
+  graph->SetPoint(17, 900,   0.000240537 );
+  graph->SetPoint(18,1000,   0.000114627 );
+}
+
+inline void
+PlotLimits::xs_mA_tanb50_nomix200_7TeV(TGraph* graph)
+{
+  graph->SetPoint( 0,  90, 256.262       );
+  graph->SetPoint( 1, 100, 168.474       );
+  graph->SetPoint( 2, 120,  81.15        );
+  graph->SetPoint( 3, 130,  58.7365      );
+  graph->SetPoint( 4, 140,  43.4647      );
+  graph->SetPoint( 5, 160,  25.1287      );
+  graph->SetPoint( 6, 180,  15.3756      );
+  graph->SetPoint( 7, 200,   9.82855     );
+  graph->SetPoint( 8, 250,   3.70346     );
+  graph->SetPoint( 9, 300,   1.60293     );
+  graph->SetPoint(10, 350,   0.740298    ); 
+  graph->SetPoint(11, 400,   0.382646    );
+  graph->SetPoint(12, 450,   0.208256    );
+  graph->SetPoint(13, 500,   0.118237    );
+  graph->SetPoint(14, 600,   0.0414199   );
+  graph->SetPoint(15, 700,   0.0164817   );  
+  graph->SetPoint(16, 800,   0.00716251  );
+  graph->SetPoint(17, 900,   0.00332492  );
+  graph->SetPoint(18,1000,   0.00162586  );
+}
+
+inline void
+PlotLimits::xs_mA_tanb70_nomix200_7TeV(TGraph* graph)
+{
+  graph->SetPoint( 0,  90, 509.157       );
+  graph->SetPoint( 1, 100, 228.45        );
+  graph->SetPoint( 2, 120, 161.029       );
+  graph->SetPoint( 3, 130, 116.516       );
+  graph->SetPoint( 4, 140,  86.1967      );
+  graph->SetPoint( 5, 160,  49.8097      );
+  graph->SetPoint( 6, 180,  30.4804      );
+  graph->SetPoint( 7, 200,  19.4975      );
+  graph->SetPoint( 8, 250,   7.3701      );
+  graph->SetPoint( 9, 300,   3.22151     );
+  graph->SetPoint(10, 350,   1.51899     ); 
+  graph->SetPoint(11, 400,   0.789342    );
+  graph->SetPoint(12, 450,   0.432966    );
+  graph->SetPoint(13, 500,   0.248024    );
+  graph->SetPoint(14, 600,   0.0892303   );
+  graph->SetPoint(15, 700,   0.0360703   );  
+  graph->SetPoint(16, 800,   0.0158435   );
+  graph->SetPoint(17, 900,   0.00741254  );
+  graph->SetPoint(18,1000,   0.00364665  );
+}
 #endif
