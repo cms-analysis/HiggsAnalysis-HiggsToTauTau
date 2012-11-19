@@ -744,58 +744,162 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
     observed->Draw("PLsame");
   }
 
+  TGraph* mA_tanb5_mhmax_neg400_7TeV = new TGraph();
+  TGraph* mA_tanb20_mhmax_neg400_7TeV = new TGraph();
+  TGraph* mA_tanb50_mhmax_neg400_7TeV = new TGraph();
+  TGraph* mA_tanb70_mhmax_neg400_7TeV = new TGraph();
   TGraph* mA_tanb5_mhmax200_7TeV = new TGraph();
   TGraph* mA_tanb20_mhmax200_7TeV = new TGraph();
   TGraph* mA_tanb50_mhmax200_7TeV = new TGraph();
   TGraph* mA_tanb70_mhmax200_7TeV = new TGraph();
+  TGraph* mA_tanb5_mhmax800_7TeV = new TGraph();
+  TGraph* mA_tanb20_mhmax800_7TeV = new TGraph();
+  TGraph* mA_tanb50_mhmax800_7TeV = new TGraph();
+  TGraph* mA_tanb70_mhmax800_7TeV = new TGraph();
   TGraph* mA_tanb5_nomix200_7TeV = new TGraph();
   TGraph* mA_tanb20_nomix200_7TeV = new TGraph();
   TGraph* mA_tanb50_nomix200_7TeV = new TGraph();
   TGraph* mA_tanb70_nomix200_7TeV = new TGraph();
   if(mssm_ && ecms_==7){
+    xs_mA_tanb5_mhmax_neg400_7TeV(mA_tanb5_mhmax_neg400_7TeV);
+    mA_tanb5_mhmax_neg400_7TeV->SetMarkerStyle(1);
+    mA_tanb5_mhmax_neg400_7TeV->SetMarkerSize(0.4);
+    mA_tanb5_mhmax_neg400_7TeV->SetMarkerColor(kBlack);
+    mA_tanb5_mhmax_neg400_7TeV->SetLineColor(kCyan);
+    mA_tanb5_mhmax_neg400_7TeV->SetLineStyle(1.);
+    mA_tanb5_mhmax_neg400_7TeV->SetLineWidth(2.);
+    mA_tanb5_mhmax_neg400_7TeV->Draw("PLsame"); 
+
+    xs_mA_tanb20_mhmax_neg400_7TeV(mA_tanb20_mhmax_neg400_7TeV);   
+    mA_tanb20_mhmax_neg400_7TeV->SetMarkerStyle(1);
+    mA_tanb20_mhmax_neg400_7TeV->SetMarkerSize(0.4);
+    mA_tanb20_mhmax_neg400_7TeV->SetMarkerColor(kBlack);
+    mA_tanb20_mhmax_neg400_7TeV->SetLineColor(kCyan);
+    mA_tanb20_mhmax_neg400_7TeV->SetLineStyle(1.);
+    mA_tanb20_mhmax_neg400_7TeV->SetLineWidth(2.);
+    mA_tanb20_mhmax_neg400_7TeV->Draw("PLsame"); 
+
+    xs_mA_tanb50_mhmax_neg400_7TeV(mA_tanb50_mhmax_neg400_7TeV);
+    mA_tanb50_mhmax_neg400_7TeV->SetMarkerStyle(1);
+    mA_tanb50_mhmax_neg400_7TeV->SetMarkerSize(0.4);
+    mA_tanb50_mhmax_neg400_7TeV->SetMarkerColor(kBlack);
+    mA_tanb50_mhmax_neg400_7TeV->SetLineColor(kCyan);
+    mA_tanb50_mhmax_neg400_7TeV->SetLineStyle(1.);
+    mA_tanb50_mhmax_neg400_7TeV->SetLineWidth(2.);
+    mA_tanb50_mhmax_neg400_7TeV->Draw("PLsame"); 
+
+    xs_mA_tanb70_mhmax_neg400_7TeV(mA_tanb70_mhmax_neg400_7TeV);
+    mA_tanb70_mhmax_neg400_7TeV->SetMarkerStyle(1);
+    mA_tanb70_mhmax_neg400_7TeV->SetMarkerSize(0.4);
+    mA_tanb70_mhmax_neg400_7TeV->SetMarkerColor(kBlack);
+    mA_tanb70_mhmax_neg400_7TeV->SetLineColor(kCyan);
+    mA_tanb70_mhmax_neg400_7TeV->SetLineStyle(1.);
+    mA_tanb70_mhmax_neg400_7TeV->SetLineWidth(2.);
+    mA_tanb70_mhmax_neg400_7TeV->Draw("PLsame");
+
     xs_mA_tanb5_mhmax200_7TeV(mA_tanb5_mhmax200_7TeV);
+    mA_tanb5_mhmax200_7TeV->SetMarkerStyle(1);
+    mA_tanb5_mhmax200_7TeV->SetMarkerSize(0.4);
+    mA_tanb5_mhmax200_7TeV->SetMarkerColor(kBlack);
     mA_tanb5_mhmax200_7TeV->SetLineColor(kBlue);
     mA_tanb5_mhmax200_7TeV->SetLineStyle(1.);
     mA_tanb5_mhmax200_7TeV->SetLineWidth(2.);
     mA_tanb5_mhmax200_7TeV->Draw("PLsame"); 
 
     xs_mA_tanb20_mhmax200_7TeV(mA_tanb20_mhmax200_7TeV);
+    mA_tanb20_mhmax200_7TeV->SetMarkerStyle(1);
+    mA_tanb20_mhmax200_7TeV->SetMarkerSize(0.4);
+    mA_tanb20_mhmax200_7TeV ->SetMarkerColor(kBlack);
     mA_tanb20_mhmax200_7TeV->SetLineColor(kBlue);
     mA_tanb20_mhmax200_7TeV->SetLineStyle(1.);
     mA_tanb20_mhmax200_7TeV->SetLineWidth(2.);
     mA_tanb20_mhmax200_7TeV->Draw("PLsame"); 
 
     xs_mA_tanb50_mhmax200_7TeV(mA_tanb50_mhmax200_7TeV);
+    mA_tanb50_mhmax200_7TeV->SetMarkerStyle(1);
+    mA_tanb50_mhmax200_7TeV->SetMarkerSize(0.4);
+    mA_tanb50_mhmax200_7TeV->SetMarkerColor(kBlack);
     mA_tanb50_mhmax200_7TeV->SetLineColor(kBlue);
     mA_tanb50_mhmax200_7TeV->SetLineStyle(1.);
     mA_tanb50_mhmax200_7TeV->SetLineWidth(2.);
     mA_tanb50_mhmax200_7TeV->Draw("PLsame"); 
 
     xs_mA_tanb70_mhmax200_7TeV(mA_tanb70_mhmax200_7TeV);
+    mA_tanb70_mhmax200_7TeV->SetMarkerStyle(1);
+    mA_tanb70_mhmax200_7TeV->SetMarkerSize(0.4);
+    mA_tanb70_mhmax200_7TeV->SetMarkerColor(kBlack);
     mA_tanb70_mhmax200_7TeV->SetLineColor(kBlue);
     mA_tanb70_mhmax200_7TeV->SetLineStyle(1.);
     mA_tanb70_mhmax200_7TeV->SetLineWidth(2.);
     mA_tanb70_mhmax200_7TeV->Draw("PLsame"); 
 
+    xs_mA_tanb5_mhmax800_7TeV(mA_tanb5_mhmax800_7TeV);
+    mA_tanb5_mhmax800_7TeV->SetMarkerStyle(1);
+    mA_tanb5_mhmax800_7TeV->SetMarkerSize(0.4);
+    mA_tanb5_mhmax800_7TeV->SetMarkerColor(kBlack);
+    mA_tanb5_mhmax800_7TeV->SetLineColor(kAzure-7);
+    mA_tanb5_mhmax800_7TeV->SetLineStyle(1.);
+    mA_tanb5_mhmax800_7TeV->SetLineWidth(2.);
+    mA_tanb5_mhmax800_7TeV->Draw("PLsame"); 
+
+    xs_mA_tanb20_mhmax800_7TeV(mA_tanb20_mhmax800_7TeV);
+    mA_tanb20_mhmax800_7TeV->SetMarkerStyle(1);
+    mA_tanb20_mhmax800_7TeV->SetMarkerSize(0.4);
+    mA_tanb20_mhmax800_7TeV->SetMarkerColor(kBlack);
+    mA_tanb20_mhmax800_7TeV->SetLineColor(kAzure-7);
+    mA_tanb20_mhmax800_7TeV->SetLineStyle(1.);
+    mA_tanb20_mhmax800_7TeV->SetLineWidth(2.);
+    mA_tanb20_mhmax800_7TeV->Draw("PLsame"); 
+
+    xs_mA_tanb50_mhmax800_7TeV(mA_tanb50_mhmax800_7TeV);
+    mA_tanb50_mhmax800_7TeV->SetMarkerStyle(1);
+    mA_tanb50_mhmax800_7TeV->SetMarkerSize(0.4);
+    mA_tanb50_mhmax800_7TeV->SetMarkerColor(kBlack);
+    mA_tanb50_mhmax800_7TeV->SetLineColor(kAzure-7);
+    mA_tanb50_mhmax800_7TeV->SetLineStyle(1.);
+    mA_tanb50_mhmax800_7TeV->SetLineWidth(2.);
+    mA_tanb50_mhmax800_7TeV->Draw("PLsame"); 
+
+    xs_mA_tanb70_mhmax800_7TeV(mA_tanb70_mhmax800_7TeV);
+    mA_tanb70_mhmax800_7TeV->SetMarkerStyle(1);
+    mA_tanb70_mhmax800_7TeV->SetMarkerSize(0.4);
+    mA_tanb70_mhmax800_7TeV->SetMarkerColor(kBlack);
+    mA_tanb70_mhmax800_7TeV->SetLineColor(kAzure-7);
+    mA_tanb70_mhmax800_7TeV->SetLineStyle(1.);
+    mA_tanb70_mhmax800_7TeV->SetLineWidth(2.);
+    mA_tanb70_mhmax800_7TeV->Draw("PLsame");
+
     xs_mA_tanb5_nomix200_7TeV(mA_tanb5_nomix200_7TeV);
+    mA_tanb5_nomix200_7TeV->SetMarkerStyle(1);
+    mA_tanb5_nomix200_7TeV->SetMarkerSize(0.4);
+    mA_tanb5_nomix200_7TeV->SetMarkerColor(kBlack);
     mA_tanb5_nomix200_7TeV->SetLineColor(kViolet);
     mA_tanb5_nomix200_7TeV->SetLineStyle(1.);
     mA_tanb5_nomix200_7TeV->SetLineWidth(2.);
     mA_tanb5_nomix200_7TeV->Draw("PLsame"); 
 
     xs_mA_tanb20_nomix200_7TeV(mA_tanb20_nomix200_7TeV);
+    mA_tanb20_nomix200_7TeV->SetMarkerStyle(1);
+    mA_tanb20_nomix200_7TeV->SetMarkerSize(0.4);
+    mA_tanb20_nomix200_7TeV->SetMarkerColor(kBlack);
     mA_tanb20_nomix200_7TeV->SetLineColor(kViolet);
     mA_tanb20_nomix200_7TeV->SetLineStyle(1.);
     mA_tanb20_nomix200_7TeV->SetLineWidth(2.);
     mA_tanb20_nomix200_7TeV->Draw("PLsame"); 
 
     xs_mA_tanb50_nomix200_7TeV(mA_tanb50_nomix200_7TeV);
+    mA_tanb50_nomix200_7TeV->SetMarkerStyle(1);
+    mA_tanb50_nomix200_7TeV->SetMarkerSize(0.4);
+    mA_tanb50_nomix200_7TeV->SetMarkerColor(kBlack);
     mA_tanb50_nomix200_7TeV->SetLineColor(kViolet);
     mA_tanb50_nomix200_7TeV->SetLineStyle(1.);
     mA_tanb50_nomix200_7TeV->SetLineWidth(2.);
     mA_tanb50_nomix200_7TeV->Draw("PLsame"); 
 
     xs_mA_tanb70_nomix200_7TeV(mA_tanb70_nomix200_7TeV);
+    mA_tanb70_nomix200_7TeV->SetMarkerStyle(1);
+    mA_tanb70_nomix200_7TeV->SetMarkerSize(0.4);
+    mA_tanb70_nomix200_7TeV->SetMarkerColor(kBlack);
     mA_tanb70_nomix200_7TeV->SetLineColor(kViolet);
     mA_tanb70_nomix200_7TeV->SetLineStyle(1.);
     mA_tanb70_nomix200_7TeV->SetLineWidth(2.);
@@ -808,24 +912,36 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
   TGraph* mA_tanb70_mhmax200_8TeV = new TGraph();
   if(mssm_ && ecms_==8){
     xs_mA_tanb5_mhmax200_8TeV(mA_tanb5_mhmax200_8TeV);
+    mA_tanb5_mhmax200_8TeV->SetMarkerStyle(1);
+    mA_tanb5_mhmax200_8TeV->SetMarkerSize(0.4);
+    mA_tanb5_mhmax200_8TeV->SetMarkerColor(kBlack);
     mA_tanb5_mhmax200_8TeV->SetLineColor(kBlue);
     mA_tanb5_mhmax200_8TeV->SetLineStyle(1.);
     mA_tanb5_mhmax200_8TeV->SetLineWidth(2.);
     mA_tanb5_mhmax200_8TeV->Draw("PLsame"); 
 
     xs_mA_tanb20_mhmax200_8TeV(mA_tanb20_mhmax200_8TeV);
+    mA_tanb20_mhmax200_8TeV->SetMarkerStyle(1);
+    mA_tanb20_mhmax200_8TeV->SetMarkerSize(0.4);
+    mA_tanb20_mhmax200_8TeV->SetMarkerColor(kBlack);
     mA_tanb20_mhmax200_8TeV->SetLineColor(kBlue);
     mA_tanb20_mhmax200_8TeV->SetLineStyle(1.);
     mA_tanb20_mhmax200_8TeV->SetLineWidth(2.);
     mA_tanb20_mhmax200_8TeV->Draw("PLsame"); 
 
     xs_mA_tanb50_mhmax200_8TeV(mA_tanb50_mhmax200_8TeV);
+    mA_tanb50_mhmax200_8TeV->SetMarkerStyle(1);
+    mA_tanb50_mhmax200_8TeV->SetMarkerSize(0.4);
+    mA_tanb50_mhmax200_8TeV->SetMarkerColor(kBlack);
     mA_tanb50_mhmax200_8TeV->SetLineColor(kBlue);
     mA_tanb50_mhmax200_8TeV->SetLineStyle(1.);
     mA_tanb50_mhmax200_8TeV->SetLineWidth(2.);
     mA_tanb50_mhmax200_8TeV->Draw("PLsame"); 
 
     xs_mA_tanb70_mhmax200_8TeV(mA_tanb70_mhmax200_8TeV);
+    mA_tanb70_mhmax200_8TeV->SetMarkerStyle(1);
+    mA_tanb70_mhmax200_8TeV->SetMarkerSize(0.4);
+    mA_tanb70_mhmax200_8TeV->SetMarkerColor(kBlack);
     mA_tanb70_mhmax200_8TeV->SetLineColor(kBlue);
     mA_tanb70_mhmax200_8TeV->SetLineStyle(1.);
     mA_tanb70_mhmax200_8TeV->SetLineWidth(2.);
@@ -896,10 +1012,18 @@ PlotLimits::plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors*
     leg->AddEntry( innerBand, "#pm 1#sigma injected" ,  "F" );
     leg->AddEntry( outerBand, "#pm 2#sigma injected" ,  "F" );
   }
-  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb5_mhmax200_7TeV , "xs(m_{A}/tan#beta)=5, mhmax"             ,  "L" );
-  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb20_mhmax200_7TeV , "xs(m_{A}/tan#beta)=20, mhmax"             ,  "L" );
-  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb50_mhmax200_7TeV , "xs(m_{A}/tan#beta)=50, mhmax"             ,  "L" );
-  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb70_mhmax200_7TeV , "xs(m_{A}/tan#beta)=70, mhmax"             ,  "L" );
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb5_mhmax_neg400_7TeV , "xs(m_{A}/tan#beta)=5, mhmax, mu=-400GeV"   ,  "L" );
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb20_mhmax_neg400_7TeV , "xs(m_{A}/tan#beta)=20, mhmax, mu=-400GeV"  ,  "L" );
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb50_mhmax_neg400_7TeV , "xs(m_{A}/tan#beta)=50, mhmax, mu=-400GeV"  ,  "L" );
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb70_mhmax_neg400_7TeV , "xs(m_{A}/tan#beta)=70, mhmax, mu=-400GeV"  ,  "L" );
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb5_mhmax200_7TeV , "xs(m_{A}/tan#beta)=5, mhmax, mu=200GeV"      ,  "L" );
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb20_mhmax200_7TeV , "xs(m_{A}/tan#beta)=20, mhmax, mu=200GeV"    ,  "L" );
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb50_mhmax200_7TeV , "xs(m_{A}/tan#beta)=50, mhmax, mu=200GeV"     ,  "L" );
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb70_mhmax200_7TeV , "xs(m_{A}/tan#beta)=70, mhmax, mu=200GeV"    ,  "L" );
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb5_mhmax800_7TeV , "xs(m_{A}/tan#beta)=5, mhmax, mu=800GeV"      ,  "L" );
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb20_mhmax800_7TeV , "xs(m_{A}/tan#beta)=20, mhmax, mu=800GeV"   ,  "L" );
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb50_mhmax800_7TeV , "xs(m_{A}/tan#beta)=50, mhmax, mu=800GeV" ,  "L" );
+  if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb70_mhmax800_7TeV , "xs(m_{A}/tan#beta)=70, mhmax, mu=800GeV" ,  "L" );
   if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb5_nomix200_7TeV , "xs(m_{A}/tan#beta)=5, nomix"             ,  "L" );
   if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb20_nomix200_7TeV , "xs(m_{A}/tan#beta)=20, nomix"             ,  "L" );
   if(mssm_ && ecms_==7) leg->AddEntry( mA_tanb50_nomix200_7TeV , "xs(m_{A}/tan#beta)=50, nomix"             ,  "L" );
