@@ -7,7 +7,7 @@ parser = OptionParser(usage="usage: %prog [options]",
                       description="Script to setup a set of script for statistical signal injection. The source directory for individual signal injections can be given by the option --inputs. This directory will be cloned in N subdirectories. N can be changed by --njob. in each subdirectory signal is injected statistically. Afterwards the limit calculation is run for each mass that is found in the subdirectory.")
 parser.add_option("-n", "--name", dest="name", default="test-injection", type="string", help="Name of the output scripts. [Default: test-injected]")
 parser.add_option("-i", "--input", dest="input", default="TEST/INJECT-SIGNAL", type="string", help="Input directory that should be used as starting point for signal injection. [Default: \"TEST/INJECT-SIGNAL\"]")
-parser.add_option("--qsub", dest="qsub", default="-l site=hh -j y -o /dev/null -v scram_arch -v cmssw_base", type="string", help="Submission arguments for batch queue. [Default: -l site=hh -j y -o /dev/null -v scram_arch -v cmssw_base'']")
+parser.add_option("--qsub", dest="qsub", default="-j y -o /dev/null -l h_cpu=1:00:00 ", type="string", help="Submission arguments for batch queue. [Default: '-j y -o /dev/null -l h_cpu=1:00:00']")
 
 parser.add_option("--njob", dest="njob", default="100", type="string", help="Number of jobs for which to inject signal. [Default: \"100\"]")
 parser.add_option("--masses", dest="masses", default="110-145:5", type="string", help="Masses argument for signal injection. [Default: \"100-145:5\"]")
@@ -89,6 +89,6 @@ else:
                     masses = masses
                     ))
             os.system('chmod a+x %s' % script_file_name)
-            submit_script.write('qsub %s %s\n' % (qsubargs, script_file_name))
+            submit_script.write('qsub -l site=hh -l h_vmem=4000M %s -v scram_arch -v cmssw_base %s\n' % (qsubargs, script_file_name))
     os.system('chmod a+x %s' % submit_name)
                 

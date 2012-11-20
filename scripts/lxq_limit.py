@@ -17,7 +17,7 @@ Note also you may need to escape the quotes around sub-arguments.  For example,
 
 would be
 
-    lxq_limit.py my_limits "-j y -o /dev/null" "cmb/*"  "--tanb+ --tanb-parallel 4 --userOpt '--minosAlgo stepping'"
+    lxq_limit.py my_limits "-l h_cpu=1:00:00 -j y -o /dev/null" "cmb/*"  "--tanb+ --tanb-parallel 4 --userOpt '--minosAlgo stepping'"
 
 will produce
 
@@ -50,7 +50,6 @@ option_str = sys.argv[4:]
 
 script_template = '''
 #!/usr/bin/bash
-#$ -l h_cpu=12:00:00
 export SCRAM_ARCH=$scram_arch
 ini cmssw
 ini autoproxy
@@ -83,5 +82,5 @@ with open(submit_name, 'w') as submit_script:
                 directory = dir
             ))
         os.system('chmod 755 %s' % script_file_name)
-        submit_script.write('qsub -l site=hh %s -v scram_arch -v cmssw_base %s\n' % (qsubargs, script_file_name))
+        submit_script.write('qsub -l site=hh -l h_vmem=4000M %s -v scram_arch -v cmssw_base %s\n' % (qsubargs, script_file_name))
 os.system('chmod 755 %s' % submit_name)

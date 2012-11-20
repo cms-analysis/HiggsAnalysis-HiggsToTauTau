@@ -6,7 +6,7 @@ from optparse import OptionParser, OptionGroup
 parser = OptionParser(usage="usage: %prog [options] ARG",
                       description="Script to setup a set of scripts for maxlimum likelihood scan for 2-dim parameters estimates.")
 parser.add_option("-n", "--name", dest="name", default="ml-scan", type="string", help="Name of the output scripts. [Default: \"ml-scan\"]")
-parser.add_option("--qsub", dest="qsub", default="-j y -o /dev/null", type="string", help="Submission arguments for batch queue. [Default: \"-j y -o /dev/null\"]")
+parser.add_option("--qsub", dest="qsub", default="-l h_cpu=1:00:00 -j y -o /dev/null", type="string", help="Submission arguments for batch queue. [Default: \"-l h_cpu=1:00:00 -j y -o /dev/null\"]")
 parser.add_option("--njobs", dest="njobs", default="100", type="string", help="Number of jobs for for scan. [Default: \"100\"]")
 parser.add_option("--npoints", dest="npoints", default="100", type="string", help="Number of points per job. [Default: \"100\"]")
 parser.add_option("--physics-model", dest="fitModel", type="string", default="", help="Physics model for multi-dimensional maximum likelihood. The physics model should be defined by a model name and a path to a python implementation of the model separated by '='. For example 'ggH-qqH-model=PATH-TO-IMPLEMENTATION'. In this case a workspace of the model with given model options will be created with the name 'ggH-qqH-model.root'. It is also possible to pass on only a name of a physics model, like 'ggH-qqH-model'. In this case it will be assumed that the model with name 'ggH-qqH-model' has been created beforehand. [Default: \"\"]")
@@ -28,7 +28,6 @@ logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 script_template = '''
 #!/usr/bin/bash
-#$ -l h_cpu=2:00:00
 export SCRAM_ARCH=$scram_arch
 ini cmssw
 ini autoproxy
@@ -65,6 +64,7 @@ else :
         DIR = input,
         STABEL = "--stable" if options.stable else ""
         ))
+    print "hello", options.name 
     os.system("mkdir %s" % options.name)
     submit_name = '%s_submit.sh' % options.name
     with open(submit_name, 'w') as submit_script:
