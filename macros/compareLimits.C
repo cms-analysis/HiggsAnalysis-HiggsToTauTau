@@ -15,8 +15,8 @@
 #include "TPaveLabel.h"
 #include "TGraphAsymmErrors.h"
 
-#include "../HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
-#include "../HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
+#include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
 static const double MARKER_SIZE = 1.3;  // 0.7
 
@@ -415,7 +415,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       hobs[i]->GetXaxis()->SetTitleFont(62);
       hobs[i]->GetXaxis()->SetTitleColor(1);
       hobs[i]->GetXaxis()->SetTitleOffset(1.05);
-      if(std::string(type) == std::string("mssm-tanb")) hexp[i]->GetYaxis()->SetRangeUser(0,70);
+      if(std::string(type) == std::string("mssm-tanb")) hobs[i]->GetYaxis()->SetRangeUser(0,70);
       
       // format y-axis
       std::string y_title;
@@ -435,6 +435,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       hobs[i]->GetYaxis()->SetLabelSize(0.03);
       hobs[i]->GetXaxis()->SetLimits(hobs[i]->GetX()[0]-.1, hobs[i]->GetX()[hobs[i]->GetN()-1]+.1);
     }
+    hobs[i]->SetLineStyle(11.);
     hobs[i]->SetLineWidth( 3.); 
     hobs[i]->SetLineColor(colors.find(channels[i])->second);
     hobs[i]->SetMarkerStyle(20);
@@ -445,7 +446,6 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     firstPlot=false;
   }
   canv1->RedrawAxis();
-
   bool firstLeg=true;
   if(observed){
     TLegend* leg1;
@@ -462,14 +462,14 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     }
     else{
       /// setup the CMS Preliminary
-       if(std::string(type) == std::string("mssm-tanb")){
-	  CMSPrelim(label, "", 0.15, 0.835);
-	  leg1 = new TLegend(firstLeg ? 0.60 : 0.20, hobs.size()<5 ? 0.20-0.06*hobs.size() : 0.4, firstLeg ? 0.93 : 0.63, 0.20);
-       }
-       else{
-	  CMSPrelim(label, "", 0.15, 0.835);
-	  leg1 = new TLegend(firstLeg ? 0.50 : 0.20, hobs.size()<5 ? 0.90-0.06*hobs.size() : 0.6, firstLeg ? 0.93 : 0.63, 0.90);
-       }
+      if(std::string(type) == std::string("mssm-tanb")){
+	CMSPrelim(label, "", 0.15, 0.835);
+	leg1 = new TLegend(legendOnRight?0.60:0.20, hobs.size()<5 ? (legendOnTop?0.90:0.20)-0.06*hobs.size() : (legendOnTop?0.6:0.4), legendOnRight?0.94:0.45, (legendOnTop?0.90:0.20));
+	   }
+      else{
+	CMSPrelim(label, "", 0.15, 0.835);
+	leg1 = new TLegend(legendOnRight ? 0.50 : 0.20, hobs.size()<5 ? 0.90-0.06*hobs.size() : 0.6, legendOnRight ? 0.94 : 0.63, 0.90);
+      }
     }
     leg1->SetTextSize(0.02);
     leg1->SetBorderSize( 0 );
