@@ -6,7 +6,7 @@ from optparse import OptionParser, OptionGroup
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGS",
                       description="Script to create datacards to be used locally or to be uploaded to the cvs. The output directory to copy the datacards to is expected to have a dedicated structure. Directories that do not exist are created on the fly. The default configuration is to upload all currently available datacards to the common cvs repository for the HiggsToTauTau analysis subgroup. ARGS corresponds to a list of integer values resembling the mass points for which you want to create the datacards. Ranges can be indicated e.g. by: 110-145'. That only any x-th mass point should be taken into account can be indicated e.g. by: 110-145:5. The latter example will pick up the masses 110 115 120 130 135 140 145. Any combination of this syntax is possible.")
-parser.add_option("-i", "--in", dest="input", default="/HiggsAnalysis/HiggsToTauTau/setup", type="string", help="Full path to the input directory from which you would like to create the datacards. The path should be given relative to $CMSSW_BASE. Note that you need to obey the directory structures provide the corresponding configurationfiels for the translatino of the uncertainties into the datacards if you plan to use your own input path. [Default: src/HiggsAnalysis/HiggsToTauTau/setup]")
+parser.add_option("-i", "--in", dest="input", default="%s/src/HiggsAnalysis/HiggsToTauTau/setup" % os.environ["CMSSW_BASE"], type="string", help="Full path to the input directory from which you would like to create the datacards. The path should be given relative to $CMSSW_BASE. Note that you need to obey the directory structures provide the corresponding configurationfiels for the translatino of the uncertainties into the datacards if you plan to use your own input path. [Default: src/HiggsAnalysis/HiggsToTauTau/setup]")
 parser.add_option("-o", "--out", dest="out", default="auxiliaries/datacards", type="string", help="Name of the output directory to which the datacards should be copied. [Default: auxiliaries/datacards]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="Choose between run periods [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
@@ -160,7 +160,7 @@ for channel in channels :
             if not period in valid_periods[channel] :
                 #print "drop due to failing period: ", channel, valid_periods[channel], period
                 continue
-            os.system("datacard-project.py -i {PATH} -c {CHN} -e {ANA}-{PER}-0{CAT} {PER}-0{CAT}".format(PATH="%s/src/%s" % (os.environ["CMSSW_BASE"], options.input), CHN=channel, ANA=options.analysis, PER=period, CAT=cat))
+            os.system("datacard-project.py -i {PATH} -c {CHN} -e {ANA}-{PER}-0{CAT} {PER}-0{CAT}".format(PATH=options.input, CHN=channel, ANA=options.analysis, PER=period, CAT=cat))
             os.chdir("{PWD}/{CHN}/{PER}-0{CAT}".format(CHN=prefix+channel, PER=period, PWD=base, CAT=cat))
             for mass in parseArgs(args) :
                 ## fudge masspoints for mm, which cannot use 1d-horizontal template morphing
