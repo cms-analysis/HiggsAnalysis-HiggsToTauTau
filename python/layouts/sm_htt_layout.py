@@ -16,6 +16,8 @@ layout = cms.PSet(
     #injected=cms.bool(True),
     ## is this mssm?
     mssm = cms.bool(False),
+    ## center of mass energy (7, 8, 78 for combination)
+    ecms = cms.int32(78),
     ## print to png
     png  = cms.bool(True),
     ## print to pdf
