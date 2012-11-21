@@ -13,7 +13,7 @@ parser.add_option("--physics-model", dest="fitModel", type="string", default="",
 parser.add_option("--physics-model-options", dest="fitModelOptions", type="string", default="", help="Potential options for the used physics model for multi-dimensional maximum likelihood. More options can be passed on separated by ','. [Default: \"\"]")
 parser.add_option("--options", dest="opts", default="", type="string", help="Additional options for limit.py. [Default: \"\"]")
 parser.add_option("--collect", dest="collect", default=False,  action="store_true", help="Collect the individual jobs of a single batch submission after completion. [Default: False)")
-parser.add_option("--stable", dest="stable", default=False, action="store_true", help="Run maximum likelihood fit with a set of options that lead to stable results. Makes use of the common options --rMin and --rMax to define the boundaries of the fit. [Default: True]")
+parser.add_option("--stable", dest="stable", default=False, action="store_true", help="Run maximum likelihood fit with a set of options that lead to stable results. [Default: False]")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 
