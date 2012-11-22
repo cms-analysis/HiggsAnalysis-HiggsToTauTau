@@ -103,7 +103,9 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   TCanvas *canv = MakeCanvas("canv", "histograms", 600, 600);
   if(log) canv->SetLogy(1);
   // reduce the axis range if necessary for linea plots and SM
-  if(MSSM && !log){ data->GetXaxis()->SetRange(0, data->FindBin(350)); } else{ data->GetXaxis()->SetRange(0, data->FindBin(1000)); };
+  if(MSSM && !log){ data->GetXaxis()->SetRange(0, data->FindBin(350)); } else{ data->GetXaxis()->SetRange(0, data->FindBin(490)); };
+  if(!MSSM){ data->GetXaxis()->SetRange(0, data->FindBin(350)); }
+
   data->SetNdivisions(505);
   data->SetMinimum(min);
   if(Zmm){
@@ -189,7 +191,10 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
     prepare output
   */
   std::string newName = std::string(inputfile).substr(0, std::string(inputfile).find(".root"));
-  canv->Print(TString::Format("%s%s.png", newName.c_str(), log ? "_LOG" : "")); 
-  canv->Print(TString::Format("%s%s.pdf", newName.c_str(), log ? "_LOG" : "")); 
-  canv->Print(TString::Format("%s%s.eps", newName.c_str(), log ? "_LOG" : "")); 
+  //canv->Print(TString::Format("%s%s.png", newName.c_str(), log ? "_LOG" : "")); 
+  //canv->Print(TString::Format("%s%s.pdf", newName.c_str(), log ? "_LOG" : "")); 
+  //canv->Print(TString::Format("%s%s.eps", newName.c_str(), log ? "_LOG" : "")); 
+  canv->Print(TString::Format("%s.png", newName.c_str())); 
+  canv->Print(TString::Format("%s.pdf", newName.c_str())); 
+  canv->Print(TString::Format("%s.eps", newName.c_str())); 
 }
