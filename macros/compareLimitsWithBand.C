@@ -131,11 +131,14 @@ void compareLimitsWithBand(const char* filename, const char* channelstr, double 
   if(addObserved){
     for(unsigned int idx=0; idx<observed.size(); ++idx){
       if(idx==0){
-	observed[idx]->SetLineStyle(11);
+	observed[idx]->SetLineStyle(1);
+	observed[idx]->SetMarkerStyle(20);
+	observed[idx]->SetMarkerSize(1.0);
 	observed[idx]->SetLineWidth(3.);
-	observed[idx]->Draw("Lsame");
+	observed[idx]->Draw("PLsame");
       }
       else{
+	observed[idx]->SetLineStyle(11);
 	observed[idx]->SetMarkerStyle(20);
 	observed[idx]->SetMarkerSize(1.0);
 	observed[idx]->SetMarkerColor(kBlack);
@@ -159,10 +162,10 @@ void compareLimitsWithBand(const char* filename, const char* channelstr, double 
   //leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
   //leg->SetHeader( "95% CL Limits" );
-  if(observed.size()>1 && addObserved){ leg->AddEntry( observed[1] , "simulation signal inj. (m_{H}=125 GeV)",  "L"  );}
-  if(observed.size()>0){ leg->AddEntry( observed[0] , "observed (HIG-12-032)",  "PL" );}
+  if(observed.size()>1 && addObserved){ leg->AddEntry( observed[1] , "observed ICHEP",  "PL"  );}
+  if(observed.size()>0){ leg->AddEntry( observed[0] , "observed HCP",  "PL" );}
   //if(observed.size()>1){ leg->AddEntry( observed[1] , "single toy (inj. signal)",  "PL" );}
-  if(expected.size()>0){ leg->AddEntry( expected[0] , "expected (HIG-12-032)"             ,  "L" );}
+  if(expected.size()>0){ leg->AddEntry( expected[0] , "expected HCP"             ,  "L" );}
   if(expected.size()>1 && addExpected){ leg->AddEntry( expected[1] , "projection to 5+12/fb",  "L" );}
   leg->AddEntry( innerBand[0], "#pm 1#sigma expected" ,  "F" );
   leg->AddEntry( outerBand[0], "#pm 2#sigma expected" ,  "F" );
