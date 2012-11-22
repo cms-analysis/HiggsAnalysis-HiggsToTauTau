@@ -47,9 +47,9 @@ def cross_section(process, mass, ecms) :
             for sub_channel in sub_channels :
                 xs += float(os.popen("xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(
                     CHANNEL=sub_channel, MA=mass, ECMS=ecms)).read().split()[2])
-            else :
-                xs += float(os.popen("xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(
-                    CHANNEL=process, MA=mass, ECMS=ecms)).read().split()[2])
+        else :
+            xs += float(os.popen("xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(
+                CHANNEL=process, MA=mass, ECMS=ecms)).read().split()[2])
     else :
         if "BR" in  process :
             xs = float(os.popen("feyn-higgs-mssm br mssm {CHANNEL} {MA} {TB} model=mhmax-{ECMS}TeV | grep value".format(
@@ -467,29 +467,31 @@ def merge_efficiencies(channel, categories, periods) :
                 if options.analysis == "mssm" :
                     lines_summed = {
                         'ggH' : 0.,
-                        'qqH' : 0.,
-                        'VH'  : 0.,
+                        'bbH' : 0.,
                         }
                 else:
                     lines_summed = {
                         'ggH' : 0.,
-                        'bbH' : 0.,
+                        'qqH' : 0.,
+                        'VH'  : 0.,
                         }
                 for sub in subsets :
                     if options.analysis == "mssm" :
                         lines_summed['ggH']+=float(lines[channel+'_'+cat+'_'+sub][1])
                         lines_summed['bbH']+=float(lines[channel+'_'+cat+'_'+sub][4])
-                    else : 
-                        lines_summed['ggH']+=float(lines[channel+'_'+cat+'_'+sub][1])
-                        lines_summed['qqH']+=float(lines[channel+'_'+cat+'_'+sub][4])
-                        lines_summed['VH' ]+=float(lines[channel+'_'+cat+'_'+sub][7])
+                    else :
+                        if len(lines[channel+'_'+cat+'_'+sub])>0 :
+                            lines_summed['ggH']+=float(lines[channel+'_'+cat+'_'+sub][1])
+                            lines_summed['qqH']+=float(lines[channel+'_'+cat+'_'+sub][4])
+                            lines_summed['VH' ]+=float(lines[channel+'_'+cat+'_'+sub][7])
                 if options.analysis == "mssm" :
                     file.write("%s \t %f \t %s \n" % (lines[channel+'_'+cat+'_'+sub][0], lines_summed['ggH'], lines[channel+'_'+cat+'_'+sub][2]))
                     file.write("%s \t %f \t %s \n" % (lines[channel+'_'+cat+'_'+sub][3], lines_summed['bbH'], lines[channel+'_'+cat+'_'+sub][5]))
                 else :
-                    file.write("%s \t %f \t %s \n" % (lines[channel+'_'+cat+'_'+sub][0], lines_summed['ggH'], lines[channel+'_'+cat+'_'+sub][2]))
-                    file.write("%s \t %f \t %s \n" % (lines[channel+'_'+cat+'_'+sub][3], lines_summed['qqH'], lines[channel+'_'+cat+'_'+sub][5]))
-                    file.write("%s \t %f \t %s \n" % (lines[channel+'_'+cat+'_'+sub][6], lines_summed['VH' ], lines[channel+'_'+cat+'_'+sub][8]))
+                    if len(lines[channel+'_'+cat+'_'+sub])>0 :
+                        file.write("%s \t %f \t %s \n" % (lines[channel+'_'+cat+'_'+sub][0], lines_summed['ggH'], lines[channel+'_'+cat+'_'+sub][2]))
+                        file.write("%s \t %f \t %s \n" % (lines[channel+'_'+cat+'_'+sub][3], lines_summed['qqH'], lines[channel+'_'+cat+'_'+sub][5]))
+                        file.write("%s \t %f \t %s \n" % (lines[channel+'_'+cat+'_'+sub][6], lines_summed['VH' ], lines[channel+'_'+cat+'_'+sub][8]))
         file.close()
 
 def make_tables(channel, categories, category_labels):
@@ -720,4 +722,4 @@ for chn in channels :
     merge_efficiencies(chn, subsets_compact, periods)
     ## make formated tex tables from compactified input 
     make_tables(chn, categories_in_table, category_labels_in_table)
-#os.system("rm *.tmp")
+os.system("rm *.tmp")
