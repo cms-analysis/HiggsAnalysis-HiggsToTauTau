@@ -83,6 +83,8 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
   samples.insert(samples.end(), signals.begin(), signals.end());
 
   // in case data_obs is supposed to be written to an extra output file
+  // open the file, otherwise the the data_obs in the input file will 
+  // be overwritten
   TFile* outputFile = 0; 
   if(!std::string(outputLabel).empty()){
     std::string out = std::string(filename); 
@@ -93,7 +95,6 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
   TH1F* buffer = 0;
   TH1F* blind_data_obs = 0;
   TFile* file = new TFile(filename, "update");
-  //TFile* file = new TFile(filename, "update");
   TIter nextDirectory(file->GetListOfKeys());
   while((idir = (TKey*)nextDirectory())){
     if( idir->IsFolder() ){
@@ -103,45 +104,56 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
       // have different background types in the same root file, so we have 
       // to run blindData twice.
       if (!inPatterns(std::string(idir->GetName()), directory_patterns)) {
-        if( debug>0 ){ std::cerr << "Skipping directory: " << idir->GetName() << " - matches no pattern in " << directory_patterns << std::endl; }
+        if( debug>0 ){ 
+	  std::cerr << "WARNING: Skipping directory: " << idir->GetName() << std::endl;
+	  std::cerr << "         No match found in pattern: " << directory_patterns << std::endl; 
+	}
         continue;
       }
       if( file->GetDirectory(idir->GetName()) ){
 	file->cd(idir->GetName()); // change to sub-directory
 	buffer = (TH1F*)file->Get((std::string(idir->GetName())+"/data_obs").c_str());
 	if(!buffer){
-	  std::cout << "WARNING: did not find histogram data_obs in directory " << idir->GetName() << std::endl;
-	  std::cout << "WARNING: will skip directory" << std::endl;
+	  std::cout << "WARNING: Did not find histogram data_obs in directory: " << idir->GetName() << std::endl;
+	  std::cout << "         Will skip directory: " << std::endl;
 	  continue;
 	}
-        blind_data_obs = (TH1F*)buffer->Clone("data_obs"); blind_data_obs->Reset();
-	for(std::vector<std::string>::const_iterator sample = samples.begin(); sample!=samples.end(); ++sample){
-	  if( debug>0 ){ std::cerr << "Looking for histogram: " << (std::string(idir->GetName())+"/"+(*sample)) << std::endl; }
-	  // add special treatment for et/mt ZLL,ZJ,ZL here. You can run the
-	  // macro with ZLL, ZL, ZJ in the background samples. Those samples,
-	  // which do not apply for one or the other event category are 
-	  // skipped here.
-	  if(std::string(idir->GetName()).find("vbf") != std::string::npos && (*sample == std::string("ZL") || *sample == std::string("ZJ"))){
-	    continue;
-	  }
-	  else if(std::string(idir->GetName()).find("vbf") == std::string::npos && *sample == std::string("ZLL")){
-	    continue;
-	  }
-	  buffer = (TH1F*)file->Get((std::string(idir->GetName())+"/"+(*sample)).c_str()); 
-          if (!buffer) {
-            std::cerr << "ERROR: Could not get histogram from: " << std::string(idir->GetName())+"/"+(*sample) << std::endl;
-            std::cerr << "       Histogram will be skipped   : " << std::string(idir->GetName())+"/"+(*sample) << std::endl;
-	    continue;
-          }
-	  if(inPatterns(*sample, signal_patterns)) {
-	    if( debug>1 ){
-	      std::cerr << " scale signal sample " << *sample << " by scale " << signal_scale << std::endl;
+        blind_data_obs = (TH1F*)buffer->Clone("data_obs"); 
+	if(!samples.empty()){
+	  blind_data_obs->Reset();
+	  std::cout << "INFO  : Blinding datacads now." << std::endl;
+	  for(std::vector<std::string>::const_iterator sample = samples.begin(); sample!=samples.end(); ++sample){
+	    if( debug>0 ){ std::cerr << "Looking for histogram: " << (std::string(idir->GetName())+"/"+(*sample)) << std::endl; }
+	    // add special treatment for et/mt ZLL,ZJ,ZL here. You can run the
+	    // macro with ZLL, ZL, ZJ in the background samples. Those samples,
+	    // which do not apply for one or the other event category are 
+	    // skipped here.
+	    if(std::string(idir->GetName()).find("vbf") != std::string::npos && (*sample == std::string("ZL") || *sample == std::string("ZJ"))){
+	      continue;
 	    }
-	    buffer->Scale(signal_scale);
+	    else if(std::string(idir->GetName()).find("vbf") == std::string::npos && *sample == std::string("ZLL")){
+	      continue;
+	    }
+	    buffer = (TH1F*)file->Get((std::string(idir->GetName())+"/"+(*sample)).c_str()); 
+	    if (!buffer) {
+	      std::cerr << "ERROR : Could not get histogram from: " << std::string(idir->GetName())+"/"+(*sample) << std::endl;
+	      std::cerr << "        Histogram will be skipped   : " << std::string(idir->GetName())+"/"+(*sample) << std::endl;
+	      continue;
+	    }
+	    if(inPatterns(*sample, signal_patterns)) {
+	      if( debug>1 ){
+		std::cerr << "INFO  : Scale signal sample " << *sample << " by scale " << signal_scale << std::endl;
+	      }
+	      buffer->Scale(signal_scale);
+	    }
+	    blind_data_obs->Add(buffer);
+	    if (debug > 1){
+	      std::cerr << "INFO  : Adding: " << buffer->GetName() << " -- " << buffer->Integral() << " --> New value: " << blind_data_obs->Integral() << std::endl;
+	    }
 	  }
-	  blind_data_obs->Add(buffer);
-          if (debug > 1)
-            std::cerr << "adding: " << buffer->GetName() << " -- " << buffer->Integral() << " --> " << blind_data_obs->Integral() << std::endl;
+	}
+	else{
+	  std::cout << "INFO  : Data are not blinded." << std::endl;
 	}
 	if(rnd>=0){
 	  // randomize histogram; this will automatically have integer integral
@@ -151,12 +163,11 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
 	else{
 	  // use expected mean with signal injected
 	  blind_data_obs->Scale(TMath::Nint(blind_data_obs->Integral())/blind_data_obs->Integral());
-	  if( debug>1 ){ std::cerr << "New scale of blinded data_obs: " << blind_data_obs->Integral() << std::endl; }
 	}
-	std::cout << "data_obs yield: " << idir->GetName() << "   " << TMath::Nint(blind_data_obs->Integral()) << std::endl;
+	std::cout << "INFO  : New data_obs yield: " << idir->GetName() << "   " << TMath::Nint(blind_data_obs->Integral()) << std::endl;
 	if(armed){
           if (debug > 1){
-            std::cerr << "Writing to file: " << blind_data_obs->GetName() << std::endl;
+            std::cerr << "INFO  : Writing to file: " << blind_data_obs->GetName() << std::endl;
 	  }
 	  if(outputFile){
 	    // write to a dedicated new file with name output in case output has been specified
