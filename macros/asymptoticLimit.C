@@ -171,7 +171,7 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
 	if(itype == plus_1sigma)  { limit=4.00; }
 	if(itype == expected)     { limit=3.00; }
 	if(itype == minus_1sigma) { limit=2.00; }
-	if(itype == minus_2sigma) { limit=1.00; }
+	if(itype == minus_2sigma) { limit=3.00; }
 	tree->Fill();
       }
     else
