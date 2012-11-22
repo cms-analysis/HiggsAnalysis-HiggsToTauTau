@@ -1231,7 +1231,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
 	//}
       }
     }
-    plain->SetPoint(bins_.size(), observed->GetX()[observed->GetN()-1], observed->GetY()[observed->GetN()-1]);
+    plain->SetPoint(bins_.size(), observed->GetX()[observed->GetN()-1]+150., observed->GetY()[observed->GetN()-1]+15.);
   }
   // create LEP exclusion plot
   TGraph* LEP = new TGraph();
