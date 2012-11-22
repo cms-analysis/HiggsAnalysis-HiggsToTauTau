@@ -1,19 +1,23 @@
 #include <map>
 #include <iostream>
 
-#include "TStyle.h"
+#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_3_3/src/HiggsAnalysis/HiggsToTauTau/macros/Zesp/base/inc/TStyle.h"
+#include "TColor.h"
 #include "TH3D.h"
 #include "TROOT.h"
 #include "TTree.h"
 #include "TFile.h"
 #include "TGraph.h"
 #include "TString.h"
+#include "TMath.h"
 
-#include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+//#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_3_3/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+
 
 void scan3D(const char* path, std::string xval="r_ggH", int xbin=10, float xmin=0., float xmax=20., std::string yval="r_bbH", int ybin=10, float ymin=0., float ymax=20., std::string zval="mh", int zbin=10, float zmin=0., float zmax=20., bool mssm=true)
 {
-  SetStyle();
+
+  //SetStyle();
   TFile* file_ = TFile::Open(path);
   TTree* limit = (TTree*) file_->Get("limit");
 
@@ -27,7 +31,11 @@ void scan3D(const char* path, std::string xval="r_ggH", int xbin=10, float xmin=
   int nevent = limit->GetEntries();
   for(int i=0; i<nevent; ++i){
     limit->GetEvent(i);
-    if(scan->GetBinContent(scan->FindBin(x,y,z))==0){scan->Fill(x, y, z, nll);}
+    if (z==130) std::cout << x <<" " <<y << " " <<z << " " <<TMath::Log10(nll) << endl;
+    if(scan->GetBinContent(scan->FindBin(x,y,z))==0 && nll>0){
+      scan->Fill(x, y, z, TMath::Log10(nll)); 
+      //if(z==130) std::cout << TMath::Log10(nll) << std::endl;
+    } 
   }
   float best_fit, best_fit_help, x_save, y_save, z_save;
   for(int i=0; i<nevent; ++i){
@@ -45,10 +53,10 @@ void scan3D(const char* path, std::string xval="r_ggH", int xbin=10, float xmin=
   axis_titles[std::make_pair<std::string, bool>(std::string("CV"   ), false)] = "#bf{c_{V}}";
   axis_titles[std::make_pair<std::string, bool>(std::string("mh"   ), true)] = "#bf{mA}";
 
-  TCanvas* canv = new TCanvas("canv", "canv", 600, 600);
-  canv->cd();
-  canv->SetGridx();
-  canv->SetGridy();
+//   TCanvas* canv = new TCanvas("canv", "canv", 600, 600);
+//   canv->cd();
+//   canv->SetGridx();
+//   canv->SetGridy();
   //canv->SetRightMargin(0.14);
 
   //TPaveText * label = new TPaveText(0.50, 0.80, 1.0, 0.90, "NDC");
@@ -79,13 +87,30 @@ void scan3D(const char* path, std::string xval="r_ggH", int xbin=10, float xmin=
 
   scan->SetMinimum(0.);
 
+
+  //gROOT->SetStyle("Plain");
+  gStyle->SetOptStat(111111);
+  gStyle->SetOptFit(1);
   gStyle->SetCanvasPreferGL(true);
   gStyle->SetPalette(1);
+  gStyle->SetPaletteOpacity(1.);
 
-  //scan->Draw("glcol"); //some problems
-  scan->Draw();
+//   //Double_t wmin = 1;
+//   //Double_t wmax = 1;
+//   Double_t Red[3]    = { 0.00, 1.00, 1.00};
+//   Double_t Green[3]  = { 0.00, 1.00, 0.00};
+//   Double_t Blue[3]   = { 1.00, 1.00, 0.00};
+//   //Double_t w    = 0.7;
+//   //Double_t v    = (w-wmin)/(wmax-wmin);
+//   Double_t Length[3] = { 0.00, 0.3, 1.00 };   
+//   Int_t nb=50;
+//   TColor::CreateGradientColorTable(3,Length,Red,Green,Blue,nb);
+  // scan->SetContour(nb); 
 
-  canv->Print("scan-ggH-bbH-mA.png");
-  canv->Print("scan-ggH-bbH-mA.eps");
-  canv->Print("scan-ggH-bbH-mA.pdf"); 
+
+  scan->Draw("glcolz"); 
+
+ //  canv->Print("scan-ggH-bbH-mA.png");
+//   canv->Print("scan-ggH-bbH-mA.eps");
+//   canv->Print("scan-ggH-bbH-mA.pdf"); 
 }
