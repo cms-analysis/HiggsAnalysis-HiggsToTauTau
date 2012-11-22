@@ -53,7 +53,7 @@ else :
         limit = dir[len(ana)+1:]
         jobname = ana[ana.rfind('/')+1:]+'-'+limit
         ## create submission scripts
-        os.system("lxq-multidim-fit.py {DIR} {STABLE} --njobs {JOBS} --npoints {POINTS} --physics-model {FITMODEL}  --physics-model-options {FITMODELOPTIONS} -n {NAME}".format(
+        os.system("lxq-multidim-fit.py {DIR} {STABLE} --njobs {JOBS} --npoints {POINTS} --physics-model '{FITMODEL}'  --physics-model-options '{FITMODELOPTIONS}' -n {NAME}".format(
             DIR = dir,
             STABLE = "--stable" if options.stable else "",
             JOBS = options.njobs,
