@@ -373,7 +373,7 @@ for directory in args :
         if options.qtilde :
             qtildeopt = "--qtilde 0"
         ## prepare mass options
-        massopt = "-m %i " % int(mass_value)
+        massopt = "-m %s " % mass_value
         ## run expected limits
         if not options.observedOnly :
             os.system("combine -M Asymptotic --run expected -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} -n '-exp' {mass} {user} {WDIR}/tmp.root".format(
@@ -389,6 +389,8 @@ for directory in args :
         ## if not done so already
         if not os.path.exists("tmp.txt") :
             os.system("combineCards.py *.txt > tmp.txt")
+        ## prepare binary workspace
+        os.system("text2workspace.py --default-morphing=%s -m %s -b tmp.txt -o tmp.root"% (options.shape, mass))
         ## create sub-directory out from scratch
         if os.path.exists("out") :
             os.system("rm -r out")
@@ -405,8 +407,8 @@ for directory in args :
             stableopt = "--robustFit=1 --stepSize=0.5  --minimizerStrategy=0 --minimizerTolerance=0.1 --preFitValue=0.1  --X-rtd FITTER_DYN_STEP  --cminFallbackAlgo=\"Minuit;0.001\" "
             stableopt+= "--rMin {MIN} --rMax {MAX} ".format(MIN=options.rMin, MAX=options.rMax)
         ## run expected limits
-        print "Running maximum likelihood fit with options: ", "combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} tmp.txt --out=out".format(mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt)
-        os.system("combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} tmp.txt --out=out".format(mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt))
+        print "Running maximum likelihood fit with options: ", "combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} tmp.root --out=out".format(mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt)
+        os.system("combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} tmp.root --out=out".format(mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt))
         ## change to sub-directory out and prepare formated output
         os.chdir(os.path.join(subdirectory, "out"))
         os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f text mlfit.root > mlfit.txt")
@@ -588,7 +590,7 @@ for directory in args :
         if options.qtilde :
             qtildeopt = "--qtilde 0"
         ## prepare mass options
-        massopt = "-m %i " % int(mass_value)
+        massopt = "-m %s " % mass_value
         ## run expected limits
         if not options.observedOnly :
             os.system("combine -M Asymptotic --run expected -C {CL} {minuit} {prefit} --minimizerStrategy {strategy} -n '-exp' {mass} {user} tmp.root".format(
