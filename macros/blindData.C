@@ -25,25 +25,51 @@
    background and potantially signal histograms. The list of background and signal 
    histograms and the input file have to be given as agruments. The macro will survery
    the input file for one directory layer according to the conventions for htt limit 
-   combinations and in this directory structire search for the data_obs histogram and 
+   combinations and in this directory structure search for the data_obs histogram and 
    the indicated background (and signal) historams. The data_obs histogram will be 
    reset and refilled by the sum of all indicated background (and signal) histograms.
-   
+   The bin-wise uncertainties will be set up the sqrt(N) of the corresponding bin 
+   content to give for proper uncertainties, when the signal strength is calculated 
+   based on the blinded data_obs histogram.
+
    The macro can be used to inject signal for a given mass into the data_obs. To obtain 
    the expected signal only from background just pass an empty string for the signal 
    samples as argument. In case you intend to inject signal keep in mind that you should 
-   have scaled the signal of you input file by the corresponding cross section to obtain 
+   have scaled the signal of your input file by the corresponding cross section to obtain 
    a proper yield estimate for the signal. 
+
+   The input od data_obs can be randomized according to a Poissonian distributrion. If 
+   no signal nor background samples are given as function arguments the content of data_obs 
+   will be randomized based on the existing content. This can be used to do toy studies 
+   based on the actual observation in data. 
 
    Function arguments are:
    
    filename               : input file that is supposed to keep the input histograms
    background_patterns    : list of background samples (should be separated by comma 
-                            or whitespaces)
+                            or whitespaces).
    signal_patterns        : list of signal samples (should be separated by comma or 
-                            whitespaces)
-   armed                  : write modified data_obs histograms back to file
+                            whitespaces).
+   directory_patterns     : give a list of directory\ies to which the blinding should be 
+                            applied only or '*' to apply it to all directories. 
+   armed                  : write modified data_obs histograms back to file.
+   rnd                    : randomized the content of data_obs with given integer value 
+                            as random seed. If -1 is given data_obs is not randomized. 
+   signal_scale           : in case you want to add signal into the content of data_obs 
+                            you can give an arbitary scale here. 1 corresponds to the 
+			    SM case. 
+   outputLabel            : if non empty and armed is true the output of data_obs (only!)
+                            will be written to a new otuput file with postfix outputLabel. 
+			    If armed and outputLabel is an empty string the inputfile 
+			    will be updated with the new data_obs histogram(s).
+   debug                  : invoke several debug output levels. 
 */
+
+void adjustUncerts(TH1F* hist){
+  for(int idx=0; idx<hist->GetNbinsX(); ++idx){
+    hist->SetBinError(idx+1, TMath::Sqrt(hist->GetBinContent(idx+1)));    
+  }
+}
 
 void randomize(TH1F* hist, unsigned int seed, unsigned int debug=0.)
 {
@@ -52,8 +78,8 @@ void randomize(TH1F* hist, unsigned int seed, unsigned int debug=0.)
     if(debug>0){
       std::cerr << "[" << idx+1 << "] : " << "mean=" << hist->GetBinContent(idx+1) << "  rnd=" << rnd->Poisson(hist->GetBinContent(idx+1)) << std::endl;  
     }
-    hist->SetBinContent(idx+1, rnd->Poisson(hist->GetBinContent(idx+1)));
-    hist->SetBinError(idx+1, TMath::Sqrt(rnd->Poisson(hist->GetBinContent(idx+1))));
+    float value = rnd->Poisson(hist->GetBinContent(idx+1));
+    hist->SetBinContent(idx+1, value); hist->SetBinError(idx+1, TMath::Sqrt(value));
   }
   // Make sure there is no rounding error, and the total is truly an integer.
   hist->Scale(TMath::Nint(hist->Integral())/hist->Integral());
@@ -163,6 +189,8 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
 	else{
 	  // use expected mean with signal injected
 	  blind_data_obs->Scale(TMath::Nint(blind_data_obs->Integral())/blind_data_obs->Integral());
+	  // adjust uncertaintie
+	  adjustUncerts(blind_data_obs);
 	}
 	std::cout << "INFO  : New data_obs yield: " << idir->GetName() << "   " << TMath::Nint(blind_data_obs->Integral()) << std::endl;
 	if(armed){
