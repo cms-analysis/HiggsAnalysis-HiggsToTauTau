@@ -237,6 +237,7 @@ void scan2D(const char* path, std::string xval="r_ggH", int xbin=10, float xmin=
 
   leg->Draw("same");
 
+  canv2->RedrawAxis();
   canv2->Print("scan-ggH-qqH-125.png");
   canv2->Print("scan-ggH-qqH-125.eps");
   canv2->Print("scan-ggH-qqH-125.pdf");
