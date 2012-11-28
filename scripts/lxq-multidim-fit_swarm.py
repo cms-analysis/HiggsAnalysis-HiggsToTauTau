@@ -53,7 +53,8 @@ else :
         limit = dir[len(ana)+1:]
         jobname = ana[ana.rfind('/')+1:]+'-'+limit
         ## create submission scripts
-        os.system("lxq-multidim-fit.py {DIR} {STABLE} --njobs {JOBS} --npoints {POINTS} --physics-model '{FITMODEL}'  --physics-model-options '{FITMODELOPTIONS}' -n {NAME}".format(
+        if options.fitModelOptions.find("bbH")==-1 : #SM 
+            os.system("lxq-multidim-fit.py {DIR} {STABLE} --njobs {JOBS} --npoints {POINTS} --physics-model '{FITMODEL}'  --physics-model-options '{FITMODELOPTIONS}' -n {NAME}".format(
             DIR = dir,
             STABLE = "--stable" if options.stable else "",
             JOBS = options.njobs,
@@ -62,8 +63,33 @@ else :
             FITMODELOPTIONS = options.fitModelOptions,
             NAME = options.name
             ))
+        ## for mssm case: setting range of POI dependent on mass
+        else : #MSSM
+            fitmodeloptions_all = options.fitModelOptions.split(";")
+            fitmodeloptions = fitmodeloptions_all[0]
+            if int(dir[dir.rfind("/")+1:])<120 :
+                fitmodeloptions += ";ggHRange=0:20;bbHRange=0:20"
+            if int(dir[dir.rfind("/")+1:])>=120 and int(dir[dir.rfind("/")+1:])<160 :
+                fitmodeloptions += ";ggHRange=0:5;bbHRange=0:5"
+            if int(dir[dir.rfind("/")+1:])>=160 and int(dir[dir.rfind("/")+1:])<250 :
+                fitmodeloptions += ";ggHRange=0:2;bbHRange=0:2"
+            if int(dir[dir.rfind("/")+1:])>=250 and int(dir[dir.rfind("/")+1:])<500 :
+                fitmodeloptions += ";ggHRange=0:0.2;bbHRange=0:0.2"
+            if int(dir[dir.rfind("/")+1:])>=500 :
+                fitmodeloptions += ";ggHRange=0:05;bbHRange=0:05"
+            print dir[dir.rfind("/")+1:], fitmodeloptions
+            os.system("lxq-multidim-fit.py {DIR} {STABLE} --njobs {JOBS} --npoints {POINTS} --physics-model '{FITMODEL}'  --physics-model-options '{FITMODELOPTIONS}' -n {NAME}".format(
+                DIR = dir,
+                STABLE = "--stable" if options.stable else "",
+                JOBS = options.njobs,
+                POINTS = options.npoints,
+                FITMODEL = options.fitModel,
+                FITMODELOPTIONS = fitmodeloptions,
+                NAME = options.name
+                ))
+            
         ## execute
-        os.system("./{NAME}_submit.sh".format(NAME=options.name))
+        ##os.system("./{NAME}_submit.sh".format(NAME=options.name))
         ## shelve
         os.system("rm {NAME}_submit.sh".format(NAME=options.name))
         os.system("rm -r {NAME}".format(NAME=options.name))
