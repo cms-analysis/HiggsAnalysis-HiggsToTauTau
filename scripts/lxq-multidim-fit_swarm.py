@@ -89,7 +89,7 @@ else :
                 ))
             
         ## execute
-        ##os.system("./{NAME}_submit.sh".format(NAME=options.name))
+        os.system("./{NAME}_submit.sh".format(NAME=options.name))
         ## shelve
         os.system("rm {NAME}_submit.sh".format(NAME=options.name))
         os.system("rm -r {NAME}".format(NAME=options.name))
