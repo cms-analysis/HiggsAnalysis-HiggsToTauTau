@@ -21,9 +21,9 @@ layout = cms.PSet(
     ## print to root
     root = cms.bool(True),
     ## min for plotting
-    min = cms.double(-1),
+    min = cms.double(-0.2),
     ## max for plotting
-    max = cms.double(8.),
+    max = cms.double(4.),
     ## min for plotting
     log = cms.int32(0),
     ## process of interest - r_ggH or r_bbH
