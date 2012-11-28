@@ -1573,7 +1573,7 @@ PlotLimits::plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErro
   hr->GetYaxis()->SetLabelSize(0.045);
   if(log_){ canv.SetLogy(1); }
 
-  // create the unit line
+   // create the unit line
   TGraph* unit = new TGraph();
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
     if(valid_[imass]){
@@ -1581,42 +1581,122 @@ PlotLimits::plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErro
     }
   }
 
-  char typ[20];
+  // handling of the likelihoodscan
+  //std::string filehead = buffer.substr(0, buffer.find("$MASS"));
+  //std::string filetail = buffer.substr(buffer.find("$MASS")+5, std::string::npos);
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
-    std::cout<< (int)bins_[imass] << std::endl;
-    std::string fullpath;
-    std::string line;
-    float bestfit, bestfit_down, bestfit_up;
-    fullpath = TString::Format("%s/%d/multi-dim.fitresult", directory, (int)bins_[imass]); // felix anpassen
-    ifstream multidim (fullpath.c_str());
-    if (multidim.is_open())
-      {
-	while ( multidim.good() )
-	  {
-	    getline (multidim,line);
-	    sscanf (line.c_str(),"%s :    %f   %f/%f (68%%)", typ, &bestfit, &bestfit_down, &bestfit_up);
-	    if(typ==POI_)
-	      {
-		expected ->SetPoint(ipoint, bins_[imass], bestfit);
-		innerBand->SetPoint(ipoint, bins_[imass], bestfit);
-		innerBand->SetPointEYlow (ipoint, fabs(bestfit_down));
-		innerBand->SetPointEYhigh(ipoint, fabs(bestfit_up));
-		ipoint++;
-	      }
-	  }
-	multidim.close();
+    if(valid_[imass]){
+      TString fullpath(TString::Format("%s/%d/higgsCombineml-scan.MultiDimFit.mH%d.root", directory, (int)bins_[imass], (int)bins_[imass]));
+      if(verbosity_>0) std::cout << "INFO: opening file " << fullpath << std::endl;
+      TFile* file = new TFile(fullpath);
+      TTree* limit = (TTree*) file->Get("limit");
+      
+      float nll, x, y;
+      limit->SetBranchAddress("deltaNLL", &nll );  
+      if(mssm_){
+	limit->SetBranchAddress("r_ggH", &x);  
+	limit->SetBranchAddress("r_bbH", &y);
       }
+      else{
+	if(POI_=="r_ggH" || POI_=="r_qqH"){
+	  limit->SetBranchAddress("r_ggH", &x);  
+	  limit->SetBranchAddress("r_qqH", &y);
+	}
+	else{
+	  limit->SetBranchAddress("CV", &x);  
+	  limit->SetBranchAddress("CF", &y);
+	}
+      }
+      float best_fit=50, POI_best=100;
+      int nevent = limit->GetEntries();
+      for(int i=0; i<nevent; ++i){
+	limit->GetEvent(i);
+	if(nll<best_fit){
+	  if(POI_=="r_ggH" || POI_=="CV"){
+	    POI_best=x;
+	    best_fit=nll;
+	  }
+	  if(POI_=="r_qqH" || POI_=="CV" || POI_=="r_bbH"){
+	    POI_best=y;
+	    best_fit=nll;
+	  }
+	}
+      }
+      float POI_value_down=10, POI_value_up=10, POI_down=POI_best, POI_up=POI_best;
+      for(int i=0; i<nevent; ++i){
+	limit->GetEvent(i);
+	if(nll>0 && nll>=1.00 && nll<POI_value_up){
+	  if((POI_=="r_ggH" || POI_=="CV") && POI_up<=x){
+	    POI_up=x;
+	    POI_value_up=nll;
+	  }
+	  if((POI_=="r_qqH" || POI_=="CF" || POI_=="r_bbH") && POI_up<=y){
+	    POI_up=y;
+	    POI_value_up=nll;
+	  }
+	}
+	if(nll>0 && nll>=1.00 && nll<POI_value_down){
+	  if((POI_=="r_ggH" || POI_=="CV") && POI_down>=x){
+	    POI_down=x;
+	    POI_value_down=nll;
+	  }
+	  if((POI_=="r_qqH" || POI_=="CF" || POI_=="r_bbH") && POI_down>=y){
+	    POI_down=y;
+	    POI_value_down=nll;
+	  }      
+	} 
+      }
+      std::cout << "POI_best_fit " << POI_best << "  nll " << best_fit << std::endl;
+      std::cout << "POI_up "<< POI_up << "  nll " << POI_value_up << std::endl;
+      std::cout << "POI_down "<< POI_down << "  nll " << POI_value_down << std::endl;
+      expected ->SetPoint(ipoint, bins_[imass], POI_best);
+      innerBand->SetPoint(ipoint, bins_[imass], POI_best);
+      innerBand->SetPointEYlow (ipoint, POI_best-POI_down);
+      innerBand->SetPointEYhigh(ipoint, POI_up-POI_best);
+      ipoint++;
+      file->Close();
+    }
   }
+
+  // obsolete since minos (--algo singles) does not work proper 
+//   char typ[20]; 
+//   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
+//     std::cout<< (int)bins_[imass] << std::endl;
+//     std::string fullpath;
+//     std::string line;
+//     float bestfit, bestfit_down, bestfit_up;
+//     fullpath = TString::Format("%s/%d/multi-dim.fitresult", directory, (int)bins_[imass]); // felix anpassen
+//     ifstream multidim (fullpath.c_str());
+//     if (multidim.is_open())
+//       {
+// 	while ( multidim.good() )
+// 	  {
+// 	    getline (multidim,line);
+// 	    sscanf (line.c_str(),"%s :    %f   %f/%f (68%%)", typ, &bestfit, &bestfit_down, &bestfit_up);
+// 	    if(typ==POI_)
+// 	      {
+// 		expected ->SetPoint(ipoint, bins_[imass], bestfit);
+// 		innerBand->SetPoint(ipoint, bins_[imass], bestfit);
+// 		innerBand->SetPointEYlow (ipoint, fabs(bestfit_down));
+// 		innerBand->SetPointEYhigh(ipoint, fabs(bestfit_up));
+// 		ipoint++;
+// 	      }
+// 	  }
+// 	multidim.close();
+//       }
+//   }
+
+
 
   innerBand->SetLineColor(kBlack);
   //innerBand->SetLineStyle(11);
   innerBand->SetLineWidth(1.);
   innerBand->SetFillColor(kGreen);
-  innerBand->Draw("3same");
+  innerBand->Draw("3same"); //maybe 4same ... than its smooth, but has a problem at last mass point ...
 
 
   expected->SetMarkerStyle(20);
-  expected->SetMarkerSize(1.0);
+  expected->SetMarkerSize(0.5);
   expected->SetMarkerColor(kBlack);
   expected->SetLineWidth(3.);
   expected->Draw("PLsame");
@@ -1637,9 +1717,9 @@ PlotLimits::plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErro
   leg->SetFillStyle ( 1001 );
   //leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
-  //leg->SetHeader( "95% CL Limits" );
-  if(observed==0 && outerBand==0) leg->AddEntry( expected , TString::Format("Best fit for %s", POI_.c_str()),  "L" );
-  if(observed==0 && outerBand==0) leg->AddEntry( innerBand, TString::Format("#pm 1#sigma Best fit for %s", POI_.c_str()),  "F" );
+  leg->SetHeader( TString::Format("Best-fit for %s", POI_.c_str()) );
+  if(observed==0 && outerBand==0) leg->AddEntry( expected , "Central",  "L" );
+  if(observed==0 && outerBand==0) leg->AddEntry( innerBand, "#pm 1#sigma",  "F" );
   leg->Draw("same");
   //canv.RedrawAxis("g");
   canv.RedrawAxis();
