@@ -1586,7 +1586,7 @@ PlotLimits::plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErro
   //std::string filetail = buffer.substr(buffer.find("$MASS")+5, std::string::npos);
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
     if(valid_[imass]){
-      TString fullpath(TString::Format("%s/%d/higgsCombineml-scan.MultiDimFit.mH%d.root", directory, (int)bins_[imass], (int)bins_[imass]));
+      TString fullpath(TString::Format("%s/%d/higgsCombineggH-bbH.MultiDimFit.mH%d.root", directory, (int)bins_[imass], (int)bins_[imass]));
       if(verbosity_>0) std::cout << "INFO: opening file " << fullpath << std::endl;
       TFile* file = new TFile(fullpath);
       TTree* limit = (TTree*) file->Get("limit");
@@ -1625,22 +1625,22 @@ PlotLimits::plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErro
       float POI_value_down=10, POI_value_up=10, POI_down=POI_best, POI_up=POI_best;
       for(int i=0; i<nevent; ++i){
 	limit->GetEvent(i);
-	if(nll>0 && nll>=1.00 && nll<POI_value_up){
-	  if((POI_=="r_ggH" || POI_=="CV") && POI_up<=x){
+	if(nll>0 && nll>=1.00 && nll<1.05 ){// nll<POI_value_up){
+	  if((POI_=="r_ggH" || POI_=="CV") && POI_up<x){
 	    POI_up=x;
 	    POI_value_up=nll;
 	  }
-	  if((POI_=="r_qqH" || POI_=="CF" || POI_=="r_bbH") && POI_up<=y){
+	  if((POI_=="r_qqH" || POI_=="CF" || POI_=="r_bbH") && POI_up<y){
 	    POI_up=y;
 	    POI_value_up=nll;
 	  }
 	}
-	if(nll>0 && nll>=1.00 && nll<POI_value_down){
-	  if((POI_=="r_ggH" || POI_=="CV") && POI_down>=x){
+	if(nll>0 && nll>=1.00 && nll<1.05){//nll<POI_value_down){
+	  if((POI_=="r_ggH" || POI_=="CV") && POI_down>x){
 	    POI_down=x;
 	    POI_value_down=nll;
 	  }
-	  if((POI_=="r_qqH" || POI_=="CF" || POI_=="r_bbH") && POI_down>=y){
+	  if((POI_=="r_qqH" || POI_=="CF" || POI_=="r_bbH") && POI_down>y){
 	    POI_down=y;
 	    POI_value_down=nll;
 	  }      
