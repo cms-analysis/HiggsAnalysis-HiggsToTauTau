@@ -54,7 +54,7 @@ if not os.path.exists(options.out) :
 if not os.path.exists("{OUTPUT}/{ANA}".format(OUTPUT=options.out, ANA=options.analysis)) :
     os.system("mkdir {OUTPUT}/{ANA}".format(OUTPUT=options.out, ANA=options.analysis))
 for channel in channels :
-    prefix = "" if (channel == "vhtt" or channel == "vhbb") else "htt_"
+    prefix = "" if (channel == "vhtt" or channel == "vhbb" or channel == "hmm") else "htt_"
     if not os.path.exists("{OUTPUT}/{ANA}/{PRE}{CHN}".format(OUTPUT=options.out, ANA=options.analysis, PRE=prefix, CHN=channel)) :
         os.system("mkdir {OUTPUT}/{ANA}/{PRE}{CHN}".format(OUTPUT=options.out, ANA=options.analysis, PRE=prefix, CHN=channel))
 os.chdir(options.out)
@@ -77,6 +77,7 @@ if options.analysis == "mssm" :
         "mt"   : (90, 1000),
         "et"   : (90, 1000),
         "tt"   : (90,  500),
+        "hmm"  : (120, 300),
     }
 
 print "------------------------------------------------------"
@@ -104,6 +105,7 @@ if options.analysis == "mssm" :
         "mt"   : "7TeV 8TeV",
         "et"   : "7TeV 8TeV",
         "tt"   :      "8TeV",
+        "hmm"  : "7TeV"     ,
         }
 
 print "------------------------------------------------------"
@@ -135,7 +137,7 @@ if options.analysis == "mssm" :
         "mt"   : options.mt_mssm_categories.split(),
         "et"   : options.et_mssm_categories.split(),
         #"tt"   : options.tt_mssm_categories.split(),
-        #"hmm"  : options.hmm_mssm_categories.split(),
+        "hmm"  : options.hmm_mssm_categories.split(),
         }
 
 ## return closest simulated masspoint to value
@@ -154,7 +156,7 @@ for channel in channels :
     for period in periods :
         for cat in categories[channel] :
             ## here the normal workflow continues
-            prefix = "" if (channel == "vhtt" or channel == "vhbb") else "htt_"
+            prefix = "" if (channel == "vhtt" or channel == "vhbb" or channel == "hmm") else "htt_"
             os.chdir("{PWD}/{CHN}".format(CHN=prefix+channel, PWD=base))
             ## check validity of run period
             if not period in valid_periods[channel] :
