@@ -9,7 +9,7 @@ parser = OptionParser(
     )
 parser.add_option("-i", "--in", dest="input", default="%s/HiggsAnalysis/HiggsToTauTau/setup" % os.environ["CMSSW_BASE"], type="string", help="Full path to the input directory from which you would like to create the datacards. The path should be given relative to $CMSSW_BASE. Note that you need to obey the directory structures provide the corresponding configurationfiels for the translatino of the uncertainties into the datacards if you plan to use your own input path. [Default: src/HiggsAnalysis/HiggsToTauTau/setup]")
 parser.add_option("-o", "--out", dest="out", default="auxiliaries/datacards", type="string", help="Name of the output directory to which the datacards should be copied. [Default: auxiliaries/datacards]")
-parser.add_option("-c", "--decay-channel", dest="channel", default="new", type="choice", help="Ditau decay channel. [Default: new]", choices=["new", "mm", "em", "et", "mt", "tt", "hmm", "vhtt", "vhbb"])
+parser.add_option("-c", "--decay-channel", dest="channel", default="new", type="choice", help="Ditau decay channel. [Default: new]", choices=["new", "mm", "em", "et", "mt", "tt", "hmm", "vhtt", "vhbb", "bbhad", "bblep"])
 parser.add_option("-e", "--event-category", dest="category", default="", type="string", help="Event category. [Default: \"\"]")
 
 ## check number of arguments; in case print usage
@@ -44,6 +44,8 @@ if not options.channel == "new" :
         type+="-"+options.category[:options.category.rfind('-')]
     if options.channel == "hmm" or options.channel == "vhtt" or options.channel == "vhbb": 
         os.system("cp {source}/{channel}.inputs{type}*.root {target}".format(source=source_path, channel=options.channel, type=type, target=target_path))
+    elif options.channel == "bbhad" or options.channel == "bblep" :
+        os.system("cp {source}/hbb_{channel}.inputs{type}*.root {target}".format(source=source_path, channel=options.channel, type=type, target=target_path))
     else :
         os.system("cp {source}/htt_{channel}.inputs{type}*.root {target}".format(source=source_path, channel=options.channel, type=type, target=target_path))    
 else:
