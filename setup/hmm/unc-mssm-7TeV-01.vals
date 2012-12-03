@@ -1,0 +1,11 @@
+###########################################################################
+# unc.vals: specification of uncertainty values by category, sample, and uncertainty name
+
+ hmm_noTag		  signal		  lumi_7TeV      	     1.022
+ hmm_noTag		  signal		  CMS_scale_met_7TeV	     1.018
+ hmm_noTag		  signal		  CMS_scale_j_7TeV	     1.012
+ hmm_noTag		  signal		  CMS_eff_b_7TeV       	     1.036
+ hmm_noTag		  signal		  CMS_hmm_pileUp_7TeV	     1.010
+ hmm_noTag		  signal		  CMS_hmm_pdf_h_7TeV         1.030
+ hmm_noTag		  background		  CMS_hmm_dy_norm_7TeV	     1.050
+ 
