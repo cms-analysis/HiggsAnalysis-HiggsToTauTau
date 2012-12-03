@@ -68,7 +68,7 @@ class MakeDatacard :
                      }
               ## mapping of unique (standardized) decay channel names to all possible decay channels
               self.standardized_decay_channels = {
-                     "hmm"    : ["hmm_0", "hmm_1",
+                     "hmm"    : ["hmm_0_7TeV", "hmm_1_7TeV",
                                  ],
                      "htt"    : ["htt_em_0_7TeV", "htt_em_1_7TeV", "htt_em_2_7TeV", "htt_em_3_7TeV", "htt_em_4_7TeV", "htt_em_5_7TeV", "htt_em_6_7TeV", "htt_em_7_7TeV", "htt_em_8_7TeV", "htt_em_9_7TeV",
                                  "htt_et_0_7TeV", "htt_et_1_7TeV", "htt_et_2_7TeV", "htt_et_3_7TeV", "htt_et_4_7TeV", "htt_et_5_7TeV", "htt_et_6_7TeV", "htt_et_7_7TeV", "htt_et_8_7TeV", "htt_et_9_7TeV",
@@ -152,8 +152,8 @@ class MakeDatacard :
                                    for period in ["7TeV", "8TeV"] :
                                           decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
                                           self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses"
-                     self.decay_channel_to_interpolation_method["hmm_0"         ] = "non-degenerate-masses"
-                     self.decay_channel_to_interpolation_method["hmm_1"         ] = "non-degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hmm_0_7TeV"    ] = "non-degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hmm_1_7TeV"    ] = "non-degenerate-masses"
                      self.decay_channel_to_interpolation_method["hwwof_0j_shape"] = "single-mass"
                      self.decay_channel_to_interpolation_method["hwwof_1j_shape"] = "single-mass"
                      self.decay_channel_to_interpolation_method["hwwsf_0j_shape"] = "single-mass"
@@ -168,8 +168,8 @@ class MakeDatacard :
                                                  self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses-light"
                                           else :
                                                  self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses"
-                     self.decay_channel_to_interpolation_method["hmm_0"         ] = "non-degenerate-masses-light"
-                     self.decay_channel_to_interpolation_method["hmm_1"         ] = "non-degenerate-masses-light"
+                     self.decay_channel_to_interpolation_method["hmm_0_7TeV"    ] = "non-degenerate-masses-light"
+                     self.decay_channel_to_interpolation_method["hmm_1_7TeV"    ] = "non-degenerate-masses-light"
                      self.decay_channel_to_interpolation_method["hwwof_0j_shape"] = "single-mass"
                      self.decay_channel_to_interpolation_method["hwwof_1j_shape"] = "single-mass"
                      self.decay_channel_to_interpolation_method["hwwsf_0j_shape"] = "single-mass"
@@ -184,8 +184,8 @@ class MakeDatacard :
                                                  self.decay_channel_to_interpolation_method[decay_channel] = "degenerate-masses"
                                           else :
                                                  self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses"
-                     self.decay_channel_to_interpolation_method["hmm_0"         ] = "degenerate-masses"
-                     self.decay_channel_to_interpolation_method["hmm_1"         ] = "degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hmm_0_7TeV"    ] = "degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hmm_1_7TeV"    ] = "degenerate-masses"
                      self.decay_channel_to_interpolation_method["hwwof_0j_shape"] = "single-mass"
                      self.decay_channel_to_interpolation_method["hwwof_1j_shape"] = "single-mass"
                      self.decay_channel_to_interpolation_method["hwwsf_0j_shape"] = "single-mass"
@@ -197,8 +197,8 @@ class MakeDatacard :
                                    for period in ["7TeV", "8TeV"] :
                                           decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
                                           self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses-light"
-                     self.decay_channel_to_interpolation_method["hmm_0"         ] = "non-degenerate-masses-light"
-                     self.decay_channel_to_interpolation_method["hmm_1"         ] = "non-degenerate-masses-light"
+                     self.decay_channel_to_interpolation_method["hmm_0_7TeV"    ] = "non-degenerate-masses-light"
+                     self.decay_channel_to_interpolation_method["hmm_1_7TeV"    ] = "non-degenerate-masses-light"
                      self.decay_channel_to_interpolation_method["hwwof_0j_shape"] = "single-mass"
                      self.decay_channel_to_interpolation_method["hwwof_1j_shape"] = "single-mass"
                      self.decay_channel_to_interpolation_method["hwwsf_0j_shape"] = "single-mass"
@@ -213,8 +213,8 @@ class MakeDatacard :
                                                  self.decay_channel_to_interpolation_method[decay_channel] = "degenerate-masses"
                                           else :
                                                  self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses-light"
-                     self.decay_channel_to_interpolation_method["hmm_0"         ] = "degenerate-masses"
-                     self.decay_channel_to_interpolation_method["hmm_1"         ] = "degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hmm_0_7TeV"    ] = "degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hmm_1_7TeV"    ] = "degenerate-masses"
                      self.decay_channel_to_interpolation_method["hwwof_0j_shape"] = "single-mass"
                      self.decay_channel_to_interpolation_method["hwwof_1j_shape"] = "single-mass"
                      self.decay_channel_to_interpolation_method["hwwsf_0j_shape"] = "single-mass"
@@ -226,8 +226,8 @@ class MakeDatacard :
                                    for period in ["7TeV", "8TeV"] :
                                           decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
                                           self.decay_channel_to_interpolation_method[decay_channel] = "degenerate-masses"
-                     self.decay_channel_to_interpolation_method["hmm_0"         ] = "degenerate-masses"
-                     self.decay_channel_to_interpolation_method["hmm_1"         ] = "degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hmm_0_7TeV"    ] = "degenerate-masses"
+                     self.decay_channel_to_interpolation_method["hmm_1_7TeV"    ] = "degenerate-masses"
                      self.decay_channel_to_interpolation_method["hwwof_0j_shape"] = "single-mass"
                      self.decay_channel_to_interpolation_method["hwwof_1j_shape"] = "single-mass"
                      self.decay_channel_to_interpolation_method["hwwsf_0j_shape"] = "single-mass"
