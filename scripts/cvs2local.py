@@ -128,14 +128,14 @@ if options.analysis == "sm" :
     }
 if options.analysis == "mssm" :
     valid_masses = {
-        "mm"   : (90, 1000),
-        "em"   : (90, 1000),
-        "mt"   : (90, 1000),
-        "et"   : (90, 1000),
-        "tt"   : (90, 500),
-        "hmm"  : (120, 300),
-        "bbhad": (90,  180),
-        "bblep": (90,  180),       
+        "mm"   : ( 90, 1000),
+        "em"   : ( 90, 1000),
+        "mt"   : ( 90, 1000),
+        "et"   : ( 90, 1000),
+        "tt"   : ( 90,  500),
+        "hmm"  : (120,  300),
+        "bbhad": ( 90,  180),
+        "bblep": ( 90,  180),       
     }
 if options.verbose :
     print "------------------------------------------------------"
@@ -196,7 +196,8 @@ for period in periods :
             if (float(mass)< valid_masses[channel][0] or float(mass)> valid_masses[channel][1]) :
                 #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass
                 continue
-            if channel == "vhtt" or channel == "vhbb" or channel == "hmm":
+            if channel == "vhtt" or channel == "vhbb" or channel == "hmm" :
+                print "channel ", channel
                 for category in categories[channel] :
                     if options.verbose :
                         print "copying datacards for:", period, channel, category, mass
@@ -208,7 +209,7 @@ for period in periods :
                         CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period))
                     if options.analysis == "mssm" :
                         add_mass("{CHN}_{CAT}_{PERIOD}".format(CHN=channel, CAT=category, PERIOD=period), mass)
-            if channel == "bbhad" or channel == "bblep":
+            elif channel == "bbhad" or channel == "bblep":
                 for category in categories[channel] :
                     if options.verbose :
                         print "copying datacards for:", period, channel, category, mass
