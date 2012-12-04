@@ -495,7 +495,6 @@ class MakeDatacard :
                                    cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR-mumu"]
                             if decay_channel == "hbb" :
                                    cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR-bb"]
-              print cross_sections #felix
               return cross_sections
 
        def load_cross_sections_map(self) :
@@ -551,7 +550,6 @@ class MakeDatacard :
                                           self.signal_channel_to_cross_section[("bbH_hbb", period)] = self.cross_sections_htt("santander", "hbb", period)
                                           self.signal_channel_to_cross_section[("qqH_hbb", period)] = {"A" : 1., "H" : 1., "h" : 1.}
                                           self.signal_channel_to_cross_section[("VH_hbb" , period)] = {"A" : 1., "H" : 1., "h" : 1.}
-              print self.signal_channel_to_cross_section #felix
 
        def contracted_cross_section(self, standardized_production_process, standardized_decay_channel, period, mode=0) :
               """
