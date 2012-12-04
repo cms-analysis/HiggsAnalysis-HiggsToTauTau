@@ -197,7 +197,6 @@ for period in periods :
                 #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass
                 continue
             if channel == "vhtt" or channel == "vhbb" or channel == "hmm" :
-                print "channel ", channel
                 for category in categories[channel] :
                     if options.verbose :
                         print "copying datacards for:", period, channel, category, mass
