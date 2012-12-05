@@ -7,7 +7,7 @@ import os
 import re
 from optparse import OptionParser, OptionGroup
 from HiggsAnalysis.HiggsToTauTau.parallelize import parallelize
-from HiggsAnalysis.HiggsToTauTau.CardCombiner import create_workspace
+from HiggsAnalysis.HiggsToTauTau.CardCombiner import create_workspace, extract_pull_options
 import sys
 
 ## set up the option parser
@@ -42,6 +42,9 @@ parser.add_option("--name", dest="name", default="Test", type="string", help="Na
 parser.add_option("--no-repeat", dest="norepeat", default=False, action="store_true", help="Detect if command has already been run, and skip the job.")
 parser.add_option("--ggH", dest="ggH", default=False, action="store_true", help="Switch ggH or bbH to background. [Default: False]")
 parser.add_option("--working-dir", dest="workingdir", default=".", help="Optionally specify where the temporary combined datacard is produced")
+parser.add_option('--apply-pulls', dest='applypulls', default=None, help="Optionally constrain nuisances using a ML fit result (e.g. mlfit.root)")
+
+
 mgroup = OptionGroup(parser, "COMBINE (MAXIMUM LIKELIHOOD FIT) COMMAND OPTIONS", "Command options for the use of combine with the Maximum Likelihood method.")
 mgroup.add_option("--stable", dest="stable", default=False, action="store_true", help="Run maximum likelihood fit with a set of options that lead to stable results. Makes use of the common options --rMin and --rMax to define the boundaries of the fit. [Default: False]")
 mgroup.add_option("--algo", dest="fitAlgo", type="string", default="contour2d", help="Algorithm for multi-dimensional maximum likelihood fit (options are singles, contour2d, grid). Option grid will make use of the option --points to determine the number of grid points in the scan. [Default: \"\"]")
@@ -122,10 +125,22 @@ def already_run(directory):
 def create_card_workspace(mass, card_glob='*.txt', output='tmp.root',
                           extra_options=None):
     ''' Create a tmp.root combining data cards in the CWD '''
-    ws_options = {'-m': mass, '--default-morphing': options.shape}
+    ws_options = [
+        ('-m', mass),
+        ('--default-morphing', options.shape),
+    ]
     if extra_options:
-        ws_options.update(extra_options)
+        ws_options.extend(extra_options)
     output = os.path.join(options.workingdir, output)
+
+    if options.applypulls:
+        # Constrain the nuisances using an external ML fit
+        with open(
+            os.path.join(base_directory, options.applypulls), 'r') as pullfile:
+            ws_options.extend(
+                extract_pull_options(pullfile)
+            )
+
     return create_workspace(output, card_glob, ws_options)
 
 for directory in args :
