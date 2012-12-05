@@ -7,6 +7,7 @@ import os
 import re
 from optparse import OptionParser, OptionGroup
 from HiggsAnalysis.HiggsToTauTau.parallelize import parallelize
+from HiggsAnalysis.HiggsToTauTau.CardCombiner import create_workspace
 import sys
 
 ## set up the option parser
@@ -117,6 +118,15 @@ def already_run(directory):
         print ">>> hash file %s is out of date: %f < %f" % (hash_file, os.path.getmtime(hash_file), latest_modified)
         return False
     return True
+
+def create_card_workspace(mass, card_glob='*.txt', output='tmp.root',
+                          extra_options=None):
+    ''' Create a tmp.root combining data cards in the CWD '''
+    ws_options = {'-m': mass, '--default-morphing': options.shape}
+    if extra_options:
+        ws_options.update(extra_options)
+    output = os.path.join(options.workingdir, output)
+    return create_workspace(output, card_glob, ws_options)
 
 for directory in args :
     if directory.find("common")>-1 :
@@ -354,10 +364,14 @@ for directory in args :
         #mass_regex   = r"(?P<mass>[\+\-0-9\s]+)[a-zA-Z0-9]*"
         #mass_matcher = re.compile(mass_regex)
         #mass_value   = mass_matcher.match(mass_string).group('mass')
+
         ## combine datacard from all datacards in this directory
-        os.system("combineCards.py -S *.txt > %s/tmp.txt" % options.workingdir)
+        #os.system("combineCards.py -S *.txt > %s/tmp.txt" % options.workingdir)
         ## prepare binary workspace
-        os.system("text2workspace.py --default-morphing=%s -m %s -b %s/tmp.txt -o %s/tmp.root"% (options.shape, mass_value, options.workingdir, options.workingdir))
+        #os.system("text2workspace.py --default-morphing=%s -m %s -b %s/tmp.txt -o %s/tmp.root"% (options.shape, mass_value, options.workingdir, options.workingdir))
+
+        create_card_workspace(mass_value)
+
         ## if it does not exist already, create link to executable
         if not os.path.exists("combine") :
             os.system("cp -s $(which combine) .")
@@ -386,11 +400,7 @@ for directory in args :
         ## determine mass value from directory
         mass = directory[directory.rfind("/")+1:]
         ## combine datacard from all datacards in this directory
-        ## if not done so already
-        if not os.path.exists("tmp.txt") :
-            os.system("combineCards.py *.txt > tmp.txt")
-        ## prepare binary workspace
-        os.system("text2workspace.py --default-morphing=%s -m %s -b tmp.txt -o tmp.root"% (options.shape, mass))
+        create_card_workspace(mass)
         ## create sub-directory out from scratch
         if os.path.exists("out") :
             os.system("rm -r out")
@@ -422,9 +432,7 @@ for directory in args :
         ## determine mass value from directory
         mass = directory[directory.rfind("/")+1:]
         ## combine datacard from all datacards in this directory
-        ## if not done so already
-        if not os.path.exists("tmp.txt") :
-            os.system("combineCards.py *.txt > tmp.txt")
+        create_card_workspace(mass)
         ## create sub-directory out from scratch
         if os.path.exists("out") :
             os.system("rm -r out")
@@ -440,7 +448,7 @@ for directory in args :
         if options.stable :
             stableopt = "--robustFit=1 --stepSize=0.5  --minimizerStrategy=0 --minimizerTolerance=0.1 --preFitValue=0.1  --X-rtd FITTER_DYN_STEP  --cminFallbackAlgo=\"Minuit;0.001\" "
         ## run expected limits
-        command = "combine -M MultiDimFit -m {mass} --points={points} --saveNLL --algo={algo} {minuit} {stable} {user} tmp.txt".format(mass=mass, points=options.gridPoints, algo=options.fitAlgo,  minuit=minuitopt, stable=stableopt, user=options.userOpt)
+        command = "combine -M MultiDimFit -m {mass} --points={points} --saveNLL --algo={algo} {minuit} {stable} {user} tmp.root".format(mass=mass, points=options.gridPoints, algo=options.fitAlgo,  minuit=minuitopt, stable=stableopt, user=options.userOpt)
         command += " --rMin {MIN} --rMax {MAX} ".format(MIN=options.rMin, MAX=options.rMax)
         command += " &> /dev/null"
         print "Running likelihood scan with options: ", command
@@ -452,14 +460,6 @@ for directory in args :
         model = []
         if "=" in options.fitModel :
             model = options.fitModel.split('=')
-            ## combine datacard from all datacards in this directory. For the multi-dimensional fit
-            ## it is of importance that the decay channels and run periods are well defined from the
-            ## channel names. Allow for a restriction of the event categories
-            if os.path.exists("tmp.txt") :
-                os.system("rm tmp.txt")
-                inputcards = ""
-            if os.path.exists("%s.root" % model[0]) :
-                os.system("rm %s.root" % model[0])
             ## collect all cards that should be combined into the model
             inputcards = ""
             for card in os.listdir(".") :
@@ -471,6 +471,16 @@ for directory in args :
                         for allowed in allowed_categories :
                             if allowed in card :
                                 inputcards+=card[:card.find('.')]+'='+card+' '
+
+            # OLD COMBINING BEHAVIOR
+
+            ## combine datacard from all datacards in this directory. For the multi-dimensional fit
+            ## it is of importance that the decay channels and run periods are well defined from the
+            ## channel names. Allow for a restriction of the event categories
+            if os.path.exists("tmp.txt") :
+                os.system("rm tmp.txt")
+            if os.path.exists("%s.root" % model[0]) :
+                os.system("rm %s.root" % model[0])
             print "combineCards.py -S %s > tmp.txt" % inputcards
             os.system("combineCards.py -S %s > tmp.txt" % inputcards)
             ## create workspace with dedicated physics model
@@ -485,6 +495,9 @@ for directory in args :
                     workspaceOptions+="--PO %s " % opt
             print "creating workspace with options:", "text2workspace.py tmp.txt %s" % workspaceOptions
             os.system("text2workspace.py tmp.txt %s" % workspaceOptions)
+
+            # NEW BEHAVIOR
+            # TODO
         else :
             model = [options.fitModel]
         if not options.setupOnly :
@@ -531,14 +544,15 @@ for directory in args :
             os.system("hadd batch_collected.root batch_collected_*.root")
             os.system("rm batch_collected_*.root")
         ## in case there were no batch jobs run run interactively
-        ## combine datacard from all datacards in this directory
-        os.system("combineCards.py -S *.txt > tmp.txt")
         ## prepare binary workspace
         mass_value = directory[directory.rfind("/")+1:]
         mass_fixed = options.fixed_mass
         if options.fixed_mass == "":
             mass_fixed = mass_value
-        os.system("text2workspace.py --default-morphing=%s -m %s -b tmp.txt -o tmp.root"% (options.shape, mass_fixed))
+
+        ## combine datacard from all datacards in this directory
+        create_card_workspace(mass_fixed)
+
         if not options.observedOnly :
             if ifile == 0 :
                 ## calculate significance, batch_collected.root is the output file name expected by plot.cc
