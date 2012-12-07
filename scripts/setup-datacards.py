@@ -86,8 +86,8 @@ if options.analysis == "mssm" :
         "et"   : (90, 1000),
         "tt"   : (90,  500),
         "hmm"  : (120, 300),
-        "bbhad": (90,  180),
-        "bblep": (90,  180),
+        "bbhad": (90,  350),
+        "bblep": (90,  350),
     }
 
 print "------------------------------------------------------"
@@ -196,12 +196,12 @@ for channel in channels :
                     #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass
                     continue
                 print "creating datacard for:", options.analysis, period, channel, cat, fudge_mass
-                if options.analysis == "mssm" :
-                    os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{PER}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
+                if options.analysis == "mssm" :                    
+                    os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{PER}-{MASSCAT}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
                         CHN=prefix+channel,
                         ANA=options.analysis,
                         PER=period,
-                        #MASSCAT=mass,
+                        MASSCAT=mass_category(mass,prefix+channel),
                         CAT=cat,
                         MASS=mass
                         ))

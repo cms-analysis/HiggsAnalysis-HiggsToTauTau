@@ -41,6 +41,7 @@ if len(args) < 1 :
 
 import os
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
+from HiggsAnalysis.HiggsToTauTau.utils import mass_category
 
 ## prepare input
 input = options.input + "/" + options.analysis
@@ -134,8 +135,8 @@ if options.analysis == "mssm" :
         "et"   : ( 90, 1000),
         "tt"   : ( 90,  500),
         "hmm"  : (120,  300),
-        "bbhad": ( 90,  180),
-        "bblep": ( 90,  180),       
+        "bbhad": ( 90,  350),
+        "bblep": ( 90,  350),       
     }
 if options.verbose :
     print "------------------------------------------------------"
@@ -195,7 +196,7 @@ for period in periods :
             ## check validity of mass
             if (float(mass)< valid_masses[channel][0] or float(mass)> valid_masses[channel][1]) :
                 #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass
-                continue
+                continue            
             if channel == "vhtt" or channel == "vhbb" or channel == "hmm" :
                 for category in categories[channel] :
                     if options.verbose :
@@ -212,12 +213,12 @@ for period in periods :
                 for category in categories[channel] :
                     if options.verbose :
                         print "copying datacards for:", period, channel, category, mass
-                    os.system("cp {INPUT}/hbb_{CHN}/hbb_{CHN}.inputs-{ANA}-{PERIOD}.root {OUTPUT}/common/{PRE}hbb_{CHN}.input_{PERIOD}.root".format(
-                        INPUT=input, ANA=options.analysis, CHN=channel, OUTPUT=options.out, PRE=prefix, PERIOD=period))
+                    os.system("cp {INPUT}/hbb_{CHN}/hbb_{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root {OUTPUT}/common/{PRE}hbb_{CHN}.input_{PERIOD}-{MASSCAT}.root".format(
+                        INPUT=input, ANA=options.analysis, CHN=channel, OUTPUT=options.out, PRE=prefix, PERIOD=period, MASSCAT=mass_category(mass,channel)))
                     os.system("cp {INPUT}/hbb_{CHN}/hbb_{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}hbb_{CHN}_{CAT}_{PERIOD}.txt".format(
                         INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
-                    os.system("perl -pi -e 's/hbb_{CHN}.inputs-{ANA}-{PERIOD}.root/..\/common\/{PRE}hbb_{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASS}/{PRE}hbb_{CHN}_{CAT}_{PERIOD}.txt".format(
-                        CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period))
+                    os.system("perl -pi -e 's/hbb_{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root/..\/common\/{PRE}hbb_{CHN}.input_{PERIOD}-{MASSCAT}.root/g' {OUTPUT}/{MASS}/{PRE}hbb_{CHN}_{CAT}_{PERIOD}.txt".format(
+                        CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period, MASSCAT=mass_category(mass,channel)))
                     if options.analysis == "mssm" :
                         add_mass("hbb_{CHN}_{CAT}_{PERIOD}".format(CHN=channel, CAT=category, PERIOD=period), mass)
             else :
