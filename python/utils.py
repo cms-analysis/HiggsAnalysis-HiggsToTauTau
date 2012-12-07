@@ -7,19 +7,25 @@ def contained(elem, list) :
     return False
 
 
-def mass_category(mass) :
+def mass_category(mass, channel) :
     """
     return the mass category depending on the value of mass. Currently we
     will have only one mass category for the pt sub-categorization.
     """
     # Temprorarily only use 1 mass cat.
-    return 0
+    #return 0
     value = float(mass)
     category = 0
-    if 150<value and value<=250 :
-        category = 0
-    elif 250<value :
-        category = 0
+    if "bbhad" in channel :
+        if value>=180 :
+            category = 1
+        elif value<180 :
+            category = 0
+    elif "bblep" in channel :
+        if value>=200 :
+            category = 1
+        elif value<200 :
+            category = 0
     return category
 
 def is_integer(elem):
