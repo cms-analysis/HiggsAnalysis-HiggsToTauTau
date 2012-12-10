@@ -29,24 +29,6 @@ def acceptance_correction(process, mass) :
     correction currently is only available from 90 to 500, beyond the values for 90 or
     500 are passed on as best approximations.
     """
-    ## map of pivotal values (from 90 up to 500 at the moment)
-    #values = {
-    #    90.   : ({"ggH" : 1.032, "bbH" : 1.011}),
-    #    100.  : ({"ggH" : 1.033, "bbH" : 1.011}),
-    #    120.  : ({"ggH" : 1.033, "bbH" : 1.011}),
-    #    130.  : ({"ggH" : 1.032, "bbH" : 1.011}),
-    #    140.  : ({"ggH" : 1.034, "bbH" : 1.011}),
-    #    160.  : ({"ggH" : 1.035, "bbH" : 1.011}),
-    #    180.  : ({"ggH" : 1.035, "bbH" : 1.012}),
-    #    200.  : ({"ggH" : 1.038, "bbH" : 1.013}),
-    #    250.  : ({"ggH" : 1.044, "bbH" : 1.014}),
-    #    300.  : ({"ggH" : 1.060, "bbH" : 1.017}),
-    #    350.  : ({"ggH" : 1.134, "bbH" : 1.025}),
-    #    400.  : ({"ggH" : 1.173, "bbH" : 1.032}),
-    #    450.  : ({"ggH" : 1.246, "bbH" : 1.041}),
-    #    500.  : ({"ggH" : 1.400, "bbH" : 1.049}),
-    #    }
-    
     # new acceptance correction factors from valentina, keep in mind: "the samples I have at hand are skimmed requiring a loose lepton, so not perfectly inclusive"
     values = { 
         80.   : ({"ggH" : 1.018, "bbH" : 1.008}),
