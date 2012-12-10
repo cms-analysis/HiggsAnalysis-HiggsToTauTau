@@ -1,30 +1,26 @@
 '''
-
 Tools to parallelize shell commands
 
 The main function is:
 
     parallelize(tasks, ntasks)
 
-where tasks is a list of tasks, where each task is list of shell commands. The
+where tasks is a list of tasks, where each task is a list of shell commands. The
 number of concurrent tasks is given by ntasks.
 
 Example to create some files then clean them up:
-
     [
         [ "touch example", "rm example" ],
         [ "touch example2", "rm example2" ],
     ]
 
 Returns a list of tuples where:
-
     [
         ([ "touch example", "rm example" ], [ (stdout, stderr), (stdout, stderr) ],
         ...
     ]
 
 Author: Evan K. Friis, UW Madison
-
 '''
 
 
@@ -34,7 +30,9 @@ import threading
 from Queue import Queue
 
 def run_task(task):
-    ''' Run a single task, by running each command in [task] '''
+    '''
+    Run a single task, by running each command in [task]
+    '''
     outputs = []
     for subtask in task:
         command = shlex.split(subtask)
@@ -46,7 +44,9 @@ def run_task(task):
     return (task, outputs)
 
 def run_task_from_queue(input, output):
-    ''' Consume from queue and process tasks '''
+    '''
+    Consume from queue and process tasks
+    '''
     while True:
         task = input.get()
         result = run_task(task)
@@ -66,7 +66,7 @@ def parallelize(tasks, ntasks):
         worker.daemon = True
         worker.start()
         workers.append(worker)
-    # Wait for all to finish
+    ## Wait for all to finish
     try:
         tasks_to_run.join()
     except KeyboardInterrupt:
@@ -77,5 +77,5 @@ def parallelize(tasks, ntasks):
         outputs.append(results.get())
 
     print "Finished parallelize() call"
-    # Kill workers
+    ## Kill workers
     return outputs
