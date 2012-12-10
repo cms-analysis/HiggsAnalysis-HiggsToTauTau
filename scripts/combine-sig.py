@@ -66,7 +66,7 @@ echo "## Starting at $(date)"
 
 toys = "$n"
 ## prepare optional options
-script.write("./combine {wsp} -M ProfileLikelihood -t {toys} --significance --signalForSignificance={sig} -m {mass} -v {v} -n {out} -s {seed}\n".format(
+script.write("./combine {wsp} -M ProfileLikelihood -t {toys} --significance --toysFreq --signalForSignificance={sig} -m {mass} -v {v} -n {out} -s {seed}\n".format(
 wsp=workspace, toys=toys, sig=options.signal_strength, mass=options.mass, v=options.v, out=options.out, seed=options.seed))
     
 script.write("\n");
