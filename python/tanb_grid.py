@@ -413,7 +413,9 @@ class MakeDatacard :
                      scan = mssm_xsec_tools("{CMSSW_BASE}/src/{PATH}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], PATH=path))
                      htt_query = scan.query(self.mA, self.tanb)
                      self.mh = htt_query['higgses']['h']['mass']
-                     self.mH = htt_query['higgses']['H']['mass']
+                     self.mH = htt_query['higgses']['H']['mass']              
+              if options.verbose :
+                     print "mh: %s  , mA: %s  , mH: %s" % (float(self.mh), float(self.mA), float(self.mH))
 
        def cross_sections_hww(self, production_channel) :
               """
@@ -494,7 +496,9 @@ class MakeDatacard :
                             if decay_channel == "hmm" :
                                    cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR-mumu"]
                             if decay_channel == "hbb" :
-                                   cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR-bb"]
+                                   cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR-bb"]                                   
+              if options.verbose :
+                     print production_channel, decay_channel, period, cross_sections
               return cross_sections
 
        def load_cross_sections_map(self) :
@@ -600,6 +604,7 @@ class MakeDatacard :
 
               - 'htt' for htt
               - 'hmm' for hmm
+              - 'hbb' for hbb
 
               The variables 'period' can have the values:
 
@@ -628,6 +633,10 @@ class MakeDatacard :
                             cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR"]
                      if decay_channel == "hmm" :
                             cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR-mumu"]
+                     if decay_channel == "hbb" :
+                            cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR-bb"]
+              if options.verbose :
+                     print production_channel, period, decay_channel, uncertainty_type, uncertainty_direction, cross_sections
               return cross_sections
 
        def contracted_uncertainty(self, standardized_production_process, standardized_decay_channel, period, uncertainty_type, uncertainty_direction) :
