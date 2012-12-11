@@ -42,9 +42,11 @@ bgroup = OptionGroup(parser, "COMMON OPTIONS", "These are the command line optio
 bgroup.add_option("--name", dest="name", default="Test", type="string",
                   help="Specify a name-label that will be added to the output file of your fit, limit or significance calculation. [Default: \"Test\"]")
 bgroup.add_option("--no-repeat", dest="norepeat", default=False, action="store_true",
-                  help="Detect if a command has already been run, and do not execute the command again if this is the case.")
+                  help="Detect if a command has already been run, and do not execute the command again if this is the case. [Default: False]")
 bgroup.add_option("--shape", dest="shape", default="shape2", type="string",
                   help="Choose a dedicated algorithm for vertical shape morphing during roofit model creation. [Default: 'shape2']")
+bgroup.add_option('--external-pulls', dest='externalPulls', default=None, type="string",
+                  help="Optionally constrain nuisance parameters using the result of a ML fit result (e.g. mlfit.root) that has been created beforehand. [Defasult: None]")
 bgroup.add_option("--confidence-level", dest="confidenceLevel", default="0.95", type="string",
                   help="Choose the confidence level at which to calculate the limit. This option only applies to asymptotic limit calculations. It does not apply to toy based methods, which have to be configured accordingly in the submission step (using the script submit.py). [Default: '0.95']")
 bgroup.add_option("--rMin", dest="rMin", default="-5", type="string",
@@ -238,15 +240,48 @@ def create_card_workspace(mass, card_glob='*.txt', output='tmp.root', extra_opti
         ws_options.extend(extra_options)
     output = os.path.join(options.workingdir, output)
 
-    if options.applypulls:
+    if options.externalPulls:
         ## constrain the nuisances using an external ML fit
         with open(
-            os.path.join(base_directory, options.applypulls), 'r') as pullfile:
+            os.path.join(base_directory, options.externalPulls), 'r') as pullfile:
             ws_options.extend(
                 extract_pull_options(pullfile)
             )
-
     return create_workspace(output, card_glob, ws_options)
+
+def create_card_workspace_with_physics_model(mass) :
+    '''
+    Create a tmp.root combining data cards in the CWD with a physics model
+    '''
+    output = ""
+    inputs = []
+    wsopts = []
+    model  = options.fitModel.split('=')
+    ## prepare output name
+    output = "%s.root" % model[0]
+    ## collect cards that should be combined
+    for card in os.listdir(".") :
+        if not '.txt' in card :
+            continue
+        if options.fitModelCategories == "" :
+            inputs.append(card)
+        else :
+            allowed_categories = options.fitModelCategories.split(':')
+            for allowed in allowed_categories :
+                if allowed in card :
+                    inputs.append(card)
+    ## prepare options for physics model and options
+    wsopts.append(('-P', model[1]))
+    if not options.fitModelOptions == "" :
+        ## break physics model options to list
+        if ';' in options.fitModelOptions :
+            opts = options.fitModelOptions.split(';')
+        else :
+            opts = options.fitModelOptions.split(' ')
+        for idx in range(len(opts)) : opts[idx] = opts[idx].rstrip(',')
+        for opt in opts :
+            wsopts.append(('--PO', opt))                                
+    return create_card_workspace(mass, inputs, output, wsopts)
 
 for directory in args :
     if directory.find("common")>-1 :
@@ -342,30 +377,14 @@ for directory in args :
             os.chdir(os.path.join(subdirectiry, "observed"))
             os.system("rm -r crab*")
             os.chdir(subdirectory)
-    ## always remove all tmp remainders from the parallelized harvesting
-    tmps = os.listdir(os.getcwd())
-    for tmp in tmps :
-        if tmp.find("tmp")>-1 :
-            if options.firstPoint == "" :
-                os.system("rm %s" % tmp)
-    if os.path.exists("observed") :
-        tmps = os.listdir("%s/observed" % os.getcwd())
-        for tmp in tmps :
-            if tmp.find("tmp")>-1 :
-                os.system("rm observed/%s" % tmp)
     ##
     ## MAX-LIKELIHOOD
     ##
     if options.optMLFit :
         ## determine mass value from directory name
         mass  = get_mass(directory)
-        ## combine datacard from all datacards in this directory if not done so already
-        if not os.path.exists("%s/tmp.txt" % options.workingdir) :
-            print "combineCards.py *.txt > %s/tmp.txt" % options.workingdir
-            os.system("combineCards.py *.txt > %s/tmp.txt" % options.workingdir)
-        ## prepare binary workspace
-        print "text2workspace.py --default-morphing=%s -m %s -b %s/tmp.txt -o %s/tmp.root"% (options.shape, mass, options.workingdir, options.workingdir)
-        os.system("text2workspace.py --default-morphing=%s -m %s -b %s/tmp.txt -o %s/tmp.root"% (options.shape, mass, options.workingdir, options.workingdir))
+        ## prepare workspace
+        create_card_workspace(mass)
         ## create sub-directory out from scratch
         if os.path.exists("out") :
             os.system("rm -r out")
@@ -403,53 +422,66 @@ for directory in args :
     if options.optNLLScan :
         ## determine mass value from directory name
         mass  = get_mass(directory)
-        ## combine datacard from all datacards in this directory if not done so already
-        if "=" in options.fitModel :
-            ## collect all cards that should be combined into the model. If used with a dedicated fit model
-            ## like in the MSSM case, only cards that can be identified to belong to an available decay
-            ## channel can be combined. this is only a practical limita tion fro now.  
-            inputcards = ""
-            for card in os.listdir(".") :
-                if "htt_" in card or "hbb_" in card or "hmm_" in card :
-                    if options.fitModelCategories == "" :
-                        inputcards+=card[:card.find('.')]+'='+card+' '
-                    else :
-                        allowed_categories = options.fitModelCategories.split(':')
-                        for allowed in allowed_categories :
-                            if allowed in card :
-                                inputcards+=card[:card.find('.')]+'='+card+' '
-            print "combineCards.py -S %s > %s/tmp.txt" % (inputcards, options.workingdir)
-            os.system("combineCards.py -S %s > %s/tmp.txt" % (inputcards, options.workingdir))
-        else:
-            ## here all kind of datacards are allowed
-            if not os.path.exists("%s/tmp.txt" % options.workingdir) :
-                print "combineCards.py -S *.txt > %s/tmp.txt" % options.workingdir
-                os.system("combineCards.py -S *.txt > %s/tmp.txt" % options.workingdir) 
-        ## set up the physics model
+        ## prepare workspace
         model = []
         if "=" in options.fitModel :
             model = options.fitModel.split('=')
-            ## combine datacard from all datacards in this directory. For the multi-dimensional fit
-            ## it is of importance that the decay channels and run periods are well defined from the
-            ## channel names. Allow for a restriction of the event categories
-            if os.path.exists("%s/%s.root" % (options.workingdir, model[0])) :
-                os.system("rm %s/%s.root" % (options.workingdir, model[0]))
-            ## create workspace with dedicated physics model
-            workspaceOptions = "-m %s " % mass
-            workspaceOptions+= "-o %s/%s.root " % (options.workingdir, model[0])
-            workspaceOptions+= "-P %s " % model[1]
-            if not options.fitModelOptions == "" :
-                ## break physics model options to list
-                opts = options.fitModelOptions.split(';')
-                for idx in range(len(opts)) : opts[idx] = opts[idx].rstrip(',')
-                for opt in opts :
-                    workspaceOptions+="--PO %s " % opt
-            print "text2workspace.py %s/tmp.txt %s" % (options.workingdir, workspaceOptions)
-            os.system("text2workspace.py %s/tmp.txt %s" % (options.workingdir, workspaceOptions))
+            create_card_workspace_with_physics_model(mass)
+        elif options.fitModel == "" :
+            create_card_workspace(mass)
         else :
-            ## prepare binary workspace
-            print "text2workspace.py --default-morphing=%s -m %s -b %s/tmp.txt -o %s/tmp.root"% (options.shape, mass, options.workingdir, options.workingdir)
-            os.system("text2workspace.py --default-morphing=%s -m %s -b %s/tmp.txt -o %s/tmp.root"% (options.shape, mass, options.workingdir, options.workingdir))
+            model = [options.fitModel]
+        ## ------------------------------------------------------------------------------------------------------------
+        ## OLD STYLE
+        ### combine datacard from all datacards in this directory if not done so already
+        #if "=" in options.fitModel :
+        #    ## collect all cards that should be combined into the model. If used with a dedicated fit model
+        #    ## like in the MSSM case, only cards that can be identified to belong to an available decay
+        #    ## channel can be combined. this is only a practical limitation for now.
+        #    inputcards = ""
+        #    for card in os.listdir(".") :
+        #        if "htt_" in card :
+        #            if options.fitModelCategories == "" :
+        #                inputcards+=card[:card.find('.')]+'='+card+' '
+        #            else :
+        #                allowed_categories = options.fitModelCategories.split(':')
+        #                for allowed in allowed_categories :
+        #                    if allowed in card :
+        #                        inputcards+=card[:card.find('.')]+'='+card+' '
+        #    print "combineCards.py -S %s > %s/tmp.txt" % (inputcards, options.workingdir)
+        #    os.system("combineCards.py -S %s > %s/tmp.txt" % (inputcards, options.workingdir))
+        #else:
+        #    ## here all kind of datacards are allowed
+        #    if not os.path.exists("%s/tmp.txt" % options.workingdir) :
+        #        print "combineCards.py -S *.txt > %s/tmp.txt" % options.workingdir
+        #        os.system("combineCards.py -S *.txt > %s/tmp.txt" % options.workingdir) 
+        ### set up the physics model
+        #model = []
+        #if "=" in options.fitModel :
+        #    model = options.fitModel.split('=')
+        #    ## combine datacard from all datacards in this directory. For the multi-dimensional fit
+        #    ## it is of importance that the decay channels and run periods are well defined from the
+        #    ## channel names. Allow for a restriction of the event categories
+        #    if os.path.exists("%s/%s.root" % (options.workingdir, model[0])) :
+        #        os.system("rm %s/%s.root" % (options.workingdir, model[0]))
+        #    ## create workspace with dedicated physics model
+        #    workspaceOptions = "-m %s " % mass
+        #    workspaceOptions+= "-o %s/%s.root " % (options.workingdir, model[0])
+        #    workspaceOptions+= "-P %s " % model[1]
+        #    if not options.fitModelOptions == "" :
+        #        ## break physics model options to list
+        #        opts = options.fitModelOptions.split(';')
+        #        for idx in range(len(opts)) : opts[idx] = opts[idx].rstrip(',')
+        #        for opt in opts :
+        #            workspaceOptions+="--PO %s " % opt
+        #    print "text2workspace.py %s/tmp.txt %s" % (options.workingdir, workspaceOptions)
+        #    os.system("text2workspace.py %s/tmp.txt %s" % (options.workingdir, workspaceOptions))
+        #else :
+        #    ## prepare binary workspace
+        #    print "text2workspace.py --default-morphing=%s -m %s -b %s/tmp.txt -o %s/tmp.root"% (options.shape, mass, options.workingdir, options.workingdir)
+        #    os.system("text2workspace.py --default-morphing=%s -m %s -b %s/tmp.txt -o %s/tmp.root"% (options.shape, mass, options.workingdir, options.workingdir))
+        ## OLD STYLE
+        ## ------------------------------------------------------------------------------------------------------------
         ## if it does not exist already, create link to executable
         if not os.path.exists("combine") :
             os.system("cp -s $(which combine) .")
@@ -464,46 +496,60 @@ for directory in args :
     ##
     if options.optMDFit :
         ## determine mass value from directory name
-        mass  = get_mass(directory)        
-        ## set up the physics model
+        mass  = get_mass(directory)
+        ## prepare workspace
         model = []
         if "=" in options.fitModel :
             model = options.fitModel.split('=')
-            ## combine datacard from all datacards in this directory. For the multi-dimensional fit
-            ## it is of importance that the decay channels and run periods are well defined from the
-            ## channel names. Allow for a restriction of the event categories
-            if os.path.exists("%s/tmp.txt" % options.workingdir) :
-                os.system("rm %s/tmp.txt" % options.workingdir)
-                inputcards = ""
-            if os.path.exists("%s/%s.root" % (options.workingdir, model[0])) :
-                os.system("rm %s/%s.root" % (options.workingdir, model[0]))
-            ## collect all cards that should be combined into the model
-            inputcards = ""
-            for card in os.listdir(".") :
-                if "htt_" in card :
-                    if options.fitModelCategories == "" :
-                        inputcards+=card[:card.find('.')]+'='+card+' '
-                    else :
-                        allowed_categories = options.fitModelCategories.split(':')
-                        for allowed in allowed_categories :
-                            if allowed in card :
-                                inputcards+=card[:card.find('.')]+'='+card+' '
-            print "combineCards.py -S %s > %s/tmp.txt" % (inputcards, options.workingdir)
-            os.system("combineCards.py -S %s > %s/tmp.txt" % (inputcards, options.workingdir))
-            ## create workspace with dedicated physics model
-            workspaceOptions = "-m %s " % mass
-            workspaceOptions+= "-o %s/%s.root " % (options.workingdir, model[0])
-            workspaceOptions+= "-P %s " % model[1]
-            if not options.fitModelOptions == "" :
-                ## break physics model options to list
-                opts = options.fitModelOptions.split(';')
-                for idx in range(len(opts)) : opts[idx] = opts[idx].rstrip(',')
-                for opt in opts :
-                    workspaceOptions+="--PO %s " % opt
-            print "text2workspace.py %s/tmp.txt %s" % (options.workingdir, workspaceOptions)
-            os.system("text2workspace.py %s/tmp.txt %s" % (options.workingdir, workspaceOptions))
+            create_card_workspace_with_physics_model(mass)
+        elif options.fitModel == "" :
+            print "You must configrue a physics model to run this option"
+            exit(1)
         else :
             model = [options.fitModel]
+        ## ------------------------------------------------------------------------------------------------------------
+        ## OLD STYLE    
+        ## set up the physics model
+        #model = []
+        #if "=" in options.fitModel :
+        #    model = options.fitModel.split('=')
+        #    ## combine datacard from all datacards in this directory. For the multi-dimensional fit
+        #    ## it is of importance that the decay channels and run periods are well defined from the
+        #    ## channel names. Allow for a restriction of the event categories
+        #    if os.path.exists("%s/tmp.txt" % options.workingdir) :
+        #        os.system("rm %s/tmp.txt" % options.workingdir)
+        #        inputcards = ""
+        #    if os.path.exists("%s/%s.root" % (options.workingdir, model[0])) :
+        #        os.system("rm %s/%s.root" % (options.workingdir, model[0]))
+        #    ## collect all cards that should be combined into the model
+        #    inputcards = ""
+        #    for card in os.listdir(".") :
+        #        if "htt_" in card :
+        #            if options.fitModelCategories == "" :
+        #                inputcards+=card[:card.find('.')]+'='+card+' '
+        #            else :
+        #                allowed_categories = options.fitModelCategories.split(':')
+        #                for allowed in allowed_categories :
+        #                    if allowed in card :
+        #                        inputcards+=card[:card.find('.')]+'='+card+' '
+        #    print "combineCards.py -S %s > %s/tmp.txt" % (inputcards, options.workingdir)
+        #    os.system("combineCards.py -S %s > %s/tmp.txt" % (inputcards, options.workingdir))
+        #    ## create workspace with dedicated physics model
+        #    workspaceOptions = "-m %s " % mass
+        #    workspaceOptions+= "-o %s/%s.root " % (options.workingdir, model[0])
+        #    workspaceOptions+= "-P %s " % model[1]
+        #    if not options.fitModelOptions == "" :
+        #        ## break physics model options to list
+        #        opts = options.fitModelOptions.split(';')
+        #        for idx in range(len(opts)) : opts[idx] = opts[idx].rstrip(',')
+        #        for opt in opts :
+        #            workspaceOptions+="--PO %s " % opt
+        #    print "text2workspace.py %s/tmp.txt %s" % (options.workingdir, workspaceOptions)
+        #    os.system("text2workspace.py %s/tmp.txt %s" % (options.workingdir, workspaceOptions))
+        #else :
+        #    model = [options.fitModel]
+        ## OLD STYLE
+        ## ------------------------------------------------------------------------------------------------------------
         if not options.setupOnly :
             ## if it does not exist already, create link to executable
             if not os.path.exists("combine") :
@@ -543,6 +589,8 @@ for directory in args :
     if options.optSig :
         ## determine mass value from directory name
         mass  = get_mass(directory)
+        ## prepare workspace
+        create_card_workspace(mass)
         ## create a hadd'ed file per crab directory if applicable        
         ifile=0
         directoryList = os.listdir(".")
@@ -559,14 +607,7 @@ for directory in args :
             if not ifile == 0 :
                 os.system("hadd batch_collected.root batch_collected_*.root")
                 os.system("rm batch_collected_*.root")
-        ## combine datacard from all datacards in this directory
-        print "combineCards.py -S *.txt > %s/tmp.txt" % options.workingdir
-        os.system("combineCards.py -S *.txt > %s/tmp.txt" % options.workingdir)
-        ## prepare binary workspace
-        print "text2workspace.py --default-morphing=%s -m %s -b %s/tmp.txt -o %s/tmp.root"% (options.shape, mass, options.workingdir, options.workingdir)
-        os.system("text2workspace.py --default-morphing=%s -m %s -b %s/tmp.txt -o %s/tmp.root"% (options.shape, mass, options.workingdir, options.workingdir))
-        if not options.observedOnly :
-            if ifile == 0 :
+            else :
                 ## calculate expected significance
                 print "combine -M ProfileLikelihood -t {toys} --significance --toysFreq --signalForSignificance={sig} -m {mass} {wdir}/tmp.root".format(
                     toys=options.toys, sig=options.signal_strength, mass=mass, wdir=options.workingdir)
@@ -584,53 +625,66 @@ for directory in args :
     if options.optAsym :
         ## determine mass value from directory name
         mass  = get_mass(directory)
-        ## combine datacard from all datacards in this directory if not done so already
-        if "=" in options.fitModel :
-            ## collect all cards that should be combined into the model. If used with a dedicated fit model
-            ## like in the MSSM case, only cards that can be identified to belong to an available decay
-            ## channel can be combined. this is only a practical limita tion fro now.  
-            inputcards = ""
-            for card in os.listdir(".") :
-                if "htt_" in card or "hbb_" in card or "hmm_" in card :
-                    if options.fitModelCategories == "" :
-                        inputcards+=card[:card.find('.')]+'='+card+' '
-                    else :
-                        allowed_categories = options.fitModelCategories.split(':')
-                        for allowed in allowed_categories :
-                            if allowed in card :
-                                inputcards+=card[:card.find('.')]+'='+card+' '
-            print "combineCards.py -S %s > %s/tmp.txt" % (inputcards, options.workingdir)
-            os.system("combineCards.py -S %s > %s/tmp.txt" % (inputcards, options.workingdir))
-        else:
-            ## here all kind of datacards are allowed
-            if not os.path.exists("%s/tmp.txt" % options.workingdir) :
-                print "combineCards.py -S *.txt > %s/tmp.txt" % options.workingdir
-                os.system("combineCards.py -S *.txt > %s/tmp.txt" % options.workingdir)            
-        ## set up the physics model
+        ## prepare workspace
         model = []
         if "=" in options.fitModel :
             model = options.fitModel.split('=')
-            ## combine datacard from all datacards in this directory. For the multi-dimensional fit
-            ## it is of importance that the decay channels and run periods are well defined from the
-            ## channel names. Allow for a restriction of the event categories
-            if os.path.exists("%s/%s.root" % (options.workingdir, model[0])) :
-                os.system("rm %s/%s.root" % (options.workingdir, model[0]))
-            ## create workspace with dedicated physics model
-            workspaceOptions = "-m %s " % mass
-            workspaceOptions+= "-o %s/%s.root " % (options.workingdir, model[0])
-            workspaceOptions+= "-P %s " % model[1]
-            if not options.fitModelOptions == "" :
-                ## break physics model options to list
-                opts = options.fitModelOptions.split(';')
-                for idx in range(len(opts)) : opts[idx] = opts[idx].rstrip(',')
-                for opt in opts :
-                    workspaceOptions+="--PO %s " % opt
-            print "text2workspace.py %s/tmp.txt %s" % (options.workingdir, workspaceOptions)
-            os.system("text2workspace.py %s/tmp.txt %s" % (options.workingdir, workspaceOptions))
+            create_card_workspace_with_physics_model(mass)
+        elif options.fitModel == "" :
+            create_card_workspace(mass)
         else :
-            ## prepare binary workspace
-            print "text2workspace.py --default-morphing=%s -m %s -b %s/tmp.txt -o %s/tmp.root"% (options.shape, mass, options.workingdir, options.workingdir)
-            os.system("text2workspace.py --default-morphing=%s -m %s -b %s/tmp.txt -o %s/tmp.root"% (options.shape, mass, options.workingdir, options.workingdir))
+            model = [options.fitModel]
+        ## ------------------------------------------------------------------------------------------------------------
+        ## OLD STYLE
+        ## combine datacard from all datacards in this directory if not done so already
+        #if "=" in options.fitModel :
+        #    ## collect all cards that should be combined into the model. If used with a dedicated fit model
+        #    ## like in the MSSM case, only cards that can be identified to belong to an available decay
+        #    ## channel can be combined. this is only a practical limita tion fro now.  
+        #    inputcards = ""
+        #    for card in os.listdir(".") :
+        #        if "htt_" in card or "hbb_" in card or "hmm_" in card :
+        #            if options.fitModelCategories == "" :
+        #                inputcards+=card[:card.find('.')]+'='+card+' '
+        #            else :
+        #                allowed_categories = options.fitModelCategories.split(':')
+        #                for allowed in allowed_categories :
+        #                    if allowed in card :
+        #                        inputcards+=card[:card.find('.')]+'='+card+' '
+        #    print "combineCards.py -S %s > %s/tmp.txt" % (inputcards, options.workingdir)
+        #    os.system("combineCards.py -S %s > %s/tmp.txt" % (inputcards, options.workingdir))
+        #else:
+        #    ## here all kind of datacards are allowed
+        #    if not os.path.exists("%s/tmp.txt" % options.workingdir) :
+        #        print "combineCards.py -S *.txt > %s/tmp.txt" % options.workingdir
+        #        os.system("combineCards.py -S *.txt > %s/tmp.txt" % options.workingdir)            
+        ### set up the physics model
+        #model = []
+        #if "=" in options.fitModel :
+        #    model = options.fitModel.split('=')
+        #    ## combine datacard from all datacards in this directory. For the multi-dimensional fit
+        #    ## it is of importance that the decay channels and run periods are well defined from the
+        #    ## channel names. Allow for a restriction of the event categories
+        #    if os.path.exists("%s/%s.root" % (options.workingdir, model[0])) :
+        #        os.system("rm %s/%s.root" % (options.workingdir, model[0]))
+        #    ## create workspace with dedicated physics model
+        #    workspaceOptions = "-m %s " % mass
+        #    workspaceOptions+= "-o %s/%s.root " % (options.workingdir, model[0])
+        #    workspaceOptions+= "-P %s " % model[1]
+        #    if not options.fitModelOptions == "" :
+        #        ## break physics model options to list
+        #        opts = options.fitModelOptions.split(';')
+        #        for idx in range(len(opts)) : opts[idx] = opts[idx].rstrip(',')
+        #        for opt in opts :
+        #            workspaceOptions+="--PO %s " % opt
+        #    print "text2workspace.py %s/tmp.txt %s" % (options.workingdir, workspaceOptions)
+        #    os.system("text2workspace.py %s/tmp.txt %s" % (options.workingdir, workspaceOptions))
+        #else :
+        #    ## prepare binary workspace
+        #    print "text2workspace.py --default-morphing=%s -m %s -b %s/tmp.txt -o %s/tmp.root"% (options.shape, mass, options.workingdir, options.workingdir)
+        #    os.system("text2workspace.py --default-morphing=%s -m %s -b %s/tmp.txt -o %s/tmp.root"% (options.shape, mass, options.workingdir, options.workingdir))
+        ## OLD STYLE
+        ## ------------------------------------------------------------------------------------------------------------
         ## if it does not exist already, create link to executable
         if not os.path.exists("combine") :
             os.system("cp -s $(which combine) .")
@@ -827,6 +881,17 @@ for directory in args :
             os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.quant0.500.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
             os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.quant0.840.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
             os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.quant0.975.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
+    ## always remove all tmp remainders from the parallelized harvesting
+    tmps = os.listdir(os.getcwd())
+    for tmp in tmps :
+        if tmp.find("tmp")>-1 :
+            if options.firstPoint == "" :
+                os.system("rm %s" % tmp)
+    if os.path.exists("observed") :
+        tmps = os.listdir("%s/observed" % os.getcwd())
+        for tmp in tmps :
+            if tmp.find("tmp")>-1 :
+                os.system("rm observed/%s" % tmp)
     ## remove any previous hashes
     os.system("rm -f limit_hash_*")
     ## create hash file for this call, so we can use the norepeat feature.
