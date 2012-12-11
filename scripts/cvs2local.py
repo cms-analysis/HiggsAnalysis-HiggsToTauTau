@@ -230,8 +230,8 @@ for period in periods :
                         if options.no_update:
                             files = ' '.join(os.listdir("{OUTPUT}/common/".format(OUTPUT=options.out)))
                             if not "htt_"+channel+'.inputs-mssm-'+period in files :
-                                os.system("cp {INPUT}/htt_{CHN}/{PRE}htt_{CHN}.inputs-{ANA}-{PERIOD}*.root {OUTPUT}/common/".format(
-                                    INPUT=input, CHN=channel, ANA=options.analysis, PERIOD=period, OUTPUT=options.out, PRE=prefix))
+                                os.system("cp {INPUT}/htt_{CHN}/{PRE}htt_{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root {OUTPUT}/common/".format(
+                                    INPUT=input, CHN=channel, ANA=options.analysis, PERIOD=period, OUTPUT=options.out, PRE=prefix, MASSCAT=mass_category(mass,channel)))
                             else :
                                 pass
                                 #print "no update of files needed."
