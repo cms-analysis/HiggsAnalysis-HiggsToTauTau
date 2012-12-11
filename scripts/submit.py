@@ -112,7 +112,7 @@ def get_mass(directory) :
     if idx == (len(directory) - 1):
         idx = directory[:idx - 1].rfind("/")
     mass  = directory[idx + 1:]
-    return mass
+    return mass.rstrip('/')
 
 def is_number(s):
     '''
@@ -123,6 +123,29 @@ def is_number(s):
         return True
     except ValueError:
         return False
+
+def lxb_submit(dirs, cmd='--asymptotic', opts='') :
+    '''
+    do an lxb submission for jobs that can be executed via limit.py.
+    dirs corresponds to a list of input directories, cmd to the
+    complete main option of limit.py and opts to additional options
+    that should be passed on to limit.py.
+    '''
+    for dir in dirs:
+        ana = dir[:dir.rfind('/')]
+        limit = dir[len(ana)+1:]
+        jobname = ana[ana.rfind('/')+1:]+'-'+limit
+        ## create submission scripts
+        if options.printOnly :
+            print "lxb-limit.py {JOBNAME} \"-q {QUEUE}\" \"{DIR}/*\" {METHOD} {OPTS}".format(
+                JOBNAME=jobname, DIR=dir, QUEUE=options.queue, METHOD=cmd, OPTS=opts)
+        else:
+            os.system("lxb-limit.py {JOBNAME} \"-q {QUEUE}\" \"{DIR}/*\" {METHOD} {OPTS}".format(
+                JOBNAME=jobname, DIR=dir, QUEUE=options.queue, METHOD=cmd, OPTS=opts))
+            ## execute
+            os.system("./{JOBNAME}_submit.sh".format(JOBNAME=jobname))
+            ## store
+            os.system("mv {JOBNAME}_submit.sh {JOBNAME}".format(JOBNAME=jobname))
 
 ##
 ## LIKELIHOOD-SCAN
@@ -145,12 +168,7 @@ if options.optNLLScan :
                 dir = dir[:dir.rstrip('/').rfind('/')]
             if not dir in dirs :
                 dirs.append(dir)
-        if options.printOnly :
-            print "lxb-limit-submit.py -q {QUEUE} -m \"--likelihood-scan\" --options \"--points 100 --rMin -2 --rMax 2 {USER}\" {DIR}".format(
-            QUEUE=options.queue, USER=options.opt, DIR=vec2str(dirs))
-        else :
-            os.system("lxb-limit-submit.py -q {QUEUE} -m \"--likelihood-scan\" --options \"--points 100 --rMin -2 --rMax 2 {USER}\" {DIR}".format(
-                QUEUE=options.queue, USER=options.opt, DIR=vec2str(dirs)))
+        lxb_submit(dirs, "--likelihood-scan", "--points 100 --rMin -2 --rMax 2 {USER}".format(USER=options.opt))
 ##
 ## MULTIDIM-FIT
 ##
@@ -237,12 +255,7 @@ if options.optAsym :
             from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
             model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
             opts  = "--physics-model-options 'modes=bbH;bbHRange=0:{BBH}'".format(BBH='5')
-        if options.printOnly :
-            print "lxb_limit_submit.py -q {QUEUE} \"{CMD}\" --options \"{MODEL} {OPTS} {USER}\" {DIR}".format(
-            QUEUE=options.queue, CMD=cmd, MODEL=model, OPTS=opts, USER=options.opt, DIR=vec2str(dirs))
-        else :
-            os.system("lxb_limit_submit.py -q {QUEUE} \"{CMD}\" --options \"{MODEL} {OPTS} {USER}\" {DIR}".format(
-                QUEUE=options.queue, CMD=cmd, MODEL=model, OPTS=opts, USER=options.opt, DIR=vec2str(dirs)))
+        lxb_submit(dirs, cmd, "{MODEL} {OPTS} {USER}".format(MODEL=model, OPTS=opts, USER=options.opt))
 ##
 ## CLs
 ##
@@ -375,10 +388,5 @@ if options.optTanb or options.optTanbPlus :
                         dir = dir[:dir.rstrip('/').rfind('/')]
                     if not dir in dirs :
                         dirs.append(dir)
-                if options.printOnly :
-                    print "lxb-limit-submit.py -q {QUEUE} -m \"--tanb+\" --options \"{USER}\" {DIR}".format(
-                        QUEUE=options.queue, USER=options.opt, DIR=dirs)
-                else:
-                    os.system("lxb-limit-submit.py -q {QUEUE} -m \"--tanb+\" --options \"{USER}\" {DIR}".format(
-                        QUEUE=options.queue, USER=options.opt, DIR=dirs))
+                lxb_submit(dirs, "--tanb+", options.opt)
         cycle = cycle-1
