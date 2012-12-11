@@ -122,6 +122,8 @@ hgroup.add_option("--setupOnly", dest="setupOnly", action="store_true", default=
                   help="Only setup the model, do not start the minimization. To be used with job splitting for maximum likelihood scans. If \"False\" the model will be set up and the minimzation will be executed right away. [Default: \"False\"]")
 hgroup.add_option("--saveResults", dest="saveResults", action="store_true", default=False,
                   help="Store the fit output that is usually prompted to the screen in a txt file called multi-dim.fitresult. This input file can be used further on to plot the signal strength as function of mH or as function of mA. [Default: \"False\"]")
+hgroup.add_option("--collect", dest="collect", action="store_true", default=False,
+                  help="Use this option to re-collect the output in the directory/ies corresponding to ARGs in case you have run the multimensional fit using the script submit.py with option --multidim-fit. Note that you have to specify a physics model, when using limit.py with option --multidim-fit. It is enought to give the name of the physics model in this case. The name of the output file will be modified according to the capitalized name of the physcis model to indicate clearly what model has been fit to the data. [Default: \"False\"]")
 parser.add_option_group(hgroup)
 ##
 ## SIGNIFICANCE OPTIONS
@@ -226,7 +228,7 @@ def get_mass(directory) :
     if idx == (len(directory) - 1):
         idx = directory[:idx - 1].rfind("/")
     mass  = directory[idx + 1:]
-    return mass
+    return mass.rstrip('/')
     
 def create_card_workspace(mass, card_glob='*.txt', output='tmp.root', extra_options=None) :
     '''
@@ -550,6 +552,14 @@ for directory in args :
         #    model = [options.fitModel]
         ## OLD STYLE
         ## ------------------------------------------------------------------------------------------------------------
+        if options.collect :
+            ## combine outputs
+            print mass
+            os.system("hadd -f higgsCombine{MODEL}.MultiDimFit.mH{MASS}.root higgsCombine*.MultiDimFit.mH{MASS}-[0-9]*-[0-9]*.root".format(
+                MASS=mass, MODEL=model[0].upper()))
+            ## cleanup
+            os.system("rm higgsCombine*.MultiDimFit.mH{MASS}-[0-9]*-[0-9]*.root".format(MASS=mass))
+            continue
         if not options.setupOnly :
             ## if it does not exist already, create link to executable
             if not os.path.exists("combine") :
