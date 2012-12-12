@@ -1,6 +1,7 @@
 #ifndef PlotLimits_h
 #define PlotLimits_h
 
+#include <map>
 #include <math.h>
 #include <vector>
 #include <fstream>
@@ -8,6 +9,9 @@
 #include <iostream>
 #include <algorithm>
 
+#include "TH2F.h"
+#include "TROOT.h"
+#include "TMath.h"
 #include "TTree.h"
 #include "TFile.h"
 #include "TAxis.h"
@@ -16,6 +20,7 @@
 #include "TString.h"
 #include "TCanvas.h"
 #include "TLegend.h"
+#include "TPaveText.h"
 #include "TPaveLabel.h"
 #include "TGraphAsymmErrors.h"
 
@@ -77,6 +82,8 @@ class PlotLimits {
   void print(const char* filename, TGraph* expected, TGraph* observed, const char* type="txt");
   /// print tabulated limits to a txt file, for inner band, outer band, expected and observed, with inner and outer band
   void print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* innerBand, TGraph* expected, TGraph* observed, const char* type="txt");
+  /// print 1d uncertainties for a given CL to file (used by scan-2d)
+  void band1D(ostream& out, std::string& xval, std::string& yval, TGraph* bestFit, TGraph* band, float xoffset, float yoffset, std::string CL);
   /// plot limits on canvas, print out png, pdf, txt, root formats if desired
   void plot(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0);
   /// plot limits for tanb on canvas, print out png, pdf, txt, root formats if desired
@@ -85,6 +92,8 @@ class PlotLimits {
   void plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0, const char* directory="");
   /// plot significance in linear scale and w/o band
   void plotSignificance(TCanvas& canv, TGraph* expected, TGraph* observed=0);
+  /// plot 2d-scans for several masses
+  void plot2DScan(TCanvas& canv, const char* directory="");
 
  private:
   /// fill a single vector of values according to 2sigma, 1sigma, median or observed
@@ -116,6 +125,10 @@ class PlotLimits {
   void prepareHIG_12_018(std::vector<double>& values, const char* type, double mass, bool initial);
   /// fill officially approved limits for HIG-12-032 PAS (NOTE: these are only SM limits)
   void prepareHIG_12_032(std::vector<double>& values, const char* type, double mass, bool initial);
+  /// fill officially approved limits for HIG-12-043 PAS (NOTE: these are only SM limits)
+  void prepareHIG_12_043(std::vector<double>& values, const char* type, double mass, bool initial);
+  /// fill officially approved limits for HIG-12-050 PAS (NOTE: these are only SM limits)
+  void prepareHIG_12_050(std::vector<double>& values, const char* type, double mass, bool initial);
 
 
   /// fill the mA-tanb20-xsec curve (only for mA mssm 8TeV mhmax mu=200GeV)
@@ -177,9 +190,9 @@ class PlotLimits {
     Limits for comparison
   */
   /// fill the LEP exclusion plot
-  void limitsLEP(TGraph* graph);
+  void limitsUpperLEP(TGraph* graph);
   /// fill the LEP exclusion plot (low tanb free space)
-  void limitsLEP2(TGraph* graph); 
+  void limitsLowerLEP(TGraph* graph); 
   /// fill the limits from the CMS hww SM Higgs search
   void limitsHWW(TGraph* graph, const char* type);
   /// fill the limits from the CMS hgg SM Higgs search
@@ -215,6 +228,8 @@ class PlotLimits {
   double max_;
   /// log scale for plotting
   int log_;
+  /// physics model for 2d-scans
+  std::string model_;
   /// define verbosity level
   unsigned int verbosity_;
   /// additional output label
@@ -851,56 +866,215 @@ PlotLimits::prepareHIG_12_032(std::vector<double>& values, const char* type, dou
 }
 
 inline void
-PlotLimits::limitsLEP(TGraph* graph)
+PlotLimits::prepareHIG_12_043(std::vector<double>& values, const char* type, double mass, bool initial)
 {
- /*  graph->SetPoint( 0, 80      ,   0.    ); */
-/*   graph->SetPoint( 1, 91      , 100.    ); */
-/*   graph->SetPoint( 2, 91.8    , 30.02624); */
-/*   graph->SetPoint( 3, 91.845  , 22.07032); */
-/*   graph->SetPoint( 4, 91.845  , 17.12491); */
-/*   graph->SetPoint( 5, 91.84523, 13.64727); */
-/*   graph->SetPoint( 6, 92.61388, 11.94143); */
-/*   graph->SetPoint( 7, 93.38253, 10.03852); */
-/*   graph->SetPoint( 8, 94.91982, 9.021481); */
-/*   graph->SetPoint( 9, 95.68846, 8.107481); */
-/*   graph->SetPoint(10, 97.22578, 7.141608); */
-/*   graph->SetPoint(11, 99.5317 , 6.680381); */
-/*   graph->SetPoint(12, 103.375 , 7.189448); */
-/*   graph->SetPoint(13, 104.1436, 7.841313); */
-/*   graph->SetPoint(14, 106.4496, 8.326916); */
-/*   graph->SetPoint(15, 109.5242, 8.609568); */
-/*   graph->SetPoint(16, 112.5988, 8.438845); */
-/*   graph->SetPoint(17, 115.6733, 8.107481); */
-/*   graph->SetPoint(18, 118.748 , 7.384029); */
-/*   graph->SetPoint(19, 122.5912, 6.547911); */
-/*   graph->SetPoint(20, 126.4344, 5.963618); */
-/*   graph->SetPoint(21, 131.815 , 5.359424); */
-/*   graph->SetPoint(22, 138.7328, 4.752558); */
-/*   graph->SetPoint(23, 144.1134, 4.445624); */
-/*   graph->SetPoint(24, 149.4939, 4.186368); */
-/*   graph->SetPoint(25, 156.4118, 3.968637); */
-/*   graph->SetPoint(26, 164.8669, 3.687628); */
-/*   graph->SetPoint(27, 177.1653, 3.472575); */
-/*   graph->SetPoint(28, 187.9264, 3.29197 ); */
-/*   graph->SetPoint(29, 203.2994, 3.141663); */
-/*   graph->SetPoint(30, 221.7469, 2.978266); */
-/*   graph->SetPoint(31, 241.7318, 2.861322); */
-/*   graph->SetPoint(32, 261.7167, 2.767383); */
-/*   graph->SetPoint(33, 283.2388, 2.676528); */
-/*   graph->SetPoint(34, 304.761 , 2.641027); */
-/*   graph->SetPoint(35, 334.7383, 2.554322); */
-/*   graph->SetPoint(36, 357.0292, 2.50367 ); */
-/*   graph->SetPoint(37, 383.9319, 2.48701 ); */
-/*   graph->SetPoint(38, 420.8271, 2.454023); */
-/*   graph->SetPoint(39, 452.3417, 2.421473); */
-/*   graph->SetPoint(40, 487.6996, 2.405361); */
-/*   graph->SetPoint(41, 550     , 2.405361); */
-/*   graph->SetPoint(42, 600     , 2.405361); */
-/*   graph->SetPoint(43, 700     , 2.405361); */
-/*   graph->SetPoint(44, 800     , 2.405361); */
-/*   graph->SetPoint(45, 900     , 2.405361); */
-/*   graph->SetPoint(46,1000     , 2.405361); */
-/*   graph->SetPoint(47,1100     , 0.      ); */
+  if(mssm_){
+    std::cout << "HIG-12-043 contained only SM limits" << std::endl;
+    exit(1);
+  }
+  else{
+    if(std::string(type)==std::string("observed")){
+      if(mass==110) {values.push_back(1.89); if(initial) masses_.push_back(mass);}
+      if(mass==115) {values.push_back(1.85); if(initial) masses_.push_back(mass);}
+      if(mass==120) {values.push_back(1.64); if(initial) masses_.push_back(mass);}
+      if(mass==125) {values.push_back(1.63); if(initial) masses_.push_back(mass);}
+      if(mass==130) {values.push_back(1.57); if(initial) masses_.push_back(mass);}
+      if(mass==135) {values.push_back(1.56); if(initial) masses_.push_back(mass);}
+      if(mass==140) {values.push_back(1.72); if(initial) masses_.push_back(mass);}
+      if(mass==145) {values.push_back( 2.1); if(initial) masses_.push_back(mass);}
+    }
+    else if(std::string(type)==std::string("+2sigma")){
+      if(mass==110) {values.push_back(1.98); }
+      if(mass==115) {values.push_back(1.92); }
+      if(mass==120) {values.push_back(1.84); }
+      if(mass==125) {values.push_back(1.84); }
+      if(mass==130) {values.push_back(1.95); }
+      if(mass==135) {values.push_back(2.23); }
+      if(mass==140) {values.push_back(2.54); }
+      if(mass==145) {values.push_back(3.07); }
+    }
+    else if(std::string(type)==std::string("+1sigma")){
+      if(mass==110) {values.push_back(1.49); }
+      if(mass==115) {values.push_back(1.45); }
+      if(mass==120) {values.push_back(1.38); }
+      if(mass==125) {values.push_back(1.38); }
+      if(mass==130) {values.push_back(1.47); }
+      if(mass==135) {values.push_back(1.68); }
+      if(mass==140) {values.push_back(1.92); }
+      if(mass==145) {values.push_back(2.31); }
+    }
+    else if(std::string(type)==std::string("expected")){
+      if(mass==110) {values.push_back( 1.07); if(initial) masses_.push_back(mass);}
+      if(mass==115) {values.push_back( 1.04); if(initial) masses_.push_back(mass);}
+      if(mass==120) {values.push_back(0.996); if(initial) masses_.push_back(mass);}
+      if(mass==125) {values.push_back(0.996); if(initial) masses_.push_back(mass);}
+      if(mass==130) {values.push_back( 1.06); if(initial) masses_.push_back(mass);}
+      if(mass==135) {values.push_back( 1.21); if(initial) masses_.push_back(mass);}
+      if(mass==140) {values.push_back( 1.38); if(initial) masses_.push_back(mass);}
+      if(mass==145) {values.push_back( 1.66); if(initial) masses_.push_back(mass);}
+    }
+    else if(std::string(type)==std::string("-1sigma")){
+      if(mass==110) {values.push_back(0.775); }
+      if(mass==115) {values.push_back(0.753); }
+      if(mass==120) {values.push_back(0.719); }
+      if(mass==125) {values.push_back(0.719); }
+      if(mass==130) {values.push_back(0.764); }
+      if(mass==135) {values.push_back(0.871); }
+      if(mass==140) {values.push_back(0.995); }
+      if(mass==145) {values.push_back(  1.2); }
+    }
+    else if(std::string(type)==std::string("-2sigma")){
+      if(mass==110) {values.push_back(0.583); }
+      if(mass==115) {values.push_back(0.566); }
+      if(mass==120) {values.push_back( 0.54); }
+      if(mass==125) {values.push_back( 0.54); }
+      if(mass==130) {values.push_back(0.574); }
+      if(mass==135) {values.push_back(0.655); }
+      if(mass==140) {values.push_back(0.748); }
+      if(mass==145) {values.push_back(0.903); }
+    }
+    else{
+      std::cout << "ERROR: picked wrong type. Available types are: +2sigma, +1sigma, mean, median, -1sigma, -2sigma" << std::endl
+		<< "       for the moment I'll stop here" << std::endl;
+      exit(1);
+    }
+  }
+  return;
+}
+
+inline void
+PlotLimits::prepareHIG_12_050(std::vector<double>& values, const char* type, double mass, bool initial)
+{
+  if(!mssm_){
+    std::cout << "HIG-12-050 contained only MSSM limits" << std::endl;
+    exit(1);
+  }
+  else{
+    if(std::string(type)==std::string("observed")){
+      if(mass== 90) {values.push_back(5.45); if(initial) masses_.push_back(mass);}
+      if(mass==100) {values.push_back( 5.2); if(initial) masses_.push_back(mass);}
+      if(mass==120) {values.push_back(4.69); if(initial) masses_.push_back(mass);}
+      if(mass==130) {values.push_back(5.05); if(initial) masses_.push_back(mass);}
+      if(mass==140) {values.push_back( 5.4); if(initial) masses_.push_back(mass);}
+      if(mass==160) {values.push_back(5.05); if(initial) masses_.push_back(mass);}
+      if(mass==180) {values.push_back(4.36); if(initial) masses_.push_back(mass);}
+      if(mass==200) {values.push_back(4.88); if(initial) masses_.push_back(mass);}
+      if(mass==250) {values.push_back( 5.3); if(initial) masses_.push_back(mass);}
+      if(mass==300) {values.push_back(7.68); if(initial) masses_.push_back(mass);}
+      if(mass==350) {values.push_back(10.4); if(initial) masses_.push_back(mass);}
+      if(mass==400) {values.push_back(13.7); if(initial) masses_.push_back(mass);}
+      if(mass==450) {values.push_back(17.3); if(initial) masses_.push_back(mass);}
+      if(mass==500) {values.push_back(20.8); if(initial) masses_.push_back(mass);}
+      if(mass==600) {values.push_back(29.7); if(initial) masses_.push_back(mass);}
+      if(mass==700) {values.push_back(39.3); if(initial) masses_.push_back(mass);}
+      if(mass==800) {values.push_back(48.6); if(initial) masses_.push_back(mass);}
+    }
+    else if (std::string(type)==std::string("-2sigma")){
+      if(mass== 90) {values.push_back(10.6); }
+      if(mass==100) {values.push_back( 9.3); }
+      if(mass==120) {values.push_back(7.54); }
+      if(mass==130) {values.push_back(6.89); }
+      if(mass==140) {values.push_back(6.77); }
+      if(mass==160) {values.push_back( 7.6); }
+      if(mass==180) {values.push_back(8.54); }
+      if(mass==200) {values.push_back(9.44); }
+      if(mass==250) {values.push_back(12.7); }
+      if(mass==300) {values.push_back(16.6); }
+      if(mass==350) {values.push_back(  21); }
+      if(mass==400) {values.push_back(24.6); }
+      if(mass==450) {values.push_back(29.4); }
+      if(mass==500) {values.push_back(35.8); }
+      if(mass==600) {values.push_back(47.4); }
+      if(mass==700) {values.push_back(63.4); }
+      if(mass==800) {values.push_back(98.3); }
+    }
+    else if (std::string(type)==std::string("-1sigma")){
+      if(mass== 90) {values.push_back(8.91); }
+      if(mass==100) {values.push_back(7.85); }
+      if(mass==120) {values.push_back(5.95); }
+      if(mass==130) {values.push_back(5.74); }
+      if(mass==140) {values.push_back(5.79); }
+      if(mass==160) {values.push_back(6.18); }
+      if(mass==180) {values.push_back(7.49); }
+      if(mass==200) {values.push_back( 8.3); }
+      if(mass==250) {values.push_back(11.1); }
+      if(mass==300) {values.push_back(14.4); }
+      if(mass==350) {values.push_back(18.7); }
+      if(mass==400) {values.push_back(22.2); }
+      if(mass==450) {values.push_back(26.2); }
+      if(mass==500) {values.push_back(31.1); }
+      if(mass==600) {values.push_back(41.7); }
+      if(mass==700) {values.push_back(55.9); }
+      if(mass==800) {values.push_back(  74); }
+    }
+    else if(std::string(type)==std::string("expected")){
+      if(mass== 90) {values.push_back(7.19); if(initial) masses_.push_back(mass);}
+      if(mass==100) {values.push_back(5.89); if(initial) masses_.push_back(mass);}
+      if(mass==120) {values.push_back(4.92); if(initial) masses_.push_back(mass);}
+      if(mass==130) {values.push_back(4.94); if(initial) masses_.push_back(mass);}
+      if(mass==140) {values.push_back(5.23); if(initial) masses_.push_back(mass);}
+      if(mass==160) {values.push_back(5.54); if(initial) masses_.push_back(mass);}
+      if(mass==180) {values.push_back(5.96); if(initial) masses_.push_back(mass);}
+      if(mass==200) {values.push_back(6.91); if(initial) masses_.push_back(mass);}
+      if(mass==250) {values.push_back(9.26); if(initial) masses_.push_back(mass);}
+      if(mass==300) {values.push_back(12.4); if(initial) masses_.push_back(mass);}
+      if(mass==350) {values.push_back(16.1); if(initial) masses_.push_back(mass);}
+      if(mass==400) {values.push_back(19.1); if(initial) masses_.push_back(mass);}
+      if(mass==450) {values.push_back(  23); if(initial) masses_.push_back(mass);}
+      if(mass==500) {values.push_back(26.9); if(initial) masses_.push_back(mass);}
+      if(mass==600) {values.push_back(36.4); if(initial) masses_.push_back(mass);}
+      if(mass==700) {values.push_back(47.8); if(initial) masses_.push_back(mass);}
+      if(mass==800) {values.push_back(61.4); if(initial) masses_.push_back(mass);}
+    }
+    else if (std::string(type)==std::string("+1sigma")){
+      if(mass== 90) {values.push_back(5.18); }
+      if(mass==100) {values.push_back(4.41); }
+      if(mass==120) {values.push_back(3.51); }
+      if(mass==130) {values.push_back(3.84); }
+      if(mass==140) {values.push_back(4.46); }
+      if(mass==160) {values.push_back(4.84); }
+      if(mass==180) {values.push_back(5.42); }
+      if(mass==200) {values.push_back(5.69); }
+      if(mass==250) {values.push_back( 7.7); }
+      if(mass==300) {values.push_back(10.5); }
+      if(mass==350) {values.push_back(13.5); }
+      if(mass==400) {values.push_back(16.3); }
+      if(mass==450) {values.push_back(19.4); }
+      if(mass==500) {values.push_back(  23); }
+      if(mass==600) {values.push_back(30.3); }
+      if(mass==700) {values.push_back(39.8); }
+      if(mass==800) {values.push_back(  51); }
+    }
+    else if (std::string(type)==std::string("+2sigma")){
+      if(mass== 90) {values.push_back(3.25); }
+      if(mass==100) {values.push_back(2.93); }
+      if(mass==120) {values.push_back(2.53); }
+      if(mass==130) {values.push_back(   3); }
+      if(mass==140) {values.push_back(3.54); }
+      if(mass==160) {values.push_back(4.02); }
+      if(mass==180) {values.push_back(4.78); }
+      if(mass==200) {values.push_back(5.01); }
+      if(mass==250) {values.push_back(5.99); }
+      if(mass==300) {values.push_back( 8.3); }
+      if(mass==350) {values.push_back(10.8); }
+      if(mass==400) {values.push_back(12.9); }
+      if(mass==450) {values.push_back(  16); }
+      if(mass==500) {values.push_back(18.7); }
+      if(mass==600) {values.push_back(24.8); }
+      if(mass==700) {values.push_back(32.2); }
+      if(mass==800) {values.push_back(40.8); }
+    }
+    else{
+      std::cout << "ERROR: picked wrong type. Available types are: +2sigma, +1sigma, mean, median, -1sigma, -2sigma" << std::endl
+		<< "       for the moment I'll stop here" << std::endl;
+      exit(1);
+    }
+  }
+}
+
+inline void
+PlotLimits::limitsUpperLEP(TGraph* graph)
+{
   graph->SetPoint( 0,  80     ,   0.    );
   graph->SetPoint( 1,  88     , 100.    );
   graph->SetPoint( 2,  90     ,   7.    );
@@ -929,7 +1103,7 @@ PlotLimits::limitsLEP(TGraph* graph)
 }
 
 inline void
-PlotLimits::limitsLEP2(TGraph* graph)
+PlotLimits::limitsLowerLEP(TGraph* graph)
 {
   graph->SetPoint( 0, 246.4   ,   0     );
   graph->SetPoint( 1, 243.3   ,   0.2   ); //246.3, 0.4

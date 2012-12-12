@@ -43,18 +43,36 @@ void addParameter(edm::ParameterSet& pset, const std::string& key, const std::st
 int main(int argc, char* argv[])
 {
   std::vector<std::string> types;
+  /// show full CLs cross section limits 
   types.push_back(std::string("CLs"));
+  /// show limits in mA-tanb (from full CLs or from asymptotic)
   types.push_back(std::string("tanb"));
+  /// show bayesian cross section limits
   types.push_back(std::string("bayesian"));
+  /// show asymptotic cross section limits with signal injected
   types.push_back(std::string("injected"));
+  /// show asymptotic cross section (times BR) limits
   types.push_back(std::string("asymptotic"));
+  /// show limits as of HIG-11-020
   types.push_back(std::string("HIG-11-020"));
+  /// show limits as of HIG-11-029
   types.push_back(std::string("HIG-11-029"));
+  /// show limits as of HIG-12-018
   types.push_back(std::string("HIG-12-018"));
+  /// show limits as of HIG-12-032
   types.push_back(std::string("HIG-12-032"));
+  /// show limits as of HIG-12-043
+  types.push_back(std::string("HIG-12-043"));
+  /// show limits as of HIG-12-050
+  types.push_back(std::string("HIG-12-050"));
+  /// show significances with bands (run with toys)
   types.push_back(std::string("significance"));
-  types.push_back(std::string("maxlikelihood"));
-  types.push_back(std::string("multidimfit"));
+  /// show signal strength as function of mH/mA as determined from a 1d maxlikelihood fit 
+  types.push_back(std::string("maxlikelihood-fit"));
+  /// show signal strength as function of mH/mA as determined from a 2d maxlikelihood fit 
+  types.push_back(std::string("multidim-fit"));
+  /// show 2D scans (still in developement)
+  types.push_back(std::string("scan-2D"));
 
   // parse arguments
   if ( argc < 3 ) {
@@ -245,7 +263,7 @@ int main(int argc, char* argv[])
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plot(*canv, inner, outer, expected, observed);
   }
-  if( std::string(argv[1]) == std::string("maxlikelihood") ){
+  if( std::string(argv[1]) == std::string("maxlikelihood-fit") ){
     /// expected limit
     TGraph* expected  = new TGraph();
     plot.fillCentral(directory, expected, "higgsCombineTest.MaxLikelihoodFit.$MASS");
@@ -257,7 +275,7 @@ int main(int argc, char* argv[])
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plot(*canv, inner, 0, expected, 0);
   }
-  if( std::string(argv[1]) == std::string("multidimfit") ){
+  if( std::string(argv[1]) == std::string("multidim-fit") ){
     /// best fit
     TGraph* expected  = new TGraph();
     /// +/- 1 sigma to bestfit
@@ -267,6 +285,16 @@ int main(int argc, char* argv[])
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plotMDF(*canv, inner, 0, expected, 0, directory);
   }
+
+  /// $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+  if( std::string(argv[1]) == std::string("scan-2D") ){
+    /// make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plot2DScan(*canv, directory);
+  }
+  /// $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
   if( std::string(argv[1]) == std::string("HIG-11-020") ){
     /// observed limit
     TGraph* observed  = 0;
@@ -362,6 +390,48 @@ int main(int argc, char* argv[])
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plot(*canv, inner, outer, expected, observed);
+  }
+  if( std::string(argv[1]) == std::string("HIG-12-043") ){
+    /// observed limit
+    TGraph* observed  = 0;
+    if(!expected_only){
+      observed = new TGraph();
+      plot.fillCentral("HIG-12-043", observed, "HIG-12-043-observed");
+    }
+    /// expected limit
+    TGraph* expected  = new TGraph();
+    plot.fillCentral("HIG-12-043", expected, "HIG-12-043-expected");
+    /// 1-sigma uncertainty band
+    TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
+    plot.fillBand("HIG-12-043", inner, "HIG-12-043", true);
+    /// 2-sigma uncertainty band
+    TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
+    plot.fillBand("HIG-12-043", outer, "HIG-12-043", false);
+    /// make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plot(*canv, inner, outer, expected, observed);
+  }
+  if( std::string(argv[1]) == std::string("HIG-12-050") ){
+    /// observed limit
+    TGraph* observed  = 0;
+    if(!expected_only){
+      observed = new TGraph();
+      plot.fillCentral("HIG-12-050", observed, "HIG-12-050-observed");
+    }
+    /// expected limit
+    TGraph* expected  = new TGraph();
+    plot.fillCentral("HIG-12-050", expected, "HIG-12-050-expected");
+    /// 1-sigma uncertainty band
+    TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
+    plot.fillBand("HIG-12-050", inner, "HIG-12-050", true);
+    /// 2-sigma uncertainty band
+    TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
+    plot.fillBand("HIG-12-050", outer, "HIG-12-050", false);
+    /// make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plotTanb(*canv, inner, outer, expected, observed);
   }
   return 0;
 }
