@@ -49,6 +49,8 @@ channel(std::string& label){
 	  label==std::string("vbf-ichep")  ||
 	  label==std::string("hgg")        ||	  
 	  label==std::string("hww")        ||
+	  label==std::string("hbb")        ||	  
+	  label==std::string("hmm")        ||
 	  label==std::string("tt")         ||
 	  label==std::string("tt-mvis")    ||
 	  label==std::string("tt-ichep")   ||
@@ -154,6 +156,8 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("nobtag"    )) title = std::string("No B-Tag");
   if(channel==std::string("hgg"       )) title = std::string("H#rightarrow#gamma#gamma");
   if(channel==std::string("hww"       )) title = std::string("H#rightarrowWW#rightarrow2l2#nu");
+  if(channel==std::string("hmm"       )) title = std::string("H#rightarrow#mu#mu");
+  if(channel==std::string("hbb"       )) title = std::string("H#rightarrowbb");
   if(channel==std::string("ltt"       )) title = std::string("WH#rightarrow#tau_{h}#tau_{h}+l");
   if(channel==std::string("llt"       )) title = std::string("WH#rightarrow#tau_{h}+2l");
   if(channel==std::string("4l"        )) title = std::string("ZH#rightarrow2l2#tau");
@@ -250,6 +254,8 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["htt+"       ] = kBlue;
   colors["hgg"        ] = kRed;
   colors["hww"        ] = kGreen;
+  colors["hbb"        ] = kOrange;
+  colors["hmm"        ] = kViolet;
   colors["4l"         ] = kGreen;
   colors["llt"        ] = kRed;
   colors["ltt"        ] = kBlue;
