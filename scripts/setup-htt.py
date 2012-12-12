@@ -37,6 +37,7 @@ parser.add_option_group(cats2)
 
 import os
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
+
 ## label
 label = "" if options.label == "" else "-"+options.label
 ## periods
@@ -83,47 +84,47 @@ for category in categories :
         os.system("mkdir {OUTPUT}/{CAT}{LABEL}".format(OUTPUT=options.out, CAT=category, LABEL=label))
 
 directories = {
-    "0"  : ["0jet", "fermionic"],
-    "1"  : ["0jet", "fermionic"],
-    "2"  : ["boost", "fermionic"],
-    "3"  : ["boost", "fermionic"],
-    "4"  : ["2jet"],
-    "5"  : ["vbf", "gauge"],
-    "6"  : ["btag"],
-    "7"  : ["btag"],
-    "8"  : ["nobtag"],
-    "9"  : ["btag"],
+    "0"  : ["0jet", "fermionic", "htt"],
+    "1"  : ["0jet", "fermionic", "htt"],
+    "2"  : ["boost", "fermionic", "htt"],
+    "3"  : ["boost", "fermionic", "htt"],
+    "4"  : ["2jet", "htt"],
+    "5"  : ["vbf", "gauge", "htt"],
+    "6"  : ["btag", "htt"],
+    "7"  : ["btag", "htt"],
+    "8"  : ["nobtag", "htt"],
+    "9"  : ["btag", "htt"],
 }
 
 ## categories are different for the vhtt case
 vhtt_directories = {
-    "0" : ["llt", "gauge"],
-    "1" : ["4l", "gauge"],
-    "2" : ["ltt", "gauge"],
+    "0" : ["llt", "gauge", "htt"],
+    "1" : ["4l", "gauge", "htt"],
+    "2" : ["ltt", "gauge", "htt"],
 }
 
 ## for htt_tt, 0 = boost, 1 = vbf
 tt_directories = {
-    "0"  : ["boost", "fermionic"],
-    "1"  : ["vbf", "gauge"],
+    "0"  : ["boost", "fermionic", "htt"],
+    "1"  : ["vbf", "gauge", "htt"],
 }
 
 hmm_directories = {
-    "0"  : ["btag"],
-    "1"  : ["nobtag"],
+    "0"  : ["btag", "hmm"],
+    "1"  : ["nobtag", "hmm"],
 }
 
 bbhad_directories = {
-    "0"  : ["bbhad"],
-    "1"  : ["bbhad"],
-    "2"  : ["bbhad"],
-    "3"  : ["bbhad"],
-    "4"  : ["bbhad"],
-    "5"  : ["bbhad"],
+    "0"  : ["bbhad", "hbb"],
+    "1"  : ["bbhad", "hbb"],
+    "2"  : ["bbhad", "hbb"],
+    "3"  : ["bbhad", "hbb"],
+    "4"  : ["bbhad", "hbb"],
+    "5"  : ["bbhad", "hbb"],
 }
 
 bblep_directories = {
-    "0"  : ["bblep"],
+    "0"  : ["bblep", "hbb"],
 }
 
 verb = "-v" if options.verbose else ""
