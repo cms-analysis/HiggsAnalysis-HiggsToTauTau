@@ -142,13 +142,13 @@ class MakeDatacard :
               """
               Configure interpolation mode for htt limits. Considered modes are:
 
-              classic htt channels (htt_em, htt_et, htt_mt)+hbb            htt_mm / hmm
-              mode-0 :            non-degenerate-masses                 non-degenerate-masses
-              mode-1 :            non-degenerate-masses                 non-degenerate-masses-light
-              mode-2 :            non-degenerate-masses                 degenerate-masses
-              mode-3 :            non-degenerate-masses-light           non-degenerate-masses-light
-              mode-4 :            non-degenerate-masses-light           non-degenerate-masses
-              mode-5 :            degenerate-masses                     degenerate-masses
+              classic htt channels (htt_em, htt_et, htt_mt, htt_tt)+hbb            htt_mm / hmm
+              mode-0 :            non-degenerate-masses                            non-degenerate-masses
+              mode-1 :            non-degenerate-masses                            non-degenerate-masses-light
+              mode-2 :            non-degenerate-masses                            degenerate-masses
+              mode-3 :            non-degenerate-masses-light                      non-degenerate-masses-light
+              mode-4 :            non-degenerate-masses-light                      non-degenerate-masses
+              mode-5 :            degenerate-masses                                degenerate-masses
               """
               if mode == "mode-0" :
                      for chn in ["mm", "em", "et", "mt"] :
