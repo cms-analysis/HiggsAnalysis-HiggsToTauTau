@@ -1219,20 +1219,18 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   if(log_){ canv.SetLogy(1); }
 
   // create plain background
-  TGraph* plain = new TGraph();
+  TGraphAsymmErrors* plain = new TGraphAsymmErrors();
   if(observed){
-    plain->SetPoint(0, observed->GetX()[0]-10., 100.);
     for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
       if(valid_[imass]){
-	//if (observed) {
-	plain->SetPoint(ipoint+1, observed->GetX()[ipoint], observed->GetY()[ipoint]); ++ipoint;
-	//} else {
-	//plain->SetPoint(ipoint+1, expected->GetX()[ipoint], expected->GetY()[ipoint]); ++ipoint;
-	//}
+	plain->SetPoint      (ipoint, observed->GetX()[ipoint], observed->GetY()[ipoint]); 
+	plain->SetPointEYlow (ipoint, 0);
+	plain->SetPointEYhigh(ipoint, 100);
+	++ipoint;		    
       }
     }
-    plain->SetPoint(bins_.size(), observed->GetX()[observed->GetN()-1]+150., observed->GetY()[observed->GetN()-1]+15.);
   }
+
   // create LEP exclusion plot
   TGraph* LEP = new TGraph();
   limitsLEP(LEP);
@@ -1399,7 +1397,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   if(observed){
     plain->SetFillStyle(1001.);
     plain->SetFillColor(obs->GetNumber());
-    plain->Draw("Fsame");
+    plain->Draw("3same");
 
     observed->SetMarkerStyle(20);
     observed->SetMarkerSize(1.0);
@@ -1586,7 +1584,7 @@ PlotLimits::plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErro
   //std::string filetail = buffer.substr(buffer.find("$MASS")+5, std::string::npos);
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
     if(valid_[imass]){
-      TString fullpath(TString::Format("%s/%d/higgsCombineggH-bbH.MultiDimFit.mH%d.root", directory, (int)bins_[imass], (int)bins_[imass]));
+      TString fullpath(TString::Format("%s/%d/higgsCombineml-scan.MultiDimFit.mH%d.root", directory, (int)bins_[imass], (int)bins_[imass])); //hardcoded atm ...
       if(verbosity_>0) std::cout << "INFO: opening file " << fullpath << std::endl;
       TFile* file = new TFile(fullpath);
       TTree* limit = (TTree*) file->Get("limit");
