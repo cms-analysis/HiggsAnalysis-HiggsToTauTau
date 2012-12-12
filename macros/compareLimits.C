@@ -421,7 +421,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       hobs[i]->GetXaxis()->SetTitleFont(62);
       hobs[i]->GetXaxis()->SetTitleColor(1);
       hobs[i]->GetXaxis()->SetTitleOffset(1.05);
-      if(std::string(type) == std::string("mssm-tanb")) hexp[i]->GetYaxis()->SetRangeUser(0,maximum);
+      if(std::string(type) == std::string("mssm-tanb")) hobs[i]->GetYaxis()->SetRangeUser(0,maximum);
       
       // format y-axis
       std::string y_title;
