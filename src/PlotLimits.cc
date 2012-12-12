@@ -21,6 +21,9 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) : outpu
   isInjected_ (cfg.exists("injected") ? cfg.getParameter<bool>("injected") : false),
   isSignificance_ (cfg.exists("significance") ? cfg.getParameter<bool>("significance") : false)
 {
+  if(cfg.existsAs<std::string>("model")){
+    model_=cfg.getParameter<std::string>("model");
+  }
   if(cfg.existsAs<bool>("outerband")){
     outerband_=cfg.getParameter<bool>("outerband");
   }
@@ -343,6 +346,18 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
       else if(std::string(filename)==std::string("HIG-12-032-expected")){
 	prepareHIG_12_032(central, "expected", bins_[imass], initial);
       }
+      else if(std::string(filename)==std::string("HIG-12-043-observed")){
+	prepareHIG_12_043(central, "observed", bins_[imass], initial);
+      }
+      else if(std::string(filename)==std::string("HIG-12-043-expected")){
+	prepareHIG_12_043(central, "expected", bins_[imass], initial);
+      }
+      else if(std::string(filename)==std::string("HIG-12-050-observed")){
+	prepareHIG_12_050(central, "observed", bins_[imass], initial);
+      }
+      else if(std::string(filename)==std::string("HIG-12-050-expected")){
+	prepareHIG_12_050(central, "expected", bins_[imass], initial);
+      }
     }
   }
   else{
@@ -415,6 +430,16 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
 	prepareHIG_12_032(expected, "expected", bins_[imass], initial);
 	prepareHIG_12_032(upper, innerBand ? "+1sigma" : "+2sigma", bins_[imass], initial);
 	prepareHIG_12_032(lower, innerBand ? "-1sigma" : "-2sigma", bins_[imass], initial);
+      }
+      else if(std::string(method) == std::string("HIG-12-043")){
+	prepareHIG_12_043(expected, "expected", bins_[imass], initial);
+	prepareHIG_12_043(upper, innerBand ? "+1sigma" : "+2sigma", bins_[imass], initial);
+	prepareHIG_12_043(lower, innerBand ? "-1sigma" : "-2sigma", bins_[imass], initial);
+      }
+      else if(std::string(method) == std::string("HIG-12-050")){
+	prepareHIG_12_050(expected, "expected", bins_[imass], initial);
+	prepareHIG_12_050(upper, innerBand ? "+1sigma" : "+2sigma", bins_[imass], initial);
+	prepareHIG_12_050(lower, innerBand ? "-1sigma" : "-2sigma", bins_[imass], initial);
       }
     }
   }
@@ -1223,32 +1248,34 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   if(observed){
     for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
       if(valid_[imass]){
-	plain->SetPoint      (ipoint, observed->GetX()[ipoint], observed->GetY()[ipoint]); 
-	plain->SetPointEYlow (ipoint, 0);
-	plain->SetPointEYhigh(ipoint, 100);
-	++ipoint;		    
+	plain->SetPoint(ipoint+1, observed->GetX()[ipoint], observed->GetY()[ipoint]); ++ipoint;
       }
     }
+    plain->SetPoint(bins_.size()-1, observed->GetX()[observed->GetN()-1]+150., 100.);
+    plain->SetPoint(bins_.size()  , plain->GetX()[0], plain->GetY()[0]);
+    //for(int ipoint=0; ipoint<plain->GetN(); ++ipoint){
+    //  std::cout << "ipoint=" << ipoint << " x: " << plain->GetX()[ipoint] << " y: " << plain->GetY()[ipoint] << std::endl;
+    //}
   }
 
   // create LEP exclusion plot
-  TGraph* LEP = new TGraph();
-  limitsLEP(LEP);
-  LEP->SetFillStyle(1001.);
-  LEP->SetFillColor(lep->GetNumber());
-  LEP->SetLineColor(lep->GetNumber());
-  LEP->SetLineStyle(1.);
-  LEP->SetLineWidth(4.);
-  LEP->Draw("F");
+  TGraph* upperLEP = new TGraph();
+  limitsUpperLEP(upperLEP);
+  upperLEP->SetFillStyle(1001.);
+  upperLEP->SetFillColor(lep->GetNumber());
+  upperLEP->SetLineColor(lep->GetNumber());
+  upperLEP->SetLineStyle(1.);
+  upperLEP->SetLineWidth(4.);
+  upperLEP->Draw("F");
 
-  TGraph* LEP2 = new TGraph();
-  limitsLEP2(LEP2);
-  LEP2->SetFillStyle(1001.);
-  LEP2->SetFillColor(kWhite);
-  LEP2->SetLineColor(kWhite);
-  LEP2->SetLineStyle(1.);
-  LEP2->SetLineWidth(4.);
-  LEP2->Draw("F");
+  TGraph* lowerLEP = new TGraph();
+  limitsLowerLEP(lowerLEP);
+  lowerLEP->SetFillStyle(1001.);
+  lowerLEP->SetFillColor(kWhite);
+  lowerLEP->SetLineColor(kWhite);
+  lowerLEP->SetLineStyle(1.);
+  lowerLEP->SetLineWidth(4.);
+  lowerLEP->Draw("F");
 
   //
   // --- 80% ggH CL Limits from H->WW moriond12 combination
@@ -1515,7 +1542,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   if(higgs125_bands) leg->AddEntry( higgs125_2 , "mh=125GeV #pm 2GeV",  "F");
   if(higgs125_bands) leg->AddEntry( higgs125_3 , "mh=125GeV #pm 3GeV",  "F");
   if(higgs125_bands) leg->AddEntry( higgs125_4 , "mh=125GeV #pm 4GeV",  "F");
-  leg->AddEntry( LEP      , "LEP"                    ,  "F" );
+  leg->AddEntry( upperLEP, "LEP", "F" );
   leg->Draw("same");
   //canv.RedrawAxis("g");
   canv.RedrawAxis();
@@ -1543,7 +1570,6 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   }
   return;
 }
-
 
 void
 PlotLimits::plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, const char* directory)
@@ -1579,113 +1605,31 @@ PlotLimits::plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErro
     }
   }
 
-  // handling of the likelihoodscan
-  //std::string filehead = buffer.substr(0, buffer.find("$MASS"));
-  //std::string filetail = buffer.substr(buffer.find("$MASS")+5, std::string::npos);
+  // pick up final results; this requires that they have been produced beforehand using limit.py --multidim-fit
+  char typ[20]; 
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
-    if(valid_[imass]){
-      TString fullpath(TString::Format("%s/%d/higgsCombineml-scan.MultiDimFit.mH%d.root", directory, (int)bins_[imass], (int)bins_[imass])); //hardcoded atm ...
-      if(verbosity_>0) std::cout << "INFO: opening file " << fullpath << std::endl;
-      TFile* file = new TFile(fullpath);
-      TTree* limit = (TTree*) file->Get("limit");
-      
-      float nll, x, y;
-      limit->SetBranchAddress("deltaNLL", &nll );  
-      if(mssm_){
-	limit->SetBranchAddress("r_ggH", &x);  
-	limit->SetBranchAddress("r_bbH", &y);
-      }
-      else{
-	if(POI_=="r_ggH" || POI_=="r_qqH"){
-	  limit->SetBranchAddress("r_ggH", &x);  
-	  limit->SetBranchAddress("r_qqH", &y);
-	}
-	else{
-	  limit->SetBranchAddress("CV", &x);  
-	  limit->SetBranchAddress("CF", &y);
+    std::cout<< (int)bins_[imass] << std::endl;
+    std::string fullpath;
+    std::string line;
+    float bestfit, bestfit_down, bestfit_up;
+    fullpath = TString::Format("%s/%d/multi-dim.fitresult", directory, (int)bins_[imass]); // felix anpassen
+    ifstream multidim (fullpath.c_str());
+    if(multidim.is_open()){
+      while( multidim.good() ){
+	getline (multidim,line);
+	sscanf (line.c_str(),"%s :    %f   %f/%f (68%%)", typ, &bestfit, &bestfit_down, &bestfit_up);
+	if(typ==POI_){
+	  expected ->SetPoint(ipoint, bins_[imass], bestfit);
+	  innerBand->SetPoint(ipoint, bins_[imass], bestfit);
+	  innerBand->SetPointEYlow (ipoint, fabs(bestfit_down));
+	  innerBand->SetPointEYhigh(ipoint, fabs(bestfit_up));
+	  ipoint++;
 	}
       }
-      float best_fit=50, POI_best=100;
-      int nevent = limit->GetEntries();
-      for(int i=0; i<nevent; ++i){
-	limit->GetEvent(i);
-	if(nll<best_fit){
-	  if(POI_=="r_ggH" || POI_=="CV"){
-	    POI_best=x;
-	    best_fit=nll;
-	  }
-	  if(POI_=="r_qqH" || POI_=="CV" || POI_=="r_bbH"){
-	    POI_best=y;
-	    best_fit=nll;
-	  }
-	}
-      }
-      float POI_value_down=10, POI_value_up=10, POI_down=POI_best, POI_up=POI_best;
-      for(int i=0; i<nevent; ++i){
-	limit->GetEvent(i);
-	if(nll>0 && nll>=1.00 && nll<1.05 ){// nll<POI_value_up){
-	  if((POI_=="r_ggH" || POI_=="CV") && POI_up<x){
-	    POI_up=x;
-	    POI_value_up=nll;
-	  }
-	  if((POI_=="r_qqH" || POI_=="CF" || POI_=="r_bbH") && POI_up<y){
-	    POI_up=y;
-	    POI_value_up=nll;
-	  }
-	}
-	if(nll>0 && nll>=1.00 && nll<1.05){//nll<POI_value_down){
-	  if((POI_=="r_ggH" || POI_=="CV") && POI_down>x){
-	    POI_down=x;
-	    POI_value_down=nll;
-	  }
-	  if((POI_=="r_qqH" || POI_=="CF" || POI_=="r_bbH") && POI_down>y){
-	    POI_down=y;
-	    POI_value_down=nll;
-	  }      
-	} 
-      }
-      std::cout << "POI_best_fit " << POI_best << "  nll " << best_fit << std::endl;
-      std::cout << "POI_up "<< POI_up << "  nll " << POI_value_up << std::endl;
-      std::cout << "POI_down "<< POI_down << "  nll " << POI_value_down << std::endl;
-      expected ->SetPoint(ipoint, bins_[imass], POI_best);
-      innerBand->SetPoint(ipoint, bins_[imass], POI_best);
-      innerBand->SetPointEYlow (ipoint, POI_best-POI_down);
-      innerBand->SetPointEYhigh(ipoint, POI_up-POI_best);
-      ipoint++;
-      file->Close();
+      multidim.close();
     }
   }
-
-  // obsolete since minos (--algo singles) does not work proper 
-//   char typ[20]; 
-//   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
-//     std::cout<< (int)bins_[imass] << std::endl;
-//     std::string fullpath;
-//     std::string line;
-//     float bestfit, bestfit_down, bestfit_up;
-//     fullpath = TString::Format("%s/%d/multi-dim.fitresult", directory, (int)bins_[imass]); // felix anpassen
-//     ifstream multidim (fullpath.c_str());
-//     if (multidim.is_open())
-//       {
-// 	while ( multidim.good() )
-// 	  {
-// 	    getline (multidim,line);
-// 	    sscanf (line.c_str(),"%s :    %f   %f/%f (68%%)", typ, &bestfit, &bestfit_down, &bestfit_up);
-// 	    if(typ==POI_)
-// 	      {
-// 		expected ->SetPoint(ipoint, bins_[imass], bestfit);
-// 		innerBand->SetPoint(ipoint, bins_[imass], bestfit);
-// 		innerBand->SetPointEYlow (ipoint, fabs(bestfit_down));
-// 		innerBand->SetPointEYhigh(ipoint, fabs(bestfit_up));
-// 		ipoint++;
-// 	      }
-// 	  }
-// 	multidim.close();
-//       }
-//   }
-
-
-
+  
   innerBand->SetLineColor(kBlack);
   //innerBand->SetLineStyle(11);
   innerBand->SetLineWidth(1.);
@@ -1694,7 +1638,7 @@ PlotLimits::plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErro
 
 
   expected->SetMarkerStyle(20);
-  expected->SetMarkerSize(0.5);
+  expected->SetMarkerSize(0.75);
   expected->SetMarkerColor(kBlack);
   expected->SetLineWidth(3.);
   expected->Draw("PLsame");
@@ -1716,8 +1660,8 @@ PlotLimits::plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErro
   //leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
   leg->SetHeader( TString::Format("Best-fit for %s", POI_.c_str()) );
-  if(observed==0 && outerBand==0) leg->AddEntry( expected , "Central",  "L" );
-  if(observed==0 && outerBand==0) leg->AddEntry( innerBand, "#pm 1#sigma",  "F" );
+  if(observed==0 && outerBand==0) leg->AddEntry( expected , "Best fit",  "L" );
+  if(observed==0 && outerBand==0) leg->AddEntry( innerBand, "68% CL",  "F" );
   leg->Draw("same");
   //canv.RedrawAxis("g");
   canv.RedrawAxis();
@@ -1754,4 +1698,304 @@ PlotLimits::plotMDF(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErro
     output->Close();
   }
   return;
+}
+
+void
+PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
+{
+  std::string xval, yval;
+  float points, xmin, xmax, ymin, ymax;
+
+  // pick up final results; this requires that they have been prodiuced beforehand using limit.py --multidim-fit
+  char typ[20]; 
+  float first, second;
+  for(unsigned int imass=0; imass<bins_.size(); ++imass){
+    std::cout << bins_[imass] << std::endl;
+    std::string line;
+    ifstream file(TString::Format("%s/%d/.scan", directory, (int)bins_[imass]));
+    if(file.is_open()){
+      while( file.good() ){
+	getline(file,line);
+	sscanf(line.c_str(),"%s : %f %f", typ, &first, &second);
+	if(std::string(typ)==std::string("points")){
+	  points = int(first);
+	}
+	if(std::string(typ)==std::string("ggH")){
+	  xval = std::string(typ);
+	  xmin = first; xmax = second;
+	}
+	if(std::string(typ)==std::string("bbH")){
+	  yval = std::string(typ);
+	  ymin = first; ymax = second;
+	}
+      }
+      file.close();
+    }
+    std::cout << "CHECK: [mass=" << bins_[imass] << "] --- "
+	      << "points : " << points << " --- "
+	      << xval << " : " << xmin << " -- " << xmax << " --- "
+	      << yval << " : " << ymin << " -- " << ymax << " --- "
+	      << std::endl;
+    
+    //void 
+    //scan2D(std::string path, std::string xval="r_ggH", int xbin=10, float xmin=0., float xmax=20., std::string yval="r_bbH", int ybin=10, float ymin=0., float ymax=20., bool mssm=true, bool log=true, bool temp=false, float xmin_range=-1., float xmax_range=-1., float ymin_range=-1., float ymax_range=-1.)
+    //{
+    /// determine mass from input path
+    //std::string dir = path.substr(0, path.rfind("/"));
+    //std::string mass = dir.substr(dir.rfind("/")+1, std::string::npos);
+
+    /// prepare output file for uncertainties from scan
+    ofstream scanOut;  
+    scanOut.open(TString::Format("%s/%d/multi-dim.fitresult", directory, (int)bins_[imass]));
+    scanOut << " --- MultiDimFit ---" << std::endl;
+    scanOut << "best fit parameter values and uncertainties from NLL scan:" << std::endl;
+
+    /// define axis titles
+    std::map<std::pair<std::string, bool>, const char*> axis_titles;
+    axis_titles[std::make_pair<std::string, bool>(std::string("bbH"), true )] = "#bf{#sigma(gg#rightarrowbb#phi)#timesBR (pb)}";
+    axis_titles[std::make_pair<std::string, bool>(std::string("ggH"), true )] = "#sigma(gg#rightarrow#phi)#timesBR (pb)";
+    axis_titles[std::make_pair<std::string, bool>(std::string("ggH"), false)] = "#sigma(gg#rightarrowH)/#sigma_{SM}(gg#rightarrowH)";
+    axis_titles[std::make_pair<std::string, bool>(std::string("qqH"), false)] = "#bf{#sigma(qq#rightarrowqqH)/#sigma_{SM}(qq#rightarrowqqH)}";
+    axis_titles[std::make_pair<std::string, bool>(std::string("CF" ), false)] = "#bf{c_{F}}";
+    axis_titles[std::make_pair<std::string, bool>(std::string("CV" ), false)] = "c_{V}";
+    
+    /// prepare tree scan
+    SetStyle();
+    float nll, x, y;
+    std::string LABEL("GGH-BBH");
+    std::cout << "open file: " << TString::Format("%s/%d/higgsCombine%s.MultiDimFit.mH%d.root", directory, (int)bins_[imass], LABEL.c_str(), (int)bins_[imass]) << std::endl;
+    TFile* file_ = TFile::Open(TString::Format("%s/%d/higgsCombine%s.MultiDimFit.mH%d.root", directory, (int)bins_[imass], LABEL.c_str(), (int)bins_[imass]));
+    TTree* limit = (TTree*) file_->Get("limit");
+    TH2F* scan2D = new TH2F("scan2D", "", TMath::Sqrt(points), xmin, xmax, TMath::Sqrt(points), ymin, ymax);
+    limit->SetBranchAddress("deltaNLL", &nll );  
+    limit->SetBranchAddress((std::string("r_")+xval).c_str() , &x);  
+    limit->SetBranchAddress((std::string("r_")+yval).c_str() , &y);
+    int nevent = limit->GetEntries();
+    for(int i=0; i<nevent; ++i){
+      limit->GetEvent(i);
+      if(scan2D->GetBinContent(scan2D->FindBin(x,y))==0){
+	scan2D->Fill(x, y, nll);
+      }
+    }
+    
+    /// determine best fit value in granularity of scan
+    float bestFit=-1.; 
+    float buffer, x_save=-999., y_save=-999.;
+    for(int i=0; i<nevent; ++i){
+      limit->GetEvent(i);
+      buffer=scan2D->GetBinContent(scan2D->FindBin(x,y));
+      if (bestFit<0 || bestFit>buffer){
+	/// adjust best fit to granularity of scan; we do this to prevent artefacts 
+	/// when quoting the 1d uncertainties of the scan. For the plotting this 
+	/// does not play a role. 
+	x_save=scan2D->GetXaxis()->GetBinCenter(scan2D->GetXaxis()->FindBin(x)); 
+	y_save=scan2D->GetYaxis()->GetBinCenter(scan2D->GetYaxis()->FindBin(y));
+	bestFit=buffer; 
+      }
+    }  
+    
+    /// prepare the plotting of the relevant contours
+    canv.cd();
+    if(log_) canv.SetLogz();
+    canv.SetGridx();
+    canv.SetGridy();
+    canv.SetRightMargin(0.14);
+    
+    /// setup new draw contours
+    double contours[2];
+    contours[0] = 1.;      //68% CL
+    contours[1] = 1.92;    //95% CL
+    scan2D->SetContour(2, contours);
+    scan2D->Draw("CONT Z LIST");  // draw contours as filled regions, and save points
+    canv.Update();               // needed to force the plotting and retrieve the contours in TGraph
+    /// get the contours
+    TObjArray* conts = (TObjArray*)gROOT->GetListOfSpecials()->FindObject("contours");
+    /// get the old the old contour plot back
+    TH2F* plot2D = new TH2F("plot2D", "", TMath::Sqrt(points), xmin, xmax, TMath::Sqrt(points), ymin, ymax);
+    bool temp_ = false;
+    if(temp_){
+      for(int i=0; i<nevent; ++i){
+	limit->GetEvent(i);
+	if(plot2D->GetBinContent(plot2D->FindBin(x,y))==0){plot2D->Fill(x, y, nll);}
+      }
+    }
+    plot2D->SetXTitle(axis_titles[std::pair<std::string, bool>(xval, mssm_)]);
+    //plot2D->GetXaxis()->SetRange(plot2D->GetXaxis()->FindBin(xmin_range), plot2D->GetXaxis()->FindBin(xmax_range)-1);
+    plot2D->GetXaxis()->SetLabelFont(62);
+    plot2D->GetXaxis()->SetTitleFont(62);
+    plot2D->GetXaxis()->SetTitleColor(1);
+    plot2D->GetXaxis()->SetTitleOffset(1.05);
+    plot2D->SetYTitle(axis_titles[std::pair<std::string, bool>(yval, mssm_)]);
+    //plot2D->GetYaxis()->SetRange(plot2D->GetYaxis()->FindBin(ymin_range), plot2D->GetYaxis()->FindBin(ymax_range)-1);
+    plot2D->GetYaxis()->SetLabelFont(62);
+    plot2D->GetYaxis()->SetTitleSize(0.05);
+    plot2D->GetYaxis()->SetTitleOffset(1.4);
+    plot2D->GetYaxis()->SetLabelSize(0.05);
+    plot2D->SetZTitle("#bf{#Delta NLL}");
+    plot2D->GetZaxis()->SetLabelFont(62);
+    plot2D->GetZaxis()->SetTitleSize(0.04);
+    plot2D->GetZaxis()->SetTitleOffset(1.03);
+    plot2D->GetZaxis()->SetLabelSize(0.04);
+    plot2D->SetMinimum(0.);
+    plot2D->Draw("colz");
+    
+    TLegend* leg = new TLegend(0.60, 0.70, 0.90, 0.90);
+    leg->SetBorderSize( 0 );
+    leg->SetFillStyle ( 0 );
+    leg->SetFillColor (kWhite);
+    
+    TGraph* bestfit = new TGraph();
+    bestfit->SetPoint(0, x_save, y_save);
+
+    if(temp_){
+      /// get and draw contours 
+      for(int i=0; i<conts->GetEntries(); ++i){   
+	TList* graphlist = (TList*)conts->At(i);  
+	for(int g=0; g<graphlist->GetEntries(); ++g){
+	  TGraph* graph = (TGraph*)graphlist->At(g);
+	  if(i==0){
+	    band1D(scanOut, xval, yval, bestfit, graph, (xmax-xmin)/TMath::Sqrt(points)/2, (ymax-ymin)/TMath::Sqrt(points)/2, "(68%)");
+	    graph->SetLineColor(kBlack); graph->SetLineStyle(1);
+	    if(g==graphlist->GetEntries()-1 ) leg->AddEntry(graph, "68% CL", "L");
+	  }
+	  if(i==1){
+	    graph->SetLineColor(kBlack); graph->SetLineStyle(11);
+	    if(g==graphlist->GetEntries()-1 ) leg->AddEntry(graph, "95% CL", "L");
+	  }
+	  graph->SetLineWidth(3);
+	  graph->Draw("contsame");
+	}
+      }
+    }
+    else{  
+      TList* graphlist95 = (TList*)conts->At(1);  
+      TGraph* contour95 = (TGraph*)graphlist95->At(0);
+      /// setup graphs for plotting
+      int m=contour95->GetN();
+      double bx[m]; double by[m];
+      for(int i=0; i<m; ++i){
+	contour95->GetPoint(i, bx[i],by[i]);
+      }
+      TGraph* filled_95 = new TGraph();
+      filled_95->SetPoint(0,0,0);
+      for(int i=0; i<m; i++){
+	filled_95->SetPoint(i+1, bx[i], by[i]);
+      }
+      contour95->SetLineStyle(11);
+      contour95->SetLineWidth(3);
+      contour95->SetLineColor(kBlack);
+      filled_95->SetLineStyle(11);
+      filled_95->SetLineColor(kBlack);
+      filled_95->SetFillColor(kBlue-10);
+      filled_95->Draw("cfsame");
+      contour95->Draw("contsame");
+      leg->AddEntry(filled_95, "95% CL", "FL");
+      
+      TList* graphlist68 = (TList*)conts->At(0);
+      TGraph* contour68 = (TGraph*)graphlist68->At(0);
+      band1D(scanOut, xval, yval, bestfit, contour68, (xmax-xmin)/TMath::Sqrt(points)/2, (ymax-ymin)/TMath::Sqrt(points)/2, "(68%)");
+      /// setup graphs for plotting
+      int n=contour68->GetN();
+      double ax[n]; double ay[n];
+      for(int i=0; i<n; i++){
+	contour68->GetPoint(i,ax[i],ay[i]);
+      }
+      TGraph* filled_68 = new TGraph();
+      filled_68->SetPoint(0,0,0);
+      for(int i=0; i<n; i++){
+	filled_68->SetPoint(i+1, ax[i], ay[i]);
+      }
+      contour68->SetLineStyle(1);
+      contour68->SetLineWidth(3);
+      contour68->SetLineColor(kBlack);
+      filled_68 ->SetLineColor(kBlack);
+      filled_68 ->SetFillColor(kBlue-8);
+      filled_68 ->Draw("cfsame");
+      contour68->Draw("contsame");
+      leg->AddEntry(filled_68, "68% CL", "FL");
+    }
+    bestfit->SetMarkerStyle(34);
+    bestfit->SetMarkerSize(3.0);
+    bestfit->SetMarkerColor(kBlack);
+    bestfit->Draw("Psame");
+    leg->AddEntry(bestfit, "Best fit", "P");
+    leg->Draw("same");
+    
+    /// setup the CMS Preliminary
+    CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
+
+    TString label = (mssm_ ? TString::Format("m_{#phi} = %d GeV", (int)bins_[imass]) : TString::Format("m_{H} = %d GeV", (int)bins_[imass]));
+    TPaveText* textlabel = new TPaveText(0.18, 0.81, 0.50, 0.90, "NDC");
+    textlabel->SetBorderSize(   0 );
+    textlabel->SetFillStyle (   0 );
+    textlabel->SetTextAlign (  12 );
+    textlabel->SetTextSize  (0.04 );
+    textlabel->SetTextColor (   1 );
+    textlabel->SetTextFont  (  62 );
+    textlabel->AddText(label);
+    textlabel->Draw();
+    
+    canv.RedrawAxis();
+    canv.Print(TString::Format("scan-%s-versus-%s-%d.png", xval.c_str(), yval.c_str(), (int)bins_[imass]));
+    canv.Print(TString::Format("scan-%s-versus-%s-%d.pdf", xval.c_str(), yval.c_str(), (int)bins_[imass]));
+    canv.Print(TString::Format("scan-%s-versus-%s-%d.eps", xval.c_str(), yval.c_str(), (int)bins_[imass]));
+
+
+
+    /*
+    if(png_){
+      canv.Print(std::string(output_).append("_").append(outputLabel_).append(".png").c_str());
+      canv.Print(std::string(output_).append("_").append(outputLabel_).append(".pdf").c_str());
+      canv.Print(std::string(output_).append("_").append(outputLabel_).append(".eps").c_str());
+    }
+    if(txt_){
+      print(std::string(output_).append("_").append(outputLabel_).c_str(), outerBand, innerBand, expected, observed, "txt");
+      print(std::string(output_).append("_").append(outputLabel_).c_str(), outerBand, innerBand, expected, observed, "tex");
+    }
+    if(root_){
+      TFile* output = new TFile(std::string("limits_").append(outputLabel_).append(".root").c_str(), "update");
+      if(!output->cd(output_.c_str())){
+	output->mkdir(output_.c_str());
+	output->cd(output_.c_str());
+      }
+      expected ->Write("BestFit" );
+      innerBand->Write("innerBand");
+      output->Close();
+    }
+    */
+  }
+  return;
+}
+
+void 
+PlotLimits::band1D(ostream& out, std::string& xval, std::string& yval, TGraph* bestFit, TGraph* band, float xoffset, float yoffset, std::string CL)
+{
+  float xmin = -1, xmax = -1.;
+  float ymin = -1, ymax = -1.; 
+  for(int i=0; i<band->GetN(); ++i){
+    if(xmin<0 || band->GetX()[i]<xmin){
+      xmin = band->GetX()[i];
+    }
+    if(xmax<0 || band->GetX()[i]>xmax){
+      xmax = band->GetX()[i];
+    }
+    if(ymin<0 || band->GetY()[i]<ymin){
+      ymin = band->GetY()[i];
+    }
+    if(ymax<0 || band->GetY()[i]>ymax){
+      ymax = band->GetY()[i];
+    }
+  }
+  xmin-=xoffset, xmax-=xoffset; ymin-=yoffset, ymax-=yoffset;
+  out << std::setw(3) << " " << xval << " :"
+      << std::setw(5) << " " << std::fixed << std::setprecision(3) << bestFit->GetX()[0]
+      << std::setw(4) << "-" << std::fixed << std::setprecision(3) << TMath::Abs(xmin-bestFit->GetX()[0])
+      << "/+" << std::fixed  << std::setprecision(3) << xmax-bestFit->GetX()[0]
+      << " " << CL << std::endl;
+
+  out << std::setw(3) << " " << yval << " :"
+      << std::setw(5) << " " << std::fixed << std::setprecision(3) << bestFit->GetY()[0]
+      << std::setw(4) << "-" << std::fixed << std::setprecision(3) << TMath::Abs(ymin-bestFit->GetY()[0]>0 ? bestFit->GetY()[0] : ymin-bestFit->GetY()[0])
+      << "/+" << std::fixed  << std::setprecision(3) << ymax-bestFit->GetY()[0]
+      << " " << CL << std::endl;
 }
