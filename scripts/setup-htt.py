@@ -65,7 +65,7 @@ if options.analysis == "mssm" :
         "em"   : options.em_mssm_categories.split(),
         "mt"   : options.mt_mssm_categories.split(),
         "et"   : options.et_mssm_categories.split(),
-        #"tt"   : options.tt_mssm_categories.split(),
+        "tt"   : options.tt_mssm_categories.split(),
         "hmm"  : options.hmm_mssm_categories.split(),
         "bbhad": options.bbhad_mssm_categories.split(),
         "bblep": options.bblep_mssm_categories.split(),
