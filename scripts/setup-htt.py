@@ -8,7 +8,7 @@ parser.add_option("-i", "--in", dest="input", default="auxiliaries/datacards", t
 parser.add_option("-o", "--out", dest="out", default="htt-limits", type="string", help="Name of the output directory to which the datacards should be copied. [Default: htt-limits]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="Choose between run periods [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
-parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string", help="List of channels, for which datacards should be created. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, bbhad, bblep. [Default: \"mm em mt et\"]")
+parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string", help="List of channels, for which datacards should be created. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et\"]")
 parser.add_option("-l", "--label", dest="label", default="", type="string", help="Add a label to the subdirectories that belong to each corresponding sub-channel. [Default: \"\"]")
 parser.add_option("-s", "--setup", dest="setup", default="all", type="choice", help="Setup in which to run. Choises are between cmb only (cmb), split by channels (chn), split by event category (cat), all (all). The combiend limit will always be calculated. [Default: all]", choices=["cmb", "chn", "cat", "all"])
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode. [Default: False]")
@@ -28,8 +28,7 @@ cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="8 9
 cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9", type="string", help="List et of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
 cats2.add_option("--mssm-categories-hmm", dest="hmm_mssm_categories", default="0 1", type="string", help="List of hmm event categories. [Default: \"0 1\"]")
-cats2.add_option("--mssm-categories-bbhad", dest="bbhad_mssm_categories", default="0 1 2 3 4 5", type="string", help="List of hbb event categories. [Default: \"0 1 2 3 4 5\"]")
-cats2.add_option("--mssm-categories-bblep", dest="bblep_mssm_categories", default="0", type="string", help="List of hbb event categories. [Default: \"0\"]")
+cats2.add_option("--mssm-categories-hbb", dest="hbb_mssm_categories", default="0 1 2 3 4 5 6", type="string", help="List of hbb event categories. [Default: \"0 1 2 3 4 5\"]")
 parser.add_option_group(cats2)
 
 ## check number of arguments; in case print usage
@@ -67,8 +66,7 @@ if options.analysis == "mssm" :
         "et"   : options.et_mssm_categories.split(),
         "tt"   : options.tt_mssm_categories.split(),
         "hmm"  : options.hmm_mssm_categories.split(),
-        "bbhad": options.bbhad_mssm_categories.split(),
-        "bblep": options.bblep_mssm_categories.split(),
+        "hbb"  : options.hbb_mssm_categories.split(),
         }
 
 ## setup directory structure in case it does not exist, yet
@@ -114,17 +112,14 @@ hmm_directories = {
     "1"  : ["nobtag", "hmm"],
 }
 
-bbhad_directories = {
+hbb_directories = {
     "0"  : ["bbhad", "hbb"],
     "1"  : ["bbhad", "hbb"],
     "2"  : ["bbhad", "hbb"],
     "3"  : ["bbhad", "hbb"],
     "4"  : ["bbhad", "hbb"],
     "5"  : ["bbhad", "hbb"],
-}
-
-bblep_directories = {
-    "0"  : ["bblep", "hbb"],
+    "6"  : ["bblep", "hbb"],
 }
 
 verb = "-v" if options.verbose else ""
@@ -139,10 +134,8 @@ for channel in channels :
                 category_names = tt_directories
             if channel == 'hmm':
                 category_names = hmm_directories
-            if channel == 'bbhad':
-                category_names = bbhad_directories
-            if channel == 'bblep':
-                category_names = bblep_directories    
+            if channel == 'hbb':
+                category_names = hbb_directories 
             for mass in parseArgs(args) :
                 print "setup directory structure for", options.analysis, period, channel, cat, mass
                 ## setup combined

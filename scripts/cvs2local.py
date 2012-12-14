@@ -9,7 +9,7 @@ parser.add_option("-i", "--in", dest="input", default="auxiliaries/datacards/", 
 parser.add_option("-o", "--out", dest="out", default="ichep2012", type="string", help="Name of the output directory to which the datacards should be copied. [Default: ichep2012]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
-parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string", help="List of channels, for whch the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, bbhad, bblep. [Default: \"mm em mt et\"]")
+parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string", help="List of channels, for whch the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et\"]")
 parser.add_option("-u", "--no-update", dest="no_update", default=False, action="store_true", help="If there are already root file in common, do not recopy them. This should be used by other tools only to speed up copy jobs. [Default: False]")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
@@ -27,14 +27,12 @@ cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="8 9
 cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9", type="string", help="List et of event categories. [Default: \"0 1 2 3 6 7\"]")
 cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
 cats2.add_option("--mssm-categories-hmm", dest="hmm_mssm_categories", default="0 1", type="string", help="List of hmm event categories. [Default: \"0 1\"]")
+cats2.add_option("--mssm-categories-hbb", dest="hbb_mssm_categories", default="0 1 2 3 4 5 6", type="string", help="List of hbb event categories. [Default: \"0 1 2 3 4 5 6\"]")
 parser.add_option_group(cats2)
 parser.add_option("-4", "--SM4", dest="sm4", default=False, action="store_true", help="Copy SM4 datacards (will add a prefix SM4_ to each file). [Default: False]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode. [Default: False]")
-cats2.add_option("--mssm-categories-bbhad", dest="bbhad_mssm_categories", default="0 1 2 3 4 5", type="string", help="List of hbb event categories. [Default: \"0 1 2 3 4 5\"]")
-cats2.add_option("--mssm-categories-bblep", dest="bblep_mssm_categories", default="0", type="string", help="List of hbb event categories. [Default: \"0\"]")
-## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
-
+## check number of arguments; in case print usage
 if len(args) < 1 :
     parser.print_usage()
     exit(1)
@@ -112,8 +110,7 @@ if options.analysis == "mssm" :
         "et"   : options.et_mssm_categories.split(),
         "tt"   : options.tt_mssm_categories.split(),
         "hmm"  : options.hmm_mssm_categories.split(),
-        "bbhad": options.bbhad_mssm_categories.split(),
-        "bblep": options.bblep_mssm_categories.split(),
+        "hbb"  : options.hbb_mssm_categories.split(),
         }
 
 ## valid mass range per category
@@ -135,8 +132,7 @@ if options.analysis == "mssm" :
         "et"   : ( 90, 1000),
         "tt"   : ( 90,  500),
         "hmm"  : (120,  300),
-        "bbhad": ( 90,  350),
-        "bblep": ( 90,  350),       
+        "hbb"  : ( 90,  350),       
     }
 if options.verbose :
     print "------------------------------------------------------"
@@ -165,8 +161,7 @@ if options.analysis == "mssm" :
         "et"   : "7TeV 8TeV",
         "tt"   :      "8TeV",
         "hmm"  : "7TeV"     ,
-        "bbhad": "7TeV"     ,
-        "bblep": "7TeV"     ,
+        "hbb"  : "7TeV"     ,
         }
 if options.verbose :
     print "------------------------------------------------------"
@@ -197,30 +192,18 @@ for period in periods :
             if (float(mass)< valid_masses[channel][0] or float(mass)> valid_masses[channel][1]) :
                 #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass
                 continue            
-            if channel == "vhtt" or channel == "vhbb" or channel == "hmm" :
+            if channel == "vhtt" or channel == "vhbb" or channel == "hmm" or channel == "hbb" :
                 for category in categories[channel] :
                     if options.verbose :
                         print "copying datacards for:", period, channel, category, mass
                     os.system("cp {INPUT}/{CHN}/{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root {OUTPUT}/common/{PRE}{CHN}.input_{PERIOD}-{MASSCAT}.root".format(
-                        INPUT=input, ANA=options.analysis, CHN=channel, OUTPUT=options.out, PRE=prefix, PERIOD=period, MASSCAT=mass_category(mass,channel)))
+                        INPUT=input, ANA=options.analysis, CHN=channel, OUTPUT=options.out, PRE=prefix, PERIOD=period, MASSCAT=mass_category(mass,category, channel)))
                     os.system("cp {INPUT}/{CHN}/{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
                         INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
                     os.system("perl -pi -e 's/{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root/..\/common\/{PRE}{CHN}.input_{PERIOD}-{MASSCAT}.root/g' {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
-                        CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period, MASSCAT=mass_category(mass,channel)))
+                        CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period, MASSCAT=mass_category(mass,category,channel)))
                     if options.analysis == "mssm" :
                         add_mass("{CHN}_{CAT}_{PERIOD}".format(CHN=channel, CAT=category, PERIOD=period), mass)
-            elif channel == "bbhad" or channel == "bblep":
-                for category in categories[channel] :
-                    if options.verbose :
-                        print "copying datacards for:", period, channel, category, mass
-                    os.system("cp {INPUT}/hbb_{CHN}/hbb_{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root {OUTPUT}/common/{PRE}hbb_{CHN}.input_{PERIOD}-{MASSCAT}.root".format(
-                        INPUT=input, ANA=options.analysis, CHN=channel, OUTPUT=options.out, PRE=prefix, PERIOD=period, MASSCAT=mass_category(mass,channel)))
-                    os.system("cp {INPUT}/hbb_{CHN}/hbb_{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}hbb_{CHN}_{CAT}_{PERIOD}.txt".format(
-                        INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
-                    os.system("perl -pi -e 's/hbb_{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root/..\/common\/{PRE}hbb_{CHN}.input_{PERIOD}-{MASSCAT}.root/g' {OUTPUT}/{MASS}/{PRE}hbb_{CHN}_{CAT}_{PERIOD}.txt".format(
-                        CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period, MASSCAT=mass_category(mass,channel)))
-                    if options.analysis == "mssm" :
-                        add_mass("hbb_{CHN}_{CAT}_{PERIOD}".format(CHN=channel, CAT=category, PERIOD=period), mass)
             else :
                 for category in categories[channel] :
                     if options.verbose :
@@ -231,13 +214,13 @@ for period in periods :
                             files = ' '.join(os.listdir("{OUTPUT}/common/".format(OUTPUT=options.out)))
                             if not "htt_"+channel+'.inputs-mssm-'+period in files :
                                 os.system("cp {INPUT}/htt_{CHN}/{PRE}htt_{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root {OUTPUT}/common/".format(
-                                    INPUT=input, CHN=channel, ANA=options.analysis, PERIOD=period, OUTPUT=options.out, PRE=prefix, MASSCAT=mass_category(mass,channel)))
+                                    INPUT=input, CHN=channel, ANA=options.analysis, PERIOD=period, OUTPUT=options.out, PRE=prefix, MASSCAT=mass_category(mass,category, channel)))
                             else :
                                 pass
                                 #print "no update of files needed."
                         else :
                             os.system("cp {INPUT}/htt_{CHN}/{PRE}htt_{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root {OUTPUT}/common/".format(
-                                INPUT=input, CHN=channel, ANA=options.analysis, PERIOD=period, OUTPUT=options.out, PRE=prefix, MASSCAT=mass_category(mass,channel)))
+                                INPUT=input, CHN=channel, ANA=options.analysis, PERIOD=period, OUTPUT=options.out, PRE=prefix, MASSCAT=mass_category(mass,category, channel)))
                         os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
                             INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
                         os.system("perl -pi -e 's/htt_{CHN}.inputs/..\/common\/{PRE}htt_{CHN}.inputs/g' {OUTPUT}/{MASS}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
