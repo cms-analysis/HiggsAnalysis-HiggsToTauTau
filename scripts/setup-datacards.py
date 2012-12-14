@@ -193,7 +193,7 @@ for channel in channels :
                         CHN=prefix+channel,
                         ANA=options.analysis,
                         PER=period,
-                        MASSCAT=mass_category(mass,prefix+channel),
+                        MASSCAT=mass_category(mass,cat,prefix+channel),
                         CAT=cat,
                         MASS=mass
                         ))
