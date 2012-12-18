@@ -190,8 +190,11 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
       canv.Print(TString::Format("scan-%s-versus-%s-%d.eps", xval.c_str(), yval.c_str(), (int)mass));
     }
     if(txt_){
-      //print(std::string(output_).append("_").append(label_).c_str(), outerBand, innerBand, expected, observed, "txt");
-      //print(std::string(output_).append("_").append(label_).c_str(), outerBand, innerBand, expected, observed, "tex");
+      TString path = TString::Format("%s_%s_68-%d", output_.c_str(), label_.c_str(), (int)mass);
+      print(path, xval, yval, graph68, "txt");
+      print(path, xval, yval, graph95, "txt");
+      print(path, xval, yval, graph68, "tex");
+      print(path, xval, yval, graph95, "tex");
     }
     if(root_){
       TFile* output = new TFile(TString::Format("scan-%s-versus-%s.root", xval.c_str(), yval.c_str()), "update");
