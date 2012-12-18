@@ -37,7 +37,7 @@ parser.add_option_group(bgroup)
 ## BATCH OPTIONS
 ##
 cgroup = OptionGroup(parser, "BATCH OPTIONS", "These are the command line options that can be used to configure lxb (lxq) batch job submission via the script lxb_submit.py. Batch job submission of this type is applicable for the following options: --likelihood-scan, --asymptotic, --tanb+. When using batch job submission in one of these main options it is possible to go up by one level in the directory structure when specifying ARGs as described in the head of this parameter description. Note: when runnign in batch mode batch jobs are split by each mass directory that can be found in the directory structure.")
-cgroup.add_option("-q", "--queue", dest="queue", default="8nh", type="string", help="The queue, to which to submit the jobs. [Default: \"8nh\"]")
+cgroup.add_option("-q", "--queue", dest="queue", default="-q 8nh", type="string", help="The queue, to which to submit the jobs. [Default: \"-q 8nh\"]")
 cgroup.add_option("--interactive", dest="interactive", default=False, action="store_true",
                   help="Force interactive running. Do not run in batch mode. This will lead to one large execution. [Default: False]")
 parser.add_option_group(cgroup)
@@ -45,7 +45,7 @@ parser.add_option_group(cgroup)
 ## MODEL OPTIONS
 ##
 dgroup = OptionGroup(parser, "MODEL OPTIONS", "These are the command line options that can be used to configure the submission of multi-dimensional fits or asymptotic limits that do require specific models. Specific models can be used for option --multidim-fit and for option --asymptotic. Possible model options for option --multidim-fit are: ggH-bbH (MSSM), ggH-qqH (SM) and cV-cF (SM). Possible model options for option --asymptotic are: \"\" (SM), ggH (MSSM) and bbH (MSSM).")
-dgroup.add_option("--model", dest="fitModel", default="", type="choice", choices=["ggH-bbH", "ggH-qqH", "cV-cF", "ggH", "bbH", ""],
+dgroup.add_option("--physics-model", dest="fitModel", default="", type="choice", choices=["ggH-bbH", "ggH-qqH", "cV-cF", "ggH", "bbH", ""],
                   help="Define the model for which you want to submit the process with option --multidim-fit ('ggH-bbH' (MSSM), 'ggH-qqH' (SM) and 'cV-cF' (SM)) or option --asymptotic ('ggH' (MSSM), 'bbH' (MSSM) and '' (SM)). [Default: \"\"]")
 parser.add_option_group(dgroup)
 ##
@@ -137,10 +137,10 @@ def lxb_submit(dirs, cmd='--asymptotic', opts='') :
         jobname = ana[ana.rfind('/')+1:]+'-'+limit
         ## create submission scripts
         if options.printOnly :
-            print "lxb-limit.py {JOBNAME} \"-q {QUEUE}\" \"{DIR}/*\" {METHOD} {OPTS}".format(
+            print "lxb-limit.py --name {JOBNAME} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" \"{DIR}/*\"".format(
                 JOBNAME=jobname, DIR=dir, QUEUE=options.queue, METHOD=cmd, OPTS=opts)
         else:
-            os.system("lxb-limit.py {JOBNAME} \"-q {QUEUE}\" \"{DIR}/*\" {METHOD} {OPTS}".format(
+            os.system("lxb-limit.py --name {JOBNAME} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" \"{DIR}/*\"".format(
                 JOBNAME=jobname, DIR=dir, QUEUE=options.queue, METHOD=cmd, OPTS=opts))
             ## execute
             os.system("./{JOBNAME}_submit.sh".format(JOBNAME=jobname))
@@ -218,6 +218,7 @@ if options.optAsym :
     cmd   = "--asymptotic"
     model = ""
     opts  = ""
+    ## prepare calculation
     if options.interactive :
         for dir in args :
             mass = get_mass(dir)
@@ -234,9 +235,9 @@ if options.optAsym :
                 model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
                 opts  = "--physics-model-options 'modes=bbH;bbHRange=0:{BBH}'".format(BBH=bounds[mass][1])
             if options.printOnly :
-                print "limit.py {CMD} -m {MASS} {MODEL} {OPTS} {USER} {DIR}".format(CMD=cmd, MASS=mass, MODEL=model, OPTS=opts, USER=options.opt, DIR=dir)
+                print "limit.py {CMD} {MODEL} {OPTS} {USER} {DIR}".format(CMD=cmd, MASS=mass, MODEL=model, OPTS=opts, USER=options.opt, DIR=dir)
             else :
-                os.system("limit.py {CMD} -m {MASS} {MODEL} {OPTS} {USER} {DIR}".format(CMD=cmd, MASS=mass, MODEL=model, OPTS=opts, USER=options.opt, DIR=dir))
+                os.system("limit.py {CMD} {MODEL} {OPTS} {USER} {DIR}".format(CMD=cmd, MASS=mass, MODEL=model, OPTS=opts, USER=options.opt, DIR=dir))
     else :
         dirs = []
         for dir in args :

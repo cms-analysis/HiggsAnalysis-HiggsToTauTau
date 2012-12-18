@@ -1,5 +1,24 @@
 #!/usr/bin/env python
+from optparse import OptionParser, OptionGroup
 
+## set up the option parser
+parser = OptionParser(usage="usage: %prog [options] ARG", description="This is a script for simple job submission of limit.py processes to lxb/lxq. It is e.g. called from submit.py, when running this script in batch mode for several main options. The arguments ARGs correspond to the directories that are meant to be processed by limit.py")
+##
+## MAIN OPTIONS
+##
+parser.add_option("--name", dest="name", default="batch", type="string",
+                  help="Add the job name here. [Default: \"batch\"]")
+parser.add_option("--batch-options", dest="batch", default="", type="string",
+                  help="Add all options you want to pass to lxb/lxq encapsulated by quotation marks '\"'. [Default: \"\"]")
+parser.add_option("--limit-options", dest="limit", default="", type="string",
+                  help="Add all options you want to pass to limit.py encapsulated by quotation marks '\"'. [Default: \"\"]")
+## check number of arguments; in case print usage
+(options, args) = parser.parse_args()
+if len(args) < 1 :
+    parser.print_usage()
+    exit(1)
+
+    
 '''
 
 Parellelize calls to limit.py using LXBATCH.
@@ -38,14 +57,14 @@ import logging
 log = logging.getLogger("lxb-limit")
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
-if len(sys.argv) < 5:
-    print "Usage: lxb-limit.py submit_name \"bsub args\" \"ARG_GLOB\" \"[other options]\""
-    sys.exit(1)
-
-name = sys.argv[1]
-bsubargs = sys.argv[2]
-dirglob = sys.argv[3]
-option_str = sys.argv[4:]
+dirglob = args[0]
+print dirglob
+name = options.name
+print name
+bsubargs = options.batch
+print bsubargs
+option_str = options.limit
+print option_str
 
 script_template = '''#!/bin/bash
 
@@ -71,7 +90,7 @@ requirements = HasAFS_OSG && TARGET.FilesystemDomain =!= UNDEFINED && TARGET.UWC
 '''
 
 if not glob.glob(dirglob):
-    print "No limit directories found in glob %s" % dirglob
+    print "No limit directories found in glob %s" % glob
     sys.exit(1)
 
 submit_name = '%s_submit.sh' % name
@@ -89,11 +108,12 @@ with open(submit_name, 'w') as submit_script:
         log.info("Generating submission script for %s", dir)
         script_file_name = '%s/%s_%i.sh' % (name, name, i)
         with open(script_file_name, 'w') as script:
-            script.write(script_template.format(
+            script.write(
+                script_template.format(
                 working_dir=os.getcwd(),
-                options=' '.join(option_str),
+                options=option_str,
                 directory=dir
-            ))
+                ))
         os.system('chmod a+x %s' % script_file_name)
         if bsubargs == "condor":
             submit_script.write("\n")
@@ -109,5 +129,4 @@ with open(submit_name, 'w') as submit_script:
         else:
             submit_script.write('bsub %s %s/%s\n'
                                 % (bsubargs, os.getcwd(), script_file_name))
-
 os.system('chmod a+x %s' % submit_name)
