@@ -5,7 +5,7 @@ from optparse import OptionParser, OptionGroup
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARG",
                       description="Script to do quick blinding of datacards inputs. ARG correspond to the file of interest.\n")
-parser.add_option("-s", "--signal", dest="signal", default="ggH{MASS},qqH{MASS},VH{MASS}", type="string", help="The signal sample to be injected. Shouold include a variable string for the mass, e.g. ggH{MASS}. If empty only no signal will be injected. The default corresponds to a SM signal. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
+parser.add_option("-s", "--signal", dest="signal", default="ggH{MASS},qqH{MASS},VH{MASS}", type="string", help="The signal sample to be injected. Should include a variable string for the mass, e.g. ggH{MASS}. If empty only no signal will be injected. The default corresponds to a SM signal. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
 parser.add_option("-m", "--mass", dest="mass", default="125", type="string", help="The mass of the signal that should be injected. the default corresponds to 125GeV. Default: \"125\"]")
 parser.add_option("-d", "--dir", dest="dir", default="\\*", type="string", help="The directories to which to apply the blinding. [Default: \"\\*\"]")
 pgroup = OptionGroup(parser, "BACKGROUNDS", "Command options to customize the backgrounds per channel.")
