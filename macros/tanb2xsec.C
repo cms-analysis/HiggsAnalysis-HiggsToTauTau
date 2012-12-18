@@ -4,10 +4,10 @@
 #include "TString.h"
 #include "TGraph.h"
 
-void tanb2xsec(const char* filename, const char* directory="HIG-11-029", const char* graph="observed", bool verbose=true)
+void tanb2xsec(const char* filename, const char* directory="HIG-12-050", const char* graph="observed", bool verbose=true)
 {
   mssm_xs_tools mssm;
-  mssm.SetInput("HiggsAnalysis/HiggsToTauTau/data/out.mhmax-7-nnlo.root"); //mssm.help();
+  mssm.SetInput("HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-7TeV-tanbHigh-nnlo.root"); //mssm.help();
 
   /// open input file  
   TFile* inputFile = new TFile(filename, "update");
