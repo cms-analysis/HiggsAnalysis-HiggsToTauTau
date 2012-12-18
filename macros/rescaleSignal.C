@@ -162,7 +162,9 @@ void rescaleSignal(bool armed, double scale, const char* filename, const char* p
       else{
 	file->cd();
       }
-      std::cout << "writing to file: " << hout->GetName() << std::endl;
+      if(debug>0){
+	std::cout << "writing to file: " << hout->GetName() << std::endl;
+      }
       hout->Write(hist->substr(hist->find("/")+1).c_str(), TObject::kOverwrite); 
     }
   }
