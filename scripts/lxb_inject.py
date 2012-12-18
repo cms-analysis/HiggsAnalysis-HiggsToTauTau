@@ -1,15 +1,13 @@
 #!/usr/bin/env python
-
 from optparse import OptionParser, OptionGroup
-
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGS",
-                      description="Script to setup a set of scripts for statistical signal injection. The source directory for individual signal injections can be given by the option --inputs. This directory will be cloned in N subdirectories. N can be changed by --njob. in each subdirectory signal is injected statistically. Afterwards the limit calculation is run for each mass that is found in the subdirectory. ARGS corresponds to the masses which are to be analysed.")
-parser.add_option("-n", "--name", dest="name", default="test-injection", type="string", help="Name of the output scripts. [Default: \"test-injected\"]")
-parser.add_option("-i", "--input", dest="input", default="TEST/INJECT-SIGNAL", type="string", help="Input directory that should be used as starting point for signal injection. [Default: \"TEST/INJECT-SIGNAL\"]")
-parser.add_option("--bsub", dest="bsub", default="-q 1nd", type="string", help="Submission arguments for batch queue. [Default: \"-q 1nd\"]")
+                      description="Script to set up a set of scripts for statistical signal injection. The source directory for individual signal injections can be given by the option --inputs. This directory will be cloned in N subdirectories. N can be changed by --njob. in each subdirectory a signal is injected statistically. Afterwards the limit calculation is run for each mass that is found in the subdirectory. ARGS corresponds to the masses which are to be analysed.")
+parser.add_option("-n", "--name", dest="name", default="TEST", type="string", help="Name of the batch submission scripts. [Default: \"TEST\"]")
+parser.add_option("-i", "--input", dest="input", default="TEST/INJECT", type="string", help="Name of the input directory that should be used as starting point for signal injection. [Default: \"TEST/INJECT\"]")
+parser.add_option("--bsub", dest="bsub", default="-q 1nd", type="string", help="Submission arguments for the batch queue. [Default: \"-q 1nd\"]")
 
-parser.add_option("--njob", dest="njob", default="100", type="string", help="Number of toys for which to inject signal. [Default: \"100\"]")
+parser.add_option("--njob", dest="njob", default="100", type="string", help="Number of toys for which to inject signal. (One toy per job). [Default: \"100\"]")
 parser.add_option("--mass-points-per-job", dest="per_job", type="int", default=15, help="Maximum mass points to run per batch job. [Default: \"15\"]")
 parser.add_option("--options", dest="opts", default="--observedOnly", type="string", help="Options for limit calculation with limit.py. [Default: \"--observedOnly\"]")
 parser.add_option("--collect", dest="collect", default=False,  action="store_true", help="Collect the individual jobs of a single batch submission. [Default: False)")
@@ -62,7 +60,7 @@ universe=vanilla
 log = condor.log
 notification = never
 getenv = true
-# make sure AFS is accessible and suppress Condor's default FilesystemDomain requirements
+# make sure AFS is accessible and suppress default FilesystemDomain requirements of Condor
 requirements = HasAFS_OSG && TARGET.FilesystemDomain =!= UNDEFINED && TARGET.UWCMS_CVMFS_Revision >= 0
 transfer_input_files=
 when_to_transfer_output=on_exit
@@ -73,7 +71,6 @@ should_transfer_files=yes
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
 
 masses = args[0]
-
 if options.collect :
     for mass in parseArgs([masses]) :
         ## to allow for more files to be combined distinguish by first digit in a first
@@ -95,7 +92,7 @@ else:
     for mass in parseArgs([masses]) :
         masses_str.append(str(mass))
 
-    # Split up masses into groups
+    ## split up masses into groups
     def group_into_chunks(iterable, n):
         output = []
         for x in iterable:
@@ -106,6 +103,7 @@ else:
         # any leftovers
         if output:
             yield output
+
     mass_groups = []
     for group in group_into_chunks(masses_str, options.per_job):
         mass_groups.append(group)
