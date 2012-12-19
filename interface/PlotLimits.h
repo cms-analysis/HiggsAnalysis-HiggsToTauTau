@@ -79,6 +79,8 @@ class PlotLimits {
   void print(const char* filename, TGraph* expected, TGraph* observed, const char* type="txt");
   /// print tabulated limits to a txt file, for inner band, outer band, expected and observed, with inner and outer band
   void print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* innerBand, TGraph* expected, TGraph* observed, const char* type="txt");
+  /// print tabulated limits to a txt file, for inner band, outer band, expected and observed, with inner and outer band
+  void print(const char* filename, std::string& xval, std::string& yval, TGraph* contour, const char* type="txt");
   /// automatic maximum determination for TGraphs (used for several options)
   float maximum(TGraph* graph); 
   /// make a fillable TGraph out of a non-fillable TGraph that comes out of a contour plot (used for option scan2D)
