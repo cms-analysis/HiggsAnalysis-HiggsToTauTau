@@ -1,14 +1,6 @@
 #!/usr/bin/env python
 # flake8: noqa
-
-import glob
-import hashlib
-import os
-import re
 from optparse import OptionParser, OptionGroup
-from HiggsAnalysis.HiggsToTauTau.parallelize import parallelize
-from HiggsAnalysis.HiggsToTauTau.CardCombiner import create_workspace, extract_pull_options
-import sys
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...", description="This is a script do to final calculations or harvesting of batch or grid jobs that have been submitted via crab, and everything that is connected to this. You can check the status of the submitted jobs, get the output of your jobs, or further process this output for the calculation of Bayesian or CLs limits, toy based significance calculations, likelihood scans or maximum-likelihood fits. What exactly you want the script to do is passed on with a large set of command line options, which are explained below. Apart from these comman line options the script expects the arguments ARG1, ARG2, ARG3, ..., which correspond to the working directories the corresponding operation should be applied to. The script expects that these directories follow a stucture, that ends with a directory corresponding to the mass, on which the operation is to be applied. The name of this directory should correspond to an interger or floating point number. It should contain all datacards and necessary information to execute the operations on.\n")
@@ -26,6 +18,8 @@ agroup.add_option("--significance", dest="optSig", default=False, action="store_
                   help="Calculate the observed and expected significance from likelihood profiling. The expected significance and its uncertainties are based on toys. This requires that the toys have been run beforehand using the script submit.py with option --significance. This script will submit toys to a batch system or to the grid using crab. This action will require a grid certificate. You can monitor and receive the results of your jobs once finished using the command options explained in section COMMON CRAB COMMAND OPTIONS of this parameter description. [Default: False]")
 agroup.add_option("--asymptotic", dest="optAsym", default=False, action="store_true",
                   help="Calculate asymptotic CLs limits from the datacards in the directory/ise corresponding to ARGs. [Default: False]")
+agroup.add_option("--injected", dest="optInject", default=False, action="store_true",
+                  help="Calculate asymptotic CLs limits from the datacards in the directory/ise corresponding to ARGs with a SM signal injected. This method is toy based. It requires that the toys have been run beforehand using the script submit.py with option --injected. This script will submit toys to a lxb (lxq). When used with option --injected the script limit.py will collect the output of the batch submission and calculate the observed limit. [Default: False]")
 agroup.add_option("--CLs", dest="optCLs", default=False, action="store_true",
                   help="Calculate the observed and expected full CLs limits. This method is completely toy based. It requires that the toys have been run beforehand using the script submit.py with option --CLs. This script will submit toys to a batch system or to the grid using crab. This action will require a grid certificate. You can monitor and receive the results of your jobs once finished using the command options explained in section COMMON CRAB COMMAND OPTIONS of this parameter description.[Default: False]")
 agroup.add_option("--bayesian", dest="optBayes", default=False, action="store_true",
@@ -47,6 +41,8 @@ bgroup.add_option("--shape", dest="shape", default="shape2", type="string",
                   help="Choose a dedicated algorithm for vertical shape morphing during roofit model creation. [Default: 'shape2']")
 bgroup.add_option('--external-pulls', dest='externalPulls', default=None, type="string",
                   help="Optionally constrain nuisance parameters using the result of a ML fit result (e.g. mlfit.root) that has been created beforehand. [Defasult: None]")
+bgroup.add_option("--signal-plus-background", dest="signal_plus_BG", default=False, action="store_true",
+                  help="When using options --external-pulls, use the fit results with signal plus background. If 'False' the fit result of the background only hypothesis is used. [Default: False]")
 bgroup.add_option("--confidence-level", dest="confidenceLevel", default="0.95", type="string",
                   help="Choose the confidence level at which to calculate the limit. This option only applies to asymptotic limit calculations. It does not apply to toy based methods, which have to be configured accordingly in the submission step (using the script submit.py). [Default: '0.95']")
 bgroup.add_option("--rMin", dest="rMin", default="-5", type="string",
@@ -176,6 +172,16 @@ if len(args) < 1 :
     parser.print_usage()
     exit(1)
 
+import os
+import re
+import sys
+import glob
+import hashlib
+
+from HiggsAnalysis.HiggsToTauTau.utils import get_mass
+from HiggsAnalysis.HiggsToTauTau.parallelize import parallelize
+from HiggsAnalysis.HiggsToTauTau.CardCombiner import create_workspace, extract_pull_options
+
 ## base directory introduced to allow use of absolute file paths
 base_directory = os.getcwd()
 
@@ -217,19 +223,6 @@ def already_run(directory):
         return False
     return True
 
-def get_mass(directory) :
-    '''
-    Returns the mass from a directory string. directories are expected to end with a floating
-    point number of with an integer number. Trailing slashes are removed. The mass is returned
-    as a string.
-    '''
-    ## determine mass value from directory name
-    idx = directory.rfind("/")
-    if idx == (len(directory) - 1):
-        idx = directory[:idx - 1].rfind("/")
-    mass  = directory[idx + 1:]
-    return mass.rstrip('/')
-    
 def create_card_workspace(mass, card_glob='*.txt', output='tmp.root', extra_options=None) :
     '''
     Create a tmp.root combining data cards in the CWD
@@ -247,7 +240,7 @@ def create_card_workspace(mass, card_glob='*.txt', output='tmp.root', extra_opti
         with open(
             os.path.join(base_directory, options.externalPulls), 'r') as pullfile:
             ws_options.extend(
-                extract_pull_options(pullfile)
+                extract_pull_options(pullfile, (False if options.signal_plus_BG else True))
             )
     return create_workspace(output, card_glob, ws_options)
 
@@ -285,6 +278,14 @@ def create_card_workspace_with_physics_model(mass) :
             wsopts.append(('--PO', opt))                                
     return create_card_workspace(mass, inputs, output, wsopts)
 
+##
+## INJECTED 
+##
+## special steering for option --injected to run --asymptotic with option --observedOnly
+if options.optInject :
+    options.optAsym = True
+    options.observedOnly = True
+    
 for directory in args :
     if directory.find("common")>-1 :
         print "> skipping directory common"
@@ -724,6 +725,37 @@ for directory in args :
                 cl=options.confidenceLevel, minuit=minuitopt, qtilde=qtildeopt, strategy=options.strategy, mass=massopt, user=options.userOpt, wdir=options.workingdir, wsp=wsp)
             os.system("combine -M Asymptotic --run observed -C {cl} {minuit} --minimizerStrategy {strategy} -n '-obs' {qtilde} {mass} {user} {wdir}/{wsp}.root".format(
                 cl=options.confidenceLevel, minuit=minuitopt, qtilde=qtildeopt, strategy=options.strategy, mass=massopt, user=options.userOpt, wdir=options.workingdir, wsp=wsp))
+    ##
+    ## INJECTED
+    ##
+    if options.optInject :
+        ## determine mass value from directory name
+        mass  = get_mass(directory)
+        if os.path.exists("batch_collected.root") :
+            os.system("mv batch_collected.root old.root")
+        ## to allow for more files to be combined distinguish by first digit in a first
+        ## iteration, than combine the resulting 10 files to the final output file.
+        njob = 0
+        globdir = "higgsCombine-obs.Asymptotic.mH{MASS}-*_*.root".format(MASS=mass)
+        print glob.glob(globdir)
+        for job in glob.glob(globdir) :
+            njob=njob+1
+        for idx in range(10 if njob>10 else njob) :
+            os.system("hadd -f batch_collected_{IDX}.root higgsCombine-obs.Asymptotic.mH{MASS}-*{IDX}_*.root".format(
+                MASS=mass,
+                IDX=idx
+                ))
+        ## clean up the files that have been combined
+        os.system("rm %s" % globdir)
+        ## combined sub-combinations
+        os.system("hadd batch_collected.root batch_collected_*.root")
+        ## clean up the files that have been combined
+        os.system("rm batch_collected_*.root")
+        ## combine with previous submissions
+        if os.path.exists("old.root") :
+            os.system("mv batch_collected.root new.root")
+            os.system("hadd batch_collected.root old.root new.root")
+            os.system("rm old.root new.root")
     ##
     ## CLS
     ##

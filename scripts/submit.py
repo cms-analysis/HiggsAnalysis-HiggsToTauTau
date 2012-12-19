@@ -15,6 +15,8 @@ agroup.add_option("--significance", dest="optSig", default=False, action="store_
                   help="Calculate the expected significance from likelihood profiling. The expected significance and its uncertainties are based on toys. This script will submit toys to a batch system or to the grid using crab. This action will require a grid certificate. You can configure this script to submit to the grid or to submit to lxb (lxq) as described in section SIGNIFICANCE OPTIONS in this parameter description. You can monitor and receive the results of your jobs once finished using the script limit.py using the CRAB OPTIONS as explained in the parameter description, there. [Default: False]")
 agroup.add_option("--asymptotic", dest="optAsym", default=False, action="store_true",
                   help="Calculate asymptotic CLs limits from the datacards in the directory/ise corresponding to ARGs. The process will be executed via lxb (lxq), split by each single mass point that is part of ARGs or as a single interactive job when using the option --interactive. When submitting to lxb (lxq) you can configure the queue to which the jobs will be submitted as described in section BATCH OPTIONS of this parameter description. When running in batch mode you can go one level up in the expected directory structure as described in the head of this section. [Default: False]")
+agroup.add_option("--injected", dest="optInject", default=False, action="store_true",
+                  help="Calculate asymptotic CLs limits with a SM signal injected from the datacards in the directory/ise corresponding to ARGs. This process is fully toy based and will require a large numnber of toys, which will be submitted via lxb (lxq). For each toy a pseudo-dataset will be created and an observed limit will be calculated. It is possible to give an input file from which the pulls of the nuisance parameters will be taken, when running the limits. The median and quantiles of the tossed toys define the expected limit with signal injected and the uncertainties. This script internally calls the script lxb-injected.py. [Default: False]")
 agroup.add_option("--CLs", dest="optCLs", default=False, action="store_true",
                   help="Calculate the observed and expected full CLs limits. This method is completely toy based. This script will submit toys to the grid using crab. This action will require a grid certificate. As this operation is very computing intensive there is no pre-defined option to submit to lxb (lxq). You can monitor and receive the results of your jobs once finished using the script limit.py using the CRAB OPTIONS as explained in the parameter description, there. [Default: False]")
 agroup.add_option("--bayesian", dest="optBayes", default=False, action="store_true",
@@ -30,14 +32,19 @@ parser.add_option_group(agroup)
 bgroup = OptionGroup(parser, "COMMON OPTIONS", "These are command line options that are not specific to one or the other main option. Where such restrictions exist they are specified in the corresponding parameter description below.")
 bgroup.add_option("--printOnly", dest="printOnly", default=False, action="store_true",
                   help="Only print the command line option(s) to the screen. Do not execute them. This can be used if you only want to know the command line option to use it elsewhere in a slightly modified way. [Default: False]")
-bgroup.add_option("--cycles", dest="cycles", default=1, type="int", help="Number of submission cycles for crab job submission. This option only applies to the main options --CLs and --tanb. For all other main options it has no effect. One submission cycle consists of 50 crab jobs. [Default: 1]")
-bgroup.add_option("--options", dest="opt", default="", type="string", help="You can use this string for additional options that can be passed on to the scripts that are executed within this script. NB: these options should be enclosed by \"...\". [Default: \"\"]")
+bgroup.add_option("--cycles", dest="cycles", default=1, type="int",
+                  help="Number of submission cycles for crab job submission. This option only applies to the main options --CLs and --tanb. For all other main options it has no effect. One submission cycle consists of 50 crab jobs. [Default: 1]")
+bgroup.add_option("--options", dest="opt", default="", type="string",
+                  help="You can use this string for additional options that can be passed on to the scripts that are executed within this script. NB: these options should be enclosed by \"...\". [Default: \"\"]")
 parser.add_option_group(bgroup)
 ##
 ## BATCH OPTIONS
 ##
 cgroup = OptionGroup(parser, "BATCH OPTIONS", "These are the command line options that can be used to configure lxb (lxq) batch job submission via the script lxb_submit.py. Batch job submission of this type is applicable for the following options: --likelihood-scan, --asymptotic, --tanb+. When using batch job submission in one of these main options it is possible to go up by one level in the directory structure when specifying ARGs as described in the head of this parameter description. Note: when runnign in batch mode batch jobs are split by each mass directory that can be found in the directory structure.")
-cgroup.add_option("-q", "--queue", dest="queue", default="-q 8nh", type="string", help="The queue, to which to submit the jobs. [Default: \"-q 8nh\"]")
+cgroup.add_option("--toys", dest="toys", default="5000", type="string",
+                  help="Set the number toys that you want to use to calculate the toy based expectations. This is valid for the calculation of the expected significance (--significance) and for the calculation of the expected 95% CL upper asymptotic CLs limit with a SM signal injected (--injected). [Default: 5000]")
+cgroup.add_option("-q", "--queue", dest="queue", default="-q 8nh", type="string",
+                  help="The queue, to which to submit the jobs. [Default: \"-q 8nh\"]")
 cgroup.add_option("--interactive", dest="interactive", default=False, action="store_true",
                   help="Force interactive running. Do not run in batch mode. This will lead to one large execution. [Default: False]")
 parser.add_option_group(cgroup)
@@ -51,21 +58,30 @@ parser.add_option_group(dgroup)
 ##
 ## SIGNIFICANCE
 ##
-egroup = OptionGroup(parser, "SIGNIFICANCE OPTIONS", "These are the command line options that can be used to configure the submission of toys for significance calculations. The toys can be submitted to the grid or to lxb (lxq) using crab. The number of toys per mass that will be the same for all masses and the number of crab jobs that will be the same for all masses can be configured.")
-egroup.add_option("--toys", dest="toys", default="5000", type="string",
-                  help="Set the number toys that you want to use to calculate the toy based expected significance. [Default: 5000]")
+egroup = OptionGroup(parser, "SIGNIFICANCE OPTIONS", "These are the command line options that can be used to configure the submission of toys for significance calculations. The toys can be submitted to the grid or to lxb (lxq) using crab. The number of toys per mass that will be the same for all masses can be configured via the option --toys as described in section BATCH OPTIONS. The number of crab jobs that will be the same for all masses can be configured via the option --jobs as described in this section.")
 egroup.add_option("--jobs", dest="jobs", default="100", type="string",
                   help="Set the number crab jobs that you want to submit to calculate the toy based expected significance. [Default: 100]")
 egroup.add_option("--grid", dest="grid", default=False, action="store_true",
                   help="Use this option if you want to submit your jobs to the grid. Otherwise they will be submitted to lxb (lxq). [Default: False]")
 parser.add_option_group(egroup)
 ##
+## INJECTED OPTIONS
+##
+fgroup = OptionGroup(parser, "INJECTED OPTIONS", "These are the command line options that can be used to configure lxb (lxq) batch job submission for 95% CL upper asymptotic CLs limits with a SM signal injected via the script lxb-injected.py, which used the script limit.py. The expected limit with a SM signal injected is obtained from a large sample of toys. For each toy a pseudo data set is prepared and the observed limit is calculated. The toys are collected using the script limit.py with option --injected. The expected limit and the uncertainties are obtained from the median and the quantiles of the collected toys. The number of toys (--toys) and the batch queue options (--queue) can be configured using the options described in section BATCH OPTIONS of this parameter description. The option --bunch-masses as described below can be used to define a maximal number of masses that will be bunched into a single job before a new job is created. The option --nuisances can be used to pass a pre-defined set of nuisance parameters to limit.py that will be used instead of determining the central values of the nuisances by the prefit for each toy on its own.")
+fgroup.add_option("--bunch-masses", dest="nmasses", default="10", type="string",
+                  help="This is the maximal number of masses that will be bunched into a single job, before a new job will be created. If you want to do the calculation for nine masses, 1000 tos and maximal 4 masses per bunch you will create 3000 jobs, 2000 jobs for 4 masses each and 1000 jobs for a single mass. [Default: 10]")
+fgroup.add_option("--external-pulls", dest="nuisances", default="", type="string",
+                  help="Specify the full path to a root output file of limit.py with option --max-likelihood (e.g. mlfit.root) to enforce the use of pre-calculated central values of the nuisance parmeters involved in this fit. It is in the responsibility of the user that the nuisance parameter names in the output file and the nuisance parameter names in the current workspace fit together. The limit will be run w/ option --no-prefit. For more details have a look to the description of option --external-pulls of the script limit.py. [Default: \"\"]")
+fgroup.add_option("--signal-plus-BG", dest="signal_plus_BG", default=False, action="store_true",
+                  help="When using options --external-pulls, use the fit results with signal plus background. If 'False' the fit result of the background only hypothesis is used. [Default: False]")
+parser.add_option_group(fgroup)
+##
 ## TANB+
 ##
-fgroup = OptionGroup(parser, "TANB+ OPTIONS", "These are the command line options that can be used to configure the submission of tanb+. This option is special in the way that it needs modifications of the directory structure before the limits can be run. Via the script submit.py this setup can only be run interactively using the commend option --setup. Once the directory structure has been set up the limit calculation can be run interactively or in batrch mode.")
-fgroup.add_option("--setup", dest="setup", default=False, action="store_true",
+ggroup = OptionGroup(parser, "TANB+ OPTIONS", "These are the command line options that can be used to configure the submission of tanb+. This option is special in the way that it needs modifications of the directory structure before the limits can be run. Via the script submit.py this setup can only be run interactively using the commend option --setup. Once the directory structure has been set up the limit calculation can be run interactively or in batrch mode.")
+ggroup.add_option("--setup", dest="setup", default=False, action="store_true",
                   help="Use the script to setup the directory structure for direct mA-tanb limits interactively. If false the the script will assume that this has already been done and execute the limit calculation either in batch mode or interactive. [Default: False]")
-parser.add_option_group(fgroup)
+parser.add_option_group(ggroup)
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -75,6 +91,10 @@ if len(args) < 1 :
 
 import re
 import os
+
+from HiggsAnalysis.HiggsToTauTau.utils import contained
+from HiggsAnalysis.HiggsToTauTau.utils import is_number
+from HiggsAnalysis.HiggsToTauTau.utils import get_mass
 
 def subvec(vec, min, max):
     '''
@@ -100,29 +120,6 @@ def vec2str(vec, delim=" "):
         str+=i
         str+=delim
     return str
-
-def get_mass(directory) :
-    '''
-    Returns the mass from a directory string. directories
-    are expected to end with a floating point number of
-    with an integer number. Trailing slashes are removed.
-    The mass is returned as a string.
-    '''
-    idx = directory.rfind("/")
-    if idx == (len(directory) - 1):
-        idx = directory[:idx - 1].rfind("/")
-    mass  = directory[idx + 1:]
-    return mass.rstrip('/')
-
-def is_number(s):
-    '''
-    check if the string is a number or not (works for int and float)
-    '''
-    try:
-        float(s)
-        return True
-    except ValueError:
-        return False
 
 def lxb_submit(dirs, cmd='--asymptotic', opts='') :
     '''
@@ -257,6 +254,40 @@ if options.optAsym :
             model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
             opts  = "--physics-model-options 'modes=bbH;bbHRange=0:{BBH}'".format(BBH='5')
         lxb_submit(dirs, cmd, "{MODEL} {OPTS} {USER}".format(MODEL=model, OPTS=opts, USER=options.opt))
+##
+## INJECTED (asymptotic limits with signal injected, implementation for SM only)
+##
+if options.optInject :
+    ## the input for lxb-injected.py should be a path, that is passed on as an 
+    ## option and the masses in question. Prepare here the corresponding paths
+    ## and directories. 
+    paths = []
+    dirs = {}
+    for dir in args :
+        head = dir[:dir.rstrip('/').rfind('/')]
+        if not contained(head, paths) :
+            paths.append(head)
+            dirs[head] = []
+    for dir in args :
+        for path in paths :
+            if path in dir :
+                tail = dir[dir.rstrip('/').rfind('/')+1:]
+                if is_number(tail) :
+                    dirs[path].append(tail)
+    ## prepare options
+    opts = options.opt
+    opts+=" --observedOnly"
+    if not options.nuisances == "" :
+        opts+=" --no-prefit --external-pulls \"{PATH}\" --signal-plus-background {SPLUSB}".format(PATH=options.nuisances, SPLUSB=options.signal_plus_BG)
+    ## do the submit 
+    for path in paths :
+        jobname = "injected-"+path[path.rstrip('/').rfind('/')+1:]
+        if options.printOnly :
+            print "lxb-injected.py -n {NAME} -i {PATH} --bsub \"{SUB}\" --njob {NJOB} --mass-points-per-job {NMASSES} --options \"{OPTS}\" {MASSES}".format(
+                NAME=jobname, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, MASSES=' '.join(dirs[path]))
+        else :
+            os.system("lxb-injected.py -n {NAME} -i {PATH} --bsub \"{SUB}\" --njob {NJOB} --mass-points-per-job {NMASSES} --options \"{OPTS}\" {MASSES}".format(
+                NAME=jobname, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, MASSES=' '.join(dirs[path])))
 ##
 ## CLs
 ##
