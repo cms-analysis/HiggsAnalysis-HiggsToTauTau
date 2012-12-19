@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
   // show signal strength as function of mH/mA as determined from a 2d maxlikelihood fit 
   types.push_back(std::string("--likelihood-scan"));
   // show 2D scans (still in developement)
-  types.push_back(std::string("--mulidim-fit"));
+  types.push_back(std::string("--multidim-fit"));
   // show limits as of HIG-11-020
   types.push_back(std::string("--HIG-11-020"));
   // show limits as of HIG-11-029
@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
     std::cout << " ERROR: The specified limit type (" << argv[1] << ")"
 	      << " is not supported. Available limit types are:" << std::endl;
     for( std::vector<std::string>::const_iterator type = types.begin(); type!=types.end(); ++type ){
-      std::cout << "  - " << *type << std::endl;
+      std::cout << "  " << *type << std::endl;
     }
     exit(0);
   }
