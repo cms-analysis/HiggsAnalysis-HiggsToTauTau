@@ -183,18 +183,18 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     band1D(scanOut, xval, yval, bestfit, graph68, (xmax-xmin)/nbins/2, (ymax-ymin)/nbins/2, "(68%)");
 
     if(png_){
-    canv.Print(TString::Format("scan-%s-versus-%s-%d.png", xval.c_str(), yval.c_str(), (int)mass));
+      canv.Print(TString::Format("%s-%s-%s-%d.png", output_.c_str(), label_.c_str(), model_.c_str(), (int)mass));
     }
     if(pdf_){
-      canv.Print(TString::Format("scan-%s-versus-%s-%d.pdf", xval.c_str(), yval.c_str(), (int)mass));
-      canv.Print(TString::Format("scan-%s-versus-%s-%d.eps", xval.c_str(), yval.c_str(), (int)mass));
+      canv.Print(TString::Format("%s-%s-%s-%d.png", output_.c_str(), label_.c_str(), model_.c_str(), (int)mass));
+      canv.Print(TString::Format("%s-%s-%s-%d.png", output_.c_str(), label_.c_str(), model_.c_str(), (int)mass));
     }
     if(txt_){
-      TString path = TString::Format("%s_%s_68-%d", output_.c_str(), label_.c_str(), (int)mass);
-      print(path, xval, yval, graph68, "txt");
-      print(path, xval, yval, graph95, "txt");
-      print(path, xval, yval, graph68, "tex");
-      print(path, xval, yval, graph95, "tex");
+      TString path;
+      path = TString::Format("%s_%s_%s-%d-CL68", output_.c_str(), label_.c_str(), model_.c_str(), (int)mass);
+      print(path, xval, yval, graph68, "txt"); print(path, xval, yval, graph68, "tex");
+      path = TString::Format("%s_%s_%s-%d-CL95", output_.c_str(), label_.c_str(), model_.c_str(), (int)mass);
+      print(path, xval, yval, graph95, "txt"); print(path, xval, yval, graph95, "tex");
     }
     if(root_){
       TFile* output = new TFile(TString::Format("scan-%s-versus-%s.root", xval.c_str(), yval.c_str()), "update");
