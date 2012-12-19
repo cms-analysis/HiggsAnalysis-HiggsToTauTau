@@ -1,3 +1,26 @@
+def get_mass(directory) :
+    '''
+    Returns the mass from a directory string. directories
+    are expected to end with a floating point number of
+    with an integer number. Trailing slashes are removed.
+    The mass is returned as a string.
+    '''
+    idx = directory.rfind("/")
+    if idx == (len(directory) - 1):
+        idx = directory[:idx - 1].rfind("/")
+    mass  = directory[idx + 1:]
+    return mass.rstrip('/')
+
+def is_number(s):
+    '''
+    check if the string is a number or not (works for int and float)
+    '''
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
 def contained(elem, list) :
     """
     return true if the element is contained in the list
