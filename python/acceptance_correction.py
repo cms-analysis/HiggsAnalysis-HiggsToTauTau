@@ -23,13 +23,15 @@ def acceptance_correction(process, mass) :
     """
     function to return the acceptance correction for the smearing of MSSM higgs masses
     at high nominal mass due to initial and infal state radiation. Pivotal values
-    correspond to the simulated masses. Values in between are interpolated liearly.
+    correspond to the simulated masses. Values in between are interpolated linearly.
     The parameter mass is expected to be of type float. The parameter process is
-    expected to be of type string. It can take 'ggH' or 'bbH' as values. The acceptance
-    correction currently is only available from 90 to 500, beyond the values for 90 or
-    500 are passed on as best approximations.
+    expected to be of type string. It can take 'ggH' or 'bbH' as values. For other
+    processes than these -999. will be returned.
     """
-    # new acceptance correction factors from valentina, keep in mind: "the samples I have at hand are skimmed requiring a loose lepton, so not perfectly inclusive"
+    if not (process == "ggH" or process == "bbH") :
+        return -999.
+    ## new acceptance correction factors from valentina, keep in mind: "the samples I 
+    ## have at hand are skimmed requiring a loose lepton, so not perfectly inclusive"
     values = { 
         80.   : ({"ggH" : 1.018, "bbH" : 1.008}),
         90.   : ({"ggH" : 1.019, "bbH" : 1.008}),
