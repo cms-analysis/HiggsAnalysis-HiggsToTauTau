@@ -54,6 +54,8 @@ parser.add_option_group(cgroup)
 dgroup = OptionGroup(parser, "MODEL OPTIONS", "These are the command line options that can be used to configure the submission of multi-dimensional fits or asymptotic limits that do require specific models. Specific models can be used for option --multidim-fit and for option --asymptotic. Possible model options for option --multidim-fit are: ggH-bbH (MSSM), ggH-qqH (SM) and cV-cF (SM). Possible model options for option --asymptotic are: \"\" (SM), ggH (MSSM) and bbH (MSSM).")
 dgroup.add_option("--physics-model", dest="fitModel", default="", type="choice", choices=["ggH-bbH", "ggH-qqH", "cV-cF", "ggH", "bbH", ""],
                   help="Define the model for which you want to submit the process with option --multidim-fit ('ggH-bbH' (MSSM), 'ggH-qqH' (SM) and 'cV-cF' (SM)) or option --asymptotic ('ggH' (MSSM), 'bbH' (MSSM) and '' (SM)). [Default: \"\"]")
+dgroup.add_option("--acceptance-corrections", dest="acceptCorrect", default=False, action="store_true",
+                  help="For the models 'ggH' (MSSM) and 'bbH' (MSSM) when running with main option --asymptotic choose here whether to apply the acceotance corrections due to the chosen mass window on generator level or not. In any other configuration this option wil have no effect. [Default: False]")
 parser.add_option_group(dgroup)
 ##
 ## SIGNIFICANCE
@@ -211,6 +213,16 @@ if options.optSig :
 ## ASYMPTOTIC (with dedicated models)
 ##
 if options.optAsym :
+    ## apply acceptance corrections for physics-models 'ggH or 'bbH' if configured such
+    if options.fitModel == 'ggH' or options.fitModel == 'bbH' :
+        if options.acceptCorrect :
+            for dir in args :
+                mass = get_mass(dir)
+                path = dir[:dir.rstrip('/').rfind('/')]
+                if options.printOnly :
+                    "scale2accept.py -i {PATH} {MASS}".format(PATH=path, MASS=mass)
+                else :
+                    os.system("scale2accept.py -i {PATH} {MASS}".format(PATH=path, MASS=mass))
     ## define command line, model and model options
     cmd   = "--asymptotic"
     model = ""
