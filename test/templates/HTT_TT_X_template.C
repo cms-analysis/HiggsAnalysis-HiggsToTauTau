@@ -15,6 +15,7 @@
 #include <TPaveText.h>
 
 #include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
 
 $DEFINE_MSSM
 

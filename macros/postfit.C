@@ -15,7 +15,7 @@
 #include <TPaveText.h>
 
 #include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
-
+#include "HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
 
 /**
    \class   postfit postfit.C "HiggsAnalysis/HiggsToTauTau/macros/postfit.C"
