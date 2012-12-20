@@ -12,43 +12,14 @@ parser.add_option("--batch-options", dest="batch", default="", type="string",
                   help="Add all options you want to pass to lxb/lxq encapsulated by quotation marks '\"'. [Default: \"\"]")
 parser.add_option("--limit-options", dest="limit", default="", type="string",
                   help="Add all options you want to pass to limit.py encapsulated by quotation marks '\"'. [Default: \"\"]")
+parser.add_option("--lxq", dest="lxq", default=False, action="store_true",
+                  help="Specify this option when running on lxq instead of lxq. [Default: False]")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 if len(args) < 1 :
     parser.print_usage()
     exit(1)
 
-    
-'''
-
-Parellelize calls to limit.py using LXBATCH.
-
-Usage:
-
-    lxb_limit.py submit_name "bsub opts" "ARG_GLOB" "limit.py options"
-
-ARG_GLOB must expand to a list of directories.  Each entry in this list will be
-a separate lxbatch job.  NB the use of quotes about ARG_GLOB.
-
-Note also you may need to escape the quotes around sub-arguments.  For example,
-
-    limit.py --tanb+ --userOpt '--minosAlgo stepping' cmb/*
-
-would be
-
-    lxb_limit.py my_limits "-q 1nh -n 6" "cmb/*"  --tanb+ --tanbparallel 6 --userOpt \'--minosAlgo stepping\'
-
-will produce
-
-    my_limits_submit.sh
-
-which bsubs
-
-    my_limits_0.sh
-    ...
-    my_limits_n.sh
-
-'''
 import os
 import sys
 import glob
@@ -58,13 +29,9 @@ log = logging.getLogger("lxb-limit")
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 dirglob = args[0]
-print dirglob
 name = options.name
-print name
 bsubargs = options.batch
-print bsubargs
 option_str = options.limit
-print option_str
 
 script_template = '''#!/bin/bash
 
@@ -80,6 +47,12 @@ $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} {director
 
 '''
 
+lxq_template_head = '''#!/bin/bash
+export SCRAM_ARCH=$scram_arch
+ini cmssw
+ini autoproxy
+'''
+
 condor_sub_template = '''
 log = condor.log
 notification = never
@@ -93,10 +66,16 @@ if not glob.glob(dirglob):
     print "No limit directories found in glob %s" % glob
     sys.exit(1)
 
+if options.lxq :
+    script_template = script_template.replace('#!/bin/bash', lxq_template_head)
+
 submit_name = '%s_submit.sh' % name
 with open(submit_name, 'w') as submit_script:
     if bsubargs == "condor":
         submit_script.write(condor_sub_template)
+    if options.lxq :
+        submit_script.write('export scram_arch=$SCRAM_ARCH\n')
+        submit_script.write('export cmssw_base=$CMSSW_BASE\n')
     if not os.path.exists(name):
         os.system("mkdir %s" % name)
     for i, dir in enumerate(glob.glob(dirglob)):
@@ -127,6 +106,10 @@ with open(submit_name, 'w') as submit_script:
                 % (os.getcwd(), script_file_name.replace('.sh', '.stderr')))
             submit_script.write("queue\n")
         else:
-            submit_script.write('bsub %s %s/%s\n'
-                                % (bsubargs, os.getcwd(), script_file_name))
+            if options.lxq :
+                submit_script.write('qsub -l site=hh -l h_vmem=4000M %s -v scram_arch -v cmssw_base %s\n'
+                                    % (bsubargs, script_file_name))
+            else :
+                submit_script.write('bsub %s %s/%s\n'
+                                    % (bsubargs, os.getcwd(), script_file_name))
 os.system('chmod a+x %s' % submit_name)
