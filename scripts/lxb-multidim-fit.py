@@ -122,6 +122,6 @@ with open(submit_name, 'w') as submit_script:
                     QUEUE=options.bsub, USER=os.environ['USER'], PATH=os.getcwd(), FILE=script_file_name))
 os.system('chmod a+x %s' % submit_name)
 ## execute 
-#os.system('./%s' % submit_name)
+os.system('./%s' % submit_name)
 ## store
 os.system('mv %s %s' % (submit_name, options.name))
