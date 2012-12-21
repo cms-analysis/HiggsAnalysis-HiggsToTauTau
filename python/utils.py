@@ -21,6 +21,19 @@ def is_number(s):
     except ValueError:
         return False
 
+def is_integer(elem):
+    '''
+    check if the element is an integer number or close to an integer number within
+    a precision of 1e-6
+    '''
+    try:
+        int(elem)
+    except ValueError:
+        return False
+    if abs(int(elem) - float(elem)) < 1e-6:
+        return True
+    return False
+
 def contained(elem, list) :
     """
     return true if the element is contained in the list
@@ -35,8 +48,6 @@ def mass_category(mass, category, channel) :
     return the mass category depending on the value of mass. Currently we
     will have only one mass category for the pt sub-categorization.
     """
-    # Temprorarily only use 1 mass cat.
-    #return 0
     value = float(mass)
     mass_category = 0
     if "hbb" in channel :
@@ -51,15 +62,6 @@ def mass_category(mass, category, channel) :
             elif value<200 :
                 mass_category = 0
     return mass_category
-
-def is_integer(elem):
-    try:
-        int(elem)
-    except ValueError:
-        return False
-    if abs(int(elem) - float(elem)) < 1e-6:
-        return True
-    return False
 
 def parseArgs(args) :
     """
