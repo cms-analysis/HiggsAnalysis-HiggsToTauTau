@@ -15,6 +15,7 @@ if len(args) < 1 :
 import os
 import re
 
+from HiggsAnalysis.HiggsToTauTau.utils import contained
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
 from HiggsAnalysis.HiggsToTauTau.acceptance_correction import acceptance_correction
 
@@ -38,26 +39,42 @@ class RescaleDatacards:
     def scale(self, values) :
         """
         Rescales a MSSM datacard by acceptance_correction according to the restriction of the mass window on
-        generator level. this correction is obtained from accdeptance_correction. For shape analyses all related
-        histograms including shapes are rescaled accordingly. The latter is done by calling the rescaleSignal.C
-        macro in the HiggsAnalysis/HiggstoTauTau package. A list of rates is returned in which the old signal
-        rates have been replaced by new ones if appropriate. The function acts on the following class members:
+        generator level. This correction is obtained from the python function accdeptance_correction. For
+        shape analyses all related histograms including shapes are rescaled accordingly. The latter is done
+        by calling the rescaleSignal.C macro in the HiggsAnalysis/HiggstoTauTau package. A list of rates is
+        returned in which the old signal rates have been replaced by new ones if appropriate. The function
+        acts on the following class members:
         
         mass      : the actual mass point (needed for the look up of the SM xsec and BR for the correction)
         histfiles : list of full paths of the root files that contain the shape histograms
         old_rates : the list of rates (signal rates are picked and rescaled)
         processes : the list of processes (signal processes are picked and the histograms scaled)
         indexes   : the list of indexes of the signal processes in processes and rates
+
+        NOTE: the scale factors are mass dependent. To prevent the histogram files being scale more than once
+        a hash file is created each time a file has been modified for a given process. If a hash file does
+        exist already the histograms in this file will not be rescaled. The hash files should be deleted for
+        each new mass value that is processed. 
         """
         ## copy of list of old rates
         new_rates = list(self.old_rates)
         for idx in self.indexes :
             old_rate = float(self.old_rates[idx])
             new_rate = old_rate*values[self.processes[idx]]
+            #print "file:", self.datacard, "process:", self.processes[idx], "value", values[self.processes[idx]]
+            #print "old rate:", old_rate
+            #print "new rate:", new_rate
             for histfile in self.histfiles :
-                ## do the scale replacement in all histfile accordingly
-                os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{INPUT}\",\"{PROCESS}\",0\)".format(
-                    CMSSW_BASE=os.environ.get("CMSSW_BASE"), SCALE=values[self.processes[idx]], INPUT=histfile, PROCESS=self.processes[idx]))
+                ## do the scale replacement in all histfiles. Make
+                ## sure each file is scaled only once per mass value
+                path = histfile[:histfile.rfind('/')]
+                hash_key = '.hash_scale_'+histfile[histfile.rfind('/')+1:histfile.rfind('.root')]+'-'+self.processes[idx]
+                if not os.path.exists("%s/%s" % (path, hash_key)) :
+                    os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{INPUT}\",\"{PROCESS}\",0\)".format(
+                        CMSSW_BASE=os.environ.get("CMSSW_BASE"), SCALE=values[self.processes[idx]], INPUT=histfile, PROCESS=self.processes[idx]+str(mass)))
+                    os.system("touch %s/%s" % (path, hash_key))
+                else :
+                    pass
             new_rates[idx] = "%f" % new_rate
         return new_rates
 
@@ -83,7 +100,8 @@ class RescaleDatacards:
                 #print "found shape line: ", wordarr[0]
                 for (i,element) in enumerate(wordarr) :
                     if element.find(".root") !=-1 :
-                        if not self.histfiles.count(histpath+element)>0 :
+                        ## make sure each element appears only once
+                        if not contained(histpath+element, self.histfiles) :
                             self.histfiles.append(histpath+element)
             ## find process lines to mark signal processes
             if wordarr[0] == "process":
@@ -137,5 +155,8 @@ for mass in parseArgs(args) :
         if datacard_match.search(piece) :
             datacards.append(piece)
     for datacard in datacards :
+        print 'processing datacard: ', datacard
         rescaleDatacard = RescaleDatacards(mass, "%s/%s" % (path, datacard))
         rescaleDatacard.run()
+    ## reset for each mass value
+    os.system("rm %s/.hash_scale_*" % path.replace(str(mass), 'common'))
