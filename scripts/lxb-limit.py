@@ -8,12 +8,14 @@ parser = OptionParser(usage="usage: %prog [options] ARG", description="This is a
 ##
 parser.add_option("--name", dest="name", default="batch", type="string",
                   help="Add the job name here. [Default: \"batch\"]")
-parser.add_option("--batch-options", dest="batch", default="", type="string",
-                  help="Add all options you want to pass to lxb/lxq encapsulated by quotation marks '\"'. [Default: \"\"]")
 parser.add_option("--limit-options", dest="limit", default="", type="string",
                   help="Add all options you want to pass to limit.py encapsulated by quotation marks '\"'. [Default: \"\"]")
+parser.add_option("--batch-options", dest="batch", default="", type="string",
+                  help="Add all options you want to pass to lxb/lxq encapsulated by quotation marks '\"'. [Default: \"\"]")
 parser.add_option("--lxq", dest="lxq", default=False, action="store_true",
-                  help="Specify this option when running on lxq instead of lxq. [Default: False]")
+                  help="Specify this option when running on lxq instead of lxb. [Default: False]")
+parser.add_option("--condor", dest="condor", default=False, action="store_true",
+                  help="Specify this option when running on condor instead of lxb. [Default: False]")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 if len(args) < 1 :
@@ -33,7 +35,8 @@ name = options.name
 bsubargs = options.batch
 option_str = options.limit
 
-script_template = '''#!/bin/bash
+script_template = '''
+#!/bin/bash
 
 cd {working_dir}
 eval `scram runtime -sh`
@@ -47,7 +50,8 @@ $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} {director
 
 '''
 
-lxq_template_head = '''#!/bin/bash
+lxq_fragment = '''
+#!/bin/bash
 export SCRAM_ARCH=$scram_arch
 ini cmssw
 ini autoproxy
@@ -67,11 +71,11 @@ if not glob.glob(dirglob):
     sys.exit(1)
 
 if options.lxq :
-    script_template = script_template.replace('#!/bin/bash', lxq_template_head)
+    script_template = script_template.replace('#!/bin/bash', lxq_fragment)
 
 submit_name = '%s_submit.sh' % name
 with open(submit_name, 'w') as submit_script:
-    if bsubargs == "condor":
+    if options.condor:
         submit_script.write(condor_sub_template)
     if options.lxq :
         submit_script.write('export scram_arch=$SCRAM_ARCH\n')
@@ -94,7 +98,7 @@ with open(submit_name, 'w') as submit_script:
                 directory=dir
                 ))
         os.system('chmod a+x %s' % script_file_name)
-        if bsubargs == "condor":
+        if options.condor :
             submit_script.write("\n")
             submit_script.write(
                 "executable = %s/%s\n" % (os.getcwd(), script_file_name))
@@ -105,11 +109,10 @@ with open(submit_name, 'w') as submit_script:
                 "error = %s/%s\n"
                 % (os.getcwd(), script_file_name.replace('.sh', '.stderr')))
             submit_script.write("queue\n")
-        else:
-            if options.lxq :
-                submit_script.write('qsub -l site=hh -l h_vmem=4000M %s -v scram_arch -v cmssw_base %s\n'
-                                    % (bsubargs, script_file_name))
-            else :
-                submit_script.write('bsub %s %s/%s\n'
-                                    % (bsubargs, os.getcwd(), script_file_name))
+        elif options.lxq :
+            submit_script.write('qsub -l site=hh -l h_vmem=4000M %s -v scram_arch -v cmssw_base %s\n'
+                                % (bsubargs, script_file_name))
+        else :
+            submit_script.write('bsub {QUEUE} -oo /tmp/{USER}/%J.log {PATH}/{FILE}\n'.format(
+                QUEUE=bsubargs, USER=os.environ['USER'], PATH=os.getcwd(), FILE=script_file_name))
 os.system('chmod a+x %s' % submit_name)

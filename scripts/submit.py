@@ -47,6 +47,10 @@ cgroup.add_option("-q", "--queue", dest="queue", default="-q 8nh", type="string"
                   help="The queue, to which to submit the jobs. [Default: \"-q 8nh\"]")
 cgroup.add_option("--interactive", dest="interactive", default=False, action="store_true",
                   help="Force interactive running. Do not run in batch mode. This will lead to one large execution. [Default: False]")
+cgroup.add_option("--lxq", dest="lxq", default=False, action="store_true",
+                  help="Specify this option when running on lxq instead of lxb for simple batch job submissions. [Default: False]")
+cgroup.add_option("--condor", dest="condor", default=False, action="store_true",
+                  help="Specify this option when running on condor instead of lxb for simple batch job submissions. [Default: False]")
 parser.add_option_group(cgroup)
 ##
 ## MODEL OPTIONS
@@ -134,13 +138,19 @@ def lxb_submit(dirs, cmd='--asymptotic', opts='') :
         ana = dir[:dir.rfind('/')]
         limit = dir[len(ana)+1:]
         jobname = ana[ana.rfind('/')+1:]+'-'+limit
+        ## add compliance with lxq or condor
+        sys = ''
+        if options.lxq :
+            sys = ' --lxq'
+        elif options.condor :
+            sys = ' --condor'
         ## create submission scripts
         if options.printOnly :
-            print "lxb-limit.py --name {JOBNAME} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" \"{DIR}/*\"".format(
-                JOBNAME=jobname, DIR=dir, QUEUE=options.queue, METHOD=cmd, OPTS=opts)
+            print "lxb-limit.py --name {JOBNAME} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" {SYS} \"{DIR}/*\"".format(
+                JOBNAME=jobname, DIR=dir, QUEUE=options.queue, METHOD=cmd, OPTS=opts, SYS=sys)
         else:
-            os.system("lxb-limit.py --name {JOBNAME} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" \"{DIR}/*\"".format(
-                JOBNAME=jobname, DIR=dir, QUEUE=options.queue, METHOD=cmd, OPTS=opts))
+            os.system("lxb-limit.py --name {JOBNAME} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" {SYS} \"{DIR}/*\"".format(
+                JOBNAME=jobname, DIR=dir, QUEUE=options.queue, METHOD=cmd, OPTS=opts, SYS=sys))
             ## execute
             os.system("./{JOBNAME}_submit.sh".format(JOBNAME=jobname))
             ## store
@@ -220,7 +230,7 @@ if options.optAsym :
                 mass = get_mass(dir)
                 path = dir[:dir.rstrip('/').rfind('/')]
                 if options.printOnly :
-                    "scale2accept.py -i {PATH} {MASS}".format(PATH=path, MASS=mass)
+                    print "scale2accept.py -i {PATH} {MASS}".format(PATH=path, MASS=mass)
                 else :
                     os.system("scale2accept.py -i {PATH} {MASS}".format(PATH=path, MASS=mass))
     ## define command line, model and model options
@@ -295,10 +305,10 @@ if options.optInject :
     for path in paths :
         jobname = "injected-"+path[path.rstrip('/').rfind('/')+1:]
         if options.printOnly :
-            print "lxb-injected.py -n {NAME} -i {PATH} --bsub \"{SUB}\" --njob {NJOB} --mass-points-per-job {NMASSES} --options \"{OPTS}\" {MASSES}".format(
+            print "lxb-injected.py --name {NAME} --input {PATH} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" {MASSES}".format(
                 NAME=jobname, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, MASSES=' '.join(dirs[path]))
         else :
-            os.system("lxb-injected.py -n {NAME} -i {PATH} --bsub \"{SUB}\" --njob {NJOB} --mass-points-per-job {NMASSES} --options \"{OPTS}\" {MASSES}".format(
+            os.system("lxb-injected.py --name {NAME} --input {PATH} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" {MASSES}".format(
                 NAME=jobname, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, MASSES=' '.join(dirs[path])))
 ##
 ## CLs
