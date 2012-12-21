@@ -193,23 +193,31 @@ if options.optMDFit :
         ## MSSM ggH versus bbH
         if "ggH-bbH" in options.fitModel :
             from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
-            cmd   = "lxb-multidim-fit.py -n GGH-BBH-{MASS} --njob 100 --npoints 400".format(MASS=mass)
+            cmd   = "lxb-multidim-fit.py --name GGH-BBH-{MASS} --njob 100 --npoints 400".format(MASS=mass)
             model = "--physics-model 'ggH-bbH=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
             opts  = "--physics-model-options 'modes=ggH,bbH;ggHRange=0:{GGH};bbHRange=0:{BBH}'".format(GGH=bounds[mass][0], BBH=bounds[mass][1])
         ## SM ggH versus qqH (this configuration is optimized fro mH=125)
         elif "ggH-qqH" in options.fitModel :
-            cmd   = "lxb-multidim-fit.py -n GGH-QQH-{MASS} --njob 100 --npoints 625".format(MASS=mass)
+            cmd   = "lxb-multidim-fit.py --name GGH-QQH-{MASS} --njob 100 --npoints 625".format(MASS=mass)
             model = "--physics-model 'ggH-qqH=HiggsAnalysis.CombinedLimit.PhysicsModel:floatingXSHiggs'"
             opts  = "--physics-model-options 'modes=ggH,qqH ggHRange=0:5 qqHRange=0:5'"
         ## SM cV versus cF (this configuration is optimized fro mH=125)
         elif "cV-cF" in options.fitModel :
-            cmd   = "lxb-multidim-fit.py -n CV-CF-{MASS} --njob 100 --npoints 225".format(MASS=mass)
+            cmd   = "lxb-multidim-fit.py --name CV-CF-{MASS} --njob 100 --npoints 225".format(MASS=mass)
             model = "--physics-model 'cV-cF=HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcF'"
             opts  = "--physics-model-options 'modes=ggH,qqH cVRange=0:3 cFRange=0:3'"
+        ## add lxq compliance
+        sys = ""
+        if options.lxq :
+            sys = " --lxq"
+        ## add batch options
+        queue = " --batch-options '%s'" % options.queue
         if options.printOnly :
-            print "{CMD} {MODEL} {OPTS} {USER} {DIR}".format(CMD=cmd, MODEL=model, OPTS=opts, USER=options.opt, DIR=dir)
+            print "{CMD} {MODEL} {OPTS} {QUEUE} {SYS} {USER} {DIR}".format(
+                CMD=cmd, MODEL=model, OPTS=opts, QUEUE=queue, SYS=sys, USER=options.opt, DIR=dir)
         else :
-            os.system("{CMD} {MODEL} {OPTS} {USER} {DIR}".format(CMD=cmd, MODEL=model, OPTS=opts, USER=options.opt, DIR=dir))
+            os.system("{CMD} {MODEL} {OPTS} {QUEUE} {SYS} {USER} {DIR}".format(
+                CMD=cmd, MODEL=model, OPTS=opts, QUEUE=queue, SYS=sys, USER=options.opt, DIR=dir))
 ##
 ## SIGNIFICANCE
 ##
