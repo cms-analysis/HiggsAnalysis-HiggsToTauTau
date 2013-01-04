@@ -2,9 +2,9 @@
 from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
-parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...", description="This is a script to submit a set of jobs to set up the datacards structure for direct mA-tanb limit calculation to lxb (lxq)")
-parser.add_option("--name", dest="name", default="setup-tanb", type="string",
-                  help="Set the name of the submission. All scripts concerned with the submission will be located in a directory with that name in your working directory. [Default: \"setup-tanb\"]")
+parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...", description="This is a script to submit a set of jobs to set up the datacard structure for direct mA-tanb limit calculation to lxb (lxq). ARGs corresponds to the mass directories or to the parent directories that should contain the masses directories.")
+parser.add_option("--name", dest="name", default="submit", type="string",
+                  help="Set the name of the submission. All scripts concerned with the submission will be located in a directory with that name in your working directory. [Default: \"xsec2tanb\"]")
 parser.add_option("--lxq", dest="lxq", default=False, action="store_true",
                   help="Specify this option when running on lxq instead of lxb. [Default: False]")
 
@@ -19,7 +19,7 @@ import sys
 import glob
 
 import logging
-log = logging.getLogger("lxb-tanb-setup")
+log = logging.getLogger("xsec2tanb")
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 from HiggsAnalysis.HiggsToTauTau.utils import is_number
@@ -81,7 +81,10 @@ def submit(name, dirs) :
                 if options.lxq :
                     submit_script.write('qsub -l site=hh -j y -o /dev/null -l h_vmem=4000M -v scram_arch -v cmssw_base %s\n' % script_file_name)
                 else :
-                    submit_script.write('bsub -q 8nh -oo /tmp/{USER}/%J.log {FILE}\n'.format(USER=os.environ['USER'], FILE=script_file_name))
+                    os.system('touch /tmp/{USER}/{LOG}'.format(
+                        USER=os.environ['USER'], LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log')))
+                    submit_script.write('bsub -q 8nh -oo /tmp/{USER}/{LOG} {PWD}/{FILE}\n'.format(
+                        USER=os.environ['USER'], LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log'), PWD=os.getcwd(), FILE=script_file_name))
                 os.system('chmod a+x %s' % submit_name)
 
 dirs = []
