@@ -2,7 +2,7 @@
 from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
-parser = OptionParser(usage="usage: %prog [options] ARG", description="This is a script for simple job submission of limit.py processes to lxb/lxq. It is e.g. called from submit.py, when running this script in batch mode for several main options. The arguments ARGs correspond to the directories that are meant to be processed by limit.py")
+parser = OptionParser(usage="usage: %prog [options] ARGs", description="This is a script for simple job submission of limit.py processes to lxb/lxq. It is e.g. called from submit.py, when running this script in batch mode for several main options. The arguments ARGs correspond to the directories that are meant to be processed by limit.py")
 ##
 ## MAIN OPTIONS
 ##
@@ -30,7 +30,7 @@ import logging
 log = logging.getLogger("lxb-limit")
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
-dirglob = args[0]
+#dirglob = args[0]
 name = options.name
 bsubargs = options.batch
 option_str = options.limit
@@ -66,9 +66,9 @@ requirements = HasAFS_OSG && TARGET.FilesystemDomain =!= UNDEFINED && TARGET.UWC
 
 '''
 
-if not glob.glob(dirglob):
-    print "No limit directories found in glob %s" % glob
-    sys.exit(1)
+#if not glob.glob(dirglob):
+#    print "No limit directories found in glob %s" % glob
+#    sys.exit(1)
 
 if options.lxq :
     script_template = script_template.replace('#!/bin/bash', lxq_fragment)
@@ -82,7 +82,8 @@ with open(submit_name, 'w') as submit_script:
         submit_script.write('export cmssw_base=$CMSSW_BASE\n')
     if not os.path.exists(name):
         os.system("mkdir %s" % name)
-    for i, dir in enumerate(glob.glob(dirglob)):
+    for i, dir in enumerate(args):
+    #for i, dir in enumerate(glob.glob(dirglob)):
         ## don't submit jobs on old LSF output
         if 'LSFJOB' in dir:
             continue

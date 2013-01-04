@@ -6,7 +6,10 @@ parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...", descrip
 ##
 ## MAIN OPTIONS
 ##
-agroup = OptionGroup(parser, "MAIN OPTIONS", "These are the command line options that list all available processes that can be executed via this script. Each process is run with a default configuration that has been recently used for analysis. Depending on the process the execution of the script will result in the submission of a pre-defined set of batch jobs via lxb (lxq) or in a submission of a pre-defined set of jobs via crab. The options that will lead submission to lxb (lxq) are: --likelihood-scan, --multidim-fit, --asymptotic, --tanb+. The options that will lead to crab submission are: --significance, --CLs, --bayesian, --tanb. The latter requires the proper setup of a glite and a crab environment. Note that this is the case even if the submission would only take place via lxb (lxq), as the grid environment is used internally by crab. All options are explained in the following. All command line options in this section are exclusive. For the options --likelihood-scan, --asymptotic, --tanb+ it is possible to force interactive running. If run in batch mode the jobs will be split per mass. In this it is possible go up by one level in the directory structure, i.e. the ARGs \"MY-LIMIT/cmb MY-LIMIT/em MY-LIMIT/et ...\" will lead to the submission of a corresponding batch job for each mass point in each directiry that ARGs is pointing to.")
+agroup = OptionGroup(parser, "MAIN OPTIONS", "These are the command line options that list all available processes that can be executed via this script. Each process is run with a default configuration that has been recently used for analysis. Depending on the process the execution of the script will result in the submission of a pre-defined set of batch jobs via lxb (lxq) or in a submission of a pre-defined set of jobs via crab. The options that will lead submission to lxb (lxq) are: --max-likelihood, --likelihood-scan, --multidim-fit, --asymptotic, --tanb+. The options that will lead to crab submission are: --significance, --CLs, --bayesian, --tanb. The latter requires the proper setup of a glite and a crab environment. Note that this is the case even if the submission would only take place via lxb (lxq), as the grid environment is used internally by crab. All options are explained in the following. All command line options in this section are exclusive. For the options --likelihood-scan, --asymptotic, --tanb+ it is possible to force interactive running. If run in batch mode the jobs will be split per mass.")
+agroup.add_option("--max-likelihood", dest="optMLFit", default=False, action="store_true",
+                  help="Perform a maximum likelihood fit scan to determine the signal strength from the datacards in the directory/ies corresponding to ARGs. This fit will be applied to the SM with single signal modifier. The pre-configuration corresponds to --stable, --rMin -5, --rMax 5. This pre-configuration will be applied irrespective of the mass, for which the process should be executed. The process will be executed via lxb (lxq), split by each single mass point that is part of ARGs or as a single interactive job when using the option --interactive. When submitting to lxb (lxq) you can configure the queue to which the jobs will be submitted as described in section BATCH OPTIONS of this parameter description. [Default: False]")
+
 agroup.add_option("--likelihood-scan", dest="optNLLScan", default=False, action="store_true",
                   help="Perform a maximum likelihood scan to determine the signal strength from the datacards in the directory/ies corresponding to ARGs. This scan will be applied to the SM with single signal modifier. The pre-configuration corresponds to --points 100, --rMin -2, --rMax 2. This pre-configuration will be applied irrespective of the mass, for which the process should be executed. The process will be executed via lxb (lxq), split by each single mass point that is part of ARGs or as a single interactive job when using the option --interactive. When submitting to lxb (lxq) you can configure the queue to which the jobs will be submitted as described in section BATCH OPTIONS of this parameter description. When running in batch mode you can go one level up in the expected directory structure as described in the head of this section. [Default: False]")
 agroup.add_option("--multidim-fit", dest="optMDFit", default=False, action="store_true",
@@ -127,12 +130,34 @@ def vec2str(vec, delim=" "):
         str+=delim
     return str
 
-def lxb_submit(dirs, cmd='--asymptotic', opts='') :
+def directories(args) :
+    ## prepare structure of parent directories
+    dirs = []
+    for dir in args :
+        if is_number(get_mass(dir)) or get_mass(dir) == "common" :
+            dir = dir[:dir.rstrip('/').rfind('/')]
+        if not dir in dirs :
+            dirs.append(dir)
+    ## prepare mapping of masses per parent directory
+    masses = {}
+    for dir in dirs :
+        buffer = []
+        for path in args :
+            if dir+'/' in path :
+                if is_number(get_mass(path)) :
+                    mass = get_mass(path)
+                    if not contained(mass, buffer) :
+                        buffer.append(mass)
+        masses[dir] = list(buffer)
+    return (dirs, masses)
+
+def lxb_submit(dirs, masses, cmd='--asymptotic', opts='') :
     '''
-    do an lxb submission for jobs that can be executed via limit.py.
-    dirs corresponds to a list of input directories, cmd to the
-    complete main option of limit.py and opts to additional options
-    that should be passed on to limit.py.
+    do a lxb submission for jobs that can be executed via limit.py.
+    dirs corresponds to a list of input directories, masses to a 
+    dictionary of masses per dir, cmd to the complete main option
+    of limit.py and opts to additional options that should be passed
+    on to limit.py.
     '''
     for dir in dirs:
         ana = dir[:dir.rfind('/')]
@@ -144,18 +169,39 @@ def lxb_submit(dirs, cmd='--asymptotic', opts='') :
             sys = ' --lxq'
         elif options.condor :
             sys = ' --condor'
+        ## create inputs corresponding to the masses per parent directory in dirs
+        inputs = ""
+        for mass in masses[dir] :
+            inputs+= dir+'/'+mass+' '
         ## create submission scripts
         if options.printOnly :
-            print "lxb-limit.py --name {JOBNAME} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" {SYS} \"{DIR}/*\"".format(
-                JOBNAME=jobname, DIR=dir, QUEUE=options.queue, METHOD=cmd, OPTS=opts, SYS=sys)
+            print "lxb-limit.py --name {JOBNAME} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" {SYS} {DIR}".format(
+                JOBNAME=jobname, DIR=inputs.rstrip(), QUEUE=options.queue, METHOD=cmd, OPTS=opts.rstrip(), SYS=sys)
         else:
-            os.system("lxb-limit.py --name {JOBNAME} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" {SYS} \"{DIR}/*\"".format(
-                JOBNAME=jobname, DIR=dir, QUEUE=options.queue, METHOD=cmd, OPTS=opts, SYS=sys))
+            os.system("lxb-limit.py --name {JOBNAME} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" {SYS} {DIR}".format(
+                JOBNAME=jobname, DIR=inputs.rstrip(), QUEUE=options.queue, METHOD=cmd, OPTS=opts.rstrip(), SYS=sys))
             ## execute
             os.system("./{JOBNAME}_submit.sh".format(JOBNAME=jobname))
             ## store
             os.system("mv {JOBNAME}_submit.sh {JOBNAME}".format(JOBNAME=jobname))
 
+##
+## MAX-LIKELIHOOD
+##
+if options.optMLFit :
+    if options.interactive :
+        for dir in args :
+            mass = get_mass(dir)
+            if mass == 'common' :
+                continue
+            if options.printOnly :
+                print"limit.py --max-likelihood --stable --rMin -5 --rMax 5 {DIR}".format(DIR=dir)
+            else :
+                os.system("limit.py --max-likelihood --stable --rMin -5 --rMax 5 {USER} {DIR}".format(USER=options.opt, DIR=dir))
+    else :
+        ## directories and mases per directory
+        struct = directories(args)
+        lxb_submit(struct[0], struct[1], "--max-likelihood", "--stable --rMin -5 --rMax 5 {USER}".format(USER=options.opt))
 ##
 ## LIKELIHOOD-SCAN
 ##
@@ -170,14 +216,9 @@ if options.optNLLScan :
             else :
                 os.system("limit.py --likelihood-scan --points 100 --rMin -2 --rMax 2 {USER} {DIR}".format(USER=options.opt, DIR=dir))
     else :
-        dirs = []
-        for dir in args :
-            ## chop off masses directory if present as this will be added automatically by the submission script
-            if is_number(get_mass(dir)) or get_mass(dir) == "common" :
-                dir = dir[:dir.rstrip('/').rfind('/')]
-            if not dir in dirs :
-                dirs.append(dir)
-        lxb_submit(dirs, "--likelihood-scan", "--points 100 --rMin -2 --rMax 2 {USER}".format(USER=options.opt))
+        ## directories and mases per directory
+        struct = directories(args)
+        lxb_submit(struct[0], struct[1], "--likelihood-scan", "--points 100 --rMin -2 --rMax 2 {USER}".format(USER=options.opt))
 ##
 ## MULTIDIM-FIT
 ##
@@ -266,13 +307,6 @@ if options.optAsym :
             else :
                 os.system("limit.py {CMD} {MODEL} {OPTS} {USER} {DIR}".format(CMD=cmd, MASS=mass, MODEL=model, OPTS=opts, USER=options.opt, DIR=dir))
     else :
-        dirs = []
-        for dir in args :
-            ## chop off masses directory if present as this will be added automatically by the submission script
-            if is_number(get_mass(dir)) or get_mass(dir) == "common" :
-                dir = dir[:dir.rstrip('/').rfind('/')]
-            if not dir in dirs :
-                dirs.append(dir)
         ## MSSM ggH while bbH is profiled (needs to be run with a fixed range for all masses here)
         if "ggH" in options.fitModel :
             from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
@@ -283,7 +317,9 @@ if options.optAsym :
             from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
             model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
             opts  = "--physics-model-options 'modes=bbH;bbHRange=0:{BBH}'".format(BBH='5')
-        lxb_submit(dirs, cmd, "{MODEL} {OPTS} {USER}".format(MODEL=model, OPTS=opts, USER=options.opt))
+        ## directories and mases per directory
+        struct = directories(args)
+        lxb_submit(struct[0], struct[1], cmd, "{MODEL} {OPTS} {USER}".format(MODEL=model, OPTS=opts, USER=options.opt))
 ##
 ## INJECTED (asymptotic limits with signal injected, implementation for SM only)
 ##
@@ -450,5 +486,7 @@ if options.optTanb or options.optTanbPlus :
                         dir = dir[:dir.rstrip('/').rfind('/')]
                     if not dir in dirs :
                         dirs.append(dir)
-                lxb_submit(dirs, "--tanb+", options.opt)
+                ## directories and mases per directory
+                struct = directories(args)
+                lxb_submit(struct[0], struct[1], "--tanb+", options.opt)
         cycle = cycle-1
