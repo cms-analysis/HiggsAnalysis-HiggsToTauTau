@@ -128,7 +128,6 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
 
     vector<double> crossing;
     crossing.push_back((min-max-y_max*min+y_min*max)/(y_min-y_max));
-    std::cout << "np: " << np << std::endl;
     //double crossing;
     //crossing = (1.-y_min)/(y_max-y_min)*(max-min); 
 				  
