@@ -163,10 +163,10 @@ if __name__ == "__main__":
                         help='Minimum error for systematic creation,'
                         'default %(default)0.2f')
 
-    parser.add_argument('--output-dir', dest='outputdir', default='setup_bbb',
+    parser.add_argument('-o', '--out', dest='outputdir', default='setup_bbb',
                         help='Output directory for modified cards. Default: setup_bbb')
 
-    parser.add_argument('--input-dir', dest='inputdir', default='setup',
+    parser.add_argument('-i', '--in', dest='inputdir', default='setup',
                         help='Output directory for modified cars. Default: setup')
 
     parser.add_argument('--mssm', dest='mssm', action='store_true',
