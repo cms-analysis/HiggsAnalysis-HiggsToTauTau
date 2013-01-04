@@ -41,7 +41,7 @@ bgroup.add_option("--shape", dest="shape", default="shape2", type="string",
                   help="Choose a dedicated algorithm for vertical shape morphing during roofit model creation. [Default: 'shape2']")
 bgroup.add_option('--external-pulls', dest='externalPulls', default=None, type="string",
                   help="Optionally constrain nuisance parameters using the result of a ML fit result (e.g. mlfit.root) that has been created beforehand. [Defasult: None]")
-bgroup.add_option("--signal-plus-background", dest="signal_plus_BG", default=False, action="store_true",
+bgroup.add_option("--SplusB", dest="signal_plus_BG", default=False, action="store_true",
                   help="When using options --external-pulls, use the fit results with signal plus background. If 'False' the fit result of the background only hypothesis is used. [Default: False]")
 bgroup.add_option("--confidence-level", dest="confidenceLevel", default="0.95", type="string",
                   help="Choose the confidence level at which to calculate the limit. This option only applies to asymptotic limit calculations. It does not apply to toy based methods, which have to be configured accordingly in the submission step (using the script submit.py). [Default: '0.95']")
