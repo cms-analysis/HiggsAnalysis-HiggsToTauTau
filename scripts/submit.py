@@ -439,9 +439,9 @@ if options.optTanb or options.optTanbPlus :
                     if mass == 'common' :
                         continue
                     if options.printOnly :
-                        print "limit.py --tanb+ {DIR}".format(DIR=dir)
+                        print "limit.py --tanb+ {OPTS} {DIR}".format(OPTS=options.opt, DIR=dir)
                     else :
-                        os.system("limit.py --tanb+ {DIR}".format(DIR=dir))
+                        os.system("limit.py --tanb+ {OPTS} {DIR}".format(OPTS=options.opt, DIR=dir))
             else :
                 dirs = []
                 for dir in args :
