@@ -10,10 +10,13 @@ PlotLimits::plotLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmEr
   // set up styles
   SetStyle();
   // create the unit line
-  TGraph* unit = new TGraph();
-  for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
-    if(valid_[imass]){
-      unit->SetPoint(ipoint, bins_[imass], 1.); ++ipoint;
+  TGraph* unit = 0;
+  if(!mssm_){
+    unit = new TGraph();
+    for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
+      if(valid_[imass]){
+	unit->SetPoint(ipoint, bins_[imass], 1.); ++ipoint;
+      }
     }
   }
   // set proper maximum
