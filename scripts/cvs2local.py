@@ -208,6 +208,14 @@ for period in periods :
                 for category in categories[channel] :
                     if options.verbose :
                         print "copying datacards for:", period, channel, category, mass
+                    ## check validity of run period
+                    if not period in valid_periods[channel] :
+                        #print "drop due to failing period: ", channel, valid_periods[channel], period
+                        continue
+                    ## check validity of mass
+                    if (float(mass)< valid_masses[channel][0] or float(mass)> valid_masses[channel][1]) :
+                        #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass
+                        continue  
                     if options.analysis == "mssm" :
                         add_mass("htt_{CHN}_{CAT}_{PERIOD}".format(CHN=channel, CAT=category, PERIOD=period), mass)
                         if options.no_update:
