@@ -37,7 +37,7 @@ logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 ## template for grid submission
 script_template = '''
-#!/usr/bin/bash
+#!/bin/bash
 
 cd {WORKING_DIR}
 eval `scram runtime -sh`
