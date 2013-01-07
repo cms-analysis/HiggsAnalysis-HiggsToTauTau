@@ -49,13 +49,6 @@ for idx in range(len(periods)) : periods[idx] = periods[idx].rstrip(',')
 channels = options.channels.split()
 for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
 
-## check whether absolute or relative input path has been set
-if not os.path.exists(options.input) :
-    print "INPUT PATH:", options.input, "does not exist, I'm checking whether you gave the relative input path"
-    path = os.environ["CMSSW_BASE"]+'/src/'+options.input
-    if os.path.exists(path) :
-        options.input = path
-
 ## setup output directory structure in case it does not exist, yet
 if not os.path.exists(options.out) :
     os.system("mkdir {OUTPUT}/".format(OUTPUT=options.out))
@@ -196,7 +189,7 @@ for channel in channels :
                     continue
                 print "creating datacard for:", options.analysis, period, channel, cat, fudge_mass
                 if options.analysis == "mssm" :                    
-                    os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{PER}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
+                    os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{PER}-{MASSCAT}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
                         CHN=prefix+channel,
                         ANA=options.analysis,
                         PER=period,
