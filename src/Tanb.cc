@@ -40,23 +40,22 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
 {
   // set up styles
   SetStyle();
+
   // create plain background
   TGraphAsymmErrors* plain=0;
   if(observed){
     plain=new TGraphAsymmErrors();
     plain->SetPoint(0, observed->GetX()[0], 100.);
+    plain->SetPointEYlow (0, 0);
+    plain->SetPointEYhigh(0, 100); 
     for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
       if(valid_[imass]){
 	plain->SetPoint(ipoint+1, observed->GetX()[ipoint], observed->GetY()[ipoint]); 
+	plain->SetPointEYlow (ipoint+1, 0);
+ 	plain->SetPointEYhigh(ipoint+1, 100);
 	++ipoint;
       }
     }
-    plain->SetPoint(bins_.size()-1, observed->GetX()[observed->GetN()-1]+150., 100.);
-    plain->SetPoint(bins_.size()  , plain->GetX()[0], 100.);
-
-    //for(int ipoint=0; ipoint<plain->GetN(); ++ipoint){
-    //  std::cout << "ipoint=" << ipoint << " x: " << plain->GetX()[ipoint] << " y: " << plain->GetY()[ipoint] << std::endl;
-    //}
   }
 
   // create LEP exclusion plot
