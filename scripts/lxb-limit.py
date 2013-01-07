@@ -114,6 +114,8 @@ with open(submit_name, 'w') as submit_script:
             submit_script.write('qsub -l site=hh -l h_vmem=4000M %s -v scram_arch -v cmssw_base %s\n'
                                 % (bsubargs, script_file_name))
         else :
-            submit_script.write('bsub {QUEUE} -oo /tmp/{USER}/%J.log {PATH}/{FILE}\n'.format(
-                QUEUE=bsubargs, USER=os.environ['USER'], PATH=os.getcwd(), FILE=script_file_name))
+            os.system('touch /tmp/{USER}/{LOG}'.format(
+                USER=os.environ['USER'], LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log')))
+            submit_script.write('bsub {QUEUE} -oo /tmp/{USER}/{LOG} {PATH}/{FILE}\n'.format(
+                QUEUE=bsubargs, USER=os.environ['USER'], LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log'), PATH=os.getcwd(), FILE=script_file_name))
 os.system('chmod a+x %s' % submit_name)
