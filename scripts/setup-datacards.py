@@ -188,7 +188,7 @@ for channel in channels :
                     #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass
                     continue
                 print "creating datacard for:", options.analysis, period, channel, cat, fudge_mass
-                if options.analysis == "mssm" :                    
+                if options.analysis == "mssm" :
                     os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{PER}-{MASSCAT}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
                         CHN=prefix+channel,
                         ANA=options.analysis,
