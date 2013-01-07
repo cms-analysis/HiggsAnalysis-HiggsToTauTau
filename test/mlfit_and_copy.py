@@ -1,11 +1,8 @@
 #!/usr/bin/env python
 from optparse import OptionParser, OptionGroup
 
-# ML-fit a directory of datcards and copy here for making plots
-# Usage: ./mlfit_and_copy.py <path>MY-LIMITS/125
-
 parser = OptionParser(usage="usage: %prog [options] input_path",
-                      description="Script to build up the necessart enviroment for postfit plots - including maxlikelihood calculation.")
+                      description="This is a script to build up the necessary enviroment for post-fit plots - including the max-likelihood calculation. ARG corresponds to the mass directory where to fin the datacards for the max-likelihood fit.")
 parser.add_option("--rMin", dest="rMin", default="-5.", type="string", help="Minimum value of signal strenth. [Default: -5.]")
 parser.add_option("--rMax", dest="rMax", default="5.", type="string", help="Maximum value of signal strenth. [Default: 5.]")
 parser.add_option("-s", "--skip", dest="skip", default=False, action="store_true", help="Skip the limit calculation in case it has been done already. [Default: False]")
