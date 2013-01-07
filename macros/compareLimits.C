@@ -17,6 +17,7 @@
 
 #include "HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
 #include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
 
 static const double MARKER_SIZE = 1.3;  // 0.7
 
@@ -103,7 +104,9 @@ channel(std::string& label){
 	  label==std::string("HIG-11-020") ||
 	  label==std::string("HIG-11-029") ||
 	  label==std::string("HIG-12-018") ||
-	  label==std::string("HIG-12-032")
+	  label==std::string("HIG-12-032") ||
+	  label==std::string("HIG-12-043") ||
+	  label==std::string("HIG-12-050")
 	  );
 }
 
@@ -168,14 +171,14 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("hzz2l2q"   )) title = std::string("H#rightarrowZZ#rightarrow2l2q");
   if(channel==std::string("hzz2l2t"   )) title = std::string("H#rightarrowZZ#rightarrow2l2#tau");
   if(channel==std::string("hzz2l2n"   )) title = std::string("H#rightarrowZZ#rightarrow2l2#nu");
-  if(channel==std::string("ggH"       )) title = std::string("gg#rightarrowH");
-  if(channel==std::string("bbH"       )) title = std::string("bb#rightarrowHbb");
+  if(channel==std::string("ggH"       )) title = std::string("gg#rightarrow#phi (bbH profiled)");
+  if(channel==std::string("bbH"       )) title = std::string("gg#rightarrowbb#phi (ggH profiled)");
   if(channel==std::string("mvis"      )) title = std::string("Visible mass");
   if(channel==std::string("ichep"     )) title = std::string("On ICHEP dataset");
-  if(channel==std::string("test-0"    )) title = std::string("Combined (w/o bin-by-bin)");
-  if(channel==std::string("test-1"    )) title = std::string("Data 2011, 7TeV");
-  if(channel==std::string("test-2"    )) title = std::string("Data 2012, 8TeV");
-  if(channel==std::string("test-3"    )) title = std::string("Combined (w/o prefit)");
+  if(channel==std::string("test-0"    )) title = std::string("gg#rightarrow#phi (bbH set to 0)");
+  if(channel==std::string("test-1"    )) title = std::string("gg#rightarrowbb#phi (ggH set to 0)");
+  if(channel==std::string("test-2"    )) title = std::string("gg#rightarrowbb#phi (w/o prefit)");
+  if(channel==std::string("test-3"    )) title = std::string("gg#rightarrow#phi (w/o prefit)");
   if(channel==std::string("test-4"    )) title = std::string("Test-4");
   if(channel==std::string("test-5"    )) title = std::string("Test-5");
   if(channel==std::string("old"       )) title = std::string("Old Limit");
@@ -199,6 +202,8 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("HIG-11-029")) title = std::string("HIG-11-029 (4.9 fb^{-1})");
   if(channel==std::string("HIG-12-018")) title = std::string("HIG-12-018 (10 fb^{-1})");
   if(channel==std::string("HIG-12-032")) title = std::string("HIG-12-032 (5-10 fb^{-1})");
+  if(channel==std::string("HIG-12-043")) title = std::string("HIG-12-043 (17 fb^{-1})");
+  if(channel==std::string("HIG-12-050")) title = std::string("HIG-12-050 (17 fb^{-1})");
   return title;
 }
 
@@ -294,6 +299,8 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["HIG-11-029" ] = kRed+2;
   colors["HIG-12-018" ] = kBlue;
   colors["HIG-12-032" ] = kRed+2;
+  colors["HIG-12-043" ] = kBlack;
+  colors["HIG-12-050" ] = kBlack;
 
   std::cout << " *******************************************************************************************************\n"
 	    << " * Usage     : root -l                                                                                  \n"
@@ -355,7 +362,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       // format x-axis
       std::string x_title;
       if(std::string(type).find("mssm")!=std::string::npos){
-	x_title = std::string("m_{A} [GeV]");
+	x_title = std::string("m_{#phi} [GeV]");
       }
       else{
 	x_title = std::string("m_{H} [GeV]");
@@ -411,7 +418,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       // format x-axis
       std::string x_title;
       if(std::string(type).find("mssm")!=std::string::npos){
-	x_title = std::string("m_{A} [GeV]");
+	x_title = std::string("m_{#phi} [GeV]");
       }
       else{
 	x_title = std::string("m_{H} [GeV]");
@@ -474,13 +481,13 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 	   }
       else{
 	CMSPrelim(label, "", 0.15, 0.835);
-	leg1 = new TLegend(legendOnRight ? 0.50 : 0.20, hobs.size()<5 ? 0.90-0.06*hobs.size() : 0.6, legendOnRight ? 0.94 : 0.63, 0.90);
+	leg1 = new TLegend(legendOnRight ? 0.50 : 0.20, hobs.size()<5 ? 0.90-0.08*hobs.size() : 0.6, legendOnRight ? 0.94 : 0.80, 0.90);
       }
     }
-    leg1->SetTextSize(0.02);
+    //leg1->SetTextSize(0.02);
     leg1->SetBorderSize( 0 );
     leg1->SetFillStyle ( 1001 );
-    leg1->SetFillColor ( 0 );
+    //leg1->SetFillColor ( 0 );
     leg1->SetFillColor (kWhite);
     leg1->SetHeader( "#bf{Observed Limit}" );
     for(unsigned int i=0; i<hobs.size(); ++i){
