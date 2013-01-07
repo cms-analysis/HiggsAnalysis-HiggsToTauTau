@@ -81,7 +81,7 @@ fgroup.add_option("--bunch-masses", dest="nmasses", default="10", type="string",
                   help="This is the maximal number of masses that will be bunched into a single job, before a new job will be created. If you want to do the calculation for nine masses, 1000 tos and maximal 4 masses per bunch you will create 3000 jobs, 2000 jobs for 4 masses each and 1000 jobs for a single mass. [Default: 10]")
 fgroup.add_option("--external-pulls", dest="nuisances", default="", type="string",
                   help="Specify the full path to a root output file of limit.py with option --max-likelihood (e.g. mlfit.root) to enforce the use of pre-calculated central values of the nuisance parmeters involved in this fit. It is in the responsibility of the user that the nuisance parameter names in the output file and the nuisance parameter names in the current workspace fit together. The limit will be run w/ option --no-prefit. For more details have a look to the description of option --external-pulls of the script limit.py. [Default: \"\"]")
-fgroup.add_option("--signal-plus-BG", dest="signal_plus_BG", default=False, action="store_true",
+fgroup.add_option("--SplusB", dest="signal_plus_BG", default=False, action="store_true",
                   help="When using options --external-pulls, use the fit results with signal plus background. If 'False' the fit result of the background only hypothesis is used. [Default: False]")
 parser.add_option_group(fgroup)
 ##
