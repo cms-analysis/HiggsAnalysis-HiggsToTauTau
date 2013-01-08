@@ -6,30 +6,50 @@ from optparse import OptionParser, OptionGroup
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGS",
                       description="Script to create datacards to be used locally or to be uploaded to the cvs. The output directory to copy the datacards to is expected to have a dedicated structure. Directories that do not exist are created on the fly. The default configuration is to upload all currently available datacards to the common cvs repository for the HiggsToTauTau analysis subgroup. ARGS corresponds to a list of integer values resembling the mass points for which you want to create the datacards. Ranges can be indicated e.g. by: 110-145'. That only any x-th mass point should be taken into account can be indicated e.g. by: 110-145:5. The latter example will pick up the masses 110 115 120 130 135 140 145. Any combination of this syntax is possible.")
-parser.add_option("-i", "--in", dest="input", default="%s/src/HiggsAnalysis/HiggsToTauTau/setup" % os.environ["CMSSW_BASE"], type="string", help="Full path to the input directory from which you would like to create the datacards. The path should be given relative to $CMSSW_BASE. Note that you need to obey the directory structures provide the corresponding configurationfiels for the translatino of the uncertainties into the datacards if you plan to use your own input path. [Default: src/HiggsAnalysis/HiggsToTauTau/setup]")
-parser.add_option("-o", "--out", dest="out", default="auxiliaries/datacards", type="string", help="Name of the output directory to which the datacards should be copied. [Default: auxiliaries/datacards]")
-parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="Choose between run periods [Default: \"7TeV 8TeV\"]")
+parser.add_option("-i", "--in", dest="input", default="%s/src/HiggsAnalysis/HiggsToTauTau/setup" % os.environ["CMSSW_BASE"], type="string",
+                  help="Full path to the input directory from which you would like to create the datacards. The path should be given relative to $CMSSW_BASE. Note that you need to obey the directory structures provide the corresponding configurationfiels for the translatino of the uncertainties into the datacards if you plan to use your own input path. [Default: src/HiggsAnalysis/HiggsToTauTau/setup]")
+parser.add_option("-o", "--out", dest="out", default="auxiliaries/datacards", type="string",
+                  help="Name of the output directory to which the datacards should be copied. [Default: auxiliaries/datacards]")
+parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
+                  help="Choose between run periods [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
-parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string", help="List of channels, for which datacards should be created. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et\"]")
-parser.add_option("-m", "--merge-no-signal", dest="merge", default=False, action="store_true", help="Merge the 0-Jet event categories, which are  w/o signal into the boost low pt event category. [Default: \"False\"]")
-parser.add_option("--SM4", dest="SM4", default=False, action="store_true", help="Re-scale signal samples in input file according to SM4 cross section*BR before datacard creation. [Default: False]")
+parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string",
+                  help="List of channels, for which datacards should be created. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et\"]")
+parser.add_option("-m", "--merge-no-signal", dest="merge", default=False, action="store_true",
+                  help="Merge the 0-Jet event categories, which are  w/o signal into the boost low pt event category. [Default: \"False\"]")
+parser.add_option("--SM4", dest="SM4", default=False, action="store_true",
+                  help="Re-scale signal samples in input file according to SM4 cross section*BR before datacard creation. [Default: False]")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
-cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
-cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 5", type="string", help="List em of event categories. [Default: \"0 1 2 3 5\"]")
-cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3 5", type="string", help="List mt of event categories. [Default: \"0 1 2 3 5\"]")
-cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 5", type="string", help="List et of event categories. [Default: \"0 1 2 3 5\"]")
-cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
-cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1", type="string", help="List of vhtt event categories. [Default: \"0 1\"]")
-cats1.add_option("--sm-categories-vhbb", dest="vhbb_sm_categories", default="0 1 2 3 4 5 6 7 8 9", type="string", help="List of vhbb event categories. [Default: \"0 1 2 3 4 5 6 7 8 9\"]")
+cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string",
+                 help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
+cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 5", type="string",
+                 help="List em of event categories. [Default: \"0 1 2 3 5\"]")
+cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3 5", type="string",
+                 help="List mt of event categories. [Default: \"0 1 2 3 5\"]")
+cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 5", type="string",
+                 help="List et of event categories. [Default: \"0 1 2 3 5\"]")
+cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1", type="string",
+                 help="List of tt event categories. [Default: \"0 1\"]")
+cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1", type="string",
+                 help="List of vhtt event categories. [Default: \"0 1\"]")
+cats1.add_option("--sm-categories-vhbb", dest="vhbb_sm_categories", default="0 1 2 3 4 5 6 7 8 9", type="string",
+                 help="List of vhbb event categories. [Default: \"0 1 2 3 4 5 6 7 8 9\"]")
 parser.add_option_group(cats1)
 cats2 = OptionGroup(parser, "MSSM EVENT CATEGORIES", "Event categories to be used for the MSSM analysis.")
-cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="8 9", type="string", help="List mm of event categories. [Default: \"8 9\"]")
-cats2.add_option("--mssm-categories-em", dest="em_mssm_categories", default="8 9", type="string", help="List em of event categories. [Default: \"8 9\"]")
-cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="8 9", type="string", help="List mt of event categories. [Default: \"8 9\"]")
-cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9", type="string", help="List et of event categories. [Default: \"8 9\"]")
-cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
-cats2.add_option("--mssm-categories-hmm", dest="hmm_mssm_categories", default="0 1", type="string", help="List of hmm event categories. [Default: \"0 1\"]")
-cats2.add_option("--mssm-categories-hbb", dest="hbb_mssm_categories", default="0 1 2 3 4 5 6", type="string", help="List of hbb event categories. [Default: \"0 1 2 3 4 5 6\"]")
+cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="8 9", type="string",
+                 help="List mm of event categories. [Default: \"8 9\"]")
+cats2.add_option("--mssm-categories-em", dest="em_mssm_categories", default="8 9", type="string",
+                 help="List em of event categories. [Default: \"8 9\"]")
+cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="8 9", type="string",
+                 help="List mt of event categories. [Default: \"8 9\"]")
+cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9", type="string",
+                 help="List et of event categories. [Default: \"8 9\"]")
+cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="0 1", type="string",
+                 help="List of tt event categories. [Default: \"0 1\"]")
+cats2.add_option("--mssm-categories-hmm", dest="hmm_mssm_categories", default="0 1", type="string",
+                 help="List of hmm event categories. [Default: \"0 1\"]")
+cats2.add_option("--mssm-categories-hbb", dest="hbb_mssm_categories", default="0 1 2 3 4 5 6", type="string",
+                 help="List of hbb event categories. [Default: \"0 1 2 3 4 5 6\"]")
 parser.add_option_group(cats2)
 
 ## check number of arguments; in case print usage
@@ -41,6 +61,7 @@ if len(args) < 1 :
 
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
 from HiggsAnalysis.HiggsToTauTau.utils import mass_category
+from HiggsAnalysis.HiggsToTauTau.acceptance_correction import acceptance_correction
 
 ## periods
 periods = options.periods.split()
@@ -157,7 +178,7 @@ def closest_simulated_masspoint(value) :
             delta = abs(float(value)-mass)
             closest = mass
     return closest
-    
+
 ## start the process here
 base = os.getcwd()
 for channel in channels :
