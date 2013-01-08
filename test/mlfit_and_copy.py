@@ -38,6 +38,7 @@ if options.analysis == "sm" :
 if options.analysis == "mssm" :
     os.system("cp -v %s/out/mlfit.txt ./fitresults/mlfit_mssm.txt" % dir)
     os.system("cp -v %s/*.txt ./datacards" % dir)
+    os.system("cp -v %s/../common/hbb.input_[78]TeV-[01].root ./root" % dir)
     os.system("cp -v %s/../common/htt_*.inputs-mssm-[78]TeV-0.root ./root" % dir)	
     ## for mm override the histograms as used for the limit calculation in favour of something more human readible
     os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-mssm-8TeV-0_postfit.root ./root/htt_mm.inputs-mssm-8TeV-0.root")

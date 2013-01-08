@@ -27,6 +27,7 @@ cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="8 9
 cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9", type="string", help="List et of event categories. [Default: \"8 9\"]")
 #cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
 #cats2.add_option("--mssm-categories-hmm", dest="hmm_mssm_categories", default="0 1", type="string", help="List of hmm event categories. [Default: \"0 1\"]")
+cats2.add_option("--mssm-categories-hbb", dest="hbb_mssm_categories", default="0 1 2 3 4 5 6", type="string", help="List of hbb event categories. [Default: \"0 1 2 3 4 5 6\"]")
 parser.add_option_group(cats2)
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -238,6 +239,7 @@ if options.analysis == "mssm" :
         "et"   : options.et_mssm_categories.split(),
         #"tt"   : options.tt_mssm_categories.split(),
         #"hmm"  : options.hmm_mssm_categories.split(),
+        "hbb"  : options.hbb_mssm_categories.split(),
         }
 for key in categories :
     for idx in range(len(categories[key])) : categories[key][idx] = categories[key][idx].rstrip(',')
@@ -259,25 +261,55 @@ category_mapping_tautau = {
     "0" : "boost",
     "1" : "vbf",
     }
+category_mapping_bb = {
+    "0" : "had0",
+    "1" : "had1",
+    "2" : "had2",
+    "3" : "had3",
+    "4" : "had4",
+    "5" : "had5",
+    "6" : "lep",
+    }
 category_mapping = {
     "mm" : category_mapping_classic,
     "em" : category_mapping_classic,
     "mt" : category_mapping_classic,
     "et" : category_mapping_classic,
-    "tt" : category_mapping_tautau
+    "tt" : category_mapping_tautau,
+    "hbb": category_mapping_bb
     }
 for chn in channels :
     for per in periods :
         for cat in categories[chn] :
-            histfile = "htt_{CHN}.input_{PER}.root".format(CHN=chn, PER=per) if options.analysis == "sm" else "htt_{CHN}.inputs-mssm-{PER}-0.root".format(CHN=chn, PER=per)
-            if chn == "mm" :
+            if chn == "hbb" :
+                histfile = "{CHN}.input_{PER}-0.root".format(CHN=chn, PER=per) ## mass 160 therefore masscat=0
+            else :
+                histfile = "htt_{CHN}.input_{PER}.root".format(CHN=chn, PER=per) if options.analysis == "sm" else "htt_{CHN}.inputs-mssm-{PER}-0.root".format(CHN=chn, PER=per)
+                if chn == "mm" :
                 ## there is one speciality for mm, which need special input files
-                histfile.replace(".root", "-svfit.root")
-	    process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties = parse_dcard("datacards/htt_{CHN}_{CAT}_{PER}.txt".format(CHN=chn, CAT=cat, PER=per), fitresults, "ANYBIN")
-            plots = Analysis(options.analysis, histfile, category_mapping[chn][cat],
-                             process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
-                             "templates/HTT_{CHN}_X_template.C".format(CHN=chn.upper()),
-                             "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per)
-                             )
+                    histfile.replace(".root", "-svfit.root")
+            if chn == "hbb" :
+                process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties = parse_dcard("datacards/{CHN}_{CAT}_{PER}.txt".format(CHN=chn, CAT=cat, PER=per), fitresults, "ANYBIN")
+                print "datacards/{CHN}_{CAT}_{PER}.txt".format(CHN=chn, CAT=cat, PER=per)
+                print cat
+                if cat=="6" :
+                    plots = Analysis(options.analysis, histfile, category_mapping[chn][cat],
+                                 process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
+                                 "templates/{CHN}_LEP_X_template.C".format(CHN=chn.upper()),
+                                 "{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per)
+                                 )
+                else :
+                    plots = Analysis(options.analysis, histfile, category_mapping[chn][cat],
+                                 process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
+                                 "templates/{CHN}_HAD_X_template.C".format(CHN=chn.upper()),
+                                 "{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per)
+                                 )
+            else :
+                process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties = parse_dcard("datacards/htt_{CHN}_{CAT}_{PER}.txt".format(CHN=chn, CAT=cat, PER=per), fitresults, "ANYBIN")
+                plots = Analysis(options.analysis, histfile, category_mapping[chn][cat],
+                                 process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
+                                 "templates/HTT_{CHN}_X_template.C".format(CHN=chn.upper()),
+                                 "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per)
+                                 )
             plots.run()
 

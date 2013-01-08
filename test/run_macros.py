@@ -22,6 +22,7 @@ cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="8 9
 cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9", type="string", help="List et of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
 cats2.add_option("--mssm-categories-hmm", dest="hmm_mssm_categories", default="0 1", type="string", help="List of hmm event categories. [Default: \"0 1\"]")
+cats2.add_option("--mssm-categories-hbb", dest="hbb_mssm_categories", default="0 1 2 3 4 5 6", type="string", help="List of hbb event categories. [Default: \"0 1 2 3 4 5 6\"]")
 parser.add_option_group(cats2)
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -56,6 +57,7 @@ if options.analysis == "mssm" :
         "et"   : options.et_mssm_categories.split(),
         "tt"   : options.tt_mssm_categories.split(),
         "hmm"  : options.hmm_mssm_categories.split(),
+        "hbb"  : options.hbb_mssm_categories.split(),
         }
 for key in categories :
     for idx in range(len(categories[key])) : categories[key][idx] = categories[key][idx].rstrip(',')
@@ -99,6 +101,13 @@ log = {
     ("mm", "7") : ["false",],
     ("mm", "8") : ["false", "true"],
     ("mm", "9") : ["false", "true"],
+    ("hbb", "0"): ["false",],
+    ("hbb", "1"): ["false",],
+    ("hbb", "2"): ["false",],
+    ("hbb", "3"): ["false",],
+    ("hbb", "4"): ["false",],
+    ("hbb", "5"): ["false",],
+    ("hbb", "6"): ["false",],
     }
 
 max = {
@@ -140,6 +149,13 @@ max = {
     ("mm", "7") :  ["-1.",],
     ("mm", "8") :  ["-1.", "-1",],
     ("mm", "9") :  ["-1.", "-1",],
+    ("hbb", "0") :  ["-1.",],
+    ("hbb", "1") :  ["-1.",],
+    ("hbb", "2") :  ["-1.",],
+    ("hbb", "3") :  ["-1.",],
+    ("hbb", "4") :  ["-1.",],
+    ("hbb", "5") :  ["-1.",],
+    ("hbb", "6") :  ["-1.",],
     }
 
 min = {
@@ -181,6 +197,13 @@ min = {
     ("mm", "7") : ["0.",],
     ("mm", "8") : ["0", "1e-2",],
     ("mm", "9") : ["0", "1e-1",],
+    ("hbb", "0"): ["0.",],
+    ("hbb", "1"): ["0.",],
+    ("hbb", "2"): ["0.",],
+    ("hbb", "3"): ["0.",],
+    ("hbb", "4"): ["0.",],
+    ("hbb", "5"): ["0.",],
+    ("hbb", "6"): ["0.",],
     }
 
 for chn in channels :
@@ -188,13 +211,24 @@ for chn in channels :
         for cat in categories[chn] :
             for sca in ["true", "false"] :
                 for i in range(len(log[chn,cat])) :
-                    bash_script = "root -l -b -q htt_{CHN}_{CAT}_{PER}.C+\(\"{SCA}\",\"{LOG}\",{MIN},{MAX}\)".format(
-                        SCA=sca,
-                        LOG=log[(chn,cat)][i],
-                        MIN=min[(chn,cat)][i],
-                        MAX=max[(chn,cat)][i],
-                        CHN=chn,
-                        CAT=cat,
-                        PER=per
-                        )
+                    if chn == "hbb" :
+                        bash_script = "root -l -b -q {CHN}_{CAT}_{PER}.C+\(\"{SCA}\",\"{LOG}\",{MIN},{MAX}\)".format(
+                            SCA=sca,
+                            LOG=log[(chn,cat)][i],
+                            MIN=min[(chn,cat)][i],
+                            MAX=max[(chn,cat)][i],
+                            CHN=chn,
+                            CAT=cat,
+                            PER=per
+                            )
+                    else :
+                        bash_script = "root -l -b -q htt_{CHN}_{CAT}_{PER}.C+\(\"{SCA}\",\"{LOG}\",{MIN},{MAX}\)".format(
+                            SCA=sca,
+                            LOG=log[(chn,cat)][i],
+                            MIN=min[(chn,cat)][i],
+                            MAX=max[(chn,cat)][i],
+                            CHN=chn,
+                            CAT=cat,
+                            PER=per
+                            )
                     os.system(bash_script)
