@@ -3,9 +3,13 @@ from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGs",
-                      description="Script to scale MSSM datacards by the acceptance corrections that have been derived for the restrictioin of the mass window on generator level. The acceptance corrections are obtained from HiggsAnalysis/HiggsToTauTau/python/acceptance_correction.py. The output will override the input datacards and corresponding input histogram files. ARGs corresponds to the mass points for which the datacards should be scaled.")
-parser.add_option("-i", "--input", dest="input", default="LIMITS", type="string", help="Input directory where to find the datacards to be scaled [Default: LIMITS]")
-
+                      description="This is a script to scale MSSM datacards by the acceptance corrections that have been derived for the restrictioin of the mass window on generator level. The acceptance corrections are obtained from HiggsAnalysis/HiggsToTauTau/python/acceptance_correction.py. The output will override the input datacards and corresponding input histogram files. ARGs corresponds to the mass points for which the datacards should be scaled.")
+parser.add_option("-i", "--input", dest="input", default="LIMITS", type="string",
+                  help="Input directory where to find the datacards to be scaled [Default: LIMITS]")
+parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
+                  help="Choose between run periods [Default: \"7TeV 8TeV\"]")
+parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string",
+                  help="List of channels, for which datacards should be created. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et\"]")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 if len(args) < 1 :
@@ -13,150 +17,41 @@ if len(args) < 1 :
     exit(1)
 
 import os
-import re
 
-from HiggsAnalysis.HiggsToTauTau.utils import contained
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
+from HiggsAnalysis.HiggsToTauTau.utils import mass_category
 from HiggsAnalysis.HiggsToTauTau.acceptance_correction import acceptance_correction
 
-class RescaleDatacards:
-    def __init__(self, masspoint, datacard, channel="htt") :
-        ## masspoint in question
-        self.mass = masspoint
-        ## name of datacard
-        self.datacard = datacard
-        ## dictionary for correction for sm branching ratio
-        self.decay_channel = channel
-        ## list of rates in datacard
-        self.old_rates = []
-        ## list of indexes where to find the actual signal
-        self.indexes = []
-        ## list of process names for signal processes (used for shape analyses)
-        self.processes = []
-        ## list of histfiles for shape analyses (determined form datacard)
-        self.histfiles = []
+source_path = ""
+if not os.path.exists(options.input) :
+    if os.path.exists(os.environ['CMSSW_BASE']+'/src/'+options.input) :
+        source_path = "%s/src/%s" % (os.environ['CMSSW_BASE'], options.input)
+    else :
+        print "ERROR: path", options.input, "does not exist."
+        exit(1)
+else:
+    source_path = options.input
 
-    def scale(self, values) :
-        """
-        Rescales a MSSM datacard by acceptance_correction according to the restriction of the mass window on
-        generator level. This correction is obtained from the python function accdeptance_correction. For
-        shape analyses all related histograms including shapes are rescaled accordingly. The latter is done
-        by calling the rescaleSignal.C macro in the HiggsAnalysis/HiggstoTauTau package. A list of rates is
-        returned in which the old signal rates have been replaced by new ones if appropriate. The function
-        acts on the following class members:
-        
-        mass      : the actual mass point (needed for the look up of the SM xsec and BR for the correction)
-        histfiles : list of full paths of the root files that contain the shape histograms
-        old_rates : the list of rates (signal rates are picked and rescaled)
-        processes : the list of processes (signal processes are picked and the histograms scaled)
-        indexes   : the list of indexes of the signal processes in processes and rates
+## periods
+periods = options.periods.split()
+for idx in range(len(periods)) : periods[idx] = periods[idx].rstrip(',')
+## channels
+channels = options.channels.split()
+for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
 
-        NOTE: the scale factors are mass dependent. To prevent the histogram files being scale more than once
-        a hash file is created each time a file has been modified for a given process. If a hash file does
-        exist already the histograms in this file will not be rescaled. The hash files should be deleted for
-        each new mass value that is processed. 
-        """
-        ## copy of list of old rates
-        new_rates = list(self.old_rates)
-        for idx in self.indexes :
-            old_rate = float(self.old_rates[idx])
-            new_rate = old_rate*values[self.processes[idx]]
-            #print "file:", self.datacard, "process:", self.processes[idx], "value", values[self.processes[idx]]
-            #print "old rate:", old_rate
-            #print "new rate:", new_rate
-            for histfile in self.histfiles :
-                ## do the scale replacement in all histfiles. Make
-                ## sure each file is scaled only once per mass value
-                path = histfile[:histfile.rfind('/')]
-                hash_key = '.hash_scale_'+histfile[histfile.rfind('/')+1:histfile.rfind('.root')]+'-'+self.processes[idx]
-                if not os.path.exists("%s/%s" % (path, hash_key)) :
-                    os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{INPUT}\",\"{PROCESS}\",0\)".format(
-                        CMSSW_BASE=os.environ.get("CMSSW_BASE"), SCALE=values[self.processes[idx]], INPUT=histfile, PROCESS=self.processes[idx]+str(mass)))
-                    os.system("touch %s/%s" % (path, hash_key))
-                else :
-                    pass
-            new_rates[idx] = "%f" % new_rate
-        return new_rates
-
-    def update_line(self, old_line, new_rates) :
-        """
-        Replaces the old_rates by the new_rates in the line string
-        """
-        new_list = old_line.split()
-        for idx in self.indexes :
-            new_list[idx+1] = str(new_rates[idx])
-        new_line = '\t   '.join(new_list)+'\n'
-        return new_line
-
-    def run(self) :
-        old_rates_line = ""
-        histpath =self.datacard[:self.datacard.rstrip('/').rfind('/')+1]
-        ## loop datacard in first go and collect information needed for rescaling
-        old_datacard = open(self.datacard,'r')
-        for line in old_datacard:
-            wordarr = line.lstrip().split();
-            ## collect histfiles for shape analyses
-            if wordarr[0] == "shapes" :
-                #print "found shape line: ", wordarr[0]
-                for (i,element) in enumerate(wordarr) :
-                    if element.find(".root") !=-1 :
-                        ## make sure each element appears only once
-                        if not contained(histpath+element, self.histfiles) :
-                            self.histfiles.append(histpath+element)
-            ## find process lines to mark signal processes
-            if wordarr[0] == "process":
-                #print "found process line: ", wordarr[0]
-                for (i,element) in enumerate(wordarr) :
-                    if i==0 :
-                        continue
-                    if element.isdigit() or element.lstrip("-").isdigit() :
-                        if int(element) <=0:
-                            self.indexes.append(i-1)
-                    else :
-                        self.processes.append(element)
-            ## find actual rates for rescaling
-            if wordarr[0].lower() == "rate":
-                #print "found rate line: ", wordarr[0]
-                old_rates_line = line
-                for (i,element) in enumerate(wordarr) :
-                    if i==0 :
-                        continue
-                    self.old_rates.append(element)
-        ## determine scale factors for acceptance correction
-        scales = {}
-        for proc in self.processes :
-            scales[proc] = acceptance_correction(proc, self.mass)
-        ## do the rescaling
-        new_rates = self.scale(scales)
-        new_rates_line = self.update_line(old_rates_line, new_rates)
-        ## create the new datacard
-        old_datacard = open(self.datacard, "r" )
-        new_datacard = open("tmp.txt"    , "w" )
-        for line in old_datacard :
-            new_datacard.write( line.replace(old_rates_line, new_rates_line) )
-        old_datacard.close()
-        new_datacard.close()
-        ## final copying and cleanup
-        #print "cp tmp.txt %s" % self.datacard 
-        os.system("cp tmp.txt %s" % self.datacard)
-        os.system("rm tmp.txt")
-
-for mass in parseArgs(args) :
-    datacards = []
-    path = "%s/%s/%s" % (os.getcwd(), options.input, mass)
-    ## collect what is there
-    basket = os.listdir(path)
-    ## skip empty directories
-    if len(basket)<1 :
-        continue
-    for piece in basket :
-        datacard_regex = r"htt_?\w*.txt"
-        datacard_match = re.compile(datacard_regex)
-        if datacard_match.search(piece) :
-            datacards.append(piece)
-    for datacard in datacards :
-        print 'processing datacard: ', datacard
-        rescaleDatacard = RescaleDatacards(mass, "%s/%s" % (path, datacard))
-        rescaleDatacard.run()
-    ## reset for each mass value
-    os.system("rm %s/.hash_scale_*" % path.replace(str(mass), 'common'))
+for channel in channels :
+    for period in periods :
+        for cat in ['0'] :
+            for mass in parseArgs(args) :
+                for process in ['ggH', 'bbH'] :
+                    exe = "{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+".format(CMSSW_BASE=os.environ.get("CMSSW_BASE"))
+                    os.system(r"root -l -b -q {EXE}\(true,{SCALE},\"{PATH}/{CHN}/htt_{CHN}.inputs-mssm-{PER}-{MASSCAT}.root\",\"{PROCESS}\",0\)".format(
+                        EXE=exe,
+                        PATH=source_path,
+                        SCALE=acceptance_correction(process, mass),
+                        CHN=channel,
+                        PER=period,
+                        MASSCAT=mass_category(mass,cat,'htt_'+channel),
+                        PROCESS=process+str(mass)
+                        ))
+                    
