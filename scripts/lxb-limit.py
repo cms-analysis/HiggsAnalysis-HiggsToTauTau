@@ -83,7 +83,7 @@ with open(submit_name, 'w') as submit_script:
         submit_script.write('export scram_arch=$SCRAM_ARCH\n')
         submit_script.write('export cmssw_base=$CMSSW_BASE\n')
     if not os.path.exists(name):
-        os.system("mkdir %s" % name)
+        os.system("mkdir -p %s" % name)
     for i, dir in enumerate(args):
     #for i, dir in enumerate(glob.glob(dirglob)):
         ## don't submit jobs on old LSF output

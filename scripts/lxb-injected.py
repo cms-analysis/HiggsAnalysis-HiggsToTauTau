@@ -110,7 +110,7 @@ mass_groups = []
 for group in group_into_chunks(masses_str, options.per_job):
     mass_groups.append(group)
 
-os.system("mkdir %s" % name)
+os.system("mkdir -p %s" % name)
 submit_name = '%s_submit.sh' % name
 with open(submit_name, 'w') as submit_script:
     tmpdir = '/tmp'
