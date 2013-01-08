@@ -225,6 +225,10 @@ if options.optMDFit :
         mass = get_mass(dir)
         if mass == 'common' :
             continue
+        ## define jobname prefix that will be combined with the model name 
+        prefix = dir[:dir.rfind(mass)].rstrip('/')
+        head = prefix[:prefix.rfind('/')]
+        prefix = prefix[head.rfind('/')+1:].replace('/', '-')
         ## define command line, model and model options
         cmd   = ""
         model = ""
@@ -232,17 +236,17 @@ if options.optMDFit :
         ## MSSM ggH versus bbH
         if "ggH-bbH" in options.fitModel :
             from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
-            cmd   = "lxb-multidim-fit.py --name GGH-BBH-{MASS} --njob 100 --npoints 400".format(MASS=mass)
+            cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-BBH-{MASS} --njob 100 --npoints 400".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'ggH-bbH=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
             opts  = "--physics-model-options 'modes=ggH,bbH;ggHRange=0:{GGH};bbHRange=0:{BBH}'".format(GGH=bounds[mass][0], BBH=bounds[mass][1])
         ## SM ggH versus qqH (this configuration is optimized fro mH=125)
         elif "ggH-qqH" in options.fitModel :
-            cmd   = "lxb-multidim-fit.py --name GGH-QQH-{MASS} --njob 100 --npoints 625".format(MASS=mass)
+            cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-QQH-{MASS} --njob 100 --npoints 625".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'ggH-qqH=HiggsAnalysis.CombinedLimit.PhysicsModel:floatingXSHiggs'"
             opts  = "--physics-model-options 'modes=ggH,qqH ggHRange=0:5 qqHRange=0:5'"
         ## SM cV versus cF (this configuration is optimized fro mH=125)
         elif "cV-cF" in options.fitModel :
-            cmd   = "lxb-multidim-fit.py --name CV-CF-{MASS} --njob 100 --npoints 225".format(MASS=mass)
+            cmd   = "lxb-multidim-fit.py --name {PRE}-CV-CF-{MASS} --njob 100 --npoints 225".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'cV-cF=HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcF'"
             opts  = "--physics-model-options 'modes=ggH,qqH cVRange=0:3 cFRange=0:3'"
         ## add lxq compliance
