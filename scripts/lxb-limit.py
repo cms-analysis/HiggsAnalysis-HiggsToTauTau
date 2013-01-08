@@ -34,6 +34,8 @@ logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 name = options.name
 bsubargs = options.batch
 option_str = options.limit
+## prepare log file directory
+os.system("mkdir -p log")
 
 script_template = '''
 #!/bin/bash
@@ -114,8 +116,8 @@ with open(submit_name, 'w') as submit_script:
             submit_script.write('qsub -l site=hh -l h_vmem=4000M %s -v scram_arch -v cmssw_base %s\n'
                                 % (bsubargs, script_file_name))
         else :
-            os.system('touch /tmp/{USER}/{LOG}'.format(
-                USER=os.environ['USER'], LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log')))
-            submit_script.write('bsub {QUEUE} -oo /tmp/{USER}/{LOG} {PATH}/{FILE}\n'.format(
-                QUEUE=bsubargs, USER=os.environ['USER'], LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log'), PATH=os.getcwd(), FILE=script_file_name))
+            os.system('touch {PWD}/log/{LOG}'.format(
+                PWD=os.getcwd(), LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log')))
+            submit_script.write('bsub {QUEUE} -oo {PATH}/log/{LOG} {PATH}/{FILE}\n'.format(
+                QUEUE=bsubargs, LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log'), PATH=os.getcwd(), FILE=script_file_name))
 os.system('chmod a+x %s' % submit_name)

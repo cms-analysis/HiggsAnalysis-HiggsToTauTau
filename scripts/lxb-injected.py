@@ -36,6 +36,8 @@ bsubargs = options.bsub
 input    = options.input.rstrip('/')
 njob     = options.njob
 opts     = options.opts
+## prepare log file directory
+os.system("mkdir -p log")
 
 random.seed()
 
@@ -154,10 +156,10 @@ with open(submit_name, 'w') as submit_script:
                 submit_script.write('qsub -l site=hh -l h_vmem=4000M %s -v scram_arch -v cmssw_base %s/%s\n'
                                     % (bsubargs, os.getcwd(), script_file_name.replace('.py', '.sh')))
             else:
-                os.system('touch /tmp/{USER}/{LOG}'.format(
-                        USER=os.environ['USER'], LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.py', '.log')))
-                submit_script.write('bsub {QUEUE} -oo /tmp/{USER}/{LOG} {PATH}/{FILE}\n'.format(
-                    QUEUE=bsubargs, USER=os.environ['USER'], LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.py', '.log'), PATH=os.getcwd(), FILE=script_file_name.replace('.py', '.sh')))
+                os.system('touch /{PWD}/log/{LOG}'.format(
+                        PWD=os.getcwd(), LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.py', '.log')))
+                submit_script.write('bsub {QUEUE} -oo {PATH}/log/{LOG} {PATH}/{FILE}\n'.format(
+                    QUEUE=bsubargs, LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.py', '.log'), PATH=os.getcwd(), FILE=script_file_name.replace('.py', '.sh')))
 ## change mode
 os.system('chmod a+x %s' % submit_name)
 ## execute 

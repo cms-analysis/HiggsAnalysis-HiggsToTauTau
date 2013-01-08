@@ -92,6 +92,8 @@ footprint.close()
 ## setup of physics model
 os.system("limit.py --multidim-fit --setupOnly --physics-model '{MODEL}' --physics-model-options '{OPT}' {DIR}".format(
     MODEL = options.fitModel, OPT = options.fitModelOptions, DIR = input))
+## prepare log file directory
+os.system("mkdir -p log")
 ## prepare submission scripts
 os.system("mkdir %s" % options.name)
 submit_name = '%s_submit.sh' % options.name
@@ -101,7 +103,7 @@ with open(submit_name, 'w') as submit_script:
         submit_script.write('export cmssw_base=$CMSSW_BASE\n')
     for idx in range(int(njobs)) :
         log.info("Generating submission script for %s", args[0])
-        script_file_name = '%s/submit_%i.sh' % (options.name, idx)
+        script_file_name = '%s/%s_%i.sh' % (options.name, options.name, idx)
         with open(script_file_name, 'w') as script:
             script.write(script_template.format(
                 WORKING_DIR = os.getcwd(),
@@ -118,10 +120,10 @@ with open(submit_name, 'w') as submit_script:
                 submit_script.write('qsub -l h_vmem=4000M -l site=hh %s -v scram_arch -v cmssw_base %s/%s\n'
                                     % (options.bsub, os.getcwd(), script_file_name))
             else:
-                os.system('touch /tmp/{USER}/{LOG}'.format(
-                        USER=os.environ['USER'], LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log')))
-                submit_script.write('bsub {QUEUE} -oo /tmp/{USER}/{LOG} {PATH}/{FILE}\n'.format(
-                    QUEUE=options.bsub, USER=os.environ['USER'], LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log'), PATH=os.getcwd(), FILE=script_file_name))
+                os.system('touch {PWD}/log/{LOG}'.format(
+                        PWD=os.getcwd(), LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log')))
+                submit_script.write('bsub {QUEUE} -oo {PWD}/log/{LOG} {PATH}/{FILE}\n'.format(
+                    QUEUE=options.bsub, LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log'), PATH=os.getcwd(), FILE=script_file_name))
 os.system('chmod a+x %s' % submit_name)
 ## execute 
 os.system('./%s' % submit_name)
