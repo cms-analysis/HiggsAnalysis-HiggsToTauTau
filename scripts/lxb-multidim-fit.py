@@ -95,7 +95,7 @@ os.system("limit.py --multidim-fit --setupOnly --physics-model '{MODEL}' --physi
 ## prepare log file directory
 os.system("mkdir -p log")
 ## prepare submission scripts
-os.system("mkdir %s" % options.name)
+os.system("mkdir -p %s" % options.name)
 submit_name = '%s_submit.sh' % options.name
 with open(submit_name, 'w') as submit_script:
     if options.lxq :
@@ -122,7 +122,7 @@ with open(submit_name, 'w') as submit_script:
             else:
                 os.system('touch {PWD}/log/{LOG}'.format(
                         PWD=os.getcwd(), LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log')))
-                submit_script.write('bsub {QUEUE} -oo {PWD}/log/{LOG} {PATH}/{FILE}\n'.format(
+                submit_script.write('bsub {QUEUE} -oo {PATH}/log/{LOG} {PATH}/{FILE}\n'.format(
                     QUEUE=options.bsub, LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log'), PATH=os.getcwd(), FILE=script_file_name))
 os.system('chmod a+x %s' % submit_name)
 ## execute 
