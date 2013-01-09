@@ -139,11 +139,14 @@ with open(submit_name, 'w') as submit_script:
                     TMPDIR=tmpdir,
                     ))
             with open(script_file_name.replace('.py', '.sh'), 'w') as sh_file:
-                sh_file.write("#!/bin/bash\n")
+                if options.lxq :
+                    sh_file.write(lxq_fragment)
+                else :
+                    sh_file.write("#!/bin/bash\n")
                 sh_file.write("cd {PWD}; eval `scram runtime -sh`\n".format(PWD=os.getcwd()))
                 sh_file.write("python %s/%s\n" % (os.getcwd(), script_file_name))
-            if options.lxq :
-                sh_file = sh_file.replace('#!/usr/bin/env python\n', lxq_fragment)
+            #if options.lxq :
+            #    sh_file = sh_file.replace('#!/bin/bash\n', lxq_fragment)
             os.system('chmod a+x %s' % script_file_name.replace('.py', '.sh'))
             bsubargs = options.bsub
             if options.condor :
