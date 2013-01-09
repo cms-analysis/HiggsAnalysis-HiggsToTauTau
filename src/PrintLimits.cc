@@ -11,13 +11,15 @@ PlotLimits::print(const char* filename, std::string& xval, std::string& yval, TG
       << " & " << std::setw(15) << std::right << yval << " (pb) "
       << std::right << "  \\\\"
       << std::endl << "\\hline" << std::endl;
-    unsigned int precision = 5;
-    for(int idx=0; idx<contour->GetN(); ++idx){
-      file
-	<< "   " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << contour->GetX()[idx]
-	<< " & " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << contour->GetY()[idx]
-	<< std::right << "  \\\\"
-	<< std::endl << "\\hline" << std::endl;
+    if(contour){
+      unsigned int precision = 5;
+      for(int idx=0; idx<contour->GetN(); ++idx){
+	file
+	  << "   " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << contour->GetX()[idx]
+	  << " & " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << contour->GetY()[idx]
+	  << std::right << "  \\\\"
+	  << std::endl << "\\hline" << std::endl;
+      }
     }
   }
   if(std::string(type) == std::string("txt")){
@@ -27,12 +29,14 @@ PlotLimits::print(const char* filename, std::string& xval, std::string& yval, TG
       << "   " << std::setw(15) << std::right << xval 
       << "   " << std::setw(15) << std::right << yval
       << std::endl;
-    unsigned int precision = 5;
-    for(int idx=0; idx<contour->GetN(); ++idx){
-      file
-	<< "   " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << contour->GetX()[idx]
-	<< "   " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << contour->GetY()[idx]
-	<< std::endl;
+    if(contour){
+      unsigned int precision = 5;
+      for(int idx=0; idx<contour->GetN(); ++idx){
+	file
+	  << "   " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << contour->GetX()[idx]
+	  << "   " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << contour->GetY()[idx]
+	  << std::endl;
+      }
     }
   }
 }

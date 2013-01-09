@@ -95,8 +95,8 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     TString fullpath = TString::Format("%s/%d/higgsCombine%s.MultiDimFit.mH%d.root", directory, (int)mass, label, (int)mass);
     std::cout << "open file: " << fullpath << std::endl;
 
-    TFile* file_ = TFile::Open(fullpath);
-    TTree* limit = (TTree*) file_->Get("limit");
+    TFile* file_ = TFile::Open(fullpath); if(!file_){ std::cout << "--> TFile is corrupt: skip" << std::endl; continue; }
+    TTree* limit = (TTree*) file_->Get("limit"); if(!limit){ std::cout << "--> TTree is corrupt: skip" << std::endl; continue; }
     float nll, x, y;
     float nbins = TMath::Sqrt(points);
     TH2F* scan2D = new TH2F("scan2D", "", nbins, xmin, xmax, nbins, ymin, ymax);
@@ -110,7 +110,6 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
 	scan2D->Fill(x, y, nll);
       }
     }
-
     // determine bestfit graph
     float bestFit=-1.; 
     float buffer, bestX=-999., bestY=-999.;
@@ -128,7 +127,6 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     }  
     TGraph* bestfit = new TGraph();
     bestfit->SetPoint(0, bestX, bestY);
-
     // determine newcontours for 68% CL and 95% CL limits
     double contours[2];
     contours[0] = 0.5;     //68% CL
@@ -154,7 +152,7 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
 	}
       }
     }    
-    
+
     // get the old contour plot back for plotting, for temperature plots it is filled 
     // as usual. Otherwise it's left empty and only used to set the boundaries for 
     // plotting.
@@ -202,10 +200,10 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
 	output->mkdir(output_.c_str());
 	output->cd(output_.c_str());
       }
-      graph68 ->Write(TString::Format("graph68_%d"  , (int)mass) );
-      filled68->Write(TString::Format("filled68_%d" , (int)mass) );      
-      graph95 ->Write(TString::Format("graph95_%d"  , (int)mass) );
-      filled95->Write(TString::Format("filled95_%d" , (int)mass) );
+      if(graph68 ){ graph68 ->Write(TString::Format("graph68_%d"  , (int)mass) ); }
+      if(filled68){ filled68->Write(TString::Format("filled68_%d" , (int)mass) ); }
+      if(graph95 ){ graph95 ->Write(TString::Format("graph95_%d"  , (int)mass) ); }
+      if(filled95){ filled95->Write(TString::Format("filled95_%d" , (int)mass) ); }
       plot2D  ->Write(TString::Format("plot2D_%d"   , (int)mass) );
       output->Close();
     }

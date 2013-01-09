@@ -41,48 +41,53 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, TGraph* graph95, TGraph* graph68, TG
   plot2D->Draw("colz");
   
   /// draw contours for 95% CL
-  if(!temp){
-    graph95->SetLineStyle(11); 
-    graph95->SetLineColor(kBlack);
-    graph95->SetLineWidth(3); 
-    graph95->SetFillColor(kBlue-10);
-    graph95->Draw("cfsame"); 
-    graph95->Draw("contsame");
-  }
-  else{
-    graph95->SetLineStyle(11); 
-    graph95->SetLineColor(kBlack); 
-    graph95->SetLineWidth(3);
-    graph95->Draw("contsame");
+  if(graph95){
+    if(!temp){
+      graph95->SetLineStyle(11); 
+      graph95->SetLineColor(kBlack);
+      graph95->SetLineWidth(3); 
+      graph95->SetFillColor(kBlue-10);
+      graph95->Draw("cfsame"); 
+      graph95->Draw("contsame");
+    }
+    else{
+      graph95->SetLineStyle(11); 
+      graph95->SetLineColor(kBlack); 
+      graph95->SetLineWidth(3);
+      graph95->Draw("contsame");
+    }
   }
   /// draw contours for 68% CL
-  if(!temp){ 
-    graph68->SetLineStyle(11); 
-    graph68->SetLineColor(kBlack); 
-    graph68->SetLineWidth(3);
-    graph68->SetFillColor(kBlue-8);
-    graph68->Draw("cfsame"); 
-    graph68->Draw("contsame");
-  }
-  else{
-    graph68->SetLineStyle(1); 
-    graph68->SetLineColor(kBlack); 
-    graph68->SetLineWidth(3);
-    graph68->Draw("contsame");
+  if(graph68){
+    if(!temp){ 
+      graph68->SetLineStyle(11); 
+      graph68->SetLineColor(kBlack); 
+      graph68->SetLineWidth(3);
+      graph68->SetFillColor(kBlue-8);
+      graph68->Draw("cfsame"); 
+      graph68->Draw("contsame");
+    }
+    else{
+      graph68->SetLineStyle(1); 
+      graph68->SetLineColor(kBlack); 
+      graph68->SetLineWidth(3);
+      graph68->Draw("contsame");
+    }
   }
   /// draw best fit
-  bestfit->SetMarkerStyle(34);
-  bestfit->SetMarkerSize(3.0);
-  bestfit->SetMarkerColor(kBlack);
-  bestfit->Draw("Psame");
-  
+  if(bestfit){
+    bestfit->SetMarkerStyle(34);
+    bestfit->SetMarkerSize(3.0);
+    bestfit->SetMarkerColor(kBlack);
+    bestfit->Draw("Psame");
+  }
   TLegend* leg = new TLegend(0.60, 0.70, 0.90, 0.90);
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
-  leg->AddEntry(graph95, "95% CL", temp ? "L" : "FL");
-  leg->AddEntry(graph68, "68% CL", temp ? "L" : "FL");
-  leg->AddEntry(bestfit, "Best fit", "P");
+  if(graph95){ leg->AddEntry(graph95, "95% CL", temp ? "L" : "FL"); }
+  if(graph68){ leg->AddEntry(graph68, "68% CL", temp ? "L" : "FL"); }
+  if(bestfit){ leg->AddEntry(bestfit, "Best fit", "P"); }
   leg->Draw("same");
   
   TString label = TString::Format("%s = %d GeV", masslabel.c_str(), mass);
