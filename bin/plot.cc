@@ -1,5 +1,7 @@
 #include <vector>
 #include <sstream>
+#include <iostream>
+#include <iterator>
 
 #include "HiggsAnalysis/HiggsToTauTau/interface/PlotLimits.h"
 #include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
@@ -31,6 +33,11 @@ void addParameter(edm::ParameterSet& pset, const std::string& key, const std::st
   else if (pset.existsAs<double>(key))
     // we use 0 or 1 for bool
     pset.addParameter<double>(key, StringToNumber<double>(value));
+  else if (pset.existsAs<std::vector<double> >(key)){
+    std::stringstream stream(value);
+    std::vector<double> values((std::istream_iterator<double>(stream)), std::istream_iterator<double>());
+    pset.addParameter<std::vector<double> >(key, values);
+  }
   else if (pset.existsAs<std::string>(key))
     pset.addParameter<std::string>(key, StringToNumber<std::string>(value));
   else {
