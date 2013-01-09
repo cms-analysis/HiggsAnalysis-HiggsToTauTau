@@ -1542,7 +1542,8 @@ if len(args) < 1 :
        exit(1)
 
 ## decide whether to run with acceptions or not 
-acc_corr = False if options.no_acc_corr else True
+#acc_corr = False if options.no_acc_corr else True
+acc_corr = False 
 ## skip first pass of 'bin'
 first_pass_on_bin = True
 ## name of the input datacard
