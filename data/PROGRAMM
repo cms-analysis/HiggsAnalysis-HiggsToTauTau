@@ -27,41 +27,41 @@ Standard Model Checklist:
 
 (3) Set up new datacards
 --------------------------------------
- - setup-datacards.py [-i MY-SETUP] -o aux-HCP [-p '7TeV 8TeV'] -a sm -c 'em et mt mm tt' 110-145:5
+ - setup-datacards.py [-i MY-SETUP] -o aux [-p '7TeV 8TeV'] -a sm -c 'em et mt mm tt' 110-145:5
    - rule of thumb to memorize the relevant options: "iOPAC"
    - you can use -i MY-SETUP to point to the setup directory, where you keep the mvis inputs.
    - you can drop -p, the default is '7TeV 8TeV'
    - attention, there is no comma separation allowed in -c
-   - in this case the output will be aux-HCP, this is a directory equivalent to auxiliaries. 
+   - in this case the output will be aux, this is a directory equivalent to auxiliaries. 
      You can also use auxiliaries directly, but nore that the datacards, which are in there 
      will be overwritten. 
 
 (4) Set up limit calculation directory
 --------------------------------------
- - cvs2local.py [-i aux-HCP] -o HCP-LIMITS [-p '7TeV 8TeV'] -a sm -c 'em et mt mm tt' 110-145:5 
+ - cvs2local.py [-i aux] -o LIMITS [-p '7TeV 8TeV'] -a sm -c 'em et mt mm tt' 110-145:5 
    - rule of thumb to memorize the relevant options: "iOPAC"
    - attention, there is no comma separation allowed in -c
 
 (4a) Set limit calculation with sub-channels
 --------------------------------------
- - setup-htt.py [-i aux-HCP] -o HCP-LIMITS [-p '7TeV 8TeV'] -a sm -c 'em et mt mm tt' 110-145:5
+ - setup-htt.py [-i aux] -o LIMITS [-p '7TeV 8TeV'] -a sm -c 'em et mt mm tt' 110-145:5
    - rule of thumb to memorize the relevant options: "iOPAC"
    - attention, there is no comma separation allowed in -c
-   - the directory structure should now contain HCP-LIMITS/0jet, HCP-LIMITS/boost, HCP-LIMITS/vbf, 
-     HCP-LIMITS/fermionic, HCP-LIMITS/gauge, HCP-LIMITS/em, HCP-LIMITS/mt, HCP-LIMITS/mm, HCP-LIMITS/et,
-     HCP-LIMITS/cmb
+   - the directory structure should now contain LIMITS/0jet, LIMITS/boost, LIMITS/vbf, 
+     LIMITS/fermionic, LIMITS/gauge, LIMITS/em, LIMITS/mt, LIMITS/mm, LIMITS/et,
+     LIMITS/cmb
 
 (5) Check pulls
 --------------------------------------
- - limit.py --max-likelihood --stable HCP-LIMITS/125
-   - you will find the output of the fit in the sub-directory HCP-LIMITS/125/out/mlfit.txt/tex
+ - limit.py --max-likelihood --stable LIMITS/125
+   - you will find the output of the fit in the sub-directory LIMITS/125/out/mlfit.txt/tex
    - the tex file should be used to dump the pulls into the AN. 
    - the txt file will be used for the postfit plots. 
 
 (6) Postfit plots
 --------------------------------------
  - cd HiggsAnalysis/HiggsToTauTau/test/
- - ./mlfit_and_copy.sh SM $CMSSW_BASE/src/HCP-LIMITS/125
+ - ./mlfit_and_copy.sh SM $CMSSW_BASE/src/LIMITS/125
  - python produce_macros.py
    - check the defaults with --help. Be careful tt has to be done separately as it only exists 
      for 8TeV. 
@@ -75,16 +75,16 @@ Standard Model Checklist:
 
 (7) Limit calculation
 --------------------------------------
- - limit.py --asymptotic HCP-LIMITS/*
- - plot asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/sm_htt_layout.py HCP-LIMITS
+ - limit.py --asymptotic LIMITS/*
+ - plot asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/sm_htt_layout.py LIMITS
 
 (8) Significance calculation (/w bands)
 --------------------------------------
- - submit-slave.py --method significance -t 1000 -j 50 --lsf HCP-LIMITS/*
- - limit.py --status HCP-LIMITS/*
- - limit.py --getoutput HCP-LIMITS/*
- - limit.py --significance HCP-LIMITS/*
- - plot significance HiggsAnalysis/HiggsToTauTau/python/layouts/sm_sig_layout.py HCP-LIMITS
+ - submit-slave.py --method significance -t 1000 -j 50 --lsf LIMITS/*
+ - limit.py --status LIMITS/*
+ - limit.py --getoutput LIMITS/*
+ - limit.py --significance LIMITS/*
+ - plot significance HiggsAnalysis/HiggsToTauTau/python/layouts/sm_sig_layout.py LIMITS
  - this works only for lxbatch or equivalent.  
 
 (9) Limit calculation (/w signal inj.)
@@ -105,11 +105,11 @@ Standard Model Checklist:
      name that has been defined beforehand.
 
  - run ggH-qqH (spacing 0.02 from 0...5, square) [for a fine scan we can go with half the spacing]
-   lxb-multidim-fit.py -n GGH-QQH --njob 100 --npoints 625 --physics-model 'ggH-qqH=HiggsAnalysis.CombinedLimit.PhysicsModel:floatingXSHiggs' --physics-model-options 'modes=ggH,qqH ggHRange=0:5 qqHRange=0:5' HCP-Limits/sm/hcp-fit/ggH-qqH/125
+   lxb-multidim-fit.py -n GGH-QQH --njob 100 --npoints 625 --physics-model 'ggH-qqH=HiggsAnalysis.CombinedLimit.PhysicsModel:floatingXSHiggs' --physics-model-options 'modes=ggH,qqH ggHRange=0:5 qqHRange=0:5' Limits/sm/hcp-fit/ggH-qqH/125
    lxb-multidim-fit.py --collect --name GGH-QQH
 
  - run cV-cF (spacing 0.02 from 0...3, square) [for a fine scan we can go with half the spacing]
-   lxb-multidim-fit.py -n CV-CF --njob 100 --npoints 225 --physics-model 'cV-cF=HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcF' --physics-model-options 'modes=ggH,qqH cVRange=0:3 cFRange=0:3' HCP-Limits/sm/hcp-fit/cv-cf/125
+   lxb-multidim-fit.py -n CV-CF --njob 100 --npoints 225 --physics-model 'cV-cF=HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcF' --physics-model-options 'modes=ggH,qqH cVRange=0:3 cFRange=0:3' Limits/sm/hcp-fit/cv-cf/125
 
 
 ---------------------------------------------------------------------------------------------------
@@ -130,89 +130,86 @@ MSSM Checklist:
 (1a) Blind datacards (OLD or NOT TESTED)
 --------------------------------------
  - root -l
-   > .x HiggsAnalysis/HiggsToTauTau.macros/blindData.C+(filename, background_patterns, signal_patterns, "*", true)
+   > .x HiggsAnalysis/HiggsToTauTau/macros/blindData.C+(filename, background_patterns, signal_patterns, "*", true)
    - if you leave signal_patterns empty you will only add BG
    - if you want to inject signal add the corresponding signal (with mass information) to
      the pattern (e.g. ggH130)
 
+(1b) Acceptance correction
+--------------------------------------
+ - scale2accept.py -i HiggsAnalysis/HiggsToTauTau/setup/[em,et,mt,mm,tt,hbb] (-p '7TeV/8TeV') -c "mm, em, mt, et, tt, vhtt"   - default for -p is '7TeV 8TeV' means both
+   - always has to be performed
+
 (2) Set up new datacards
 --------------------------------------
- - setup-datacards.py [-i MY-SETUP] -o aux-HCP [-p '7TeV 8TeV'] -a mssm -c 'em et mt mm tt hbb' 90 100-200:20 130 250-500:50 600-1000:100
+ - setup-datacards.py [-i MY-SETUP] -o aux [-p '7TeV 8TeV'] -a mssm -c 'em et mt mm tt hbb' 90 100-200:20 130 250-500:50 600-1000:100
    - rule of thumb to memorize the relevant options: "iOPAC"
    - you can use -i MY-SETUP to point to the setup directory, where you keep the mvis inputs.
    - you can drop -p, the default is '7TeV 8TeV'
    - attention, there is no comma separation allowed in -c
-   - in this case the output will be aux-HCP, this is a directory equivalent to auxiliaries. 
+   - in this case the output will be aux, this is a directory equivalent to auxiliaries. 
      You can also use auxiliaries directly, but nore that the datacards, which are in there 
      will be overwritten. 
 
 (3) Set up limit calculation directory
 --------------------------------------
- - cvs2local.py [-i aux-HCP] -o HCP-LIMITS [-p '7TeV 8TeV'] -a mssm -c 'em et mt mm tt hbb' 90 100-200:20 130 250-500:50 600-1000:100
+ - cvs2local.py [-i aux] -o LIMITS [-p '7TeV 8TeV'] -a mssm -c 'em et mt mm tt hbb' 90 100-200:20 130 250-500:50 600-1000:100
    - rule of thumb to memorize the relevant options: "iOPAC"
    - attention, there is no comma separation allowed in -c
 
 (3a) Set limit calculation with sub-channels 
 --------------------------------------
- - setup-htt.py [-i aux-HCP] -o HCP-LIMITS [-p '7TeV 8TeV'] -a mssm -c 'em et mt mm tt hbb' 90 100-200:20 130 250-500:50 600-1000:100
+ - setup-htt.py [-i aux] -o LIMITS [-p '7TeV 8TeV'] -a mssm -c 'em et mt mm tt hbb' 90 100-200:20 130 250-500:50 600-1000:100
    - rule of thumb to memorize the relevant options: "iOPAC"
    - attention, there is no comma separation allowed in -c
-   - in HCP-LIMITS there will be different sets of directories with different sets off datacards in it (seperating channels and categories)
+   - in LIMITS there will be different sets of directories with different sets off datacards in it (seperating channels and categories)
 
-(4) Check pulls (OLD or NOT TESTED)
+(4) Check pulls 
 --------------------------------------
- - limit.py --max-likelihood --stable HCP-LIMITS/130
-   - you will find the output of the fit in the sub-directory HCP-LIMITS/130/out/mlfit.txt/tex
+ - limit.py --max-likelihood LIMITS/130
+   - you will find the output of the fit in the sub-directory LIMITS/130/out/mlfit.(txt,tex)
    - the tex file should be used to dump the pulls into the AN. 
    - the txt file will be used for the postfit plots. 
 
-(5) Postfit plots (OLD or NOT TESTED)
+(5) Postfit plots
 --------------------------------------
  - cd HiggsAnalysis/HiggsToTauTau/test/
- - ./mlfit_and_copy.py MSSM $CMSSW_BASE/src/HCP-LIMITS/130
- - python produce_macros.py
+ - ./mlfit_and_copy.py -a mssm $CMSSW_BASE/src/LIMITS/130
+ - python produce_macros.py -a mssm
    - check the defaults with --help. 
    - ATTENTION: there is a few potential fixes needed, in case Josh finally renamed his datacards 
      to follow the conventions. Also if there is a decision to move from ZLL to ZL and ZJ also 
      in the VBF event category. In General all templates should be revised a bit after the final 
      HCP datacards arrive. From that point on we might loose backwards compatibility.  
- - python run_macros.py
+ - python run_macros.py -a mssm
    - check the defaults with --help.
 
 (6) Limit calculation in tanb-mA plane
 --------------------------------------
- - xsec2tanb.py (--lxq) (--name xsec2tanb) HCP-LIMITS/*
- - submit.py --tanb+ (--options "--multi-core=4") (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null)  HCP-LIMITS/*
- - plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/mssm_tanb_layout.py HCP-LIMITS
+ - xsec2tanb.py (--lxq) (--name xsec2tanb) LIMITS/*
+ - submit.py --tanb+ (--options "--multi-core=4") (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null)  LIMITS/*
+ - plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/mssm_tanb_layout.py LIMITS
  - Higgs band plotting: Set higgs125_bands to "true" in mssm_tanb_layout.py
 
-(7) Xsec limit calculation (OLD or NOT TESTED)
+(7) Xsec limit calculation ggH/bbH while bbH/ggH is profiled
 --------------------------------------
- - limit.py --multidim-fit [--stable] --saveResults --algo singles --confidence-level 0.68 --physics-model 
-   'ggH-bbH-model=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH;
-   ggHRange=0:20;bbHRange=0:20'
-   HCP-LIMITS/* 
- - limit.py --mssm-xsec [--noprefit] [--ggH] --userOpt '--minosAlgo stepping' HCP-LIMITS/*
-   - option ggH translates ggH into background and calculates xsec limit of bbH, if not specfied bbH is translated into 
-     background and calculates xsec limit of ggH
-   - ATTENTION: could also be useful to use lxq/b_limit.py
- - plot asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/mssm_xsec_layout.py HCP-LIMITS
-   - you may have to change layout a bit
+ - submit.py (--lxq --queue="-l h_cpu=1:00:00 -j y -o /dev/null") --asymptotic --physics-model="ggH/bbH" LIMITS/*
+ - plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/(limit-mssm-bbH.py, limit-mssm-ggH.py) LIMITS
 
 (8) Best fit calculation (OLD or NOT TESTED)
 --------------------------------------
  - limit.py --multidim-fit [--stable] --saveResults --algo singles --confidence-level 0.68 --physics-model 
    'ggH-bbH-model=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH;
-   ggHRange=0:20;bbHRange=0:20' HCP-LIMITS/*
+   ggHRange=0:20;bbHRange=0:20' LIMITS/*
    - ATTENTION: could also be useful to use lxq/b_limit.py
- - plot multidimfit HiggsAnalysis/HiggsToTauTau/python/layouts/mssm_bestfit_layout.py HCP-LIMITS
+ - plot multidimfit HiggsAnalysis/HiggsToTauTau/python/layouts/mssm_bestfit_layout.py LIMITS
    - if you want to plot bestfit of ggH set POI in mssm_bestfit_layout.py to "r_ggH"
    - if you want to plot bestfit of bbH set POI in mssm_bestfit_layout.py to "r_bbH"
 
 (9) 2D scans
 --------------------------------------
- - submit.py (--lxq --queue="-l h_cpu=1:00:00 -j y -o /dev/null") (--acceptance-corrected) --multidim-fit --physics-model="ggH-bbH" HCP-LIMITS/*
- - limit.py --collect --multidim-fit --physics-model="ggH-bbH" HCP-LIMITS/*
+ - submit.py (--lxq --queue="-l h_cpu=1:00:00 -j y -o /dev/null") --multidim-fit --physics-model="ggH-bbH" LIMITS/*
+ - limit.py --collect --multidim-fit --physics-model="ggH-bbH" LIMITS/*
  - In python/mssm_multidim_fit_boundaries.py the ranges of ggH and bbH for different masses are defined. Those may have to be edited if lumi changes!
 
 
