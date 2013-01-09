@@ -555,7 +555,6 @@ for directory in args :
         ## ------------------------------------------------------------------------------------------------------------
         if options.collect :
             ## combine outputs
-            print mass
             os.system("hadd -f higgsCombine{MODEL}.MultiDimFit.mH{MASS}.root higgsCombine*.MultiDimFit.mH{MASS}-[0-9]*-[0-9]*.root".format(
                 MASS=mass, MODEL=model[0].upper()))
             ## cleanup
