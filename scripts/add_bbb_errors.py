@@ -66,9 +66,14 @@ def get_channel_name(finalstate, category):
 def get_shape_file(sourcedir, channel, period, ana='sm'):
     # Ex: shape file for mt lives in
     #  setup/mt/htt_mt.inputs-sm-7TeV.root
-    return os.path.join(sourcedir, channel,
-                        'htt_' + channel + '.inputs-' +
-                        ana + '-' + period + '.root')
+    if ana=='sm' :
+        return os.path.join(sourcedir, channel,
+                            'htt_' + channel + '.inputs-' +
+                            ana + '-' + period + '.root')
+    else : ## for mssm - may have to add mass-category (atm its 0 for all)
+        return os.path.join(sourcedir, channel, 
+                            'htt_' + channel + '.inputs-' +
+                            ana + '-' + period + '-' + '0' + '.root')
 
 def get_card_config_files(sourcedir, channel, period, category, ana='sm'):
     ''' Get the configuration files (cgs, unc.vals, etc)
