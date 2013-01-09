@@ -196,12 +196,20 @@ for period in periods :
                 for category in categories[channel] :
                     if options.verbose :
                         print "copying datacards for:", period, channel, category, mass
-                    os.system("cp {INPUT}/{CHN}/{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root {OUTPUT}/common/{PRE}{CHN}.input_{PERIOD}-{MASSCAT}.root".format(
-                        INPUT=input, ANA=options.analysis, CHN=channel, OUTPUT=options.out, PRE=prefix, PERIOD=period, MASSCAT=mass_category(mass,category, channel)))
-                    os.system("cp {INPUT}/{CHN}/{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
-                        INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
-                    os.system("perl -pi -e 's/{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root/..\/common\/{PRE}{CHN}.input_{PERIOD}-{MASSCAT}.root/g' {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
-                        CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period, MASSCAT=mass_category(mass,category,channel)))
+                    if options.analysis == "mssm" :
+                        os.system("cp {INPUT}/{CHN}/{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root {OUTPUT}/common/{PRE}{CHN}.input_{PERIOD}-{MASSCAT}.root".format(
+                            INPUT=input, ANA=options.analysis, CHN=channel, OUTPUT=options.out, PRE=prefix, PERIOD=period, MASSCAT=mass_category(mass,category, channel)))
+                        os.system("cp {INPUT}/{CHN}/{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
+                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
+                        os.system("perl -pi -e 's/{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root/..\/common\/{PRE}{CHN}.input_{PERIOD}-{MASSCAT}.root/g' {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
+                            CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period, MASSCAT=mass_category(mass,category,channel)))
+                    else :
+                        os.system("cp {INPUT}/{CHN}/{CHN}.inputs-{ANA}-{PERIOD}.root {OUTPUT}/common/{PRE}{CHN}.input_{PERIOD}.root".format(
+                            INPUT=input, ANA=options.analysis, CHN=channel, OUTPUT=options.out, PRE=prefix, PERIOD=period))
+                        os.system("cp {INPUT}/{CHN}/{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
+                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
+                        os.system("perl -pi -e 's/{CHN}.inputs-{ANA}-{PERIOD}.root/..\/common\/{PRE}{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
+                            CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period)) 
                     if options.analysis == "mssm" :
                         add_mass("{CHN}_{CAT}_{PERIOD}".format(CHN=channel, CAT=category, PERIOD=period), mass)
             else :
