@@ -236,7 +236,7 @@ if options.optMDFit :
         ## MSSM ggH versus bbH
         if "ggH-bbH" in options.fitModel :
             from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
-            cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-BBH-{MASS} --njob 100 --npoints 400".format(PRE=prefix, MASS=mass)
+            cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-BBH-{MASS} --njob 50 --npoints 800".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'ggH-bbH=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
             opts  = "--physics-model-options 'modes=ggH,bbH;ggHRange=0:{GGH};bbHRange=0:{BBH}'".format(GGH=bounds[mass][0], BBH=bounds[mass][1])
         ## SM ggH versus qqH (this configuration is optimized fro mH=125)
