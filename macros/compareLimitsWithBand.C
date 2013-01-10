@@ -22,7 +22,7 @@ static const double MARKER_SIZE = 1.3;  // 0.7
 
 
 
-void compareLimitsWithBand(const char* filename, const char* channelstr, double minimum=0., double maximum=5., bool log=false, const char* label=" Preliminary, #sqrt{s} = 7+8 TeV, H#rightarrow#tau#tau, L = 10 fb^{-1}", bool addExpected=false, bool addObserved=true)
+void compareLimitsWithBand(const char* filename, const char* channelstr, double minimum=0., double maximum=5., bool log=false, const char* label=" Preliminary, #sqrt{s} = 7+8 TeV, H#rightarrow#tau#tau, L=17 fb^{-1}", bool addExpected=false, bool addObserved=true)
 {
   SetStyle();
 
