@@ -2,7 +2,7 @@
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* unit, std::string& xaxis, std::string& yaxis, double min, double max, bool log, bool injected, bool legendOnRight); 
+void plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* unit, std::string& xaxis, std::string& yaxis, double min, double max, bool log, std::string PLOT, bool legendOnRight); 
 
 void
 PlotLimits::plotLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed)
@@ -22,7 +22,10 @@ PlotLimits::plotLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmEr
   // set proper maximum
   float max = maximum(expected);
   // do the plotting 
-  plottingLimit(canv, innerBand, outerBand, expected, observed, unit, xaxis_, yaxis_, min_, max, log_, injected_, mssm_);
+  std::string PLOT("LIMIT");
+  if(injected_){ PLOT=std::string("INJECTED"); }
+  if(bestfit_ ){ PLOT=std::string("BESTFIT" ); }
+  plottingLimit(canv, innerBand, outerBand, expected, observed, unit, xaxis_, yaxis_, min_, max, log_, PLOT, mssm_);
   // setup CMS Preliminary
   CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
   // write results to files
@@ -41,10 +44,10 @@ PlotLimits::plotLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmEr
       output->mkdir(output_.c_str());
       output->cd(output_.c_str());
     }
-    if(observed){ observed ->Write("observed" );}
-    expected ->Write("expected" );
-    innerBand->Write("innerBand");
-    outerBand->Write("outerBand");
+    if(observed ){ observed ->Write("observed" ); }
+    if(expected ){ expected ->Write("expected" ); }
+    if(innerBand){ innerBand->Write("innerBand"); }
+    if(outerBand){ outerBand->Write("outerBand"); }
     output->Close();
   }
   return;
