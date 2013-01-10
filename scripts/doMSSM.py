@@ -12,9 +12,13 @@ parser.add_option("-n", "--name", dest="name", default="testing", type="string",
 ##
 ## SKIP OPTIONS
 ##
+parser.add_option("-a", "--skip-backup", dest="skip_backup", default=False, action="store_true", help="skip backup creation. [Default: False]")
 parser.add_option("-s", "--skip-setup", dest="skip_setup", default=False, action="store_true", help="skip setup. [Default: False]")
 parser.add_option("-d", "--skip-datacards", dest="skip_datacards", default=False, action="store_true", help="skip datacards. [Default: False]")
 parser.add_option("-l", "--skip-limits", dest="skip_limits", default=False, action="store_true", help="skip limit setup. [Default: False]")
+parser.add_option("-m", "--skip-multidim", dest="skip_multidim", default=False, action="store_true", help="skip multidim-fit limit. [Default: False]")
+parser.add_option("-p", "--skip-postfit", dest="skip_postfit", default=False, action="store_true", help="skip postfit plots. [Default: False]")
+parser.add_option("-t", "--skip-tanb-mA", dest="skip_tanb-mA", default=False, action="store_true", help="skip tanb-mA limit. [Default: False]")
 ##
 ## BATCH OPTIONS
 ##
@@ -45,10 +49,11 @@ base_dir = os.getcwd()
 ##
 
 ## creating backup
-print "INFO: create a backup"
-os.system("cp -r {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/{NAME}".format(
-    NAME=options.name, CMSSW_BASE=os.environ['CMSSW_BASE']
-    ))
+if not options.skip_backup:
+    print "INFO: create a backup"
+    os.system("cp -r {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/{NAME}".format(
+        NAME=options.name, CMSSW_BASE=os.environ['CMSSW_BASE']
+        ))
 
 ## scaling of root files and adding bin-by-bin uncertainties
 setup=cmssw_base+"/src/HiggsAnalysis/HiggsToTauTau/{NAME}".format(NAME=options.name)
@@ -94,67 +99,140 @@ if not options.skip_datacards :
 
 if not options.skip_limits :
     ##postfit plots
-    print "INFO: Calculating pulls and postfit plots"
-    os.chdir("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/test".format(
-        CMSSW_BASE=os.environ['CMSSW_BASE']
-        ))
-    os.system("./mlfit_and_copy.py -a mssm {CMSSW_BASE}/src/{NAME}_out/cmb/100".format(
-        CMSSW_BASE=os.environ['CMSSW_BASE'],
-        NAME=options.name
-        ))
-    os.system("python produce_macros.py -a mssm")
-    os.system("python run_macros.py -a mssm")
+    if not options.skip_postfit :
+        print "INFO: Calculating pulls and postfit plots"
+        os.chdir("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/test".format(
+            CMSSW_BASE=os.environ['CMSSW_BASE']
+            ))
+        os.system("./mlfit_and_copy.py -a mssm {CMSSW_BASE}/src/{NAME}_out/cmb/160".format(
+            CMSSW_BASE=os.environ['CMSSW_BASE'],
+            NAME=options.name
+            ))
+        os.system("python produce_macros.py -a mssm")
+        os.system("python run_macros.py -a mssm")
     ##standard tanb-mA limit
-    print "INFO: Calculating limits in tanb-mA plane"
-    os.chdir("{BASE_DIR}".format(
-        BASE_DIR= base_dir
-        ))
-    os.system("xsec2tanb.py --tanb+ {LXQ} {NAME}_out/cmb/*".format(
-        NAME=options.name,
-        LXQ="--lxq" if options.lxq else ""
-        ))
-    #wait for jobs to finish
-    output=""
-    if options.lxq :
-        p = os.popen("qstat -u {USER}".format(
-        USER=options.user
-        ))
-        output = p.readline()
-        p.close() 
-    else  :
-        p = os.popen('bjobs')
-        output = p.readline()
-        p.close() 
-    while output!="" :    
-        time.sleep(60)
-    os.system("submit.py --tanb+ --options='multi-core=4' {LXQ} {QUEUE} {CONDOR} {NAME}_out/cmb/*".format(
-        NAME=options.name,
-        LXQ="--lxq" if options.lxq else "",
-        QUEUE="--queue='-l h_cpu=12:00:00 -j y -o /dev/null'" if options.queue!="" else "",
-        CONDOR="--condor" if options.condor else ""
-        ))
+    if not options.skip_tanb-mA :
+        print "INFO: Calculating limits in tanb-mA plane"
+        os.chdir("{BASE_DIR}".format(
+            BASE_DIR= base_dir
+            ))
+        os.system("lxb-xsec2tanb.py {LXQ} {NAME}_out/cmb/*".format(
+            NAME=options.name,
+            LXQ="--lxq" if options.lxq else ""
+            ))
+        #wait for jobs to finish
+        output=""
+        if options.lxq :
+            while output!="" :
+                print "still waiting ..."
+                time.sleep(60)
+                p = os.popen("qstat -u {USER}".format(
+                    USER=options.user
+                    ))
+                output = p.readline()
+                p.close()    
+        else :
+            while output.find("No unfinished job found")==-1 :
+                print "still waiting ..."
+                time.sleep(60)
+                p = os.popen("qstat -u {USER}".format(
+                    USER=options.user
+                    ))
+                output = p.readline()
+                p.close()
+        os.system("submit.py --tanb+ --options='multi-core=4' {LXQ} {QUEUE} {CONDOR} {NAME}_out/cmb/*".format(
+            NAME=options.name,
+            LXQ="--lxq" if options.lxq else "",
+            QUEUE="--queue='-l h_cpu=12:00:00 -j y -o /dev/null'" if options.queue!="" else "",
+            CONDOR="--condor" if options.condor else ""
+            ))
     ##2D scans ggH-bbH
-    print "INFO: Calculating multidim scans"
-    os.system("submit.py {LXQ} {QUEUE} {CONDOR} --multidim-fit --physics-model='ggH-bbH' {NAME}_out/cmb/*".format(
-        NAME=options.name,
-        LXQ="--lxq" if options.lxq else "",
-        QUEUE="--queue='-l h_cpu=1:00:00 -j y -o /dev/null'" if options.queue!="" else "",
-        CONDOR="--condor" if options.condor else ""
-        ))
-    #wait for jobs to finish
-    output=""
-    if options.lxq :
-        p = os.popen("qstat -u {USER}".format(
-        USER=options.user
-        ))
-        output = p.readline()
-        p.close() 
-    else  :
-        p = os.popen('bjobs')
-        output = p.readline()
-        p.close() 
-    while output!="" :    
-        time.sleep(60)
-    os.system("limit.py --collect --multidim-fit --physics-model='ggH-bbH' {NAME}_out/cmb/*".format(
-        NAME=options.name
-        ))
+    if not options.skip_multidim :
+        print "INFO: Calculating multidim scans"
+        os.system("submit.py {LXQ} {QUEUE} {CONDOR} --multidim-fit --physics-model='ggH-bbH' {NAME}_out/cmb/*".format(
+            NAME=options.name,
+            LXQ="--lxq" if options.lxq else "",
+            QUEUE="--queue='-l h_cpu=1:00:00 -j y -o /dev/null'" if options.queue!="" else "",
+            CONDOR="--condor" if options.condor else ""
+            ))
+        #wait for jobs to finish
+        output=""
+        if options.lxq :
+            while output!="" :
+                print "still waiting ..."
+                time.sleep(60)
+                p = os.popen("qstat -u {USER}".format(
+                    USER=options.user
+                    ))
+                output = p.readline()
+                p.close()    
+        else :
+            while output.find("No unfinished job found")==-1 :
+                print "still waiting ..."
+                time.sleep(60)
+                p = os.popen("qstat -u {USER}".format(
+                    USER=options.user
+                    ))
+                output = p.readline()
+                p.close()         
+        os.system("limit.py --collect --multidim-fit --physics-model='ggH-bbH' {NAME}_out/cmb/*".format(
+            NAME=options.name
+            ))
+    ##xsec ggH - bbH profiled
+    if not options.skip_ggH :
+        print "INFO: Calculating xsec of ggH profiling bbH"
+        os.system("submit.py {LXQ} {QUEUE} {CONDOR} --asymptotic --physics-model='ggH' {NAME}_out/cmb/*".format(
+            NAME=options.name,
+            LXQ="--lxq" if options.lxq else "",
+            QUEUE="--queue='-l h_cpu=1:00:00 -j y -o /dev/null'" if options.queue!="" else "",
+            CONDOR="--condor" if options.condor else ""
+            ))
+        #wait for jobs to finish
+        output=""
+        if options.lxq :
+            while output!="" :
+                print "still waiting ..."
+                time.sleep(60)
+                p = os.popen("qstat -u {USER}".format(
+                    USER=options.user
+                    ))
+                output = p.readline()
+                p.close()    
+        else :
+            while output.find("No unfinished job found")==-1 :
+                print "still waiting ..."
+                time.sleep(60)
+                p = os.popen("qstat -u {USER}".format(
+                    USER=options.user
+                    ))
+                output = p.readline()
+                p.close() 
+    ##xsec bbH - ggH profiled
+    if not options.skip_bbH :
+        print "INFO: Calculating xsec of bbH profiling ggH"
+        os.system("submit.py {LXQ} {QUEUE} {CONDOR} --asymptotic --physics-model='bbH' {NAME}_out2/cmb/*".format(
+            NAME=options.name,
+            LXQ="--lxq" if options.lxq else "",
+            QUEUE="--queue='-l h_cpu=1:00:00 -j y -o /dev/null'" if options.queue!="" else "",
+            CONDOR="--condor" if options.condor else ""
+            ))
+        #wait for jobs to finish
+        output=""
+        if options.lxq :
+            while output!="" :
+                print "still waiting ..."
+                time.sleep(60)
+                p = os.popen("qstat -u {USER}".format(
+                    USER=options.user
+                    ))
+                output = p.readline()
+                p.close()    
+        else :
+            while output.find("No unfinished job found")==-1 :
+                print "still waiting ..."
+                time.sleep(60)
+                p = os.popen("qstat -u {USER}".format(
+                    USER=options.user
+                    ))
+                output = p.readline()
+                p.close() 
