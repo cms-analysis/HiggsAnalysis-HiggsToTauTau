@@ -61,6 +61,8 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   // specifics to plot scan-2d
   model_ = cfg.existsAs<std::string>("model") ? cfg.getParameter<std::string>("model") : std::string();
   temp_ = cfg.existsAs<bool>("temp") ? cfg.getParameter<bool>("temp") : false;
+  // specifics to plot signal strength
+  bestfit_ = cfg.existsAs<bool>("bestfit") ? cfg.getParameter<bool>("bestfit") : false;
   // specifics to plot xsec limits
   injected_ = cfg.existsAs<bool>("injected") ? cfg.getParameter<bool>("injected") : false;
   // specifics to plot MSSM mA-tanb limits
@@ -72,80 +74,76 @@ TGraph*
 PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filename)
 {
   std::vector<double> central;
+  // fill pre-defined values from previous results
   if (std::string(filename).find("HIG")!=std::string::npos){
     bool initial = masses_.empty();
     for(unsigned int imass=0; imass<bins_.size(); ++imass){
-      if(std::string(filename)==std::string("HIG-11-020-observed")){
+      if(std::string(filename)==std::string("HIG-11-020-obs")){
 	prepareHIG_11_020(central, "observed", false, bins_[imass], initial);
       }
-      else if(std::string(filename)==std::string("HIG-11-020-expected")){
+      else if(std::string(filename)==std::string("HIG-11-020-exp")){
 	prepareHIG_11_020(central, "expected", false, bins_[imass], initial);
       }
-      else if(std::string(filename)==std::string("HIG-11-029-observed")){
+      else if(std::string(filename)==std::string("HIG-11-029-obs")){
 	prepareHIG_11_029(central, "observed", bins_[imass], initial);
       }
-      else if(std::string(filename)==std::string("HIG-11-029-expected")){
+      else if(std::string(filename)==std::string("HIG-11-029-exp")){
 	prepareHIG_11_029(central, "expected", bins_[imass], initial);
       }
-      else if(std::string(filename)==std::string("HIG-12-018-observed")){
+      else if(std::string(filename)==std::string("HIG-12-018-obs")){
 	prepareHIG_12_018(central, "observed", bins_[imass], initial);
       }
-      else if(std::string(filename)==std::string("HIG-12-018-expected")){
+      else if(std::string(filename)==std::string("HIG-12-018-exp")){
 	prepareHIG_12_018(central, "expected", bins_[imass], initial);
       }
-      else if(std::string(filename)==std::string("HIG-12-032-observed")){
+      else if(std::string(filename)==std::string("HIG-12-032-obs")){
 	prepareHIG_12_032(central, "observed", bins_[imass], initial);
       }
-      else if(std::string(filename)==std::string("HIG-12-032-expected")){
+      else if(std::string(filename)==std::string("HIG-12-032-exp")){
 	prepareHIG_12_032(central, "expected", bins_[imass], initial);
       }
-      else if(std::string(filename)==std::string("HIG-12-043-observed")){
+      else if(std::string(filename)==std::string("HIG-12-043-obs")){
 	prepareHIG_12_043(central, "observed", bins_[imass], initial);
       }
-      else if(std::string(filename)==std::string("HIG-12-043-expected")){
+      else if(std::string(filename)==std::string("HIG-12-043-exp")){
 	prepareHIG_12_043(central, "expected", bins_[imass], initial);
       }
-      else if(std::string(filename)==std::string("HIG-12-050-observed")){
+      else if(std::string(filename)==std::string("HIG-12-050-obs")){
 	prepareHIG_12_050(central, "observed", bins_[imass], initial);
       }
-      else if(std::string(filename)==std::string("HIG-12-050-expected")){
+      else if(std::string(filename)==std::string("HIG-12-050-exp")){
 	prepareHIG_12_050(central, "expected", bins_[imass], initial);
       }
     }
   }
   else{
-    if(std::string(filename)==std::string("median") || std::string(filename)==std::string("mean")){
-      prepareBayesian(directory, central, filename);
+    if(std::string(filename)==std::string("MEDIAN") || std::string(filename)==std::string("MEAN")){
+      prepareByToy(directory, central, filename);
     }
-    else if(std::string(filename)==std::string("asym-observed")){
-      prepareAsymptotic(directory, central, "observed");
+    else if(std::string(filename).find("obs.Asymptotic") != std::string::npos){
+      prepareByValue(directory, central, "higgsCombine-obs.Asymptotic.mH$MASS", -1.);
     }
-    else if(std::string(filename)==std::string("asym-expected")){
-      prepareAsymptotic(directory, central, "median");
+    else if(std::string(filename).find("exp.Asymptotic") != std::string::npos){
+      prepareByValue(directory, central, "higgsCombine-exp.Asymptotic.mH$MASS", 0.5);
+    }
+    else if(std::string(filename).find("MaxLikelihood") != std::string::npos){
+      prepareByValue(directory, central, filename, -1.);
     }
     else{
-      prepareSimple(directory, central, filename);
+      prepareByFile(directory, central, filename);
     }
   }
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
     if(valid_[imass] && std::string(filename).find("HIG")==std::string::npos){
-      plot->SetPoint(ipoint, bins_[imass], central[imass]);
-      ++ipoint; // only add valid mass points to the TGraph
-      if(verbosity_>1){
-	// second verbosity level
-	std::cout << "INFO: central [" << bins_[imass] << "] = " << central[imass] << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl;
-      }
+      plot->SetPoint(ipoint++, bins_[imass], central[imass]);
+      if(verbosity_>1){ std::cout << "INFO: central [" << bins_[imass] << "] = " << central[imass] << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl; }
     }
     else{
       if(valid_[imass]){
 	for(unsigned int jmass=0; jmass<masses_.size(); ++jmass){
 	  if(masses_[jmass]==bins_[imass]){
-	    plot->SetPoint(ipoint, masses_[jmass], central[jmass]);
-	    ++ipoint; // only add valid mass points to the TGraph
-	    if(verbosity_>1){
-	      // second verbosity level
-	      std::cout << "INFO: central [" << masses_[jmass] << "] = " << central[jmass] << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl;
-	    }
+	    plot->SetPoint(ipoint++, masses_[jmass], central[jmass]);
+	    if(verbosity_>1){ std::cout << "INFO: central [" << masses_[jmass] << "] = " << central[jmass] << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl; }
 	    break;
 	  }
 	}
@@ -165,61 +163,60 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
     for(unsigned int imass=0; imass<bins_.size(); ++imass){
       if(std::string(method) == std::string("HIG-11-020")){
 	bool xsec = false;
-	prepareHIG_11_020(expected, "expected", xsec, bins_[imass], initial);
-	prepareHIG_11_020(upper, innerBand ? "+1sigma" : "+2sigma", xsec, bins_[imass], initial);
-	prepareHIG_11_020(lower, innerBand ? "-1sigma" : "-2sigma", xsec, bins_[imass], initial);
+	prepareHIG_11_020(expected, "expected"                       , xsec, bins_[imass], initial);
+	prepareHIG_11_020(upper   , innerBand ? "+1sigma" : "+2sigma", xsec, bins_[imass], initial);
+	prepareHIG_11_020(lower   , innerBand ? "-1sigma" : "-2sigma", xsec, bins_[imass], initial);
       }
       else if(std::string(method) == std::string("HIG-11-029")){
-	prepareHIG_11_029(expected, "expected", bins_[imass], initial);
-	prepareHIG_11_029(upper, innerBand ? "+1sigma" : "+2sigma", bins_[imass], initial);
-	prepareHIG_11_029(lower, innerBand ? "-1sigma" : "-2sigma", bins_[imass], initial);
+	prepareHIG_11_029(expected, "expected"                       , bins_[imass], initial);
+	prepareHIG_11_029(upper   , innerBand ? "+1sigma" : "+2sigma", bins_[imass], initial);
+	prepareHIG_11_029(lower   , innerBand ? "-1sigma" : "-2sigma", bins_[imass], initial);
       }
       else if(std::string(method) == std::string("HIG-12-018")){
-	prepareHIG_12_018(expected, "expected", bins_[imass], initial);
-	prepareHIG_12_018(upper, innerBand ? "+1sigma" : "+2sigma", bins_[imass], initial);
-	prepareHIG_12_018(lower, innerBand ? "-1sigma" : "-2sigma", bins_[imass], initial);
+	prepareHIG_12_018(expected, "expected"                       , bins_[imass], initial);
+	prepareHIG_12_018(upper   , innerBand ? "+1sigma" : "+2sigma", bins_[imass], initial);
+	prepareHIG_12_018(lower   , innerBand ? "-1sigma" : "-2sigma", bins_[imass], initial);
       }
       else if(std::string(method) == std::string("HIG-12-032")){
-	prepareHIG_12_032(expected, "expected", bins_[imass], initial);
-	prepareHIG_12_032(upper, innerBand ? "+1sigma" : "+2sigma", bins_[imass], initial);
-	prepareHIG_12_032(lower, innerBand ? "-1sigma" : "-2sigma", bins_[imass], initial);
+	prepareHIG_12_032(expected, "expected"                       , bins_[imass], initial);
+	prepareHIG_12_032(upper   , innerBand ? "+1sigma" : "+2sigma", bins_[imass], initial);
+	prepareHIG_12_032(lower   , innerBand ? "-1sigma" : "-2sigma", bins_[imass], initial);
       }
       else if(std::string(method) == std::string("HIG-12-043")){
-	prepareHIG_12_043(expected, "expected", bins_[imass], initial);
-	prepareHIG_12_043(upper, innerBand ? "+1sigma" : "+2sigma", bins_[imass], initial);
-	prepareHIG_12_043(lower, innerBand ? "-1sigma" : "-2sigma", bins_[imass], initial);
+	prepareHIG_12_043(expected, "expected"                       , bins_[imass], initial);
+	prepareHIG_12_043(upper   , innerBand ? "+1sigma" : "+2sigma", bins_[imass], initial);
+	prepareHIG_12_043(lower   , innerBand ? "-1sigma" : "-2sigma", bins_[imass], initial);
       }
       else if(std::string(method) == std::string("HIG-12-050")){
-	prepareHIG_12_050(expected, "expected", bins_[imass], initial);
-	prepareHIG_12_050(upper, innerBand ? "+1sigma" : "+2sigma", bins_[imass], initial);
-	prepareHIG_12_050(lower, innerBand ? "-1sigma" : "-2sigma", bins_[imass], initial);
+	prepareHIG_12_050(expected, "expected"                       , bins_[imass], initial);
+	prepareHIG_12_050(upper   , innerBand ? "+1sigma" : "+2sigma", bins_[imass], initial);
+	prepareHIG_12_050(lower   , innerBand ? "-1sigma" : "-2sigma", bins_[imass], initial);
       }
     }
   }
   else{
-    if(std::string(method) == std::string("Bayesian")){
-      prepareBayesian(directory, expected, "median");
-      prepareBayesian(directory, upper, innerBand ? "+1sigma" : "+2sigma");
-      prepareBayesian(directory, lower, innerBand ? "-1sigma" : "-2sigma");
-    }
-    else if(std::string(method) == std::string("Asymptotic")){
-      prepareAsymptotic(directory, expected, "median");
-      prepareAsymptotic(directory, upper, innerBand ? "+1sigma" : "+2sigma");
-      prepareAsymptotic(directory, lower, innerBand ? "-1sigma" : "-2sigma");
+    if(std::string(method) == std::string("TOYBASED")){
+      prepareByToy(directory, expected, "MEDIAN");
+      prepareByToy(directory, upper   , innerBand ? "+1SIGMA" : "+2SIGMA");
+      prepareByToy(directory, lower   , innerBand ? "-1SIGMA" : "-2SIGMA");
     }
     else if(std::string(method) == std::string("CLs")){
       prepareCLs(directory, expected, ".quant0.500");
-      prepareCLs(directory, upper, innerBand ? ".quant0.840" : ".quant0.975");
-      prepareCLs(directory, lower, innerBand ? ".quant0.160" : ".quant0.027");
+      prepareCLs(directory, upper   , innerBand ? ".quant0.840" : ".quant0.975");
+      prepareCLs(directory, lower   , innerBand ? ".quant0.160" : ".quant0.027");
+    }
+    else if(std::string(method).find("Asymptotic") != std::string::npos){
+      prepareByValue(directory, expected, method, 0.50);
+      prepareByValue(directory, upper   , method, innerBand ? 0.84 : 0.975);
+      prepareByValue(directory, lower   , method, innerBand ? 0.16 : 0.025);
     }
     else if(std::string(method).find("MaxLikelihood") != std::string::npos){
-      prepareMaxLikelihood(directory, expected, method, 0.50);
-      prepareMaxLikelihood(directory, upper, method, 0.84);
-      prepareMaxLikelihood(directory, lower, method, 0.16);
+      prepareByValue(directory, expected, method, 0.50);
+      prepareByValue(directory, upper, method, 0.84);
+      prepareByValue(directory, lower, method, 0.16);
     }
     else{
-      std::cout << "ERROR: chose wrong method to fill uncertainty band. Available methods are: Bayesian, CLs, MaxLikelihood\n"
-		<< "       for the moment I'll stop here" << std::endl;
+      std::cout << "ERROR: chose wrong method to fill uncertainty band: " << method << std::endl;
       exit(1);
     }
   }
@@ -230,7 +227,6 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
       plot->SetPointEYlow (ipoint, expected[imass] - lower[imass]);
       ++ipoint; // only add valid mass points to the TGraph
       if(verbosity_>1){
-	// second verbosity level
 	std::cout << "INFO: Calculating " << (innerBand ? "inner" : "outer") << " uncertainty band" << std::endl;
 	std::cout << "INFO: upper    [" << bins_[imass] << "] = " << " (" << upper[imass] << ") " << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl;
 	std::cout << "INFO: expected [" << bins_[imass] << "] = " << expected[imass]          << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl;
@@ -246,7 +242,6 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
 	    plot->SetPointEYlow (ipoint, expected[jmass] - lower[jmass]);
 	    ++ipoint; // only add valid mass points to the TGraph
 	    if(verbosity_>1){
-	      // second verbosity level
 	      std::cout << "INFO: Calculating " << (innerBand ? "inner" : "outer") << " uncertainty band" << std::endl;
 	      std::cout << "INFO: upper    [" << masses_[jmass] << "] = " << " (" << upper[jmass] << ") " << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl;
 	      std::cout << "INFO: expected [" << masses_[jmass] << "] = " << expected[jmass]          << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl;
