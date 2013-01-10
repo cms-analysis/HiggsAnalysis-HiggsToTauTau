@@ -63,32 +63,43 @@ dgroup.add_option("--physics-model", dest="fitModel", default="", type="choice",
                   help="Define the model for which you want to submit the process with option --multidim-fit ('ggH-bbH' (MSSM), 'ggH-qqH' (SM) and 'cV-cF' (SM)) or option --asymptotic ('ggH' (MSSM), 'bbH' (MSSM) and '' (SM)). [Default: \"\"]")
 parser.add_option_group(dgroup)
 ##
+## LIKELIHOOD-SCAN
+##
+egroup = OptionGroup(parser, "LIKELIHOOD-SCAN OPTIONS", "These are the command line options that can be used to configure the submission of the likelihood scan. The number of scan points the minimum and the maximum of the scan can be given. Note that the likelihood scan is only possible for the SM case with all signal contributions as single POI. At the moment there is no job splitting implemented, yet.")
+egroup.add_option("--points", dest="points", default="100", type="string",
+                  help="Number of scan points for the likelihood scan. [Default: 100]")
+egroup.add_option("--rMin", dest="rMin", default="-2.0", type="string",
+                  help="Minimum of the scan. [Default: -2.0]")
+egroup.add_option("--rMax", dest="rMax", default="+2.0", type="string",
+                  help="Maximum of the scan. [Default: -2.0]")
+parser.add_option_group(egroup)
+##
 ## SIGNIFICANCE
 ##
-egroup = OptionGroup(parser, "SIGNIFICANCE OPTIONS", "These are the command line options that can be used to configure the submission of toys for significance calculations. The toys can be submitted to the grid or to lxb (lxq) using crab. The number of toys per mass that will be the same for all masses can be configured via the option --toys as described in section BATCH OPTIONS. The number of crab jobs that will be the same for all masses can be configured via the option --jobs as described in this section.")
-egroup.add_option("--jobs", dest="jobs", default="100", type="string",
+fgroup = OptionGroup(parser, "SIGNIFICANCE OPTIONS", "These are the command line options that can be used to configure the submission of toys for significance calculations. The toys can be submitted to the grid or to lxb (lxq) using crab. The number of toys per mass that will be the same for all masses can be configured via the option --toys as described in section BATCH OPTIONS. The number of crab jobs that will be the same for all masses can be configured via the option --jobs as described in this section.")
+fgroup.add_option("--jobs", dest="jobs", default="100", type="string",
                   help="Set the number crab jobs that you want to submit to calculate the toy based expected significance. [Default: 100]")
-egroup.add_option("--grid", dest="grid", default=False, action="store_true",
+fgroup.add_option("--grid", dest="grid", default=False, action="store_true",
                   help="Use this option if you want to submit your jobs to the grid. Otherwise they will be submitted to lxb (lxq). [Default: False]")
-parser.add_option_group(egroup)
+parser.add_option_group(fgroup)
 ##
 ## INJECTED OPTIONS
 ##
-fgroup = OptionGroup(parser, "INJECTED OPTIONS", "These are the command line options that can be used to configure lxb (lxq) batch job submission for 95% CL upper asymptotic CLs limits with a SM signal injected via the script lxb-injected.py, which used the script limit.py. The expected limit with a SM signal injected is obtained from a large sample of toys. For each toy a pseudo data set is prepared and the observed limit is calculated. The toys are collected using the script limit.py with option --injected. The expected limit and the uncertainties are obtained from the median and the quantiles of the collected toys. The number of toys (--toys) and the batch queue options (--queue) can be configured using the options described in section BATCH OPTIONS of this parameter description. The option --bunch-masses as described below can be used to define a maximal number of masses that will be bunched into a single job before a new job is created. The option --nuisances can be used to pass a pre-defined set of nuisance parameters to limit.py that will be used instead of determining the central values of the nuisances by the prefit for each toy on its own.")
-fgroup.add_option("--bunch-masses", dest="nmasses", default="10", type="string",
+ggroup = OptionGroup(parser, "INJECTED OPTIONS", "These are the command line options that can be used to configure lxb (lxq) batch job submission for 95% CL upper asymptotic CLs limits with a SM signal injected via the script lxb-injected.py, which used the script limit.py. The expected limit with a SM signal injected is obtained from a large sample of toys. For each toy a pseudo data set is prepared and the observed limit is calculated. The toys are collected using the script limit.py with option --injected. The expected limit and the uncertainties are obtained from the median and the quantiles of the collected toys. The number of toys (--toys) and the batch queue options (--queue) can be configured using the options described in section BATCH OPTIONS of this parameter description. The option --bunch-masses as described below can be used to define a maximal number of masses that will be bunched into a single job before a new job is created. The option --nuisances can be used to pass a pre-defined set of nuisance parameters to limit.py that will be used instead of determining the central values of the nuisances by the prefit for each toy on its own.")
+ggroup.add_option("--bunch-masses", dest="nmasses", default="10", type="string",
                   help="This is the maximal number of masses that will be bunched into a single job, before a new job will be created. If you want to do the calculation for nine masses, 1000 tos and maximal 4 masses per bunch you will create 3000 jobs, 2000 jobs for 4 masses each and 1000 jobs for a single mass. [Default: 10]")
-fgroup.add_option("--external-pulls", dest="nuisances", default="", type="string",
+ggroup.add_option("--external-pulls", dest="nuisances", default="", type="string",
                   help="Specify the full path to a root output file of limit.py with option --max-likelihood (e.g. mlfit.root) to enforce the use of pre-calculated central values of the nuisance parmeters involved in this fit. It is in the responsibility of the user that the nuisance parameter names in the output file and the nuisance parameter names in the current workspace fit together. The limit will be run w/ option --no-prefit. For more details have a look to the description of option --external-pulls of the script limit.py. [Default: \"\"]")
-fgroup.add_option("--SplusB", dest="signal_plus_BG", default=False, action="store_true",
+ggroup.add_option("--SplusB", dest="signal_plus_BG", default=False, action="store_true",
                   help="When using options --external-pulls, use the fit results with signal plus background. If 'False' the fit result of the background only hypothesis is used. [Default: False]")
-parser.add_option_group(fgroup)
+parser.add_option_group(ggroup)
 ##
 ## TANB+
 ##
-ggroup = OptionGroup(parser, "TANB+ OPTIONS", "These are the command line options that can be used to configure the submission of tanb+. This option is special in the way that it needs modifications of the directory structure before the limits can be run. Via the script submit.py this setup can only be run interactively using the commend option --setup. Once the directory structure has been set up the limit calculation can be run interactively or in batrch mode.")
-ggroup.add_option("--setup", dest="setup", default=False, action="store_true",
+hgroup = OptionGroup(parser, "TANB+ OPTIONS", "These are the command line options that can be used to configure the submission of tanb+. This option is special in the way that it needs modifications of the directory structure before the limits can be run. Via the script submit.py this setup can only be run interactively using the commend option --setup. Once the directory structure has been set up the limit calculation can be run interactively or in batrch mode.")
+hgroup.add_option("--setup", dest="setup", default=False, action="store_true",
                   help="Use the script to setup the directory structure for direct mA-tanb limits interactively. If false the the script will assume that this has already been done and execute the limit calculation either in batch mode or interactive. [Default: False]")
-parser.add_option_group(ggroup)
+parser.add_option_group(hgroup)
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -204,19 +215,27 @@ if options.optMLFit :
 ## LIKELIHOOD-SCAN
 ##
 if options.optNLLScan :
+    ## add the footprint of the scan
+    footprint = open("{DIR}/.scan".format(DIR=dir), "w")
+    footprint.write("points : {POINTS}\n".format(POINTS=options.points))
+    footprint.write("r : {RMIN} \t {RMAX}\n".format(VAL=val, RMIN=options.rMin, RMAX=options.rMAX))
+    footprint.close()
     if options.interactive :
         for dir in args :
             mass = get_mass(dir)
             if mass == 'common' :
                 continue
             if options.printOnly :
-                print"limit.py --likelihood-scan --points 100 --rMin -2 --rMax 2 {DIR}".format(DIR=dir)
+                print"limit.py --likelihood-scan --points {POINTS} --rMin {RMIN} --rMax {RMAX} {USER} {DIR}".format(
+                    POINTS=options.points, RMIN.options.rMin, RMAX=options.rMax, USER=options.opt, DIR=dir)
             else :
-                os.system("limit.py --likelihood-scan --points 100 --rMin -2 --rMax 2 {USER} {DIR}".format(USER=options.opt, DIR=dir))
+                os.system("limit.py --likelihood-scan --points {POINTS} --rMin {RMIN} --rMax {RMAX} {USER} {DIR}".format(
+                    POINTS=options.points, RMIN.options.rMin, RMAX=options.rMax, USER=options.opt, DIR=dir))
     else :
         ## directories and mases per directory
         struct = directories(args)
-        lxb_submit(struct[0], struct[1], "--likelihood-scan", "--points 100 --rMin -2 --rMax 2 {USER}".format(USER=options.opt))
+        lxb_submit(struct[0], struct[1], "--likelihood-scan", "--points {POINTS} --rMin {RMIN} --rMax {RMAX} {USER}".format(
+            POINTS=options.points, RMIN.options.rMin, RMAX=options.rMax, USER=options.opt))
 ##
 ## MULTIDIM-FIT
 ##
