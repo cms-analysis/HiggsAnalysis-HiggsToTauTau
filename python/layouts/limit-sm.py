@@ -24,13 +24,12 @@ layout = cms.PSet(
     ## define verbosity level
     verbosity = cms.uint32(0),
     ## define output label for root file
-    outputLabel = cms.string("limits"),
+    outputLabel = cms.string("limit"),
     ## define masspoints for limit plot
-    masspoints = cms.vdouble(range(110, 146, 5))
-    #masspoints = cms.vdouble([125])
+    masspoints = cms.vdouble(range(110, 146, 5)),
     ## plot expected only
-    #expectedOnly = cms.bool(True),
-    ## print band for signal injected
-    #injected=cms.bool(True),
+    expectedOnly = cms.bool(False),
+    ## print band in different layout for signal injected
+    injected=cms.bool(False),
 
 )
