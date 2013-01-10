@@ -137,12 +137,17 @@ MSSM Checklist:
 
 (1b) Acceptance correction
 --------------------------------------
- - scale2accept.py -i HiggsAnalysis/HiggsToTauTau/setup/[em,et,mt,mm,tt,hbb] (-p '7TeV/8TeV') -c "mm, em, mt, et, tt, vhtt"   - default for -p is '7TeV 8TeV' means both
+ - scale2accept.py -i HiggsAnalysis/HiggsToTauTau/setup/[em,et,mt,mm,tt,hbb] (-p '7TeV/8TeV') -c "mm, em, mt, et, tt, hbb" 90 100-200:20 130 250-500:50 600-1000:100
+   - default for -p is '7TeV 8TeV' means both
    - always has to be performed
+
+(1c) Bin-by-Bin Uncertainties
+--------------------------------------
+ - add_bbb_errors.py 'et,mt,em:7TeV,8TeV:08,09:ZL,ZLL,Fakes,QCD>W' --mssm -i HiggsAnalysis/HiggsToTauTau/setup  -o MY-SETUP --threshold 0.10
 
 (2) Set up new datacards
 --------------------------------------
- - setup-datacards.py [-i MY-SETUP] -o aux [-p '7TeV 8TeV'] -a mssm -c 'em et mt mm tt hbb' 90 100-200:20 130 250-500:50 600-1000:100
+ - setup-datacards.py -i MY-SETUP -o aux [-p '7TeV 8TeV'] -a mssm -c 'em et mt mm tt hbb' 90 100-200:20 130 250-500:50 600-1000:100
    - rule of thumb to memorize the relevant options: "iOPAC"
    - you can use -i MY-SETUP to point to the setup directory, where you keep the mvis inputs.
    - you can drop -p, the default is '7TeV 8TeV'
@@ -174,7 +179,7 @@ MSSM Checklist:
 (5) Postfit plots
 --------------------------------------
  - cd HiggsAnalysis/HiggsToTauTau/test/
- - ./mlfit_and_copy.py -a mssm $CMSSW_BASE/src/LIMITS/130
+ - ./mlfit_and_copy.py -a mssm $CMSSW_BASE/src/LIMITS/160
  - python produce_macros.py -a mssm
    - check the defaults with --help. 
    - ATTENTION: there is a few potential fixes needed, in case Josh finally renamed his datacards 
@@ -186,7 +191,7 @@ MSSM Checklist:
 
 (6) Limit calculation in tanb-mA plane
 --------------------------------------
- - xsec2tanb.py (--lxq) (--name xsec2tanb) LIMITS/*
+ - lxb-xsec2tanb.py (--lxq) (--name xsec2tanb) LIMITS/*
  - submit.py --tanb+ (--options "--multi-core=4") (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null)  LIMITS/*
  - plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/mssm_tanb_layout.py LIMITS
  - Higgs band plotting: Set higgs125_bands to "true" in mssm_tanb_layout.py
