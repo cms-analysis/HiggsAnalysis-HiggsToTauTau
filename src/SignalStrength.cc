@@ -21,7 +21,8 @@ PlotLimits::plotSignalStrength(TCanvas& canv, TGraphAsymmErrors* innerBand, TGra
   }
 
   // pick up final results; this requires that they have been 
-  // produced beforehand using limit.py --multidim-fit
+  // produced beforehand using limit.py/submit.py with options
+  // --multidim-fit or --likelihood-scan.
   char type[20]; 
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
     // buffer mass value
@@ -31,7 +32,7 @@ PlotLimits::plotSignalStrength(TCanvas& canv, TGraphAsymmErrors* innerBand, TGra
     std::string line;
     std::string fullpath;
     float bestfit, bestfitDown, bestfitUp;
-    fullpath = TString::Format("%s/%d/multi-dim.fitresult", directory, (int)mass);
+    fullpath = TString::Format("%s/%d/signal-strength.output", directory, (int)mass);
     ifstream multidim (fullpath.c_str());
     if(multidim.is_open()){
       while( multidim.good() ){
@@ -65,7 +66,7 @@ PlotLimits::plotSignalStrength(TCanvas& canv, TGraphAsymmErrors* innerBand, TGra
     print(std::string(output_).append("_").append(label_).c_str(), 0, innerBand, central, 0, "tex");
   }
   if(root_){
-    TFile* output = new TFile(std::string("limits_").append(label_).append(".root").c_str(), "update");
+    TFile* output = new TFile(std::string("signal-strength-").append(label_).append(".root").c_str(), "update");
     if(!output->cd(output_.c_str())){
       output->mkdir(output_.c_str());
       output->cd(output_.c_str());

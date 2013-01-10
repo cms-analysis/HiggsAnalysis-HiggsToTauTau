@@ -134,7 +134,7 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     }
     // determine bestfit graph
     float bestFit=-1.; 
-    float buffer, bestX=-999., bestY=-999.;
+    float buffer=0., bestX=-999., bestY=-999.;
     for(int i=0; i<nevent; ++i){
       limit->GetEvent(i);
       buffer=scan2D->GetBinContent(scan2D->FindBin(x,y));
@@ -156,7 +156,7 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     }
     TGraph* bestfit = new TGraph();
     bestfit->SetPoint(0, bestX, bestY);
-    // determine newcontours for 68% CL and 95% CL limits
+    // determine new contours for 68% CL and 95% CL limits
     double contours[2];
     contours[0] = 0.5;     //68% CL
     contours[1] = 1.92;    //95% CL
@@ -204,7 +204,7 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
     // print 1d band
     ofstream scanOut;  
-    scanOut.open(TString::Format("%s/%d/multi-dim.fitresult", directory, (int)mass));
+    scanOut.open(TString::Format("%s/%d/signal-strength.output", directory, (int)mass));
     scanOut << " --- MultiDimFit ---" << std::endl;
     scanOut << "best fit parameter values and uncertainties from NLL scan:" << std::endl;
     band1D(scanOut, xval, yval, bestfit, graph68, (xmax-xmin)/nbins/2, (ymax-ymin)/nbins/2, "(68%)");
@@ -233,6 +233,7 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
       if(filled68){ filled68->Write(TString::Format("filled68_%d" , (int)mass) ); }
       if(graph95 ){ graph95 ->Write(TString::Format("graph95_%d"  , (int)mass) ); }
       if(filled95){ filled95->Write(TString::Format("filled95_%d" , (int)mass) ); }
+      if(bestfit ){ bestfit ->Write(TString::Format("bestfit_%d"  , (int)mass) ); }
       plot2D  ->Write(TString::Format("plot2D_%d"   , (int)mass) );
       output->Close();
     }
