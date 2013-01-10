@@ -99,24 +99,34 @@ class PlotLimits {
   void plotSignificance(TCanvas& canv, TGraph* expected, TGraph* observed=0);
   /// plot 2d-scans for several masses on canvases, print out png, pdf, txt, root formats if desired  
   void plot2DScan(TCanvas& canv, const char* directory="");
+  /// plot 1d-scans for several masses on canvases, print out png, pdf, root formats if desired  
+  void plot1DScan(TCanvas& canv, const char* directory="");
 
  private:
-  /// fill a single vector of values according to 2sigma, 1sigma, median and observed from asymptotic limits
-  void prepareAsymptotic(const char* directory, std::vector<double>& values, const char* type);
-  /// fill a single vector of values according to 2sigma, 1sigma, mean or median from bayesian limits; in case files do not 
-  /// exists or were corrupted for a given mass point the initial value of -1. will be filled, the member functions fillCentral
-  /// and fillBand should check for values of -1. and take these mass points out of consideration.
-  void prepareBayesian(const char* directory, std::vector<double>& values, const char* type);
+  /// fill a single vector of values from toys. Values are obtained from the mean and/or the quantiles of the 
+  /// input distribution. Valid types are: 
+  /// -2sigma :  0.025 quantile
+  /// -1sigma :   0.16 quantile
+  /// median  :    0.5 quantile
+  /// +1sigma :   0.84 quantile
+  /// +2sigma :  0.975 quantile
+  /// mean    : mean value of distribution 
+  void prepareByToy(const char* directory, std::vector<double>& values, const char* type);
+  /// fill a single vector of values by value in the root input file with name filename (w/o .root ending). 
+  /// Valid values are: 
+  /// -1.     : observed
+  /// 0.025   : -2sigma
+  /// 0.16    : -1sigma
+  /// 0.5     : median
+  /// 0.84    : +1sigma
+  /// 0.975   : +2sigma
+  void prepareByValue(const char* directory, std::vector<double>& values, const char* filename, float value);
+  /// fill a single vector of values from a single file given by filename (w/o .root ending).
+  void prepareByFile(const char* directory, std::vector<double>& values, const char* filename);
   /// fill a single vector of values according to 2sigma, 1sigma or median from CLs limits;
   void prepareCLs(const char* directory, std::vector<double>& values, const char* type) {
-    prepareSimple(directory, values, std::string("higgsCombineTest.HybridNew.$MASS").append(type).c_str());
+    prepareByFile(directory, values, std::string("higgsCombineTest.HybridNew.mH$MASS").append(type).c_str());
   };
-  /// fill a single vector of values according to 1sigma from the simple maximum likelihood fit of combine
-  void prepareMaxLikelihood(const char* directory, std::vector<double>& values, const char* filename, float ConLevel);
-  /// fill a single vector of values from a file filename. In case files do not exists or were corrupted for a given mass point 
-  /// the initial value of -1. will be filled, the member functions fillCentral and fillBand should check for values of -1. and
-  /// take these mass points out of consideration.
-  void prepareSimple(const char* directory, std::vector<double>& values, const char* filename);
   /// fill officially approved limits for HIG-11-020 (NOTE: these are cross section limits also for MSSM)
   void prepareHIG_11_020(std::vector<double>& values, const char* type, bool xsec, double mass, bool initial);
   /// fill officially approved limits for HIG-11-029 (NOTE: these are direct limits on tanb for MSSM)
@@ -168,6 +178,8 @@ class PlotLimits {
 
   /// indicate whether mssm or sm plots should be made (used fro several options)
   bool mssm_;
+  /// indicate plot type as bestfit
+  bool bestfit_;
   /// indicate whether this is with signal injected or not (used for limit plotting)
   bool injected_;
   /// indicate whether the +/- 2 sigma should be shown or not (used for option tanb)

@@ -27,11 +27,15 @@ void addParameter(edm::ParameterSet& pset, const std::string& key, const std::st
     pset.addParameter<int>(key, StringToNumber<int>(value));
   else if (pset.existsAs<unsigned int>(key))
     pset.addParameter<unsigned int>(key, StringToNumber<unsigned int>(value));
-  else if (pset.existsAs<bool>(key))
-    // we use 0 or 1 for bool
-    pset.addParameter<unsigned int>(key, StringToNumber<unsigned int>(value));
+  else if (pset.existsAs<bool>(key)){
+    if(StringToNumber<unsigned int>(value)==0){
+      pset.addParameter<bool>(key, true);
+    }
+    else{
+      pset.addParameter<bool>(key, true);
+    }
+  }
   else if (pset.existsAs<double>(key))
-    // we use 0 or 1 for bool
     pset.addParameter<double>(key, StringToNumber<double>(value));
   else if (pset.existsAs<std::vector<double> >(key)){
     std::stringstream stream(value);
@@ -81,11 +85,11 @@ int main(int argc, char* argv[])
   types.push_back(std::string("--HIG-12-050"));
 
   // parse arguments
-  if ( argc < 3 ) {
+  if(argc<3){
     std::cout << "Usage : " << argv[0] << " [limit-type] [layout.py] [target-dir] [option1=value1 [option2=value2] ...]" << std::endl;
     return 0;
   }
-  if( std::find(types.begin(), types.end(), std::string(argv[1])) == types.end() ){
+  if( std::find(types.begin(), types.end(), std::string(argv[1])) == types.end()){
     std::cout << " ERROR: The specified limit type (" << argv[1] << ")"
 	      << " is not supported. Available limit types are:" << std::endl;
     for( std::vector<std::string>::const_iterator type = types.begin(); type!=types.end(); ++type ){
@@ -93,17 +97,32 @@ int main(int argc, char* argv[])
     }
     exit(0);
   }
-  if( !edm::readPSetsFrom(argv[2])->existsAs<edm::ParameterSet>("layout") ){
+  if(!edm::readPSetsFrom(argv[2])->existsAs<edm::ParameterSet>("layout")){
     std::cout << " ERROR: ParameterSet 'layout' is missing in your configuration file" << std::endl; exit(0);
   }
   edm::ParameterSet layout =  edm::readPSetsFrom(argv[2])->getParameterSet("layout");
 
+  // define number of required parameters
+  int REQUIRED = (std::string(argv[1]).find("HIG")==std::string::npos) ? 4 : 3;
+  // get intput directory up to one before mass points
+  const char* directory((std::string(argv[1]).find("HIG")==std::string::npos) ? argv[3] : argv[1]);
+  std::string directory_string(directory);
+  // chop off the prepended directories if needed for out
+  if(directory_string.rfind("/")+1 == directory_string.length()){
+    directory_string = directory_string.substr(0, directory_string.rfind("/"));
+  }
+  else{
+    directory_string = directory_string.substr(2, std::string::npos);
+  }
+  std::string out(directory_string.substr(directory_string.rfind("/")+1));
+
   // update layout with overridden options
-  if (argc > 4) {
-    for (int i = 4; i < argc; ++i) {
+  std::cout << "REQUIRED=" << REQUIRED << " --> argc=" << argc << std::endl;
+  if(argc>REQUIRED){
+    for(int i=REQUIRED; i<argc; ++i){
       std::string argument(argv[i]);
       size_t equals_pos = argument.find("=");
-      if (equals_pos == std::string::npos) {
+      if(equals_pos == std::string::npos){
         std::cerr << "I don't understand the layout override: " << argument <<
           " The format should be key=value" << std::endl;
         exit(1);
@@ -113,40 +132,30 @@ int main(int argc, char* argv[])
       addParameter(layout, key, value);
     }
   }
-
   bool mssm = layout.existsAs<bool>("mssm") ? layout.getParameter<bool>("mssm") : false;
-  bool expected_only = layout.existsAs<bool>("expectedOnly") ? layout.getParameter<bool>("expectedOnly") : false;
-
-  // get intput directory up to one before mass points
-  const char* directory ((std::string(argv[1]).find("HIG")==std::string::npos) ? argv[3] : argv[1]);
-  std::string directory_string(directory);
-  // chop off the prepended directories if needed for out
-  if(directory_string.rfind("/")+1 == directory_string.length()){
-    directory_string = directory_string.substr(0, directory_string.rfind("/"));
-  }
-  std::string out(directory_string.substr(directory_string.rfind("/")+1));
-  PlotLimits plot(out.c_str(), layout);
-
+  bool expectedOnly = layout.existsAs<bool>("expectedOnly") ? layout.getParameter<bool>("expectedOnly") : false;
+  
   /*
     Implementations
   */
 
-  if( std::string(argv[1]) == std::string("--CLs") ){
+  PlotLimits plot(out.c_str(), layout);
+  if(std::string(argv[1]) == std::string("--CLs")){
     // observed limit
     TGraph* observed  = 0;
-    if(!expected_only){
+    if(!expectedOnly){
       observed = new TGraph();
-      plot.fillCentral(directory, observed, "higgsCombineTest.HybridNew.$MASS");
+      plot.fillCentral(directory, observed, "higgsCombineTest.HybridNew.mH$MASS");
     }
     // expected limit
     TGraph* expected  = new TGraph();
-    plot.fillCentral(directory, expected, "higgsCombineTest.HybridNew.$MASS.quant0.500");
+    plot.fillCentral(directory, expected, "higgsCombineTest.HybridNew.mH$MASS.quant0.500");
     // 2-sigma uncertainty band
     TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
-    plot.fillBand(directory, outer, "CLs", false);
+    plot.fillBand(directory, outer, "CLS", false);
     // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
-    plot.fillBand(directory, inner, "CLs", true);
+    plot.fillBand(directory, inner, "CLS", true);
     // make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
@@ -155,19 +164,19 @@ int main(int argc, char* argv[])
   if( std::string(argv[1]) == std::string("--tanb") ){
     // observed limit
     TGraph* observed  = 0;
-    if(!expected_only){
+    if(!expectedOnly){
       observed = new TGraph();
-      plot.fillCentral(directory, observed, "higgsCombineTest.HybridNew.$MASS");
+      plot.fillCentral(directory, observed, "higgsCombineTest.HybridNew.mH$MASS");
     }
     // expected limit
     TGraph* expected  = new TGraph();
-    plot.fillCentral(directory, expected, "higgsCombineTest.HybridNew.$MASS.quant0.500");
+    plot.fillCentral(directory, expected, "higgsCombineTest.HybridNew.mH$MASS.quant0.500");
     // 2-sigma uncertainty band
     TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
-    plot.fillBand(directory, outer, "CLs", false);
+    plot.fillBand(directory, outer, "CLS", false);
     // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
-    plot.fillBand(directory, inner, "CLs", true);
+    plot.fillBand(directory, inner, "CLS", true);
     // make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
@@ -176,19 +185,20 @@ int main(int argc, char* argv[])
   if( std::string(argv[1]) == std::string("--bayesian") ){
     // observed limit
     TGraph* observed  = 0;
-    if(!expected_only){
+    if(!expectedOnly){
       observed = new TGraph();
-      plot.fillCentral(directory, observed, "higgsCombineTest.MarkovChainMC.$MASS");
+      // fill based on single value in single file as for CLs
+      plot.fillCentral(directory, observed, "higgsCombineTest.MarkovChainMC.mH$MASS");
     }
-    // expected limit (for Bayesian 'median' and 'mean' are sensible parameters)
+    // expected limit (for --bayesian 'MEDIAN' and 'MEAN' are sensible parameters)
     TGraph* expected  = new TGraph();
-    plot.fillCentral(directory, expected, "median");
+    plot.fillCentral(directory, expected, "MEDIAN");
     // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
-    plot.fillBand(directory, inner, "Bayesian", true);
+    plot.fillBand(directory, inner, "TOYBASED", true);
     // 2-sigma uncertainty band
     TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
-    plot.fillBand(directory, outer, "Bayesian", false);
+    plot.fillBand(directory, outer, "TOYBASED", false);
     // make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
@@ -197,19 +207,19 @@ int main(int argc, char* argv[])
   if( std::string(argv[1]) == std::string("--injected") ){
     // observed limit
     TGraph* observed  = 0;
-    if(!expected_only){
+    if(!expectedOnly){
       observed = new TGraph();
-      plot.fillCentral(directory, observed, "higgsCombine-obs.Asymptotic.$MASS");
+      plot.fillCentral(directory, observed, "higgsCombine-obs.Asymptotic.mH$MASS");
     }
-    // expected limit (for Bayesian 'median' and 'mean' are sensible parameters)
+    // expected limit (for --injected 'MEDIAN' and 'MEAN' are sensible parameters)
     TGraph* expected  = new TGraph();
-    plot.fillCentral(directory, expected, "median");
-    // 1-sigma uncertainty band (this high-jacks the bayesian filling)
+    plot.fillCentral(directory, expected, "MEDIAN");
+    // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
-    plot.fillBand(directory, inner, "Bayesian", true);
-    // 2-sigma uncertainty band (this high-jacks the bayesian filling)
+    plot.fillBand(directory, inner, "TOYBASED", true);
+    // 2-sigma uncertainty band
     TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
-    plot.fillBand(directory, outer, "Bayesian", false);
+    plot.fillBand(directory, outer, "TOYBASED", false);
     // make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
@@ -218,19 +228,19 @@ int main(int argc, char* argv[])
   if( std::string(argv[1]) == std::string("--asymptotic") ){
     // observed limit
     TGraph* observed  = 0;
-    if(!expected_only){
+    if(!expectedOnly){
       observed = new TGraph();
-      plot.fillCentral(directory, observed, "asym-observed");
+      plot.fillCentral(directory, observed, "higgsCombine-obs.Asymptotic.mH$MASS");
     }
     // expected limit
     TGraph* expected  = new TGraph();
-    plot.fillCentral(directory, expected, "asym-expected");
+    plot.fillCentral(directory, expected, "higgsCombine-exp.Asymptotic.mH$MASS");
     // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
-    plot.fillBand(directory, inner, "Asymptotic", true);
+    plot.fillBand(directory, inner, "higgsCombine-exp.Asymptotic.mH$MASS", true);
     // 2-sigma uncertainty band
     TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
-    plot.fillBand(directory, outer, "Asymptotic", false);
+    plot.fillBand(directory, outer, "higgsCombine-exp.Asymptotic.mH$MASS", false);
     // make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
@@ -239,34 +249,34 @@ int main(int argc, char* argv[])
   if( std::string(argv[1]) == std::string("--significance") ){
     // observed limit
     TGraph* observed  = 0;
-    if(!expected_only){
+    if(!expectedOnly){
       observed = new TGraph();
-      plot.fillCentral(directory, observed, "higgsCombineTest.ProfileLikelihood.$MASS");
+      plot.fillCentral(directory, observed, "higgsCombineTest.ProfileLikelihood.mH$MASS");
     }
     TGraph* expected  = new TGraph();
-    plot.fillCentral(directory, expected, "median");
-    // 1-sigma uncertainty band (this high-jacks the bayesian filling)
+    plot.fillCentral(directory, expected, "MEDIAN");
+    // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
-    plot.fillBand(directory, inner, "Bayesian", true);
-    // 2-sigma uncertainty band (this high-jacks the bayesian filling)
+    plot.fillBand(directory, inner, "TOYBASED", true);
+    // 2-sigma uncertainty band
     TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
-    plot.fillBand(directory, outer, "Bayesian", false);
+    plot.fillBand(directory, outer, "TOYBASED", false);
     // make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plotSignificance(*canv, expected, observed);
   }
   if( std::string(argv[1]) == std::string("--max-likelihood") ){
-    // expected limit
-    TGraph* expected  = new TGraph();
-    plot.fillCentral(directory, expected, "higgsCombineTest.MaxLikelihoodFit.$MASS");
+    // central value
+    TGraph* central  = new TGraph();
+    plot.fillCentral(directory, central, "higgsCombineTest.MaxLikelihoodFit.mH$MASS");
     // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
-    plot.fillBand(directory, inner, "higgsCombineTest.MaxLikelihoodFit.$MASS", true);
+    plot.fillBand(directory, inner, "higgsCombineTest.MaxLikelihoodFit.mH$MASS", true);
     // make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
-    plot.plotLimit(*canv, inner, 0, expected, 0);
+    plot.plotLimit(*canv, inner, 0, central, 0);
   }
   if( std::string(argv[1]) == std::string("--likelihood-scan") ){
     // best fit
@@ -287,13 +297,13 @@ int main(int argc, char* argv[])
   if( std::string(argv[1]) == std::string("--HIG-11-020") ){
     // observed limit
     TGraph* observed  = 0;
-    if(!expected_only){
+    if(!expectedOnly){
       observed = new TGraph();
-      plot.fillCentral("HIG-11-020", observed, "HIG-11-020-observed");
+      plot.fillCentral("HIG-11-020", observed, "HIG-11-020-obs");
     }
     // expected limit
     TGraph* expected  = new TGraph();
-    plot.fillCentral("HIG-11-020", expected, "HIG-11-020-expected");
+    plot.fillCentral("HIG-11-020", expected, "HIG-11-020-exp");
     // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
     plot.fillBand("HIG-11-020", inner, "HIG-11-020", true);
@@ -311,13 +321,13 @@ int main(int argc, char* argv[])
   if( std::string(argv[1]) == std::string("--HIG-11-029") ){
     // observed limit
     TGraph* observed  = 0;
-    if(!expected_only){
+    if(!expectedOnly){
       observed = new TGraph();
-      plot.fillCentral("HIG-11-029", observed, "HIG-11-029-observed");
+      plot.fillCentral("HIG-11-029", observed, "HIG-11-029-obs");
     }
     // expected limit
     TGraph* expected  = new TGraph();
-    plot.fillCentral("HIG-11-029", expected, "HIG-11-029-expected");
+    plot.fillCentral("HIG-11-029", expected, "HIG-11-029-exp");
     // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
     plot.fillBand("HIG-11-029", inner, "HIG-11-029", true);
@@ -337,13 +347,13 @@ int main(int argc, char* argv[])
   if( std::string(argv[1]) == std::string("--HIG-12-018") ){
     // observed limit
     TGraph* observed  = 0;
-    if(!expected_only){
+    if(!expectedOnly){
       observed = new TGraph();
-      plot.fillCentral("HIG-12-018", observed, "HIG-12-018-observed");
+      plot.fillCentral("HIG-12-018", observed, "HIG-12-018-obs");
     }
     // expected limit
     TGraph* expected  = new TGraph();
-    plot.fillCentral("HIG-12-018", expected, "HIG-12-018-expected");
+    plot.fillCentral("HIG-12-018", expected, "HIG-12-018-exp");
     // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
     plot.fillBand("HIG-12-018", inner, "HIG-12-018", true);
@@ -358,13 +368,13 @@ int main(int argc, char* argv[])
   if( std::string(argv[1]) == std::string("--HIG-12-032") ){
     // observed limit
     TGraph* observed  = 0;
-    if(!expected_only){
+    if(!expectedOnly){
       observed = new TGraph();
-      plot.fillCentral("HIG-12-032", observed, "HIG-12-032-observed");
+      plot.fillCentral("HIG-12-032", observed, "HIG-12-032-obs");
     }
     // expected limit
     TGraph* expected  = new TGraph();
-    plot.fillCentral("HIG-12-032", expected, "HIG-12-032-expected");
+    plot.fillCentral("HIG-12-032", expected, "HIG-12-032-exp");
     // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
     plot.fillBand("HIG-12-032", inner, "HIG-12-032", true);
@@ -379,13 +389,13 @@ int main(int argc, char* argv[])
   if( std::string(argv[1]) == std::string("--HIG-12-043") ){
     // observed limit
     TGraph* observed  = 0;
-    if(!expected_only){
+    if(!expectedOnly){
       observed = new TGraph();
-      plot.fillCentral("HIG-12-043", observed, "HIG-12-043-observed");
+      plot.fillCentral("HIG-12-043", observed, "HIG-12-043-obs");
     }
     // expected limit
     TGraph* expected  = new TGraph();
-    plot.fillCentral("HIG-12-043", expected, "HIG-12-043-expected");
+    plot.fillCentral("HIG-12-043", expected, "HIG-12-043-exp");
     // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
     plot.fillBand("HIG-12-043", inner, "HIG-12-043", true);
@@ -400,13 +410,13 @@ int main(int argc, char* argv[])
   if( std::string(argv[1]) == std::string("--HIG-12-050") ){
     // observed limit
     TGraph* observed  = 0;
-    if(!expected_only){
+    if(!expectedOnly){
       observed = new TGraph();
-      plot.fillCentral("HIG-12-050", observed, "HIG-12-050-observed");
+      plot.fillCentral("HIG-12-050", observed, "HIG-12-050-obs");
     }
     // expected limit
     TGraph* expected  = new TGraph();
-    plot.fillCentral("HIG-12-050", expected, "HIG-12-050-expected");
+    plot.fillCentral("HIG-12-050", expected, "HIG-12-050-exp");
     // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
     plot.fillBand("HIG-12-050", inner, "HIG-12-050", true);
