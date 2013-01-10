@@ -84,7 +84,7 @@ class PlotLimits {
   /// automatic maximum determination for TGraphs (used for several options)
   float maximum(TGraph* graph); 
   /// make a fillable TGraph out of a non-fillable TGraph that comes out of a contour plot (used for option scan2D)
-  TGraph* convexGraph(TGraph* graph);
+  TGraph* convexGraph(TGraph* graph, double lowerBound, double upperBound, double tollerance);
   /// print 1d uncertainties for a given CL to file (used by scan-2d)
   void band1D(ostream& out, std::string& xval, std::string& yval, TGraph* bestFit, TGraph* band, float xoffset, float yoffset, std::string CL);
   /// fill a graph for the contraints of the H(125) resonance in the mA-tanb exclusion plane (used for option tanb)

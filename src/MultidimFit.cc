@@ -5,16 +5,37 @@
 void plotting2DScan(TCanvas& canv, TH2F* plot2D, TGraph* graph95, TGraph* graph68, TGraph* bestfit, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp, bool log);
 
 TGraph* 
-PlotLimits::convexGraph(TGraph* graph)
+PlotLimits::convexGraph(TGraph* graph, double lowerBound, double upperBound, double tollerance)
 {
+  // this function adds points the lower x-axis boundaries (xmin,0), (xmax,0) if 
+  // the graph reaches there to guarantee that the graph is convex and can be 
+  // plotted as filled. It does not cover cases where the ellipes is truncated 
+  // by the right boundary. Note: this function assumes that graphs are filled 
+  // from large x values to small x values. This is true for graphs that have 
+  // been filled from contours.
   int n=graph->GetN();
+  double xmin=-1, xmax=-1.;
   double bx[n]; double by[n];
-  for(int idx=0; idx<n; ++idx){ graph->GetPoint(idx, bx[idx],by[idx]); }
-  TGraph* convex = new TGraph();
-  convex->SetPoint(0,0,0);
-  for(int idx=0; idx<n; idx++){
-    convex->SetPoint(idx+1, bx[idx], by[idx]);
+  for(int idx=0; idx<n; ++idx){ 
+    graph->GetPoint(idx, bx[idx],by[idx]);
+    // determine boundary values on x-axis
+    if(xmin<1 || bx[idx]<xmin){ xmin=bx[idx]; }
+    if(xmax<1 || bx[idx]>xmax){ xmax=bx[idx]; }
   }
+  // set up the convex graph that can be filld for plotting
+  TGraph* convex = new TGraph(); int idx=0;
+  if(fabs(xmax-upperBound)<tollerance){
+    convex->SetPoint(idx++, upperBound, 0.);
+  }
+  for(int isrc=0; isrc<n; ++isrc){
+    convex->SetPoint(idx++, bx[isrc], by[isrc]);
+  }
+  if(fabs(xmin-lowerBound)<tollerance){
+    convex->SetPoint(idx++, lowerBound, 0.);
+  }
+  //for(int idx=0; idx<convex->GetN(); ++idx){
+  //  std::cout << "idx:" << idx << " x:" << convex->GetX()[idx] << " y:" << convex->GetY()[idx] << std::endl;
+  //}
   return convex;
 }
 
@@ -83,7 +104,7 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
       file.close();
     }
     if(verbosity_>1){
-      std::cout << " mass: " << mass << ";" << " points: " << points << ";"
+      std::cout << "mass: " << mass << ";" << " points: " << points << ";"
 		<< " " << xval << " : " << xmin << " -- " << xmax << ";" 
 		<< " " << yval << " : " << ymin << " -- " << ymax << ";"
 		<< std::endl;
@@ -95,8 +116,8 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     TString fullpath = TString::Format("%s/%d/higgsCombine%s.MultiDimFit.mH%d.root", directory, (int)mass, label, (int)mass);
     std::cout << "open file: " << fullpath << std::endl;
 
-    TFile* file_ = TFile::Open(fullpath); if(!file_){ std::cout << "--> TFile is corrupt: skip" << std::endl; continue; }
-    TTree* limit = (TTree*) file_->Get("limit"); if(!limit){ std::cout << "--> TTree is corrupt: skip" << std::endl; continue; }
+    TFile* file_ = TFile::Open(fullpath); if(!file_){ std::cout << "--> TFile is corrupt: skipping masspoint." << std::endl; continue; }
+    TTree* limit = (TTree*) file_->Get("limit"); if(!limit){ std::cout << "--> TTree is corrupt: skipping masspoint." << std::endl; continue; }
     float nll, x, y;
     float nbins = TMath::Sqrt(points);
     TH2F* scan2D = new TH2F("scan2D", "", nbins, xmin, xmax, nbins, ymin, ymax);
@@ -107,7 +128,8 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     for(int i=0; i<nevent; ++i){
       limit->GetEvent(i);
       if(scan2D->GetBinContent(scan2D->FindBin(x,y))==0){
-	scan2D->Fill(x, y, nll);
+	// catch small negative values that might occure due to rounding
+	scan2D->Fill(x, y, fabs(nll));
       }
     }
     // determine bestfit graph
@@ -117,14 +139,21 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
       limit->GetEvent(i);
       buffer=scan2D->GetBinContent(scan2D->FindBin(x,y));
       if (bestFit<0 || bestFit>buffer){
+	//std::cout << "update bestFit coordinates: " << std::endl;
+	//std::cout << "-->old: x=" << bestX << " y=" << bestY << " value=" << bestFit << std::endl;
 	// adjust best fit to granularity of scan; we do this to prevent artefacts 
 	// when quoting the 1d uncertainties of the scan. For the plotting this 
 	// does not play a role. 
 	bestX=scan2D->GetXaxis()->GetBinCenter(scan2D->GetXaxis()->FindBin(x)); 
 	bestY=scan2D->GetYaxis()->GetBinCenter(scan2D->GetYaxis()->FindBin(y));
 	bestFit=buffer; 
+	//std::cout << "-->new: x=" << bestX << " y=" << bestY << " value=" << bestFit << std::endl;
       }
-    }  
+    }
+    if(verbosity_>0){
+      std::cout << "Bestfit value from likelihood-scan:" << std::endl;
+      std::cout << "x=" << bestX << " y=" << bestY << " value=" << bestFit << std::endl;
+    }
     TGraph* bestfit = new TGraph();
     bestfit->SetPoint(0, bestX, bestY);
     // determine newcontours for 68% CL and 95% CL limits
@@ -144,11 +173,11 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
       for(int g=0; g<graphlist->GetEntries(); ++g){
 	if(i==0){
 	  graph68 = (TGraph*)graphlist->At(g);
-	  filled68 = convexGraph(graph68);
+	  filled68 = convexGraph(graph68, xmin, xmax, (xmax-xmin)/nbins);
 	}
 	if(i==1){
 	  graph95 = (TGraph*)graphlist->At(g); 
-	  filled95 = convexGraph(graph95);
+	  filled95 = convexGraph(graph95, xmin, xmax, (xmax-xmin)/nbins);
 	}
       }
     }    
