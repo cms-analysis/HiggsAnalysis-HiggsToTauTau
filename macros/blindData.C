@@ -109,8 +109,8 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
   samples.insert(samples.end(), signals.begin(), signals.end());
 
   // in case data_obs is supposed to be written to an extra output file
-  // open the file, otherwise the the data_obs in the input file will 
-  // be overwritten
+  // open the file, otherwise the data_obs in the input file will be
+  // overwritten
   TFile* outputFile = 0; 
   if(!std::string(outputLabel).empty()){
     std::string out = std::string(filename); 
