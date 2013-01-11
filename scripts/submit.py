@@ -92,6 +92,8 @@ ggroup.add_option("--external-pulls", dest="nuisances", default="", type="string
                   help="Specify the full path to a root output file of limit.py with option --max-likelihood (e.g. mlfit.root) to enforce the use of pre-calculated central values of the nuisance parmeters involved in this fit. It is in the responsibility of the user that the nuisance parameter names in the output file and the nuisance parameter names in the current workspace fit together. The limit will be run w/ option --no-prefit. For more details have a look to the description of option --external-pulls of the script limit.py. [Default: \"\"]")
 ggroup.add_option("--SplusB", dest="signal_plus_BG", default=False, action="store_true",
                   help="When using options --external-pulls, use the fit results with signal plus background. If 'False' the fit result of the background only hypothesis is used. [Default: False]")
+ggroup.add_option("--calculate-injected", dest="calculate_injected", default=False, action="store_true",
+                  help="This option can only be used if toys have produced before. When using option --calculate the limit.py script will be called with --injected using lxb (lxq). [Default: False]")
 parser.add_option_group(ggroup)
 ##
 ## TANB+
@@ -226,16 +228,16 @@ if options.optNLLScan :
             if mass == 'common' :
                 continue
             if options.printOnly :
-                print"limit.py --likelihood-scan --points {POINTS} --rMin {RMIN} --rMax {RMAX} {USER} {DIR}".format(
-                    POINTS=options.points, RMIN.options.rMin, RMAX=options.rMax, USER=options.opt, DIR=dir)
+                print "limit.py --likelihood-scan --points {POINTS} --rMin {RMIN} --rMax {RMAX} {USER} {DIR}".format(
+                    POINTS=options.points, RMIN=options.rMin, RMAX=options.rMax, USER=options.opt, DIR=dir)
             else :
                 os.system("limit.py --likelihood-scan --points {POINTS} --rMin {RMIN} --rMax {RMAX} {USER} {DIR}".format(
-                    POINTS=options.points, RMIN.options.rMin, RMAX=options.rMax, USER=options.opt, DIR=dir))
+                    POINTS=options.points, RMIN=options.rMin, RMAX=options.rMax, USER=options.opt, DIR=dir))
     else :
         ## directories and mases per directory
         struct = directories(args)
         lxb_submit(struct[0], struct[1], "--likelihood-scan", "--points {POINTS} --rMin {RMIN} --rMax {RMAX} {USER}".format(
-            POINTS=options.points, RMIN.options.rMin, RMAX=options.rMax, USER=options.opt))
+            POINTS=options.points, RMIN=options.rMin, RMAX=options.rMax, USER=options.opt))
 ##
 ## MULTIDIM-FIT
 ##
@@ -351,20 +353,26 @@ if options.optInject :
                 tail = dir[dir.rstrip('/').rfind('/')+1:]
                 if is_number(tail) :
                     dirs[path].append(tail)
-    ## prepare options
-    opts = options.opt
-    opts+=" --observedOnly"
-    if not options.nuisances == "" :
-        opts+=" --no-prefit --external-pulls \"{PATH}\" --signal-plus-background {SPLUSB}".format(PATH=options.nuisances, SPLUSB=options.signal_plus_BG)
-    ## do the submit 
-    for path in paths :
-        jobname = "injected-"+path[path.rstrip('/').rfind('/')+1:]
-        if options.printOnly :
-            print "lxb-injected.py --name {NAME} --input {PATH} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" {MASSES}".format(
-                NAME=jobname, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, MASSES=' '.join(dirs[path]))
-        else :
-            os.system("lxb-injected.py --name {NAME} --input {PATH} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" {MASSES}".format(
-                NAME=jobname, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, MASSES=' '.join(dirs[path])))
+    if not options.calculate_injected :
+        ## prepare options
+        opts = options.opt
+        opts+=" --observedOnly"
+        if not options.nuisances == "" :
+            opts+=" --no-prefit --external-pulls \"{PATH}\" --signal-plus-background {SPLUSB}".format(PATH=options.nuisances, SPLUSB=options.signal_plus_BG)
+        ## do the submit 
+        for path in paths :
+            jobname = "injected-"+path[path.rstrip('/').rfind('/')+1:]
+            if options.printOnly :
+                print "lxb-injected.py --name {NAME} --input {PATH} {LXQ} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" {MASSES}".format(
+                    NAME=jobname, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "")
+            else :
+                os.system("lxb-injected.py --name {NAME} --input {PATH} {LXQ} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" {MASSES}".format(
+                    NAME=jobname, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else ""))
+    else :
+        ## directories and mases per directory
+        struct = directories(args)
+        lxb_submit(struct[0], struct[1], "--injected", "{USER}".format(USER=options.opt))
+        
 ##
 ## CLs
 ##
