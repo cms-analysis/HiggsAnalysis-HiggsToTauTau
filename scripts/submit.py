@@ -218,10 +218,11 @@ if options.optMLFit :
 ##
 if options.optNLLScan :
     ## add the footprint of the scan
-    footprint = open("{DIR}/.scan".format(DIR=dir), "w")
-    footprint.write("points : {POINTS}\n".format(POINTS=options.points))
-    footprint.write("r : {RMIN} \t {RMAX}\n".format(VAL=val, RMIN=options.rMin, RMAX=options.rMAX))
-    footprint.close()
+    for dir in args :
+        footprint = open("{DIR}/.scan".format(DIR=dir), "w")
+        footprint.write("points : {POINTS}\n".format(POINTS=options.points))
+        footprint.write("r : {RMIN} \t {RMAX}\n".format(RMIN=options.rMin, RMAX=options.rMax))
+        footprint.close()
     if options.interactive :
         for dir in args :
             mass = get_mass(dir)
