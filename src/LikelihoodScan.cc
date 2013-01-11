@@ -73,7 +73,7 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
 
     // tree scan
     char* label = (char*)model_.c_str(); int i=0;
-    while(label[i]){ label[i]=putchar(toupper(label[i])); ++i; } std::cout << " : ";
+    //while(label[i]){ label[i]=putchar(toupper(label[i])); ++i; } std::cout << " : ";
     TString fullpath = TString::Format("%s/%d/higgsCombine%s.MultiDimFit.mH%d.root", directory, (int)mass, label, (int)mass);
     std::cout << "open file: " << fullpath << std::endl;
 
