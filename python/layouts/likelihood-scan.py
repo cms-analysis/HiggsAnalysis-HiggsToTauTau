@@ -20,7 +20,9 @@ layout = cms.PSet(
     ## print to root
     root = cms.bool(True),
     ## define verbosity level
-    verbosity = cms.uint32(0),
+    verbosity = cms.uint32(1),
+    ## input model - if no model specified it should be "Test" - upper and lower case sensitive
+    model = cms.string("Test"),
     ## define output label
     outputLabel = cms.string("likelihood-scan"),
     ## define masspoints for limit plot
