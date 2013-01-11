@@ -92,8 +92,8 @@ ggroup.add_option("--external-pulls", dest="nuisances", default="", type="string
                   help="Specify the full path to a root output file of limit.py with option --max-likelihood (e.g. mlfit.root) to enforce the use of pre-calculated central values of the nuisance parmeters involved in this fit. It is in the responsibility of the user that the nuisance parameter names in the output file and the nuisance parameter names in the current workspace fit together. The limit will be run w/ option --no-prefit. For more details have a look to the description of option --external-pulls of the script limit.py. [Default: \"\"]")
 ggroup.add_option("--SplusB", dest="signal_plus_BG", default=False, action="store_true",
                   help="When using options --external-pulls, use the fit results with signal plus background. If 'False' the fit result of the background only hypothesis is used. [Default: False]")
-ggroup.add_option("--calculate-injected", dest="calculate_injected", default=False, action="store_true",
-                  help="This option can only be used if toys have produced before. When using option --calculate the limit.py script will be called with --injected using lxb (lxq). [Default: False]")
+ggroup.add_option("--collect", dest="calculate_injected", default=False, action="store_true",
+                  help="Collect toys and calculate observed limit using lxb (lxq). To run with this options the toys have to be produced beforehand. [Default: False]")
 parser.add_option_group(ggroup)
 ##
 ## TANB+
@@ -299,37 +299,25 @@ if options.optAsym :
     cmd   = "--asymptotic"
     model = ""
     opts  = ""
+    ## MSSM ggH while bbH is profiled (GGH-BOUND will be resolved in limit.create_card_workspace_with_physics_model)
+    if "ggH" in options.fitModel :
+        model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
+        opts  = "--physics-model-options 'modes=ggH;ggHRange=0:GGH-BOUND'"
+    ## MSSM bbH while ggH is profiled (BBH-BOUND will be resolved in limit.create_card_workspace_with_physics_model)
+    elif "bbH" in options.fitModel :
+        model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
+        opts  = "--physics-model-options 'modes=bbH;bbHRange=0:BBH-BOUND'"
     ## prepare calculation
     if options.interactive :
         for dir in args :
             mass = get_mass(dir)
             if mass == 'common' :
                 continue
-            ## MSSM ggH while bbH is profiled
-            if "ggH" in options.fitModel :
-                from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
-                model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
-                opts  = "--physics-model-options 'modes=ggH;ggHRange=0:{GGH}'".format(GGH=bounds[mass][0])
-            ## MSSM bbH while ggH is profiled
-            elif "bbH" in options.fitModel :
-                from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
-                model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
-                opts  = "--physics-model-options 'modes=bbH;bbHRange=0:{BBH}'".format(BBH=bounds[mass][1])
             if options.printOnly :
                 print "limit.py {CMD} {MODEL} {OPTS} {USER} {DIR}".format(CMD=cmd, MASS=mass, MODEL=model, OPTS=opts, USER=options.opt, DIR=dir)
             else :
                 os.system("limit.py {CMD} {MODEL} {OPTS} {USER} {DIR}".format(CMD=cmd, MASS=mass, MODEL=model, OPTS=opts, USER=options.opt, DIR=dir))
     else :
-        ## MSSM ggH while bbH is profiled (needs to be run with a fixed range for all masses here)
-        if "ggH" in options.fitModel :
-            from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
-            model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
-            opts  = "--physics-model-options 'modes=ggH;ggHRange=0:{GGH}'".format(GGH='5')
-        ## MSSM bbH while ggH is profiled (needs to be run with a fixed range for all masses here)
-        elif "bbH" in options.fitModel :
-            from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
-            model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
-            opts  = "--physics-model-options 'modes=bbH;bbHRange=0:{BBH}'".format(BBH='5')
         ## directories and mases per directory
         struct = directories(args)
         lxb_submit(struct[0], struct[1], cmd, "{MODEL} {OPTS} {USER}".format(MODEL=model, OPTS=opts, USER=options.opt))
