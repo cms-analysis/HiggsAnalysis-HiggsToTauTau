@@ -275,6 +275,11 @@ def create_card_workspace_with_physics_model(mass) :
             opts = options.fitModelOptions.split(' ')
         for idx in range(len(opts)) : opts[idx] = opts[idx].rstrip(',')
         for opt in opts :
+            from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
+            ## resolve multidim-fit bounds if they exist
+            opt = opt.replace("GGH-BOUND", bounds[mass][0])
+            opt = opt.replace("BBH-BOUND", bounds[mass][1])
+            ## add options to workspace 
             wsopts.append(('--PO', opt))                                
     return create_card_workspace(mass, inputs, output, wsopts)
 
@@ -580,7 +585,7 @@ for directory in args :
             os.system("combine -M Asymptotic --run observed -C {cl} {minuit} --minimizerStrategy {strategy} -n '-obs' {qtilde} {mass} {user} {wdir}/{wsp}.root".format(
                 cl=options.confidenceLevel, minuit=minuitopt, qtilde=qtildeopt, strategy=options.strategy, mass=massopt, user=options.userOpt, wdir=options.workingdir, wsp=wsp))
     ##
-    ## INJECTED
+    ## INJECTED (optInject runs in addition optAsym and observedOnly)
     ##
     if options.optInject :
         ## determine mass value from directory name
