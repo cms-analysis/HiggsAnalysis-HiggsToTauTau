@@ -280,13 +280,14 @@ int main(int argc, char* argv[])
   }
   if( std::string(argv[1]) == std::string("--likelihood-scan") ){
     // best fit
-    TGraph* central  = new TGraph();
+    //TGraph* central  = new TGraph(); //not needed for plot1DScan
     // +/- 1 sigma to bestfit
-    TGraphAsymmErrors* innerBand  = new TGraphAsymmErrors();
+    //TGraphAsymmErrors* innerBand  = new TGraphAsymmErrors(); //not needed for plot1DScan
     // make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
-    plot.plotSignalStrength(*canv, innerBand, central, directory);
+    //plot.plotSignalStrength(*canv, innerBand, central, directory);
+    plot.plot1DScan(*canv, directory);
   }
   if( std::string(argv[1]) == std::string("--multidim-fit") ){
     // make the plot
