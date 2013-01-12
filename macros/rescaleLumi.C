@@ -15,17 +15,17 @@
 /**
    \class   rescaleLumi rescaleLumi.C "HiggsAnalysis/HiggsToTauTau/macros/rescaleLumi.C"
 
-   \brief   macro to rescale the lumi for histogram based limit inputs for limi calculation.
+   \brief   macro to rescale the lumi for histogram based inputs for limit calculation.
 
     Macro to rescale input files for limit calculations to an arbitrary luminosity. 
     The original luminosty has to be known. All directories in the given file will
     be searched for histograms. All histograms will be scaled to the new lumi. For
     histograms with name 'data_obs' the new yield will be scaled to an integer value
-    to satisfy the combine limit calculation tool. The macro iterates only through
-    one level of folders. These folders are expected to contain only histograms.
-    Function arguments are the filename which is supposed to keep the input histo-
-    grams for the limit calculation the old and the new lumi. A new root file will 
-    be written out with file extension *_rescaled 
+    to satisfy the combine limit calculation tool requirementss. The macro iterates 
+    only through one level of folders. These folders are expected to contain only 
+    histograms. Function arguments are the filename which is supposed to keep the 
+    input histograms for the limit calculation the old and the new lumi. A new root 
+    file will be written out with file extension *_rescaled 
 */
 
 void rescaleLumi(const char* filename, float oldLumi=4.9, float newLumi=12., unsigned int debug=0)
