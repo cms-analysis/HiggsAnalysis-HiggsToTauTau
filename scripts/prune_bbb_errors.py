@@ -9,7 +9,7 @@ parser.add_option("-c", "--channels", dest="channels", default="mm em mt et tt",
                   help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. Note that the order in which the arguments are given will determine the order in which the pruning og bin-by-bin uncertainties will be processed. The recommendation is to start with the channels, which are the least sensitive to the bin-by-bin uncertainties and then to proceed to the channels, which are the most sensitive to bin--by-bin uncertainties. [Default: \"mm em mt et tt\"]")
 parser.add_option("-m", "--mass", dest="mass", default="125", type="string",
                   help="Mass value to be used for the pruning algorithm. [Default: 125]")
-parser.add_option("--threshold", dest="threshold", default="0.001", type="string",
+parser.add_option("--threshold", dest="threshold", default="0.0025", type="string",
                   help="Threshold to prune the given bin-by-bin uncertainty. The value is given for the relative pull on the uncertainty parameter in the fit. [Default: 0.005]")
 parser.add_option("--metric", dest="metric", default="all",  type="choice", choices=['exp', 'obs', 'all'],
                   help="Metric to be used fro pruning. Choices are: exp (maximal difference on expected limit only), obs (maximal difference on observed only), all (maximal difference on of observed or expected).")
@@ -45,7 +45,7 @@ def manipulate_bbb(datacard, manipulation, excludes=None) :
         bbb = re.match("^#*\s*(\w+bin\_*\d*\w+)\s+(shape)\s+.*", line)
         if bbb :
             if manipulation == "COMMENT" :
-                if excludes :
+                if excludes != None:
                     if bbb.group(1) in excludes :
                         excl+=1
                         line = '#'+line                    
@@ -109,9 +109,9 @@ for datacard in glob.glob('*.txt') :
     manipulate_bbb(datacard, "COMMENT")
 
 ## run the parameter ranking channelwise. 
-for chn in channels :
+for chn in ['tt'] : #channels :
     all = 0
-    for datacard in glob.glob('*{CHN}*.txt'.format(CHN=chn)) :
+    for datacard in glob.glob('*_{CHN}_*.txt'.format(CHN=chn)) :
         all += manipulate_bbb(datacard, "UNCOMMENT")
     if all == 0 :
         print "no bin-by-bin uncertainties found for channel:", chn
@@ -125,7 +125,7 @@ for chn in channels :
             #CARDS=' '.join(glob.glob('*.txt')),
             ## to run on all cards combined but seperated by channels uncomment the
             ## the following line
-            CARDS=' '.join(glob.glob('*{CHN}*.txt'.format(CHN=chn))),
+            CARDS=' '.join(glob.glob('*_{CHN}_*.txt'.format(CHN=chn))),
             CHN=chn
             ))
         ## run nuisance parameter ranking
@@ -144,11 +144,11 @@ for chn in channels :
         ## prune datacards for given channel
         excl = 0
         excludes = prune("test-{CHN}/Removed1.json".format(CHN=chn))
-        for datacard in glob.glob('*{CHN}*.txt'.format(CHN=chn)) :
+        for datacard in glob.glob('*_{CHN}_*.txt'.format(CHN=chn)) :
             excl += manipulate_bbb(datacard, "COMMENT", excludes)
         print "commented", excl, "bin-by-bin uncertainties from", all, "for chn:", chn
         ## and finally prune all datacards for all masses in input directory
-        for datacard in glob.glob('{PARENT}/{INPUT}/htt_{CHN}/*{CHN}*.txt'.format(PARENT=parentdir,INPUT=args[0], CHN=chn)) :
+        for datacard in glob.glob('{PARENT}/{INPUT}/htt_{CHN}/*_{CHN}_*.txt'.format(PARENT=parentdir,INPUT=args[0], CHN=chn)) :
             manipulate_bbb(datacard, "COMMENT", excludes)
 ## clean up if not requested otherwise
 if not options.verbose :
