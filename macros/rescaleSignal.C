@@ -1,9 +1,9 @@
 #include <string>
 #include <vector>
-#include <iostream>
-
 #include <regex.h>
-#include <sys/types.h>
+#include <cstdlib>
+#include <iostream>
+#include <algorithm>
 
 #include <TKey.h>
 #include <TH1F.h>
@@ -18,16 +18,18 @@
 /**
    \class   rescalSignal rescaleSignal.C "HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C"
 
-   \brief   macro to rescale the signal component(s) for histogram based limit inputs for limi calculation to an arbitary value.
+   \brief   macro to rescale the individual signal components for histogram based limit inputs to an arbitary value.
 
    Macro to rescale all signal components in a given input file for limit calculations
    The macro searches the head of the file and the next level of histogram directories 
    from the head of the file on. All directories in the given layer will be searched for 
    histograms. All histograms that fullfill a given PATTERN will be scaled by a factor 
-   SCALE. If the PATTERN is empty all histograms that start with 'Higgs', 'GGH', 'BBH', 
-   'SM', 'VH', 'VBF' will be scaled, according to the histogram conventions used within 
-   the Higgs2Tau group. All other histograms remain the same. The macro iterates only 
-   through one level of folders. These folders are expected to contain only histograms. 
+   SCALE. If the process is data_obs the rescaled integral is scaled to correspond to an 
+   integer value to fulfill the requirements of the Higgs combination tool combine. All 
+   other histograms remain the same. The macro iterates only through one level of folders. 
+   These folders are expected to contain only histograms. If armed=false, the rescaled 
+   histograms are written to a file with extension '_scaled'.
+
    Function arguments are:
    
    armed    : update rescaled histograms in file
@@ -54,120 +56,62 @@ match(const char *string, char *pattern)
   return 1 ;
 }
 
-bool
-httSignal(const char* histName)
+void 
+rescaleSignal(bool armed, double scale, const char* filename, const char* pattern="", unsigned int debug=0)
 {
-  return (match(histName, "Higgs") || 
-	  match(histName, "GGH"  ) || 
-	  match(histName, "BBH"  ) || 
-	  match(histName, "VBF"  ) || 
-	  match(histName, "ggH"  ) || 
-	  match(histName, "qqH"  ) || 
-	  match(histName, "VH"   ) || 
-	  match(histName, "SM"   ));
-}
-
-std::vector<std::string>
-signalList(const char* dirName="", const char* pattern="", unsigned int debug=0)
-{
-  std::vector<std::string> histnames;
-  TIter next(gDirectory->GetListOfKeys());
-  TKey* iobj;
-  unsigned int idx=0;
-  while((iobj = (TKey*)next())){
-    if(iobj->IsFolder()) continue;
-    if(debug>2){ std::cout << "[" << ++idx << "] ...Found object: " << iobj->GetName() << " of type: " << iobj->GetClassName() << std::endl; }
-    std::string fullpath(dirName); 
-    fullpath += fullpath == std::string("") ? "" : "/"; fullpath += iobj->GetName();
-    // why does \\w*_\\d+ not work to catch them all?!?
-    if(std::string(pattern).empty() && httSignal(iobj->GetName())){
-      histnames.push_back(fullpath);
-    }
-    else if(!std::string(pattern).empty() && match(iobj->GetName(), (char*)pattern)){
-      histnames.push_back(fullpath);
-    }
-  }
-  return histnames;
-}
-
-void rescaleSignal(bool armed, double scale, const char* filename, const char* pattern="", unsigned int debug=0)
-{
-  std::vector<std::string> histnames; histnames.clear();
-  if( debug>0 ){
-    std::cout << "file  = " << filename << std::endl;
-    std::cout << "scale = " << scale    << std::endl;
-    std::cout << "armed = " << armed    << std::endl;
-  }
-  TFile* file = new TFile(filename, "update");
-  TIter nextDirectory(file->GetListOfKeys());
-  std::vector<std::string> buffer;
+  std::vector<TString> paths, dirs;
+  TFile* old_file = new TFile(filename, "Read");
+  TIter nextDirectory(old_file->GetListOfKeys());
   TKey* idir;
+  // collect all folder and histogram names
   while((idir = (TKey*)nextDirectory())){
-    buffer.clear();
-    if( idir->IsFolder() ){
-      file->cd(); // make sure to start in directory head 
-      if( debug>0 ){ std::cout << "Found directory: " << idir->GetName() << std::endl; }
-      if( file->GetDirectory(idir->GetName()) ){
-	file->cd(idir->GetName()); // change to sub-directory
-	buffer = signalList(idir->GetName(), pattern, debug);
+    old_file->cd();
+    if(idir->IsFolder()){
+      dirs.push_back(idir->GetName());
+      if(debug>1){ std::cout << "found directory: " << idir->GetName() << std::endl; }
+      if(old_file->GetDirectory(idir->GetName())){
+	old_file->cd(idir->GetName());
+	TIter next(gDirectory->GetListOfKeys());
+	TKey* iobj;
+	while((iobj = (TKey*)next())){
+	  if(debug>2){ std::cout << " ...found object: " << iobj->GetName() << std::endl; }
+	  TString path = TString::Format("%s/%s", idir->GetName(), iobj->GetName());
+	  if(!std::count(paths.begin(), paths.end(), path)){ 
+	    paths.push_back(path);
+	  }
+	}
       }
-      // append to the vector of histograms to be rescaled
-      for(std::vector<std::string>::const_iterator elem=buffer.begin(); elem!=buffer.end(); ++elem){
-	histnames.push_back(*elem);
-      }
-      if(debug>1){
-	std::cout << "added " << buffer.size() << " elements to histnames [" << histnames.size() << "] for directory " << idir->GetName() << std::endl;
-      }
-    }
+    }    
   }
-  // pick up files which are not kept in an extra folder
-  file->cd(); buffer.clear();
-  buffer = signalList("", pattern, debug);
-  // append to the vector of histograms to be rescaled
-  for(std::vector<std::string>::const_iterator elem=buffer.begin(); elem!=buffer.end(); ++elem){
-    histnames.push_back(*elem);
-  }
-  if(debug>1){
-    std::cout << "added " << buffer.size() << " elements to histnames [" << histnames.size() << "] for file head" << std::endl;
-  }
-
-  for(std::vector<std::string>::const_iterator hist=histnames.begin(); hist!=histnames.end(); ++hist){
-    file->cd();
-    TH1F* h = (TH1F*)file->Get(hist->c_str());
-    std::string histName;
-    if(hist->find("/")!=std::string::npos){
-      histName = hist->substr(hist->find("/")+1);
-    }
-    else{
-      histName = *hist;
-    }
-    TH1F* hout = (TH1F*)h->Clone(histName.c_str());
-    if(debug>1){
-      std::cout << "...folder    : " << hist->substr(0, hist->find("/")).c_str() << std::endl;
-      std::cout << "...histogram : " << hout->GetName () << " / " << hist->c_str() << std::endl; 
-      std::cout << "...old scale : " << hout->Integral() << std::endl; 
-    }
-    hout->Scale(scale);
-    if(match(pattern, "data")){
-      //make sure to have an integer integral when rescaling data yields
-      hout->Scale(int(hout->Integral())/hout->Integral());
-    }
-    if(debug>1){ 
-      std::cout << "...new scale : " << hout->Integral() << std::endl; 
-    }
-    if(armed){
-      if(hist->find("/")!=std::string::npos){
-	file->cd(hist->substr(0, hist->find("/")).c_str());
+  // setup directory structure in new file
+  TFile* new_file = new TFile(TString::Format("%s_scaled", filename), "Update");
+  for(std::vector<TString>::const_iterator dir = dirs.begin(); dir!=dirs.end(); ++dir){
+    if(debug>1){ std::cout << " ...creating directory: " << *dir << std::endl; }
+    new_file->mkdir(*dir);
+  } 
+  // do the rescaling and write new object to file
+  for(std::vector<TString>::const_iterator path = paths.begin(); path!=paths.end(); ++path){ 
+    TH1F* h = (TH1F*)old_file->Get(*path);
+    if(debug>2){ std::cout << "...getting histogram: " << *path << std::endl; }
+    if(match(h->GetName(), (char*)pattern)){
+      if(debug>1){ std::cout << "...[" << h->GetName() << "]: " << "old scale : " << h->Integral() << std::endl; }
+      h->Scale(scale);  
+      if(std::string(*path).find("data_obs")!=std::string::npos){
+	if (h->Integral() > 0)  h->Scale((int)h->Integral()/h->Integral());
       }
-      else{
-	file->cd();
-      }
-      if(debug>0){
-	std::cout << "writing to file: " << hout->GetName() << std::endl;
-      }
-      hout->Write(hist->substr(hist->find("/")+1).c_str(), TObject::kOverwrite); 
+      if(debug>1){ std::cout << "...[" << h->GetName() << "]: " << "new scale : " << h->Integral() << std::endl; }
     }
+    std::string str = std::string(*path);
+    std::string dir = str.substr(0, str.find("/"));
+    std::string hist = str.substr(str.find("/")+1, std::string::npos);
+    new_file->cd();;
+    new_file->cd(dir.c_str());
+    h->Write(hist.c_str()); 
   }
-  file->Close();
+  old_file->Close();
+  new_file->Close();
+  if(armed){
+    system(TString::Format("mv %s_scaled %s", filename, filename));
+  }
   return;
 }
