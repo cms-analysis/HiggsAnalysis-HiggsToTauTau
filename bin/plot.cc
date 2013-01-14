@@ -117,7 +117,6 @@ int main(int argc, char* argv[])
   std::string out(directory_string.substr(directory_string.rfind("/")+1));
 
   // update layout with overridden options
-  std::cout << "REQUIRED=" << REQUIRED << " --> argc=" << argc << std::endl;
   if(argc>REQUIRED){
     for(int i=REQUIRED; i<argc; ++i){
       std::string argument(argv[i]);
@@ -173,10 +172,10 @@ int main(int argc, char* argv[])
     plot.fillCentral(directory, expected, "higgsCombineTest.HybridNew.mH$MASS.quant0.500");
     // 2-sigma uncertainty band
     TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
-    plot.fillBand(directory, outer, "CLS", false);
+    plot.fillBand(directory, outer, "CLs", false);
     // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
-    plot.fillBand(directory, inner, "CLS", true);
+    plot.fillBand(directory, inner, "CLs", true);
     // make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
