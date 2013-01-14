@@ -4,7 +4,7 @@ layout = cms.PSet(
     ## dataset
     dataset = cms.string(", Preliminary, H #rightarrow #tau #tau, L = 17 fb^{-1}"),
     ## x-axis title
-    xaxis = cms.string("Signal Strength (in multiples of #sigma(SM))"),
+    xaxis = cms.string("Signal Strength"),
     ## x-axis title
     yaxis = cms.string("NLL"),
     ## min for plotting (for fine tuning)
