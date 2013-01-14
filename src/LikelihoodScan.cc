@@ -161,7 +161,7 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
     TString newfullpath = TString::Format("%s/%d/higgsCombineTest.MaxLikelihoodFit.mH%d.root", directory, (int)mass, (int)mass);
     TFile *newfile_ = new TFile(newfullpath, "RECREATE"); 
     TTree *newlimit = new TTree("limit", "limit"); 
-    float l, quantile_expected;
+    double l; float quantile_expected;
     newlimit->Branch("quantileExpected", &quantile_expected);
     newlimit->Branch("limit", &l);
     float CL_p025=-99, CL_p16=-99, CL_p84=-99, CL_p975=-99;
@@ -182,7 +182,7 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
       newlimit->Fill();
       new_nevent++;
     }
-    quantile_expected=0.5;
+    quantile_expected=-1;
     l=bestX;
     newlimit->Fill();
     new_nevent++;
