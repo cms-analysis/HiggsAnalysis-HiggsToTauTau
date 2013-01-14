@@ -73,14 +73,13 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
     }
 
     // tree scan
-    char* label = (char*)model_.c_str(); //int i=0;
+    char* label = model_.empty() ? (char*)"Test" : (char*)model_.c_str();// int i=0;
     //while(label[i]){ label[i]=putchar(toupper(label[i])); ++i; } std::cout << " : ";
     TString fullpath = TString::Format("%s/%d/higgsCombine%s.MultiDimFit.mH%d.root", directory, (int)mass, label, (int)mass);
     std::cout << "open file: " << fullpath << std::endl;
     TFile* file_ = TFile::Open(fullpath); if(!file_){ std::cout << "--> TFile is corrupt: skipping masspoint." << std::endl; continue; }
     TTree* limit = (TTree*) file_->Get("limit"); if(!limit){ std::cout << "--> TTree is corrupt: skipping masspoint." << std::endl; continue; }
     float nll, x;
-    //float nbins = TMath::Sqrt(points);
     float nbins = points;
     TH1F* scan1D = new TH1F("scan1D", "", nbins, xmin, xmax);
     limit->SetBranchAddress("deltaNLL", &nll );  
