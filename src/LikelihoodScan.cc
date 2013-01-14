@@ -49,7 +49,8 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
   // requires that you have run imits.py beforehand with option --multidim-fit
   char type[20]; 
   float first, second;
-  float points, xmin, xmax;
+  int points;
+  float xmin, xmax;
   for(unsigned int imass=0; imass<bins_.size(); ++imass){
     // buffer mass value
     float mass = bins_[imass];
@@ -72,18 +73,18 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
     }
 
     // tree scan
-    char* label = (char*)model_.c_str(); int i=0;
+    char* label = (char*)model_.c_str(); //int i=0;
     //while(label[i]){ label[i]=putchar(toupper(label[i])); ++i; } std::cout << " : ";
     TString fullpath = TString::Format("%s/%d/higgsCombine%s.MultiDimFit.mH%d.root", directory, (int)mass, label, (int)mass);
     std::cout << "open file: " << fullpath << std::endl;
-
     TFile* file_ = TFile::Open(fullpath); if(!file_){ std::cout << "--> TFile is corrupt: skipping masspoint." << std::endl; continue; }
     TTree* limit = (TTree*) file_->Get("limit"); if(!limit){ std::cout << "--> TTree is corrupt: skipping masspoint." << std::endl; continue; }
     float nll, x;
-    float nbins = TMath::Sqrt(points);
+    //float nbins = TMath::Sqrt(points);
+    float nbins = points;
     TH1F* scan1D = new TH1F("scan1D", "", nbins, xmin, xmax);
     limit->SetBranchAddress("deltaNLL", &nll );  
-    limit->SetBranchAddress(std::string("r").c_str() , &x);  
+    limit->SetBranchAddress(std::string("r").c_str() , &x);
     int nevent = limit->GetEntries();
     for(int i=0; i<nevent; ++i){
       limit->GetEvent(i);
@@ -92,7 +93,7 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
 	scan1D->Fill(x, fabs(nll));
       }
     }
-    // determine bestfit graph
+    // determine bestfit graph 
     float bestFit=-1.; 
     float buffer=0., bestX=-999.;
     for(int i=0; i<nevent; ++i){
@@ -115,7 +116,101 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
     }
     TGraph* bestfit = new TGraph();
     bestfit->SetPoint(0, bestX, 0);
-
+    // find quantileExpected values
+    float plus_2sigma_below=-99,  plus_2sigma_above=-99,  plus_2sigma_below_x=-99,  plus_2sigma_above_x=-99;
+    float minus_2sigma_below=-99, minus_2sigma_above=-99, minus_2sigma_below_x=-99, minus_2sigma_above_x=-99;
+    float plus_1sigma_below=-99,  plus_1sigma_above=-99,  plus_1sigma_below_x=-99,  plus_1sigma_above_x=-99;
+    float minus_1sigma_below=-99, minus_1sigma_above=-99, minus_1sigma_below_x=-99, minus_1sigma_above_x=-99;
+    for(int i=0; i<nevent; ++i){\
+      if (i+1==nevent) break;
+      limit->GetEvent(i);
+      if (nll>1.92 && x<bestX) {
+	limit->GetEvent(i+1);	
+	if (nll<1.92 && x<bestX) {
+	  limit->GetEvent(i);   minus_2sigma_above=nll; minus_2sigma_above_x=x;
+	  limit->GetEvent(i+1); minus_2sigma_below=nll; minus_2sigma_below_x=x;
+	}
+      }
+      limit->GetEvent(i);
+      if (nll>0.5 && x<bestX) {
+	limit->GetEvent(i+1);	
+	if (nll<0.5 && x<bestX) {
+	  limit->GetEvent(i);   minus_1sigma_above=nll; minus_1sigma_above_x=x;
+	  limit->GetEvent(i+1); minus_1sigma_below=nll; minus_1sigma_below_x=x;
+	}
+      }
+      limit->GetEvent(i);
+      if (nll<0.5 && x>bestX) {
+	limit->GetEvent(i+1);	
+	if (nll>0.5 && x>bestX) {
+	  limit->GetEvent(i);   plus_1sigma_below=nll; plus_1sigma_below_x=x;
+	  limit->GetEvent(i+1); plus_1sigma_above=nll; plus_1sigma_above_x=x;
+	}
+      }
+      limit->GetEvent(i);
+      if (nll<1.92 && x>bestX) {
+	limit->GetEvent(i+1);	
+	if (nll>1.92 && x>bestX) {
+	  limit->GetEvent(i);   plus_2sigma_below=nll; plus_2sigma_below_x=x; 
+	  limit->GetEvent(i+1); plus_2sigma_above=nll; plus_2sigma_above_x=x;
+	}
+      }
+    }
+    // calculate linear interpolation to get 95CL or 68CL and
+    // build the MaximumLikelihood root output for bestfit plots  
+    TString newfullpath = TString::Format("%s/%d/higgsCombineTest.MaxLikelihoodFit.mH%d.root", directory, (int)mass, (int)mass);
+    TFile *newfile_ = new TFile(newfullpath, "RECREATE"); 
+    TTree *newlimit = new TTree("limit", "limit"); 
+    float l, quantile_expected;
+    newlimit->Branch("quantileExpected", &quantile_expected);
+    newlimit->Branch("limit", &l);
+    float CL_p025=-99, CL_p16=-99, CL_p84=-99, CL_p975=-99;
+    int new_nevent=0;
+    if (minus_2sigma_above>0 && minus_2sigma_below>0) {
+      CL_p025= ( 1.92*(minus_2sigma_above_x - minus_2sigma_below_x) - minus_2sigma_below*minus_2sigma_above_x + minus_2sigma_above*minus_2sigma_below_x) / (minus_2sigma_above-minus_2sigma_below);
+      newlimit->GetEvent(new_nevent);
+      quantile_expected=0.025;
+      l=CL_p025;
+      newlimit->Fill();
+      new_nevent++;
+	}
+    if (minus_1sigma_above>0 && minus_1sigma_below>0) {
+      CL_p16= ( 0.5*(minus_1sigma_above_x - minus_1sigma_below_x) - minus_1sigma_below*minus_1sigma_above_x + minus_1sigma_above*minus_1sigma_below_x) / (minus_1sigma_above-minus_1sigma_below);
+      newlimit->GetEvent(new_nevent);
+      quantile_expected=0.16;
+      l=CL_p16;
+      newlimit->Fill();
+      new_nevent++;
+    }
+    quantile_expected=0.5;
+    l=bestX;
+    newlimit->Fill();
+    new_nevent++;
+    if (plus_1sigma_above>0 && plus_1sigma_below>0) {
+      CL_p84= ( 0.5*(plus_1sigma_above_x - plus_1sigma_below_x) - plus_1sigma_below*plus_1sigma_above_x + plus_1sigma_above*plus_1sigma_below_x) / (plus_1sigma_above-plus_1sigma_below);
+      newlimit->GetEvent(new_nevent);
+      quantile_expected=0.84;
+      l=CL_p84;
+      newlimit->Fill();
+      new_nevent++;
+    }
+    if (plus_2sigma_above>0 && plus_2sigma_below>0) {
+      CL_p975= ( 1.92*(plus_2sigma_above_x - plus_2sigma_below_x) - plus_2sigma_below*plus_2sigma_above_x + plus_2sigma_above*plus_2sigma_below_x) / (plus_2sigma_above-plus_2sigma_below);
+      newlimit->GetEvent(new_nevent);
+      quantile_expected=0.975;
+      l=CL_p975;
+      newlimit->Fill();
+    }
+    if(verbosity_>0){
+      std::cout << "quantileExpected values for likelihood-scan:" << std::endl;
+      std::cout << "minus_2sigma = " << CL_p025 << std::endl;
+      std::cout << "minus_1sigma = " << CL_p16 << std::endl;
+      std::cout << "medium = " << bestX << std::endl; 
+      std::cout << "plus_1sigma = " << CL_p84 << std::endl;
+      std::cout << "plus_2sigma = " << CL_p975 << std::endl;
+    }
+    newfile_->Write();
+    newfile_->Close();
     // do the plotting
     std::string masslabel = mssm_ ? std::string("m_{#phi}") : std::string("m_{H}");
     plotting1DScan(canv, scan1D, xaxis_, yaxis_, masslabel, mass, max_, log_);    
@@ -154,4 +249,4 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
     }
   }
   return;
-}
+  }
