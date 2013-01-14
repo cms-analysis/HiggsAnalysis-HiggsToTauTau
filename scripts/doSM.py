@@ -100,10 +100,9 @@ if not options.skip_datacards :
     datacards = "{CMSSW_BASE}/src/aux".format(CMSSW_BASE=cmssw_base)
     if not os.path.exists(datacards) :
         os.system("mkdir {DIR}".format(DIR=datacards))
-    #if os.path.exists(datacards+'/sm') :
-    #    os.system("rm -r {DIR}/sm".format(DIR=datacards))
-    #os.system("mkdir {DIR}/sm".format(DIR=datacards))
-    #if os.path.exists(datacards+'/mssm') :
+    if os.path.exists(datacards+'/sm') :
+        os.system("rm -r {DIR}/sm".format(DIR=datacards))
+    os.system("mkdir {DIR}/sm".format(DIR=datacards))
     #    os.system("rm -r {DIR}/mssm".format(DIR=datacards))
     #os.system("mkdir {DIR}/mssm".format(DIR=datacards))
     for ana in ['Moriond']:#, 'Moriond-bin-by-bin', 'Moriond-mvis'] :
@@ -118,6 +117,7 @@ if not options.skip_limits :
     limits = "{CMSSW_BASE}/src/MORIOND-Limits".format(CMSSW_BASE=cmssw_base)
     if not os.path.exists(limits) :
         os.system("mkdir {DIR}".format(DIR=limits))
+        os.system("mkdir {DIR}/sm".format(DIR=limits))
     for ana in ['Moriond']:#, 'Moriond-bin-by-bin', 'Moriond-mvis'] :
         label = ""
         if 'mvis' in ana :
