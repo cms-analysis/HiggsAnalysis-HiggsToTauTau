@@ -37,7 +37,7 @@ plotting1DScan(TCanvas& canv, TH1F* plot1D, std::string& xaxis, std::string& yax
   plot1D->SetLineColor(kBlack); 
   plot1D->Draw();
   
-  TLegend* leg = new TLegend(0.60, 0.70, 0.90, 0.90);
+  TLegend* leg = new TLegend(0.50, 0.81, 0.92, 0.90);
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
