@@ -63,7 +63,7 @@ if not options.skip_setup :
         os.system("rm -r {DIR}".format(DIR=source))
     os.system("mkdir {DIR}".format(DIR=source))
     ## setup main analysis
-    os.system("cp -r {SETUP} {DIR}/Moriond".format(SETUP=setup, DIR=source))
+    os.system("cp -r {SETUP} {DIR}/Moriond".format(SETUP=setup, DIR=source))      
     ## setup bin-by-bin ##No included atm
     #os.system("add_bbb_errors.py 'et,mt,em:7TeV,8TeV:01,03,05:ZL,ZLL,Fakes,QCD>W' --input-dir {DIR}/Moriond --output-dir {DIR}/Moriond-bin-by-bin --threshold 0.10".format(
     #    DIR=source
@@ -95,6 +95,13 @@ if not options.skip_setup :
 ##                         ANA=ana,
 ##                         PER=per
 ##                         ))
+    ##setup 2012D
+##     os.system("cp -r {SETUP} {DIR}/Moriond-2012D".format(SETUP=setup, DIR=source))
+##     os.system("mv {DIR}/Moriond-2012D/em/htt_em.inputs-sm-8TeV-2012d.root htt_em.inputs-sm-8TeV.root"format(DIR=source))
+##     os.system("mv {DIR}/Moriond-2012D/et/htt_et.inputs-sm-8TeV-2012d.root htt_et.inputs-sm-8TeV.root"format(DIR=source))
+##     os.system("mv {DIR}/Moriond-2012D/mt/htt_mt.inputs-sm-8TeV-2012d.root htt_mt.inputs-sm-8TeV.root"format(DIR=source))
+##     os.system("mv {DIR}/Moriond-2012D/mm/htt_mm.inputs-sm-8TeV-2012d.root htt_mm.inputs-sm-8TeV.root"format(DIR=source))
+##     os.system("mv {DIR}/Moriond-2012D/tt/htt_tt.inputs-sm-8TeV-2012d.root htt_tt.inputs-sm-8TeV.root"format(DIR=source))
 if not options.skip_datacards :
     ## setup datacards
     datacards = "{CMSSW_BASE}/src/aux".format(CMSSW_BASE=cmssw_base)
@@ -105,20 +112,27 @@ if not options.skip_datacards :
     os.system("mkdir {DIR}/sm".format(DIR=datacards))
     #    os.system("rm -r {DIR}/mssm".format(DIR=datacards))
     #os.system("mkdir {DIR}/mssm".format(DIR=datacards))
-    for ana in ['Moriond']:#, 'Moriond-bin-by-bin', 'Moriond-mvis'] :
+    for ana in ['Moriond']:#, 'Moriond-2012d', 'Moriond-bin-by-bin', 'Moriond-mvis'] :
         print "setup datacards for:", ana, "sm"
-        os.system("setup-datacards.py -i setups/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt mm tt' {MASSES}".format(
+        if '2012d' in ana :
+            os.system("setup-datacards.py -i setups/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt mm tt' -p 8TeV {MASSES}".format(
             ANA=ana,
             OUTPUT=datacards,
             MASSES=masses
             ))
+        else :
+            os.system("setup-datacards.py -i setups/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt mm tt' {MASSES}".format(
+                ANA=ana,
+                OUTPUT=datacards,
+                MASSES=masses
+                ))
 if not options.skip_limits :
     ## setup limit calculation
     limits = "{CMSSW_BASE}/src/MORIOND-Limits".format(CMSSW_BASE=cmssw_base)
     if not os.path.exists(limits) :
         os.system("mkdir {DIR}".format(DIR=limits))
         os.system("mkdir {DIR}/sm".format(DIR=limits))
-    for ana in ['Moriond']:#, 'Moriond-bin-by-bin', 'Moriond-mvis'] :
+    for ana in ['Moriond']:#, 'Moriond-2012d', 'Moriond-bin-by-bin', 'Moriond-mvis'] :
         label = ""
         if 'mvis' in ana :
             label = "-l "+ana[ana.find('-')+1:]
