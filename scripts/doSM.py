@@ -122,20 +122,19 @@ if not options.skip_limits :
         label = ""
         if 'mvis' in ana :
             label = "-l "+ana[ana.find('-')+1:]
-        if not options.skip_sm :
-            print "setup limits structure for:", ana, "sm"
-            os.system("setup-htt.py -i aux/sm/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt mm tt' {LABEL} {MASSES}".format(
-                ANA=ana,
-                LABEL=label,
-                OUTPUT=limits,
-                MASSES=masses
-                ))
-            if ana == 'Moriond' : #'Moriond-bin-by-bin' :  ##Later change that maybe
-                for per in ['7TeV', '8TeV'] :
-                    os.system("setup-htt.py -i aux/sm/{ANA} -o {OUTPUT}/sm/{ANA}-{PER} -p {PER} -a sm -c 'em et mt mm tt' {LABEL} {MASSES}".format(
-                        ANA=ana,
-                        PER=per,
-                        LABEL=label,
-                        OUTPUT=limits,
-                        MASSES=masses
-                        ))  
+        print "setup limits structure for:", ana, "sm"
+        os.system("setup-htt.py -i aux/sm/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt mm tt' {LABEL} {MASSES}".format(
+            ANA=ana,
+            LABEL=label,
+            OUTPUT=limits,
+            MASSES=masses
+            ))
+        if ana == 'Moriond' : #'Moriond-bin-by-bin' :  ##Later change that maybe
+            for per in ['7TeV', '8TeV'] :
+                os.system("setup-htt.py -i aux/sm/{ANA} -o {OUTPUT}/sm/{ANA}-{PER} -p {PER} -a sm -c 'em et mt mm tt' {LABEL} {MASSES}".format(
+                    ANA=ana,
+                    PER=per,
+                    LABEL=label,
+                    OUTPUT=limits,
+                    MASSES=masses
+                    ))  
