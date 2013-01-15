@@ -20,7 +20,7 @@
 $DEFINE_MSSM
 
 /**
-   \class   HTT_TT_X_template HTT_TT_X_template.C "HiggsAnalysis/HiggsToTauTau/postfit/tamplates/HTT_TT_X_template.C"
+   \class   HTT_TT_X_template HTT_TT_X_template.C "HiggsAnalysis/HiggsToTauTau/postfit/templates/HTT_TT_X_template.C"
 
    \brief   macro template to create pre-/postfit plots of the inputs to the limit calculation
 
@@ -130,7 +130,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 
   const char* dataset;
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}";}
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 12.0 fb^{-1}";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 19.3 fb^{-1}";}
 
   // open example histogram file
   TFile* input = new TFile(inputfile);

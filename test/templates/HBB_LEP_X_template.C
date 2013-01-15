@@ -106,7 +106,7 @@ HBB_LEP_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
 
   const char* dataset;
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}";}
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 12.0 fb^{-1}";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 19.3 fb^{-1}";}
   
   TFile* input = new TFile(inputfile);
   TH1F* bkgBBB  = refill((TH1F*)input->Get(TString::Format("%s/bkgBBB"   , directory)), "bkgBBB"); InitHist(bkgBBB, "", "", kMagenta-10, 1001);;
