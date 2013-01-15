@@ -2,59 +2,97 @@
 from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
-parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...",
-                      description="Script to submit crabjobs to a batch system. This system can be lxbatch, condor or the grid. Note that condor submission has not been validated yet. The script expects a list of submission directories (ARG1, ARG2, ARG2, ...) in which the complete information to execute the tools for limit calculation should be hosted. Each sub-directory is expected to correspond to a single mass point. The script will perform the following actions: visit each of the sub-directories; create the batch submission script and a corresponding crab configuration file; create the jobs and submit. Input files and datacards will be made known to the batch submission script and the configuration file automatically. At the moment the following binaries and methods are supported: land (bayesian); combine (bayesian, CLs, tanb, single). The latter two methods are of type CLs in special configurations to calculate limits directly on tanb in the MSSM parameter space. For complex models like the combination of all Higgs channels even the computation of the observed limit in Bayesian can be time consuming, especially if it has to be done for many mass points. Therefore an extension has been made to allow also to do a batch job submission for the observed limit. This feature can be steered by option --observed, which will result in a subdirectory \"observed\" in the directory of the corresponding mass point in which an additional crabjob will be submitted. By definition this crabjob will contain only one subjob. Options which deal with the number of toys, number of subjobs or toy specifics will be ignored for this submission. Other options will still be applied.")
+parser = OptionParser(usage="usage: %prog [options] ARGs",
+                      description="This is a script to submit crabjobs to a batch system. This system can be lxbatch, condor or the grid. Note that condor submission has not been validated yet. The script expects a list of submission directories (ARGs) in which the complete information to execute the tools for limit calculation should be hosted. Each sub-directory is expected to correspond to a single mass point. The script will perform the following actions: visit each of the sub-directories; create the batch submission script and a corresponding crab configuration file; create the jobs and submit. Input files and datacards will be made known to the batch submission script and the configuration file automatically. At the moment the following binaries and methods are supported: lands (bayesian); combine (bayesian, CLs, tanb). The latter method is of type CLs in special configurations to calculate limits directly on tanb in the MSSM parameter space. For complex models like the combination of all Higgs channels even the computation of the observed limit in Bayesian can be time consuming, especially if it has to be done for many mass points. Therefore an extension has been made to allow also to do a batch job submission for the observed limit. This feature can be steered by option --observed, which will result in a subdirectory \"observed\" in the directory of the corresponding mass point in which an additional crabjob will be submitted. By definition this crabjob will contain only one subjob. Options which deal with the number of toys, number of subjobs or toy specifics will be ignored for this submission. Other options will still be applied.")
 ## direct options
-parser.add_option("-o", "--out", dest="out", default="batch", type="string", help="Name of the output files (.sh and .cfg). [Default: batch]")
-parser.add_option("-v", "--verbose", dest="v", default=0, type="int", help="Verbosity level of lands or combine. [Default: 0]")
-parser.add_option("--binary", dest="binary", default="combine", type="choice", help="Binary file to be used [Default: combine]",  choices=["lands", "combine"])
-parser.add_option("--method", dest="method", default="CLs", type="choice", help="Statistical method to be used [Default: CLs]",  choices=["bayesian", "CLs", "tanb", "single", "significance"])
-parser.add_option("--shape",           dest="shape",           default="shape2",  type="string",             help="Choose dedicated algorithm for shape uncertainties. [Default: 'shape2']")
-parser.add_option("--random", dest="random", default=False, action="store_true", help="Use random seeds. [Default: False]")
-parser.add_option("--model", dest="model", default="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root", type="string", help="The model that should be applied for direct limits on tanb (only applicable for --method tanb, for other methods this option will have no effect). The model should be given as the absolute path to the mssm_xsec_tool input file starting from CMSSW_BASE/src/, or feyn-higgs::saeffm , feyn-higgs::gluoph, ... in case the model is assumed to be picked from feyn-higgs. In the case of feyn-higgs the model tag following the \'::\' will be passed on the the feyn-higgs extration tool feyn-higgs-mssm. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root']")
-parser.add_option("--interpolation", dest="interpolation_mode", default='mode-1', type="choice", help="Mode for mass interpolation for direct limits tanb (only applicable for --method tanb, for other methods this option will have no effect). [Default: mode-1]", choices=["mode-0", "mode-1", "mode-2", "mode-3", "mode-4", "mode-5"])
-parser.add_option("--no-acc-corr", dest="no_acc_corr", default=False, action="store_true", help="Do not apply acceptance corrections for masswindow that has been applied for cross section calculation. Kept for legacy. [Default: False]")
-parser.add_option("--noSystematics", dest="nosys", default=False, action="store_true", help="Use statistical uncertainties only (currently only implemented for combine). [Default: False]")
+parser.add_option("-o", "--out", dest="out", default="batch", type="string",
+                  help="Name of the output files (.sh and .cfg). [Default: batch]")
+parser.add_option("-v", "--verbose", dest="v", default=0, type="int",
+                  help="Verbosity level of lands or combine. [Default: 0]")
+parser.add_option("--binary", dest="binary", default="combine", type="choice",
+                  help="Binary file to be used [Default: combine]", choices=["lands", "combine"])
+parser.add_option("--method", dest="method", default="CLs", type="choice",
+                  help="Statistical method to be used [Default: CLs]", choices=["bayesian", "CLs", "tanb", "single", "significance"])
+parser.add_option("--shape", dest="shape", default="shape2", type="string",
+                  help="Choose dedicated algorithm for shape uncertainties. [Default: 'shape2']")
+parser.add_option("--random", dest="random", default=False, action="store_true",
+                  help="Use random seeds. [Default: False]")
+parser.add_option("--seed", dest="seed", default="", type="string",
+                  help="Seed in case it is not chosen randomly. If emtpy the option has no effect. If option --random is chosen this option also has no effect. Currently only implemented for method='significance'. [Default: \"\"]")
+parser.add_option("--model", dest="model", default="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root", type="string",
+                  help="The model that should be applied for direct limits on tanb (only applicable for --method tanb, for other methods this option will have no effect). The model should be given as the absolute path to the mssm_xsec_tool input file starting from CMSSW_BASE/src/, or feyn-higgs::saeffm , feyn-higgs::gluoph, ... in case the model is assumed to be picked from feyn-higgs. In the case of feyn-higgs the model tag following the \'::\' will be passed on the the feyn-higgs extration tool feyn-higgs-mssm. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root']")
+parser.add_option("--interpolation", dest="interpolation_mode", default='mode-1', type="choice",
+                  help="Mode for mass interpolation for direct limits tanb (only applicable for --method tanb, for other methods this option will have no effect). [Default: mode-1]", choices=["mode-0", "mode-1", "mode-2", "mode-3", "mode-4", "mode-5"])
+parser.add_option("--no-acc-corr", dest="no_acc_corr", default=False, action="store_true",
+                  help="Do not apply acceptance corrections for masswindow that has been applied for cross section calculation. Kept for legacy. [Default: False]")
+parser.add_option("--noSystematics", dest="nosys", default=False, action="store_true",
+                  help="Use statistical uncertainties only (currently only implemented for combine). [Default: False]")
 ## lands options for Bayesian
 lgroup = OptionGroup(parser, "LANDS (Bayesian) COMMAND OPTIONS", "Command options for the use of lands with method -M bayesian.")
-lgroup.add_option("-b", "--bands", dest="bands", default=1, type="int", help="--doExpectation 1; this has to be 0 or 1. [Default: 1]")
-lgroup.add_option("--toysB", dest="nuisance", default=1000, type="int", help="Toys to integrate out the nuisance parameters of the model. [Default: 1000]")
+lgroup.add_option("-b", "--bands", dest="bands", default=1, type="int",
+                  help="--doExpectation 1; this has to be 0 or 1. [Default: 1]")
+lgroup.add_option("--toysB", dest="nuisance", default=1000, type="int",
+                  help="Toys to integrate out the nuisance parameters of the model. [Default: 1000]")
 parser.add_option_group(lgroup)
 ## combine options for Hybrid/CLs
 mgroup = OptionGroup(parser, "COMBINE (HybridNew) COMMAND OPTIONS", "Command options for the use of combine with method -M HybridNew.")
-mgroup.add_option("-n", "--points", dest="points", default=11, type="int", help="Number of points for the CLs significance grip (including --min and --max as starting and endpoint). [Default: 11]")
-mgroup.add_option("-I", "--interleave", dest="interl", default=1, type="int", help="If >1, excute only 1/I of the points in each job. [Default: 1]")
-mgroup.add_option("-O", "--options", dest="options", default="--freq", type="string", help="Additional options to be used for combine. [Default: '--freq']")
-mgroup.add_option("--toysH", dest="T", default=500, type="int", help="Toys per point and per iteration. [Default: 500]")
-mgroup.add_option("--min", dest="min", default="0.5", type="string", help="Minimum value of signal strength. [Default: 0.5]")
+mgroup.add_option("-n", "--points", dest="points", default=11, type="int",
+                  help="Number of points for the CLs significance grid (including --min and --max as starting and endpoint). [Default: 11]")
+mgroup.add_option("-I", "--interleave", dest="interl", default=1, type="int",
+                  help="If >1, excute only 1/I of the points in each job. [Default: 1]")
+mgroup.add_option("-O", "--options", dest="options", default="--freq", type="string",
+                  help="Additional options to be used for combine. [Default: '--freq']")
+mgroup.add_option("--toysH", dest="T", default=500, type="int",
+                  help="Toys per point and per iteration. [Default: 500]")
+mgroup.add_option("--min", dest="min", default="0.5", type="string",
+                  help="Minimum value of signal strength. [Default: 0.5]")
 mgroup.add_option("--max", dest="max", default="80", type="string", help="Maximum value of signal strength. [Default: 80]")
-mgroup.add_option("--noPrefit", dest="nofit", default=False, action="store_true", help="Don't apply a fit before running toys. [Default: False]")
+mgroup.add_option("--no-prefit", dest="nofit", default=False, action="store_true",
+                  help="Don't apply a fit before running toys. [Default: False]")
 parser.add_option_group(mgroup)
 ## combine options for MarkovChainMC/Bayesian
 ngroup = OptionGroup(parser, "COMBINE (MarkovChainMC) COMMAND OPTIONS", "Command options for the use of combine with method -M MarkovChainMC.")
-ngroup.add_option("-H", "--hint", dest="hint", default="Asymptotic", type="string", help="Name of the hint method that is used to guide the MarkovChainMC. [Default: Asymptotic]")
-ngroup.add_option("--rMin", dest="rMin", default="0.1", type="string", help="Minimum value of signal strenth. [Default: 0.1]")
-ngroup.add_option("--rMax", dest="rMax", default="100", type="string", help="Maximum value of signal strenth. [Default: 100]")
-ngroup.add_option("--iterations", dest="iter", default=10000, type="int", help="Number of iterations to integrate out nuisance parameters. [Default: 10000]")
-ngroup.add_option("--tries", dest="tries", default=10, type="int", help="Number of tries to run the MarkovChainMC on the same data. [Default: 10]")
-ngroup.add_option("--observed", dest="observed", default=False, action="store_true", help="Calculate the observed limit via crab (in case this is time consuming). [Default: False]")
+ngroup.add_option("-H", "--hint", dest="hint", default="Asymptotic", type="string",
+                  help="Name of the hint method that is used to guide the MarkovChainMC. [Default: Asymptotic]")
+ngroup.add_option("--rMin", dest="rMin", default="0.1", type="string",
+                  help="Minimum value of signal strenth. [Default: 0.1]")
+ngroup.add_option("--rMax", dest="rMax", default="100", type="string",
+                  help="Maximum value of signal strenth. [Default: 100]")
+ngroup.add_option("--iterations", dest="iter", default=10000, type="int",
+                  help="Number of iterations to integrate out nuisance parameters. [Default: 10000]")
+ngroup.add_option("--tries", dest="tries", default=10, type="int",
+                  help="Number of tries to run the MarkovChainMC on the same data. [Default: 10]")
+ngroup.add_option("--observed", dest="observed", default=False, action="store_true",
+                  help="Calculate the observed limit via crab (in case this is time consuming). [Default: False]")
 parser.add_option_group(ngroup)
 pgroup = OptionGroup(parser, "COMBINE (PROFILE LIKELIHOOD) COMMAND OPTIONS", "Command options for the use of combine with the ProfileLikelihood method.")
-pgroup.add_option("--fixed-mass", dest="fixed_mass", default="", type="string", help="Set a fixed mass at which to inject the signal signal (during workspace creation). If the string is empty the mass point is taken for which the significance is calculated. [Default: \"\"]")
-pgroup.add_option("--signal-strength", dest="signal_strength", default="1", type="string", help="Set signal strength for expected significance calculation. [Default: \"1\"]")
+pgroup.add_option("--fixed-mass", dest="fixed_mass", default="", type="string",
+                  help="Set a fixed mass at which to inject the signal signal (during workspace creation). If the string is empty the mass point is taken for which the significance is calculated. [Default: \"\"]")
+pgroup.add_option("--signal-strength", dest="signal_strength", default="1", type="string",
+                  help="Set signal strength for expected significance calculation. [Default: \"1\"]")
 parser.add_option_group(pgroup)
 ## crab cfg parameters
 cgroup = OptionGroup(parser, "CRAB CONFIGURATION OPTIONS", "Options for the configuration of the crab configuration file. Note that all of these parameters can be changed in the batch.cfg file later on.")
-cgroup.add_option("--interactive", dest="interactive",default=False, action="store_true", help="Set to true to run interactive, otherwise the script will submit the job to the grid directly [Default: False]")
-cgroup.add_option("-t", "--toys", dest="t", default=1000, type="int", help="Total number of toys. (can be changed in .cfg file). [Default: 1000]")
-cgroup.add_option("-j", "--jobs", dest="j", default=10, type="int", help="Total number of jobs. [Default: 10]")
-cgroup.add_option("--server", dest="server", default=False, action="store_true", help="Use crab server. [Default: False]")
-cgroup.add_option("--lsf", dest="lsf", default=False, action="store_true", help="Run on LSF instead of GRID (can be changed in .cfg file). [Default: True]")
-cgroup.add_option("--condor", dest="condor", default=False, action="store_true", help="Run on condor_g instead of GRID (can be changed in .cfg file). [Default: False]")
-cgroup.add_option("--glidein", dest="glide", default=False, action="store_true", help="Use glide-in scheduler instead of glite. [Default: False]")
-cgroup.add_option("-q", "--queue", dest="queue", default="8nh", type="string", help="LSF queue to use (can be changed in .cfg file). [Default: 8nh]")
-cgroup.add_option("-P", "--priority", dest="prio", default=False, action="store_true", help="Use PriorityUser role")
-cgroup.add_option("--submitOnly", dest="submitOnly", default=False, action="store_true", help="Use this option to skip the re-creation of input cards and submission scripts")
+cgroup.add_option("--interactive", dest="interactive",default=False, action="store_true",
+                  help="Set to true to run interactive, otherwise the script will submit the job to the grid directly [Default: False]")
+cgroup.add_option("-t", "--toys", dest="t", default=1000, type="int",
+                  help="Total number of toys. (can be changed in .cfg file). [Default: 1000]")
+cgroup.add_option("-j", "--jobs", dest="j", default=10, type="int",
+                  help="Total number of jobs. [Default: 10]")
+cgroup.add_option("--server", dest="server", default=False, action="store_true",
+                  help="Use crab server. [Default: False]")
+cgroup.add_option("--lsf", dest="lsf", default=False, action="store_true",
+                  help="Run on LSF instead of GRID (can be changed in .cfg file). [Default: True]")
+cgroup.add_option("--condor", dest="condor", default=False, action="store_true",
+                  help="Run on condor_g instead of GRID (can be changed in .cfg file). [Default: False]")
+cgroup.add_option("--glidein", dest="glide", default=False, action="store_true",
+                  help="Use glide-in scheduler instead of glite. [Default: False]")
+cgroup.add_option("-q", "--queue", dest="queue", default="8nh", type="string",
+                  help="LSF queue to use (can be changed in .cfg file). [Default: 8nh]")
+cgroup.add_option("-P", "--priority", dest="prio", default=False, action="store_true",
+                  help="Use PriorityUser role")
+cgroup.add_option("--submitOnly", dest="submitOnly", default=False, action="store_true",
+                  help="Use this option to skip the re-creation of input cards and submission scripts")
 parser.add_option_group(cgroup)
 
 ## check number of arguments; in case print usage
@@ -427,6 +465,8 @@ for directory in args :
                     opts += " --glidein"
                 if options.prio:
                     opts += " --priority"
+                if options.seed != "" :
+                    opts += " --seed %s" % optsion.seed
                 if options.v != 0 :
                     print "> creating batch job for combine -M ProfileLikelihood"
                 ## create the job

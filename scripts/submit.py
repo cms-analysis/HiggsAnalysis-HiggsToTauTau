@@ -79,6 +79,8 @@ parser.add_option_group(egroup)
 fgroup = OptionGroup(parser, "SIGNIFICANCE OPTIONS", "These are the command line options that can be used to configure the submission of toys for significance calculations. The toys can be submitted to the grid or to lxb (lxq) using crab. The number of toys per mass that will be the same for all masses can be configured via the option --toys as described in section BATCH OPTIONS. The number of crab jobs that will be the same for all masses can be configured via the option --jobs as described in this section.")
 fgroup.add_option("--jobs", dest="jobs", default="100", type="string",
                   help="Set the number crab jobs that you want to submit to calculate the toy based expected significance. [Default: 100]")
+fgroup.add_option("--seed", dest="seed", default="", type="string",
+                  help="Per default toys are run with a random seed. In case you want to run on pseudo toys with a well defined seed add the seed here. If \"\" this option will have no effect. [Default: \"\"]")
 fgroup.add_option("--grid", dest="grid", default=False, action="store_true",
                   help="Use this option if you want to submit your jobs to the grid. Otherwise they will be submitted to lxb (lxq). [Default: False]")
 parser.add_option_group(fgroup)
@@ -287,11 +289,14 @@ if options.optMDFit :
 ## SIGNIFICANCE
 ##
 if options.optSig :
-    optgrid = '--lsf' if not options.grid else ''
+    opt = ' --lsf' if not options.grid else ''
+    opt+= ' --seed %s' % options.seed if not options.seed == "" else ''
     if options.printOnly :
-        print "submit-slave.py --method significance -t {TOYS} -j {JOBS} {USER} {GRID}".format(TOYS=options.toys, JOBS=options.jobs, USER=options.opt, GRID=optgrid)
+        print "submit-slave.py --method significance -t {TOYS} -j {JOBS} {USER} {OPT} {MASSES}".format(
+            TOYS=options.toys, JOBS=options.jobs, USER=options.opt, OPT=opt, MASSES=' '.join(args))
     else :
-        os.system("submit-slave.py --method significance -t {TOYS} -j {JOBS} {USER} {GRID}".format(TOYS=options.toys, JOBS=options.jobs, USER=options.opt, GRID=optgrid))
+        os.system("submit-slave.py --method significance -t {TOYS} -j {JOBS} {USER} {OPT} {MASSES}".format(
+            TOYS=options.toys, JOBS=options.jobs, USER=options.opt, OPT=opt, MASSES=' '.join(args)))
 ##
 ## ASYMPTOTIC (with dedicated models)
 ##
