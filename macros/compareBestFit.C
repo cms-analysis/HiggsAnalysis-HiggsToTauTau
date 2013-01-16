@@ -16,9 +16,9 @@
 #include "TGraphAsymmErrors.h"
 #include "TLine.h"
 
-#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_2_5/src/HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
-#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_2_5/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
-#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_2_5/src/HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
+#include "HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
+#include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
 
 static const double MARKER_SIZE = 1.3;  // 0.7
 
@@ -208,7 +208,7 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void compareBestFit(const char* filename, const char* channelstr, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label=" Preliminary, H#rightarrow#tau#tau, L=17 fb^{-1}", bool legendOnRight=true, bool legendOnTop=true)
+void compareBestFit(const char* filename, const char* channelstr, const char* type, const char* label=" Preliminary, H#rightarrow#tau#tau, L=17 fb^{-1}")
 {
   SetStyle();
 
@@ -431,12 +431,12 @@ void compareBestFit(const char* filename, const char* channelstr, const char* ty
   }
   //SM->SetLineSize(3);
   SM->SetLineColor(kGreen+3);
-  SM->Draw("same");
+  if(std::string(type).find("sm")!=std::string::npos) SM->Draw("same");
   canv1->RedrawAxis();
   CMSPrelim(label, "", 0.15, 0.835);
   
-//   canv1->Print(std::string("BestFit").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.png" : "_sm.png").c_str());
-//   canv1->Print(std::string("BestFit").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.pdf" : "_sm.pdf").c_str());
-//   canv1->Print(std::string("BestFit").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.pdf" : "_sm.eps").c_str());
-//   return;
+  canv1->Print(std::string("BestFit").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.png" : "_sm.png").c_str());
+  canv1->Print(std::string("BestFit").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.pdf" : "_sm.pdf").c_str());
+  canv1->Print(std::string("BestFit").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.pdf" : "_sm.eps").c_str());
+  return;
 }
