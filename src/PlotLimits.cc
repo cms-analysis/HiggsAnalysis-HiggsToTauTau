@@ -211,7 +211,7 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
       prepareByValue(directory, lower   , method, innerBand ? 0.16 : 0.025);
     }
     else if(std::string(method).find("MaxLikelihood") != std::string::npos){
-      prepareByValue(directory, expected, method, 0.50);
+      prepareByValue(directory, expected, method, -1);
       prepareByValue(directory, upper, method, 0.84);
       prepareByValue(directory, lower, method, 0.16);
     }
