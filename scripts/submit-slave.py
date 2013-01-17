@@ -466,7 +466,7 @@ for directory in args :
                 if options.prio:
                     opts += " --priority"
                 if options.seed != "" :
-                    opts += " --seed %s" % optsion.seed
+                    opts += " --seed %s" % options.seed
                 if options.v != 0 :
                     print "> creating batch job for combine -M ProfileLikelihood"
                 ## create the job

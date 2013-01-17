@@ -40,6 +40,7 @@ def get_channel_name(finalstate, category):
         'mt' : 'muTau',
         'et' : 'eleTau',
         'em' : 'emu',
+        'mm' : 'mumu',
         'tt' : 'tauTau',
     }
     cat_map = {

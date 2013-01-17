@@ -510,8 +510,6 @@ for directory in args :
     if options.optSig :
         ## determine mass value from directory name
         mass  = get_mass(directory)
-        ## prepare workspace
-        create_card_workspace(mass)
         ## create a hadd'ed file per crab directory if applicable        
         ifile=0
         directoryList = os.listdir(".")
@@ -521,6 +519,14 @@ for directory in args :
                     os.system("rm batch_collected_%s.root" % ifile)
                 os.system("hadd batch_collected_%s.root %s/res/*.root" % (ifile, name))
                 ifile=ifile+1
+        ## prepare workspace
+        if options.expectedOnly :
+            if not ifile == 0 :
+                print "using option: --expextedOnly on pre-processed toys. Workspace re-creation will be skipped."
+            else :
+                create_card_workspace(mass)
+        else :
+            create_card_workspace(mass)
         ## and finally hadd all sub files corresponding to each crab directory
         if not options.observedOnly :
             if os.path.exists("batch_collected.root") :

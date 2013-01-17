@@ -31,8 +31,8 @@ dgroup.add_option("--pull-metric", dest="pull_metric", default="all",  type="cho
 dgroup.add_option("--fit-result", dest="fit_result", default="",  type="string",
                   help="The full path to the result file of the fit (mlfit.txt) if it exists already. If empty the fit will be performed within hits script. [Default: \"\"]")
 parser.add_option_group(dgroup)
-parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true",
-                  help="run in verbose mode. [Default: False]")
+parser.add_option("-v", "--debug", dest="verbose", default=False, action="store_true",
+                  help="run in verbose mode. Only recommended for (performace) testing or debugging. [Default: False]")
 (options, args) = parser.parse_args()
 ## check number of arguments; in case print usage
 if len(args) < 1 :
@@ -43,10 +43,24 @@ import os
 import re
 import glob
 import json
+import math
+import ROOT
 
 ## channels
 channels = options.channels.split()
 for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
+
+def summarize_uncerts(values, chn=None) :
+    output = "bin-by-bin-uncertainties-%s.root" % chn if chn else "bin-by-bin-uncertainties.root"
+    file = ROOT.TFile(output, "UPDATE")
+    nbin = 150 if options.optByPull else 150
+    xmin = 0.  if options.optByPull else -3.
+    xmax = 1.5 if options.optByPull else  0.
+    hist = ROOT.TH1F("bin-by-bin", "bin-by-bin", nbin, xmin, xmax)
+    for val in values :
+        hist.Fill(val if options.optByPull else math.log10(val))
+    file.Write("bin-by-bin")
+    file.Close()
 
 ## number of excluded files
 def manipulate_bbb(datacard, manipulation, excludes=None) :
@@ -116,20 +130,26 @@ if options.optByLimit :
     metric = metrics[options.limit_metric]
     
     ## pick up parameters from json file per channel
-    def prune_by_limit(path) :
+    def prune_by_limit(path, chn) :
         out = 0
         all = 0
+        vals= []
         report = json.loads(" ".join([l for l in open(path,"r")]))
         if not report: raise RuntimError, "Couldn't load %s" % path
-    
         toExclude = []
         for (nuisList, map) in report:
             all += 1
             outcome = metric(map)
+            if options.verbose :
+                bbb = re.match("\w+bin\_*\d*\w+", nuisList[0])
+                if bbb :
+                    vals.append(float(outcome))
             if float(outcome) < float(options.limit_threshold) :
                 toExclude += nuisList
                 out += 1
         print "excluded", out, "from", all
+        if options.verbose :
+            summarize_uncerts(vals, chn)
         return toExclude
         
     ## to get started comment all bin-by-bin uncertainties
@@ -145,41 +165,47 @@ if options.optByLimit :
             continue
         else :
             print "ranking all nuisance parameters for channel:", chn
-            os.system("combineCards.py -S {CARDS} > test-{CHN}.txt". format(
-                ## to run on all cards combined while for each non-covered channel all bbb 
-                ## uncertainties are commented and for each pre-ceding channel the bbb
-                ## uncertainties are already pruned uncomment the follwing line.
-                #CARDS=' '.join(glob.glob('*.txt')),
-                ## to run on all cards combined but seperated by channels uncomment the
-                ## the following line
-                CARDS=' '.join(glob.glob('*_{CHN}_*.txt'.format(CHN=chn))),
-                CHN=chn
-                ))
-            ## run nuisance parameter ranking
-            cmd = "python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/sizeUpSystematics.py"
-            os.system("{CMD} {PWD}/test-{CHN}.txt --masses={MASS} --X-keep-global-nuisances --dir test-{CHN}".format(
-                CMD=cmd,
-                PWD=os.getcwd(),
-                MASS=options.mass,
-                CHN=chn
-                ))
-            ## clean up test datacard
-            os.system("mv test-{CHN}.txt test-{CHN}".format(
-            MASS=options.mass,
-            CHN=chn
-            ))
+            if not os.path.exists('test-{CHN}'.format(CHN=chn)) :
+                os.system("combineCards.py -S {CARDS} > test-{CHN}.txt". format(
+                    ## to run on all cards combined while for each non-covered channel all bbb 
+                    ## uncertainties are commented and for each pre-ceding channel the bbb
+                    ## uncertainties are already pruned uncomment the follwing line.
+                    #CARDS=' '.join(glob.glob('*.txt')),
+                    ## to run on all cards combined but seperated by channels uncomment the
+                    ## the following line
+                    CARDS=' '.join(glob.glob('*_{CHN}_*.txt'.format(CHN=chn))),
+                    CHN=chn
+                    ))
+                ## run nuisance parameter ranking
+                cmd = "python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/sizeUpSystematics.py"
+                os.system("{CMD} {PWD}/test-{CHN}.txt --masses={MASS} --X-keep-global-nuisances --dir test-{CHN}".format(
+                    CMD=cmd,
+                    PWD=os.getcwd(),
+                    MASS=options.mass,
+                    CHN=chn
+                    ))
+                ## clean up test datacard
+                os.system("mv test-{CHN}.txt test-{CHN}".format(
+                    MASS=options.mass,
+                    CHN=chn
+                    ))
+            else:
+                print 'ranking directory exists already. Will not re-run, but use existing results.'
             ## prune datacards for given channel
             excl = 0
-            excludes = prune_by_limit("test-{CHN}/Removed1.json".format(CHN=chn))
+            excludes = prune_by_limit("test-{CHN}/Removed1.json".format(CHN=chn), chn)
             for datacard in glob.glob('*_{CHN}_*.txt'.format(CHN=chn)) :
                 excl += manipulate_bbb(datacard, "COMMENT", excludes)
             print "commented", excl, "bin-by-bin uncertainties from", all, "for channel:", chn, "(", float(100*excl/all), "%)"
             ## and finally prune all datacards for all masses in input directory
-            for datacard in glob.glob('{PARENT}/{INPUT}/htt_{CHN}/*_{CHN}_*.txt'.format(PARENT=parentdir,INPUT=args[0], CHN=chn)) :
-                manipulate_bbb(datacard, "COMMENT", excludes)
+            if not options.verbose :
+                for datacard in glob.glob('{PARENT}/{INPUT}/htt_{CHN}/*_{CHN}_*.txt'.format(PARENT=parentdir,INPUT=args[0], CHN=chn)) :
+                    manipulate_bbb(datacard, "COMMENT", excludes)
             glob_all += all
             glob_excl += excl
-
+    if options.verbose :
+        os.system("hadd bin-by-bin-uncertainties.root bin-by-bin-uncertainties-*.root")
+        
 if options.optByPull :
     ## run max-likelihood fit (at the moment just copy)
     if not options.fit_result == "" :
@@ -190,6 +216,7 @@ if options.optByPull :
     def prune_by_pull(path) :
         out = 0
         all = 0
+        vals= []
         file = open(path,'r')
         toExclude = []
         for line in file :
@@ -200,19 +227,27 @@ if options.optByPull :
                 if pulls :
                     all += 1
                     if options.pull_metric == 'b' :
+                        if options.verbose :
+                            vals.append(float(pulls[0]))
                         if abs(float(pulls[0])) < float(options.pull_threshold) :
                             out += 1
                             toExclude.append(line.split()[0])
                     if options.pull_metric == 's+b' :
+                        if options.verbose :
+                            vals.append(float(pulls[1]))                        
                         if abs(float(pulls[1])) < float(options.pull_threshold) :
                             out += 1
                             toExclude.append(line.split()[0])
                     if options.pull_metric == 'all' :
+                        if options.verbose :
+                            vals.append(float(max(abs(float(pulls[0])), float(pulls[1]))))
                         if max(abs(float(pulls[0])), float(pulls[1])) < float(options.pull_threshold) :
                             out += 1
                             toExclude.append(line.split()[0])
         file.close()
         print "excluded", out, "from", all
+        if options.verbose :
+            summarize_uncerts(vals)
         return toExclude
 
     ## prune datacards for given channel
@@ -225,8 +260,9 @@ if options.optByPull :
             excl += manipulate_bbb(datacard, "COMMENT", excludes)
         print "commented", excl, "bin-by-bin uncertainties from", all, "for channel:", chn, "(", float(100*excl/all), "%)"
         ## and finally prune all datacards for all masses in input directory
-        for datacard in glob.glob('{PARENT}/{INPUT}/htt_{CHN}/*.txt'.format(PARENT=parentdir,INPUT=args[0], CHN=chn)) :
-            manipulate_bbb(datacard, "COMMENT", excludes)
+        if not options.verbose :
+            for datacard in glob.glob('{PARENT}/{INPUT}/htt_{CHN}/*.txt'.format(PARENT=parentdir,INPUT=args[0], CHN=chn)) :
+                manipulate_bbb(datacard, "COMMENT", excludes)
         glob_all += all
         glob_excl += excl
 
@@ -234,6 +270,6 @@ if options.optByPull :
 print "Summary:"
 print "commented", glob_excl, "bin-by-bin uncertainties from", glob_all, "for all channels. (", float(100*glob_excl/glob_all), "%)"
 ## clean up if not requested otherwise
-#if not options.verbose :
-#    os.chdir(parentdir)
-#    os.system("rm -r tmp")
+if not options.verbose :
+    os.chdir(parentdir)
+    os.system("rm -r pruning")
