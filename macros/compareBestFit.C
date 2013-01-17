@@ -208,9 +208,9 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void compareBestFit(const char* filename, const char* channelstr, const char* type, const char* label=" Preliminary, H#rightarrow#tau#tau, L=17 fb^{-1}")
+void compareBestFit(const char* filename, const char* channelstr, const char* type, const char* label=" Preliminary, H#rightarrow#tau#tau, L=24.3 fb^{-1}")
 {
-  SetStyle();
+  //SetStyle();
 
   std::map<std::string, unsigned int> colors;
   colors["incl"       ] = kBlue;
@@ -305,7 +305,7 @@ void compareBestFit(const char* filename, const char* channelstr, const char* ty
 
   std::cout << " *******************************************************************************************************\n"
 	    << " * Usage     : root -l                                                                                  \n"
-	    << " *             .x MitLimits/Higgs2Tau/macros/compareLimits.C+(file, chn, min, max, log) \n"
+	    << " *             .x macros/compareBestFit.C+(file, chn, type) \n"
 	    << " *                                                                                                      \n"
 	    << " * Arguments :  + file     const char*      full path to the input file                                 \n"
 	    << " *              + chn      const char*      list of channels; choose between: 'cmb', 'htt', 'em',       \n"
@@ -316,12 +316,6 @@ void compareBestFit(const char* filename, const char* channelstr, const char* ty
 	    << " *                                          The list should be comma separated and may contain          \n"
 	    << " *                                          whitespaces                                                 \n"
 	    << " *              + type      const char*     type of plot; choose between 'sm' and 'mssm'                \n"
-	    << " *                                                                                                      \n"
-	    << " *              + max       double          maximum of the plot (default is 20.)                        \n"
-	    << " *                                                                                                      \n"
-	    << " *              + min       double          minimum of the plot (default is  0.)                        \n"
-	    << " *                                                                                                      \n"
-	    << " *              + log       bool            set log scale yes or no (default is false)                  \n"
 	    << " *                                                                                                      \n"
 	    << " *******************************************************************************************************\n";
 
@@ -429,7 +423,7 @@ void compareBestFit(const char* filename, const char* channelstr, const char* ty
     //gr->Draw(firstPlot ? "AL" : "Lsame");
     firstPlot=false;
   }
-  //SM->SetLineSize(3);
+  SM->SetLineWidth(3);
   SM->SetLineColor(kGreen+3);
   if(std::string(type).find("sm")!=std::string::npos) SM->Draw("same");
   canv1->RedrawAxis();
