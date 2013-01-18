@@ -24,7 +24,7 @@ aux = {
     'et' : ['Wisconsin', 'Imperial'],
     'mt' : ['Wisconsin', 'Imperial'],
     'mm' : ['Htt_MuMu_Unblinded'],
-    'tt' : ['Htt_FullHad']
+    ##'tt' : ['Htt_FullHad']
     }
 
 setup=cmssw_base+"/src/HiggsAnalysis/HiggsToTauTau/setup"
@@ -33,7 +33,7 @@ if not options.skip_cvs :
     for chn, dirs in aux.iteritems() :
         for dir in dirs :
             print "copy files for channel:", chn
-            os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/*htt_{CHN}*.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/".format(
+            os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/htt_{CHN}*.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/".format(
                 CMSSW_BASE=cmssw_base,
                 DIR=dir,
                 CHN=chn
@@ -63,11 +63,18 @@ if not options.skip_setup :
         os.system("rm -r {DIR}".format(DIR=source))
     os.system("mkdir {DIR}".format(DIR=source))
     ## setup main analysis
-    os.system("cp -r {SETUP} {DIR}/Moriond".format(SETUP=setup, DIR=source))      
+    os.system("cp -r {SETUP} {DIR}/Moriond".format(SETUP=setup, DIR=source))
+
+############YOUR SPACE ROGER!
+    
     ## setup bin-by-bin ##No included atm
     #os.system("add_bbb_errors.py 'et,mt,em:7TeV,8TeV:01,03,05:ZL,ZLL,Fakes,QCD>W' --input-dir {DIR}/Moriond --output-dir {DIR}/Moriond-bin-by-bin --threshold 0.10".format(
     #    DIR=source
     #    ))
+
+############
+
+    
     ## setup mvis ##skip for now
 ##     if os.path.exists("{DIR}/Moriond-mvis".format(DIR=source)) :
 ##         os.system("rm -r {DIR}/Moriond-mvis".format(DIR=source))
@@ -102,15 +109,7 @@ if not options.skip_setup :
 ##     os.system("mv {DIR}/Moriond-2012D/mt/htt_mt.inputs-sm-8TeV-2012d.root htt_mt.inputs-sm-8TeV.root"format(DIR=source))
 ##     os.system("mv {DIR}/Moriond-2012D/mm/htt_mm.inputs-sm-8TeV-2012d.root htt_mm.inputs-sm-8TeV.root"format(DIR=source))
 ##     os.system("mv {DIR}/Moriond-2012D/tt/htt_tt.inputs-sm-8TeV-2012d.root htt_tt.inputs-sm-8TeV.root"format(DIR=source)
-    ##setup andrew 2012D    
-    os.system("cp -r {SETUP} {DIR}/andrew-2012D".format(SETUP=setup, DIR=source))
-    os.system("mv {DIR}/andrew-2012D/em/DOnly-htt_em.inputs-sm-8TeV.root htt_em.inputs-sm-8TeV.root".format(SETUP=setup, DIR=source))
-    ##setup andrew HCP
-    os.system("cp -r {SETUP} {DIR}/andrew-HCP".format(SETUP=setup, DIR=source))
-    os.system("mv {DIR}/andrew-HCP/em/DOnly-htt_em.inputs-sm-8TeV.root htt_em.inputs-sm-8TeV.root".format(SETUP=setup, DIR=source))
-    ##setup andrew Moriond
-    os.system("cp -r {SETUP} {DIR}/andrew-Moriond".format(SETUP=setup, DIR=source))
-    os.system("mv {DIR}/andrew-Moriond/em/DOnly-htt_em.inputs-sm-8TeV.root htt_em.inputs-sm-8TeV.root".format(SETUP=setup, DIR=source))
+
 if not options.skip_datacards :
     ## setup datacards
     datacards = "{CMSSW_BASE}/src/aux".format(CMSSW_BASE=cmssw_base)
@@ -121,16 +120,16 @@ if not options.skip_datacards :
     os.system("mkdir {DIR}/sm".format(DIR=datacards))
     #    os.system("rm -r {DIR}/mssm".format(DIR=datacards))
     #os.system("mkdir {DIR}/mssm".format(DIR=datacards))
-    for ana in ['Moriond', 'andrew-2012D', 'andrew-HCP', 'andrew-Moriond']:#, 'Moriond-2012d', 'Moriond-bin-by-bin', 'Moriond-mvis'] :
+    for ana in ['Moriond']:#,'HCP', 'Moriond-2012D', 'Moriond-bin-by-bin', 'Moriond-mvis'] :
         print "setup datacards for:", ana, "sm"
-        if '2012D' in ana :
-            os.system("setup-datacards.py -i setups/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt mm tt' -p 8TeV {MASSES}".format(
+        if '2012D' in ana : #only em et mt for now 
+            os.system("setup-datacards.py -i setups/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt' -p 8TeV {MASSES}".format(
             ANA=ana,
             OUTPUT=datacards,
             MASSES=masses
             ))
-        else :  #only 8tev for now
-            os.system("setup-datacards.py -i setups/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt mm tt' -p 8TeV {MASSES}".format(
+        else :  #only 8tev for now  #only em et mt for now 
+            os.system("setup-datacards.py -i setups/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt' -p 8TeV {MASSES}".format(
                 ANA=ana,
                 OUTPUT=datacards,
                 MASSES=masses
@@ -141,23 +140,30 @@ if not options.skip_limits :
     if not os.path.exists(limits) :
         os.system("mkdir {DIR}".format(DIR=limits))
         os.system("mkdir {DIR}/sm".format(DIR=limits))
-    for ana in ['Moriond', 'andrew-2012D', 'andrew-HCP', 'andrew-Moriond']:#, 'Moriond-2012d', 'Moriond-bin-by-bin', 'Moriond-mvis'] :
+    for ana in ['Moriond']:#, 'Moriond-2012D', 'Moriond-bin-by-bin', 'Moriond-mvis', 'HCP'] :
         label = ""
         if 'mvis' in ana :
             label = "-l "+ana[ana.find('-')+1:]
-        print "setup limits structure for:", ana, "sm" #only 8tev for now
-        os.system("setup-htt.py -i aux/sm/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt mm tt' -p 8TeV {LABEL} {MASSES}".format(
+        print "setup limits structure for:", ana, "sm" #only 8tev for now #only em et mt for now 
+        os.system("setup-htt.py -i aux/sm/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt' -p 8TeV {LABEL} {MASSES}".format(
             ANA=ana,
             LABEL=label,
             OUTPUT=limits,
             MASSES=masses
             ))
-        if ana == 'Moriond' : #'Moriond-bin-by-bin' :  ##Later change that maybe
-            for per in ['7TeV', '8TeV'] :
-                os.system("setup-htt.py -i aux/sm/{ANA} -o {OUTPUT}/sm/{ANA}-{PER} -p {PER} -a sm -c 'em et mt mm tt' {LABEL} {MASSES}".format(
-                    ANA=ana,
-                    PER=per,
-                    LABEL=label,
-                    OUTPUT=limits,
-                    MASSES=masses
-                    ))  
+        if '2012D' in ana :
+            os.system("setup-htt.py -i aux/sm/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt' -p 8TeV {LABEL} {MASSES}".format(
+                ANA=ana,
+                LABEL=label,
+                OUTPUT=limits,
+                MASSES=masses
+                ))
+       ##  if ana == 'Moriond-bin-by-bin' :  ##Later change that maybe 
+##             for per in ['7TeV', '8TeV'] :
+##                 os.system("setup-htt.py -i aux/sm/{ANA} -o {OUTPUT}/sm/{ANA}-{PER} -p {PER} -a sm -c 'em et mt' {LABEL} {MASSES}".format(
+##                     ANA=ana,
+##                     PER=per,
+##                     LABEL=label,
+##                     OUTPUT=limits,
+##                     MASSES=masses
+##                     ))  
