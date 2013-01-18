@@ -8,17 +8,17 @@ parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", ty
                   help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et\"]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
                   help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
-parser.add_option("-a", "--analyses", dest="analyses", default="moriond moriond-bin-by-bin moriond-mvis moriond-2012d morions-hcp moriond-incl",
-                  help="Type of analyses to be considered for updating. Lower case is required. [Default: \"moriond moriond-bin-by-bin moriond-mvis moriond-hcp moriond-2012 moriond-incl\"]")
+parser.add_option("-a", "--analyses", dest="analyses", default="moriond moriond-bin-by-bin moriond-mvis moriond-2012d moriond-hcp moriond-incl",
+                  help="Type of analyses to be considered for updating. Lower case is required. [Default: \"moriond moriond-bin-by-bin moriond-mvis moriond-hcp moriond-2012d moriond-incl\"]")
 parser.add_option("--full-update", dest="full_update", default=False, action="store_true",
                   help="update everything from scratch. If not specified use the following options to specify which parts of the reload you want to run. [Default: False]")
 parser.add_option("--update-cvs", dest="update_cvs", default=False, action="store_true",
                   help="update root input files from cvs and rescale all input files by SM Higgs cross section. [Default: False]")
-parser.add_option("--update-setup", dest="update_setup", default=False, action="store_true",
+parser.add_option("--update-setups", dest="update_setup", default=False, action="store_true",
                   help="update setup directories for the indicated main and cross check analyses. [Default: False]")
-parser.add_option("--update-datacards", dest="update_datacards", default=False, action="store_true",
+parser.add_option("--update-aux", dest="update_datacards", default=False, action="store_true",
                   help="update skip datacards. [Default: False]")
-parser.add_option("--update-limits", dest="update_limits", default=False, action="store_true",
+parser.add_option("--update-LIMITS", dest="update_limits", default=False, action="store_true",
                   help="update directory structure for limit calculation. [Default: False]")
 parser.add_option("--fit-result", dest="fit_result", default="",  type="string",
                   help="The full path to the result file of the fit (mlfit.txt) if it exists already fro pruning of bin-by-bin uncertainties. If empty the fit will be performed within this script. ATTENTION: this can take a few hours depending on the number of additional bin-by-bin uncertainties. [Default: \"\"]")
@@ -51,7 +51,7 @@ cmssw_base=os.environ['CMSSW_BASE']
 os.system("mkdir -p backup")
 
 ## directory mapping in cvs auxiliaries/datacards/collected
-aux = {
+directories = {
     'em' : ['MIT'],
     'et' : ['Wisconsin', 'Imperial'],
     'mt' : ['Wisconsin', 'Imperial'],
@@ -69,7 +69,7 @@ if options.update_cvs :
         print "... copy files for channel:", chn
         for file in glob.glob("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/htt_{CHN}*-sm-*.root".format(CMSSW_BASE=cmssw_base, CHN=chn)) :
             os.system("rm %s" % file)  
-        for dir in aux[chn] :
+        for dir in directories[chn] :
             pattern = "7TeV" if dir == "Imperial" else "" 
             os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/htt_{CHN}*-sm-{PATTERN}*.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/".format(
                 CMSSW_BASE=cmssw_base,
@@ -87,13 +87,15 @@ if options.update_cvs :
                 
 if options.update_setup :
     print "##"
-    print "## update setup directories:"
+    print "## update setups directory:"
     print "##"    
     ## setup directory structure
     dir = "{CMSSW_BASE}/src/setups".format(CMSSW_BASE=cmssw_base)
     if os.path.exists(dir) :
-        os.system("mv -r {DIR} {CMSSW_BASE}/src/backup/".format(DIR=dir, CMSSW_BASE=cmssw_base))
-    os.system("mkdir {DIR}".format(DIR=dir))
+        if os.path.exists(dir.replace('src/', 'src/backup/')):
+            os.system("rm -r "+dir.replace('src/', 'src/backup/'))
+        os.system("mv {DIR} {CMSSW_BASE}/src/backup/".format(DIR=dir, CMSSW_BASE=cmssw_base))
+    os.system("mkdir -p {DIR}".format(DIR=dir))
     for ana in analyses :
         os.system("cp -r {SETUP} {DIR}/{ANA}".format(SETUP=setup, DIR=dir, ANA=ana))
         ##
@@ -106,14 +108,10 @@ if options.update_setup :
         ##
         if ana == 'moriond-bin-by-bin' :
             ## setup bbb uncertainties
-            os.system("add_bbb_errors.py 'et,mt,em,mm:7TeV,8TeV:01,03,05:ZMM,ZTT,TTJ,Diboson,ZL,ZLL,Fakes,QCD,W' --input-dir {DIR}/moriond --output-dir {DIR}/{ANA} --threshold 0.10".format(
+            os.system("add_bbb_errors.py 'et,mt,em,mm:7TeV,8TeV:01,03,05:ZMM,ZTT,TTJ,Diboson,ZL,ZLL,Fakes,QCD,W' -f --in {DIR}/moriond --out {DIR}/{ANA} --threshold 0.10".format(
                 DIR=dir,
                 ANA=ana
                 ))
-            ## setup bbb uncertainty pruning
-            fit_result = "" if options.fit_result == "" else "--fit-result %s" % optsions.fit_result
-            debug = "--debug" if fit_result == "" else ""
-            os.system("prune_bbb_errors.py --byPull {FIT} {DEBUG} --pull-threshold 0.30".format(FIT=fit_result, DEBUG=debug))
         ##
         ## MODIOND-MVIS
         ##
@@ -152,11 +150,16 @@ if options.update_setup :
                 ))                        
 
 if options.update_datacards :
+    print "##"
+    print "## update aux directory:"
+    print "##"    
     ## setup directory structure
     dir = "{CMSSW_BASE}/src/aux".format(CMSSW_BASE=cmssw_base)
     if os.path.exists(dir) :
-        os.system("mv -r {DIR} {CMSSW_BASE}/src/backup/".format(DIR=dir, CMSSW_BASE=cmssw_base))
-    os.system("mkdir {DIR}".format(DIR=dir))
+        if os.path.exists(dir.replace('src/', 'src/backup/')):
+            os.system("rm -r "+dir.replace('src/', 'src/backup/'))
+        os.system("mv {DIR} {CMSSW_BASE}/src/backup/".format(DIR=dir, CMSSW_BASE=cmssw_base))
+    os.system("mkdir -p {DIR}".format(DIR=dir))    
     for ana in analyses :
         print "setup datacards for:", ana, "sm"
         per = "8TeV" if ana == 'modiond-2012d' else options.periods
@@ -168,16 +171,30 @@ if options.update_datacards :
             CHN=options.channels,
             MASSES=masses
             ))
+        if ana == "moriond-bin-by-bin" :
+            ## setup bbb uncertainty pruning
+            os.system("prune_bbb_errors.py -c {CHN} --byPull {FIT} {DEBUG} --pull-threshold 0.30 {DIR}/{ANA}/sm".format(
+                FIT="" if options.fit_result == "" else "--fit-result %s" % optsions.fit_result,
+                DEBUG="--debug" if options.fit_result == "" else "",
+                CHN=options.channels,
+                DIR=dir,
+                ANA=ana
+                ))
 
 if options.update_limits :
+    print "##"
+    print "## update LIMITS directory:"
+    print "##"
     ## setup directory structure
     dir = "{CMSSW_BASE}/src/LIMITS".format(CMSSW_BASE=cmssw_base)
     if os.path.exists(dir) :
-        os.system("mv -r {DIR} {CMSSW_BASE}/src/backup/".format(DIR=dir, CMSSW_BASE=cmssw_base))
-    os.system("mkdir {DIR}".format(DIR=dir))
+        if os.path.exists(dir.replace('src/', 'src/backup/')):
+            os.system("rm -r "+dir.replace('src/', 'src/backup/'))
+        os.system("mv {DIR} {CMSSW_BASE}/src/backup/".format(DIR=dir, CMSSW_BASE=cmssw_base))
+    os.system("mkdir -p {DIR}".format(DIR=dir))    
     for ana in analyses :
         print "setup limits structure for:", ana, "sm"
-        if ana == 'moriond' :
+        if ana == 'moriond-incl' :
             os.system("cvs2local.py -i aux/sm/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {MASSES}".format(
                 ANA=ana,
                 PER=options.periods,
@@ -185,7 +202,7 @@ if options.update_limits :
                 MASSES=masses
                 ))
         else :
-            per = "8TeV" if ana == 'modiond-2012d' else options.periods
+            per = "8TeV" if ana == 'moriond-2012d' else options.periods
             label = "" if not '-' in ana else "-l "+ana[ana.find('-')+1:]
             os.system("setup-htt.py -i aux/sm/{ANA} -o {DIR}/{ANA} -p '{PER} '-a sm -c '{CHN}' {LABEL} {MASSES}".format(
                 ANA=ana,
