@@ -2,12 +2,27 @@
 from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
-parser = OptionParser(usage="usage: %prog [options] ARGS",
-                      description="Script to reload the MORIOND analysis with main analysis [Moriond-bin-by-bin] and two cross-check analyses [Moriond, Moriond-mvis]. ARGS should correspond to the masses, for which to setup the structure.")
-parser.add_option("-c", "--skip-cvs-update", dest="skip_cvs", default=False, action="store_true", help="skip the cvs update and rescaling of the input files. [Default: False]")
-parser.add_option("-s", "--skip-setup", dest="skip_setup", default=False, action="store_true", help="skip setup. [Default: False]")
-parser.add_option("-d", "--skip-datacards", dest="skip_datacards", default=False, action="store_true", help="skip datacards. [Default: False]")
-parser.add_option("-l", "--skip-limits", dest="skip_limits", default=False, action="store_true", help="skip limit setup. [Default: False]")
+parser = OptionParser(usage="usage: %prog [options] ARGs",
+                      description="This is a script to reload the MORIOND analysis with main analysis [Moriond-bin-by-bin] and two cross-check analyses [Moriond, Moriond-mvis]. ARGs corresponds to the masses, for which to setup the structure.")
+parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string",
+                  help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et\"]")
+parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
+                  help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
+parser.add_option("-a", "--analyses", dest="analyses", default="moriond moriond-bin-by-bin moriond-mvis moriond-2012d morions-hcp moriond-incl",
+                  help="Type of analyses to be considered for updating. Lower case is required. [Default: \"moriond moriond-bin-by-bin moriond-mvis moriond-hcp moriond-2012 moriond-incl\"]")
+parser.add_option("--full-update", dest="full_update", default=False, action="store_true",
+                  help="update everything from scratch. If not specified use the following options to specify which parts of the reload you want to run. [Default: False]")
+parser.add_option("--update-cvs", dest="update_cvs", default=False, action="store_true",
+                  help="update root input files from cvs and rescale all input files by SM Higgs cross section. [Default: False]")
+parser.add_option("--update-setup", dest="update_setup", default=False, action="store_true",
+                  help="update setup directories for the indicated main and cross check analyses. [Default: False]")
+parser.add_option("--update-datacards", dest="update_datacards", default=False, action="store_true",
+                  help="update skip datacards. [Default: False]")
+parser.add_option("--update-limits", dest="update_limits", default=False, action="store_true",
+                  help="update directory structure for limit calculation. [Default: False]")
+parser.add_option("--fit-result", dest="fit_result", default="",  type="string",
+                  help="The full path to the result file of the fit (mlfit.txt) if it exists already fro pruning of bin-by-bin uncertainties. If empty the fit will be performed within this script. ATTENTION: this can take a few hours depending on the number of additional bin-by-bin uncertainties. [Default: \"\"]")
+
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -16,154 +31,163 @@ if len(args) < 1 :
     exit(1)
 
 import os
+import glob
+
+
+## masses
 masses = args[0]
+## periods
+periods = options.periods.split()
+for idx in range(len(periods)) : periods[idx] = periods[idx].rstrip(',')
+## channels
+channels = options.channels.split()
+for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
+## analyses
+analyses = options.analyses.split()
+for idx in range(len(analyses)) : analyses[idx] = analyses[idx].rstrip(',')
+## CMSSW_BASE
 cmssw_base=os.environ['CMSSW_BASE']
-## copy files in setup
+## setup a backup directory
+os.system("mkdir -p backup")
+
+## directory mapping in cvs auxiliaries/datacards/collected
 aux = {
     'em' : ['MIT'],
     'et' : ['Wisconsin', 'Imperial'],
     'mt' : ['Wisconsin', 'Imperial'],
     'mm' : ['Htt_MuMu_Unblinded'],
-    ##'tt' : ['Htt_FullHad']
+    'tt' : ['Htt_FullHad']
     }
 
 setup=cmssw_base+"/src/HiggsAnalysis/HiggsToTauTau/setup"
     
-if not options.skip_cvs :
-    for chn, dirs in aux.iteritems() :
-        for dir in dirs :
+if options.update_cvs :
+    for chn in channels :
+        for dir in aux[chn] :
             print "copy files for channel:", chn
-            os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/htt_{CHN}*.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/".format(
+            os.system("rm {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/htt_{CHN}*-sm-*.root")
+            os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/htt_{CHN}*-sm-.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/".format(
                 CMSSW_BASE=cmssw_base,
                 DIR=dir,
                 CHN=chn
                 ))
-    os.system("mv {SETUP}/mm/htt_mm.inputs-mssm-7TeV_msv.root {SETUP}/mm/htt_mm.inputs-mssm-7TeV_postfit.root".format(SETUP=setup))
-    os.system("mv {SETUP}/mm/htt_mm.inputs-mssm-8TeV_msv.root {SETUP}/mm/htt_mm.inputs-mssm-8TeV_postfit.root".format(SETUP=setup))
+    ## adjustments for htt_mm plotting
     os.system("mv {SETUP}/mm/htt_mm.inputs-sm-7TeV_msv.root {SETUP}/mm/htt_mm.inputs-sm-7TeV_postfit.root".format(SETUP=setup))
     os.system("mv {SETUP}/mm/htt_mm.inputs-sm-8TeV_msv.root {SETUP}/mm/htt_mm.inputs-sm-8TeV_postfit.root".format(SETUP=setup))
     ## scale to SM cross section
-    for chn in aux :
-        files = os.listdir("{SETUP}/{CHN}".format(SETUP=setup, CHN=chn))
-        for file in files :
-            if chn == 'tt' :
-                ## do NOT scale tt, these are already scaled
-                continue
-            if chn in file and '-sm-' in file :
-                os.system("scale2SM.py -i {SETUP}/{CHN}/{FILE} -s 'ggH, qqH, VH' {MASSES}".format(
-                    SETUP=setup,
-                    CHN=chn,
-                    FILE=file,
-                    MASSES=masses
-                    ))
+    for chn in channels :
+        for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
+            os.system("scale2SM.py -i {SETUP}/{CHN}/{FILE} -s 'ggH, qqH, VH' {MASSES}".format(
+                SETUP=setup,
+                CHN=chn,
+                FILE=file,
+                MASSES=masses
+                ))
                 
-if not options.skip_setup :
-    source = "{CMSSW_BASE}/src/setups".format(CMSSW_BASE=cmssw_base)
-    if os.path.exists(source) :
-        os.system("rm -r {DIR}".format(DIR=source))
-    os.system("mkdir {DIR}".format(DIR=source))
-    ## setup main analysis
-    os.system("cp -r {SETUP} {DIR}/Moriond".format(SETUP=setup, DIR=source))
+if options.update_setup :
+    ## setup directory structure
+    dir = "{CMSSW_BASE}/src/setups".format(CMSSW_BASE=cmssw_base)
+    if os.path.exists(dir) :
+        os.system("mv -r {DIR} {CMSSW_BASE}/src/backup/".format(DIR=dir, CMSSW_BASE=cmssw_base))
+    os.system("mkdir {DIR}".format(DIR=dir))
+    for ana in analyses :
+        os.system("cp -r {SETUP} {DIR}/{ANA}".format(SETUP=setup, DIR=dir, ANA=ana))
+        ##
+        ## MORIOND
+        ##
+        if ana == 'moriond' :
+            pass
+        ##
+        ## MORIOND-BIN-BY-BIN
+        ##
+        if ana == 'moriond-bin-by-bin' :
+            ## setup bbb uncertainties
+            os.system("add_bbb_errors.py 'et,mt,em,mm:7TeV,8TeV:01,03,05:ZMM,ZTT,TTJ,Diboson,ZL,ZLL,Fakes,QCD,W' --input-dir {DIR}/moriond --output-dir {DIR}/{ANA} --threshold 0.10".format(
+                DIR=dir,
+                ANA=ana
+                ))
+            ## setup bbb uncertainty pruning
+            fit_result = "" if options.fit_result == "" else "--fit-result %s" % optsions.fit_result
+            debug = "--debug" if fit_result == "" else ""
+            os.system("prune_bbb_errors.py --byPull {FIT} {DEBUG} --pull-threshold 0.30".format(FIT=fit_result, DEBUG=debug))
+        ##
+        ## MODIOND-MVIS
+        ##
+        if ana == 'moriond-incl' :
+            os.system("mv {DIR}/moriond-mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}-mvis.root {DIR}/moriond-mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
+                DIR=dir,
+                CHN=chn,
+                PER=per
+                ))
+        ##
+        ## MODIOND-HCP
+        ##            
+        if ana == 'morions-hcp' :
+            os.system("mv {DIR}/moriond-mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}-hcp.root {DIR}/moriond-mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
+                DIR=dir,
+                CHN=chn,
+                PER=per
+                ))
+        ##
+        ## MODIOND-2012D
+        ##            
+        if ana == 'morions-2012d' :
+            os.system("mv {DIR}/moriond-mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}-2012d.root {DIR}/moriond-mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
+                DIR=dir,
+                CHN=chn,
+                PER=per
+                ))
+        ##
+        ## MODIOND-INCLUSIVE
+        ##            
+        if ana == 'morions-incl' :
+            os.system("mv {DIR}/moriond-mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}-inclusive.root {DIR}/moriond-mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
+                DIR=dir,
+                CHN=chn,
+                PER=per
+                ))                        
 
-############YOUR SPACE ROGER!
-    
-    ## setup bin-by-bin ##No included atm
-    #os.system("add_bbb_errors.py 'et,mt,em:7TeV,8TeV:01,03,05:ZL,ZLL,Fakes,QCD>W' --input-dir {DIR}/Moriond --output-dir {DIR}/Moriond-bin-by-bin --threshold 0.10".format(
-    #    DIR=source
-    #    ))
-
-############
-
-    
-    ## setup mvis ##skip for now
-##     if os.path.exists("{DIR}/Moriond-mvis".format(DIR=source)) :
-##         os.system("rm -r {DIR}/Moriond-mvis".format(DIR=source))
-##     os.system("cp -r {DIR}/Moriond {DIR}/Moriond-mvis".format(DIR=source))
-##     for chn in aux :
-##         for ana in ['sm'] :
-##             for per in ['7TeV', '8TeV'] :
-##                 if chn == 'mm' :
-##                     pass
-##                 else :
-##                     if chn == 'tt' and per == '7TeV' :
-##                         continue
-                  ##   if chn == 'mt' : #NEEDED??
-##                         os.system("cp auxiliaries/datacards/collected/Wisconsin/unc-sm-8TeV-02-mvis.vals {DIR}/Moriond-mvis/{CHN}/unc-sm-8TeV-02.vals".format(
-##                             DIR=source,
-##                             CHN=chn
-##                             ))
-##                         os.system("cp auxiliaries/datacards/collected/Wisconsin/unc-sm-8TeV-02-mvis.vals {DIR}/Moriond-mvis/{CHN}/unc-sm-8TeV-02.vals".format(
-##                             DIR=source,
-##                             CHN=chn
-##                             ))
-##                     os.system("mv {DIR}/Moriond-mvis/{CHN}/htt_{CHN}.inputs-{ANA}-{PER}-mvis.root {DIR}/Moriond-mvis/{CHN}/htt_{CHN}.inputs-{ANA}-{PER}.root".format(
-##                         DIR=source,
-##                         CHN=chn,
-##                         ANA=ana,
-##                         PER=per
-##                         ))
-    ##setup 2012D
-##     os.system("cp -r {SETUP} {DIR}/Moriond-2012D".format(SETUP=setup, DIR=source))
-##     os.system("mv {DIR}/Moriond-2012D/em/htt_em.inputs-sm-8TeV-2012d.root {DIR}/Moriond-2012D/mt/htt_em.inputs-sm-8TeV.root"format(DIR=source))
-##     os.system("mv {DIR}/Moriond-2012D/et/htt_et.inputs-sm-8TeV-2012d.root {DIR}/Moriond-2012D/mt/htt_et.inputs-sm-8TeV.root"format(DIR=source))
-##     os.system("mv {DIR}/Moriond-2012D/mt/htt_mt.inputs-sm-8TeV-2012d.root {DIR}/Moriond-2012D/mt/htt_mt.inputs-sm-8TeV.root"format(DIR=source))
-##     os.system("mv {DIR}/Moriond-2012D/mm/htt_mm.inputs-sm-8TeV-2012d.root {DIR}/Moriond-2012D/mt/htt_mm.inputs-sm-8TeV.root"format(DIR=source))
-##     os.system("mv {DIR}/Moriond-2012D/tt/htt_tt.inputs-sm-8TeV-2012d.root {DIR}/Moriond-2012D/mt/htt_tt.inputs-sm-8TeV.root"format(DIR=source)
-
-if not options.skip_datacards :
-    ## setup datacards
-    datacards = "{CMSSW_BASE}/src/aux".format(CMSSW_BASE=cmssw_base)
-    if not os.path.exists(datacards) :
-        os.system("mkdir {DIR}".format(DIR=datacards))
-    if os.path.exists(datacards+'/sm') :
-        os.system("rm -r {DIR}/sm".format(DIR=datacards))
-    os.system("mkdir {DIR}/sm".format(DIR=datacards))
-    #    os.system("rm -r {DIR}/mssm".format(DIR=datacards))
-    #os.system("mkdir {DIR}/mssm".format(DIR=datacards))
-    for ana in ['Moriond']:#,'HCP', 'Moriond-2012D', 'Moriond-bin-by-bin', 'Moriond-mvis'] :
+if options.update_datacards :
+    ## setup directory structure
+    dir = "{CMSSW_BASE}/src/aux".format(CMSSW_BASE=cmssw_base)
+    if os.path.exists(dir) :
+        os.system("mv -r {DIR} {CMSSW_BASE}/src/backup/".format(DIR=dir, CMSSW_BASE=cmssw_base))
+    os.system("mkdir {DIR}".format(DIR=dir))
+    for ana in analyses :
         print "setup datacards for:", ana, "sm"
-        if '2012D' in ana : #only em et mt for now 
-            os.system("setup-datacards.py -i setups/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt' -p 8TeV {MASSES}".format(
+        per = "8TeV" if ana == 'modiond-2012d' else options.periods
+        os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {MASSES}".format(
+            CMSSW_BASE=cmssw_base,
             ANA=ana,
-            OUTPUT=datacards,
+            DIR=dir,
+            PER=per
+            CHN=options.channels,
             MASSES=masses
             ))
-        else :  #only 8tev for now  #only em et mt for now 
-            os.system("setup-datacards.py -i setups/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt' -p 8TeV {MASSES}".format(
+
+if options.update_limits :
+    ## setup directory structure
+    dir = "{CMSSW_BASE}/src/LIMITS".format(CMSSW_BASE=cmssw_base)
+    if os.path.exists(dir) :
+        os.system("mv -r {DIR} {CMSSW_BASE}/src/backup/".format(DIR=dir, CMSSW_BASE=cmssw_base))
+    os.system("mkdir {DIR}".format(DIR=dir))
+    for ana in analyses :
+        print "setup limits structure for:", ana, "sm"
+        if ana == 'moriond' :
+            os.system("cvs2local.py -i aux/sm/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {MASSES}".format(
                 ANA=ana,
-                OUTPUT=datacards,
+                PER=options.periods,
+                CHN=options.channels,
                 MASSES=masses
                 ))
-if not options.skip_limits :
-    ## setup limit calculation
-    limits = "{CMSSW_BASE}/src/MORIOND-Limits".format(CMSSW_BASE=cmssw_base)
-    if not os.path.exists(limits) :
-        os.system("mkdir {DIR}".format(DIR=limits))
-        os.system("mkdir {DIR}/sm".format(DIR=limits))
-    for ana in ['Moriond']:#, 'Moriond-2012D', 'Moriond-bin-by-bin', 'Moriond-mvis', 'HCP'] :
-        label = ""
-        if 'mvis' in ana :
-            label = "-l "+ana[ana.find('-')+1:]
-        print "setup limits structure for:", ana, "sm" #only 8tev for now #only em et mt for now 
-        os.system("setup-htt.py -i aux/sm/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt' -p 8TeV {LABEL} {MASSES}".format(
-            ANA=ana,
-            LABEL=label,
-            OUTPUT=limits,
-            MASSES=masses
-            ))
-        if '2012D' in ana :
-            os.system("setup-htt.py -i aux/sm/{ANA} -o {OUTPUT}/sm/{ANA} -a sm -c 'em et mt' -p 8TeV {LABEL} {MASSES}".format(
+        else :
+            per = "8TeV" if ana == 'modiond-2012d' else options.periods
+            label = "" if not '-' in ana else "-l "+ana[ana.find('-')+1:]
+            os.system("setup-htt.py -i aux/sm/{ANA} -o {DIR}/{ANA} -p '{PER} '-a sm -c '{CHN}' {LABEL} {MASSES}".format(
                 ANA=ana,
+                DIR=dir,
+                PER=per,
+                CHN=chn,
                 LABEL=label,
-                OUTPUT=limits,
                 MASSES=masses
                 ))
-       ##  if ana == 'Moriond-bin-by-bin' :  ##Later change that maybe 
-##             for per in ['7TeV', '8TeV'] :
-##                 os.system("setup-htt.py -i aux/sm/{ANA} -o {OUTPUT}/sm/{ANA}-{PER} -p {PER} -a sm -c 'em et mt' {LABEL} {MASSES}".format(
-##                     ANA=ana,
-##                     PER=per,
-##                     LABEL=label,
-##                     OUTPUT=limits,
-##                     MASSES=masses
-##                     ))  
