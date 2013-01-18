@@ -113,7 +113,7 @@ for chn in channels :
 ## run the max-likelihood fit before changing into
 ## the pruning directory
 if options.optByPull and options.fit_result == "" :
-    os.system("limit.py --max-likelihood --stable pruning/{MASS}")
+    os.system("limit.py --max-likelihood --stable pruning/{MASS}".format(MASS=options.mass))
         
 ## change directory (needed by sizeUpsystematics.py)
 parentdir = os.getcwd()
@@ -196,7 +196,8 @@ if options.optByLimit :
             excludes = prune_by_limit("test-{CHN}/Removed1.json".format(CHN=chn), chn)
             for datacard in glob.glob('*_{CHN}_*.txt'.format(CHN=chn)) :
                 excl += manipulate_bbb(datacard, "COMMENT", excludes)
-            print "commented", excl, "bin-by-bin uncertainties from", all, "for channel:", chn, "(", float(100*excl/all), "%)"
+            if all>0 :
+                print "commented", excl, "bin-by-bin uncertainties from", all, "for channel:", chn, "(", float(100*excl/all), "%)"
             ## and finally prune all datacards for all masses in input directory
             if not options.verbose :
                 for datacard in glob.glob('{PARENT}/{INPUT}/htt_{CHN}/*_{CHN}_*.txt'.format(PARENT=parentdir,INPUT=args[0], CHN=chn)) :
@@ -258,7 +259,8 @@ if options.optByPull :
         for datacard in glob.glob('*_{CHN}_*.txt'.format(CHN=chn)) :
             all  += manipulate_bbb(datacard, "UNCOMMENT")
             excl += manipulate_bbb(datacard, "COMMENT", excludes)
-        print "commented", excl, "bin-by-bin uncertainties from", all, "for channel:", chn, "(", float(100*excl/all), "%)"
+        if all>0 :
+            print "commented", excl, "bin-by-bin uncertainties from", all, "for channel:", chn, "(", float(100*excl/all), "%)"
         ## and finally prune all datacards for all masses in input directory
         if not options.verbose :
             for datacard in glob.glob('{PARENT}/{INPUT}/htt_{CHN}/*.txt'.format(PARENT=parentdir,INPUT=args[0], CHN=chn)) :
@@ -267,8 +269,9 @@ if options.optByPull :
         glob_excl += excl
 
 ## a short summary
-print "Summary:"
-print "commented", glob_excl, "bin-by-bin uncertainties from", glob_all, "for all channels. (", float(100*glob_excl/glob_all), "%)"
+if glob_all>0 :
+    print "Summary:"
+    print "commented", glob_excl, "bin-by-bin uncertainties from", glob_all, "for all channels. (", float(100*glob_excl/glob_all), "%)"
 ## clean up if not requested otherwise
 if not options.verbose :
     os.chdir(parentdir)
