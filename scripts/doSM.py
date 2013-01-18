@@ -104,11 +104,11 @@ if not options.skip_setup :
 ##                         ))
     ##setup 2012D
 ##     os.system("cp -r {SETUP} {DIR}/Moriond-2012D".format(SETUP=setup, DIR=source))
-##     os.system("mv {DIR}/Moriond-2012D/em/htt_em.inputs-sm-8TeV-2012d.root htt_em.inputs-sm-8TeV.root"format(DIR=source))
-##     os.system("mv {DIR}/Moriond-2012D/et/htt_et.inputs-sm-8TeV-2012d.root htt_et.inputs-sm-8TeV.root"format(DIR=source))
-##     os.system("mv {DIR}/Moriond-2012D/mt/htt_mt.inputs-sm-8TeV-2012d.root htt_mt.inputs-sm-8TeV.root"format(DIR=source))
-##     os.system("mv {DIR}/Moriond-2012D/mm/htt_mm.inputs-sm-8TeV-2012d.root htt_mm.inputs-sm-8TeV.root"format(DIR=source))
-##     os.system("mv {DIR}/Moriond-2012D/tt/htt_tt.inputs-sm-8TeV-2012d.root htt_tt.inputs-sm-8TeV.root"format(DIR=source)
+##     os.system("mv {DIR}/Moriond-2012D/em/htt_em.inputs-sm-8TeV-2012d.root {DIR}/Moriond-2012D/mt/htt_em.inputs-sm-8TeV.root"format(DIR=source))
+##     os.system("mv {DIR}/Moriond-2012D/et/htt_et.inputs-sm-8TeV-2012d.root {DIR}/Moriond-2012D/mt/htt_et.inputs-sm-8TeV.root"format(DIR=source))
+##     os.system("mv {DIR}/Moriond-2012D/mt/htt_mt.inputs-sm-8TeV-2012d.root {DIR}/Moriond-2012D/mt/htt_mt.inputs-sm-8TeV.root"format(DIR=source))
+##     os.system("mv {DIR}/Moriond-2012D/mm/htt_mm.inputs-sm-8TeV-2012d.root {DIR}/Moriond-2012D/mt/htt_mm.inputs-sm-8TeV.root"format(DIR=source))
+##     os.system("mv {DIR}/Moriond-2012D/tt/htt_tt.inputs-sm-8TeV-2012d.root {DIR}/Moriond-2012D/mt/htt_tt.inputs-sm-8TeV.root"format(DIR=source)
 
 if not options.skip_datacards :
     ## setup datacards
