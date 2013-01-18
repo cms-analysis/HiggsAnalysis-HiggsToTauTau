@@ -62,29 +62,33 @@ aux = {
 setup=cmssw_base+"/src/HiggsAnalysis/HiggsToTauTau/setup"
     
 if options.update_cvs :
+    print "##"
+    print "## update input files from cvs:"
+    print "##"
     for chn in channels :
+        print "... copy files for channel:", chn
+        for file in glob.glob("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/htt_{CHN}*-sm-*.root".format(CMSSW_BASE=cmssw_base, CHN=chn)) :
+            os.system("rm %s" % file)  
         for dir in aux[chn] :
-            print "copy files for channel:", chn
-            os.system("rm {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/htt_{CHN}*-sm-*.root")
-            os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/htt_{CHN}*-sm-.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/".format(
+            pattern = "7TeV" if dir == "Imperial" else "" 
+            os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/htt_{CHN}*-sm-{PATTERN}*.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/".format(
                 CMSSW_BASE=cmssw_base,
                 DIR=dir,
-                CHN=chn
+                CHN=chn,
+                PATTERN=pattern
                 ))
-    ## adjustments for htt_mm plotting
-    os.system("mv {SETUP}/mm/htt_mm.inputs-sm-7TeV_msv.root {SETUP}/mm/htt_mm.inputs-sm-7TeV_postfit.root".format(SETUP=setup))
-    os.system("mv {SETUP}/mm/htt_mm.inputs-sm-8TeV_msv.root {SETUP}/mm/htt_mm.inputs-sm-8TeV_postfit.root".format(SETUP=setup))
     ## scale to SM cross section
     for chn in channels :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
-            os.system("scale2SM.py -i {SETUP}/{CHN}/{FILE} -s 'ggH, qqH, VH' {MASSES}".format(
-                SETUP=setup,
-                CHN=chn,
+            os.system("scale2SM.py -i {FILE} -s 'ggH, qqH, VH' {MASSES}".format(
                 FILE=file,
                 MASSES=masses
                 ))
                 
 if options.update_setup :
+    print "##"
+    print "## update setup directories:"
+    print "##"    
     ## setup directory structure
     dir = "{CMSSW_BASE}/src/setups".format(CMSSW_BASE=cmssw_base)
     if os.path.exists(dir) :
@@ -160,7 +164,7 @@ if options.update_datacards :
             CMSSW_BASE=cmssw_base,
             ANA=ana,
             DIR=dir,
-            PER=per
+            PER=per,
             CHN=options.channels,
             MASSES=masses
             ))
