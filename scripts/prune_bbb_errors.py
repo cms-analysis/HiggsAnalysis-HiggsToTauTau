@@ -31,7 +31,7 @@ dgroup.add_option("--pull-metric", dest="pull_metric", default="all",  type="cho
 dgroup.add_option("--fit-result", dest="fit_result", default="",  type="string",
                   help="The full path to the result file of the fit (mlfit.txt) if it exists already. If empty the fit will be performed within hits script. [Default: \"\"]")
 parser.add_option_group(dgroup)
-parser.add_option("-v", "--debug", dest="verbose", default=False, action="store_true",
+parser.add_option("--debug", dest="verbose", default=False, action="store_true",
                   help="run in verbose mode. Only recommended for (performace) testing or debugging. [Default: False]")
 (options, args) = parser.parse_args()
 ## check number of arguments; in case print usage
