@@ -8,18 +8,20 @@ parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", ty
                   help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et\"]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
                   help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
-parser.add_option("-a", "--analyses", dest="analyses", default="moriond moriond-bin-by-bin moriond-mvis moriond-2012d moriond-hcp moriond-incl",
-                  help="Type of analyses to be considered for updating. Lower case is required. [Default: \"moriond moriond-bin-by-bin moriond-mvis moriond-hcp moriond-2012d moriond-incl\"]")
-parser.add_option("--full-update", dest="full_update", default=False, action="store_true",
-                  help="update everything from scratch. If not specified use the following options to specify which parts of the reload you want to run. [Default: False]")
+parser.add_option("-a", "--analyses", dest="analyses", default="std, bin-by-bin, mvis, 2012d, hcp, inclusive",
+                  help="Type of analyses to be considered for updating. Lower case is required. [Default: \"std, bin-by-bin, mvis, hcp, 2012d, inclusive\"]")
+parser.add_option("--input", dest="input", default="Wisconsin", type="choice", choices=['Wisconsin', 'Imperial'],
+                  help="Configuration for root input files. At the moment there is a choice for et,mt between Imperial and Wisconsin. [Default: \"Wisconsin\"]")
+parser.add_option("--update-all", dest="full_update", default=False, action="store_true",
+                  help="update everything from scratch. If not specified use the following options to specify, which parts of the reload you want to run. [Default: False]")
 parser.add_option("--update-cvs", dest="update_cvs", default=False, action="store_true",
                   help="update root input files from cvs and rescale all input files by SM Higgs cross section. [Default: False]")
 parser.add_option("--update-setups", dest="update_setup", default=False, action="store_true",
-                  help="update setup directories for the indicated main and cross check analyses. [Default: False]")
+                  help="update setups directory for the indicated analyses. [Default: False]")
 parser.add_option("--update-aux", dest="update_datacards", default=False, action="store_true",
-                  help="update skip datacards. [Default: False]")
+                  help="update aux directory for the indicated analyses. [Default: False]")
 parser.add_option("--update-LIMITS", dest="update_limits", default=False, action="store_true",
-                  help="update directory structure for limit calculation. [Default: False]")
+                  help="update LIMITS directory for the indicated analyses. [Default: False]")
 parser.add_option("--fit-result", dest="fit_result", default="",  type="string",
                   help="The full path to the result file of the fit (mlfit.txt) if it exists already fro pruning of bin-by-bin uncertainties. If empty the fit will be performed within this script. ATTENTION: this can take a few hours depending on the number of additional bin-by-bin uncertainties. [Default: \"\"]")
 
@@ -27,8 +29,9 @@ parser.add_option("--fit-result", dest="fit_result", default="",  type="string",
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 if len(args) < 1 :
-    parser.print_usage()
-    exit(1)
+    #parser.print_usage()
+    args.append("110-145:5")
+    #exit(1)
 
 import os
 import glob
@@ -58,6 +61,15 @@ directories = {
     'mm' : ['Htt_MuMu_Unblinded'],
     'tt' : ['Htt_FullHad']
     }
+## postfix pattern for input file
+patterns = {
+    'std'        : '',
+    'bin-by-bin' : '',
+    'mvis'       : '-mvis', 
+    'inclusive'  : '-inclusive',
+    '2012d'      : '-2012d',
+    'hcp'        : '-hcp',
+    }
 
 setup=cmssw_base+"/src/HiggsAnalysis/HiggsToTauTau/setup"
     
@@ -65,18 +77,58 @@ if options.update_cvs :
     print "##"
     print "## update input files from cvs:"
     print "##"
+    ## ---
+    ## special treatment for Imperial:
+    ## + copy specialized files names to common file name convention
+    auxiliaries=cmssw_base+"/src/auxiliaries/datacards/collected/Imperial"
+    for chn in ['et', 'mt'] :
+        for ana in analyses :
+            specials = {
+                'std'        : '-moriond-andrew',
+                'bin-by-bin' : '-moriond-andrew',
+                'mvis'       : '-mvis-moriond-andrew',
+                'inclusive'  : '-inclusive-moriond-andrew',
+                '2012d'      : '-2012d-andrew',
+                'hcp'        : '-hcp-andrew',
+                }
+            os.system("cp {BASE}/htt_{CHN}.inputs-sm-8TeV{SPECIAL}.root {BASE}/htt_{CHN}.inputs-sm-8TeV{ANA}.root".format(
+                BASE=auxiliaries,
+                CHN=chn,
+                SPECIAL=specials[ana],
+                ANA=patterns[ana]
+                ))
     for chn in channels :
         print "... copy files for channel:", chn
         for file in glob.glob("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/htt_{CHN}*-sm-*.root".format(CMSSW_BASE=cmssw_base, CHN=chn)) :
             os.system("rm %s" % file)  
         for dir in directories[chn] :
-            pattern = "7TeV" if dir == "Imperial" else "" 
-            os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/htt_{CHN}*-sm-{PATTERN}*.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/".format(
-                CMSSW_BASE=cmssw_base,
-                DIR=dir,
-                CHN=chn,
-                PATTERN=pattern
-                ))
+            per='[78]TeV'
+            ## --- 
+            ## special steering for et/mt :
+            ## + in configuration 'Wisconsin': take 7TeV from Imperial take 8Tev from Wisconsin
+            ## + in configuration 'Imperial' : tale 7TeV from Imperial take 8TeV from Imperial
+            ## ---
+            if options.input == 'Wisconsin' :
+                if dir == 'Wisconsin' : per='8TeV'
+                if dir == 'Imperial'  : per='7TeV'
+            if options.input == 'Imperial' :
+                if dir == 'Wisconsin' :
+                    continue
+            for ana in analyses :
+                pattern = patterns[ana]
+                ## ---
+                ## special treatment for moriond-hcp and moriond-2012d:
+                ## + for 'moriond-hcp' 7TeV is equivalent to central analysis
+                if ana  == 'moriond-hcp' :
+                    if per == '7TeV' :
+                        pattern=''
+                os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/htt_{CHN}*-sm-{PER}{PATTERN}.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/".format(
+                    CMSSW_BASE=cmssw_base,
+                    DIR=dir,
+                    CHN=chn,
+                    PER=per,
+                    PATTERN=pattern
+                    ))
     ## scale to SM cross section
     for chn in channels :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
@@ -107,11 +159,23 @@ if options.update_setup :
         ## MORIOND-BIN-BY-BIN
         ##
         if ana == 'moriond-bin-by-bin' :
-            ## setup bbb uncertainties
-            os.system("add_bbb_errors.py 'et,mt,em,mm:7TeV,8TeV:01,03,05:ZMM,ZTT,TTJ,Diboson,ZL,ZLL,Fakes,QCD,W' -f --in {DIR}/moriond --out {DIR}/{ANA} --threshold 0.10".format(
+            ## setup bbb uncertainties for mm (26)
+            os.system("add_bbb_errors.py 'mm:7TeV,8TeV:01,03,05:ZTT,TTJ' --normalize -f --in {DIR}/moriond --out {DIR}/{ANA}-tmp-mm --threshold 0.10".format(
                 DIR=dir,
                 ANA=ana
                 ))
+            ## setup bbb uncertainties for em (101)
+            os.system("add_bbb_errors.py 'em:7TeV,8TeV:01,03,05:Fakes' --normalize -f --in {DIR}/{ANA}-tmp-mm --out {DIR}/{ANA}-tmp-em --threshold 0.10".format(
+                DIR=dir,
+                ANA=ana
+                ))
+            ## setup bbb uncertainties for et, mt (416)
+            os.system("add_bbb_errors.py 'et,mt:7TeV,8TeV:01,03,05:ZL,ZLL,QCD>W' --normalize -f --in {DIR}/{ANA}-tmp-em --out {DIR}/{ANA} --threshold 0.10".format(
+                DIR=dir,
+                ANA=ana
+                ))
+            ## clean up
+            os.system("rm -r {FILES}".format(FILES=' '.join(glob.glob("{DIR}/{ANA}-tmp-*".format(ANA=ana, DIR=dir)))))
         ##
         ## MODIOND-MVIS
         ##
@@ -172,8 +236,9 @@ if options.update_datacards :
             MASSES=masses
             ))
         if ana == "moriond-bin-by-bin" :
+            print "...pruning bbb uncertainties:"
             ## setup bbb uncertainty pruning
-            os.system("prune_bbb_errors.py -c {CHN} --byPull {FIT} {DEBUG} --pull-threshold 0.30 {DIR}/{ANA}/sm".format(
+            os.system("prune_bbb_errors.py -c '{CHN}' --byPull {FIT} {DEBUG} --pull-threshold 0.30 {DIR}/{ANA}/sm".format(
                 FIT="" if options.fit_result == "" else "--fit-result %s" % optsions.fit_result,
                 DEBUG="--debug" if options.fit_result == "" else "",
                 CHN=options.channels,
