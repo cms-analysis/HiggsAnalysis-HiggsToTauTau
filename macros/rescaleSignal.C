@@ -91,8 +91,13 @@ rescaleSignal(bool armed, double scale, const char* filename, const char* patter
   } 
   // do the rescaling and write new object to file
   for(std::vector<TString>::const_iterator path = paths.begin(); path!=paths.end(); ++path){ 
-    TH1F* h = (TH1F*)old_file->Get(*path);
     if(debug>2){ std::cout << "...getting histogram: " << *path << std::endl; }
+    TH1F* h = (TH1F*)old_file->Get(*path);
+    std::string histname(*path);
+    if(histname.find("/")!=std::string::npos){
+      //std::cout << "hist name should be:" << histname.substr(histname.find("/")+1,std::string::npos) << std::endl;
+      h->SetName(histname.substr(histname.find("/")+1,std::string::npos).c_str());
+    }
     if(match(h->GetName(), (char*)pattern)){
       if(debug>1){ std::cout << "...[" << h->GetName() << "]: " << "old scale : " << h->Integral() << std::endl; }
       h->Scale(scale);  
@@ -106,7 +111,7 @@ rescaleSignal(bool armed, double scale, const char* filename, const char* patter
     std::string hist = str.substr(str.find("/")+1, std::string::npos);
     new_file->cd();;
     new_file->cd(dir.c_str());
-    h->Write(hist.c_str()); 
+    h->Write(hist.c_str(), TObject::kOverwrite); 
   }
   old_file->Close();
   new_file->Close();
