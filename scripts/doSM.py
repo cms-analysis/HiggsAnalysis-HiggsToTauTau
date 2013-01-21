@@ -75,6 +75,7 @@ setup=cmssw_base+"/src/HiggsAnalysis/HiggsToTauTau/setup"
 
 if options.update_all :
     options.update_cvs=True
+    options.update_setup=True
     options.update_datacards=True
     options.update_limits=True
     
@@ -185,38 +186,42 @@ if options.update_setup :
         ## MODIOND-MVIS
         ##
         if ana == 'incl' :
-            os.system("mv {DIR}/mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}-mvis.root {DIR}/mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
-                DIR=dir,
-                CHN=chn,
-                PER=per
-                ))
+            for chn in channels :
+                for per in periods :
+                    os.system("mv {DIR}/mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}-mvis.root {DIR}/mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
+                        DIR=dir,
+                        CHN=chn,
+                        PER=per
+                        ))
         ##
         ## MODIOND-HCP
         ##            
         if ana == 'hcp' :
-            os.system("mv {DIR}/hcp/{CHN}/htt_{CHN}.inputs-sm-{PER}-hcp.root {DIR}/hcp/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
-                DIR=dir,
-                CHN=chn,
-                PER=per
-                ))
+            for chn in channels :
+                os.system("mv {DIR}/hcp/{CHN}/htt_{CHN}.inputs-sm-8TeV-hcp.root {DIR}/hcp/{CHN}/htt_{CHN}.inputs-sm-8TeV.root".format(
+                    DIR=dir,
+                    CHN=chn
+                    ))
         ##
         ## MODIOND-2012D
         ##            
         if ana == '2012d' :
-            os.system("mv {DIR}/2012d/{CHN}/htt_{CHN}.inputs-sm-{PER}-2012d.root {DIR}/2012d/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
-                DIR=dir,
-                CHN=chn,
-                PER=per
-                ))
+            for chn in channels :
+                os.system("mv {DIR}/2012d/{CHN}/htt_{CHN}.inputs-sm-8TeV-2012d.root {DIR}/2012d/{CHN}/htt_{CHN}.inputs-sm-8TeV.root".format(
+                    DIR=dir,
+                    CHN=chn
+                    ))
         ##
         ## MODIOND-INCLUSIVE
         ##            
         if ana == 'incl' :
-            os.system("mv {DIR}/incl/{CHN}/htt_{CHN}.inputs-sm-{PER}-inclusive.root {DIR}/incl/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
-                DIR=dir,
-                CHN=chn,
-                PER=per
-                ))                        
+            for chn in channels :
+                for per in periods :            
+                    os.system("mv {DIR}/incl/{CHN}/htt_{CHN}.inputs-sm-{PER}-inclusive.root {DIR}/incl/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
+                        DIR=dir,
+                        CHN=chn,
+                        PER=per
+                        ))                        
 
 if options.update_datacards :
     print "##"
