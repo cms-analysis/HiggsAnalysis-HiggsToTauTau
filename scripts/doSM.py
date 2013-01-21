@@ -3,7 +3,7 @@ from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGs",
-                      description="This is a script to reload the MORIOND analysis with main analysis [Moriond-bin-by-bin] and two cross-check analyses [Moriond, Moriond-mvis]. ARGs corresponds to the masses, for which to setup the structure.")
+                      description="This is a script to reload the MORIOND analysis with main analysis [std, bin-by-bin] and four cross-check analyses [mvis, incl, hcp, 2012d]. ARGs corresponds to the masses, for which to setup the structure.")
 parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string",
                   help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et\"]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
@@ -12,7 +12,7 @@ parser.add_option("-a", "--analyses", dest="analyses", default="std, bin-by-bin,
                   help="Type of analyses to be considered for updating. Lower case is required. [Default: \"std, bin-by-bin, mvis, hcp, 2012d, inclusive\"]")
 parser.add_option("--input", dest="input", default="Wisconsin", type="choice", choices=['Wisconsin', 'Imperial'],
                   help="Configuration for root input files. At the moment there is a choice for et,mt between Imperial and Wisconsin. [Default: \"Wisconsin\"]")
-parser.add_option("--update-all", dest="full_update", default=False, action="store_true",
+parser.add_option("--update-all", dest="update_all", default=False, action="store_true",
                   help="update everything from scratch. If not specified use the following options to specify, which parts of the reload you want to run. [Default: False]")
 parser.add_option("--update-cvs", dest="update_cvs", default=False, action="store_true",
                   help="update root input files from cvs and rescale all input files by SM Higgs cross section. [Default: False]")
@@ -72,6 +72,11 @@ patterns = {
     }
 
 setup=cmssw_base+"/src/HiggsAnalysis/HiggsToTauTau/setup"
+
+if options.update_all :
+    options.update_cvs=True
+    options.update_datacards=True
+    options.update_limits=True
     
 if options.update_cvs :
     print "##"
@@ -117,9 +122,9 @@ if options.update_cvs :
             for ana in analyses :
                 pattern = patterns[ana]
                 ## ---
-                ## special treatment for moriond-hcp and moriond-2012d:
-                ## + for 'moriond-hcp' 7TeV is equivalent to central analysis
-                if ana  == 'moriond-hcp' :
+                ## special treatment for hcp and 2012d:
+                ## + for 'hcp' 7TeV is equivalent to central analysis
+                if ana  == 'hcp' :
                     if per == '7TeV' :
                         pattern=''
                 os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/htt_{CHN}*-sm-{PER}{PATTERN}.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/".format(
@@ -153,14 +158,14 @@ if options.update_setup :
         ##
         ## MORIOND
         ##
-        if ana == 'moriond' :
+        if ana == 'std' :
             pass
         ##
         ## MORIOND-BIN-BY-BIN
         ##
-        if ana == 'moriond-bin-by-bin' :
+        if ana == 'bin-by-bin' :
             ## setup bbb uncertainties for mm (26)
-            os.system("add_bbb_errors.py 'mm:7TeV,8TeV:01,03,05:ZTT,TTJ' --normalize -f --in {DIR}/moriond --out {DIR}/{ANA}-tmp-mm --threshold 0.10".format(
+            os.system("add_bbb_errors.py 'mm:7TeV,8TeV:01,03,05:ZTT,TTJ' --normalize -f --in {DIR}/std --out {DIR}/{ANA}-tmp-mm --threshold 0.10".format(
                 DIR=dir,
                 ANA=ana
                 ))
@@ -179,8 +184,8 @@ if options.update_setup :
         ##
         ## MODIOND-MVIS
         ##
-        if ana == 'moriond-incl' :
-            os.system("mv {DIR}/moriond-mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}-mvis.root {DIR}/moriond-mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
+        if ana == 'incl' :
+            os.system("mv {DIR}/mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}-mvis.root {DIR}/mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
                 DIR=dir,
                 CHN=chn,
                 PER=per
@@ -188,8 +193,8 @@ if options.update_setup :
         ##
         ## MODIOND-HCP
         ##            
-        if ana == 'morions-hcp' :
-            os.system("mv {DIR}/moriond-mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}-hcp.root {DIR}/moriond-mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
+        if ana == 'hcp' :
+            os.system("mv {DIR}/hcp/{CHN}/htt_{CHN}.inputs-sm-{PER}-hcp.root {DIR}/hcp/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
                 DIR=dir,
                 CHN=chn,
                 PER=per
@@ -197,8 +202,8 @@ if options.update_setup :
         ##
         ## MODIOND-2012D
         ##            
-        if ana == 'morions-2012d' :
-            os.system("mv {DIR}/moriond-mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}-2012d.root {DIR}/moriond-mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
+        if ana == '2012d' :
+            os.system("mv {DIR}/2012d/{CHN}/htt_{CHN}.inputs-sm-{PER}-2012d.root {DIR}/2012d/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
                 DIR=dir,
                 CHN=chn,
                 PER=per
@@ -206,8 +211,8 @@ if options.update_setup :
         ##
         ## MODIOND-INCLUSIVE
         ##            
-        if ana == 'morions-incl' :
-            os.system("mv {DIR}/moriond-mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}-inclusive.root {DIR}/moriond-mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
+        if ana == 'incl' :
+            os.system("mv {DIR}/incl/{CHN}/htt_{CHN}.inputs-sm-{PER}-inclusive.root {DIR}/incl/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
                 DIR=dir,
                 CHN=chn,
                 PER=per
@@ -226,7 +231,7 @@ if options.update_datacards :
     os.system("mkdir -p {DIR}".format(DIR=dir))    
     for ana in analyses :
         print "setup datacards for:", ana, "sm"
-        per = "8TeV" if ana == 'modiond-2012d' else options.periods
+        per = "8TeV" if ana == '2012d' else options.periods
         os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {MASSES}".format(
             CMSSW_BASE=cmssw_base,
             ANA=ana,
@@ -235,7 +240,7 @@ if options.update_datacards :
             CHN=options.channels,
             MASSES=masses
             ))
-        if ana == "moriond-bin-by-bin" :
+        if ana == "bin-by-bin" :
             print "...pruning bbb uncertainties:"
             ## setup bbb uncertainty pruning
             os.system("prune_bbb_errors.py -c '{CHN}' --byPull {FIT} {DEBUG} --pull-threshold 0.30 {DIR}/{ANA}/sm".format(
@@ -259,7 +264,7 @@ if options.update_limits :
     os.system("mkdir -p {DIR}".format(DIR=dir))    
     for ana in analyses :
         print "setup limits structure for:", ana, "sm"
-        if ana == 'moriond-incl' :
+        if ana == 'incl' :
             os.system("cvs2local.py -i aux/sm/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {MASSES}".format(
                 ANA=ana,
                 PER=options.periods,
@@ -267,7 +272,7 @@ if options.update_limits :
                 MASSES=masses
                 ))
         else :
-            per = "8TeV" if ana == 'moriond-2012d' else options.periods
+            per = "8TeV" if ana == '2012d' else options.periods
             label = "" if not '-' in ana else "-l "+ana[ana.find('-')+1:]
             os.system("setup-htt.py -i aux/sm/{ANA} -o {DIR}/{ANA} -p '{PER} '-a sm -c '{CHN}' {LABEL} {MASSES}".format(
                 ANA=ana,
