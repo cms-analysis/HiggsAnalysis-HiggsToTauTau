@@ -18,7 +18,7 @@ import sys
 
 log = logging.getLogger('stat_shapes')
 
-def walk_and_copy(inputdir, outputdir, pattern, mergers, threshold, prefix):
+def walk_and_copy(inputdir, outputdir, pattern, mergers, threshold, prefix, normalize):
     ''' Recursive function which copies from inputdir to outputdir '''
     for key in inputdir.GetListOfKeys():
         # Keep track of stuff we find in this directory
@@ -75,6 +75,9 @@ def walk_and_copy(inputdir, outputdir, pattern, mergers, threshold, prefix):
                             print "%s_%s_bin_%i" % (prefix, histo, ibin)
                             err_up.SetBinContent(ibin, val + error)
                             err_down.SetBinContent(ibin, val - error if val > error else 0.)
+                            if normalize:
+                                err_up.Scale(th1.Integral()/err_up.Integral())
+                                err_down.Scale(th1.Integral()/err_down.Integral())
                             if val < error:
                                 log.warning("%s_%s_bin_%iDown, is negative, pegged to zero", prefix, histo, ibin)
                             outputdir.cd()
@@ -88,16 +91,16 @@ def walk_and_copy(inputdir, outputdir, pattern, mergers, threshold, prefix):
             # Recurse
             walk_and_copy(
                 inputdir.Get(subdir), output_subdir,
-                pattern, mergers, threshold, prefix)
+                pattern, mergers, threshold, prefix, normalize)
 
-def main(inputfilename, outputfilename, matcher, mergers, threshold, prefix):
+def main(inputfilename, outputfilename, matcher, mergers, threshold, prefix, normalize):
     input = ROOT.TFile(inputfilename, 'READ')
     if not input:
         raise IOError("Can't open input file: %s" % inputfilename)
     output = ROOT.TFile(outputfilename, 'RECREATE')
     if not output:
         raise IOError("Can't open output file: %s" % outputfilename)
-    walk_and_copy(input, output, matcher, mergers, threshold, prefix)
+    walk_and_copy(input, output, matcher, mergers, threshold, prefix, normalize)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -115,6 +118,8 @@ if __name__ == "__main__":
     parser.add_argument('--threshold', type=float, default=0.05,
                         help='Minimum error for systematic creation,'
                         'default %(default)0.2f')
+    parser.add_argument('--normalize', action='store_true', default=False,
+                        help='Normalize shifted templates to the original yield')
     parser.add_argument('--verbose', action='store_true',
                         help='Print debug output.')
 
@@ -134,6 +139,6 @@ if __name__ == "__main__":
     log.info("Building shape systematics. input: %s output: %s",
              args.input, args.output)
     main(args.input, args.output, args.filter, args.merge,
-         args.threshold, args.prefix)
+         args.threshold, args.prefix, args.normalize)
     log.info("Moving temproary output to final destination")
     shutil.move(args.output, args.output.replace('.tmp.root', '.root'))

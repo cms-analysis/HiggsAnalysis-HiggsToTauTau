@@ -107,7 +107,8 @@ def add_systematics(cat_name, process, systematics, unc_conf_file, unc_val_file)
         unc_val_file.write(
             '%s %s %s 1.00\n' % (cat_name, process, systematic_name))
 
-def create_systematics(channel, category, process, period, shape_file, threshold):
+def create_systematics(channel, category, process, period, shape_file, threshold,
+                      normalize):
     ''' Create the bin-by-bin systematics in the shape file.
 
     Returns a tuple with (channel name, list of added systs)
@@ -145,10 +146,12 @@ def create_systematics(channel, category, process, period, shape_file, threshold
         '--threshold',
         str(threshold),
     ]
+    if normalize:
+        command.append('--normalize')
     if process_to_merge_in:
         command.append('--merge-errors')
         command.extend(process_to_merge_in)
-    
+
     log.debug("Shape command:")
     log.debug(" ".join(command))
     # Run the command, get the list of new names (written to stdout)
@@ -180,6 +183,9 @@ if __name__ == "__main__":
 
     parser.add_argument('-f', dest='force', action='store_true',
                         help='Force creation of new output dir')
+
+    parser.add_argument('--normalize', action='store_true',
+                        help='Normalize shifted templates to the original yield')
 
     args = parser.parse_args()
 
@@ -230,7 +236,8 @@ if __name__ == "__main__":
         # Create the systematics
         shape_file = get_shape_file(args.outputdir, channel, period, ana)
         nicename, systematics = create_systematics(
-            channel, cat, proc, period, shape_file, args.threshold)
+            channel, cat, proc, period, shape_file, args.threshold,
+            args.normalize)
         log.info("Added systs for %i bins", len(systematics))
         total_added_systematics += len(systematics)
         cgs, unc_c, unc_v = get_card_config_files(
