@@ -154,7 +154,7 @@ if options.analysis == "mssm" :
         "et"   : ( 90, 1000),
         "tt"   : ( 90,  500),
         "hmm"  : (120,  300),
-        "hbb"  : ( 90,  350),       
+        "hbb"  : ( 90,  350),
     }
 if options.verbose :
     print "------------------------------------------------------"
@@ -192,7 +192,7 @@ if options.verbose :
     for chn in channels :
         print "chn: ", chn, "valid run periods:", valid_periods[chn]
     print
-    print "copy datacards for:", options.analysis, options.channels, options.periods 
+    print "copy datacards for:", options.analysis, options.channels, options.periods
 
 ## setup directory structure in case it does not exist, yet
 if not os.path.exists(options.out) :
@@ -213,8 +213,8 @@ for period in periods :
             ## check validity of mass
             if (float(mass)< valid_masses[channel][0] or float(mass)> valid_masses[channel][1]) :
                 #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass
-                continue            
-            if channel == "vhtt" or channel == "vhbb" or channel == "hmm" or channel == "hbb" :
+                continue
+            if channel == "vhbb" or channel == "hmm" or channel == "hbb" :
                 for category in categories[channel] :
                     if options.verbose :
                         print "copying datacards for:", period, channel, category, mass
@@ -234,6 +234,16 @@ for period in periods :
                             CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period)) 
                     if options.analysis == "mssm" :
                         add_mass("{CHN}_{CAT}_{PERIOD}".format(CHN=channel, CAT=category, PERIOD=period), mass)
+            if channel == "vhtt":
+                for category in categories[channel] :
+                    if options.verbose :
+                        print "copying datacards for:", period, channel, category, mass
+                    os.system("cp {INPUT}/{CHN}/{CHN}.inputs-{ANA}-{PERIOD}.root {OUTPUT}/common/{PRE}{CHN}.input_{PERIOD}.root".format(
+                        INPUT=input, ANA=options.analysis, CHN=channel, OUTPUT=options.out, PRE=prefix, PERIOD=period, MASSCAT=mass_category(mass,category, channel)))
+                    os.system("cp {INPUT}/{CHN}/{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
+                        INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
+                    os.system("perl -pi -e 's/{CHN}.inputs-{ANA}-{PERIOD}.root/..\/common\/{PRE}{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
+                        CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period, MASSCAT=mass_category(mass,category,channel)))
             else :
                 for category in categories[channel] :
                     if options.verbose :
@@ -275,7 +285,7 @@ for period in periods :
                                         INPUT=input, CHN=channel, ANA=options.analysis, OUTPUT=options.out, PRE=prefix, PERIOD=period))
                                 else :
                                     pass
-                                    #print "no update of files needed."                                    
+                                    #print "no update of files needed."
                         else :
                             os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}.inputs-{ANA}-{PERIOD}.root {OUTPUT}/common/{PRE}htt_{CHN}.input_{PERIOD}.root".format(
                                 INPUT=input, CHN=channel, ANA=options.analysis, OUTPUT=options.out, PRE=prefix, PERIOD=period))
