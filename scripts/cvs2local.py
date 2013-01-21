@@ -28,8 +28,8 @@ cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3
                  help="List et of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1", type="string",
                  help="List of tt event categories. [Default: \"0 1\"]")
-cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1", type="string",
-                 help="List of vhtt event categories. [Default: \"0 1\"]")
+cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1 2", type="string",
+                 help="List of vhtt event categories. [Default: \"0 1 2\"]")
 cats1.add_option("--sm-categories-vhbb", dest="vhbb_sm_categories", default="0 1 2 3 4 5 6 7 8 9", type="string",
                  help="List of tt event categories. [Default: \"0 1 2 3 4 5 6 7 8 9\"]")
 parser.add_option_group(cats1)
@@ -231,7 +231,7 @@ for period in periods :
                         os.system("cp {INPUT}/{CHN}/{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
                             INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
                         os.system("perl -pi -e 's/{CHN}.inputs-{ANA}-{PERIOD}.root/..\/common\/{PRE}{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
-                            CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period)) 
+                            CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period))
                     if options.analysis == "mssm" :
                         add_mass("{CHN}_{CAT}_{PERIOD}".format(CHN=channel, CAT=category, PERIOD=period), mass)
             if channel == "vhtt":
@@ -255,7 +255,7 @@ for period in periods :
                     ## check validity of mass
                     if (float(mass)< valid_masses[channel][0] or float(mass)> valid_masses[channel][1]) :
                         #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass
-                        continue  
+                        continue
                     if options.analysis == "mssm" :
                         add_mass("htt_{CHN}_{CAT}_{PERIOD}".format(CHN=channel, CAT=category, PERIOD=period), mass)
                         if options.no_update:
