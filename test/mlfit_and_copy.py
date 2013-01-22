@@ -32,8 +32,8 @@ if options.analysis == "sm" :
     os.system("cp -v %s/*.txt ./datacards" % dir)
     os.system("cp -v %s/../common/*TeV.root ./root" % dir)	
     ## for mm override the histograms as used for the limit calculation in favour of something more human readible
-    os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-sm-8TeV_postfit.root ./root/htt_mm.input_8TeV.root")
-    os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-sm-7TeV_postfit.root ./root/htt_mm.input_7TeV.root")
+    os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-sm-8TeV_msv.root ./root/htt_mm.input_8TeV.root")
+    os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-sm-7TeV_msv.root ./root/htt_mm.input_7TeV.root")
 
 if options.analysis == "mssm" :
     os.system("cp -v %s/out/mlfit.txt ./fitresults/mlfit_mssm.txt" % dir)
@@ -41,7 +41,7 @@ if options.analysis == "mssm" :
     os.system("cp -v %s/../common/hbb.input_[78]TeV-[01].root ./root" % dir)
     os.system("cp -v %s/../common/htt_*.inputs-mssm-[78]TeV-0.root ./root" % dir)	
     ## for mm override the histograms as used for the limit calculation in favour of something more human readible
-    os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-mssm-8TeV-0_postfit.root ./root/htt_mm.inputs-mssm-8TeV-0.root")
-    os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-mssm-7TeV-0_postfit.root ./root/htt_mm.inputs-mssm-7TeV-0.root")
+    os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-mssm-8TeV-0_msv.root ./root/htt_mm.inputs-mssm-8TeV-0.root")
+    os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-mssm-7TeV-0_msv.root ./root/htt_mm.inputs-mssm-7TeV-0.root")
 
 
