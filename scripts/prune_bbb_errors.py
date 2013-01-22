@@ -31,8 +31,8 @@ dgroup.add_option("--pull-metric", dest="pull_metric", default="all",  type="cho
 dgroup.add_option("--fit-result", dest="fit_result", default="",  type="string",
                   help="The full path to the result file of the fit (mlfit.txt) if it exists already. If empty the fit will be performed within hits script. [Default: \"\"]")
 parser.add_option_group(dgroup)
-parser.add_option("--debug", dest="verbose", default=False, action="store_true",
-                  help="run in verbose mode. Only recommended for (performace) testing or debugging. [Default: False]")
+parser.add_option("--debug", dest="debug", default=False, action="store_true",
+                  help="run in debug mode. Only recommended for (performace) testing or debugging. [Default: False]")
 (options, args) = parser.parse_args()
 ## check number of arguments; in case print usage
 if len(args) < 1 :
@@ -50,9 +50,15 @@ import ROOT
 channels = options.channels.split()
 for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
 
+## setup directory structure for for logging
+os.system("mkdir -p log")
+os.system("mkdir -p log/pruning")
+logdir = os.getcwd()+'/log/pruning'
+
 def summarize_uncerts(values, chn=None) :
-    path = os.environ['CMSSW_BASE']+"/src/pruning/"+options.mass+"/"
-    output = path+"bin-by-bin-uncertainties-%s.root" % chn if chn else path+"bin-by-bin-uncertainties.root"
+    path = logdir
+    output = path+"/bin-by-bin-uncertainties-%s.root" % chn if chn else path+"/bin-by-bin-uncertainties.root"
+    print "writing pulls/effect on limit to", output
     file = ROOT.TFile(output, "UPDATE")
     nbin = 150 if options.optByPull else 150
     xmin = 0.  if options.optByPull else -3.
@@ -115,6 +121,7 @@ for chn in channels :
 ## the pruning directory
 if options.optByPull and options.fit_result == "" :
     os.system("limit.py --max-likelihood --stable pruning/{MASS}".format(MASS=options.mass))
+    os.system("cp pruning/{MASS}/out/mlfit.txt {LOG}".format(MASS=options.mass, LOG=logdir))
         
 ## change directory (needed by sizeUpsystematics.py)
 parentdir = os.getcwd()
@@ -141,7 +148,7 @@ if options.optByLimit :
         for (nuisList, map) in report:
             all += 1
             outcome = metric(map)
-            if options.verbose :
+            if options.debug :
                 bbb = re.match("\w+bin\_*\d*\w+", nuisList[0])
                 if bbb :
                     vals.append(float(outcome))
@@ -149,7 +156,7 @@ if options.optByLimit :
                 toExclude += nuisList
                 out += 1
         print "excluded", out, "from", all
-        if options.verbose :
+        if options.debug :
             summarize_uncerts(vals, chn)
         return toExclude
         
@@ -200,12 +207,12 @@ if options.optByLimit :
             if all>0 :
                 print "commented", excl, "bin-by-bin uncertainties from", all, "for channel:", chn, "(", float(100*excl/all), "%)"
             ## and finally prune all datacards for all masses in input directory
-            if not options.verbose :
+            if not options.debug :
                 for datacard in glob.glob('{PARENT}/{INPUT}/htt_{CHN}/*_{CHN}_*.txt'.format(PARENT=parentdir,INPUT=args[0], CHN=chn)) :
                     manipulate_bbb(datacard, "COMMENT", excludes)
             glob_all += all
             glob_excl += excl
-    if options.verbose :
+    if options.debug :
         os.system("hadd bin-by-bin-uncertainties.root bin-by-bin-uncertainties-*.root")
         
 if options.optByPull :
@@ -229,26 +236,26 @@ if options.optByPull :
                 if pulls :
                     all += 1
                     if options.pull_metric == 'b' :
-                        if options.verbose :
+                        if options.debug :
                             vals.append(float(pulls[0]))
                         if abs(float(pulls[0])) < float(options.pull_threshold) :
                             out += 1
                             toExclude.append(line.split()[0])
                     if options.pull_metric == 's+b' :
-                        if options.verbose :
+                        if options.debug :
                             vals.append(float(pulls[1]))                        
                         if abs(float(pulls[1])) < float(options.pull_threshold) :
                             out += 1
                             toExclude.append(line.split()[0])
                     if options.pull_metric == 'all' :
-                        if options.verbose :
+                        if options.debug :
                             vals.append(float(max(abs(float(pulls[0])), float(pulls[1]))))
                         if max(abs(float(pulls[0])), float(pulls[1])) < float(options.pull_threshold) :
                             out += 1
                             toExclude.append(line.split()[0])
         file.close()
         print "excluded", out, "from", all
-        if options.verbose :
+        if options.debug :
             summarize_uncerts(vals)
         return toExclude
 
@@ -263,7 +270,7 @@ if options.optByPull :
         if all>0 :
             print "commented", excl, "bin-by-bin uncertainties from", all, "for channel:", chn, "(", float(100*excl/all), "%)"
         ## and finally prune all datacards for all masses in input directory
-        if not options.verbose :
+        if not options.debug :
             for datacard in glob.glob('{PARENT}/{INPUT}/htt_{CHN}/*.txt'.format(PARENT=parentdir,INPUT=args[0], CHN=chn)) :
                 manipulate_bbb(datacard, "COMMENT", excludes)
         glob_all += all
@@ -274,6 +281,6 @@ if glob_all>0 :
     print "Summary:"
     print "commented", glob_excl, "bin-by-bin uncertainties from", glob_all, "for all channels. (", float(100*glob_excl/glob_all), "%)"
 ## clean up if not requested otherwise
-if not options.verbose :
-    os.chdir(parentdir)
-    os.system("rm -r pruning")
+#if not options.debug :
+os.chdir(parentdir)
+os.system("rm -r pruning")
