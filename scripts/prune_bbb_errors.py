@@ -49,6 +49,8 @@ import ROOT
 ## channels
 channels = options.channels.split()
 for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
+## parent directory from which the tool has been executed
+parentdir = os.getcwd()
 
 ## setup directory structure for for logging
 os.system("mkdir -p log")
@@ -97,6 +99,9 @@ def manipulate_bbb(datacard, manipulation, excludes=None) :
 
 print "setting up directory structure for bbb uncertainty pruning"
 for chn in channels :
+    ## uncomment all cards in case that pruning has been run beforehand on these cards already. 
+    for datacard in glob.glob('{PARENT}/{INPUT}/htt_{CHN}/*.txt'.format(PARENT=parentdir,INPUT=args[0], CHN=chn)) :
+        manipulate_bbb(datacard, "UNCOMMENT")
     ## pick up the list of available datacards per channel
     datacards = ' '.join(glob.glob(args[0]+'/'+'htt_'+chn+'/*.txt'))
     ## prepare cvs2local.py
@@ -124,7 +129,6 @@ if options.optByPull and options.fit_result == "" :
     os.system("cp pruning/{MASS}/out/mlfit.txt {LOG}".format(MASS=options.mass, LOG=logdir))
         
 ## change directory (needed by sizeUpsystematics.py)
-parentdir = os.getcwd()
 os.chdir("pruning/{MASS}".format(MASS=options.mass))
 
 glob_all =0
@@ -207,20 +211,21 @@ if options.optByLimit :
             if all>0 :
                 print "commented", excl, "bin-by-bin uncertainties from", all, "for channel:", chn, "(", float(100*excl/all), "%)"
             ## and finally prune all datacards for all masses in input directory
-            if not options.debug :
-                for datacard in glob.glob('{PARENT}/{INPUT}/htt_{CHN}/*_{CHN}_*.txt'.format(PARENT=parentdir,INPUT=args[0], CHN=chn)) :
-                    manipulate_bbb(datacard, "COMMENT", excludes)
+            for datacard in glob.glob('{PARENT}/{INPUT}/htt_{CHN}/*_{CHN}_*.txt'.format(PARENT=parentdir,INPUT=args[0], CHN=chn)) :
+                ## uncomment bin-by-bin uncertainties that might have been processed alreadt in previous iterations
+                manipulate_bbb(datacard, "UNCOMMENT")
+                ## comment bin-by-bin uncertainties
+                manipulate_bbb(datacard, "COMMENT", excludes)
             glob_all += all
             glob_excl += excl
     if options.debug :
         os.system("hadd bin-by-bin-uncertainties.root bin-by-bin-uncertainties-*.root")
         
 if options.optByPull :
-    ## run max-likelihood fit (at the moment just copy)
+    ## copy the results of the max-likelihood fit to local
     if not options.fit_result == "" :
         os.system("mkdir -p out")
         os.system("cp {SRC} out/mlfit.txt".format(SRC=options.fit_result))
-
     ## pick up parameters from json file per channel
     def prune_by_pull(path) :
         out = 0
@@ -258,7 +263,6 @@ if options.optByPull :
         if options.debug :
             summarize_uncerts(vals)
         return toExclude
-
     ## prune datacards for given channel
     excludes = prune_by_pull("out/mlfit.txt")
     for chn in channels :
@@ -270,9 +274,11 @@ if options.optByPull :
         if all>0 :
             print "commented", excl, "bin-by-bin uncertainties from", all, "for channel:", chn, "(", float(100*excl/all), "%)"
         ## and finally prune all datacards for all masses in input directory
-        if not options.debug :
-            for datacard in glob.glob('{PARENT}/{INPUT}/htt_{CHN}/*.txt'.format(PARENT=parentdir,INPUT=args[0], CHN=chn)) :
-                manipulate_bbb(datacard, "COMMENT", excludes)
+        for datacard in glob.glob('{PARENT}/{INPUT}/htt_{CHN}/*.txt'.format(PARENT=parentdir,INPUT=args[0], CHN=chn)) :
+            ## uncomment bin-by-bin uncertainties that might have been processed alreadt in previous iterations
+            #manipulate_bbb(datacard, "UNCOMMENT")
+            ## comment bin-by-bin uncertainties
+            manipulate_bbb(datacard, "COMMENT", excludes)
         glob_all += all
         glob_excl += excl
 
@@ -281,6 +287,5 @@ if glob_all>0 :
     print "Summary:"
     print "commented", glob_excl, "bin-by-bin uncertainties from", glob_all, "for all channels. (", float(100*glob_excl/glob_all), "%)"
 ## clean up if not requested otherwise
-#if not options.debug :
 os.chdir(parentdir)
 os.system("rm -r pruning")
