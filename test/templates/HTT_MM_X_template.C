@@ -291,7 +291,12 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   errorBand  ->SetFillColor(1);
   errorBand  ->SetFillStyle(3013);
   errorBand  ->SetLineWidth(1);
-
+  for(int idx=0; idx<errorBand->GetNbinsX(); ++idx){
+    if(errorBand->GetBinContent(idx)>0){
+      std::cout << "Uncertainties on summed background samples: " << errorBand->GetBinError(idx)/errorBand->GetBinContent(idx) << std::endl;
+      break;
+    }
+  }
   if(log){
     WJets->Draw("histsame");
     //Dibosons->Draw("histsame");
