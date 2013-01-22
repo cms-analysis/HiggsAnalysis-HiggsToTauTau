@@ -49,7 +49,7 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
   // requires that you have run imits.py beforehand with option --multidim-fit
   char type[20]; 
   float first, second;
-  int points;
+  int points=0;
   float xmin, xmax;
   for(unsigned int imass=0; imass<bins_.size(); ++imass){
     // buffer mass value
