@@ -51,7 +51,8 @@ channels = options.channels.split()
 for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
 
 def summarize_uncerts(values, chn=None) :
-    output = "bin-by-bin-uncertainties-%s.root" % chn if chn else "bin-by-bin-uncertainties.root"
+    path = os.environ['CMSSW_BASE']+"/src/pruning/"+options.mass+"/"
+    output = path+"bin-by-bin-uncertainties-%s.root" % chn if chn else path+"bin-by-bin-uncertainties.root"
     file = ROOT.TFile(output, "UPDATE")
     nbin = 150 if options.optByPull else 150
     xmin = 0.  if options.optByPull else -3.
