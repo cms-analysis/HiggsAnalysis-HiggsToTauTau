@@ -139,8 +139,8 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   TH1F* ZMM    = refill((TH1F*)input->Get(TString::Format("%s/ZMM"     , directory)), "ZMM"); InitHist(ZMM  , "", "", kAzure+2, 1001);
   TH1F* TTJ  = refill((TH1F*)input->Get(TString::Format("%s/TTJ"   , directory)), "TTJ"); InitHist(TTJ, "", "", kBlue-8, 1001);
   TH1F* QCD    = refill((TH1F*)input->Get(TString::Format("%s/QCD"     , directory)), "QCD"); InitHist(QCD  , "", "", kMagenta - 10, 1001);
-  TH1F* Dibosons  = refill((TH1F*)input->Get(TString::Format("%s/Dibosons"   , directory)), "Dibosons"); InitHist(Dibosons, "", "", kRed + 2, 1001);
-  TH1F* WJets    = refill((TH1F*)input->Get(TString::Format("%s/WJets"     , directory)), "WJets"); InitHist(WJets  , "", "", kGreen - 4, 1001);
+  TH1F* Dibosons  = refill((TH1F*)input->Get(TString::Format("%s/Dibosons"   , directory)), "Dibosons"); InitHist(Dibosons, "", "", kGreen - 4, 1001);
+  TH1F* WJets    = refill((TH1F*)input->Get(TString::Format("%s/WJets"     , directory)), "WJets"); InitHist(WJets  , "", "", kRed + 2, 1001);
 #ifdef MSSM
   float ggHScale = 1., bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=8, times 10 for the time being
   if(std::string(inputfile).find("7TeV")!=std::string::npos){ ggHScale = 10*1300.*0.11/1000.; bbHScale = 10*4030.*0.11/1000.; }
