@@ -21,27 +21,33 @@ dir = args[0]
 
 print "Fitting %s : %s" % (options.analysis, dir)
 
-os.system("mkdir -p datacards")
-os.system("mkdir -p root")
-os.system("mkdir -p fitresults")
+def system(command):
+    """ Version that dies immediately on a command failure """
+    result = os.system(command)
+    if result:
+        sys.exit(result)
+
+system("mkdir -p datacards")
+system("mkdir -p root")
+system("mkdir -p fitresults")
 if not options.skip :
-    os.system("limit.py --max-likelihood --stable --rMin %s --rMax %s %s" % (options.rMin, options.rMax, dir))
+    system("limit.py --max-likelihood --stable --rMin %s --rMax %s %s" % (options.rMin, options.rMax, dir))
 
 if options.analysis == "sm" :
-    os.system("cp -v %s/out/mlfit.txt ./fitresults/mlfit_sm.txt" % dir)
-    os.system("cp -v %s/*.txt ./datacards" % dir)
-    os.system("cp -v %s/../common/*TeV.root ./root" % dir)	
+    system("cp -v %s/out/mlfit.txt ./fitresults/mlfit_sm.txt" % dir)
+    system("cp -v %s/*.txt ./datacards" % dir)
+    system("cp -v %s/../common/*TeV.root ./root" % dir)
     ## for mm override the histograms as used for the limit calculation in favour of something more human readible
-    os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-sm-8TeV_msv.root ./root/htt_mm.input_8TeV.root")
-    os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-sm-7TeV_msv.root ./root/htt_mm.input_7TeV.root")
+    system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-sm-8TeV_msv.root ./root/htt_mm.input_8TeV.root")
+    system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-sm-7TeV_msv.root ./root/htt_mm.input_7TeV.root")
 
 if options.analysis == "mssm" :
-    os.system("cp -v %s/out/mlfit.txt ./fitresults/mlfit_mssm.txt" % dir)
-    os.system("cp -v %s/*.txt ./datacards" % dir)
-    os.system("cp -v %s/../common/hbb.input_[78]TeV-[01].root ./root" % dir)
-    os.system("cp -v %s/../common/htt_*.inputs-mssm-[78]TeV-0.root ./root" % dir)	
+    system("cp -v %s/out/mlfit.txt ./fitresults/mlfit_mssm.txt" % dir)
+    system("cp -v %s/*.txt ./datacards" % dir)
+    system("cp -v %s/../common/hbb.input_[78]TeV-[01].root ./root" % dir)
+    system("cp -v %s/../common/htt_*.inputs-mssm-[78]TeV-0.root ./root" % dir)
     ## for mm override the histograms as used for the limit calculation in favour of something more human readible
-    os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-mssm-8TeV-0_msv.root ./root/htt_mm.inputs-mssm-8TeV-0.root")
-    os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-mssm-7TeV-0_msv.root ./root/htt_mm.inputs-mssm-7TeV-0.root")
+    system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-mssm-8TeV-0_msv.root ./root/htt_mm.inputs-mssm-8TeV-0.root")
+    system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-mssm-7TeV-0_msv.root ./root/htt_mm.inputs-mssm-7TeV-0.root")
 
 
