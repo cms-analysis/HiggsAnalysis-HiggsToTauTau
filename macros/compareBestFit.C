@@ -208,7 +208,7 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void compareBestFit(const char* filename, const char* channelstr, const char* type, const char* label=" Preliminary, H#rightarrow#tau#tau, L=24.3 fb^{-1}")
+void compareBestFit(const char* filename, const char* channelstr, const char* type, double mass, double minimum, double maximum, const char* label=" Preliminary, H#rightarrow#tau#tau, L=24.3 fb^{-1}")
 {
   //SetStyle();
 
@@ -317,6 +317,12 @@ void compareBestFit(const char* filename, const char* channelstr, const char* ty
 	    << " *                                          whitespaces                                                 \n"
 	    << " *              + type      const char*     type of plot; choose between 'sm' and 'mssm'                \n"
 	    << " *                                                                                                      \n"
+	    << " *              + mass      double          Higgs mass for which the plot should be performed           \n"
+	    << " *                                                                                                      \n"
+	    << " *              + minimum   double          Minimum value for the x-Axis (best fit value)               \n"
+	    << " *                                                                                                      \n"
+	    << " *              + maximum   double          Maximum value for the x-Axis (best fit value)               \n"
+	    << " *                                                                                                      \n"
 	    << " *******************************************************************************************************\n";
 
   /// open input file  
@@ -344,7 +350,7 @@ void compareBestFit(const char* filename, const char* channelstr, const char* ty
   
   bool firstPlot=true;
   for(unsigned int i=0; i<hexp.size(); ++i){
-    double value[1] = {hexp[i]->Eval(125)};
+    double value[1] = {hexp[i]->Eval(mass)};
     double position[1] = {hexp.size()-i-0.5}; 
 
     double x;
@@ -354,7 +360,7 @@ void compareBestFit(const char* filename, const char* channelstr, const char* ty
     int k = hexp[i]->GetN();
     for(int l=0; l<k; l++){
       hexp[i]->GetPoint(l, x, y);
-      if(x==125){
+      if(x==mass){
 	el=hband[i]->GetErrorYlow(l);
 	eh=hband[i]->GetErrorYhigh(l);
 	std::cout << l << " " << x << " " << y << " " << el << " " << eh << std::endl;
@@ -391,7 +397,7 @@ void compareBestFit(const char* filename, const char* channelstr, const char* ty
       gr->GetXaxis()->SetTitleFont(62);
       gr->GetXaxis()->SetTitleColor(1);
       gr->GetXaxis()->SetTitleOffset(1.05);
-      gr->GetXaxis()->SetLimits(-2, 3);
+      gr->GetXaxis()->SetLimits(minimum, maximum);
 
       // format y-axis
       gr->GetYaxis()->Set(hexp.size(), 0, hexp.size());
@@ -426,6 +432,16 @@ void compareBestFit(const char* filename, const char* channelstr, const char* ty
   SM->SetLineWidth(3);
   SM->SetLineColor(kGreen+3);
   if(std::string(type).find("sm")!=std::string::npos) SM->Draw("same");
+  TPaveText *pt = new TPaveText(maximum-1.5,hexp.size()-0.3,maximum-0.2,hexp.size()-0.02);
+  if(std::string(type).find("sm")!=std::string::npos) pt->AddText(TString::Format("m_{H} = %0.0f GeV" , mass));
+  else pt->AddText(TString::Format("m_{A} = %0.0f GeV" , mass));
+  pt->SetBorderSize(   0 );
+  pt->SetFillStyle(    0 );
+  pt->SetTextAlign(   12 );
+  pt->SetTextSize ( 0.035 );
+  pt->SetTextColor(    1 );
+  pt->SetTextFont (   62 );
+  pt->Draw("same");
   canv1->RedrawAxis();
   CMSPrelim(label, "", 0.15, 0.835);
   
