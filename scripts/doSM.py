@@ -23,7 +23,7 @@ parser.add_option("--update-aux", dest="update_datacards", default=False, action
 parser.add_option("--update-LIMITS", dest="update_limits", default=False, action="store_true",
                   help="update LIMITS directory for the indicated analyses. [Default: False]")
 parser.add_option("--fit-result", dest="fit_result", default="",  type="string",
-                  help="The full path to the result file of the fit (mlfit.txt) if it exists already fro pruning of bin-by-bin uncertainties. If empty the fit will be performed within this script. ATTENTION: this can take a few hours depending on the number of additional bin-by-bin uncertainties. [Default: \"\"]")
+                  help="The full path to the result file of the fit (mlfit.txt) if it exists already for pruning of bin-by-bin uncertainties. If empty the fit will be performed within this script. ATTENTION: this can take a few hours depending on the number of additional bin-by-bin uncertainties. [Default: \"\"]")
 
 
 ## check number of arguments; in case print usage
@@ -34,8 +34,7 @@ if len(args) < 1 :
     #exit(1)
 
 import os
-import glob
-
+import glob 
 
 ## masses
 masses = args[0]
@@ -135,6 +134,10 @@ if options.update_cvs :
                     PER=per,
                     PATTERN=pattern
                     ))
+        os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/Htt_MuMu_Unblinded/htt_mm*-sm-{PER}-msv.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
+            CMSSW_BASE=cmssw_base,
+            PER=per
+            ))  
     ## scale to SM cross section
     for chn in channels :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
