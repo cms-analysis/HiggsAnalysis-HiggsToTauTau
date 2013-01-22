@@ -270,7 +270,7 @@ if options.update_limits :
     for ana in analyses :
         print "setup limits structure for:", ana, "sm"
         if ana == 'incl' :
-            os.system("cvs2local.py -i aux/sm/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {MASSES}".format(
+            os.system("cvs2local.py -i aux/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {MASSES}".format(
                 ANA=ana,
                 PER=options.periods,
                 CHN=options.channels,
@@ -279,11 +279,11 @@ if options.update_limits :
         else :
             per = "8TeV" if ana == '2012d' else options.periods
             label = "" if not '-' in ana else "-l "+ana[ana.find('-')+1:]
-            os.system("setup-htt.py -i aux/sm/{ANA} -o {DIR}/{ANA} -p '{PER} '-a sm -c '{CHN}' {LABEL} {MASSES}".format(
+            os.system("setup-htt.py -i aux/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {LABEL} {MASSES}".format(
                 ANA=ana,
                 DIR=dir,
                 PER=per,
-                CHN=chn,
+                CHN=options.channels,
                 LABEL=label,
                 MASSES=masses
                 ))
