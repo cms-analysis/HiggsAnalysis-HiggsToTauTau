@@ -14,7 +14,7 @@ eleTau_0jet_low		signal,ZTT			CMS_scale_t_etau_8TeV 				1.00
 eleTau_0jet_low        	ggH				CMS_scale_j_8TeV				0.95
 eleTau_0jet_low        	qqH				CMS_scale_j_8TeV				0.85
 eleTau_0jet_low        	VH				CMS_scale_j_8TeV				0.85
-eleTau_0jet_low        	TT				CMS_scale_j_8TeV				0.80
+eleTau_0jet_low        	TT				CMS_scale_j_8TeV				0.85
 eleTau_0jet_low        	VV				CMS_scale_j_8TeV				0.98
 eleTau_0jet_low	 	signal,ZL,ZJ	   		CMS_htt_scale_met_8TeV				1.05
 eleTau_0jet_low	 	TT		    		CMS_htt_scale_met_8TeV				1.07
