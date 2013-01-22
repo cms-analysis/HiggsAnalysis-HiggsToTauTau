@@ -108,9 +108,8 @@ if options.update_cvs :
         for file in glob.glob("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/htt_{CHN}*-sm-*.root".format(CMSSW_BASE=cmssw_base, CHN=chn)) :
             os.system("rm %s" % file)
         ## copy postfit inputs for mm to test directory
-        os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/Htt_MuMu_Unblinded/htt_mm*-sm-{PER}-msv.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
-            CMSSW_BASE=cmssw_base,
-            PER=per
+        os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/Htt_MuMu_Unblinded/htt_mm*-sm-[78]TeV-msv.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
+            CMSSW_BASE=cmssw_base
             ))  
         for dir in directories[chn] :
             per='[78]TeV'
