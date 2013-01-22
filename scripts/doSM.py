@@ -170,7 +170,8 @@ if options.update_setup :
         ##
         if ana == 'bin-by-bin' :
             ## setup bbb uncertainties for mm (26)
-            os.system("add_bbb_errors.py 'mm:7TeV,8TeV:01,03,05:ZTT,TTJ' --normalize -f --in {DIR}/std --out {DIR}/{ANA}-tmp-mm --threshold 0.10".format(
+            os.system("add_bbb_errors.py 'mm:7TeV,8TeV:01,03,05:ZTT,TTJ' --normalize -f --in {SETUP} --out {DIR}/{ANA}-tmp-mm --threshold 0.10".format(
+                SETUP=setup,
                 DIR=dir,
                 ANA=ana
                 ))
