@@ -363,7 +363,6 @@ void compareBestFit(const char* filename, const char* channelstr, const char* ty
       if(x==mass){
 	el=hband[i]->GetErrorYlow(l);
 	eh=hband[i]->GetErrorYhigh(l);
-	std::cout << l << " " << x << " " << y << " " << el << " " << eh << std::endl;
       }
     }
 
@@ -403,7 +402,6 @@ void compareBestFit(const char* filename, const char* channelstr, const char* ty
       gr->GetYaxis()->Set(hexp.size(), 0, hexp.size());
       //std::cout<<gr->GetYaxis()->GetBinCenter(hexp.size()-i)<<std::endl;
       for(unsigned int j=0; j<hexp.size(); ++j){
-	std::cout<<hexp.size()-j<< " " <<std::string(channels[j]).c_str()<<std::endl;
 	gr->GetYaxis()->SetBinLabel(hexp.size()-j, std::string(channels[j]).c_str());
       }
       gr->GetYaxis()->SetLabelFont(62);
@@ -431,10 +429,10 @@ void compareBestFit(const char* filename, const char* channelstr, const char* ty
   }
   SM->SetLineWidth(3);
   SM->SetLineColor(kGreen+3);
-  if(std::string(type).find("sm")!=std::string::npos) SM->Draw("same");
-  TPaveText *pt = new TPaveText(maximum-1.5,hexp.size()-0.3,maximum-0.2,hexp.size()-0.02);
-  if(std::string(type).find("sm")!=std::string::npos) pt->AddText(TString::Format("m_{H} = %0.0f GeV" , mass));
-  else pt->AddText(TString::Format("m_{A} = %0.0f GeV" , mass));
+  if(std::string(type).find("mssm")==std::string::npos) SM->Draw("same");
+  TPaveText *pt = new TPaveText(2*(maximum+minimum)/3,hexp.size()-0.3,maximum,hexp.size()-0.02);
+  if(std::string(type).find("mssm")!=std::string::npos) pt->AddText(TString::Format("m_{A} = %0.0f GeV" , mass));
+  else pt->AddText(TString::Format("m_{H} = %0.0f GeV" , mass));
   pt->SetBorderSize(   0 );
   pt->SetFillStyle(    0 );
   pt->SetTextAlign(   12 );
