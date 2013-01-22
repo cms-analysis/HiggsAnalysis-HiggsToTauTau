@@ -104,8 +104,14 @@ if options.update_cvs :
                 ))
     for chn in channels :
         print "... copy files for channel:", chn
+        ## remove legacy
         for file in glob.glob("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/htt_{CHN}*-sm-*.root".format(CMSSW_BASE=cmssw_base, CHN=chn)) :
-            os.system("rm %s" % file)  
+            os.system("rm %s" % file)
+        ## copy postfit inputs for mm to test directory
+        os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/Htt_MuMu_Unblinded/htt_mm*-sm-{PER}-msv.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
+            CMSSW_BASE=cmssw_base,
+            PER=per
+            ))  
         for dir in directories[chn] :
             per='[78]TeV'
             ## --- 
@@ -134,10 +140,6 @@ if options.update_cvs :
                     PER=per,
                     PATTERN=pattern
                     ))
-        os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/Htt_MuMu_Unblinded/htt_mm*-sm-{PER}-msv.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
-            CMSSW_BASE=cmssw_base,
-            PER=per
-            ))  
     ## scale to SM cross section
     for chn in channels :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
@@ -252,7 +254,7 @@ if options.update_datacards :
             print "...pruning bbb uncertainties:"
             ## setup bbb uncertainty pruning
             os.system("prune_bbb_errors.py -c '{CHN}' --byPull {FIT} {DEBUG} --pull-threshold 0.30 {DIR}/{ANA}/sm".format(
-                FIT="" if options.fit_result == "" else "--fit-result %s" % optsions.fit_result,
+                FIT="" if options.fit_result == "" else "--fit-result %s" % options.fit_result,
                 DEBUG="--debug" if options.fit_result == "" else "",
                 CHN=options.channels,
                 DIR=dir,
