@@ -140,5 +140,5 @@ if __name__ == "__main__":
              args.input, args.output)
     main(args.input, args.output, args.filter, args.merge,
          args.threshold, args.prefix, args.normalize)
-    log.info("Moving temproary output to final destination")
+    log.info("Moving temprorary output to final destination")    
     shutil.move(args.output, args.output.replace('.tmp.root', '.root'))
