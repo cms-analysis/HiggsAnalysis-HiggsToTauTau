@@ -116,7 +116,7 @@ channel(std::string& label){
 	  label==std::string("mt_josh"     ) || 
 	  label==std::string("mt_jose"     ) || 
 	  label==std::string("mt_andrew"   ) || 
-	  label==std::string("mt_matthew"  ) || 
+	  label==std::string("mt_matthew"  ) 
 	  );
 }
 
@@ -227,7 +227,7 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label=" Preliminary, H#rightarrow#tau#tau, L=17 fb^{-1}", bool legendOnRight=true, bool legendOnTop=true)
+void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label=" Preliminary, H#rightarrow#tau#tau, L=19.4 fb^{-1}", bool legendOnRight=true, bool legendOnTop=true)
 {
   SetStyle();
 
@@ -321,16 +321,16 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["HIG-12-032" ] = kRed+2;
   colors["HIG-12-043" ] = kBlack;
   colors["HIG-12-050" ] = kBlack;
-  colors["mm_thomas"   ] = kBlack;
+  colors["mm_thomas"   ] = kRed;
   colors["em_valentina"] = kRed;
-  colors["em_andrew"   ] = kGreen;
-  colors["et_josh"     ] = kMagenta;
+  colors["em_andrew"   ] = kBlue;
+  colors["et_josh"     ] = kRed;
   colors["et_jose"     ] = kBlue;
   colors["et_andrew"   ] = kOrange;
   colors["mt_josh"     ] = kViolet;
-  colors["mt_jose"     ] = kGray;
-  colors["mt_andrew"   ] = kPink;
-  colors["mt_matthew"  ] = kYellow;
+  colors["mt_jose"     ] = kRed;
+  colors["mt_andrew"   ] = kBlue;
+  colors["mt_matthew"  ] = kOrange;
 
   std::cout << " *******************************************************************************************************\n"
 	    << " * Usage     : root -l                                                                                  \n"
