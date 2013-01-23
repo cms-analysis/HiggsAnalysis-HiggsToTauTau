@@ -253,7 +253,8 @@ if options.update_datacards :
         if ana == "bin-by-bin" :
             print "...pruning bbb uncertainties:"
             ## setup bbb uncertainty pruning
-            os.system("prune_bbb_errors.py -c '{CHN}' --byPull {FIT} {DEBUG} --pull-threshold 0.30 {DIR}/{ANA}/sm".format(
+            os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/prune_bbb_errors.py -c '{CHN}' --byPull {FIT} {DEBUG} --pull-threshold 0.30 {DIR}/{ANA}/sm".format(
+                CMSSW_BASE=cmssw_base,
                 FIT="" if options.fit_result == "" else "--fit-result %s" % options.fit_result,
                 DEBUG="--debug" if options.fit_result == "" else "",
                 CHN=options.channels,
