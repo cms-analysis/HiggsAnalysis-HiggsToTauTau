@@ -106,7 +106,17 @@ channel(std::string& label){
 	  label==std::string("HIG-12-018") ||
 	  label==std::string("HIG-12-032") ||
 	  label==std::string("HIG-12-043") ||
-	  label==std::string("HIG-12-050")
+	  label==std::string("HIG-12-050") ||
+	  label==std::string("mm_thomas"   ) ||
+	  label==std::string("em_valentina") ||
+	  label==std::string("em_andrew"   ) ||
+	  label==std::string("et_josh"     ) ||
+	  label==std::string("et_jose"     ) ||
+	  label==std::string("et_andrew"   ) ||
+	  label==std::string("mt_josh"     ) || 
+	  label==std::string("mt_jose"     ) || 
+	  label==std::string("mt_andrew"   ) || 
+	  label==std::string("mt_matthew"  ) || 
 	  );
 }
 
@@ -203,7 +213,17 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("HIG-12-018")) title = std::string("HIG-12-018 (10 fb^{-1})");
   if(channel==std::string("HIG-12-032")) title = std::string("HIG-12-032 (5-10 fb^{-1})");
   if(channel==std::string("HIG-12-043")) title = std::string("HIG-12-043 (17 fb^{-1})");
-  if(channel==std::string("HIG-12-050")) title = std::string("HIG-12-050 (17 fb^{-1})");
+  if(channel==std::string("HIG-12-050")) title = std::string("HIG-12-050 (17 fb^{-1})"); 
+  if(channel==std::string("mm_thomas"   )) title = std::string("mm thomas");
+  if(channel==std::string("em_valentina")) title = std::string("em valentina");
+  if(channel==std::string("em_andrew"   )) title = std::string("em andrew");
+  if(channel==std::string("et_josh"     )) title = std::string("et josh");
+  if(channel==std::string("et_jose"     )) title = std::string("et jose");
+  if(channel==std::string("et_andrew"   )) title = std::string("et andrew");
+  if(channel==std::string("mt_josh"     )) title = std::string("mt josh");
+  if(channel==std::string("mt_jose"     )) title = std::string("mt jose");
+  if(channel==std::string("mt_andrew"   )) title = std::string("mt andrew");
+  if(channel==std::string("mt_matthew"  )) title = std::string("mt matthew");
   return title;
 }
 
@@ -301,6 +321,16 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["HIG-12-032" ] = kRed+2;
   colors["HIG-12-043" ] = kBlack;
   colors["HIG-12-050" ] = kBlack;
+  colors["mm_thomas"   ] = kBlack;
+  colors["em_valentina"] = kRed;
+  colors["em_andrew"   ] = kGreen;
+  colors["et_josh"     ] = kMagenta;
+  colors["et_jose"     ] = kBlue;
+  colors["et_andrew"   ] = kOrange;
+  colors["mt_josh"     ] = kViolet;
+  colors["mt_jose"     ] = kGray;
+  colors["mt_andrew"   ] = kPink;
+  colors["mt_matthew"  ] = kYellow;
 
   std::cout << " *******************************************************************************************************\n"
 	    << " * Usage     : root -l                                                                                  \n"
