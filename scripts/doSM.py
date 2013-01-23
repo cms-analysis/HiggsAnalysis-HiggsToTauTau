@@ -219,10 +219,10 @@ if options.update_setup :
         ##
         ## MODIOND-INCLUSIVE
         ##            
-        if ana == 'incl' :
+        if ana == 'inclusive' :
             for chn in channels :
-                for per in periods :            
-                    os.system("mv {DIR}/incl/{CHN}/htt_{CHN}.inputs-sm-{PER}-inclusive.root {DIR}/incl/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
+                for per in periods :
+                    os.system("mv {DIR}/inclusive/{CHN}/htt_{CHN}.inputs-sm-{PER}-inclusive.root {DIR}/inclusive/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
                         DIR=dir,
                         CHN=chn,
                         PER=per
@@ -274,9 +274,10 @@ if options.update_limits :
     os.system("mkdir -p {DIR}".format(DIR=dir))    
     for ana in analyses :
         print "setup limits structure for:", ana, "sm"
-        if ana == 'incl' :
+        if ana == 'inclusive' :
             os.system("cvs2local.py -i aux/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {MASSES}".format(
                 ANA=ana,
+                DIR=dir,
                 PER=options.periods,
                 CHN=options.channels,
                 MASSES=masses
