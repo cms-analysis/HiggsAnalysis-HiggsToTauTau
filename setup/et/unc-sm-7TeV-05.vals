@@ -5,7 +5,7 @@ eleTau_vbf   		ggH				pdf_gg    				1.08
 eleTau_vbf   		qqH				pdf_qqbar				1.03
 eleTau_vbf   		VH				pdf_qqbar				1.02
 eleTau_vbf		ggH				QCDscale_ggH2in 			1.30
-eleTau_vbf		qqH				QCDscale_qqH				1.10
+eleTau_vbf		qqH				QCDscale_qqH				1.04
 eleTau_vbf		VH				QCDscale_VH				1.04
 eleTau_vbf		signal				UEPS					1.04
 eleTau_vbf 		signal,ZTT,ZLL,TT,VV 		CMS_eff_e 				1.02

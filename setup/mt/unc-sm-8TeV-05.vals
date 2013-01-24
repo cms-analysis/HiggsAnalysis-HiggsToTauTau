@@ -5,7 +5,7 @@ muTau_vbf   		ggH				pdf_gg    				1.08
 muTau_vbf   		qqH				pdf_qqbar				1.03
 muTau_vbf   		VH				pdf_qqbar				1.02
 muTau_vbf		ggH				QCDscale_ggH2in 			1.30
-muTau_vbf		qqH				QCDscale_qqH				1.10
+muTau_vbf		qqH				QCDscale_qqH				1.04
 muTau_vbf		VH 	                        QCDscale_VH				1.04
 muTau_vbf		signal				UEPS					1.04
 muTau_vbf 		signal,ZTT,ZLL,TT,VV 		CMS_eff_m 				1.02
