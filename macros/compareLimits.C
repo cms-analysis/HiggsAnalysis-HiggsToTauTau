@@ -175,8 +175,6 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("llt"       )) title = std::string("WH#rightarrow#tau_{h}+2l");
   if(channel==std::string("4l"        )) title = std::string("ZH#rightarrow2l2#tau");
   if(channel==std::string("ltt"       )) title = std::string("WH#rightarrow#tau_{h}#tau_{h}");
-  if(channel==std::string("llt"       )) title = std::string("WH#rightarrow#tau_{h}+2l (10 fb^{-1})");
-  if(channel==std::string("4l"        )) title = std::string("ZH#rightarrow2l2#tau (10 fb^{-1})");
   if(channel==std::string("hzz4l"     )) title = std::string("H#rightarrowZZ#rightarrow4l");
   if(channel==std::string("hzz2l2q"   )) title = std::string("H#rightarrowZZ#rightarrow2l2q");
   if(channel==std::string("hzz2l2t"   )) title = std::string("H#rightarrowZZ#rightarrow2l2#tau");
