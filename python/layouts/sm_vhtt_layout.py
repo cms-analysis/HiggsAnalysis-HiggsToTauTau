@@ -10,7 +10,7 @@ layout = cms.PSet(
     ## x-axis title
     yaxis = cms.string("95% CL limit on #sigma/#sigma_{SM}"),
     ## plot expected only
-    expectedOnly = cms.bool(True),
+    expectedOnly = cms.bool(False),
     ## is this mssm?
     mssm = cms.bool(False),
     ## print to png
