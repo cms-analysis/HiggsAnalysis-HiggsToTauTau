@@ -211,9 +211,12 @@ if options.optByLimit :
             if all>0 :
                 print "commented", excl, "bin-by-bin uncertainties from", all, "for channel:", chn, "(", float(100*excl/all), "%)"
             ## and finally prune all datacards for all masses in input directory
-            for datacard in glob.glob('{PARENT}/{INPUT}/htt_{CHN}/*_{CHN}_*.txt'.format(PARENT=parentdir,INPUT=args[0], CHN=chn)) :
-                ## uncomment bin-by-bin uncertainties that might have been processed alreadt in previous iterations
-                manipulate_bbb(datacard, "UNCOMMENT")
+            cards = '{PARENT}/{INPUT}/htt_{CHN}/*_{CHN}_*.txt'.format(
+                PARENT="" if parentdir in args[0] else parentdir,
+                INPUT=args[0],
+                CHN=chn
+                )
+            for datacard in glob.glob(cards) :
                 ## comment bin-by-bin uncertainties
                 manipulate_bbb(datacard, "COMMENT", excludes)
             glob_all += all
@@ -274,9 +277,12 @@ if options.optByPull :
         if all>0 :
             print "commented", excl, "bin-by-bin uncertainties from", all, "for channel:", chn, "(", float(100*excl/all), "%)"
         ## and finally prune all datacards for all masses in input directory
-        for datacard in glob.glob('{PARENT}/{INPUT}/htt_{CHN}/*.txt'.format(PARENT=parentdir,INPUT=args[0], CHN=chn)) :
-            ## uncomment bin-by-bin uncertainties that might have been processed alreadt in previous iterations
-            #manipulate_bbb(datacard, "UNCOMMENT")
+        cards = '{PARENT}/{INPUT}/htt_{CHN}/*.txt'.format(
+            PARENT="" if parentdir in args[0] else parentdir,
+            INPUT=args[0],
+            CHN=chn
+            )
+        for datacard in glob.glob(cards) :
             ## comment bin-by-bin uncertainties
             manipulate_bbb(datacard, "COMMENT", excludes)
         glob_all += all
