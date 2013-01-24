@@ -132,7 +132,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 
   const char* dataset;
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}";}
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 19.3 fb^{-1}";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 18.7 fb^{-1}";}
   
   TFile* input = new TFile(inputfile);
   TH1F* ZTT = refill((TH1F*)input->Get(TString::Format("%s/ZTT"   , directory)), "ZTT"); InitHist(ZTT, "", "", kOrange-4, 1001);
