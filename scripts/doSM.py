@@ -4,8 +4,8 @@ from optparse import OptionParser, OptionGroup
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGs",
                       description="This is a script to reload the MORIOND analysis with main analysis [std, bin-by-bin] and four cross-check analyses [mvis, incl, hcp, 2012d]. ARGs corresponds to the masses, for which to setup the structure.")
-parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string",
-                  help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et\"]")
+parser.add_option("-c", "--channels", dest="channels", default="mm em mt et tt", type="string",
+                  help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et tt\"]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
                   help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analyses", dest="analyses", default="std, bin-by-bin, mvis, 2012d, hcp, inclusive",
@@ -108,7 +108,7 @@ if options.update_cvs :
         for file in glob.glob("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/htt_{CHN}*-sm-*.root".format(CMSSW_BASE=cmssw_base, CHN=chn)) :
             os.system("rm %s" % file)
         ## copy postfit inputs for mm to test directory
-        os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/Htt_MuMu_Unblinded/htt_mm*-sm-[78]TeV-msv.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
+        os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/Htt_MuMu_Unblinded/htt_mm*-sm-[78]TeV-postfit-*.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
             CMSSW_BASE=cmssw_base
             ))  
         for dir in directories[chn] :
@@ -169,24 +169,47 @@ if options.update_setup :
         ## MORIOND-BIN-BY-BIN
         ##
         if ana == 'bin-by-bin' :
-            ## setup bbb uncertainties for mm (26)
-            os.system("add_bbb_errors.py 'mm:7TeV,8TeV:01,03,05:ZTT,TTJ' --normalize -f --in {SETUP} --out {DIR}/{ANA}-tmp-mm --threshold 0.10".format(
-                SETUP=setup,
-                DIR=dir,
-                ANA=ana
-                ))
-            ## setup bbb uncertainties for em (101)
-            os.system("add_bbb_errors.py 'em:7TeV,8TeV:01,03,05:Fakes' --normalize -f --in {DIR}/{ANA}-tmp-mm --out {DIR}/{ANA}-tmp-em --threshold 0.10".format(
-                DIR=dir,
-                ANA=ana
-                ))
-            ## setup bbb uncertainties for et, mt (416)
-            os.system("add_bbb_errors.py 'et,mt:7TeV,8TeV:01,03,05:ZL,ZLL,QCD>W' --normalize -f --in {DIR}/{ANA}-tmp-em --out {DIR}/{ANA} --threshold 0.10".format(
-                DIR=dir,
-                ANA=ana
-                ))
-            ## clean up
-            os.system("rm -r {FILES}".format(FILES=' '.join(glob.glob("{DIR}/{ANA}-tmp-*".format(ANA=ana, DIR=dir)))))
+            os.system("cp {SETUP} {DIR}/{ANA}".format(SETUP=setup, DIR=dir, ANA=ana))
+            if 'mm' in channels :
+                ## setup bbb uncertainties for mm (172)
+                os.system("add_bbb_errors.py 'mm:7TeV,8TeV:01,03,05:ZTT,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    DIR=dir,
+                    ANA=ana
+                    ))
+                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+            if 'em' in channels :
+                ## setup bbb uncertainties for em (103)
+                os.system("add_bbb_errors.py 'em:7TeV,8TeV:01,03,05:Fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    DIR=dir,
+                    ANA=ana
+                    ))
+                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+            if 'et' in channels :
+            ## setup bbb uncertainties for et (207)
+                os.system("add_bbb_errors.py 'et:7TeV,8TeV:01,03,05:ZL,ZLL,QCD>W' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    DIR=dir,
+                    ANA=ana
+                    ))
+                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+            if 'mt' in channels :
+                ## setup bbb uncertainties for mt (203)
+                os.system("add_bbb_errors.py 'mt:7TeV,8TeV:01,03,05:ZL,ZLL,QCD>W' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    DIR=dir,
+                    ANA=ana
+                    ))
+                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+            if 'tt' in channels :
+                ## setup bbb uncertainties for tt (72)
+                os.system("add_bbb_errors.py 'tt:8TeV:00,01:ZTT,QCD' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    DIR=dir,
+                    ANA=ana
+                    ))
+                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
         ##
         ## MODIOND-MVIS
         ##
