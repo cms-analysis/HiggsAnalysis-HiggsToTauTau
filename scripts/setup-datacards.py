@@ -173,7 +173,7 @@ if options.analysis == "mssm" :
 def closest_simulated_masspoint(value) :
     delta = -1
     closest = 150
-    for mass in [110, 115, 120, 125, 130, 135, 140, 150] :
+    for mass in [110, 115, 120, 125, 130, 135, 140, 145] :
         if delta<0 or abs(float(value)-mass)<delta :
             delta = abs(float(value)-mass)
             closest = mass
@@ -199,7 +199,7 @@ for channel in channels :
             os.chdir("{PWD}/{CHN}/{PER}-0{CAT}".format(CHN=prefix+channel, PER=period, PWD=base, CAT=cat))
             for mass in parseArgs(args) :
                 ## fudge masspoints for mm, which cannot use 1d-horizontal template morphing
-                fudge_mass = mass
+                fudge_mass = mass 
                 fudge_mm_datacards = False
                 if options.analysis == "sm" and "mm" in channel :
                     mass = closest_simulated_masspoint(mass)
