@@ -110,6 +110,8 @@ channel(std::string& label){
 	  label==std::string("mm_thomas"   ) ||
 	  label==std::string("em_valentina") ||
 	  label==std::string("em_andrew"   ) ||
+	  label==std::string("tt_riccardo" ) ||
+	  label==std::string("tt_aram"     ) ||
 	  label==std::string("et_josh"     ) ||
 	  label==std::string("et_jose"     ) ||
 	  label==std::string("et_andrew"   ) ||
@@ -215,6 +217,8 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("mm_thomas"   )) title = std::string("mm thomas");
   if(channel==std::string("em_valentina")) title = std::string("em valentina");
   if(channel==std::string("em_andrew"   )) title = std::string("em andrew");
+  if(channel==std::string("tt_riccardo" )) title = std::string("tt riccardo");
+  if(channel==std::string("tt_aram"     )) title = std::string("tt aram");
   if(channel==std::string("et_josh"     )) title = std::string("et josh");
   if(channel==std::string("et_jose"     )) title = std::string("et jose");
   if(channel==std::string("et_andrew"   )) title = std::string("et andrew");
@@ -322,6 +326,8 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["mm_thomas"   ] = kRed;
   colors["em_valentina"] = kRed;
   colors["em_andrew"   ] = kBlue;
+  colors["tt_riccardo" ] = kRed;
+  colors["tt_aram"     ] = kBlue;
   colors["et_josh"     ] = kRed;
   colors["et_jose"     ] = kBlue;
   colors["et_andrew"   ] = kOrange;
