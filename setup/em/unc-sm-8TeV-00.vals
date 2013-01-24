@@ -3,10 +3,11 @@ emu_0jet_low	signal,EWK              	lumi_8TeV            		1.042
 emu_0jet_low	signal,background 		CMS_eff_e 			1.02
 emu_0jet_low 	signal,Ztt	 		CMS_scale_e_8TeV 		1.00
 emu_0jet_low	signal,background 		CMS_eff_m 			1.02
-emu_0jet_low	ggH				CMS_scale_j_8TeV		0.98
-emu_0jet_low	qqH				CMS_scale_j_8TeV		0.90
-emu_0jet_low	VH				CMS_scale_j_8TeV		0.98
-emu_0jet_low	EWK,ttbar			CMS_scale_j_8TeV		0.99
+emu_0jet_low	ggH				CMS_scale_j_8TeV		0.97
+emu_0jet_low	qqH				CMS_scale_j_8TeV	        0.86
+emu_0jet_low	VH				CMS_scale_j_8TeV		0.91
+emu_0jet_low	ttbar				CMS_scale_j_8TeV		0.93
+emu_0jet_low	EWK				CMS_scale_j_8TeV		0.97
 emu_0jet_low	signal,EWK,ttbar      		CMS_htt_scale_met_8TeV		1.05
 emu_0jet_low	signal,background 		CMS_eff_b_8TeV 			0.98
 emu_0jet_low	signal,background 		CMS_fake_b_8TeV 		0.98
