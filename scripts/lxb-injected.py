@@ -93,7 +93,7 @@ from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
 masses_str = []
 for mass in parseArgs(args) :
     masses_str.append(str(mass))
-    
+
 ## split up masses into groups
 def group_into_chunks(iterable, n):
     output = []
@@ -165,7 +165,10 @@ with open(submit_name, 'w') as submit_script:
                     QUEUE=bsubargs, LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.py', '.log'), PATH=os.getcwd(), FILE=script_file_name.replace('.py', '.sh')))
 ## change mode
 os.system('chmod a+x %s' % submit_name)
-## execute 
-os.system('./%s' % submit_name)
+## execute
+if not options.condor:
+    os.system('./%s' % submit_name)
+else:
+    os.system('condor_submit %s' % submit_name)
 ## clean up
 os.system('mv %s %s' % (submit_name, name))
