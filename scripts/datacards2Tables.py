@@ -16,10 +16,10 @@ cats1.add_option("--lumi-7TeV-mm", dest="lumi_7TeV_mm", default= 4.9, type="floa
 cats1.add_option("--lumi-7TeV-em", dest="lumi_7TeV_em", default= 4.9, type="float", help="Luminosity used for em channel. [Default:  4.9]")
 cats1.add_option("--lumi-7TeV-mt", dest="lumi_7TeV_mt", default= 4.9, type="float", help="Luminosity used for mt channel. [Default:  4.9]")
 cats1.add_option("--lumi-7TeV-et", dest="lumi_7TeV_et", default= 4.9, type="float", help="Luminosity used for et channel. [Default:  4.9]")
-cats1.add_option("--lumi-8TeV-mm", dest="lumi_8TeV_mm", default=12.0, type="float", help="Luminosity used for mm channel. [Default: 12.0]")
-cats1.add_option("--lumi-8TeV-em", dest="lumi_8TeV_em", default=12.0, type="float", help="Luminosity used for em channel. [Default: 12.0]")
-cats1.add_option("--lumi-8TeV-mt", dest="lumi_8TeV_mt", default=12.0, type="float", help="Luminosity used for mt channel. [Default: 12.0]")
-cats1.add_option("--lumi-8TeV-et", dest="lumi_8TeV_et", default=12.0, type="float", help="Luminosity used for et channel. [Default: 12.0]")
+cats1.add_option("--lumi-8TeV-mm", dest="lumi_8TeV_mm", default=19.4, type="float", help="Luminosity used for mm channel. [Default: 19.4]")
+cats1.add_option("--lumi-8TeV-em", dest="lumi_8TeV_em", default=19.4, type="float", help="Luminosity used for em channel. [Default: 19.4]")
+cats1.add_option("--lumi-8TeV-mt", dest="lumi_8TeV_mt", default=19.4, type="float", help="Luminosity used for mt channel. [Default: 19.4]")
+cats1.add_option("--lumi-8TeV-et", dest="lumi_8TeV_et", default=19.4, type="float", help="Luminosity used for et channel. [Default: 19.4]")
 parser.add_option_group(cats1)
 
 ## check number of arguments; in case print usage
@@ -659,53 +659,53 @@ for idx in range(len(periods)) : periods[idx] = periods[idx].rstrip(',')
 ## extended dictionary of subsets to be contracted (used for merging of table yields)
 if len(periods) == 1 and contained('7TeV', periods) :
     subsets_extended = {
-       #"0jet"  : ["low_7TeV", "high_7TeV"],
-       #"boost" : ["low_7TeV", "high_7TeV"],
-       #"vbf"   : ["7TeV"],
-        "btag"  : ["7TeV"],
-        "nobtag": ["7TeV"],
+        "0jet"  : ["low_7TeV", "high_7TeV"],
+        "boost" : ["low_7TeV", "high_7TeV"],
+        "vbf"   : ["7TeV"],
+       #"btag"  : ["7TeV"],
+       #"nobtag": ["7TeV"],
         }
 if len(periods) == 1 and contained('8TeV', periods) :
     subsets_extended = {
-       #"0jet"     : ["low_8TeV", "high_8TeV"],
-       #"boost"    : ["low_8TeV", "high_8TeV"],
+        "0jet"     : ["low_8TeV", "high_8TeV"],
+        "boost"    : ["low_8TeV", "high_8TeV"],
        #"boost" : ["8TeV"], ##for tt
-       #"vbf"   : ["8TeV"],
-        "btag"  : ["8TeV"],
-        "nobtag": ["8TeV"],
+        "vbf"   : ["8TeV"],
+       #"btag"  : ["8TeV"],
+       #"nobtag": ["8TeV"],
         }
 if contained('7TeV', periods) and contained('8TeV', periods) :
     subsets_extended = {
-       #"0jet"  : ["low_7TeV", "low_8TeV", "high_7TeV", "high_8TeV"],
-       #"boost" : ["low_7TeV", "low_8TeV", "high_7TeV", "high_8TeV"],
-       #"vbf"   : ["7TeV", "8TeV"],
-        "btag"  : ["7TeV", "8TeV"],
-        "nobtag": ["7TeV", "8TeV"],
+        "0jet"  : ["low_7TeV", "low_8TeV", "high_7TeV", "high_8TeV"],
+        "boost" : ["low_7TeV", "low_8TeV", "high_7TeV", "high_8TeV"],
+        "vbf"   : ["7TeV", "8TeV"],
+       #"btag"  : ["7TeV", "8TeV"],
+       #"nobtag": ["7TeV", "8TeV"],
         }
 ## compact dictionary of subsets to be contraced (used fro mergin of efficiencies)
 subsets_compact  = {
-   #'0jet'     : ['low', 'high'],
-   #'boost'    : ['low', 'high'],
+    '0jet'     : ['low', 'high'],
+    'boost'    : ['low', 'high'],
    #'boost'    : [], ##for tt
-   #'vbf'      : [],
-    'btag'     : [],
-    'nobtag'   : [],
+    'vbf'      : [],
+   #'btag'     : [],
+   #'nobtag'   : [],
     }
 ## categories to be shown in the table(s)
 categories_in_table = [
-   #'0jet',
-   #'boost',
-   #'vbf',
-    'btag',
-    'nobtag',
+    '0jet',
+    'boost',
+    'vbf',
+   #'btag',
+   #'nobtag',
     ]
 ## category labels for categories to be shown in table(s)
 category_labels_in_table = {
-   #'0jet'     : "\emph{0-Jet}",
-   #'boost'    : "\emph{1-Jet}",
-   #'vbf'      : "\emph{VBF}",
-    'btag'     : "\emph{B-Tag}",
-    'nobtag'   : "\emph{No B-Tag}",
+    '0jet'     : "\emph{0-Jet}",
+    'boost'    : "\emph{1-Jet}",
+    'vbf'      : "\emph{VBF}",
+   #'btag'     : "\emph{B-Tag}",
+   #'nobtag'   : "\emph{No B-Tag}",
     }
 
 os.system("rm -f *.tmp")
