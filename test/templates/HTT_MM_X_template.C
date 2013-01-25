@@ -43,9 +43,9 @@ float blinding_SM(float mass){ return (100<mass && mass<150); }
 float blinding_MSSM(float mass){ return (100<mass); }
 float maximum(TH1F* h, bool LOG=false){
   if(LOG){
-    if(h->GetMaximum()>1000){ return 1000.*TMath::Nint(500*h->GetMaximum()/1000.); }
-    if(h->GetMaximum()>  10){ return   10.*TMath::Nint( 50*h->GetMaximum()/  10.); }
-    return 10000*h->GetMaximum(); 
+    //if(h->GetMaximum()>1000){ return 1000.*TMath::Nint(500*h->GetMaximum()/1000.); }
+    //if(h->GetMaximum()>  10){ return   10.*TMath::Nint( 50*h->GetMaximum()/  10.); }
+    return 100000*h->GetMaximum(); 
   }
   else{
     if(h->GetMaximum()>  12){ return 10.*TMath::Nint((1.3*h->GetMaximum()/10.)); }
@@ -268,6 +268,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
     if(helper>helper2) {helper2=helper;}
     }
   max=helper2*2;
+  if(log) max=helper2*100000;
 
 
   /*
