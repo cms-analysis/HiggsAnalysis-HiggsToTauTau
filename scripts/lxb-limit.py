@@ -37,8 +37,7 @@ option_str = options.limit
 ## prepare log file directory
 os.system("mkdir -p log")
 
-script_template = '''
-#!/bin/bash
+script_template = '''#!/bin/bash
 
 cd {working_dir}
 eval `scram runtime -sh`
@@ -52,8 +51,7 @@ $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} {director
 
 '''
 
-lxq_fragment = '''
-#!/bin/bash
+lxq_fragment = '''#!/bin/bash
 export SCRAM_ARCH=$scram_arch
 ini cmssw
 ini autoproxy
