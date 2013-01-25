@@ -1,4 +1,4 @@
-cd from optparse import OptionParser, OptionGroup
+from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options]",
