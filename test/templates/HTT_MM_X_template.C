@@ -155,7 +155,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 #endif
 #endif
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data", true);
-  InitHist(data, "#bf{m_{#tau#tau} [GeV]}", "#bf{dN/dm_{#tau#tau} [1/GeV]}"); InitData(data);
+  InitHist(data, "#bf{unfolded 2D mass}", "#bf{dN/dBin}"); InitData(data);
 
   TH1F* ref=(TH1F*)ZTT->Clone("ref");
   ref->Add(ZMM  );
@@ -396,7 +396,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   rat1->SetMinimum(-1.5);
   rat1->GetYaxis()->CenterTitle();
   rat1->GetYaxis()->SetTitle("#bf{Data/MC-1}");
-  rat1->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}"); 
+  rat1->GetXaxis()->SetTitle("#bf{unfolded 2D mass}"); 
   rat1->Draw();
   zero->SetLineColor(kBlack);
   zero->Draw("same");
@@ -424,7 +424,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   rat2->SetMinimum(-0.3);
   rat2->GetYaxis()->SetTitle("#bf{Fit/Prefit-1}");
   rat2->GetYaxis()->CenterTitle();
-  rat2->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}");
+  rat2->GetXaxis()->SetTitle("#bf{unfolded 2D mass}");
   rat2->GetXaxis()->SetRange(0, 28);
   rat2->Draw();
   zero->SetLineColor(kBlack);
