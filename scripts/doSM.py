@@ -308,7 +308,7 @@ if options.update_limits :
                 ))
         else :
             per = "8TeV" if ana == '2012d' else options.periods
-            label = "" if not '-' in ana else "-l "+ana[ana.find('-')+1:]
+            label = ana
             os.system("setup-htt.py -i aux/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {LABEL} {MASSES}".format(
                 ANA=ana,
                 DIR=dir,
