@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#flake8: noqa
 from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
@@ -167,7 +168,7 @@ def directories(args) :
 def lxb_submit(dirs, masses, cmd='--asymptotic', opts='') :
     '''
     do a lxb submission for jobs that can be executed via limit.py.
-    dirs corresponds to a list of input directories, masses to a 
+    dirs corresponds to a list of input directories, masses to a
     dictionary of masses per dir, cmd to the complete main option
     of limit.py and opts to additional options that should be passed
     on to limit.py.
@@ -249,7 +250,7 @@ if options.optMDFit :
         mass = get_mass(dir)
         if mass == 'common' :
             continue
-        ## define jobname prefix that will be combined with the model name 
+        ## define jobname prefix that will be combined with the model name
         prefix = dir[:dir.rfind(mass)].rstrip('/')
         head = prefix[:prefix.rfind('/')]
         prefix = prefix[head.rfind('/')+1:].replace('/', '-')
@@ -331,9 +332,9 @@ if options.optAsym :
 ## INJECTED (asymptotic limits with signal injected, implementation for SM only)
 ##
 if options.optInject :
-    ## the input for lxb-injected.py should be a path, that is passed on as an 
+    ## the input for lxb-injected.py should be a path, that is passed on as an
     ## option and the masses in question. Prepare here the corresponding paths
-    ## and directories. 
+    ## and directories.
     paths = []
     dirs = {}
     for dir in args :
@@ -353,20 +354,20 @@ if options.optInject :
         opts+=" --observedOnly"
         if not options.nuisances == "" :
             opts+=" --no-prefit --external-pulls \"{PATH}\" --signal-plus-background {SPLUSB}".format(PATH=options.nuisances, SPLUSB=options.signal_plus_BG)
-        ## do the submit 
+        ## do the submit
         for path in paths :
             jobname = "injected-"+path[path.rstrip('/').rfind('/')+1:]
             if options.printOnly :
-                print "lxb-injected.py --name {NAME} --input {PATH} {LXQ} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" {MASSES}".format(
-                    NAME=jobname, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "")
+                print "lxb-injected.py --name {NAME} --input {PATH} {LXQ} {CONDOR} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" {MASSES}".format(
+                    NAME=jobname, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else "")
             else :
-                os.system("lxb-injected.py --name {NAME} --input {PATH} {LXQ} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" {MASSES}".format(
-                    NAME=jobname, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else ""))
+                os.system("lxb-injected.py --name {NAME} --input {PATH} {LXQ} {CONDOR} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" {MASSES}".format(
+                    NAME=jobname, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else ""))
     else :
         ## directories and mases per directory
         struct = directories(args)
         lxb_submit(struct[0], struct[1], "--injected", "{USER}".format(USER=options.opt))
-        
+
 ##
 ## CLs
 ##
@@ -451,8 +452,8 @@ if options.optTanb or options.optTanbPlus :
                     os.system("{CMD} -n  4 --min  6.0  --max 15.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs))
                     os.system("{CMD} -n  2 --min 20.0  --max 30.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs))
                     os.system("{CMD} -n  2 --min 50.0  --max 70.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs))
-            if len(subvec(args, 300, 399))>0 :                                                                                       
-                dirs = vec2str(subvec(args, 300,  399))                                                                              
+            if len(subvec(args, 300, 399))>0 :
+                dirs = vec2str(subvec(args, 300,  399))
                 if options.printOnly :
                     print "{CMD} -n  3 --min  1.0  --max  3.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
                     print "{CMD} -n  4 --min  6.0  --max 15.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
@@ -461,7 +462,7 @@ if options.optTanb or options.optTanbPlus :
                     os.system("{CMD} -n  3 --min  1.0  --max  3.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs))
                     os.system("{CMD} -n  4 --min  6.0  --max 15.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs))
                     os.system("{CMD} -n  6 --min 20.0  --max 70.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs))
-            if len(subvec(args, 400, 499))>0 :                                                                                       
+            if len(subvec(args, 400, 499))>0 :
                 dirs = vec2str(subvec(args, 400,  499))
                 if options.printOnly :
                     print "{CMD} -n  3 --min  1.0  --max  5.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
@@ -471,7 +472,7 @@ if options.optTanb or options.optTanbPlus :
                     os.system("{CMD} -n  3 --min  1.0  --max  5.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs))
                     os.system("{CMD} -n  4 --min 10.0  --max 25.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs))
                     os.system("{CMD} -n  5 --min 30.0  --max 70.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs))
-            if len(subvec(args, 500, 1000))>0 :                                                                                      
+            if len(subvec(args, 500, 1000))>0 :
                 dirs = vec2str(subvec(args, 500, 1000))
                 if options.printOnly :
                     print "{CMD} -n  3 --min  1.0  --max  5.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
