@@ -45,7 +45,7 @@ float maximum(TH1F* h, bool LOG=false){
   if(LOG){
     if(h->GetMaximum()>1000){ return 1000.*TMath::Nint(500*h->GetMaximum()/1000.); }
     if(h->GetMaximum()>  10){ return   10.*TMath::Nint( 50*h->GetMaximum()/  10.); }
-    return 50*h->GetMaximum(); 
+    return 10000*h->GetMaximum(); 
   }
   else{
     if(h->GetMaximum()>  12){ return 10.*TMath::Nint((1.3*h->GetMaximum()/10.)); }
