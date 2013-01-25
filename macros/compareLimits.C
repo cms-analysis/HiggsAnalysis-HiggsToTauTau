@@ -107,6 +107,9 @@ channel(std::string& label){
 	  label==std::string("HIG-12-032") ||
 	  label==std::string("HIG-12-043") ||
 	  label==std::string("HIG-12-050") ||
+	  label==std::string("bbb"           ) || 
+	  label==std::string("nobbb"         ) || 
+	  label==std::string("nobbb-noprefit") ||
 	  label==std::string("mm_thomas"   ) ||
 	  label==std::string("em_valentina") ||
 	  label==std::string("em_andrew"   ) ||
@@ -214,6 +217,9 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("HIG-12-032")) title = std::string("HIG-12-032 (5-10 fb^{-1})");
   if(channel==std::string("HIG-12-043")) title = std::string("HIG-12-043 (17 fb^{-1})");
   if(channel==std::string("HIG-12-050")) title = std::string("HIG-12-050 (17 fb^{-1})"); 
+  if(channel==std::string("bbb"           )) title = std::string("bin-by-bin");
+  if(channel==std::string("nobbb"         )) title = std::string("no bin-by-bin");
+  if(channel==std::string("nobbb-noprefit")) title = std::string("no bin-by-bin and no prefit");
   if(channel==std::string("mm_thomas"   )) title = std::string("mm thomas");
   if(channel==std::string("em_valentina")) title = std::string("em valentina");
   if(channel==std::string("em_andrew"   )) title = std::string("em andrew");
@@ -323,6 +329,9 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["HIG-12-032" ] = kRed+2;
   colors["HIG-12-043" ] = kBlack;
   colors["HIG-12-050" ] = kBlack;
+  colors["bbb"           ] = kBlack;
+  colors["nobbb"         ] = kBlue;
+  colors["nobbb-noprefit"] = kRed;
   colors["mm_thomas"   ] = kRed;
   colors["em_valentina"] = kRed;
   colors["em_andrew"   ] = kBlue;
