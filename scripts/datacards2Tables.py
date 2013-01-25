@@ -298,8 +298,9 @@ def extractor(path, period):
     rate_bkg_summed = 0
     for i in range(0, len(rate_bkg)):
         rate_bkg[i] = float(rate_bkg[i])
-        rate_bkg[i] = round(rate_bkg[i], 0 if round(math.log10(rate_bkg[i]))>0 else -int(math.ceil(-math.log10(rate_bkg[i])))+1)
-        rate_bkg_summed += rate_bkg[i]
+	if rate_bkg[i]!=0.0 :
+            rate_bkg[i] = round(rate_bkg[i], 0 if round(math.log10(rate_bkg[i]))>0 else -int(math.ceil(-math.log10(rate_bkg[i])))+1)
+            rate_bkg_summed += rate_bkg[i]
     ## sum up uncertainty of total background rate
     uncert_bkg_split = []
     uncert_bkg_summed = 0
