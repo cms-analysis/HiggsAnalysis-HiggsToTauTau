@@ -81,17 +81,31 @@ for category in categories :
     if not os.path.exists("{OUTPUT}/{CAT}{LABEL}".format(OUTPUT=options.out, CAT=category, LABEL=label)) :
         os.system("mkdir {OUTPUT}/{CAT}{LABEL}".format(OUTPUT=options.out, CAT=category, LABEL=label))
 
+#directories = {
+#    "0"  : ["0jet", "fermionic", "htt"],
+#    "1"  : ["0jet", "fermionic", "htt"],
+#    "2"  : ["boost", "fermionic", "htt"],
+#    "3"  : ["boost", "fermionic", "htt"],
+#    "4"  : ["2jet", "htt"],
+#    "5"  : ["vbf", "gauge", "htt"],
+#    "6"  : ["btag", "htt"],
+#    "7"  : ["btag", "htt"],
+#    "8"  : ["nobtag", "htt"],
+#    "9"  : ["btag", "htt"],
+#}
+
+## configuration for Moriond
 directories = {
-    "0"  : ["0jet", "fermionic", "htt"],
-    "1"  : ["0jet", "fermionic", "htt"],
-    "2"  : ["boost", "fermionic", "htt"],
-    "3"  : ["boost", "fermionic", "htt"],
-    "4"  : ["2jet", "htt"],
-    "5"  : ["vbf", "gauge", "htt"],
-    "6"  : ["btag", "htt"],
-    "7"  : ["btag", "htt"],
-    "8"  : ["nobtag", "htt"],
-    "9"  : ["btag", "htt"],
+    "0"  : ["0jet", "boost", "vbf"],
+    "1"  : ["0jet", "boost", "vbf"],
+    "2"  : ["boost"],
+    "3"  : ["boost"],
+    "4"  : ["2jet"],
+    "5"  : ["vbf"],
+    "6"  : ["btag"],
+    "7"  : ["btag"],
+    "8"  : ["nobtag"],
+    "9"  : ["btag"],
 }
 
 ## categories are different for the vhtt case
@@ -102,9 +116,14 @@ vhtt_directories = {
 }
 
 ## for htt_tt, 0 = boost, 1 = vbf
+#tt_directories = {
+#    "0"  : ["boost", "fermionic", "htt"],
+#    "1"  : ["vbf", "gauge", "htt"],
+#}
+
 tt_directories = {
-    "0"  : ["boost", "fermionic", "htt"],
-    "1"  : ["vbf", "gauge", "htt"],
+    "0"  : ["boost"],
+    "1"  : ["vbf"],
 }
 
 hmm_directories = {
