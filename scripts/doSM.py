@@ -213,7 +213,7 @@ if options.update_setup :
         ##
         ## MODIOND-MVIS
         ##
-        if ana == 'incl' :
+        if ana == 'mvis' :
             for chn in channels :
                 for per in periods :
                     os.system("mv {DIR}/mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}-mvis.root {DIR}/mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
