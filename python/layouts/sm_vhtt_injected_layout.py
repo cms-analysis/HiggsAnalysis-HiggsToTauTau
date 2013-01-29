@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 layout = cms.PSet(
     ## dataset
     dataset=cms.string(
-        ", #sqrt{s}=7-8 TeV, VH #rightarrow #tau #tau, L=17 fb^{-1}"),
+        ", #sqrt{s}=7-8 TeV, VH #rightarrow #tau #tau, L=24 fb^{-1}"),
     ## x-axis title
     xaxis=cms.string("m_{H} [GeV]"),
     ## x-axis title
@@ -31,6 +31,6 @@ layout = cms.PSet(
     ## define output label
     outputLabel=cms.string("injected_limit"),
     ## define masspoints for limit plot
-    masspoints=cms.vdouble(range(110, 146, 5)),
+    masspoints=cms.vdouble(range(115, 146, 5)),
     injected=cms.bool(True),
 )
