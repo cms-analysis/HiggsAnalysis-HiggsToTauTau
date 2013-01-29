@@ -110,18 +110,19 @@ channel(std::string& label){
 	  label==std::string("bbb"           ) || 
 	  label==std::string("nobbb"         ) || 
 	  label==std::string("nobbb-noprefit") ||
-	  label==std::string("mm_thomas"   ) ||
-	  label==std::string("em_valentina") ||
-	  label==std::string("em_andrew"   ) ||
-	  label==std::string("tt_riccardo" ) ||
-	  label==std::string("tt_aram"     ) ||
-	  label==std::string("et_josh"     ) ||
-	  label==std::string("et_jose"     ) ||
-	  label==std::string("et_andrew"   ) ||
-	  label==std::string("mt_josh"     ) || 
-	  label==std::string("mt_jose"     ) || 
-	  label==std::string("mt_andrew"   ) || 
-	  label==std::string("mt_matthew"  ) 
+	  label==std::string("mm-thomas"   ) ||
+	  label==std::string("em-valentina") ||
+	  label==std::string("em-andrew"   ) ||
+	  label==std::string("tt-riccardo" ) ||
+	  label==std::string("tt-aram"     ) ||
+	  label==std::string("et-josh"     ) ||
+	  label==std::string("et-jose"     ) ||
+	  label==std::string("et-andrew"   ) ||
+	  label==std::string("mt-josh"     ) || 
+	  label==std::string("mt-jose"     ) || 
+	  label==std::string("mt-andrew"   ) || 
+	  label==std::string("mt-matthew"  ) ||
+	  label==std::string("mt-aruna"    )
 	  );
 }
 
@@ -220,18 +221,19 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("bbb"           )) title = std::string("bin-by-bin");
   if(channel==std::string("nobbb"         )) title = std::string("no bin-by-bin");
   if(channel==std::string("nobbb-noprefit")) title = std::string("no bin-by-bin and no prefit");
-  if(channel==std::string("mm_thomas"   )) title = std::string("mm thomas");
-  if(channel==std::string("em_valentina")) title = std::string("em valentina");
-  if(channel==std::string("em_andrew"   )) title = std::string("em andrew");
-  if(channel==std::string("tt_riccardo" )) title = std::string("tt riccardo");
-  if(channel==std::string("tt_aram"     )) title = std::string("tt aram");
-  if(channel==std::string("et_josh"     )) title = std::string("et josh");
-  if(channel==std::string("et_jose"     )) title = std::string("et jose");
-  if(channel==std::string("et_andrew"   )) title = std::string("et andrew");
-  if(channel==std::string("mt_josh"     )) title = std::string("mt josh");
-  if(channel==std::string("mt_jose"     )) title = std::string("mt jose");
-  if(channel==std::string("mt_andrew"   )) title = std::string("mt andrew");
-  if(channel==std::string("mt_matthew"  )) title = std::string("mt matthew");
+  if(channel==std::string("mm-thomas"   )) title = std::string("mm thomas");
+  if(channel==std::string("em-valentina")) title = std::string("em valentina");
+  if(channel==std::string("em-andrew"   )) title = std::string("em andrew");
+  if(channel==std::string("tt-riccardo" )) title = std::string("tt riccardo");
+  if(channel==std::string("tt-aram"     )) title = std::string("tt aram");
+  if(channel==std::string("et-josh"     )) title = std::string("et josh");
+  if(channel==std::string("et-jose"     )) title = std::string("et jose");
+  if(channel==std::string("et-andrew"   )) title = std::string("et andrew");
+  if(channel==std::string("mt-josh"     )) title = std::string("mt josh");
+  if(channel==std::string("mt-jose"     )) title = std::string("mt jose");
+  if(channel==std::string("mt-andrew"   )) title = std::string("mt andrew");
+  if(channel==std::string("mt-matthew"  )) title = std::string("mt matthew");
+  if(channel==std::string("mt-aruna"    )) title = std::string("mt aruna");
   return title;
 }
 
@@ -332,18 +334,19 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["bbb"           ] = kBlack;
   colors["nobbb"         ] = kBlue;
   colors["nobbb-noprefit"] = kRed;
-  colors["mm_thomas"   ] = kRed;
-  colors["em_valentina"] = kRed;
-  colors["em_andrew"   ] = kBlue;
-  colors["tt_riccardo" ] = kRed;
-  colors["tt_aram"     ] = kBlue;
-  colors["et_josh"     ] = kRed;
-  colors["et_jose"     ] = kBlue;
-  colors["et_andrew"   ] = kOrange;
-  colors["mt_josh"     ] = kViolet;
-  colors["mt_jose"     ] = kRed;
-  colors["mt_andrew"   ] = kBlue;
-  colors["mt_matthew"  ] = kOrange;
+  colors["mm-thomas"   ] = kRed;
+  colors["em-valentina"] = kRed;
+  colors["em-andrew"   ] = kBlue;
+  colors["tt-riccardo" ] = kRed;
+  colors["tt-aram"     ] = kBlue;
+  colors["et-josh"     ] = kRed;
+  colors["et-jose"     ] = kBlue;
+  colors["et-andrew"   ] = kOrange;
+  colors["mt-josh"     ] = kViolet;
+  colors["mt-jose"     ] = kRed;
+  colors["mt-andrew"   ] = kBlue;
+  colors["mt-matthew"  ] = kOrange;
+  colors["mt-aruna"    ] = kGreen+2;
 
   std::cout << " *******************************************************************************************************\n"
 	    << " * Usage     : root -l                                                                                  \n"

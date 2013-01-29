@@ -107,18 +107,31 @@ channel(std::string& label){
 	  label==std::string("HIG-12-032") ||
 	  label==std::string("HIG-12-043") ||
 	  label==std::string("HIG-12-050") ||
-	  label==std::string("mm_thomas"   ) ||
-	  label==std::string("em_valentina") ||
-	  label==std::string("em_andrew"   ) ||
-	  label==std::string("tt_riccardo" ) ||
-	  label==std::string("tt_aram"     ) ||
-	  label==std::string("et_josh"     ) ||
-	  label==std::string("et_jose"     ) ||
-	  label==std::string("et_andrew"   ) ||
-	  label==std::string("mt_josh"     ) || 
-	  label==std::string("mt_jose"     ) || 
-	  label==std::string("mt_andrew"   ) || 
-	  label==std::string("mt_matthew"  ) 
+	  label==std::string("mm-thomas"   ) ||
+	  label==std::string("em-valentina") ||
+	  label==std::string("em-andrew"   ) ||
+	  label==std::string("tt-riccardo" ) ||
+	  label==std::string("tt-aram"     ) ||
+	  label==std::string("et-josh"     ) ||
+	  label==std::string("et-jose"     ) ||
+	  label==std::string("et-andrew"   ) ||
+	  label==std::string("mt-josh"     ) || 
+	  label==std::string("mt-jose"     ) || 
+	  label==std::string("mt-andrew"   ) || 
+	  label==std::string("mt-matthew"  ) ||
+	  label==std::string("mt-aruna"    ) ||
+	  label==std::string("et-vbf-josh"     ) ||
+	  label==std::string("et-vbf-jose"     ) ||
+	  label==std::string("et-vbf-andrew"   ) ||
+	  label==std::string("mt-vbf-josh"     ) || 
+	  label==std::string("mt-vbf-jose"     ) || 
+	  label==std::string("mt-vbf-andrew"   ) ||
+	  label==std::string("et-boost-josh"     ) ||
+	  label==std::string("et-boost-jose"     ) ||
+	  label==std::string("et-boost-andrew"   ) ||
+	  label==std::string("mt-boost-josh"     ) || 
+	  label==std::string("mt-boost-jose"     ) || 
+	  label==std::string("mt-boost-andrew"   ) 
 	  );
 }
 
@@ -216,18 +229,31 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("HIG-12-032")) title = std::string("HIG-12-032 (5-10 fb^{-1})");
   if(channel==std::string("HIG-12-043")) title = std::string("HIG-12-043 (17 fb^{-1})");
   if(channel==std::string("HIG-12-050")) title = std::string("HIG-12-050 (17 fb^{-1})"); 
-  if(channel==std::string("mm_thomas"   )) title = std::string("mm thomas");
-  if(channel==std::string("em_valentina")) title = std::string("em valentina");
-  if(channel==std::string("em_andrew"   )) title = std::string("em andrew");
-  if(channel==std::string("tt_riccardo ")) title = std::string("tt riccardo");
-  if(channel==std::string("tt_aram"     )) title = std::string("tt aram");
-  if(channel==std::string("et_josh"     )) title = std::string("et josh");
-  if(channel==std::string("et_jose"     )) title = std::string("et jose");
-  if(channel==std::string("et_andrew"   )) title = std::string("et andrew");
-  if(channel==std::string("mt_josh"     )) title = std::string("mt josh");
-  if(channel==std::string("mt_jose"     )) title = std::string("mt jose");
-  if(channel==std::string("mt_andrew"   )) title = std::string("mt andrew");
-  if(channel==std::string("mt_matthew"  )) title = std::string("mt matthew");
+  if(channel==std::string("mm-thomas"   )) title = std::string("mm thomas");
+  if(channel==std::string("em-valentina")) title = std::string("em valentina");
+  if(channel==std::string("em-andrew"   )) title = std::string("em andrew");
+  if(channel==std::string("tt-riccardo ")) title = std::string("tt riccardo");
+  if(channel==std::string("tt-aram"     )) title = std::string("tt aram");
+  if(channel==std::string("et-josh"     )) title = std::string("et josh");
+  if(channel==std::string("et-jose"     )) title = std::string("et jose");
+  if(channel==std::string("et-andrew"   )) title = std::string("et andrew");
+  if(channel==std::string("mt-josh"     )) title = std::string("mt josh");
+  if(channel==std::string("mt-jose"     )) title = std::string("mt jose");
+  if(channel==std::string("mt-andrew"   )) title = std::string("mt andrew");
+  if(channel==std::string("mt-matthew"  )) title = std::string("mt matthew");
+  if(channel==std::string("mt-aruna"    )) title = std::string("mt aruna");
+  if(channel==std::string("et-vbf-josh"     )) title = std::string("et vbf josh");
+  if(channel==std::string("et-vbf-jose"     )) title = std::string("et vbf jose");
+  if(channel==std::string("et-vbf-andrew"   )) title = std::string("et vbf andrew");
+  if(channel==std::string("mt-vbf-josh"     )) title = std::string("mt vbf josh");
+  if(channel==std::string("mt-vbf-jose"     )) title = std::string("mt vbf jose");
+  if(channel==std::string("mt-vbf-andrew"   )) title = std::string("mt vbf andrew");
+  if(channel==std::string("et-boost-josh"     )) title = std::string("et boost josh");
+  if(channel==std::string("et-boost-jose"     )) title = std::string("et boost jose");
+  if(channel==std::string("et-boost-andrew"   )) title = std::string("et boost andrew");
+  if(channel==std::string("mt-boost-josh"     )) title = std::string("mt boost josh");
+  if(channel==std::string("mt-boost-jose"     )) title = std::string("mt boost jose");
+  if(channel==std::string("mt-boost-andrew"   )) title = std::string("mt boost andrew");
   return title;
 }
 
@@ -325,18 +351,31 @@ void compareDeltaLimit(const char* filename, const char* channelstr, bool expect
   colors["HIG-12-032" ] = kRed+2;
   colors["HIG-12-043" ] = kBlack;
   colors["HIG-12-050" ] = kBlack;
-  colors["mm_thomas"   ] = kRed;
-  colors["tt_riccardo" ] = kRed;
-  colors["tt_aram"     ] = kBlue;
-  colors["em_valentina"] = kRed;
-  colors["em_andrew"   ] = kBlue;
-  colors["et_josh"     ] = kRed;
-  colors["et_jose"     ] = kBlue;
-  colors["et_andrew"   ] = kOrange;
-  colors["mt_josh"     ] = kViolet;
-  colors["mt_jose"     ] = kRed;
-  colors["mt_andrew"   ] = kBlue;
-  colors["mt_matthew"  ] = kOrange;
+  colors["mm-thomas"   ] = kRed;
+  colors["tt-riccardo" ] = kRed;
+  colors["tt-aram"     ] = kBlue;
+  colors["em-valentina"] = kRed;
+  colors["em-andrew"   ] = kBlue;
+  colors["et-josh"     ] = kRed;
+  colors["et-jose"     ] = kBlue;
+  colors["et-andrew"   ] = kOrange;
+  colors["mt-josh"     ] = kViolet;
+  colors["mt-jose"     ] = kRed;
+  colors["mt-andrew"   ] = kBlue;
+  colors["mt-matthew"  ] = kOrange;
+  colors["mt-aruna"    ] = kGreen+2;
+  colors["et-vbf-josh"     ] = kRed;
+  colors["et-vbf-jose"     ] = kBlue;
+  colors["et-vbf-andrew"   ] = kOrange;
+  colors["mt-vbf-josh"     ] = kViolet;
+  colors["mt-vbf-jose"     ] = kRed;
+  colors["mt-vbf-andrew"   ] = kBlue;
+  colors["et-boost-josh"     ] = kRed;
+  colors["et-boost-jose"     ] = kBlue;
+  colors["et-boost-andrew"   ] = kOrange;
+  colors["mt-boost-josh"     ] = kViolet;
+  colors["mt-boost-jose"     ] = kRed;
+  colors["mt-boost-andrew"   ] = kBlue; 
 
   std::cout << " *******************************************************************************************************\n"
 	    << " * Usage     : root -l                                                                                  \n"
@@ -459,7 +498,7 @@ void compareDeltaLimit(const char* filename, const char* channelstr, bool expect
 	  leg1 = new TLegend(0.20, hobs.size()<5 ? 0.90-0.08*hobs.size() : 0.6, 0.63, 0.90);
        }
     }
-    else{
+    else if(observed){
       /// setup the CMS Preliminary
       if(std::string(type) == std::string("mssm-tanb")){
 	CMSPrelim(label, "", 0.15, 0.835);
@@ -470,12 +509,26 @@ void compareDeltaLimit(const char* filename, const char* channelstr, bool expect
 	leg1 = new TLegend(legendOnRight ? 0.50 : 0.20, hobs.size()<5 ? 0.90-0.08*hobs.size() : 0.6, legendOnRight ? 0.94 : 0.80, 0.90);
       }
     }
+    else if(expected){
+      /// setup the CMS Preliminary
+      if(std::string(type) == std::string("mssm-tanb")){
+	CMSPrelim(label, "", 0.15, 0.835);
+	leg1 = new TLegend(legendOnRight?0.60:0.20, hexp.size()<5 ? (legendOnTop?0.90:0.20)-0.06*hexp.size() : (legendOnTop?0.6:0.4), legendOnRight?0.94:0.45, (legendOnTop?0.90:0.20));
+	   }
+      else{
+	CMSPrelim(label, "", 0.15, 0.835);
+	leg1 = new TLegend(legendOnRight ? 0.50 : 0.20, hexp.size()<5 ? 0.90-0.08*hexp.size() : 0.6, legendOnRight ? 0.94 : 0.80, 0.90);
+      }
+    }
+    
     //leg1->SetTextSize(0.02);
     leg1->SetBorderSize( 0 );
     leg1->SetFillStyle ( 1001 );
     //leg1->SetFillColor ( 0 );
     leg1->SetFillColor (kWhite);
-    leg1->SetHeader( "#bf{Observed Limit}" );
+    if(expected && observed) leg1->SetHeader( "#bf{Observed and Expected Limit}" );
+    else if(expected) leg1->SetHeader( "#bf{Expected Limit}" );
+    else if(observed) leg1->SetHeader( "#bf{Observed Limit}" );
     // skip one of the two split options
     TString help = TString::Format("| %s  -  %s |" , channels[0].c_str(), channels[1].c_str());
     leg1->AddEntry( result , help,  "PL" );    
