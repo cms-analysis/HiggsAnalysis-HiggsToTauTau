@@ -162,7 +162,7 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("0jet-mvis" )) title = std::string("0-Jet (with m_{vis})");
   if(channel==std::string("0jet-ichep")) title = std::string("0-Jet (HCP on ICHEP dataset)");
   if(channel==std::string("2jet"      )) title = std::string("V(jj)H(#tau#tau)");
-  if(channel==std::string("vbf"       )) title = std::string("2-Jet (VBF) ICHEP analysis");
+  if(channel==std::string("vbf"       )) title = std::string("2-Jet (VBF)");
   if(channel==std::string("vbf+0jet"  )) title = std::string("2-Jet (VBF)");
   if(channel==std::string("vbf-mvis"  )) title = std::string("2-Jet (VBF) (with m_{vis})");
   if(channel==std::string("vbf-ichep" )) title = std::string("2-Jet (VBF) HCP analysis");
@@ -235,7 +235,7 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label=" Preliminary, H#rightarrow#tau#tau, L=19.4 fb^{-1}", bool legendOnRight=true, bool legendOnTop=true)
+void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label=" Preliminary, H#rightarrow#tau#tau, L=23.4 fb^{-1}", bool legendOnRight=true, bool legendOnTop=true)
 {
   SetStyle();
 
