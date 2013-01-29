@@ -20,6 +20,10 @@ agroup.add_option("--asymptotic", dest="optAsym", default=False, action="store_t
                   help="Calculate asymptotic CLs limits from the datacards in the directory/ise corresponding to ARGs. [Default: False]")
 agroup.add_option("--injected", dest="optInject", default=False, action="store_true",
                   help="Calculate asymptotic CLs limits from the datacards in the directory/ise corresponding to ARGs with a SM signal injected. This method is toy based. It requires that the toys have been run beforehand using the script submit.py with option --injected. When used with option --injected the script limit.py will collect the output of the batch submission and calculate the observed limit. In case that toys from previous submission exist already they will be merged with the new toys. This does allow to increase the toy statistics in subsequent submissions. In case you do not want this feature you should specify this with option --from-scratch. [Default: False]")
+
+agroup.add_option("--injected2", dest="optInject2", default=False, action="store_true",
+                  help="Calculate asymptotic CLs limits from the datacards in the directory/ise corresponding to ARGs with a SM signal injected. This method is toy based. It requires that the toys have been run beforehand using the script submit.py with option --injected. When used with option --injected the script limit.py will collect the output of the batch submission and calculate the observed limit. In case that toys from previous submission exist already they will be merged with the new toys. This does allow to increase the toy statistics in subsequent submissions. In case you do not want this feature you should specify this with option --from-scratch. [Default: False]")
+
 agroup.add_option("--CLs", dest="optCLs", default=False, action="store_true",
                   help="Calculate the observed and expected full CLs limits. This method is completely toy based. It requires that the toys have been run beforehand using the script submit.py with option --CLs. This script will submit toys to a batch system or to the grid using crab. This action will require a grid certificate. You can monitor and receive the results of your jobs once finished using the command options explained in section COMMON CRAB COMMAND OPTIONS of this parameter description.[Default: False]")
 agroup.add_option("--bayesian", dest="optBayes", default=False, action="store_true",
@@ -59,7 +63,7 @@ bgroup.add_option("--working-dir", dest="workingdir", default=".",
                   help="Optionally specify where the temporary combined datacard tmp.txt should be produced. [Default '.']")
 parser.add_option_group(bgroup)
 ##
-## CRAB OPTIONS 
+## CRAB OPTIONS
 ##
 cgroup = OptionGroup(parser, "CRAB OPTIONS", "These are command line options for the common use of crab within limits.py. You need the following requirements to be able to execute limits.py with these options: have set up the glite environment; have set up the crab environment; have a valid grid certificate. These options apply to all toy based calculations that have been submitted to the grid. you can use them to monitor the jobs of each crab job that has been submittred from the directoriy/ies corresponding to ARGs and to receive their output once finished.")
 cgroup.add_option("--status", dest="status", default=False, action="store_true",
@@ -131,7 +135,7 @@ igroup.add_option("--toys", dest="toys", default="100", type="string",
                   help="Set number of toys of the median and quantiles for expected significance calculation. [Default: \"100\"]")
 parser.add_option_group(igroup)
 ##
-## ASYMPTOTIC OPTIONS 
+## ASYMPTOTIC OPTIONS
 ##
 egroup = OptionGroup(parser, "ASYMPTOTIC OPTIONS", "These are the command line options for the use of limit.py with the option --asymptotic. Running limit.py --asymptotic ARGs will result in observed and expected asymptotic CLs limits based on the datacards in the directory/ies corresponding to ARGs. Asymptotic limits can be run directly on the specified target directories without any further processing. It is expected that the target directories follow a directory structure as described on the top of this parameter description. Prior to the limit calculation a maximum likelihood fit is performed to the data with a background only model and with a signal plus background model. The parameters of this fit can be changed according to the options described in section MAX-LIKELIHOOD OPTIONS of this parameter description. The pre-fit to the data can also be suppressed. When calculating expected limits in data blinded mode use the options --no-prefit and --expectedOnly.")
 egroup.add_option("--no-prefit", dest="noprefit", default=False, action="store_true",
@@ -279,18 +283,18 @@ def create_card_workspace_with_physics_model(mass) :
             ## resolve multidim-fit bounds if they exist
             opt = opt.replace("GGH-BOUND", bounds[mass][0])
             opt = opt.replace("BBH-BOUND", bounds[mass][1])
-            ## add options to workspace 
-            wsopts.append(('--PO', opt))                                
+            ## add options to workspace
+            wsopts.append(('--PO', opt))
     return create_card_workspace(mass, inputs, output, wsopts)
 
 ##
-## INJECTED 
+## INJECTED
 ##
 ## special steering for option --injected to run --asymptotic with option --observedOnly
 if options.optInject :
     options.optAsym = True
     options.observedOnly = True
-    
+
 for directory in args :
     if directory.find("common")>-1 :
         print "> skipping directory common"
@@ -510,7 +514,7 @@ for directory in args :
     if options.optSig :
         ## determine mass value from directory name
         mass  = get_mass(directory)
-        ## create a hadd'ed file per crab directory if applicable        
+        ## create a hadd'ed file per crab directory if applicable
         ifile=0
         directoryList = os.listdir(".")
         for name in directoryList :
@@ -621,6 +625,50 @@ for directory in args :
             os.system("mv batch_collected.root new.root")
             os.system("hadd batch_collected.root old.root new.root")
             os.system("rm old.root new.root")
+    ##
+    ## INJECTED2 (compute expected dataset using toys)
+    ##
+    if options.optInject2:
+        ## determine mass value from directory name
+        mass  = get_mass(directory)
+        ## prepare workspace
+        model = []
+        if "=" in options.fitModel :
+            model = options.fitModel.split('=')
+            create_card_workspace_with_physics_model(mass)
+        elif options.fitModel == "" :
+            create_card_workspace(mass)
+        else :
+            model = [options.fitModel]
+        ## if it does not exist already, create link to executable
+        if not os.path.exists("combine") :
+            os.system("cp -s $(which combine) .")
+        ## prepare prefit option
+        prefitopt = ""
+        if options.noprefit :
+            prefitopt = "-t -1"
+        ## prepare fit option
+        minuitopt = ""
+        if options.minuit :
+            minuitopt = "--minimizerAlgo minuit"
+        qtildeopt = ""
+        if options.qtilde :
+            qtildeopt = "--qtilde 0"
+        ## prepare mass options
+        massopt = "-m %s " % mass
+        ## run expected limits
+        wsp = 'tmp' if len(model) == 0 else model[0]
+        # Generate toys
+        command = "combine {wdir}/{wsp}.root -M GenerateOnly -t 1000 -m 125 --saveToys".format(
+             user=options.userOpt, wdir=options.workingdir, wsp=wsp
+        )
+        print command
+        os.system(command)
+        os.system("mv higgsCombineTest.GenerateOnly.mH125.123456.root toys.root")
+        command = "combine -M Asymptotic -t -1 --run expected -C {cl} {minuit} {prefit} --minimizerStrategy {strategy} -n '-exp' {mass} {user} {wdir}/{wsp}.root --toysFile=toys.root".format(
+            cl=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt, strategy=options.strategy, mass=massopt, user=options.userOpt, wdir=options.workingdir, wsp=wsp)
+        print command
+        os.system(command)
     ##
     ## CLS
     ##

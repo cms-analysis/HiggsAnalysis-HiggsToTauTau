@@ -28,7 +28,7 @@ sub1.add_option("--signals-em", dest="signals_em", default="ggH{MASS},qqH{MASS},
 sub1.add_option("--signals-et", dest="signals_et", default="ggH{MASS},qqH{MASS},VH{MASS}", type="string", help="List of signal for em channel. NOTE: should be comma separated, NO spaces allowed. The keyword {MASS} will be replaced by the mass to be injected (--mass-injected). It has to be present in the signal sample string. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
 sub1.add_option("--signals-mt", dest="signals_mt", default="ggH{MASS},qqH{MASS},VH{MASS}", type="string", help="List of signal for em channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
 sub1.add_option("--signals-tt", dest="signals_tt", default="ggH{MASS},qqH{MASS},VH{MASS}", type="string", help="List of signal for em channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
-sub1.add_option("--signals-vhtt", dest="signals_vhtt", default="WH{MASS},WH_hww{MASS},ZH_htt{MASS},ZH_hww{MASS}", type="string", help="List of signal for the VH (WH & ZH) channels. NOTE: should be comma separated, NO spaces allowed. [Default: \"VH{MASS},VH_hww{MASS}\"]")
+sub1.add_option("--signals-vhtt", dest="signals_vhtt", default="WH{MASS},WH_hww{MASS},ZH_htt{MASS},ZH_hww{MASS},VH{MASS}", type="string", help="List of signal for the VH (WH & ZH) channels. NOTE: should be comma separated, NO spaces allowed. [Default: \"VH{MASS},VH_hww{MASS}\"]")
 parser.add_option_group(sub1)
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode. [Default: False]")
 ## check number of arguments; in case print usage
@@ -120,6 +120,7 @@ directories = {
     ("tt", "0") : "tauTau_boost",
     ("tt", "1") : "tauTau_vbf",
     ("wh", "0") : ["emt", "mmt"], # WH is always category 0, and is 2 channels
+    ("wh", "2") : ["ett", "mtt"], # WH fully hadronic
     # ZH is always category 1, and is 8 channels
     ("zh", "1") : ["mmmt_zh", "mmet_zh", "mmme_zh", "mmtt_zh", "eemt_zh",
                    "eeet_zh", "eeem_zh", "eett_zh"],
@@ -193,7 +194,7 @@ for file in files :
     chn = matcher.match(file).group('CHANNEL')
     per = matcher.match(file).group('PERIOD')
     #print "an:",an,"chn:",chn,"cat:",cat,"per:",per
-    if an == 'vhtt' and cat == '0' :
+    if an == 'vhtt' and (cat == '0' or cat == '2'):
         chn = 'wh'
     if an == 'vhtt' and cat == '1' :
         chn = 'zh'
@@ -248,7 +249,7 @@ for chn in channels :
             if chn == 'zh':
                 directories_to_randomize = '*_zh'
             elif chn == 'wh':
-                directories_to_randomize = 'emt,mmt'
+                directories_to_randomize = 'emt,mmt,mtt,ett'
             command = "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/blindData.C+\\(\\\"{FILE}\\\",\\\"{BACKGROUNDS}\\\",\\\"{SIGNALS}\\\",\\\"{DIRS}\\\",true,{RND},{SCALE},\\\"{OUTPUT}\\\",2\)"
             yields = subprocess.Popen(
                 shlex.split(command.format(
@@ -283,7 +284,7 @@ def get_card_file(channel, category, period, mass):
                             "htt_"+channel+"_"+category+"_"+period+".txt")
     else:
         # For WH and ZH, they are differentiated by category number
-        if channel == 'wh' and int(category) != 0:
+        if channel == 'wh' and int(category) not in (0, 2):
             return "wh is always category 0" # this will fail os.path.exists
         elif channel == 'zh' and int(category) != 1:
             return "zh is always category 1" # this will fail os.path.exists
