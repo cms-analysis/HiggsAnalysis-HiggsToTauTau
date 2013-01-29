@@ -9,28 +9,44 @@ agroup = OptionGroup(parser, "MAIN OPTIONS", "These are the main command line op
 agroup.add_option("--byLimit", dest="optByLimit", default=False, action="store_true",
                   help="With this method the parameters to be pruned will be determined by the influence of the parameter on the limit calculation. For performance reasons the procedure is split by decay channels. [Default: \"False\"]")
 agroup.add_option("--byPull", dest="optByPull", default=False, action="store_true",
-                  help="With this method the parameters to be pruned will be determined by the influence the fit has on the parameter in the background only or in the signal+background fit. When applying this method a maximum likelihood fit will be performed on the combination of all indicated decay channel. Depending on the number of nuisance parameters in the model this can take up to several hours. [Default: \"False\"]")
+                  help="With this method the parameters to be pruned will be determined by the pull that the fit has on the parameter in the background only or in the signal+background fit. When applying this method a maximum likelihood fit will be performed on the combination of all indicated decay channel. Depending on the number of nuisance parameters in the model this can take up to several hours. [Default: \"False\"]")
+agroup.add_option("--byShift", dest="optByShift", default=False, action="store_true",
+                  help="This method is equivalent to method --byPull. Instrad of the pull the rleative shift of the parameter is taken into account, which is determined from the product of the pull with the original size of the uncertainty in the datacard. [Default: \"False\"]")
 parser.add_option_group(agroup)
-bgroup = OptionGroup(parser, "COMMON OPTIONS", "These are the command line options that a common for both methods. You can determine the mass to be chosen for the pruning process, the number of channels to be considered and the threshold to distinguish the pruning. Note that depending on the method the threshold does have a different meaning and should take different values.")
+bgroup = OptionGroup(parser, "COMMON OPTIONS", "These are the command line options that are common for all methods. You can determine the mass to be chosen for the pruning process and the number of channels to be considered.")
 bgroup.add_option("-c", "--channels", dest="channels", default="mm em mt et tt", type="string",
                   help="The list of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et tt\"]")
 bgroup.add_option("-m", "--mass", dest="mass", default="125", type="string",
                   help="The mass value to be used to run the pruning algorithm on. [Default: 125]")
+bgroup.add_option("--shield-bins", dest="optShield", default=False, action="store_true",
+                  help="Use this option if you want to prevent bins in the vicinity of an expected signal to be subject to bin-by-bin uncertainty pruning, even, if they have a small effect on pulls, relative shifts or limit. If this option is chosen the central value and the relative size of the window can be chosen by the parameters --shield-central and --shield-bounds as described below. [Default: \"False\"]")
+bgroup.add_option("--fit-result", dest="fit_result", default="",  type="string",
+                  help="The main option --byPull and --byShift require a maximum likeihood fit to be run before pruning. This can be time consuming. It is possible to pass on the output of pre-calculated fits by this option. Give here the full path to the result file of the fit (mlfit.txt) if it exists already. If empty the fit will be performed within hits script. [Default: \"\"]")
 parser.add_option_group(bgroup)
-cgroup = OptionGroup(parser, "BYLIMIT OPTIONS", "These are the additional command line options when running the script with option --byLimit.")
-cgroup.add_option("--limit-threshold", dest="limit_threshold", default="0.0025", type="string",
-                  help="The threshold to determine the nuisance parameters to be pruned. The value corresponds to the relative difference on the limit result (split by channel) when taking the nuisance parameter of choice into account or not. [Default: 0.0025]")
-cgroup.add_option("--limit-metric", dest="limit_metric", default="all",  type="choice", choices=['exp', 'obs', 'all'],
-                  help="The metric to be used for pruning. Choices are: exp (maximal difference on expected limit only), obs (maximal difference on observed only), all (maximal difference on of observed or expected). [Default: 'all']")
+cgroup = OptionGroup(parser, "SHIELD-BINS OPTIONS", "These are the additional command line options when running the script with option --shield-bins. You can give the central value and the relative width of a mass window in which you want to prevent bins to be subject to bin-by-bin uncertainty pruning.")
+cgroup.add_option("--shield-central", dest="shield_central", default="125", type="string",
+                  help="Give a value here that corresponds to the central value of this window for option --shield-bins. [Default: 125]")
+cgroup.add_option("--shield-bounds", dest="shield_bounds", default="0.3", type="string",
+                  help="Give a value here that corresponds to the relative width of the window for option --shield-bins. The central value is given by option --shield-central. [Default: 0.3]")
 parser.add_option_group(cgroup)
-dgroup = OptionGroup(parser, "BYPULL OPTIONS", "These are the additional command line options when running the script with option --byPull.")
-dgroup.add_option("--pull-threshold", dest="pull_threshold", default="0.05", type="string",
-                  help="The threshold to determine the nuisance parameters to be pruned. The value corresponds to the pull of the parameter in the maximum likelihood fit. [Default: 0.05]")
-dgroup.add_option("--pull-metric", dest="pull_metric", default="all",  type="choice", choices=['b-only', 's+b', 'all'],
-                  help="The metric to be used for pruning. Choices are: b-only (pull for b-only fit), s+b (pull for s+b fit), all (maximum of pull on b-only and s+b fit). [Default: 'all']")
-dgroup.add_option("--fit-result", dest="fit_result", default="",  type="string",
-                  help="The full path to the result file of the fit (mlfit.txt) if it exists already. If empty the fit will be performed within hits script. [Default: \"\"]")
+dgroup = OptionGroup(parser, "BYLIMIT OPTIONS", "These are the additional command line options when running the script with option --byLimit.")
+dgroup.add_option("--limit-threshold", dest="limit_threshold", default="0.0025", type="string",
+                  help="The threshold to determine the nuisance parameters to be pruned. The value corresponds to the relative difference on the limit result (split by channel) when taking the nuisance parameter of choice into account or not. [Default: 0.0025]")
+dgroup.add_option("--limit-metric", dest="limit_metric", default="all",  type="choice", choices=['exp', 'obs', 'all'],
+                  help="The metric to be used for pruning. Choices are: exp (maximal difference on expected limit only), obs (maximal difference on observed only), all (maximal difference on of observed or expected). [Default: 'all']")
 parser.add_option_group(dgroup)
+egroup = OptionGroup(parser, "BYPULL OPTIONS", "These are the additional command line options when running the script with option --byPull.")
+egroup.add_option("--pull-threshold", dest="pull_threshold", default="0.05", type="string",
+                  help="The threshold to determine the nuisance parameters to be pruned. The value corresponds to the pull of the parameter in the maximum likelihood fit. [Default: 0.05]")
+egroup.add_option("--pull-metric", dest="pull_metric", default="all",  type="choice", choices=['b-only', 's+b', 'all'],
+                  help="The metric to be used for pruning. Choices are: b-only (pull for b-only fit), s+b (pull for s+b fit), all (maximum of pull on b-only and s+b fit). [Default: 'all']")
+parser.add_option_group(egroup)
+fgroup = OptionGroup(parser, "BYSHIFT OPTIONS", "These are the additional command line options when running the script with option --byShift.")
+fgroup.add_option("--shift-threshold", dest="shift_threshold", default="0.05", type="string",
+                  help="The threshold to determine the nuisance parameters to be pruned. The value corresponds to the relative shift of the parameter in the maximum likelihood fit. [Default: 0.05]")
+fgroup.add_option("--shift-metric", dest="shift_metric", default="all",  type="choice", choices=['b-only', 's+b', 'all'],
+                  help="The metric to be used for pruning. Choices are: b-only (pull for b-only fit), s+b (pull for s+b fit), all (maximum of pull on b-only and s+b fit). [Default: 'all']")
+parser.add_option_group(fgroup)
 parser.add_option("--debug", dest="debug", default=False, action="store_true",
                   help="Run in debug mode. Only recommended for (performace) testing or debugging. [Default: False]")
 (options, args) = parser.parse_args()
@@ -51,6 +67,11 @@ channels = options.channels.split()
 for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
 ## parent directory from which the tool has been executed
 parentdir = os.getcwd()
+## configure options for --byPull or --byShift
+if options.optByShift :
+    options.optByPull = True
+    options.pull_metric = options.shift_metric
+    options.pull_theshold = options.shift_threshold
 
 ## setup directory structure for for logging
 os.system("mkdir -p log")
@@ -58,21 +79,88 @@ os.system("mkdir -p log/pruning")
 logdir = os.getcwd()+'/log/pruning'
 
 def summarize_uncerts(values, chn=None) :
+    """
+    This function opens a root file and fills the values that the bin-by-bin
+    uncertainties have into a histogram. Depending on the chosen method the
+    boundaries of this histogram are adjusted.
+    """
     path = logdir
     output = path+"/bin-by-bin-uncertainties-%s.root" % chn if chn else path+"/bin-by-bin-uncertainties.root"
     print "writing pulls/effect on limit to", output
     file = ROOT.TFile(output, "UPDATE")
-    nbin = 150 if options.optByPull else 150
-    xmin = 0.  if options.optByPull else -3.
-    xmax = 1.5 if options.optByPull else  0.
+    nbin = 150 if options.optByPull or options.optByShift else 150
+    xmin = 0.  if options.optByPull or options.optByShift else -3.
+    xmax = 1.5 if options.optByPull or options.optByShift else  0.
     hist = ROOT.TH1F("bin-by-bin", "bin-by-bin", nbin, xmin, xmax)
     for val in values :
         hist.Fill(val if options.optByPull else math.log10(val))
     file.Write("bin-by-bin")
     file.Close()
 
-## number of excluded files
+def walk_directory(dir, uncerts, bounds) :
+    """
+    This function walks the directory structure of the input file. It checks for histograms that follow
+    the bin-by-bin uncertainty naming conventions. From these histograms it fills the actual value of
+    the uncertainty and the boundaries of a user defined window around the mH mass region. These values
+    are filled in two dictionaries of type:
+
+     - uncert = {uncert_name, uncert}
+     - bounds - {uncert_name, (lower-bound, upper-bound)}
+    """
+    for key in dir.GetListOfKeys() :
+        name=key.GetName()
+        if key.GetClassName().startswith('TDirectory') :
+            #print "in directory: ", name
+            walk_directory(dir.Get(name), uncerts, bounds)
+        else :
+            if isinstance(dir.Get(name), ROOT.TH1) :
+                bbb = re.match("\s*\w+bin\_*(\d*)Up", name)
+                if bbb :
+                    ## Note: depending on the chosen statistics uncertainties can be
+                    ## asymmetric also for histograms. Also there is cases where Down
+                    ## has been forced to 0 if it lead to values smaller than 0.
+                    upper = dir.Get(name)
+                    value = dir.Get(name[:name.find('_CMS')])
+                    lower = dir.Get(name.replace('Up', 'Down'))
+                    bin_match = re.compile("\s*\w+bin\_*(\d*)\w*")
+                    bins = bin_match.findall(name)
+                    for bin in bins :
+                        ibin = int(bin)
+                        cen = float(options.shield_central)
+                        bnd = float(options.shield_bounds)
+                        ## Note: there is small inconsistency here as the uncertainty
+                        ## histograms have been re-normalized to have the same integral
+                        ## as the central value after shifting up the bin in question.
+                        uncerts[name[name.find('CMS'):name.find('Up')]]=max(abs(value.GetBinContent(ibin)-lower.GetBinContent(ibin)), abs(value.GetBinContent(ibin)-upper.GetBinContent(ibin)))
+                        bounds [name[name.find('CMS'):name.find('Up')]]=(value.GetXaxis().FindBin(cen-bnd*cen), value.GetXaxis().FindBin(cen+bnd*cen))
+                
+def load_auxiliaries(filename, uncerts, bounds) :
+    """
+    This function is called after the directory structure to apply the pruning has been
+    set up to fill to auxiliary dictionaries: uncerts keeps the actual Up and Down
+    uncertainty for a given uncertainty name; bounds keeps the lower and upper bound of
+    the mass window to force bin-by-bin uncertainties in case this option is active.
+    The returned structure of these dictionaries will be:
+
+     - uncert = {uncert_name, uncert}
+     - bounds - {uncert_name, (lower-bound, upper-bound)}
+
+    where uncert_name corresponds to the unique name of the uncertainty histgoram up to
+    the ending Up/Down.
+    """
+    input = ROOT.TFile(filename, 'READ')
+    if not input :
+        raise IOError("Can't open input file: %s" % filename)
+    walk_directory(input, uncerts, bounds)
+    input.Close()
+
 def manipulate_bbb(datacard, manipulation, excludes=None) :
+    """
+    This function parses a datacard, finds those uncertainties that follow the naming
+    conventions for bin-by-bin uncertainties and manipulates them. It can comment or
+    uncomment them. If a list excludes is passed on it only acts on those uncerts,
+    which are in this list.
+    """
     excl=0
     file = open(datacard,'r')
     output = open('tmp.txt', 'w')
@@ -127,7 +215,15 @@ for chn in channels :
 if options.optByPull and options.fit_result == "" :
     os.system("limit.py --max-likelihood --stable pruning/{MASS}".format(MASS=options.mass))
     os.system("cp pruning/{MASS}/out/mlfit.txt {LOG}".format(MASS=options.mass, LOG=logdir))
-        
+
+## fill a set of auxiliary dictionaires here that
+## will be used when running with option --byShift
+## or with option --shield-bins
+uncerts = {}
+bounds  = {}
+for file in glob.glob("pruning/common/*.root") :
+    load_auxiliaries(file, uncerts, bounds)
+
 ## change directory (needed by sizeUpsystematics.py)
 os.chdir("pruning/{MASS}".format(MASS=options.mass))
 
@@ -143,8 +239,11 @@ if options.optByLimit :
     
     ## pick up parameters from json file per channel
     def prune_by_limit(path, chn) :
+        ## counters for monitoring
         out = 0
         all = 0
+        shielded = 0
+        ## list of all values for monitoring
         vals= []
         report = json.loads(" ".join([l for l in open(path,"r")]))
         if not report: raise RuntimError, "Couldn't load %s" % path
@@ -153,13 +252,25 @@ if options.optByLimit :
             all += 1
             outcome = metric(map)
             if options.debug :
-                bbb = re.match("\w+bin\_*\d*\w+", nuisList[0])
+                bbb = re.match("\w+bin\_*\d*\w*", nuisList[0])
                 if bbb :
                     vals.append(float(outcome))
             if float(outcome) < float(options.limit_threshold) :
-                toExclude += nuisList
-                out += 1
-        print "excluded", out, "from", all
+                ## apply shielding of bins
+                shield = False
+                bin_match = re.compile("\s*\w+bin\_*(\d*)\w*")
+                bins = bin_match.findall(name)
+                for bin in bins :
+                    ibin = int(bin)
+                    if options.optShield :
+                        if bounds[name][0]<ibin and ibin<bounds[name][1] :
+                            shield=True
+                if shield :
+                    shielded += 1
+                else :
+                    out += 1
+                    toExclude += nuisList
+        print "excluded", out, "from", all, ": (", shielded, "rescued from shielding.)"
         if options.debug :
             summarize_uncerts(vals, chn)
         return toExclude
@@ -231,38 +342,53 @@ if options.optByPull :
         os.system("cp {SRC} out/mlfit.txt".format(SRC=options.fit_result))
     ## pick up parameters from json file per channel
     def prune_by_pull(path) :
+        ## counters for monitoring
         out = 0
         all = 0
+        shielded = 0
+        ## list of all values for monitoring
         vals= []
-        file = open(path,'r')
+        ## datacards input file
+        file= open(path,'r')
         toExclude = []
         for line in file :
-            bbb = re.match("^#*\s*(\w+bin\_*\d*\w+)", line.split()[0])
+            name=line.split()[0]
+            bbb = re.match("^#*\s*(\w+bin\_*\d*\w+)", name)
             if bbb :
                 pull_match = re.compile('[+-]\d+\.\d+(?=sig)')
                 pulls = pull_match.findall(line)
                 if pulls :
-                    all += 1
+                    all+= 1
+                    val = 0.
+                    ## define metric
                     if options.pull_metric == 'b' :
-                        if options.debug :
-                            vals.append(float(pulls[0]))
-                        if abs(float(pulls[0])) < float(options.pull_threshold) :
-                            out += 1
-                            toExclude.append(line.split()[0])
+                        val = float(pulls[0])
                     if options.pull_metric == 's+b' :
-                        if options.debug :
-                            vals.append(float(pulls[1]))                        
-                        if abs(float(pulls[1])) < float(options.pull_threshold) :
-                            out += 1
-                            toExclude.append(line.split()[0])
+                        val = float(pulls[1])
                     if options.pull_metric == 'all' :
-                        if options.debug :
-                            vals.append(float(max(abs(float(pulls[0])), float(pulls[1]))))
-                        if max(abs(float(pulls[0])), float(pulls[1])) < float(options.pull_threshold) :
+                        val = max(abs(float(pulls[0])), float(pulls[1]))
+                    ## switch to byShift
+                    if options.optByShift :
+                        val*= uncerts[name]
+                    if options.debug :
+                        vals.append(val)
+                    if abs(val) < float(options.pull_threshold) :
+                        ## apply shielding of bins
+                        shield = False
+                        bin_match = re.compile("\s*\w+bin\_*(\d*)\w*")
+                        bins = bin_match.findall(name)
+                        for bin in bins :
+                            ibin = int(bin)
+                            if options.optShield :
+                                if bounds[name][0]<ibin and ibin<bounds[name][1] :
+                                    shield = True
+                        if shield :
+                            shielded += 1
+                        else :
                             out += 1
-                            toExclude.append(line.split()[0])
+                            toExclude.append(name)
         file.close()
-        print "excluded", out, "from", all
+        print "excluded", out, "from", all, ": (", shielded, "rescued from shielding.)"
         if options.debug :
             summarize_uncerts(vals)
         return toExclude
@@ -294,4 +420,4 @@ if glob_all>0 :
     print "commented", glob_excl, "bin-by-bin uncertainties from", glob_all, "for all channels. (", float(100*glob_excl/glob_all), "%)"
 ## clean up if not requested otherwise
 os.chdir(parentdir)
-os.system("rm -r pruning")
+os.system("rm -rf pruning")
