@@ -58,7 +58,8 @@ directories = {
     'et' : ['Wisconsin', 'Imperial'],
     'mt' : ['Wisconsin', 'Imperial'],
     'mm' : ['Htt_MuMu_Unblinded'],
-    'tt' : ['Htt_FullHad']
+    'tt' : ['Htt_FullHad'], ##Riccardo
+   #'tt' : ['MIT'] ## Aram
     }
 ## postfix pattern for input file
 patterns = {
@@ -102,15 +103,15 @@ if options.update_cvs :
                 SPECIAL=specials[ana],
                 ANA=patterns[ana]
                 ))
+    ## copy postfit inputs for mm to test directory
+    os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/Htt_MuMu_Unblinded/htt_mm*-sm-[78]TeV-postfit-*.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
+        CMSSW_BASE=cmssw_base
+        ))  
     for chn in channels :
         print "... copy files for channel:", chn
         ## remove legacy
         for file in glob.glob("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/htt_{CHN}*-sm-*.root".format(CMSSW_BASE=cmssw_base, CHN=chn)) :
             os.system("rm %s" % file)
-        ## copy postfit inputs for mm to test directory
-        os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/Htt_MuMu_Unblinded/htt_mm*-sm-[78]TeV-postfit-*.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
-            CMSSW_BASE=cmssw_base
-            ))  
         for dir in directories[chn] :
             per='[78]TeV'
             ## --- 
@@ -129,7 +130,7 @@ if options.update_cvs :
                 ## ---
                 ## special treatment for hcp and 2012d:
                 ## + for 'hcp' 7TeV is equivalent to central analysis
-                if ana  == 'hcp' :
+                if ana  == 'hcp' or ana == '2012d':
                     if per == '7TeV' :
                         pattern=''
                 os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/htt_{CHN}*-sm-{PER}{PATTERN}.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/".format(
@@ -187,7 +188,7 @@ if options.update_setup :
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
             if 'et' in channels :
-            ## setup bbb uncertainties for et (207)
+                ## setup bbb uncertainties for et (207)
                 os.system("add_bbb_errors.py 'et:7TeV,8TeV:01,03,05:ZL,ZLL,QCD>W' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                     DIR=dir,
                     ANA=ana
@@ -308,7 +309,7 @@ if options.update_limits :
                 ))
         else :
             per = "8TeV" if ana == '2012d' else options.periods
-            label = ana
+            label = '' if ana == 'std' else '-l '+ana
             os.system("setup-htt.py -i aux/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {LABEL} {MASSES}".format(
                 ANA=ana,
                 DIR=dir,
