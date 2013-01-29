@@ -10,7 +10,15 @@ parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="
                   help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analyses", dest="analyses", default="std, bin-by-bin, mvis, 2012d, hcp, inclusive",
                   help="Type of analyses to be considered for updating. Lower case is required. [Default: \"std, bin-by-bin, mvis, hcp, 2012d, inclusive\"]")
-parser.add_option("--input", dest="input", default="Wisconsin", type="choice", choices=['Wisconsin', 'Imperial'],
+parser.add_option("--inputs-mm", dest="inputs_mm", default="KIT", type="choice", choices=['KIT'],
+                  help="Input files for htt_mm analysis. [Default: \"KIT\"]")
+parser.add_option("--inputs-em", dest="inputs_em", default="MIT", type="choice", choices=['MIT', 'Imperial'],
+                  help="Input files for htt_em analysis. [Default: \"MIT\"]")
+parser.add_option("--inputs-et", dest="inputs_et", default="Wisconsin", type="choice", choices=['Wisconsin', 'Imperial', 'LLR', 'CERN', 'MIT'],
+                  help="Input files for htt_et analysis. [Default: \"Wisconsin\"]")
+parser.add_option("--inputs-mt", dest="inputs_mt", default="Wisconsin", type="choice", choices=['Wisconsin', 'Imperial', 'LLR', 'CERN'],
+                  help="Input files for htt_mt analysis. [Default: \"Wisconsin\"]")
+parser.add_option("--inputs-tt", dest="inputs_tt", default="MIT", type="choice", choices=['CERN', 'MIT'],
                   help="Configuration for root input files. At the moment there is a choice for et,mt between Imperial and Wisconsin. [Default: \"Wisconsin\"]")
 parser.add_option("--update-all", dest="update_all", default=False, action="store_true",
                   help="update everything from scratch. If not specified use the following options to specify, which parts of the reload you want to run. [Default: False]")
@@ -52,16 +60,16 @@ cmssw_base=os.environ['CMSSW_BASE']
 ## setup a backup directory
 os.system("mkdir -p backup")
 
-## directory mapping in cvs auxiliaries/datacards/collected
-directories = {
-    'em' : ['MIT'],
-    'et' : ['Wisconsin', 'Imperial'],
-    'mt' : ['Wisconsin', 'Imperial'],
-    'mm' : ['Htt_MuMu_Unblinded'],
-    'tt' : ['Htt_FullHad'], ##Riccardo
-   #'tt' : ['MIT'] ## Aram
-    }
-## postfix pattern for input file
+## define inputs from cvs; Note: not all ianalyses are available for all inputs
+directories = {}
+from HiggsAnalysis.HiggsToTauTau.moriond_analyses_cfg import htt_mm, htt_em, htt_et, htt_mt, htt_tt
+directories['mm'] = htt_mm(options.inputs_mm)
+directories['em'] = htt_em(options.inputs_em)
+directories['et'] = htt_et(options.inputs_et)
+directories['mt'] = htt_mt(options.inputs_mt)
+directories['tt'] = htt_tt(options.inputs_tt)
+
+## postfix pattern for input files
 patterns = {
     'std'        : '',
     'bin-by-bin' : '',
@@ -83,12 +91,11 @@ if options.update_cvs :
     print "##"
     print "## update input files from cvs:"
     print "##"
-    ## ---
-    ## special treatment for Imperial:
-    ## + copy specialized files names to common file name convention
+    ## copy specialized files names to common file name convention
     auxiliaries=cmssw_base+"/src/auxiliaries/datacards/collected/Imperial"
-    for chn in ['et', 'mt'] :
+    for chn in ['et', 'mt', 'em'] :
         for ana in analyses :
+            ## specials for Imperial
             specials = {
                 'std'        : '-moriond-andrew',
                 'bin-by-bin' : '-moriond-andrew',
@@ -112,34 +119,30 @@ if options.update_cvs :
         ## remove legacy
         for file in glob.glob("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/htt_{CHN}*-sm-*.root".format(CMSSW_BASE=cmssw_base, CHN=chn)) :
             os.system("rm %s" % file)
-        for dir in directories[chn] :
-            per='[78]TeV'
-            ## --- 
-            ## special steering for et/mt :
-            ## + in configuration 'Wisconsin': take 7TeV from Imperial take 8Tev from Wisconsin
-            ## + in configuration 'Imperial' : tale 7TeV from Imperial take 8TeV from Imperial
-            ## ---
-            if options.input == 'Wisconsin' :
-                if dir == 'Wisconsin' : per='8TeV'
-                if dir == 'Imperial'  : per='7TeV'
-            if options.input == 'Imperial' :
-                if dir == 'Wisconsin' :
-                    continue
+        for per in periods :
             for ana in analyses :
                 pattern = patterns[ana]
-                ## ---
-                ## special treatment for hcp and 2012d:
-                ## + for 'hcp' 7TeV is equivalent to central analysis
-                if ana  == 'hcp' or ana == '2012d':
+                ## for 'hcp' 7TeV is equivalent to central analysis
+                if ana  == 'hcp' :
                     if per == '7TeV' :
                         pattern=''
-                os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/htt_{CHN}*-sm-{PER}{PATTERN}.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/".format(
+                ## for 2012d skip 7TeV inputs
+                if ana == '2012d' :
+                    if per == '7TeV' :
+                        continue
+                source="{CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/htt_{CHN}*-sm-{PER}{PATTERN}.root".format(
                     CMSSW_BASE=cmssw_base,
-                    DIR=dir,
+                    DIR=directories[chn][per],
                     CHN=chn,
                     PER=per,
                     PATTERN=pattern
-                    ))
+                    )
+                for file in glob.glob(source) :
+                    os.system("cp {SOURCE} {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/".format(
+                        SOURCE=file,
+                        CMSSW_BASE=cmssw_base,
+                        CHN=chn
+                        ))
     ## scale to SM cross section
     for chn in channels :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
@@ -217,6 +220,9 @@ if options.update_setup :
         if ana == 'mvis' :
             for chn in channels :
                 for per in periods :
+                    if chn == 'tt' :
+                        if per == '8TeV' :
+                            continue
                     os.system("mv {DIR}/mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}-mvis.root {DIR}/mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
                         DIR=dir,
                         CHN=chn,
