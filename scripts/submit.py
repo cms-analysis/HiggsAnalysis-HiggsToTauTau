@@ -189,13 +189,16 @@ def lxb_submit(dirs, masses, cmd='--asymptotic', opts='') :
             inputs+= dir+'/'+mass+' '
         ## create submission scripts
         if options.printOnly :
-            print "lxb-limit.py --name {JOBNAME} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" {SYS} {DIR}".format(
-                JOBNAME=jobname, DIR=inputs.rstrip(), QUEUE=options.queue, METHOD=cmd, OPTS=opts.rstrip(), SYS=sys)
+            print "lxb-limit.py --name {JOBNAME} {CONDOR} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" {SYS} {DIR}".format(
+                JOBNAME=jobname, DIR=inputs.rstrip(), QUEUE=options.queue, METHOD=cmd, OPTS=opts.rstrip(), SYS=sys, CONDOR="--condor" if options.condor else "")
         else:
-            os.system("lxb-limit.py --name {JOBNAME} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" {SYS} {DIR}".format(
-                JOBNAME=jobname, DIR=inputs.rstrip(), QUEUE=options.queue, METHOD=cmd, OPTS=opts.rstrip(), SYS=sys))
+            os.system("lxb-limit.py --name {JOBNAME} {CONDOR} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" {SYS} {DIR}".format(
+                JOBNAME=jobname, DIR=inputs.rstrip(), QUEUE=options.queue, METHOD=cmd, OPTS=opts.rstrip(), SYS=sys, CONDOR="--condor" if options.condor else ""))
             ## execute
-            os.system("./{JOBNAME}_submit.sh".format(JOBNAME=jobname))
+            if not options.condor:
+                os.system("./{JOBNAME}_submit.sh".format(JOBNAME=jobname))
+            else:
+                os.system("condor_submit {JOBNAME}_submit.sh".format(JOBNAME=jobname))
             ## store
             os.system("mv {JOBNAME}_submit.sh {JOBNAME}".format(JOBNAME=jobname))
 
@@ -365,6 +368,7 @@ if options.optInject :
                     NAME=jobname, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else ""))
     else :
         ## directories and mases per directory
+        print "Collectiong results"
         struct = directories(args)
         lxb_submit(struct[0], struct[1], "--injected", "{USER}".format(USER=options.opt))
 

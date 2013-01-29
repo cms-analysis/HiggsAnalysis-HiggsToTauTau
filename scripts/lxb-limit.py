@@ -34,6 +34,12 @@ logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 name = options.name
 bsubargs = options.batch
 option_str = options.limit
+
+# If we are using CONDOR, make sure any card creation happens in a writable
+# directory.
+if options.condor:
+    option_str = " ".join([option_str, "--working-dir=${_CONDOR_SCRATCH_DIR}"])
+
 ## prepare log file directory
 os.system("mkdir -p log")
 
