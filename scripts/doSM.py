@@ -10,6 +10,8 @@ parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="
                   help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analyses", dest="analyses", default="std, bin-by-bin, mvis, 2012d, hcp, inclusive",
                   help="Type of analyses to be considered for updating. Lower case is required. [Default: \"std, bin-by-bin, mvis, hcp, 2012d, inclusive\"]")
+parser.add_option("--index", dest="index", default="", type="string", 
+                  help="Possibility to give the setups, aux and LIMITS directory a index (example LIMITS-bbb). [Default: \"\"]")
 parser.add_option("--inputs-mm", dest="inputs_mm", default="KIT", type="choice", choices=['KIT'],
                   help="Input files for htt_mm analysis. [Default: \"KIT\"]")
 parser.add_option("--inputs-em", dest="inputs_em", default="MIT", type="choice", choices=['MIT', 'Imperial'],
@@ -156,7 +158,7 @@ if options.update_setup :
     print "## update setups directory:"
     print "##"    
     ## setup directory structure
-    dir = "{CMSSW_BASE}/src/setups".format(CMSSW_BASE=cmssw_base)
+    dir = "{CMSSW_BASE}/src/setups{INDEX}".format(CMSSW_BASE=cmssw_base, INDEX=options.index)
     if os.path.exists(dir) :
         if os.path.exists(dir.replace('src/', 'src/backup/')):
             os.system("rm -r "+dir.replace('src/', 'src/backup/'))
@@ -263,7 +265,7 @@ if options.update_datacards :
     print "## update aux directory:"
     print "##"    
     ## setup directory structure
-    dir = "{CMSSW_BASE}/src/aux".format(CMSSW_BASE=cmssw_base)
+    dir = "{CMSSW_BASE}/src/aux{INDEX}".format(CMSSW_BASE=cmssw_base, INDEX=options.index)
     if os.path.exists(dir) :
         if os.path.exists(dir.replace('src/', 'src/backup/')):
             os.system("rm -r "+dir.replace('src/', 'src/backup/'))
@@ -280,24 +282,24 @@ if options.update_datacards :
             CHN=options.channels,
             MASSES=masses
             ))
-        if ana == "bin-by-bin" :
-            print "...pruning bbb uncertainties:"
-            ## setup bbb uncertainty pruning
-            os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/prune_bbb_errors.py -c '{CHN}' --byPull {FIT} {DEBUG} --pull-threshold 0.30 {DIR}/{ANA}/sm".format(
-                CMSSW_BASE=cmssw_base,
-                FIT="" if options.fit_result == "" else "--fit-result %s" % options.fit_result,
-                DEBUG="--debug" if options.fit_result == "" else "",
-                CHN=options.channels,
-                DIR=dir,
-                ANA=ana
-                ))
+        ## if ana == "bin-by-bin" :
+##             print "...pruning bbb uncertainties:"
+##             ## setup bbb uncertainty pruning
+##             os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/prune_bbb_errors.py -c '{CHN}' --byPull {FIT} {DEBUG} --pull-threshold 0.30 {DIR}/{ANA}/sm".format(
+##                 CMSSW_BASE=cmssw_base,
+##                 FIT="" if options.fit_result == "" else "--fit-result %s" % options.fit_result,
+##                 DEBUG="--debug" if options.fit_result == "" else "",
+##                 CHN=options.channels,
+##                 DIR=dir,
+##                 ANA=ana
+##                 ))
 
 if options.update_limits :
     print "##"
     print "## update LIMITS directory:"
     print "##"
     ## setup directory structure
-    dir = "{CMSSW_BASE}/src/LIMITS".format(CMSSW_BASE=cmssw_base)
+    dir = "{CMSSW_BASE}/src/LIMITS{INDEX}".format(CMSSW_BASE=cmssw_base, INDEX=options.index)
     if os.path.exists(dir) :
         if os.path.exists(dir.replace('src/', 'src/backup/')):
             os.system("rm -r "+dir.replace('src/', 'src/backup/'))
