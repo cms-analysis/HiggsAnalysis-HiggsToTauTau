@@ -10,6 +10,8 @@ parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="
                   help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analyses", dest="analyses", default="std, bin-by-bin, mvis, 2012d, hcp, inclusive",
                   help="Type of analyses to be considered for updating. Lower case is required. [Default: \"std, bin-by-bin, mvis, hcp, 2012d, inclusive\"]")
+parser.add_option("--skip-pruning", dest="skip_pruning", default=False, action="store_true",
+                  help="Skip pruning step when doing --setup-aux. [Default: False]")
 parser.add_option("--index", dest="index", default="", type="string", 
                   help="Possibility to give the setups, aux and LIMITS directory a index (example LIMITS-bbb). [Default: \"\"]")
 parser.add_option("--inputs-mm", dest="inputs_mm", default="KIT", type="choice", choices=['KIT'],
@@ -122,6 +124,8 @@ if options.update_cvs :
         for file in glob.glob("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/htt_{CHN}*-sm-*.root".format(CMSSW_BASE=cmssw_base, CHN=chn)) :
             os.system("rm %s" % file)
         for per in periods :
+            if directories[chn][per] == 'None' :
+                continue
             for ana in analyses :
                 pattern = patterns[ana]
                 ## for 'hcp' 7TeV is equivalent to central analysis
@@ -158,7 +162,7 @@ if options.update_setup :
     print "## update setups directory:"
     print "##"    
     ## setup directory structure
-    dir = "{CMSSW_BASE}/src/setups{INDEX}".format(CMSSW_BASE=cmssw_base, INDEX=options.index)
+    dir = "{CMSSW_BASE}/src/setups{INDEX}".format(CMSSW_BASE=cmssw_base, INDEX='' if options.index == '' else '_'+options.index)
     if os.path.exists(dir) :
         if os.path.exists(dir.replace('src/', 'src/backup/')):
             os.system("rm -r "+dir.replace('src/', 'src/backup/'))
@@ -175,7 +179,6 @@ if options.update_setup :
         ## MORIOND-BIN-BY-BIN
         ##
         if ana == 'bin-by-bin' :
-            os.system("cp {SETUP} {DIR}/{ANA}".format(SETUP=setup, DIR=dir, ANA=ana))
             if 'mm' in channels :
                 ## setup bbb uncertainties for mm (172)
                 os.system("add_bbb_errors.py 'mm:7TeV,8TeV:01,03,05:ZTT,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
@@ -265,7 +268,7 @@ if options.update_datacards :
     print "## update aux directory:"
     print "##"    
     ## setup directory structure
-    dir = "{CMSSW_BASE}/src/aux{INDEX}".format(CMSSW_BASE=cmssw_base, INDEX=options.index)
+    dir = "{CMSSW_BASE}/src/aux{INDEX}".format(CMSSW_BASE=cmssw_base, INDEX='' if options.index == '' else '_'+options.index)
     if os.path.exists(dir) :
         if os.path.exists(dir.replace('src/', 'src/backup/')):
             os.system("rm -r "+dir.replace('src/', 'src/backup/'))
@@ -274,7 +277,8 @@ if options.update_datacards :
     for ana in analyses :
         print "setup datacards for:", ana, "sm"
         per = "8TeV" if ana == '2012d' else options.periods
-        os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {MASSES}".format(
+        os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{INDEX}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {MASSES}".format(
+            INDEX='' if options.index == '' else '_'+options.index,
             CMSSW_BASE=cmssw_base,
             ANA=ana,
             DIR=dir,
@@ -282,24 +286,26 @@ if options.update_datacards :
             CHN=options.channels,
             MASSES=masses
             ))
-        ## if ana == "bin-by-bin" :
-##             print "...pruning bbb uncertainties:"
-##             ## setup bbb uncertainty pruning
-##             os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/prune_bbb_errors.py -c '{CHN}' --byPull {FIT} {DEBUG} --pull-threshold 0.30 {DIR}/{ANA}/sm".format(
-##                 CMSSW_BASE=cmssw_base,
-##                 FIT="" if options.fit_result == "" else "--fit-result %s" % options.fit_result,
-##                 DEBUG="--debug" if options.fit_result == "" else "",
-##                 CHN=options.channels,
-##                 DIR=dir,
-##                 ANA=ana
-##                 ))
+        if ana == "bin-by-bin" :
+            if not options.skip_pruning :
+                print "...pruning bbb uncertainties:"
+                ## setup bbb uncertainty pruning
+                cmd="python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/prune_bbb_errors.py".format(CMSSW_BASE=cmssw_base)
+                os.system("{CMD} -c '{CHN}' --byPull {FIT} {DEBUG} --pull-threshold 0.30 {DIR}/{ANA}/sm".format(
+                    CMD=cmd,
+                    FIT="" if options.fit_result == "" else "--fit-result %s" % options.fit_result,
+                    DEBUG="--debug" if options.fit_result == "" else "",
+                    CHN=options.channels,
+                    DIR=dir,
+                    ANA=ana
+                    ))
 
 if options.update_limits :
     print "##"
     print "## update LIMITS directory:"
     print "##"
     ## setup directory structure
-    dir = "{CMSSW_BASE}/src/LIMITS{INDEX}".format(CMSSW_BASE=cmssw_base, INDEX=options.index)
+    dir = "{CMSSW_BASE}/src/LIMITS{INDEX}".format(CMSSW_BASE=cmssw_base, INDEX='' if options.index == '' else '_'+options.index)
     if os.path.exists(dir) :
         if os.path.exists(dir.replace('src/', 'src/backup/')):
             os.system("rm -r "+dir.replace('src/', 'src/backup/'))
@@ -308,7 +314,8 @@ if options.update_limits :
     for ana in analyses :
         print "setup limits structure for:", ana, "sm"
         if ana == 'inclusive' :
-            os.system("cvs2local.py -i aux/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {MASSES}".format(
+            os.system("cvs2local.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {MASSES}".format(
+                INDEX='' if options.index == '' else '_'+options.index,                
                 ANA=ana,
                 DIR=dir,
                 PER=options.periods,
@@ -318,7 +325,8 @@ if options.update_limits :
         else :
             per = "8TeV" if ana == '2012d' else options.periods
             label = '' if ana == 'std' else '-l '+ana
-            os.system("setup-htt.py -i aux/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {LABEL} {MASSES}".format(
+            os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {LABEL} {MASSES}".format(
+                INDEX='' if options.index == '' else '_'+options.index,                
                 ANA=ana,
                 DIR=dir,
                 PER=per,
