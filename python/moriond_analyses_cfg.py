@@ -12,13 +12,13 @@ def htt_em(TYPE='MIT') :
 
 def htt_et(TYPE='Wisconsin') :
     dict = {}
-    dict['7TeV'] = 'Wisconsin'
+    dict['7TeV'] = 'Imperial'
     dict['8TeV'] = TYPE
     return dict
 
 def htt_mt(TYPE='Wisconsin') :
     dict = {}
-    dict['7TeV'] = 'Wisconsin'
+    dict['7TeV'] = 'Imperial'
     dict['8TeV'] = TYPE
     return dict
 
