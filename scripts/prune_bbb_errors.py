@@ -70,9 +70,24 @@ parentdir = os.getcwd()
 ## configure options for --byPull or --byShift
 if options.optByShift :
     options.optByPull = True
-    options.pull_metric = options.shift_metric
-    options.pull_theshold = options.shift_threshold
-
+## defined thesholds and metrics
+metric = ''
+threshold = 0.
+if options.optByShift :
+    metric = options.shift_metric
+    threshold = options.shift_threshold
+    print "pruning: byShift (threshold:", options.shift_threshold, " metric:", options.shift_metric+")"
+elif options.optByPull :
+    metric = options.pull_metric
+    threshold = options.pull_threshold    
+    print "pruning: byPull  (threshold:", options.pull_threshold, " metric:", options.pull_metric+")"
+elif options.optByLimit :
+    metric = options.limit_metric
+    threshold = options.limit_threshold
+    print "pruning: byLimit (threshold:", options.limit_threshold, " metric:", options.limit_metric+")"
+if options.optShield :
+    print "shield :         (central  :", options.shield_central, "  bounds: +/-"+options.shield_bounds+")"
+    
 ## setup directory structure for for logging
 os.system("mkdir -p log")
 os.system("mkdir -p log/pruning")
@@ -235,7 +250,7 @@ if options.optByLimit :
     metric_obs    = lambda map : max(abs(map['obs']['AllIn']), abs(map['obs']['AllOut']));
     metric_all    = lambda map : max(metric_exp(map), metric_obs(map))
     metrics = { 'exp':metric_exp, 'obs':metric_obs, 'all':metric_all };
-    metric = metrics[options.limit_metric]
+    metric = metrics[metric]
     
     ## pick up parameters from json file per channel
     def prune_by_limit(path, chn) :
@@ -255,7 +270,7 @@ if options.optByLimit :
                 bbb = re.match("\w+bin\_*\d*\w*", nuisList[0])
                 if bbb :
                     vals.append(float(outcome))
-            if float(outcome) < float(options.limit_threshold) :
+            if float(outcome) < float(threshold) :
                 ## apply shielding of bins
                 shield = False
                 bin_match = re.compile("\s*\w+bin\_*(\d*)\w*")
@@ -270,7 +285,7 @@ if options.optByLimit :
                 else :
                     out += 1
                     toExclude += nuisList
-        print "excluded", out, "from", all, ": (", shielded, "rescued from shielding.)"
+        print "excluded", out, "from", all, ": (", shielded, "rescued by shielding.)"
         if options.debug :
             summarize_uncerts(vals, chn)
         return toExclude
@@ -361,18 +376,18 @@ if options.optByPull :
                     all+= 1
                     val = 0.
                     ## define metric
-                    if options.pull_metric == 'b' :
+                    if metric == 'b' :
                         val = float(pulls[0])
-                    if options.pull_metric == 's+b' :
+                    if metric == 's+b' :
                         val = float(pulls[1])
-                    if options.pull_metric == 'all' :
+                    if metric == 'all' :
                         val = max(abs(float(pulls[0])), float(pulls[1]))
                     ## switch to byShift
                     if options.optByShift :
                         val*= uncerts[name]
                     if options.debug :
                         vals.append(val)
-                    if abs(val) < float(options.pull_threshold) :
+                    if abs(val) < float(threshold) :
                         ## apply shielding of bins
                         shield = False
                         bin_match = re.compile("\s*\w+bin\_*(\d*)\w*")
@@ -388,7 +403,7 @@ if options.optByPull :
                             out += 1
                             toExclude.append(name)
         file.close()
-        print "excluded", out, "from", all, ": (", shielded, "rescued from shielding.)"
+        print "excluded", out, "from", all, ": (", shielded, "rescued by shielding.)"
         if options.debug :
             summarize_uncerts(vals)
         return toExclude
