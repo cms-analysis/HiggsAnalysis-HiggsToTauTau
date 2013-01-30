@@ -196,21 +196,35 @@ if options.update_setup :
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
             if 'et' in channels :
-                ## setup bbb uncertainties for et (207)
-                os.system("add_bbb_errors.py 'et:7TeV,8TeV:01,03,05:ZL,ZLL,QCD>W' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                ## setup bbb uncertainties for et 7TeV, (117)
+                os.system("add_bbb_errors.py 'et:7TeV:01,03,05:ZL,ZLL,QCD>W' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                     DIR=dir,
                     ANA=ana
                     ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                ## setup bbb uncertainties for et 8TeV, (112)                
+                os.system("add_bbb_errors.py 'et:8TeV:01,03,05:ZL,ZJ,QCD>W'  --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    DIR=dir,
+                    ANA=ana
+                    ))
+                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                
             if 'mt' in channels :
-                ## setup bbb uncertainties for mt (203)
-                os.system("add_bbb_errors.py 'mt:7TeV,8TeV:01,03,05:ZL,ZLL,QCD>W' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                ## setup bbb uncertainties for mt 7TeV (118)
+                os.system("add_bbb_errors.py 'mt:7TeV:01,03,05:ZL,ZLL,QCD>W' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                     DIR=dir,
                     ANA=ana
                     ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                ## setup bbb uncertainties for mt 8TeV (116)
+                os.system("add_bbb_errors.py 'mt:8TeV:01,03,05:ZL,ZJ,QCD>W'  --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    DIR=dir,
+                    ANA=ana
+                    ))
+                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                
             if 'tt' in channels :
                 ## setup bbb uncertainties for tt (72)
                 os.system("add_bbb_errors.py 'tt:8TeV:00,01:ZTT,QCD' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
@@ -291,7 +305,7 @@ if options.update_datacards :
                 print "...pruning bbb uncertainties:"
                 ## setup bbb uncertainty pruning
                 cmd="python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/prune_bbb_errors.py".format(CMSSW_BASE=cmssw_base)
-                os.system("{CMD} -c '{CHN}' --byPull {FIT} {DEBUG} --pull-threshold 0.30 {DIR}/{ANA}/sm".format(
+                os.system("{CMD} -c '{CHN}' --byShift {FIT} {DEBUG} --shift-threshold 0.05 --shield-bins {DIR}/{ANA}/sm".format(
                     CMD=cmd,
                     FIT="" if options.fit_result == "" else "--fit-result %s" % options.fit_result,
                     DEBUG="--debug" if options.fit_result == "" else "",
