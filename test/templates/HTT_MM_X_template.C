@@ -43,9 +43,9 @@ float blinding_SM(float mass){ return (100<mass && mass<150); }
 float blinding_MSSM(float mass){ return (100<mass); }
 float maximum(TH1F* h, bool LOG=false){
   if(LOG){
-    //if(h->GetMaximum()>1000){ return 1000.*TMath::Nint(500*h->GetMaximum()/1000.); }
-    //if(h->GetMaximum()>  10){ return   10.*TMath::Nint( 50*h->GetMaximum()/  10.); }
-    return 100000*h->GetMaximum(); 
+    if(h->GetMaximum()>1000){ return 1000.*TMath::Nint(500*h->GetMaximum()/1000.); }
+    if(h->GetMaximum()>  10){ return   10.*TMath::Nint( 50*h->GetMaximum()/  10.); }
+    return 50*h->GetMaximum(); 
   }
   else{
     if(h->GetMaximum()>  12){ return 10.*TMath::Nint((1.3*h->GetMaximum()/10.)); }
@@ -155,7 +155,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 #endif
 #endif
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data", true);
-  InitHist(data, "#bf{Unfolded 2D Mass}", "#bf{dN/dBin}"); InitData(data);
+  InitHist(data, "#bf{m_{#tau#tau} [GeV]}", "#bf{dN/dm_{#tau#tau} [1/GeV]}"); InitData(data);
 
   TH1F* ref=(TH1F*)ZTT->Clone("ref");
   ref->Add(ZMM  );
@@ -268,7 +268,6 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
     if(helper>helper2) {helper2=helper;}
     }
   max=helper2*2;
-  if(log) max=helper2*100000;
 
 
   /*
@@ -397,7 +396,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   rat1->SetMinimum(-1.5);
   rat1->GetYaxis()->CenterTitle();
   rat1->GetYaxis()->SetTitle("#bf{Data/MC-1}");
-  rat1->GetXaxis()->SetTitle("#bf{Unfolded 2D Mass}"); 
+  rat1->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}"); 
   rat1->Draw();
   zero->SetLineColor(kBlack);
   zero->Draw("same");
@@ -425,7 +424,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   rat2->SetMinimum(-0.3);
   rat2->GetYaxis()->SetTitle("#bf{Fit/Prefit-1}");
   rat2->GetYaxis()->CenterTitle();
-  rat2->GetXaxis()->SetTitle("#bf{Unfolded 2D Mass}");
+  rat2->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}");
   rat2->GetXaxis()->SetRange(0, 28);
   rat2->Draw();
   zero->SetLineColor(kBlack);
