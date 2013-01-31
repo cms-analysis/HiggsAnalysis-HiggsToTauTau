@@ -113,11 +113,7 @@ if options.update_cvs :
                 CHN=chn,
                 SPECIAL=specials[ana],
                 ANA=patterns[ana]
-                ))
-    ## copy postfit inputs for mm to test directory
-    os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/Htt_MuMu_Unblinded/htt_mm*-sm-[78]TeV-postfit-*.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
-        CMSSW_BASE=cmssw_base
-        ))  
+                )) 
     for chn in channels :
         print "... copy files for channel:", chn
         ## remove legacy
@@ -149,6 +145,10 @@ if options.update_cvs :
                         CMSSW_BASE=cmssw_base,
                         CHN=chn
                         ))
+    ## copy postfit inputs for mm to test directory
+    os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/Htt_MuMu_Unblinded/htt_mm*-sm-[78]TeV-msv.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
+        CMSSW_BASE=cmssw_base
+        )) 
     ## scale to SM cross section
     for chn in channels :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
@@ -271,11 +271,14 @@ if options.update_setup :
         if ana == 'inclusive' :
             for chn in channels :
                 for per in periods :
-                    os.system("mv {DIR}/inclusive/{CHN}/htt_{CHN}.inputs-sm-{PER}-inclusive.root {DIR}/inclusive/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
-                        DIR=dir,
-                        CHN=chn,
-                        PER=per
-                        ))                        
+                    if chn == "tt" :
+                        pass
+                    else :
+                        os.system("mv {DIR}/inclusive/{CHN}/htt_{CHN}.inputs-sm-{PER}-inclusive.root {DIR}/inclusive/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
+                            DIR=dir,
+                            CHN=chn,
+                            PER=per
+                            ))                        
 
 if options.update_datacards :
     print "##"
