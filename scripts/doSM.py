@@ -23,7 +23,7 @@ parser.add_option("--inputs-et", dest="inputs_et", default="Wisconsin", type="ch
 parser.add_option("--inputs-mt", dest="inputs_mt", default="Wisconsin", type="choice", choices=['Wisconsin', 'Imperial', 'LLR', 'CERN'],
                   help="Input files for htt_mt analysis. [Default: \"Wisconsin\"]")
 parser.add_option("--inputs-tt", dest="inputs_tt", default="MIT", type="choice", choices=['CERN', 'MIT'],
-                  help="Configuration for root input files. At the moment there is a choice for et,mt between Imperial and Wisconsin. [Default: \"Wisconsin\"]")
+                  help="Input files for htt_mt analysis. [Default: \"MIT\"]")
 parser.add_option("--update-all", dest="update_all", default=False, action="store_true",
                   help="update everything from scratch. If not specified use the following options to specify, which parts of the reload you want to run. [Default: False]")
 parser.add_option("--update-cvs", dest="update_cvs", default=False, action="store_true",
@@ -139,6 +139,13 @@ if options.update_cvs :
                     PER=per,
                     PATTERN=pattern
                     )
+                if chn == 'tt' :
+                    source="{CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/htt_{CHN}*-sm-{PER}.root".format(
+                        CMSSW_BASE=cmssw_base,
+                        DIR=directories[chn][per],
+                        CHN=chn,
+                        PER=per
+                        )
                 for file in glob.glob(source) :
                     os.system("cp {SOURCE} {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/".format(
                         SOURCE=file,
@@ -146,7 +153,7 @@ if options.update_cvs :
                         CHN=chn
                         ))
     ## copy postfit inputs for mm to test directory
-    os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/Htt_MuMu_Unblinded/htt_mm*-sm-[78]TeV-msv.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
+    os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/Htt_MuMu_Unblinded/htt_mm*-sm-[78]TeV-postfit-*.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
         CMSSW_BASE=cmssw_base
         )) 
     ## scale to SM cross section
