@@ -240,7 +240,7 @@ if options.update_setup :
             for chn in channels :
                 for per in periods :
                     if chn == 'tt' :
-                        if per == '8TeV' :
+                        if per == '7TeV' :
                             continue
                     os.system("mv {DIR}/mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}-mvis.root {DIR}/mvis/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
                         DIR=dir,
@@ -271,14 +271,14 @@ if options.update_setup :
         if ana == 'inclusive' :
             for chn in channels :
                 for per in periods :
-                    if chn == "tt" :
-                        pass
-                    else :
-                        os.system("mv {DIR}/inclusive/{CHN}/htt_{CHN}.inputs-sm-{PER}-inclusive.root {DIR}/inclusive/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
-                            DIR=dir,
-                            CHN=chn,
-                            PER=per
-                            ))                        
+                    if chn == "tt" : 
+                        if per == '7TeV' :
+                            continue
+                    os.system("mv {DIR}/inclusive/{CHN}/htt_{CHN}.inputs-sm-{PER}-inclusive.root {DIR}/inclusive/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
+                        DIR=dir,
+                        CHN=chn,
+                        PER=per
+                        ))                        
 
 if options.update_datacards :
     print "##"
