@@ -165,7 +165,17 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   data->Draw("esame");
   canv->RedrawAxis();
 
-  CMSPrelim(dataset, extra, 0.17, 0.835);
+  //CMSPrelim(dataset, extra, 0.17, 0.835);
+  CMSPrelim(dataset, "", 0.17, 0.835);  
+  TPaveText* chan     = new TPaveText(0.20, 0.74+0.061, 0.32, 0.74+0.161, "NDC");
+  chan->SetBorderSize(   0 );
+  chan->SetFillStyle(    0 );
+  chan->SetTextAlign(   12 );
+  chan->SetTextSize ( 0.05 );
+  chan->SetTextColor(    1 );
+  chan->SetTextFont (   62 );
+  chan->AddText("extra");
+  chan->Draw();
 
   float lower_bound = EWK1 ? 0.60 : 0.65;
   TLegend* leg = new TLegend(MSSM ? 0.45 : 0.50, lower_bound, 0.93, 0.90);

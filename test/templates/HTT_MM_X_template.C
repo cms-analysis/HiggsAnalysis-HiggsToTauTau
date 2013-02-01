@@ -1,4 +1,4 @@
-#include <iostream>
+_#include <iostream>
 
 #include <TH1F.h>
 #include <TFile.h>
@@ -325,8 +325,17 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   data->Draw("esame");
   canv->RedrawAxis();
 
-  CMSPrelim(dataset, "#tau_{#mu}#tau_{#mu}", 0.17, 0.835);
-  
+  //CMSPrelim(dataset, "#tau_{#mu}#tau_{#mu}", 0.17, 0.835);
+  CMSPrelim(dataset, "", 0.17, 0.835);  
+  TPaveText* chan     = new TPaveText(0.20, 0.74+0.061, 0.32, 0.74+0.161, "NDC");
+  chan->SetBorderSize(   0 );
+  chan->SetFillStyle(    0 );
+  chan->SetTextAlign(   12 );
+  chan->SetTextSize ( 0.05 );
+  chan->SetTextColor(    1 );
+  chan->SetTextFont (   62 );
+  chan->AddText("#tau_{#mu}#tau_{#mu}");
+  chan->Draw();
 
 #ifdef MSSM  
   TLegend* leg = new TLegend(0.45, 0.65, 0.95, 0.90);

@@ -227,7 +227,17 @@ HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   data->Draw("esame");
   canv->RedrawAxis();
 
-  CMSPrelim(dataset, "b#bar{b}", 0.17, 0.835);
+  //CMSPrelim(dataset, "b#bar{b}", 0.17, 0.835);
+  CMSPrelim(dataset, "", 0.17, 0.835);  
+  TPaveText* chan     = new TPaveText(0.20, 0.74+0.061, 0.32, 0.74+0.161, "NDC");
+  chan->SetBorderSize(   0 );
+  chan->SetFillStyle(    0 );
+  chan->SetTextAlign(   12 );
+  chan->SetTextSize ( 0.05 );
+  chan->SetTextColor(    1 );
+  chan->SetTextFont (   62 );
+  chan->AddText("b#bar{b}");
+  chan->Draw();
 
 #ifdef MSSM  
   TLegend* leg = new TLegend(0.45, 0.65, 0.95, 0.90);
