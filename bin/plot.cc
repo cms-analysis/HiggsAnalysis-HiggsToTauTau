@@ -65,6 +65,8 @@ int main(int argc, char* argv[])
   types.push_back(std::string("--asymptotic"));
   // show significances with bands (run with toys)
   types.push_back(std::string("--significance"));
+  // show frequentist p-values w/o bands
+  types.push_back(std::string("--pvalue"));
   // show signal strength as function of mH/mA as determined from a 1d maxlikelihood fit 
   types.push_back(std::string("--max-likelihood"));
   // show signal strength as function of mH/mA as determined from a 2d maxlikelihood fit 
@@ -276,6 +278,19 @@ int main(int argc, char* argv[])
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plotLimit(*canv, inner, 0, central, 0);
+  }
+
+  if( std::string(argv[1]) == std::string("--pvalue") ){
+    // observed p-value
+    TGraph* observed  = new TGraph();
+    plot.fillCentral(directory, observed, "higgsCombinePVAL-obs.ProfileLikelihood.mH$MASS");
+    // expected p-value
+    TGraph* expected  = new TGraph();
+    plot.fillCentral(directory, expected, "higgsCombinePVAL-exp.ProfileLikelihood.mH$MASS");
+    // make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plotPValue(*canv, expected, observed);
   }
   if( std::string(argv[1]) == std::string("--likelihood-scan") ){
     // best fit

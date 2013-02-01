@@ -262,8 +262,8 @@ PlotLimits::maximum(TGraph* graph)
   float maximum = -1;
   if(max_<0){
     for(int ibin=0; ibin<graph->GetN(); ++ibin){
-      if(maximum<0 || graph->GetY()[ibin+1]>maximum){
-	maximum=graph->GetY()[ibin+1];
+      if(maximum<0 || graph->GetY()[ibin]>maximum){
+	maximum=graph->GetY()[ibin];
       }
     }
     maximum*=2.5;

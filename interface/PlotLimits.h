@@ -97,6 +97,8 @@ class PlotLimits {
   void plotSignalStrength(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraph* central, const char* directory="");
   /// plot significance on canvas, print out png, pdf, txt, root formats if desired  
   void plotSignificance(TCanvas& canv, TGraph* expected, TGraph* observed=0);
+  /// plot bestfit values for different parameters dependend on mass on canvas, print out png, pdf, txt, root formats if desired 
+  void plotPValue(TCanvas& canv, TGraph* expected, TGraph* observed, const char* directory="");
   /// plot 2d-scans for several masses on canvases, print out png, pdf, txt, root formats if desired  
   void plot2DScan(TCanvas& canv, const char* directory="");
   /// plot 1d-scans for several masses on canvases, print out png, pdf, root formats if desired  
