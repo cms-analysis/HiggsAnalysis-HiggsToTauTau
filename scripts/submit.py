@@ -17,6 +17,8 @@ agroup.add_option("--multidim-fit", dest="optMDFit", default=False, action="stor
                   help="Perform a maximum likelihood fit in two dimensions to determine the signal strength from the datacards in the directory/ies corresponding to ARGs. This option requires the configuration of a dedicated physics model as described in section MODEL OPTIONS of this parameter description. The process will be executed via lxb (lxq). [Default: False]")
 agroup.add_option("--significance", dest="optSig", default=False, action="store_true",
                   help="Calculate the expected significance from likelihood profiling. The expected significance and its uncertainties are based on toys. This script will submit toys to a batch system or to the grid using crab. This action will require a grid certificate. You can configure this script to submit to the grid or to submit to lxb (lxq) as described in section SIGNIFICANCE OPTIONS in this parameter description. You can monitor and receive the results of your jobs once finished using the script limit.py using the CRAB OPTIONS as explained in the parameter description, there. [Default: False]")
+agroup.add_option("--pvalue", dest="optPValue", default=False, action="store_true",
+                  help="Calculate the expected and observed frequentist p-value a la HCG. [Default: False]")
 agroup.add_option("--asymptotic", dest="optAsym", default=False, action="store_true",
                   help="Calculate asymptotic CLs limits from the datacards in the directory/ise corresponding to ARGs. The process will be executed via lxb (lxq), split by each single mass point that is part of ARGs or as a single interactive job when using the option --interactive. When submitting to lxb (lxq) you can configure the queue to which the jobs will be submitted as described in section BATCH OPTIONS of this parameter description. When running in batch mode you can go one level up in the expected directory structure as described in the head of this section. [Default: False]")
 agroup.add_option("--injected", dest="optInject", default=False, action="store_true",
@@ -302,6 +304,23 @@ if options.optSig :
         os.system("submit-slave.py --method significance -t {TOYS} -j {JOBS} {USER} {OPT} {MASSES}".format(
             TOYS=options.toys, JOBS=options.jobs, USER=options.opt, OPT=opt, MASSES=' '.join(args)))
 ##
+## PVALUE
+##
+if options.optPValue :
+    if options.interactive :
+        for dir in args :
+            mass = get_mass(dir)
+            if mass == 'common' :
+                continue
+            if options.printOnly :
+                print "limit.py --pvalue {USER} {DIR}".format(USER=options.opt, DIR=dir)
+            else :
+                os.system("limit.py --pvalue {USER} {DIR}".format(USER=options.opt, DIR=dir))
+    else :
+        ## directories and mases per directory
+        struct = directories(args)
+        lxb_submit(struct[0], struct[1], "--pvalue", "{USER}".format(USER=options.opt))
+##
 ## ASYMPTOTIC (with dedicated models)
 ##
 if options.optAsym :
@@ -324,9 +343,9 @@ if options.optAsym :
             if mass == 'common' :
                 continue
             if options.printOnly :
-                print "limit.py {CMD} {MODEL} {OPTS} {USER} {DIR}".format(CMD=cmd, MASS=mass, MODEL=model, OPTS=opts, USER=options.opt, DIR=dir)
+                print "limit.py {CMD} {MODEL} {OPTS} {USER} {DIR}".format(CMD=cmd, MODEL=model, OPTS=opts, USER=options.opt, DIR=dir)
             else :
-                os.system("limit.py {CMD} {MODEL} {OPTS} {USER} {DIR}".format(CMD=cmd, MASS=mass, MODEL=model, OPTS=opts, USER=options.opt, DIR=dir))
+                os.system("limit.py {CMD} {MODEL} {OPTS} {USER} {DIR}".format(CMD=cmd, MODEL=model, OPTS=opts, USER=options.opt, DIR=dir))
     else :
         ## directories and mases per directory
         struct = directories(args)
