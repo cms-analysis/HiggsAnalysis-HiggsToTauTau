@@ -79,8 +79,14 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   bool MSSM = std::string(analysis) == std::string("MSSM");
  
   if (std::string(dataset) == std::string("2011"     )){ dataset = "Preliminary, 2011, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}"; }
-  if (std::string(dataset) == std::string("2012"     )){ dataset = "Preliminary, 2012, #sqrt{s} = 8 TeV, L = 19.3 fb^{-1}"; }
-  if (std::string(dataset) == std::string("2011+2012")){ dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 24.2 fb^{-1}"; }
+  if (std::string(dataset) == std::string("2012"     )){ 
+	if (std::string(extra) == std::string("#tau_{#mu}#tau_{#mu}") ) dataset = "Preliminary, 2012, #sqrt{s} = 8 TeV, L = 18.7 fb^{-1}"; 
+	else dataset = "Preliminary, 2012, #sqrt{s} = 8 TeV, L = 19.4 fb^{-1}";
+  }
+  if (std::string(dataset) == std::string("2011+2012")){ 
+	if (std::string(extra) == std::string("#tau_{#mu}#tau_{#mu}") ) dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 23.6 fb^{-1}"; 
+ 	else dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 24.3 fb^{-1}";
+  }
 
   TFile* input = new TFile(inputfile);
   TH1F* Fakes  = refill((TH1F*)input->Get("Fakes"   ), "Fakes/QCD"); 
@@ -97,7 +103,7 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   }
   TH1F* errorBand = (TH1F*)input->Get("errorBand");
 
-  /*
+  /* 
     mass plot before and after fit
   */
   TCanvas *canv = MakeCanvas("canv", "histograms", 600, 600);
