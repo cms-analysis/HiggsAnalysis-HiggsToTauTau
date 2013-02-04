@@ -245,9 +245,9 @@ for chn in channels :
             ## channel (directory) has the same backgrounds in it. For
             ## WH/ZH, both are in the same file, and the names of the BGs.
             ## depend on which category (i.e. WH or ZH) it is.
-            directories_to_randomize = '*'
+            directories_to_randomize = '\*'
             if chn == 'zh':
-                directories_to_randomize = '*_zh'
+                directories_to_randomize = '\*_zh'
             elif chn == 'wh':
                 directories_to_randomize = 'emt,mmt,mtt,ett'
             command = "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/blindData.C+\\(\\\"{FILE}\\\",\\\"{BACKGROUNDS}\\\",\\\"{SIGNALS}\\\",\\\"{DIRS}\\\",true,{RND},{SCALE},\\\"{OUTPUT}\\\",2\)"
