@@ -8,8 +8,8 @@ parser.add_option("-c", "--channels", dest="channels", default="mm em mt et tt",
                   help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et tt\"]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
                   help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
-parser.add_option("-a", "--analyses", dest="analyses", default="std, bin-by-bin, mvis, 2012d, hcp, inclusive",
-                  help="Type of analyses to be considered for updating. Lower case is required. [Default: \"std, bin-by-bin, mvis, hcp, 2012d, inclusive\"]")
+parser.add_option("-a", "--analyses", dest="analyses", default="std, bin-by-bin, pruned, mvis, 2012d, hcp, inclusive",
+                  help="Type of analyses to be considered for updating. Lower case is required. [Default: \"std, bin-by-bin, pruned, mvis, hcp, 2012d, inclusive\"]")
 parser.add_option("--skip-pruning", dest="skip_pruning", default=False, action="store_true",
                   help="Skip pruning step when doing --setup-aux. [Default: False]")
 parser.add_option("--index", dest="index", default="", type="string", 
@@ -23,7 +23,7 @@ parser.add_option("--inputs-et", dest="inputs_et", default="Wisconsin", type="ch
 parser.add_option("--inputs-mt", dest="inputs_mt", default="Wisconsin", type="choice", choices=['Wisconsin', 'Imperial', 'LLR', 'CERN'],
                   help="Input files for htt_mt analysis. [Default: \"Wisconsin\"]")
 parser.add_option("--inputs-tt", dest="inputs_tt", default="MIT", type="choice", choices=['CERN', 'MIT'],
-                  help="Input files for htt_mt analysis. [Default: \"MIT\"]")
+                  help="Input files for htt_tt analysis. [Default: \"MIT\"]")
 parser.add_option("--update-all", dest="update_all", default=False, action="store_true",
                   help="update everything from scratch. If not specified use the following options to specify, which parts of the reload you want to run. [Default: False]")
 parser.add_option("--update-cvs", dest="update_cvs", default=False, action="store_true",
@@ -77,6 +77,7 @@ directories['tt'] = htt_tt(options.inputs_tt)
 patterns = {
     'std'        : '',
     'bin-by-bin' : '',
+    'pruned'     : '',
     'mvis'       : '-mvis', 
     'inclusive'  : '-inclusive',
     '2012d'      : '-2012d',
@@ -103,6 +104,7 @@ if options.update_cvs :
             specials = {
                 'std'        : '-moriond-andrew',
                 'bin-by-bin' : '-moriond-andrew',
+                'pruned'     : '-moriond-andrew',
                 'mvis'       : '-mvis-moriond-andrew',
                 'inclusive'  : '-inclusive-moriond-andrew',
                 '2012d'      : '-2012d-andrew',
@@ -139,13 +141,6 @@ if options.update_cvs :
                     PER=per,
                     PATTERN=pattern
                     )
-                if chn == 'tt' :
-                    source="{CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/htt_{CHN}*-sm-{PER}.root".format(
-                        CMSSW_BASE=cmssw_base,
-                        DIR=directories[chn][per],
-                        CHN=chn,
-                        PER=per
-                        )
                 for file in glob.glob(source) :
                     os.system("cp {SOURCE} {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/".format(
                         SOURCE=file,
@@ -185,7 +180,7 @@ if options.update_setup :
         ##
         ## MORIOND-BIN-BY-BIN
         ##
-        if ana == 'bin-by-bin' :
+        if ana == 'bin-by-bin'  or ana == 'pruned' :
             if 'mm' in channels :
                 ## setup bbb uncertainties for mm (172)
                 os.system("add_bbb_errors.py 'mm:7TeV,8TeV:01,03,05:ZTT,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
@@ -216,6 +211,13 @@ if options.update_setup :
                     ANA=ana
                     ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                ## setup bbb uncertainties for et 8TeV, (???)                
+                os.system("add_bbb_errors.py 'et:8TeV:02:QCD>W' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    DIR=dir,
+                    ANA=ana
+                    ))
+                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                
             if 'mt' in channels :
                 ## setup bbb uncertainties for mt 7TeV (118)
@@ -225,7 +227,7 @@ if options.update_setup :
                     ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                ## setup bbb uncertainties for mt 8TeV (116)
+                ## setup bbb uncertainties for mt 8TeV (120)
                 os.system("add_bbb_errors.py 'mt:8TeV:01,03,05:ZL,ZJ,QCD>W'  --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                     DIR=dir,
                     ANA=ana
@@ -233,7 +235,7 @@ if options.update_setup :
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                
             if 'tt' in channels :
-                ## setup bbb uncertainties for tt (72)
+                ## setup bbb uncertainties for tt (48)
                 os.system("add_bbb_errors.py 'tt:8TeV:00,01:ZTT,QCD' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                     DIR=dir,
                     ANA=ana
@@ -279,8 +281,7 @@ if options.update_setup :
             for chn in channels :
                 for per in periods :
                     if chn == "tt" : 
-                        if per == '7TeV' :
-                            continue
+                        continue
                     os.system("mv {DIR}/inclusive/{CHN}/htt_{CHN}.inputs-sm-{PER}-inclusive.root {DIR}/inclusive/{CHN}/htt_{CHN}.inputs-sm-{PER}.root".format(
                         DIR=dir,
                         CHN=chn,
@@ -310,7 +311,7 @@ if options.update_datacards :
             CHN=options.channels,
             MASSES=masses
             ))
-        if ana == "bin-by-bin" :
+        if ana == "pruned" :
             if not options.skip_pruning :
                 print "...pruning bbb uncertainties:"
                 ## setup bbb uncertainty pruning
