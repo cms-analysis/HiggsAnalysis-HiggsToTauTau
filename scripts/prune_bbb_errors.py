@@ -361,6 +361,7 @@ if options.optByPull :
         out = 0
         all = 0
         shielded = 0
+        confused = 0
         ## list of all values for monitoring
         vals= []
         ## datacards input file
@@ -370,6 +371,11 @@ if options.optByPull :
             name=line.split()[0]
             bbb = re.match("^#*\s*(\w+bin\_*\d*\w+)", name)
             if bbb :
+                missmatch = False
+                if not name in uncerts.keys() :
+                    confused += 1
+                    missmatch = True
+                    print "Warning: bbb uncert:", name,  "not in list of bbb uncerts. This uncert will not be pruned."
                 pull_match = re.compile('[+-]\d+\.\d+(?=sig)')
                 pulls = pull_match.findall(line)
                 if pulls :
@@ -384,7 +390,10 @@ if options.optByPull :
                         val = max(abs(float(pulls[0])), float(pulls[1]))
                     ## switch to byShift
                     if options.optByShift :
-                        val*= uncerts[name]
+                        if not missmatch :
+                            val*= uncerts[name]
+                        else :
+                            val = 999
                     if options.debug :
                         vals.append(val)
                     if abs(val) < float(threshold) :
@@ -394,16 +403,19 @@ if options.optByPull :
                         bins = bin_match.findall(name)
                         for bin in bins :
                             ibin = int(bin)
-                            if options.optShield :
-                                if bounds[name][0]<ibin and ibin<bounds[name][1] :
-                                    shield = True
+                            if not missmatch :
+                                if options.optShield :
+                                    if bounds[name][0]<ibin and ibin<bounds[name][1] :
+                                        shield = True
+                            else :
+                                shield = True
                         if shield :
                             shielded += 1
                         else :
                             out += 1
                             toExclude.append(name)
         file.close()
-        print "excluded", out, "from", all, ": (", shielded, "rescued by shielding.)"
+        print "excluded", out, "from", all, ": (", shielded, "rescued by shielding,", confused, "not pruned due to missmatch of inputs.)"
         if options.debug :
             summarize_uncerts(vals)
         return toExclude
