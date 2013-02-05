@@ -12,7 +12,9 @@ parser.add_option("-a", "--analyses", dest="analyses", default="std, bin-by-bin,
                   help="Type of analyses to be considered for updating. Lower case is required. [Default: \"std, bin-by-bin, pruned, mvis, hcp, 2012d, inclusive\"]")
 parser.add_option("--skip-pruning", dest="skip_pruning", default=False, action="store_true",
                   help="Skip pruning step when doing --setup-aux. [Default: False]")
-parser.add_option("--index", dest="index", default="", type="string", 
+parser.add_option("--extend-masses", dest="extend_masses", default=False, action="store_true",
+                  help="Extend central analysis to lower masses down to 90 GeV. [Default: False]")
+parser.add_option("--label", dest="index", default="", type="string", 
                   help="Possibility to give the setups, aux and LIMITS directory a index (example LIMITS-bbb). [Default: \"\"]")
 parser.add_option("--inputs-mm", dest="inputs_mm", default="KIT", type="choice", choices=['KIT'],
                   help="Input files for htt_mm analysis. [Default: \"KIT\"]")
@@ -96,7 +98,7 @@ if options.update_cvs :
     print "##"
     print "## update input files from cvs:"
     print "##"
-    ## copy specialized files names to common file name convention
+    ## copy specialized file names to common file name convention
     auxiliaries=cmssw_base+"/src/auxiliaries/datacards/collected/Imperial"
     for chn in ['et', 'mt', 'em'] :
         for ana in analyses :
@@ -115,7 +117,27 @@ if options.update_cvs :
                 CHN=chn,
                 SPECIAL=specials[ana],
                 ANA=patterns[ana]
-                )) 
+                ))
+    if options.extend_masses :
+        print "##"
+        print "## extending mass range to 90 GeV "
+        print "##"
+        print "... attention there is currently no extension available for mm."
+        ## specials for masses extended to low mass
+        for chn in channels :            
+            for per in periods :
+            ## temporarey fix as long as mm does not have the extension to low mass
+                if chn == 'mm' :
+                    continue
+                if chn == 'tt' :
+                    if per == '7TeV' :
+                        continue
+                os.system("cp {SOURCE}/{DIR}/htt_{CHN}.inputs-sm-{PER}-lowsignal.root {SOURCE}/{DIR}/htt_{CHN}.inputs-sm-{PER}.root".format(
+                    SOURCE=cmssw_base+"/src/auxiliaries/datacards/collected",
+                    DIR=directories[chn][per],
+                    CHN=chn,
+                    PER=per
+                    ))
     for chn in channels :
         print "... copy files for channel:", chn
         ## remove legacy
