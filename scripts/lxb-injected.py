@@ -3,6 +3,8 @@ from optparse import OptionParser, OptionGroup
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGS",
                       description="Script to set up a set of scripts for statistical signal injection. The source directory for individual signal injections can be given by the option --inputs. This directory will be cloned in N subdirectories. N can be changed by --njob. in each subdirectory a signal is injected statistically. Afterwards the limit calculation is run for each mass that is found in the subdirectory. ARGS corresponds to the masses which are to be analysed.")
+parser.add_option("--method", dest="method", default="--asymptotic", type="choice", choices = ['--asymptotic', '--significance-frequentist', '--pvalue-frequentist'],
+                  help="Main option for limit.py to indicate the method that is to be used. [Default: \"--asymptotic\"]")
 parser.add_option("--name", dest="name", default="TEST", type="string",
                   help="Name of the batch submission scripts. [Default: \"TEST\"]")
 parser.add_option("--input", dest="input", default="TEST/INJECT", type="string",
@@ -61,9 +63,9 @@ os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/inject-si
 masses = "{MASSES}".strip().rstrip().replace(" ", "_").split("_")
 for m in masses :
     if m :
-      print "limit.py --asymptotic {OPTS} {TMPDIR}/{USER}/{DIR}_{JOBID}/%s" % m
-      os.system("limit.py --asymptotic {OPTS} {TMPDIR}/{USER}/{DIR}_{JOBID}/%s" % m)
-      os.system("cp -v {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/higgsCombine-obs.Asymptotic.mH%s.root {PWD}/{PATH}/{DIR}/%s/higgsCombine-obs.Asymptotic.mH%s-{JOBID}.root" % (m, m, m, m))
+      print "limit.py {METHOD} {OPTS} {TMPDIR}/{USER}/{DIR}_{JOBID}/%s" % m
+      os.system("limit.py {METHOD} {OPTS} {TMPDIR}/{USER}/{DIR}_{JOBID}/%s" % m)
+      os.system("cp -v {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/higgsCombine{EXTENSION}.mH%s.root {PWD}/{PATH}/{DIR}/%s/higgsCombine{EXTENSION}.mH%s-{JOBID}.root" % (m, m, m, m))
 os.system("rm -r {TMPDIR}/{USER}/{DIR}_{JOBID}")
 '''
 
@@ -110,6 +112,13 @@ mass_groups = []
 for group in group_into_chunks(masses_str, options.per_job):
     mass_groups.append(group)
 
+if options.method == '--asymptotic' :
+    extension = '-obs.Asymptotic'
+if options.method == '--significance-frequentist' :
+    extension = 'SIG-obs.ProfileLikelihood'
+if options.method == '--pvalue-frequentist' :
+    extension = 'PVAL-obs.ProfileLikelihood'
+    
 os.system("mkdir -p %s" % name)
 submit_name = '%s_submit.sh' % name
 with open(submit_name, 'w') as submit_script:
@@ -127,6 +136,8 @@ with open(submit_name, 'w') as submit_script:
             script_file_name = '%s/%s_%i_%i.py' % (name, name, idx, mass_grp_idx)
             with open(script_file_name, 'w') as script:
                 script.write(script_template.format(
+                    METHOD = options.method,
+                    EXTENSION = extension,
                     CMSSW_BASE=os.environ["CMSSW_BASE"],
                     PWD= os.getcwd(),
                     MASSES = ' '.join(mass_group),
