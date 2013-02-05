@@ -122,13 +122,10 @@ if options.update_cvs :
         print "##"
         print "## extending mass range to 90 GeV "
         print "##"
-        print "... attention there is currently no extension available for mm."
         ## specials for masses extended to low mass
         for chn in channels :            
             for per in periods :
-            ## temporarey fix as long as mm does not have the extension to low mass
-                if chn == 'mm' :
-                    continue
+                ## temporarey fix as long as mm does not have the extension to low mass
                 if chn == 'tt' :
                     if per == '7TeV' :
                         continue
