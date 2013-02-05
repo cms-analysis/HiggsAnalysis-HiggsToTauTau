@@ -17,6 +17,8 @@
 #include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 #include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
 
+static const float SIGNAL_SCALE = 1.;
+
 $DEFINE_DROP_SIGNAL
 $DEFINE_MSSM
 
@@ -142,9 +144,9 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   TH1F* bbH  = refill((TH1F*)input->Get(TString::Format("%s/bbH160"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale(bbHScale);
 #else
 #ifndef DROP_SIGNAL
-  TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125"  , directory)), "ggH"  ); InitSignal(ggH); //ggH->Scale(5);
-  TH1F* qqH    = refill((TH1F*)input->Get(TString::Format("%s/qqH125"  , directory)), "qqH"  ); InitSignal(qqH); //qqH->Scale(5);
-  TH1F* VH     = refill((TH1F*)input->Get(TString::Format("%s/VH125"   , directory)), "VH"   ); InitSignal(VH ); //VH ->Scale(5);
+  TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125"  , directory)), "ggH"  ); InitSignal(ggH); ggH->Scale(SIGNAL_SCALE);
+  TH1F* qqH    = refill((TH1F*)input->Get(TString::Format("%s/qqH125"  , directory)), "qqH"  ); InitSignal(qqH); qqH->Scale(SIGNAL_SCALE);
+  TH1F* VH     = refill((TH1F*)input->Get(TString::Format("%s/VH125"   , directory)), "VH"   ); InitSignal(VH ); VH ->Scale(SIGNAL_SCALE);
 #endif
 #endif
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data", true);
@@ -367,8 +369,8 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   }
   rat1->SetLineColor(kBlack);
   rat1->SetFillColor(kGray );
-  rat1->SetMaximum(+1.5);
-  rat1->SetMinimum(-1.5);
+  rat1->SetMaximum(+0.5);
+  rat1->SetMinimum(-0.5);
   rat1->GetYaxis()->CenterTitle();
   rat1->GetYaxis()->SetTitle("#bf{Data/MC-1}");
   rat1->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}");
