@@ -173,7 +173,7 @@ if options.analysis == "mssm" :
 def closest_simulated_masspoint(value) :
     delta = -1
     closest = 150
-    for mass in [110, 115, 120, 125, 130, 135, 140, 145] :
+    for mass in [90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 145] :
         if delta<0 or abs(float(value)-mass)<delta :
             delta = abs(float(value)-mass)
             closest = mass
