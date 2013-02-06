@@ -88,11 +88,11 @@ os.chdir(options.out)
 ## valid mass range per category
 if options.analysis == "sm" :
     valid_masses = {
-        "mm"   : (110, 145),
-        "em"   : (110, 145),
-        "mt"   : (110, 145),
-        "et"   : (110, 145),
-        "tt"   : (110, 145),
+        "mm"   : ( 90, 145),
+        "em"   : ( 90, 145),
+        "mt"   : ( 90, 145),
+        "et"   : ( 90, 145),
+        "tt"   : ( 90, 145),
         "vhtt" : (110, 145),
         "vhbb" : (110, 145),
     }
