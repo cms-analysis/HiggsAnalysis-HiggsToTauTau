@@ -104,8 +104,8 @@ shapes VH_SM * ../common/{ROOTFILE} $CHANNEL/VH125 $CHANNEL/VH125_$SYSTEMATIC
             if words[0] == "process" and words[4].isdigit() :
                 if not words[1].isdigit() :
                     includesSignal = True
-                    output_line = output_line.replace("\n", "")
-                    output_line = output_line + "\t \t 97" + "\t \t 98" + "\t \t 99 \n" # geht auch schoener
+                output_line = output_line.replace("\n", "")
+                output_line = output_line + "\t \t 97" + "\t \t 98" + "\t \t 99 \n" # geht auch schoener
             if words[0] == "process" and words[4].isdigit()==False :
                 for (idx, word) in enumerate(words) :
                     if word=="ggH" :
