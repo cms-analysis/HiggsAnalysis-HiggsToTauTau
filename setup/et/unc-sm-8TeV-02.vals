@@ -9,7 +9,7 @@ eleTau_boost_low	qqH				QCDscale_qqH					1.04
 eleTau_boost_low	VH				QCDscale_VH					1.04
 eleTau_boost_low	signal				UEPS						1.04
 eleTau_boost_low 	signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_e 					1.02
-eleTau_boost_low 	signal,ZTT,TT,VV 		CMS_eff_t_8TeV 					1.08
+eleTau_boost_low 	signal,ZTT,TT,VV 		CMS_eff_t_etau_8TeV 				1.08
 eleTau_boost_low	signal,ZTT   			CMS_scale_t_etau_8TeV 				1.00
 eleTau_boost_low        ggH				CMS_scale_j_8TeV				1.06
 eleTau_boost_low        qqH				CMS_scale_j_8TeV				1.02
@@ -25,7 +25,7 @@ eleTau_boost_low	ZTT,ZJ,ZL			CMS_htt_zttNorm_8TeV 				1.03
 eleTau_boost_low	TT				CMS_htt_ttbarNorm_8TeV				1.10
 eleTau_boost_low	VV				CMS_htt_DiBosonNorm_8TeV			1.15
 eleTau_boost_low	W				CMS_htt_WNorm_etau_boost_low_8TeV		1.10
-eleTau_boost_low        ZTT,ZJ,ZL			CMS_htt_extrap_ztt_boost_low_8TeV		1.03
+eleTau_boost_low        ZTT				CMS_htt_extrap_ztt_etau_boost_low_8TeV		1.05
 eleTau_boost_low        QCD				CMS_htt_QCDSyst_etau_boost_low_8TeV		1.10
 eleTau_boost_low	ZJ				CMS_htt_ZJetFakeTau_etau_boost_low_8TeV		1.20
 eleTau_boost_low	ZL				CMS_htt_ZLeptonFakeTau_etau_low_8TeV		1.20

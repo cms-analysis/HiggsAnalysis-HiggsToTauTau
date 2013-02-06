@@ -9,8 +9,8 @@ eleTau_vbf		qqH				QCDscale_qqH				1.04
 eleTau_vbf		VH 	                        QCDscale_VH				1.04
 eleTau_vbf		signal				UEPS					1.04
 eleTau_vbf 		signal,ZTT,ZL,ZJ,TT,VV 		CMS_eff_e 				1.02
-eleTau_vbf 		signal,ZTT,TT,VV 		CMS_eff_t_8TeV 				1.08
-eleTau_vbf 		signal,ZTT,TT,VV 		CMS_eff_t_high_8TeV 			1.015
+eleTau_vbf 		signal,ZTT,TT,VV 		CMS_eff_t_etau_8TeV 			1.08
+eleTau_vbf 		signal,ZTT,TT,VV 		CMS_eff_t_etau_high_8TeV 		1.015
 eleTau_vbf		signal,ZTT			CMS_scale_t_etau_8TeV 			1.00
 eleTau_vbf         	ggH				CMS_scale_j_8TeV			1.20
 eleTau_vbf         	qqH				CMS_scale_j_8TeV			1.05
@@ -25,8 +25,7 @@ eleTau_vbf		TT				CMS_htt_ttbarNorm_8TeV			1.08
 eleTau_vbf		TT				CMS_htt_ttbarNorm_etau_vbf_8TeV		1.33
 eleTau_vbf		VV				CMS_htt_DiBosonNorm_8TeV		2.00
 eleTau_vbf		W				CMS_htt_WNorm_etau_vbf_8TeV		1.134
-eleTau_vbf		ZTT				CMS_htt_extrap_ztt_vbf_8TeV		1.10
-eleTau_vbf		ZL,ZJ				CMS_htt_extrap_ztt_vbf_8TeV		1.10
+eleTau_vbf		ZTT				CMS_htt_extrap_ztt_etau_vbf_8TeV	1.10
 eleTau_vbf		QCD				CMS_htt_QCDSyst_etau_vbf_8TeV		1.30
 eleTau_vbf		ZLL				CMS_htt_ZLeptonFakeTau_etau_low_8TeV	1.15
 eleTau_vbf		ZLL				CMS_htt_ZLeptonFakeTau_etau_high_8TeV	1.05

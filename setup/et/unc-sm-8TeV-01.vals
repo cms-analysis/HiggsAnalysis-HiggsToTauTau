@@ -9,8 +9,8 @@ eleTau_0jet_high     	qqH				QCDscale_qqH					1.035
 eleTau_0jet_high     	VH				QCDscale_VH					1.04
 eleTau_0jet_high	signal				UEPS						0.96
 eleTau_0jet_high	signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_e 					1.02
-eleTau_0jet_high	signal,ZTT,TT,VV 		CMS_eff_t_8TeV 					1.08
-eleTau_0jet_high	signal,ZTT,TT,VV 		CMS_eff_t_high_8TeV 				1.03
+eleTau_0jet_high	signal,ZTT,TT,VV 		CMS_eff_t_etau_8TeV 				1.08
+eleTau_0jet_high	signal,ZTT,TT,VV 		CMS_eff_t_etau_high_8TeV 			1.03
 eleTau_0jet_high	signal,ZTT			CMS_scale_t_etau_8TeV 				1.00
 eleTau_0jet_high        ggH				CMS_scale_j_8TeV				0.97
 eleTau_0jet_high        qqH				CMS_scale_j_8TeV				0.90
@@ -23,7 +23,7 @@ eleTau_0jet_high	VV    				CMS_htt_scale_met_8TeV				1.07
 eleTau_0jet_high	signal,ZL,ZJ,TT,VV 		CMS_eff_b_8TeV 					0.98
 elaTau_0jet_high	signal,ZL,ZJ,TT,VV 		CMS_fake_b_8TeV 				0.98
 eleTau_0jet_high	ZTT,ZL,ZJ			CMS_htt_zttNorm_8TeV 				1.03
-eleTau_0jet_high        ZTT,ZJ,ZL			CMS_htt_extrap_ztt_0jet_high_8TeV		1.03
+eleTau_0jet_high        ZTT				CMS_htt_extrap_ztt_etau_0jet_high_8TeV		1.05
 eleTau_0jet_high	TT				CMS_htt_ttbarNorm_8TeV				1.10
 eleTau_0jet_high	VV				CMS_htt_DiBosonNorm_8TeV			1.15
 eleTau_0jet_high	W				CMS_htt_WNorm_etau_0jet_high_8TeV 		1.20
