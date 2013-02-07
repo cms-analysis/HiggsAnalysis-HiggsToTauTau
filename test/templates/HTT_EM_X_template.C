@@ -315,9 +315,13 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   TLegend* leg = new TLegend(0.50, 0.65, 0.95, 0.90);
   SetLegendStyle(leg);
 #ifndef DROP_SIGNAL
-  leg->AddEntry(ggH  , "H(125 GeV)#rightarrow#tau#tau" , "L" );
+  if(SIGNAL_SCALE!=1){
+    leg->AddEntry(ggH  , TString::Format("%.0f#timesH(125 GeV)#rightarrow#tau#tau", SIGNAL_SCALE) , "L" );
+  }
+  else{
+    leg->AddEntry(ggH  , "H(125 GeV)#rightarrow#tau#tau" , "L" );
+  }
 #endif
-  //leg->AddEntry(ggH  , "5#timesH(125 GeV)#rightarrow#tau#tau" , "L" );
 #endif
   leg->AddEntry(data , "observed"                       , "LP");
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
