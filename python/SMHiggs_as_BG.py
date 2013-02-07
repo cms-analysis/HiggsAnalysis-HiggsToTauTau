@@ -89,9 +89,9 @@ for dir in directoryList :
                         full_rootfile=options.input+"/sm/{DIR}/".format(DIR=dir)+word
                         rootfile=word.replace("../common/", "")
                 output_line = output_line +"""
-shapes ggH_SM * ../common/{ROOTFILE} $CHANNEL/ggH125 $CHANNEL/ggH125_$SYSTEMATIC \n
-shapes qqH_SM * ../common/{ROOTFILE} $CHANNEL/qqH125 $CHANNEL/qqH125_$SYSTEMATIC \n
-shapes VH_SM * ../common/{ROOTFILE} $CHANNEL/VH125 $CHANNEL/VH125_$SYSTEMATIC
+shapes ggH_SM * {ROOTFILE} $CHANNEL/ggH125 $CHANNEL/ggH125_$SYSTEMATIC \n
+shapes qqH_SM * {ROOTFILE} $CHANNEL/qqH125 $CHANNEL/qqH125_$SYSTEMATIC \n
+shapes VH_SM * {ROOTFILE} $CHANNEL/VH125 $CHANNEL/VH125_$SYSTEMATIC
 """.format(ROOTFILE=rootfile)
                 add_shapes= False
             ## determine the list of all single channels (in standardized format, multiple occurences possible)
