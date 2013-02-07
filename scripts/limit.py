@@ -647,11 +647,11 @@ for directory in args :
                 os.system("hadd batch_collected.root old.root new.root")
                 os.system("rm old.root new.root")
         ## prepare workspace
+        model = []
         if options.optCollect and options.expectedOnly :
             print "No further model needed."
             pass
         else :
-            model = []
             if "=" in options.fitModel :
                 model = options.fitModel.split('=')
                 create_card_workspace_with_physics_model(mass)
