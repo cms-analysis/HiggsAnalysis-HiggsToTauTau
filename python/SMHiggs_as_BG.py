@@ -2,20 +2,17 @@
 
 from optparse import OptionParser
 
-parser = OptionParser(usage="usage: %prog [options]",
-                      description="This is a script to inject a 125 GeV SM Higgs to the backgrounds.")
-parser.add_option("-i", "--input", dest="input", default="", type="string",
-                  help="Input path to the aux directory. [Default: \"\"]")
-parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode")
+parser = OptionParser(usage="usage: %prog [options] ARG",
+                      description="This is a script to inject a 125 GeV SM Higgs as background. ARG corresponds to the pull path of the auxiliaries directory to which you want to apply this change. Note that this causes a change of the inputs datacards.")
+parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode.")
+## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
-
-import re
+if not len(args) == 1 :
+    parser.print_usage()
+    exit(1)    
+    
 import os
-import math
-import sys
-import shutil
 import ROOT
-import linecache
 
 class MakeDatacard :
     def load_hist(self, file, name) :
@@ -42,10 +39,10 @@ class MakeDatacard :
 ## setup datacard creator
 datacard_creator = MakeDatacard()
 
-directoryList = os.listdir(options.input+"/sm")
+directoryList = os.listdir(args[0]+"/sm")
 #print directoryList
 for dir in directoryList :
-    datacards = os.listdir(options.input+"/sm/{DIR}".format(DIR=dir))
+    datacards = os.listdir(args[0]+"/sm/{DIR}".format(DIR=dir))
     for datacard in datacards :
         ## skip first pass of 'bin'
         first_pass_on_bin = True
@@ -66,8 +63,8 @@ for dir in directoryList :
         else :
             continue
         ## first file parsing
-        input_file = open(options.input+"/sm/{DIR}/".format(DIR=dir) +input_name,'r')
-        output_file = open(options.input+"/sm/{DIR}/".format(DIR=dir) +input_name.replace(".txt", "_Higgs.txt"), 'w')
+        input_file = open(args[0]+"/sm/{DIR}/".format(DIR=dir) +input_name,'r')
+        output_file = open(args[0]+"/sm/{DIR}/".format(DIR=dir) +input_name.replace(".txt", "_Higgs.txt"), 'w')
         for index, input_line in enumerate(input_file) :
             words = input_line.split()
             output_line = input_line
@@ -80,7 +77,7 @@ for dir in directoryList :
             if words[0] == "shapes" and add_shapes:
                 for (idx, word) in enumerate(words):
                     if word.find(".root")>-1 :
-                        full_rootfile=options.input+"/sm/{DIR}/".format(DIR=dir)+word
+                        full_rootfile=args[0]+"/sm/{DIR}/".format(DIR=dir)+word
                         rootfile=word.replace("../common/", "")
                 output_line = output_line +"""shapes ggH_SM * {ROOTFILE} $CHANNEL/ggH125 $CHANNEL/ggH125_$SYSTEMATIC 
 shapes qqH_SM * {ROOTFILE} $CHANNEL/qqH125 $CHANNEL/qqH125_$SYSTEMATIC 
@@ -130,6 +127,6 @@ shapes VH_SM * {ROOTFILE} $CHANNEL/VH125 $CHANNEL/VH125_$SYSTEMATIC
         ##close files
         input_file.close()
         output_file.close()
-        os.system("rm -r {INPUT}".format(INPUT=options.input+"/sm/{DIR}/".format(DIR=dir) +input_name))
-        os.system("mv {OUTPUT} {NEW}".format(OUTPUT=options.input+"/sm/{DIR}/".format(DIR=dir) +input_name.replace(".txt", "_Higgs.txt"), NEW=options.input+"/sm/{DIR}/".format(DIR=dir) +input_name))
+        os.system("rm -r {INPUT}".format(INPUT=args[0]+"/sm/{DIR}/".format(DIR=dir) +input_name))
+        os.system("mv {OUTPUT} {NEW}".format(OUTPUT=args[0]+"/sm/{DIR}/".format(DIR=dir) +input_name.replace(".txt", "_Higgs.txt"), NEW=args[0]+"/sm/{DIR}/".format(DIR=dir) +input_name))
     print dir, " done"
