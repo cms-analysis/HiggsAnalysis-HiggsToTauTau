@@ -24,193 +24,64 @@ static const double MARKER_SIZE = 1.3;  // 0.7
 bool
 channel(std::string& label){
   return (label==std::string("cmb")        ||
-	  label==std::string("cmb-mvis")   ||
-	  label==std::string("cmb-ichep")  ||
 	  label==std::string("cmb+")       ||
 	  label==std::string("htt")        ||
-	  label==std::string("htt+")       ||
 	  label==std::string("vhtt")       ||
-	  label==std::string("whtt")       ||
-	  label==std::string("zhtt")       ||
-	  label==std::string("whhh")       ||
-	  label==std::string("incl")       ||
 	  label==std::string("0jet")       ||
-	  label==std::string("0jet-mvis")  ||
-	  label==std::string("0jet-ichep") ||
 	  label==std::string("2jet")       ||
 	  label==std::string("boost")      ||
-	  label==std::string("boost+0jet") ||
-	  label==std::string("boost-mvis") ||
-	  label==std::string("boost-ichep")||
 	  label==std::string("btag")       ||
 	  label==std::string("nobtag")     ||
 	  label==std::string("vbf")        ||
-	  label==std::string("vbf_0jet")   ||
-	  label==std::string("vbf-mvis")   ||
-	  label==std::string("vbf-ichep")  ||
-	  label==std::string("hgg")        ||	  
-	  label==std::string("hww")        ||
-	  label==std::string("hbb")        ||	  
-	  label==std::string("hmm")        ||
 	  label==std::string("tt")         ||
-	  label==std::string("tt-mvis")    ||
-	  label==std::string("tt-ichep")   ||
 	  label==std::string("em")         ||
-	  label==std::string("em-mvis")    ||
-	  label==std::string("em-ichep")   ||
 	  label==std::string("et")         ||
-	  label==std::string("et-mvis")    ||
-	  label==std::string("et-ichep")   ||
 	  label==std::string("mt")         ||
-	  label==std::string("mt-mvis")    ||
-	  label==std::string("mt-ichep")   ||
 	  label==std::string("mm")         ||
-	  label==std::string("mm-mvis")    ||
-	  label==std::string("mm-ichep")   ||
-	  label==std::string("ltt") 	   ||
-	  label==std::string("llt") 	   ||
-	  label==std::string("4l") 	   ||
-	  label==std::string("hzz4l")      ||
-	  label==std::string("hzz2l2q")    ||
-	  label==std::string("hzz2l2q")    ||
-	  label==std::string("hzz2l2t")    ||
-	  label==std::string("hzz2l2n")    ||
 	  label==std::string("ggH")        ||
 	  label==std::string("bbH")        ||
 	  label==std::string("mvis")       ||
-	  label==std::string("ichep")      ||
 	  label==std::string("test-0")     ||
 	  label==std::string("test-1")     ||
 	  label==std::string("test-2")     ||
 	  label==std::string("test-3")     ||
 	  label==std::string("test-4")     ||
 	  label==std::string("test-5")     ||
-	  label==std::string("old")        ||
-	  label==std::string("cmb-5fb")    ||
-	  label==std::string("hpa-5fb")    ||
-	  label==std::string("hpa-10fb")   ||
-	  label==std::string("saeff")      ||
-	  label==std::string("gluph")      ||
-	  label==std::string("nomix-200")  ||
-	  label==std::string("nomix+200")  ||
-	  label==std::string("mhmax-400")  ||
-	  label==std::string("mhmax-200")  ||
-	  label==std::string("mhmax+200")  ||
-	  label==std::string("mhmax+400")  ||
-	  label==std::string("mhmax+600")  ||
-	  label==std::string("mhmax+800")  ||
-	  label==std::string("MSSM-7TeV")  ||
-	  label==std::string("MSSM-8TeV")  ||
 	  label==std::string("HIG-11-020") ||
 	  label==std::string("HIG-11-029") ||
 	  label==std::string("HIG-12-018") ||
 	  label==std::string("HIG-12-032") ||
 	  label==std::string("HIG-12-043") ||
 	  label==std::string("HIG-12-050") ||
-	  label==std::string("bbb"           ) || 
-	  label==std::string("nobbb"         ) || 
-	  label==std::string("nobbb-noprefit") ||
-	  label==std::string("mm-thomas"   ) ||
-	  label==std::string("em-valentina") ||
-	  label==std::string("em-andrew"   ) ||
-	  label==std::string("tt-riccardo" ) ||
-	  label==std::string("tt-aram"     ) ||
-	  label==std::string("et-josh"     ) ||
-	  label==std::string("et-jose"     ) ||
-	  label==std::string("et-andrew"   ) ||
-	  label==std::string("mt-josh"     ) || 
-	  label==std::string("mt-jose"     ) || 
-	  label==std::string("mt-andrew"   ) || 
-	  label==std::string("mt-matthew"  ) ||
-	  label==std::string("mt-aruna"    )
 	  );
 }
 
 std::string legendEntry(const std::string& channel){
   std::string title;
-  if(channel==std::string("emu"       )) title = std::string("e#mu");
   if(channel==std::string("em"        )) title = std::string("e#mu");
-  if(channel==std::string("em-mvis"   )) title = std::string("e#mu (with m_{vis})");
-  if(channel==std::string("em-ichep"  )) title = std::string("e#mu (HCP on ICHEP dataset)");
-  if(channel==std::string("etau"      )) title = std::string("e#tau_{h}");
   if(channel==std::string("et"        )) title = std::string("e#tau_{h}");
-  if(channel==std::string("et-mvis"   )) title = std::string("e#tau_{h} (with m_{vis})");
-  if(channel==std::string("et-ichep"  )) title = std::string("e#tau_{h} (HCP in ICHEP dataset)");
-  if(channel==std::string("mutau"     )) title = std::string("#mu#tau_{h}");
   if(channel==std::string("mt"        )) title = std::string("#mu#tau_{h}");
-  if(channel==std::string("mt-mvis"   )) title = std::string("#mu#tau_{h} (with m_{vis})");
-  if(channel==std::string("mt-ichep"  )) title = std::string("#mu#tau_{h} (HCP on ICHEP dataset)");
-  if(channel==std::string("tautau"    )) title = std::string("#tau_{h}#tau_{h}");
   if(channel==std::string("tt"        )) title = std::string("#tau_{h}#tau_{h}");
-  if(channel==std::string("tt-mvis"   )) title = std::string("#tau_{h}#tau_{h} (with m_{vis})");
-  if(channel==std::string("tt-ichep"  )) title = std::string("#tau_{h}#tau_{h} (HCP on ICHEP dataset)");
-  if(channel==std::string("mumu"      )) title = std::string("#mu#mu");
   if(channel==std::string("mm"        )) title = std::string("#mu#mu");
-  if(channel==std::string("mm-mvis"   )) title = std::string("#mu#mu (with m_{vis})");
-  if(channel==std::string("mm-ichep"  )) title = std::string("#mu#mu (HCP on ICHEP dataset)");
   if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau+l(l)");
-  if(channel==std::string("whtt"      )) title = std::string("WH#rightarrow#tau_{l}#tau_{l}+l");
-  if(channel==std::string("zhtt"      )) title = std::string("ZH#rightarrow#tau_{l}#tau_{l}+ll");
-  if(channel==std::string("whhh"      )) title = std::string("WH#rightarrow#tau_{h}#tau_{h}+#mu");
   if(channel==std::string("htt"       )) title = std::string("e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu");
-  if(channel==std::string("htt+"      )) title = std::string("e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu+#tau_{h}#tau_{h}");
   if(channel==std::string("cmb"       )) title = std::string("Combined");
-  if(channel==std::string("cmb-mvis"  )) title = std::string("Combined (with m_{vis})");
-  if(channel==std::string("cmb-ichep" )) title = std::string("Combined (HCP on ICHEP dataset)");
   if(channel==std::string("cmb+"      )) title = std::string("H#rightarrow#tau#tau + VH#rightarrow#tau#tau+l");
-  if(channel==std::string("incl"      )) title = std::string("Inclusive");
   if(channel==std::string("0jet"      )) title = std::string("0-Jet");
-  if(channel==std::string("0jet-mvis" )) title = std::string("0-Jet (with m_{vis})");
-  if(channel==std::string("0jet-ichep")) title = std::string("0-Jet (HCP on ICHEP dataset)");
   if(channel==std::string("2jet"      )) title = std::string("V(jj)H(#tau#tau)");
   if(channel==std::string("vbf"       )) title = std::string("2-Jet (VBF)");
-  if(channel==std::string("vbf+0jet"  )) title = std::string("2-Jet (VBF)");
-  if(channel==std::string("vbf-mvis"  )) title = std::string("2-Jet (VBF) (with m_{vis})");
-  if(channel==std::string("vbf-ichep" )) title = std::string("2-Jet (VBF) HCP analysis");
   if(channel==std::string("boost"     )) title = std::string("1-Jet");
-  if(channel==std::string("boost+0jet")) title = std::string("1-Jet");
-  if(channel==std::string("boost-mvis")) title = std::string("1-Jet (with m_{vis})");
-  if(channel==std::string("boost-ichep")) title = std::string("1-Jet (HCP on ICHEP dataset)");
   if(channel==std::string("btag"      )) title = std::string("B-Tag");
   if(channel==std::string("nobtag"    )) title = std::string("No B-Tag");
-  if(channel==std::string("hgg"       )) title = std::string("H#rightarrow#gamma#gamma");
-  if(channel==std::string("hww"       )) title = std::string("H#rightarrowWW#rightarrow2l2#nu");
-  if(channel==std::string("hmm"       )) title = std::string("H#rightarrow#mu#mu");
-  if(channel==std::string("hbb"       )) title = std::string("H#rightarrowbb");
-  if(channel==std::string("ltt"       )) title = std::string("WH#rightarrow#tau_{h}#tau_{h}+l");
-  if(channel==std::string("llt"       )) title = std::string("WH#rightarrow#tau_{h}+2l");
-  if(channel==std::string("4l"        )) title = std::string("ZH#rightarrow2l2#tau");
-  if(channel==std::string("ltt"       )) title = std::string("WH#rightarrow#tau_{h}#tau_{h}");
-  if(channel==std::string("hzz4l"     )) title = std::string("H#rightarrowZZ#rightarrow4l");
-  if(channel==std::string("hzz2l2q"   )) title = std::string("H#rightarrowZZ#rightarrow2l2q");
-  if(channel==std::string("hzz2l2t"   )) title = std::string("H#rightarrowZZ#rightarrow2l2#tau");
-  if(channel==std::string("hzz2l2n"   )) title = std::string("H#rightarrowZZ#rightarrow2l2#nu");
   if(channel==std::string("ggH"       )) title = std::string("gg#rightarrow#phi (bbH profiled)");
   if(channel==std::string("bbH"       )) title = std::string("gg#rightarrowbb#phi (ggH profiled)");
   if(channel==std::string("mvis"      )) title = std::string("Visible mass");
-  if(channel==std::string("ichep"     )) title = std::string("On ICHEP dataset");
-  if(channel==std::string("test-0"    )) title = std::string("gg#rightarrow#phi (bbH set to 0)");
-  if(channel==std::string("test-1"    )) title = std::string("gg#rightarrowbb#phi (ggH set to 0)");
+  if(channel==std::string("test-0"    )) title = std::string("original");
+  if(channel==std::string("test-1"    )) title = std::string("extrap. masses");
   if(channel==std::string("test-2"    )) title = std::string("gg#rightarrowbb#phi (w/o prefit)");
   if(channel==std::string("test-3"    )) title = std::string("gg#rightarrow#phi (w/o prefit)");
   if(channel==std::string("test-4"    )) title = std::string("Test-4");
   if(channel==std::string("test-5"    )) title = std::string("Test-5");
-  if(channel==std::string("old"       )) title = std::string("Old Limit");
-  if(channel==std::string("cmb-5fb"   )) title = std::string("All channels (5 fb^{-1})");
-  if(channel==std::string("hpa-5fb"   )) title = std::string("HPA analyses (5 fb^{-1})");
-  if(channel==std::string("hpa-10fb"  )) title = std::string("HPA analyses (10 fb^{-1})");
-  if(channel==std::string("saeff"     )) title = std::string("small #alpha_{eff}");
-  if(channel==std::string("gluph"     )) title = std::string("gluo-phobic");
-  if(channel==std::string("nomix-200" )) title = std::string("no mixing (#mu=-200 GeV)");
-  if(channel==std::string("nomix+200" )) title = std::string("no mixing (#mu=+200 GeV)");
-  if(channel==std::string("mhmax-400" )) title = std::string("m_{h, max} (#mu=-400 GeV)");
-  if(channel==std::string("mhmax-200" )) title = std::string("m_{h, max} (#mu=-200 GeV)");
-  if(channel==std::string("mhmax+200" )) title = std::string("m_{h, max} (#mu=+200 GeV)");
-  if(channel==std::string("mhmax+400" )) title = std::string("m_{h, max} (#mu=+400 GeV)");
-  if(channel==std::string("mhmax+600" )) title = std::string("m_{h, max} (#mu=+600 GeV)");
-  if(channel==std::string("mhmax+800" )) title = std::string("m_{h, max} (#mu=+800 GeV)");
-  if(channel==std::string("MSSM-7TeV" )) title = std::string("ICHEP 7 TeV (4.9 fb^{-1})");
-  if(channel==std::string("MSSM-8TeV" )) title = std::string("ICHEP 8 TeV (5.1 fb^{-1})");
   if(channel==std::string("HIG-11-020")) title = std::string("HIG-11-020 (1.6 fb^{-1})");
   if(channel==std::string("HIG-11-020")) title = std::string("HIG-11-020 (1.6 fb^{-1})");
   if(channel==std::string("HIG-11-029")) title = std::string("HIG-11-029 (4.9 fb^{-1})");
@@ -218,22 +89,6 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("HIG-12-032")) title = std::string("HIG-12-032 (5-10 fb^{-1})");
   if(channel==std::string("HIG-12-043")) title = std::string("HIG-12-043 (17 fb^{-1})");
   if(channel==std::string("HIG-12-050")) title = std::string("HIG-12-050 (17 fb^{-1})"); 
-  if(channel==std::string("bbb"           )) title = std::string("bin-by-bin");
-  if(channel==std::string("nobbb"         )) title = std::string("no bin-by-bin");
-  if(channel==std::string("nobbb-noprefit")) title = std::string("no bin-by-bin and no prefit");
-  if(channel==std::string("mm-thomas"   )) title = std::string("mm thomas");
-  if(channel==std::string("em-valentina")) title = std::string("em valentina");
-  if(channel==std::string("em-andrew"   )) title = std::string("em andrew");
-  if(channel==std::string("tt-riccardo" )) title = std::string("tt riccardo");
-  if(channel==std::string("tt-aram"     )) title = std::string("tt aram");
-  if(channel==std::string("et-josh"     )) title = std::string("et josh");
-  if(channel==std::string("et-jose"     )) title = std::string("et jose");
-  if(channel==std::string("et-andrew"   )) title = std::string("et andrew");
-  if(channel==std::string("mt-josh"     )) title = std::string("mt josh");
-  if(channel==std::string("mt-jose"     )) title = std::string("mt jose");
-  if(channel==std::string("mt-andrew"   )) title = std::string("mt andrew");
-  if(channel==std::string("mt-matthew"  )) title = std::string("mt matthew");
-  if(channel==std::string("mt-aruna"    )) title = std::string("mt aruna");
   return title;
 }
 
@@ -242,111 +97,36 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   SetStyle();
 
   std::map<std::string, unsigned int> colors;
-  colors["incl"       ] = kBlue;
   colors["0jet"       ] = kBlue;
-  colors["0jet-mvis"  ] = kBlue+2;
-  colors["0jet-ichep" ] = kBlue+2;
   colors["2jet"       ] = kMagenta;
   colors["vbf"        ] = kRed;
-  colors["vbf+0jet"   ] = kRed;
-  colors["vbf-mvis"   ] = kRed+2;
-  colors["vbf-ichep"  ] = kRed+2;
   colors["boost"      ] = kGreen;
-  colors["boost+0jet" ] = kGreen;
-  colors["boost-mvis" ] = kGreen+2;
-  colors["boost-ichep"] = kGreen+2;
   colors["btag"       ] = kRed;
   colors["nobtag"     ] = kBlue;
-  colors["emu"        ] = kBlue;
   colors["em"         ] = kBlue;
-  colors["em-mvis"    ] = kBlue+2;
-  colors["em-ichep"   ] = kBlue+2;
-  colors["etau"       ] = kRed;
   colors["et"         ] = kRed;
-  colors["et-mvis"    ] = kRed+2;
-  colors["et-ichep"   ] = kRed+2;
-  colors["mutau"      ] = kGreen;
   colors["mt"         ] = kGreen;
-  colors["mt-mvis"    ] = kGreen+2;
-  colors["mt-ichep"   ] = kGreen+2;
-  colors["mumu"       ] = kMagenta;
   colors["mm"         ] = kMagenta;
-  colors["mm-mvis"    ] = kMagenta+2;
-  colors["mm-ichep"   ] = kMagenta+2;
-  colors["tautau"     ] = kOrange;
-  colors["tt"         ] = kOrange;
-  colors["tt-mvis"    ] = kOrange+2;
-  colors["tt-ichep"   ] = kOrange+2;
+  colors["tt"         ] = kMagenta+3;
   colors["vhtt"       ] = kMagenta+2;
-  colors["whtt"       ] = kMagenta+0;
-  colors["zhtt"       ] = kCyan+2;
-  colors["whhh"       ] = kBlue;
   colors["cmb"        ] = kBlack;
-  colors["cmb-mvis"   ] = kGray+2;
-  colors["cmb-ichep"  ] = kGray+3;
   colors["cmb+"       ] = kGray+2;
   colors["htt"        ] = kBlack;
-  colors["htt+"       ] = kBlue;
-  colors["hgg"        ] = kRed;
-  colors["hww"        ] = kGreen;
-  colors["hbb"        ] = kOrange;
-  colors["hmm"        ] = kViolet;
-  colors["4l"         ] = kGreen;
-  colors["llt"        ] = kRed;
-  colors["ltt"        ] = kBlue;
-  colors["hzz4l"      ] = kBlue;
-  colors["hzz2l2q"    ] = kMagenta;
-  colors["hzz2l2q+"   ] = kMagenta;
-  colors["hzz2l2t"    ] = kOrange;
-  colors["hzz2l2n"    ] = kPink;
   colors["ggH"        ] = kRed;
   colors["bbH"        ] = kBlue;
   colors["mvis"       ] = kBlue+2;
-  colors["ichep"      ] = kBlue+2;
   colors["test-0"     ] = kRed+2;
   colors["test-1"     ] = kGreen+2;
   colors["test-2"     ] = kGreen;
   colors["test-3"     ] = kRed+2;
   colors["test-4"     ] = kBlue;
   colors["test-5"     ] = kViolet-6;
-  colors["old"        ] = kViolet-6;
-  colors["cmb-5fb"    ] = kBlue;
-  colors["hpa-5fb"    ] = kRed;
-  colors["hpa-10fb"   ] = kBlack;
-  colors["saeff"      ] = kGreen;
-  colors["gluph"      ] = kOrange-3;
-  colors["nomix-200"  ] = kBlue-10;
-  colors["nomix+200"  ] = kBlue +2;
-  colors["mhmax-400"  ] = kGray +2;
-  colors["mhmax-200"  ] = kGray +1;
-  colors["mhmax+200"  ] = kMagenta+ 4;
-  colors["mhmax+400"  ] = kMagenta+ 3;
-  colors["mhmax+600"  ] = kMagenta- 2;
-  colors["mhmax+800"  ] = kMagenta-10;
-  colors["MSSM-7TeV"  ] = kBlue+2;
-  colors["MSSM-8TeV"  ] = kBlue+4;
   colors["HIG-11-020" ] = kBlue+2;
   colors["HIG-11-029" ] = kRed+2;
   colors["HIG-12-018" ] = kBlue;
   colors["HIG-12-032" ] = kRed+2;
-  colors["HIG-12-043" ] = kBlack;
+  colors["HIG-12-043" ] = kRed;
   colors["HIG-12-050" ] = kBlack;
-  colors["bbb"           ] = kBlack;
-  colors["nobbb"         ] = kBlue;
-  colors["nobbb-noprefit"] = kRed;
-  colors["mm-thomas"   ] = kRed;
-  colors["em-valentina"] = kRed;
-  colors["em-andrew"   ] = kBlue;
-  colors["tt-riccardo" ] = kRed;
-  colors["tt-aram"     ] = kBlue;
-  colors["et-josh"     ] = kRed;
-  colors["et-jose"     ] = kBlue;
-  colors["et-andrew"   ] = kOrange;
-  colors["mt-josh"     ] = kViolet;
-  colors["mt-jose"     ] = kRed;
-  colors["mt-andrew"   ] = kBlue;
-  colors["mt-matthew"  ] = kOrange;
-  colors["mt-aruna"    ] = kGreen+2;
 
   std::cout << " *******************************************************************************************************\n"
 	    << " * Usage     : root -l                                                                                  \n"
@@ -485,8 +265,8 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 	y_title = std::string("#bf{tan#beta}");
       }
       else{
-	//y_title = std::string("#sigma(H#rightarrow#tau#tau)_{95% CL} / #sigma(H#rightarrow#tau#tau)_{SM}");
-	y_title = std::string("#sigma(H)_{95% CL} / #sigma(H)_{SM}");
+	y_title = std::string("95% CL limit on #sigma/#sigma_{SM}");
+	//y_title = std::string("#sigma(H)_{95% CL} / #sigma(H)_{SM}");
       }
       hobs[i]->GetYaxis()->SetTitle(y_title.c_str());
       hobs[i]->GetYaxis()->SetLabelFont(62);
