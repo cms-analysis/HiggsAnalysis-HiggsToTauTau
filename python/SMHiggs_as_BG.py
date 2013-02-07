@@ -3,7 +3,7 @@
 from optparse import OptionParser
 
 parser = OptionParser(usage="usage: %prog [options]",
-                      description="Main script to inject a 125 GeV SM Higgs to the backgrounds.")
+                      description="This is a script to inject a 125 GeV SM Higgs to the backgrounds.")
 parser.add_option("-i", "--input", dest="input", default="", type="string",
                   help="Input path to the aux directory. [Default: \"\"]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode")
@@ -18,7 +18,6 @@ import ROOT
 import linecache
 
 class MakeDatacard :
-
     def load_hist(self, file, name) :
         """
         Load a histogram with name from input histfile. Issue a warning in case the histogram
@@ -34,30 +33,25 @@ class MakeDatacard :
         Return rate from histogram in output histfile.
         """
         file = ROOT.TFile(file,"READ")
-        rate=0.0
+        rate=0.
         help = directory +"/"+hist
         hist=self.load_hist(file, help)
         rate=hist.Integral()
         return rate
 
-
-## if len(args) < 1 :
-##        parser.print_help()
-##        exit(1)
-
 ## setup datacard creator
 datacard_creator = MakeDatacard()
 
 directoryList = os.listdir(options.input+"/sm")
-print directoryList
+#print directoryList
 for dir in directoryList :
     datacards = os.listdir(options.input+"/sm/{DIR}".format(DIR=dir))
     for datacard in datacards :
         ## skip first pass of 'bin'
         first_pass_on_bin = True
-        ## does datacard includes Signal
+        ## does datacard include signal?
         includesSignal = False
-        ## only add once shape
+        ## add shape only once
         add_shapes = True
         ## other needed stuff
         full_rootfile=""
@@ -71,7 +65,7 @@ for dir in directoryList :
             input_name = datacard
         else :
             continue
-        ## first file parsin
+        ## first file parsing
         input_file = open(options.input+"/sm/{DIR}/".format(DIR=dir) +input_name,'r')
         output_file = open(options.input+"/sm/{DIR}/".format(DIR=dir) +input_name.replace(".txt", "_Higgs.txt"), 'w')
         for index, input_line in enumerate(input_file) :
@@ -88,9 +82,8 @@ for dir in directoryList :
                     if word.find(".root")>-1 :
                         full_rootfile=options.input+"/sm/{DIR}/".format(DIR=dir)+word
                         rootfile=word.replace("../common/", "")
-                output_line = output_line +"""
-shapes ggH_SM * {ROOTFILE} $CHANNEL/ggH125 $CHANNEL/ggH125_$SYSTEMATIC \n
-shapes qqH_SM * {ROOTFILE} $CHANNEL/qqH125 $CHANNEL/qqH125_$SYSTEMATIC \n
+                output_line = output_line +"""shapes ggH_SM * {ROOTFILE} $CHANNEL/ggH125 $CHANNEL/ggH125_$SYSTEMATIC 
+shapes qqH_SM * {ROOTFILE} $CHANNEL/qqH125 $CHANNEL/qqH125_$SYSTEMATIC 
 shapes VH_SM * {ROOTFILE} $CHANNEL/VH125 $CHANNEL/VH125_$SYSTEMATIC
 """.format(ROOTFILE=rootfile)
                 add_shapes= False
@@ -101,12 +94,13 @@ shapes VH_SM * {ROOTFILE} $CHANNEL/VH125 $CHANNEL/VH125_$SYSTEMATIC
                     output_line = output_line.replace("\n", "")
                     output_line = output_line + '\t' + bin_name + '\t' + bin_name + '\t' + bin_name + '\n'
                 first_pass_on_bin = False
-            if words[0] == "process" and words[4].isdigit() :
+            if words[0] == "process" and words[-1].isdigit() :
                 if not words[1].isdigit() :
                     includesSignal = True
+                final_elem = int(words[-1])
                 output_line = output_line.replace("\n", "")
-                output_line = output_line + "\t \t 97" + "\t \t 98" + "\t \t 99 \n" # geht auch schoener
-            if words[0] == "process" and words[4].isdigit()==False :
+                output_line = output_line + ("\t \t %s" % (final_elem+1)) + ("\t \t %s" % (final_elem+2)) + ("\t \t %s \n" % (final_elem+3))
+            if words[0] == "process" and words[-1].isdigit()==False :
                 for (idx, word) in enumerate(words) :
                     if word=="ggH" :
                         ggH_idx=idx
