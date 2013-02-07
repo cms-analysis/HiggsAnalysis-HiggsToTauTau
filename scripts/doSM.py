@@ -9,7 +9,7 @@ parser.add_option("-c", "--channels", dest="channels", default="mm em mt et tt",
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
                   help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analyses", dest="analyses", default="std, bin-by-bin, pruned, mvis, 2012d, hcp, inclusive",
-                  help="Type of analyses to be considered for updating. Lower case is required. [Default: \"std, bin-by-bin, pruned, mvis, hcp, 2012d, inclusive\"]")
+                  help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"std, bin-by-bin, pruned, mvis, hcp, 2012d, inclusive\" [Default: \"std, bin-by-bin\"]")
 parser.add_option("--skip-pruning", dest="skip_pruning", default=False, action="store_true",
                   help="Skip pruning step when doing --setup-aux. [Default: False]")
 parser.add_option("--extend-masses", dest="extend_masses", default=False, action="store_true",
@@ -368,7 +368,8 @@ if options.update_limits :
                 ))
         else :
             per = "8TeV" if ana == '2012d' else options.periods
-            label = '' if ana == 'std' else '-l '+ana
+            ## this os a try to live w/o the additional label, which is really annoying once it coem to plotting 
+            label = '' #if ana == 'std' else '-l '+ana
             os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {LABEL} {MASSES}".format(
                 INDEX='' if options.index == '' else '_'+options.index,                
                 ANA=ana,
