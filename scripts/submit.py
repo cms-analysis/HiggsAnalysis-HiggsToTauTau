@@ -75,8 +75,8 @@ egroup.add_option("--points", dest="points", default="100", type="string",
                   help="Number of scan points for the likelihood scan. [Default: 100]")
 egroup.add_option("--rMin", dest="rMin", default="-2.0", type="string",
                   help="Minimum of the scan. [Default: -2.0]")
-egroup.add_option("--rMax", dest="rMax", default="+2.0", type="string",
-                  help="Maximum of the scan. [Default: -2.0]")
+egroup.add_option("--rMax", dest="rMax", default="+4.0", type="string",
+                  help="Maximum of the scan. [Default: -4.0]")
 parser.add_option_group(egroup)
 ##
 ## SIGNIFICANCE
