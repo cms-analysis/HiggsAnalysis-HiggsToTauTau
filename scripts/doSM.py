@@ -8,8 +8,8 @@ parser.add_option("-c", "--channels", dest="channels", default="mm em mt et tt",
                   help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et tt\"]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
                   help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
-parser.add_option("-a", "--analyses", dest="analyses", default="std, bin-by-bin, pruned, mvis, 2012d, hcp, inclusive",
-                  help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"std, bin-by-bin, pruned, mvis, hcp, 2012d, inclusive\" [Default: \"std, bin-by-bin\"]")
+parser.add_option("-a", "--analyses", dest="analyses", default="std, pruned",
+                  help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"std, bin-by-bin, pruned, mvis, hcp, 2012d, inclusive\" [Default: \"std, pruned\"]")
 parser.add_option("--skip-pruning", dest="skip_pruning", default=False, action="store_true",
                   help="Skip pruning step when doing --setup-aux. [Default: False]")
 parser.add_option("--extend-masses", dest="extend_masses", default=False, action="store_true",
