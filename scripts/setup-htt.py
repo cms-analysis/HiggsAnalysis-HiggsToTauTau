@@ -96,8 +96,8 @@ for category in categories :
 
 ## configuration for Moriond
 directories = {
-    "0"  : ["0jet", "boost", "vbf"],
-    "1"  : ["0jet", "boost", "vbf"],
+    "0"  : ["boost", "vbf"],
+    "1"  : ["boost", "vbf"],
     "2"  : ["boost"],
     "3"  : ["boost"],
     "4"  : ["2jet"],
