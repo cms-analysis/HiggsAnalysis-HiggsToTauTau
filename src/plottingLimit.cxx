@@ -116,7 +116,7 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   }
   else if(bestfit){
     leg->AddEntry( expected , "#sigma/#sigma_{SM} (best fit)",  "PL" );
-    if(innerBand){ leg->AddEntry( innerBand, "68% CL" ,  "PLF" ); }
+    if(innerBand){ leg->AddEntry( innerBand, "#pm 1#sigma (best fit)" ,  "PLF" ); }
   }
   else{
     leg->AddEntry( expected , "expected",  "L" );
