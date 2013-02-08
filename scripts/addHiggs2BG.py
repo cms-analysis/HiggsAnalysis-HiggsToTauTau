@@ -1,19 +1,22 @@
 #!/usr/bin/env python
 
+import os
+import re
+import ROOT
 from optparse import OptionParser
 
 parser = OptionParser(usage="usage: %prog [options] ARG",
                       description="This is a script to inject a 125 GeV SM Higgs as background. ARG corresponds to the pull path of the auxiliaries directory to which you want to apply this change. Note that this causes a change of the inputs datacards.")
-parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode.")
+parser.add_option("--uncertainty-cash", dest="cash_uncert", default="{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup".format(CMSSW_BASE=os.environ['CMSSW_BASE']), type="string",
+                  help="Run in verbose mode.")
+parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true",
+                  help="Run in verbose mode.")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 if not len(args) == 1 :
     parser.print_usage()
     exit(1)    
     
-import os
-import ROOT
-
 class MakeDatacard :
     def load_hist(self, file, name) :
         """
@@ -35,6 +38,41 @@ class MakeDatacard :
         hist=self.load_hist(file, help)
         rate=hist.Integral()
         return rate
+
+## cashed uncertainties for each channel
+def cash_uncerts(datacard="htt_em_0_8TeV.txt") :
+    """
+    open the uncertainty files for a given datacard, extract the uncertainties that
+    should be added for ggH, qqH, VH and return these as a dictionary of dictionaries
+    """
+    uncert_VH  = {}
+    uncert_ggH = {}
+    uncert_qqH = {}
+    ## extract info from datacards name unc-sm-8TeV-00.vals
+    matcher = re.compile('\w+_(?P<CHN>\w+)_(?P<CAT>\w+)_(?P<PER>\d\w+)\w*')
+    chn = matcher.match(datacard).group('CHN')
+    cat = matcher.match(datacard).group('CAT')
+    per = matcher.match(datacard).group('PER')
+    ## parse uncertainty values file
+    input = open(options.cash_uncert+"/{CHN}/unc-sm-{PER}-0{CAT}.vals".format(CHN=chn, PER=per, CAT=cat),'r')
+    for index, line in enumerate(input) :
+        if "#" in line :
+            continue
+        words = line.lstrip().strip().split()
+        if len(words)<4 :
+            continue
+        if 'signal' in words[1] or 'ggH' in words[1] :
+            uncert_ggH[words[-2]] = words[-1]
+        if 'signal' in words[1] or 'qqH' in words[1] :
+            uncert_qqH[words[-2]] = words[-1]
+        if 'signal' in words[1] or 'VH'  in words[1] :
+            uncert_VH [words[-2]] = words[-1]
+    input.close()
+    cash = {}
+    cash['ggH'] = uncert_ggH
+    cash['qqH'] = uncert_qqH
+    cash['VH' ] = uncert_VH
+    return cash
 
 ## setup datacard creator
 datacard_creator = MakeDatacard()
@@ -62,6 +100,9 @@ for dir in directoryList :
             input_name = datacard
         else :
             continue
+        ## cash the uncertainties for Higgs as BG. The result is a dictionary of
+        ## dictionaries for ggH, qqH, VH relating uncertainty names to values.
+        cashed_uncerts = cash_uncerts(input_name)
         ## first file parsing
         input_file = open(args[0]+"/sm/{DIR}/".format(DIR=dir) +input_name,'r')
         output_file = open(args[0]+"/sm/{DIR}/".format(DIR=dir) +input_name.replace(".txt", "_Higgs.txt"), 'w')
@@ -120,7 +161,17 @@ shapes VH_SM * {ROOTFILE} $CHANNEL/VH125 $CHANNEL/VH125_$SYSTEMATIC
                         output_line = output_line + "\t" + words[ggH_idx+1] + "\t" + words[qqH_idx+1] + "\t" + words[VH_idx+1] + "\n"
                     else :
                         output_line = output_line.replace("\n", "")
-                        output_line = output_line + "- \t - \t - \n"
+                        ggH_value = '-'
+                        if words[0] in cashed_uncerts['ggH'].keys() :
+                            ggH_value = cashed_uncerts['ggH'][words[0]]
+                        qqH_value = '-'
+                        if words[0] in cashed_uncerts['qqH'].keys() :
+                            qqH_value = cashed_uncerts['qqH'][words[0]]
+                        VH_value  = '-'
+                        if words[0] in cashed_uncerts['VH' ].keys()  :
+                            VH_value  = cashed_uncerts['VH' ][words[0]]
+                        ## add uncertainties channelwise
+                        output_line = output_line + "{GGH} \t {QQH} \t {VH} \n".format(GGH=ggH_value, QQH=qqH_value, VH=VH_value)
             if options.verbose :
                 print output_line
             output_file.write(output_line)
