@@ -53,7 +53,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
     }
   }
 
-  // common cofigs
+  // common configs
   label_ = cfg.existsAs<std::string>("outputLabel") ? cfg.getParameter<std::string>("outputLabel") : std::string();
   verbosity_ = cfg.existsAs<unsigned int>("verbosity") ? cfg.getParameter<unsigned int>("verbosity") : 0,
   // specifics to plot signal strength
@@ -65,6 +65,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   bestfit_ = cfg.existsAs<bool>("bestfit") ? cfg.getParameter<bool>("bestfit") : false;
   // specifics to plot xsec limits
   injected_ = cfg.existsAs<bool>("injected") ? cfg.getParameter<bool>("injected") : false;
+  BG_Higgs_ = cfg.existsAs<bool>("BG_Higgs") ? cfg.getParameter<bool>("BG_Higgs") : false;
   // specifics to plot MSSM mA-tanb limits
   higgs125_ =cfg.existsAs<bool>("higgs125" ) ? cfg.getParameter<bool>("higgs125" ) : false;
   outerband_=cfg.existsAs<bool>("outerband") ? cfg.getParameter<bool>("outerband") : false;

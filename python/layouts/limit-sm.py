@@ -28,10 +28,11 @@ layout = cms.PSet(
     ## define output label for root file
     outputLabel = cms.string("limit"),
     ## define masspoints for limit plot
-    masspoints = cms.vdouble(range(110, 146, 5)),
+    masspoints = cms.vdouble(range(90, 146, 5)),
     ## plot expected only
     expectedOnly = cms.bool(False),
     ## print band in different layout for signal injected
     injected=cms.bool(False),
-
+    ## print band in different layout if SM 125GeV Higgs has been added to Background
+    BG_Higgs=cms.bool(True),
 )

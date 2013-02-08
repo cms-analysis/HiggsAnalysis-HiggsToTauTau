@@ -11,6 +11,7 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   // define PLOT type
   bool injected = (PLOT == std::string("INJECTED"));
   bool bestfit  = (PLOT == std::string("BESTFIT" ));
+  bool BG_Higgs = (PLOT == std::string("BG_HIGGS"));
 
   // set up styles
   canv.cd();
@@ -41,7 +42,9 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   if(outerBand){
     outerBand->SetLineWidth(1.);
     outerBand->SetLineColor(kBlack);
-    outerBand->SetFillColor(injected ? kAzure-9 : kYellow);
+    if(injected) innerBand->SetFillColor(kAzure-9);
+    if else(BG-Higgs) innerBand->SetFillColor(kSpring+5);
+    else outerBand->SetFillColor(kYellow);
     outerBand->Draw("3");
   }
   if(innerBand){
@@ -57,7 +60,9 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
     else{
       innerBand->SetLineWidth(1.);
       innerBand->SetLineColor(kBlack);
-      innerBand->SetFillColor(injected ? kAzure-4 : kGreen);
+      if(injected) innerBand->SetFillColor(kAzure-4);
+      if else(BG-Higgs) innerBand->SetFillColor(kGreen+2);
+      else innerBand->SetFillColor(kGreen);
       innerBand->Draw("3same");
     }
   }
