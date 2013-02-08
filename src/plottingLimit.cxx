@@ -42,8 +42,8 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   if(outerBand){
     outerBand->SetLineWidth(1.);
     outerBand->SetLineColor(kBlack);
-    if(injected) innerBand->SetFillColor(kAzure-9);
-    if else(BG-Higgs) innerBand->SetFillColor(kSpring+5);
+    if(injected) outerBand->SetFillColor(kAzure-9);
+    else if(BG_Higgs) outerBand->SetFillColor(kSpring+5);
     else outerBand->SetFillColor(kYellow);
     outerBand->Draw("3");
   }
@@ -61,7 +61,7 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
       innerBand->SetLineWidth(1.);
       innerBand->SetLineColor(kBlack);
       if(injected) innerBand->SetFillColor(kAzure-4);
-      if else(BG-Higgs) innerBand->SetFillColor(kGreen+2);
+      else if(BG_Higgs) innerBand->SetFillColor(kGreen+2);
       else innerBand->SetFillColor(kGreen);
       innerBand->Draw("3same");
     }
