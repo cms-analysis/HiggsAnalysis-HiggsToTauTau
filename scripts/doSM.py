@@ -21,9 +21,9 @@ parser.add_option("--inputs-mm", dest="inputs_mm", default="KIT", type="choice",
 parser.add_option("--inputs-em", dest="inputs_em", default="MIT", type="choice", choices=['MIT', 'Imperial'],
                   help="Input files for htt_em analysis. [Default: \"MIT\"]")
 parser.add_option("--inputs-et", dest="inputs_et", default="Imperial", type="choice", choices=['Wisconsin', 'Imperial', 'CERN'],
-                  help="Input files for htt_et analysis. [Default: \"Wisconsin\"]")
+                  help="Input files for htt_et analysis. [Default: \"Imperial\"]")
 parser.add_option("--inputs-mt", dest="inputs_mt", default="Imperial", type="choice", choices=['Wisconsin', 'Imperial', 'LLR', 'CERN', 'MIT'],
-                  help="Input files for htt_mt analysis. [Default: \"Wisconsin\"]")
+                  help="Input files for htt_mt analysis. [Default: \"Imperial\"]")
 parser.add_option("--inputs-tt", dest="inputs_tt", default="MIT", type="choice", choices=['CERN', 'MIT'],
                   help="Input files for htt_tt analysis. [Default: \"MIT\"]")
 parser.add_option("--update-all", dest="update_all", default=False, action="store_true",
