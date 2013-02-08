@@ -110,7 +110,17 @@ parser.add_option_group(ggroup)
 hgroup = OptionGroup(parser, "TANB+ OPTIONS", "These are the command line options that can be used to configure the submission of tanb+. This option is special in the way that it needs modifications of the directory structure before the limits can be run. Via the script submit.py this setup can only be run interactively using the commend option --setup. Once the directory structure has been set up the limit calculation can be run interactively or in batrch mode.")
 hgroup.add_option("--setup", dest="setup", default=False, action="store_true",
                   help="Use the script to setup the directory structure for direct mA-tanb limits interactively. If false the the script will assume that this has already been done and execute the limit calculation either in batch mode or interactive. [Default: False]")
-parser.add_option_group(hgroup)
+##
+## FULL CLs
+##
+igroup = OptionGroup(parser, "CLS OPTIONS", "These are the command line options that can be used to configure the submission of full CLs limits in the SM.")
+igroup.add_option("--priority", dest="priority", default=False, action="store_true",
+                  help="Do grid submission with priority user roles (if available). This is only of relevance for vgrid submissions. [Default: False]")
+igroup.add_option("--lsf", dest="lxbsubmit", default=False, action="store_true",
+                  help="Do the submission on lxb. [Default: False]")
+igroup.add_option("--skip-server", dest="skipserver", default=False, action="store_true",
+                  help="Do not submit via crab server. [Default: False]")
+parser.add_option_group(igroup)
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -414,7 +424,13 @@ if options.optCLs :
         print " %s cycle(s) to finish" % cycle
         print "***********************************************************"
         cmd = "submit-slave.py --bin combine --method CLs"
-        sub = "--toysH 50 -t 1000 -j 500 --random --server --priority"
+        sub = "--toysH 50 -t 1000 -j 500 --random"
+        if not options.skipserver :
+            sub+= " --server"
+        if options.priority :
+            sub+= " --priority"
+        if options.lxbsubmit :
+            sub+= " --lsf"
         if len(subvec(args, 90, 150))>0 :
             dirs = vec2str(subvec(args, 90, 150))
             if options.printOnly :
