@@ -111,8 +111,8 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   }
   else if(BG_Higgs){
     leg->AddEntry( expected , "expected BKG+H(125)",  "L" );
-    if(innerBand){ leg->AddEntry( innerBand, "#pm 1#sigma expected BKG+H(125)",  "F" ); }
-    if(outerBand){ leg->AddEntry( outerBand, "#pm 2#sigma expected BKG+H(125)",  "F" ); }  
+    if(innerBand){ leg->AddEntry( innerBand, "#pm 1#sigma expected BG+H(125)",  "F" ); }
+    if(outerBand){ leg->AddEntry( outerBand, "#pm 2#sigma expected BG+H(125)",  "F" ); }  
   }
   else if(bestfit){
     leg->AddEntry( expected , "#sigma/#sigma_{SM} (best fit)",  "PL" );
