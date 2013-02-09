@@ -18,10 +18,22 @@ bgroup.add_option("-c", "--channels", dest="channels", default="mm em mt et tt",
                   help="The list of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et tt\"]")
 bgroup.add_option("-m", "--mass", dest="mass", default="125", type="string",
                   help="The mass value to be used to run the pruning algorithm on. [Default: 125]")
+bgroup.add_option("--split-by-channel", dest="optSplit", default=False, action="store_true",
+                  help="For option s --byPull and --byShift the caltulation of the maximum likelihood fit can be quite time consuming. Use this option to split the fit by channel. The pulls will then be picked up channel-wise. For correlated uncertainties the maximal pull will be chosen. [Default: \"False\"]")
 bgroup.add_option("--shield-bins", dest="optShield", default=False, action="store_true",
                   help="Use this option if you want to prevent bins in the vicinity of an expected signal to be subject to bin-by-bin uncertainty pruning, even, if they have a small effect on pulls, relative shifts or limit. If this option is chosen the central value and the relative size of the window can be chosen by the parameters --shield-central and --shield-bounds as described below. [Default: \"False\"]")
 bgroup.add_option("--fit-result", dest="fit_result", default="",  type="string",
-                  help="The main option --byPull and --byShift require a maximum likeihood fit to be run before pruning. This can be time consuming. It is possible to pass on the output of pre-calculated fits by this option. Give here the full path to the result file of the fit (mlfit.txt) if it exists already. If empty the fit will be performed within hits script. [Default: \"\"]")
+                  help="The main option --byPull and --byShift require a maximum likeihood fit to be run before pruning. This can be time consuming. It is possible to pass on the output of pre-calculated fits by this option. Give here the full path to the result file of the fit (mlfit.txt) for the combined maximum likelihood fit if it exists already. If empty the fit will be performed within hits script. [Default: \"\"]")
+bgroup.add_option("--fit-result-mt", dest="fit_result_mt", default="",  type="string",
+                  help="The main option --byPull and --byShift require a maximum likeihood fit to be run before pruning. This can be time consuming. It is possible to pass on the output of pre-calculated fits by this option. Give here the full path to the result file of the fit (mlfit.txt) for the mt channel if it exists already. If empty the fit will be performed within hits script. [Default: \"\"]")
+bgroup.add_option("--fit-result-et", dest="fit_result_et", default="",  type="string",
+                  help="The main option --byPull and --byShift require a maximum likeihood fit to be run before pruning. This can be time consuming. It is possible to pass on the output of pre-calculated fits by this option. Give here the full path to the result file of the fit (mlfit.txt) for the et channel if it exists already. If empty the fit will be performed within hits script. [Default: \"\"]")
+bgroup.add_option("--fit-result-em", dest="fit_result_em", default="",  type="string",
+                  help="The main option --byPull and --byShift require a maximum likeihood fit to be run before pruning. This can be time consuming. It is possible to pass on the output of pre-calculated fits by this option. Give here the full path to the result file of the fit (mlfit.txt) for the em channel if it exists already. If empty the fit will be performed within hits script. [Default: \"\"]")
+bgroup.add_option("--fit-result-mm", dest="fit_result_mm", default="",  type="string",
+                  help="The main option --byPull and --byShift require a maximum likeihood fit to be run before pruning. This can be time consuming. It is possible to pass on the output of pre-calculated fits by this option. Give here the full path to the result file of the fit (mlfit.txt) for the mm channel if it exists already. If empty the fit will be performed within hits script. [Default: \"\"]")
+bgroup.add_option("--fit-result-tt", dest="fit_result_tt", default="",  type="string",
+                  help="The main option --byPull and --byShift require a maximum likeihood fit to be run before pruning. This can be time consuming. It is possible to pass on the output of pre-calculated fits by this option. Give here the full path to the result file of the fit (mlfit.txt) for the tt channel if it exists already. If empty the fit will be performed within hits script. [Default: \"\"]")
 parser.add_option_group(bgroup)
 cgroup = OptionGroup(parser, "SHIELD-BINS OPTIONS", "These are the additional command line options when running the script with option --shield-bins. You can give the central value and the relative width of a mass window in which you want to prevent bins to be subject to bin-by-bin uncertainty pruning.")
 cgroup.add_option("--shield-central", dest="shield_central", default="125", type="string",
@@ -70,6 +82,10 @@ parentdir = os.getcwd()
 ## configure options for --byPull or --byShift
 if options.optByShift :
     options.optByPull = True
+## in case of --split-by-channel prevent the max-likelihood fit
+## from being performed on the fly
+if options.optSplit :
+    options.fit_result = 'BY-CHANNEL'
 ## defined thesholds and metrics
 metric = ''
 threshold = 0.
@@ -148,7 +164,53 @@ def walk_directory(dir, uncerts, bounds) :
                         ## as the central value after shifting up the bin in question.
                         uncerts[name[name.find('CMS'):name.find('Up')]]=max(abs(value.GetBinContent(ibin)-lower.GetBinContent(ibin)), abs(value.GetBinContent(ibin)-upper.GetBinContent(ibin)))
                         bounds [name[name.find('CMS'):name.find('Up')]]=(value.GetXaxis().FindBin(cen-bnd*cen), value.GetXaxis().FindBin(cen+bnd*cen))
-                
+
+def mimic_pulls(path) :
+    """
+    Create a pseudo output file from individual channels to shortcut the maximum likelihood
+    fit. Each single appearance of an uncertainty will be written to the combined output file.
+    For multiple occurrences (corresponding to correlated uncertainties among channels), the
+    line will the maximum pull will be chosen. The inputs are defined by options of this
+    script.
+    """
+    inputs = {
+        'mt' : options.fit_result_mt,
+        'et' : options.fit_result_et,
+        'em' : options.fit_result_em,
+        'mm' : options.fit_result_mm,
+        'tt' : options.fit_result_tt,
+        }
+    output = {}
+    headline = ''
+    pull_match = re.compile('[+-]\d+\.\d+(?=sig)')
+    for (chn, input) in inputs.iteritems():
+        file= open(input,'r')
+        for line in file :
+            ## add headline
+            if 'name' in line :
+                if headline == '' :
+                    headline = line
+                else :
+                    continue
+            ## fill outputs with uncertainties of this channel
+            key = line.split()[0]
+            if not key in output.keys() :
+                output[key] = line
+            else :
+                pulls_old  = pull_match.findall(output[key])
+                pulls_new  = pull_match.findall(line)
+                if pulls_new :
+                    val_old = max(abs(float(pulls_old[0])), float(pulls_old[1]))
+                    val_new = max(abs(float(pulls_new[0])), float(pulls_new[1]))
+                    if val_new > val_old :
+                        output[key] = line
+        file.close()
+    file= open(path,'w')
+    file.write(headline)
+    for line in output.values() :
+        file.write(line)
+    file.close()
+
 def load_auxiliaries(filename, uncerts, bounds) :
     """
     This function is called after the directory structure to apply the pruning has been
@@ -354,7 +416,8 @@ if options.optByPull :
     ## copy the results of the max-likelihood fit to local
     if not options.fit_result == "" :
         os.system("mkdir -p out")
-        os.system("cp {SRC} out/mlfit.txt".format(SRC=options.fit_result))
+        if not options.fit_result == 'BY-CHANNEL' :
+            os.system("cp {SRC} out/mlfit.txt".format(SRC=options.fit_result))
     ## pick up parameters from json file per channel
     def prune_by_pull(path) :
         ## counters for monitoring
@@ -420,6 +483,8 @@ if options.optByPull :
             summarize_uncerts(vals)
         return toExclude
     ## prune datacards for given channel
+    if options.optSplit :
+        mimic_pulls("out/mlfit.txt")
     excludes = prune_by_pull("out/mlfit.txt")
     for chn in channels :
         all  = 0
@@ -446,5 +511,6 @@ if glob_all>0 :
     print "Summary:"
     print "commented", glob_excl, "bin-by-bin uncertainties from", glob_all, "for all channels. (", float(100*glob_excl/glob_all), "%)"
 ## clean up if not requested otherwise
+os.system("cp out/mlfit.txt {LOG}".format(LOG=logdir))
 os.chdir(parentdir)
 os.system("rm -rf pruning")
