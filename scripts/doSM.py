@@ -335,7 +335,7 @@ if options.update_datacards :
                 print "...pruning bbb uncertainties:"
                 ## setup bbb uncertainty pruning
                 cmd="python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/prune_bbb_errors.py".format(CMSSW_BASE=cmssw_base)
-                os.system("{CMD} -c '{CHN}' --byShift {FIT} {DEBUG} --shift-threshold 0.05 --shield-bins {DIR}/{ANA}/sm".format(
+                os.system("{CMD} -c '{CHN}' --byShift {FIT} {DEBUG} --shift-threshold 0.30 --shield-bins {DIR}/{ANA}/sm".format(
                     CMD=cmd,
                     FIT="" if options.fit_result == "" else "--fit-result %s" % options.fit_result,
                     DEBUG="--debug" if options.fit_result == "" else "",
