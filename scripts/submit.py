@@ -292,7 +292,7 @@ if options.optMDFit :
         elif "cV-cF" in options.fitModel :
             cmd   = "lxb-multidim-fit.py --name {PRE}-CV-CF-{MASS} --njob 100 --npoints 225".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'cV-cF=HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcF'"
-            opts  = "--physics-model-options 'modes=ggH,qqH cVRange=0:3 cFRange=0:3'"
+            opts  = "--physics-model-options 'modes=cV,cF cVRange=0:3 cFRange=0:3'"
         ## add lxq compliance
         sys = ""
         if options.lxq :
@@ -424,7 +424,7 @@ if options.optCLs :
         print " %s cycle(s) to finish" % cycle
         print "***********************************************************"
         cmd = "submit-slave.py --bin combine --method CLs"
-        sub = "--toysH 50 -t 1000 -j 500 --random"
+        sub = "--toysH 50 -t 500 -j 500 --random"
         if not options.skipserver :
             sub+= " --server"
         if options.priority :
