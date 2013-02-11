@@ -15,7 +15,7 @@ channels   = [
     "emu",
     "eleTau",
     "muTau",
-   #"mumu",
+    "mumu",
     ]
 
 categories_sm = [
