@@ -32,7 +32,7 @@ float maximum(TH1F* h, bool LOG=false){
     return 50*h->GetMaximum(); 
   }
   else{
-    std::cout << "WHERE IS MY MAX? -- " << h->GetName() << " -- " << h->GetMaximum() << std::endl;
+    //std::cout << "WHERE IS MY MAX? -- " << h->GetName() << " -- " << h->GetMaximum() << std::endl;
     if(h->GetMaximum()>  12){ return 10.*TMath::Nint((1.3*h->GetMaximum()/10.)); }
     if(h->GetMaximum()> 1.2){ return TMath::Nint((1.6*h->GetMaximum())); }
     return 1.6*h->GetMaximum(); 
@@ -174,7 +174,7 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   chan->SetTextSize ( 0.05 );
   chan->SetTextColor(    1 );
   chan->SetTextFont (   62 );
-  chan->AddText("extra");
+  chan->AddText(extra);
   chan->Draw();
 
   float lower_bound = EWK1 ? 0.60 : 0.65;
