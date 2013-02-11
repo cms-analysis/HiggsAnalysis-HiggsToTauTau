@@ -8,7 +8,7 @@ from optparse import OptionParser
 parser = OptionParser(usage="usage: %prog [options] ARG",
                       description="This is a script to inject a 125 GeV SM Higgs as background. ARG corresponds to the pull path of the auxiliaries directory to which you want to apply this change. Note that this causes a change of the inputs datacards.")
 parser.add_option("--uncertainty-cash", dest="cash_uncert", default="{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup".format(CMSSW_BASE=os.environ['CMSSW_BASE']), type="string",
-                  help="Run in verbose mode.")
+                  help="Add here the path where to find the uncertainty files that these datacards have been produced from. [Default: '{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup']")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true",
                   help="Run in verbose mode.")
 ## check number of arguments; in case print usage
