@@ -117,14 +117,16 @@ def parse_dcard(datacard,fitres,bin_name="ANYBIN"):
                if val == "-":
                    continue
                else:
-                   # the uncertainty is a float
+                   ## the uncertainty is a float
                    uncert = float(val)
-                   # subtract 1 to get a decimal representation of the "percent" uncertainty
+                   ## subtract 1 to get a decimal representation of the "percent" uncertainty
                    uncert -= 1
-                   svar = get_svar(factor_name,fitres) #obtain the sigma variation
+                   ## obtain the sigma variation
+                   svar = get_svar(factor_name,fitres) 
                    if type(svar).__name__=="NoneType" :
                        svar = 0.0
-                   sigma = get_sigma(factor_name,fitres) #obtain the sigma variation
+                   ## obtain the sigma variation
+                   sigma = get_sigma(factor_name,fitres) 
                    if type(sigma).__name__=="NoneType" :
                        sigma = 0.0
                    #print processes[index],factor_name,"Uncertainty: ",uncert,"Sigma variations: ",svar,"Total: ",1+uncert*svar
@@ -135,10 +137,12 @@ def parse_dcard(datacard,fitres,bin_name="ANYBIN"):
                        new_weight = 0
                        print "SETTING WEIGHT TO 0... NEGATIVE WEIGHT FOUND", processes[index], factor_name, uncert, svar
 		   if fit_type.strip() == "lnN":
-                       process_weights[processes[index]]*= new_weight #multiply the existing weight by the new weight.
+                       ## multiply the existing weight by the new weight.
+                       process_weights[processes[index]]*= new_weight 
                        process_uncertainties[processes[index]]+= pow(uncert*sigma,2)
 		   elif fit_type.strip() == "shape":
-                       process_shape_weights[processes[index]][factor_name] = float(val)*svar #multiply the existing weight by the new weight.
+                       ## multiply the existing weight by the new weight.
+                       process_shape_weights[processes[index]][factor_name] = svar*float(val)
                        process_shape_uncertainties[processes[index]][factor_name] = sigma
    # return the dictionary of weights
                    factor_weights[factor_name]= "%f ; // 1+%f*%f " % (1+uncert*svar,uncert,svar)
