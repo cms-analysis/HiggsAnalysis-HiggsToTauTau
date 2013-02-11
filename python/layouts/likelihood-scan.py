@@ -2,11 +2,11 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string(", Preliminary, H #rightarrow #tau #tau, L = 17 fb^{-1}"),
+    dataset = cms.string(", Preliminary, H #rightarrow #tau #tau, L=24.3 fb^{-1}"),
     ## x-axis title
     xaxis = cms.string("Signal Strength"),
     ## x-axis title
-    yaxis = cms.string("NLL"),
+    yaxis = cms.string("#Delta NLL"),
     ## min for plotting (for fine tuning)
     min = cms.double(0.),
     ## min for plotting
@@ -26,14 +26,5 @@ layout = cms.PSet(
     ## define output label
     outputLabel = cms.string("likelihood-scan"),
     ## define masspoints for limit plot
-    masspoints = cms.vdouble(
-    110
-   ,115
-   ,120
-   ,125
-   ,130
-   ,135
-   ,140
-   ,145
-    ),
+    masspoints = cms.vdouble(125),
 )
