@@ -52,7 +52,7 @@ channel(std::string& label){
 	  label==std::string("HIG-12-018") ||
 	  label==std::string("HIG-12-032") ||
 	  label==std::string("HIG-12-043") ||
-	  label==std::string("HIG-12-050") ||
+	  label==std::string("HIG-12-050")
 	  );
 }
 
