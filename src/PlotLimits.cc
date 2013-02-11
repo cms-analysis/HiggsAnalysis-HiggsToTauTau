@@ -65,7 +65,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   bestfit_ = cfg.existsAs<bool>("bestfit") ? cfg.getParameter<bool>("bestfit") : false;
   // specifics to plot xsec limits
   injected_ = cfg.existsAs<bool>("injected") ? cfg.getParameter<bool>("injected") : false;
-  BG_Higgs_ = cfg.existsAs<bool>("BG_Higgs") ? cfg.getParameter<bool>("BG_Higgs") : false;
+  BG_Higgs_ = cfg.existsAs<bool>("higgsBG") ? cfg.getParameter<bool>("higgsBG") : false;
   // specifics to plot MSSM mA-tanb limits
   higgs125_ =cfg.existsAs<bool>("higgs125" ) ? cfg.getParameter<bool>("higgs125" ) : false;
   outerband_=cfg.existsAs<bool>("outerband") ? cfg.getParameter<bool>("outerband") : false;
@@ -201,7 +201,7 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
       prepareByToy(directory, upper   , innerBand ? "+1SIGMA" : "+2SIGMA");
       prepareByToy(directory, lower   , innerBand ? "-1SIGMA" : "-2SIGMA");
     }
-    else if(std::string(method) == std::string("CLs")){
+    else if(std::string(method) == std::string("CLS")){
       prepareCLs(directory, expected, ".quant0.500");
       prepareCLs(directory, upper   , innerBand ? ".quant0.840" : ".quant0.975");
       prepareCLs(directory, lower   , innerBand ? ".quant0.160" : ".quant0.027");

@@ -2,7 +2,7 @@
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plotting1DScan(TCanvas& canv, TH1F* plot1D, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double max, bool log);
+void plotting1DScan(TCanvas& canv, TH1F* plot1D, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double max, int lowerBin, int upperBin, bool log);
 
 /*
 void 
@@ -81,15 +81,29 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
     TTree* limit = (TTree*) file_->Get("limit"); if(!limit){ std::cout << "--> TTree is corrupt: skipping masspoint." << std::endl; continue; }
     float nll, x;
     float nbins = points;
+    bool validValue = false;
+    int lowerBin = 0; int upperBin = nbins;
     TH1F* scan1D = new TH1F("scan1D", "", nbins, xmin, xmax);
     limit->SetBranchAddress("deltaNLL", &nll );  
     limit->SetBranchAddress(std::string("r").c_str() , &x);
     int nevent = limit->GetEntries();
     for(int i=0; i<nevent; ++i){
       limit->GetEvent(i);
+      //std::cout << "bin:" << scan1D->FindBin(x) << " -- r=" << x << " -- NLL=" << nll << std::endl; 
       if(scan1D->GetBinContent(scan1D->FindBin(x))==0){
 	// catch small negative values that might occure due to rounding
-	scan1D->Fill(x, fabs(nll));
+	if(fabs(nll)>50){
+	  if(validValue){
+	    lowerBin = scan1D->FindBin(x);
+	  }
+	  else{
+	    upperBin = scan1D->FindBin(x);
+	  }
+	}
+	else{
+	  validValue=true;
+	  scan1D->Fill(x, fabs(nll));
+	}
       }
     }
     // determine bestfit graph 
@@ -212,7 +226,7 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
     newfile_->Close();
     // do the plotting
     std::string masslabel = mssm_ ? std::string("m_{#phi}") : std::string("m_{H}");
-    plotting1DScan(canv, scan1D, xaxis_, yaxis_, masslabel, mass, max_, log_);    
+    plotting1DScan(canv, scan1D, xaxis_, yaxis_, masslabel, mass, max_, lowerBin, upperBin, log_);    
     // add the CMS Preliminary stamp
     CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
     // print 1d band

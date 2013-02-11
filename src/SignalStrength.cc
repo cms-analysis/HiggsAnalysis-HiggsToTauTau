@@ -19,7 +19,6 @@ PlotLimits::plotSignalStrength(TCanvas& canv, TGraphAsymmErrors* innerBand, TGra
       }
     }
   }
-
   // pick up final results; this requires that they have been 
   // produced beforehand using limit.py/submit.py with options
   // --multidim-fit or --likelihood-scan.
@@ -28,7 +27,7 @@ PlotLimits::plotSignalStrength(TCanvas& canv, TGraphAsymmErrors* innerBand, TGra
     // buffer mass value
     float mass = bins_[imass];
     if(verbosity_>2){ std::cout << mass << std::endl; }
-
+    
     std::string line;
     std::string fullpath;
     float bestfit, bestfitDown, bestfitUp;
@@ -46,7 +45,7 @@ PlotLimits::plotSignalStrength(TCanvas& canv, TGraphAsymmErrors* innerBand, TGra
 	  ipoint++;
 	}
       }
-      multidim.close();
+	multidim.close();
     }
   }
   // do the plotting 

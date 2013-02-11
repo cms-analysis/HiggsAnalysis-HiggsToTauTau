@@ -7,7 +7,7 @@
 #include "TGraphAsymmErrors.h"
 
 void
-plottingSignificance(TCanvas& canv, TGraph* expected, TGraph* observed, TGraph* unit3, TGraph* unit5, std::string& xaxis, std::string& yaxis, double min=0., double max=5., bool log=false, bool legendOnRight=false)
+plottingSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* unit3, TGraph* unit5, std::string& xaxis, std::string& yaxis, double min=0., double max=5., bool log=false, bool legendOnRight=false)
 {
   // set up styles
   canv.cd();
@@ -35,10 +35,43 @@ plottingSignificance(TCanvas& canv, TGraph* expected, TGraph* observed, TGraph* 
   hr->GetYaxis()->SetLabelSize(0.045);
   hr->SetNdivisions(505);
 
+  bool FIRST = true;
+  if(outerBand){
+    outerBand->SetLineWidth(1.);
+    outerBand->SetLineColor(kBlack);
+    outerBand->SetFillColor(kYellow);
+    if(FIRST){
+      FIRST = false;
+      outerBand->Draw("3");
+    }
+    else{
+      outerBand->Draw("3same");
+    }
+  }
+
+  if(innerBand){
+    innerBand->SetLineWidth(1.);
+    innerBand->SetLineColor(kBlack);
+    innerBand->SetFillColor(kGreen);
+    if(FIRST){
+      FIRST = false;
+      innerBand->Draw("3");
+    }
+    else{
+      innerBand->Draw("3same");
+    }
+  }
+
   expected->SetLineColor(kBlue);
   expected->SetLineWidth(3);
   expected->SetLineStyle(1);
-  expected->Draw("L");
+  if(FIRST){
+    FIRST = false;
+    expected->Draw("L");
+  }
+  else{
+    expected->Draw("Lsame");
+  }
 
   unit3->SetLineColor(kRed);
   unit3->SetLineWidth(3.);
@@ -79,7 +112,7 @@ plottingSignificance(TCanvas& canv, TGraph* expected, TGraph* observed, TGraph* 
   }
 
   /// add the proper legend
-  TLegend* leg = new TLegend(legendOnRight ? 0.5625 : 0.18, 0.80, legendOnRight ? 1.00 : 0.605, 0.90);
+  TLegend* leg = new TLegend(legendOnRight ? 0.5625 : 0.18, outerBand ? 0.70 : 0.80, legendOnRight ? 1.00 : 0.605, 0.90);
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 1001 );
   leg->SetFillColor (kWhite);
@@ -87,6 +120,8 @@ plottingSignificance(TCanvas& canv, TGraph* expected, TGraph* observed, TGraph* 
     leg->AddEntry(observed, "observed",  "PL");
   }
   leg->AddEntry(expected, "expected",  "L");
+  if(innerBand){ leg->AddEntry( innerBand, "#pm 1#sigma expected",  "F" ); }
+  if(outerBand){ leg->AddEntry( outerBand, "#pm 2#sigma expected",  "F" ); }
   leg->Draw("same");
   //canv.RedrawAxis("g");
   canv.RedrawAxis();

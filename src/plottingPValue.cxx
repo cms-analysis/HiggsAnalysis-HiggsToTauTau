@@ -50,16 +50,16 @@ plottingPValue(TCanvas& canv, TGraph* expected, TGraph* observed, std::string& x
   hr->GetYaxis()->SetTitleOffset(1.30);
   hr->GetYaxis()->SetLabelSize(0.045);
 
-  expected->SetLineColor(kBlack);
+  expected->SetLineColor(kBlue);
   expected->SetLineWidth(3.);
   expected->SetLineStyle(11);
   expected->Draw("L");
 
-  //observed->SetMarkerStyle(20);
-  //observed->SetMarkerSize(0.75);
-  //observed->SetMarkerColor(kRed);
+  observed->SetMarkerStyle(20);
+  observed->SetMarkerSize(1.0);
+  observed->SetMarkerColor(kBlack);
   observed->SetLineWidth(3.);
-  observed->Draw("Lsame");
+  observed->Draw("PLsame");
 
   unit->SetLineColor(kBlue);
   unit->SetLineWidth(3.);

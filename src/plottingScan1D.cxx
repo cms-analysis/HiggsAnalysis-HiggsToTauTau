@@ -6,7 +6,7 @@
 #include "TPaveText.h"
 
 void
-plotting1DScan(TCanvas& canv, TH1F* plot1D, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double max, bool log=false)
+plotting1DScan(TCanvas& canv, TH1F* plot1D, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double max, int lowerBin, int upperBin, bool log=false)
 {
   // set up styles
   canv.cd();
@@ -26,6 +26,7 @@ plotting1DScan(TCanvas& canv, TH1F* plot1D, std::string& xaxis, std::string& yax
   plot1D->GetYaxis()->SetTitleSize(0.05);
   plot1D->GetYaxis()->SetTitleOffset(1.4);
   plot1D->GetYaxis()->SetLabelSize(0.05);
+  plot1D->GetXaxis()->SetRange(lowerBin+1, upperBin);
   plot1D->SetMinimum( 0.);
   if(max>0){
     plot1D->SetMaximum(max);

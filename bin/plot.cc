@@ -65,8 +65,10 @@ int main(int argc, char* argv[])
   types.push_back(std::string("--asymptotic"));
   // show significances with bands (run with toys)
   types.push_back(std::string("--significance"));
+  // show significances w/o bands, frequentist
+  types.push_back(std::string("--significance-frequentist"));
   // show frequentist p-values w/o bands
-  types.push_back(std::string("--pvalue"));
+  types.push_back(std::string("--pvalue-frequentist"));
   // show signal strength as function of mH/mA as determined from a 1d maxlikelihood fit 
   types.push_back(std::string("--max-likelihood"));
   // show signal strength as function of mH/mA as determined from a 2d maxlikelihood fit 
@@ -139,7 +141,6 @@ int main(int argc, char* argv[])
   /*
     Implementations
   */
-
   PlotLimits plot(out.c_str(), layout);
   if(std::string(argv[1]) == std::string("--CLs")){
     // observed limit
@@ -162,6 +163,7 @@ int main(int argc, char* argv[])
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plotLimit(*canv, inner, outer, expected, observed);
   }
+  // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--tanb") ){
     // observed limit
     TGraph* observed  = 0;
@@ -183,6 +185,7 @@ int main(int argc, char* argv[])
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plotTanb(*canv, inner, outer, expected, observed, directory);
   }
+  // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--bayesian") ){
     // observed limit
     TGraph* observed  = 0;
@@ -205,6 +208,7 @@ int main(int argc, char* argv[])
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plotLimit(*canv, inner, outer, expected, observed);
   }
+  // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--injected") ){
     // observed limit
     TGraph* observed  = 0;
@@ -226,6 +230,7 @@ int main(int argc, char* argv[])
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plotLimit(*canv, inner, outer, expected, observed);
   }
+  // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--asymptotic") ){
     // observed limit
     TGraph* observed  = 0;
@@ -247,6 +252,7 @@ int main(int argc, char* argv[])
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plotLimit(*canv, inner, outer, expected, observed);
   }
+  // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--significance") ){
     // observed limit
     TGraph* observed  = 0;
@@ -265,8 +271,35 @@ int main(int argc, char* argv[])
     // make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
-    plot.plotSignificance(*canv, expected, observed);
+    plot.plotSignificance(*canv, inner, outer, expected, observed);
   }
+  // -----------------------------------------------------------------------------------------------------------------------
+  if( std::string(argv[1]) == std::string("--significance-frequentist") ){
+    // observed p-value
+    TGraph* observed  = new TGraph();
+    plot.fillCentral(directory, observed, "higgsCombineSIG-obs.ProfileLikelihood.mH$MASS");
+    // expected p-value
+    TGraph* expected  = new TGraph();
+    plot.fillCentral(directory, expected, "higgsCombineSIG-exp.ProfileLikelihood.mH$MASS");
+    // make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plotSignificance(*canv, 0, 0, expected, observed);
+  }
+  // -----------------------------------------------------------------------------------------------------------------------
+  if( std::string(argv[1]) == std::string("--pvalue-frequentist") ){
+    // observed p-value
+    TGraph* observed  = new TGraph();
+    plot.fillCentral(directory, observed, "higgsCombinePVAL-obs.ProfileLikelihood.mH$MASS");
+    // expected p-value
+    TGraph* expected  = new TGraph();
+    plot.fillCentral(directory, expected, "higgsCombinePVAL-exp.ProfileLikelihood.mH$MASS");
+    // make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plotPValue(*canv, expected, observed);
+  }
+  // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--max-likelihood") ){
     // central value
     TGraph* central  = new TGraph();
@@ -279,19 +312,7 @@ int main(int argc, char* argv[])
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plotLimit(*canv, inner, 0, central, 0);
   }
-
-  if( std::string(argv[1]) == std::string("--pvalue") ){
-    // observed p-value
-    TGraph* observed  = new TGraph();
-    plot.fillCentral(directory, observed, "higgsCombinePVAL-obs.ProfileLikelihood.mH$MASS");
-    // expected p-value
-    TGraph* expected  = new TGraph();
-    plot.fillCentral(directory, expected, "higgsCombinePVAL-exp.ProfileLikelihood.mH$MASS");
-    // make the plot
-    SetStyle();
-    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
-    plot.plotPValue(*canv, expected, observed);
-  }
+  // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--likelihood-scan") ){
     // best fit
     //TGraph* central  = new TGraph(); //not needed for plot1DScan
@@ -303,12 +324,14 @@ int main(int argc, char* argv[])
     //plot.plotSignalStrength(*canv, innerBand, central, directory);
     plot.plot1DScan(*canv, directory);
   }
+  // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--multidim-fit") ){
     // make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plot2DScan(*canv, directory);
   }
+  // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--HIG-11-020") ){
     // observed limit
     TGraph* observed  = 0;
@@ -333,6 +356,7 @@ int main(int argc, char* argv[])
     // plots the layout corresponding to the direct tanb limits
     plot.plotTanb(*canv, inner, outer, expected, observed);
   }
+  // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--HIG-11-029") ){
     // observed limit
     TGraph* observed  = 0;
@@ -359,6 +383,7 @@ int main(int argc, char* argv[])
       plot.plotLimit(*canv, inner, outer, expected, observed);
     }
   }
+  // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--HIG-12-018") ){
     // observed limit
     TGraph* observed  = 0;
@@ -380,6 +405,7 @@ int main(int argc, char* argv[])
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plotLimit(*canv, inner, outer, expected, observed);
   }
+  // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--HIG-12-032") ){
     // observed limit
     TGraph* observed  = 0;
@@ -401,6 +427,7 @@ int main(int argc, char* argv[])
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plotLimit(*canv, inner, outer, expected, observed);
   }
+  // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--HIG-12-043") ){
     // observed limit
     TGraph* observed  = 0;
@@ -422,6 +449,7 @@ int main(int argc, char* argv[])
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plotLimit(*canv, inner, outer, expected, observed);
   }
+  // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--HIG-12-050") ){
     // observed limit
     TGraph* observed  = 0;

@@ -2,10 +2,10 @@
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plottingSignificance(TCanvas& canv, TGraph* expected, TGraph* observed, TGraph* unit3, TGraph* unit5, std::string& xaxis, std::string& yaxis, double min, double max, bool log, bool legendOnRight);
+void plottingSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* unit3, TGraph* unit5, std::string& xaxis, std::string& yaxis, double min, double max, bool log, bool legendOnRight);
 
 void
-PlotLimits::plotSignificance(TCanvas& canv, TGraph* expected, TGraph* observed)
+PlotLimits::plotSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed)
 {
   // set up styles
   SetStyle();
@@ -22,7 +22,7 @@ PlotLimits::plotSignificance(TCanvas& canv, TGraph* expected, TGraph* observed)
   // set proper maximum
   float max = maximum(expected);
   // do the plotting 
-  plottingSignificance(canv, expected, observed, unit3, unit5, xaxis_, yaxis_, min_, max, log_, mssm_);
+  plottingSignificance(canv, innerBand, outerBand, expected, observed, unit3, unit5, xaxis_, yaxis_, min_, max, log_, mssm_);
   /// setup the CMS Preliminary
   CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
 
@@ -44,6 +44,8 @@ PlotLimits::plotSignificance(TCanvas& canv, TGraph* expected, TGraph* observed)
     }
     if(observed){ observed ->Write("observed" );}
     expected ->Write("expected" );
+    if(innerBand){ innerBand->Write("innerBand" );}
+    if(outerBand){ outerBand->Write("outerBand" );}
     output->Close();
   }
   return;
