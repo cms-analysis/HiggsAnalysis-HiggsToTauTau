@@ -79,6 +79,13 @@ egroup.add_option("--rMax", dest="rMax", default="+4.0", type="string",
                   help="Maximum of the scan. [Default: -4.0]")
 parser.add_option_group(egroup)
 ##
+## MULTIDIM-FIT
+##
+jgroup = OptionGroup(parser, "MULTIDIM-FIT OPTIONS", "These are the command line options that can be used to configure the submission of multi-dimensional maximum likelihood fits. You can configure whether you want to run with option --fastScan or not.")
+jgroup.add_option("--fastScan", dest="fastScan", default=False, action="store_true",
+                  help="In general the central values of all nuisance parameters are re-evaluated at each scan point of the maximum likelihood function. Choose this option if you want the central values of the nuisance parameters only evaluated in the minimum of the likelihood fit. [Default: False]")
+parser.add_option_group(jgroup)
+##
 ## SIGNIFICANCE
 ##
 fgroup = OptionGroup(parser, "SIGNIFICANCE OPTIONS", "These are the command line options that can be used to configure the submission of toys for significance calculations. The toys can be submitted to the grid or to lxb (lxq) using crab. The number of toys per mass that will be the same for all masses can be configured via the option --toys as described in section BATCH OPTIONS. The number of crab jobs that will be the same for all masses can be configured via the option --jobs as described in this section.")
@@ -283,14 +290,14 @@ if options.optMDFit :
             cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-BBH-{MASS} --njob 50 --npoints 800".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'ggH-bbH=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
             opts  = "--physics-model-options 'modes=ggH,bbH;ggHRange=0:{GGH};bbHRange=0:{BBH}'".format(GGH=bounds[mass][0], BBH=bounds[mass][1])
-        ## SM ggH versus qqH (this configuration is optimized fro mH=125)
+        ## SM ggH versus qqH (this configuration is optimized for mH=125)
         elif "ggH-qqH" in options.fitModel :
-            cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-QQH-{MASS} --njob 100 --npoints 625".format(PRE=prefix, MASS=mass)
+            cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-QQH-{MASS} --njob 800 --npoints 8".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'ggH-qqH=HiggsAnalysis.CombinedLimit.PhysicsModel:floatingXSHiggs'"
-            opts  = "--physics-model-options 'modes=ggH,qqH ggHRange=0:5 qqHRange=0:5'"
-        ## SM cV versus cF (this configuration is optimized fro mH=125)
+            opts  = "--physics-model-options 'modes=ggH,qqH ggHRange=0:4 qqHRange=0:4'"
+        ## SM cV versus cF (this configuration is optimized for mH=125)
         elif "cV-cF" in options.fitModel :
-            cmd   = "lxb-multidim-fit.py --name {PRE}-CV-CF-{MASS} --njob 100 --npoints 225".format(PRE=prefix, MASS=mass)
+            cmd   = "lxb-multidim-fit.py --name {PRE}-CV-CF-{MASS} --njob 600 --npoints 6".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'cV-cF=HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcF'"
             opts  = "--physics-model-options 'modes=cV,cF cVRange=0:3 cFRange=0:3'"
         ## add lxq compliance
@@ -299,12 +306,14 @@ if options.optMDFit :
             sys = " --lxq"
         ## add batch options
         queue = " --batch-options '%s'" % options.queue
+        ## add fastScan option
+        fastScan = " --limit-options '--fastScan'" if options.fastScan else ""
         if options.printOnly :
-            print "{CMD} {MODEL} {OPTS} {QUEUE} {SYS} {USER} {DIR}".format(
-                CMD=cmd, MODEL=model, OPTS=opts, QUEUE=queue, SYS=sys, USER=options.opt, DIR=dir)
+            print "{CMD} {MODEL} {OPTS} {FAST} {QUEUE} {SYS} {USER} {DIR}".format(
+                CMD=cmd, MODEL=model, OPTS=opts, FAST=fastScan, QUEUE=queue, SYS=sys, USER=options.opt, DIR=dir)
         else :
-            os.system("{CMD} {MODEL} {OPTS} {QUEUE} {SYS} {USER} {DIR}".format(
-                CMD=cmd, MODEL=model, OPTS=opts, QUEUE=queue, SYS=sys, USER=options.opt, DIR=dir))
+            os.system("{CMD} {MODEL} {OPTS} {FAST} {QUEUE} {SYS} {USER} {DIR}".format(
+                CMD=cmd, MODEL=model, OPTS=opts, FAST=fastScan, QUEUE=queue, SYS=sys, USER=options.opt, DIR=dir))
 ##
 ## SIGNIFICANCE
 ##
@@ -413,7 +422,7 @@ if options.optInject :
         ## directories and mases per directory
         print "Collectiong results"
         struct = directories(args)
-        lxb_submit(struct[0], struct[1], "--injected", "{USER}".format(USER=options.opt))
+        lxb_submit(struct[0], struct[1], "--asymptotic --collect-injected-toys", "{USER}".format(USER=options.opt))
 ##
 ## CLs
 ##
