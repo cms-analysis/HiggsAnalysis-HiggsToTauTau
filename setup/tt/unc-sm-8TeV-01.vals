@@ -7,7 +7,7 @@ tauTau_vbf			qqH				QCDscale_qqH				1.04
 tauTau_vbf			VH				QCDscale_VH	 			1.04 
 tauTau_vbf		    	signal				UEPS					1.04
 tauTau_vbf 			signal,ZTT,TT,VV		CMS_eff_t_tautau_8TeV 		        1.19
-tauTau_vbf			signal,ZTT   			CMS_scale_t_tautau_8TeV  		2.00
+tauTau_vbf			signal,ZTT   			CMS_scale_t_tautau_8TeV  		0.50
 tauTau_vbf      	   	ggH				CMS_scale_j_8TeV			1.03
 tauTau_vbf         		qqH				CMS_scale_j_8TeV			1.02
 tauTau_vbf         		VH				CMS_scale_j_8TeV			1.01
