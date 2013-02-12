@@ -66,7 +66,7 @@ model   = options.fitModel.split('=')
 if options.lxq :
     script_template = script_template.replace('#!/bin/bash', lxq_fragment)
 
-## leave footprint of grid calculation in mass directory directory
+## leave footprint of grid calculation in mass directory
 ## to facilitate the reassambly later 
 phys_opts = []
 if ';' in options.fitModelOptions :
@@ -86,6 +86,10 @@ for val in vals :
 footprint = open("{DIR}/.scan".format(DIR=input), "w")
 footprint.write("points : {POINTS}\n".format(POINTS=points))
 for val in vals :
+    if 'cV' in val :
+        val = val.upper()
+    if 'cF' in val :
+        val = val.upper()
     footprint.write("{VAL} : {RANGE}\n".format(VAL=val, RANGE=ranges[val].replace(':', '\t')))
 footprint.close()
 

@@ -28,7 +28,7 @@ layout = cms.PSet(
     ## make a temperature plot?
     temp = cms.bool(False),
     ## define physics-model
-    model = cms.string("cV-cF"),
+    model = cms.string("CV-CF"),
     ## max for plotting (for fine tuning)
     xmaxs = cms.VPSet(
     cms.PSet(mass = cms.double( 125.), max = cms.double(-1.)),
