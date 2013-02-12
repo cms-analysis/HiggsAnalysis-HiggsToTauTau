@@ -130,7 +130,8 @@ shapes VH_SM * {ROOTFILE} $CHANNEL/VH{MASS} $CHANNEL/VH{MASS}_$SYSTEMATIC
                 else :
                    output_line = output_line +"""shapes ggH_{MASS} * {ROOTFILE} $CHANNEL/ggH{MASS} $CHANNEL/ggH{MASS}_$SYSTEMATIC 
                    shapes qqH_{MASS} * {ROOTFILE} $CHANNEL/qqH{MASS} $CHANNEL/qqH{MASS}_$SYSTEMATIC 
-                   shapes VH_{MASS} * {ROOTFILE} $CHANNEL/VH{MASS} $CHANNEL/VH{MASS}_$SYSTEMATIC 
+                   shapes VH_{MASS} * {ROOTFILE} $CHANNEL/VH{MASS} $CHANNEL/VH{MASS}_$SYSTEMATIC
+                   """.format(ROOTFILE=rootfile, MASS=options.mass)
                 add_shapes= False
             ## determine the list of all single channels (in standardized format, multiple occurences possible)
             if words[0] == "bin" :
