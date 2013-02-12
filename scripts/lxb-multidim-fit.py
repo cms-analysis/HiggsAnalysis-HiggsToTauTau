@@ -86,11 +86,12 @@ for val in vals :
 footprint = open("{DIR}/.scan".format(DIR=input), "w")
 footprint.write("points : {POINTS}\n".format(POINTS=points))
 for val in vals :
+    mode = val
     if 'cV' in val :
-        val = val.upper()
+        mode = val.upper()
     if 'cF' in val :
-        val = val.upper()
-    footprint.write("{VAL} : {RANGE}\n".format(VAL=val, RANGE=ranges[val].replace(':', '\t')))
+        mode = val.upper()
+    footprint.write("{VAL} : {RANGE}\n".format(VAL=mode, RANGE=ranges[val].replace(':', '\t')))
 footprint.close()
 
 ## setup of physics model
