@@ -6,9 +6,11 @@ import ROOT
 from optparse import OptionParser
 
 parser = OptionParser(usage="usage: %prog [options] ARG",
-                      description="This is a script to inject a 125 GeV SM Higgs as background. ARG corresponds to the pull path of the auxiliaries directory to which you want to apply this change. Note that this causes a change of the inputs datacards.")
+                      description="This is a script to inject a SM Higgs as background. The mass of the Higgs Boson could be chosen, but has to be available. ARG corresponds to the pull path of the auxiliaries directory to which you want to apply this change. Note that this causes a change of the inputs datacards.")
 parser.add_option("--uncertainty-cash", dest="cash_uncert", default="{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup".format(CMSSW_BASE=os.environ['CMSSW_BASE']), type="string",
                   help="Add here the path where to find the uncertainty files that these datacards have been produced from. [Default: '{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup']")
+parser.add_option("--mass", dest="mass", default="", type="string",
+                  help="Chose which Higgs Mass Hypotheses to add. [Default: '125']")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true",
                   help="Run in verbose mode.")
 ## check number of arguments; in case print usage
@@ -120,10 +122,10 @@ for dir in directoryList :
                     if word.find(".root")>-1 :
                         full_rootfile=args[0]+"/sm/{DIR}/".format(DIR=dir)+word
                         rootfile=word.replace("../common/", "")
-                output_line = output_line +"""shapes ggH_SM * {ROOTFILE} $CHANNEL/ggH125 $CHANNEL/ggH125_$SYSTEMATIC 
-shapes qqH_SM * {ROOTFILE} $CHANNEL/qqH125 $CHANNEL/qqH125_$SYSTEMATIC 
-shapes VH_SM * {ROOTFILE} $CHANNEL/VH125 $CHANNEL/VH125_$SYSTEMATIC
-""".format(ROOTFILE=rootfile)
+                output_line = output_line +"""shapes ggH_SM * {ROOTFILE} $CHANNEL/ggH{MASS} $CHANNEL/ggH{MASS}_$SYSTEMATIC 
+shapes qqH_SM * {ROOTFILE} $CHANNEL/qqH{MASS} $CHANNEL/qqH{MASS}_$SYSTEMATIC 
+shapes VH_SM * {ROOTFILE} $CHANNEL/VH{MASS} $CHANNEL/VH{MASS}_$SYSTEMATIC
+""".format(ROOTFILE=rootfile, MASS=options.mass)
                 add_shapes= False
             ## determine the list of all single channels (in standardized format, multiple occurences possible)
             if words[0] == "bin" :
@@ -147,11 +149,14 @@ shapes VH_SM * {ROOTFILE} $CHANNEL/VH125 $CHANNEL/VH125_$SYSTEMATIC
                     if word=="VH" :
                         VH_idx=idx
                 output_line = output_line.replace("\n", "")
-                output_line = output_line + "\t \t ggH_SM" + "\t \t qqH_SM" + "\t \t VH_SM \n"
+                if(options.mass=="125") :
+                    output_line = output_line + "\t \t ggH_SM" + "\t \t qqH_SM" + "\t \t VH_SM \n"
+                else :
+                    output_line = output_line + "\t \t ggH_{MASS}".format(MASS=options.mass) + "\t \t qqH_{MASS}".format(MASS=options.mass) + "\t \t VH_{MASS} \n".format(MASS=options.mass)
             if words[0] == "rate" :
-                VH_rate=datacard_creator.rate_from_hist(full_rootfile, bin_name, "VH125")
-                qqH_rate=datacard_creator.rate_from_hist(full_rootfile, bin_name, "qqH125")
-                ggH_rate=datacard_creator.rate_from_hist(full_rootfile, bin_name, "ggH125")
+                VH_rate=datacard_creator.rate_from_hist(full_rootfile, bin_name, "VH{MASS}".format(MASS=options.mass))
+                qqH_rate=datacard_creator.rate_from_hist(full_rootfile, bin_name, "qqH{MASS}".format(MASS=options.mass))
+                ggH_rate=datacard_creator.rate_from_hist(full_rootfile, bin_name, "ggH{MASS}".format(MASS=options.mass))
                 output_line = output_line.replace("\n", "")
                 output_line = output_line + '\t \t' + str(ggH_rate) + "\t \t" + str(qqH_rate) + "\t \t" + str(VH_rate) + "\n"
             if len(words) > 1 :
