@@ -11,6 +11,8 @@ parser.add_option("--uncertainty-cash", dest="cash_uncert", default="{CMSSW_BASE
                   help="Add here the path where to find the uncertainty files that these datacards have been produced from. [Default: '{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup']")
 parser.add_option("--mass", dest="mass", default="", type="string",
                   help="Chose which Higgs Mass Hypotheses to add. [Default: '125']")
+parser.add_option("--scale-rate", dest="scale", default=1.0, type="float",
+                  help="Scale the Higgs rate of the injected Higgs. [Default: 1.0]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true",
                   help="Run in verbose mode.")
 ## check number of arguments; in case print usage
@@ -27,19 +29,40 @@ class MakeDatacard :
         """
         hist = file.Get(name)
         if type(hist) == ROOT.TObject :
-            print "hist not found: ", file.GetName(), ":", name
+            print "hist not found: ", file.GetName(), ":", name           
         return hist
 
-    def rate_from_hist(self, file, directory, hist) :
+    def rate_from_hist(self, file, directory, hist_name) :
         """
         Return rate from histogram in output histfile.
         """
         file = ROOT.TFile(file,"READ")
         rate=0.
-        help = directory +"/"+hist
+        help = directory +"/"+hist_name
         hist=self.load_hist(file, help)
         rate=hist.Integral()
         return rate
+
+    def scale_histogram(self, file, directory, hist_name, scale, uncertainty="") :
+        """
+        Rescale and Clone a given Higgs histogram.
+        """
+        ## open root file and get original histograms
+        file = ROOT.TFile(file, "UPDATE")
+        help = directory + "/" + hist_name + uncertainty
+        ## prepare mA hist
+        hist = self.load_hist(file, help)
+        new_hist = hist.Clone()
+        new_hist_name = hist_name.replace("{MASS}".format(MASS=options.mass), "{MASS}_{SCALE}".format(MASS=options.mass, SCALE=str(scale))) + uncertainty
+        new_hist.Scale(scale)
+        ## write modified histogram to file
+        #help2 = directory + "/" + hist_name.replace("{MASS}".format(MASS=options.mass), "{MASS}_{SCALE}".format(MASS=options.mass, SCALE=str(scale))) + uncertainty
+        #test = self.load_hist(file, help2)
+        #if not type(test) == ROOT.TObject :
+        #    print "Already included a Higgs with exact same configuration"
+        #    exit(1)
+        file.cd(directory)
+        new_hist.Write(new_hist_name, ROOT.TObject.kOverwrite)
 
 ## cashed uncertainties for each channel
 def cash_uncerts(datacard="htt_em_0_8TeV.txt") :
@@ -122,16 +145,28 @@ for dir in directoryList :
                     if word.find(".root")>-1 :
                         full_rootfile=args[0]+"/sm/{DIR}/".format(DIR=dir)+word
                         rootfile=word.replace("../common/", "")
-                if(options.mass=="125") :
-                    output_line = output_line +"""shapes ggH_SM * {ROOTFILE} $CHANNEL/ggH{MASS} $CHANNEL/ggH{MASS}_$SYSTEMATIC 
+                if options.scale==1.0 :
+                    if options.mass=="125" :
+                        output_line = output_line +"""shapes ggH_SM * {ROOTFILE} $CHANNEL/ggH{MASS} $CHANNEL/ggH{MASS}_$SYSTEMATIC 
 shapes qqH_SM * {ROOTFILE} $CHANNEL/qqH{MASS} $CHANNEL/qqH{MASS}_$SYSTEMATIC 
 shapes VH_SM * {ROOTFILE} $CHANNEL/VH{MASS} $CHANNEL/VH{MASS}_$SYSTEMATIC
 """.format(ROOTFILE=rootfile, MASS=options.mass)
-                else :
-                   output_line = output_line +"""shapes ggH_{MASS} * {ROOTFILE} $CHANNEL/ggH{MASS} $CHANNEL/ggH{MASS}_$SYSTEMATIC 
-                   shapes qqH_{MASS} * {ROOTFILE} $CHANNEL/qqH{MASS} $CHANNEL/qqH{MASS}_$SYSTEMATIC 
-                   shapes VH_{MASS} * {ROOTFILE} $CHANNEL/VH{MASS} $CHANNEL/VH{MASS}_$SYSTEMATIC
-                   """.format(ROOTFILE=rootfile, MASS=options.mass)
+                    else :
+                        output_line = output_line +"""shapes ggH_{MASS} * {ROOTFILE} $CHANNEL/ggH{MASS} $CHANNEL/ggH{MASS}_$SYSTEMATIC 
+shapes qqH_{MASS} * {ROOTFILE} $CHANNEL/qqH{MASS} $CHANNEL/qqH{MASS}_$SYSTEMATIC 
+shapes VH_{MASS} * {ROOTFILE} $CHANNEL/VH{MASS} $CHANNEL/VH{MASS}_$SYSTEMATIC
+""".format(ROOTFILE=rootfile, MASS=options.mass)
+                else:
+                    if options.mass=="125" :
+                        output_line = output_line +"""shapes ggH_SM_{SCALE} * {ROOTFILE} $CHANNEL/ggH{MASS}_{SCALE} $CHANNEL/ggH{MASS}_{SCALE}_$SYSTEMATIC 
+shapes qqH_SM_{SCALE} * {ROOTFILE} $CHANNEL/qqH{MASS}_{SCALE} $CHANNEL/qqH{MASS}_{SCALE}_$SYSTEMATIC 
+shapes VH_SM_{SCALE} * {ROOTFILE} $CHANNEL/VH{MASS}_{SCALE} $CHANNEL/VH{MASS}_{SCALE}_$SYSTEMATIC
+""".format(ROOTFILE=rootfile, MASS=options.mass, SCALE=str(options.scale))
+                    else :
+                        output_line = output_line +"""shapes ggH_{MASS}_{SCALE} * {ROOTFILE} $CHANNEL/ggH{MASS}_{SCALE} $CHANNEL/ggH{MASS}_{SCALE}_$SYSTEMATIC 
+shapes qqH_{MASS}_{SCALE} * {ROOTFILE} $CHANNEL/qqH{MASS}_{SCALE} $CHANNEL/qqH{MASS}_{SCALE}_$SYSTEMATIC 
+shapes VH_{MASS}_{SCALE} * {ROOTFILE} $CHANNEL/VH{MASS}_{SCALE} $CHANNEL/VH{MASS}_{SCALE}_$SYSTEMATIC
+""".format(ROOTFILE=rootfile, MASS=options.mass, SCALE=str(options.scale))
                 add_shapes= False
             ## determine the list of all single channels (in standardized format, multiple occurences possible)
             if words[0] == "bin" :
@@ -155,16 +190,26 @@ shapes VH_SM * {ROOTFILE} $CHANNEL/VH{MASS} $CHANNEL/VH{MASS}_$SYSTEMATIC
                     if word=="VH" :
                         VH_idx=idx
                 output_line = output_line.replace("\n", "")
-                if(options.mass=="125") :
-                    output_line = output_line + "\t \t ggH_SM" + "\t \t qqH_SM" + "\t \t VH_SM \n"
+                if options.scale==1.0 :
+                    if(options.mass=="125") :
+                        output_line = output_line + "\t \t ggH_SM" + "\t \t qqH_SM" + "\t \t VH_SM \n"
+                    else :
+                        output_line = output_line + "\t \t ggH_{MASS}".format(MASS=options.mass) + "\t \t qqH_{MASS}".format(MASS=options.mass) + "\t \t VH_{MASS} \n".format(MASS=options.mass)
                 else :
-                    output_line = output_line + "\t \t ggH_{MASS}".format(MASS=options.mass) + "\t \t qqH_{MASS}".format(MASS=options.mass) + "\t \t VH_{MASS} \n".format(MASS=options.mass)
+                    if(options.mass=="125") :
+                        output_line = output_line + "\t \t ggH_SM_{SCALE}".format(SCALE=str(options.scale)) + "\t \t qqH_SM_{SCALE}".format(SCALE=str(options.scale)) + "\t \t VH_SM_{SCALE} \n".format(SCALE=str(options.scale))
+                    else :
+                        output_line = output_line + "\t \t ggH_{MASS}_{SCALE}".format(MASS=options.mass, SCALE=str(options.scale)) + "\t \t qqH_{MASS}_{SCALE}".format(MASS=options.mass, SCALE=str(options.scale)) + "\t \t VH_{MASS}_{SCALE} \n".format(MASS=options.mass, SCALE=str(options.scale))
             if words[0] == "rate" :
-                VH_rate=datacard_creator.rate_from_hist(full_rootfile, bin_name, "VH{MASS}".format(MASS=options.mass))
-                qqH_rate=datacard_creator.rate_from_hist(full_rootfile, bin_name, "qqH{MASS}".format(MASS=options.mass))
-                ggH_rate=datacard_creator.rate_from_hist(full_rootfile, bin_name, "ggH{MASS}".format(MASS=options.mass))
+                VH_rate=datacard_creator.rate_from_hist(full_rootfile, bin_name, "VH{MASS}".format(MASS=options.mass))*options.scale
+                qqH_rate=datacard_creator.rate_from_hist(full_rootfile, bin_name, "qqH{MASS}".format(MASS=options.mass))*options.scale
+                ggH_rate=datacard_creator.rate_from_hist(full_rootfile, bin_name, "ggH{MASS}".format(MASS=options.mass))*options.scale
                 output_line = output_line.replace("\n", "")
                 output_line = output_line + '\t \t' + str(ggH_rate) + "\t \t" + str(qqH_rate) + "\t \t" + str(VH_rate) + "\n"
+                ## add new scaled central histograms
+                datacard_creator.scale_histogram(full_rootfile, bin_name, "VH{MASS}".format(MASS=options.mass), options.scale, "")
+                datacard_creator.scale_histogram(full_rootfile, bin_name, "qqH{MASS}".format(MASS=options.mass), options.scale, "")
+                datacard_creator.scale_histogram(full_rootfile, bin_name, "ggH{MASS}".format(MASS=options.mass), options.scale, "")
             if len(words) > 1 :
                 if words[1]=="lnN" or words[1]=="shape" or words[1]=="gnN" :
                     if includesSignal :
@@ -183,6 +228,15 @@ shapes VH_SM * {ROOTFILE} $CHANNEL/VH{MASS} $CHANNEL/VH{MASS}_$SYSTEMATIC
                             VH_value  = cashed_uncerts['VH' ][words[0]]
                         ## add uncertainties channelwise
                         output_line = output_line + "{GGH} \t {QQH} \t {VH} \n".format(GGH=ggH_value, QQH=qqH_value, VH=VH_value)
+                ## add new scaled uncertainty histograms
+                if words[1]=="shape" :
+                    if words[0] in cashed_uncerts['qqH'].keys() :
+                        datacard_creator.scale_histogram(full_rootfile, bin_name, "VH{MASS}_".format(MASS=options.mass) + words[0], options.scale, "Up")
+                        datacard_creator.scale_histogram(full_rootfile, bin_name, "qqH{MASS}_".format(MASS=options.mass) + words[0], options.scale, "Up")
+                        datacard_creator.scale_histogram(full_rootfile, bin_name, "ggH{MASS}_".format(MASS=options.mass) + words[0], options.scale, "Up")
+                        datacard_creator.scale_histogram(full_rootfile, bin_name, "VH{MASS}_".format(MASS=options.mass) + words[0], options.scale, "Down")
+                        datacard_creator.scale_histogram(full_rootfile, bin_name, "qqH{MASS}_".format(MASS=options.mass) + words[0], options.scale, "Down")
+                        datacard_creator.scale_histogram(full_rootfile, bin_name, "ggH{MASS}_".format(MASS=options.mass) + words[0], options.scale, "Down")  
             if options.verbose :
                 print output_line
             output_file.write(output_line)
