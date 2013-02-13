@@ -196,7 +196,12 @@ def extractor(path, period):
     ignore_line = [
         'CMS_scale_t',
         'CMS_scale_j',
-        'CMS_scale_u'
+        'CMS_scale_u',
+        'CMS_htt_mt_0',
+        'CMS_htt_et_0',
+        'CMS_htt_em_0',
+        'CMS_htt_tt_0',
+        'CMS_htt_mm_0'
         ]
     ## largest index for signal samples (used for split up of uncertainties for signal
     ## and background) 
@@ -378,9 +383,18 @@ def merge_subsets(channel, categories) :
                 if values[0] == 'Data':
                     observed[sub] = float(values[1])
                 else :
-                    samples[sub].append(values[0])
-                    rates[sub].append(float(values[1]))
-                    uncerts[sub].append(float(values[2]))
+                    # work-around for problem in mt and et (different processes in VBF for 7 and 8 TeV)
+                    if options.analysis == 'sm' and sub == '7TeV' and values[0] == 'ZLL' :
+                        samples[sub].append('ZL')
+                        rates[sub].append(float(values[1]))
+                        uncerts[sub].append(float(values[2]))
+                        samples[sub].append('ZJ')
+                        rates[sub].append(0.0)
+                        uncerts[sub].append(0.0)
+                    else:
+                        samples[sub].append(values[0])
+                        rates[sub].append(float(values[1]))
+                        uncerts[sub].append(float(values[2]))
             file.close()
 
         for key in samples :
