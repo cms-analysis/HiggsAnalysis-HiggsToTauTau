@@ -1,4 +1,4 @@
-Programm of measures to go from initial datacards as provided by the analysts to the ifnal result: 
+Programm of measures to go from initial datacards as provided by the analysts to the final result: 
 
 ---------------------------------------------------------------------------------------------------
 Standard Model Checklist:
@@ -53,7 +53,7 @@ Standard Model Checklist:
 
 (5) Check pulls
 --------------------------------------
- - limit.py --max-likelihood --stable LIMITS/125
+ - limit.py --max-likelihood LIMITS/125
    - you will find the output of the fit in the sub-directory LIMITS/125/out/mlfit.txt/tex
    - the tex file should be used to dump the pulls into the AN. 
    - the txt file will be used for the postfit plots. 
@@ -61,7 +61,7 @@ Standard Model Checklist:
 (6) Postfit plots
 --------------------------------------
  - cd HiggsAnalysis/HiggsToTauTau/test/
- - ./mlfit_and_copy.sh SM $CMSSW_BASE/src/LIMITS/125
+ - ./mlfit_and_copy.sh -a sm $CMSSW_BASE/src/LIMITS/125
  - python produce_macros.py
    - check the defaults with --help. Be careful tt has to be done separately as it only exists 
      for 8TeV. 
@@ -75,10 +75,10 @@ Standard Model Checklist:
 
 (7) Limit calculation
 --------------------------------------
- - limit.py --asymptotic LIMITS/*
- - plot asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/sm_htt_layout.py LIMITS
+ - submit.py (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null")  --asymptotic LIMITS/*
+ - plot asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-sm.py LIMITS
 
-(8) Significance calculation (/w bands)
+(8) Significance calculation (/w bands) (NOT TESTED?)
 --------------------------------------
  - submit-slave.py --method significance -t 1000 -j 50 --lsf LIMITS/*
  - limit.py --status LIMITS/*
@@ -87,29 +87,53 @@ Standard Model Checklist:
  - plot significance HiggsAnalysis/HiggsToTauTau/python/layouts/sm_sig_layout.py LIMITS
  - this works only for lxbatch or equivalent.  
 
-(9) Limit calculation (/w signal inj.)
+(8a) Frequentist significance calculation (w/o bands)
 --------------------------------------
- - lxb/q_inject.py 
+ - submit.py (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null") --significance-frequentist LIMITS/*
+ - plot --significance-frequentist HiggsAnalysis/HiggsToTauTau/python/layouts/significance-sm.py LIMITS
+ 
+(8b) Frequentist p-value caclulation (w/o bands)
+--------------------------------------
+ - submit.py (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null") --pvalue-frequentist LIMITS/*
+ - plot --pvalue-frequentist HiggsAnalysis/HiggsToTauTau/python/layouts/pvalue-sm.py  LIMITS
+
+(9) Limit calculation (with signal injected)
+--------------------------------------
+ - submit.py (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null") --injected --toys 1000 LIMITS/*
+ - submit.py (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null") --injected --collect-injected-toys LIMITS/*
+ - plot --injected HiggsAnalysis/HiggsToTauTau/python/layouts/limit-sm.py 
 
 (10) Multidimensional fits (125GeV)
 --------------------------------------
- - at the moment for lxb: do the following: 
- - setting up models standalone: 
-   limit.py --multidim-fit --setup-only --physics-model '{MODEL}' --physics-model-options '{OPT}' MY-LIMITS/125
- - determine limit boundaries from single fits: 
-   limit.py --multidim-fit --algo singles --physics-model MODEL --name OUTPUTNAME  MY-LIMITS/125
-   - models are:
-     - ggH-qqH=HiggsAnalysis.CombinedLimit.PhysicsModel:floatingXSHiggs 
-     - cV-cF=HiggsAnalysis.CombineLimit.HiggsCouplings:cVcF
-   - once models are created they can be picked up by there names e.g. ggH-qqh, ggh-bbH, cV-cF. It can be any other 
-     name that has been defined beforehand.
+ggH-qqH
+ - submit.py (--lxq --queue="-l h_cpu=1:00:00 -j y -o /dev/null") --multidim-fit --physics-model="ggH-qqH" LIMITS/125
+ - limit.py --collect --multidim-fit --physics-model="ggH-qqH" LIMITS/125
+ - plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-qqH.py LIMITS
+cV-cF
+ - submit.py (--lxq --queue="-l h_cpu=1:00:00 -j y -o /dev/null") --multidim-fit --physics-model="cV-cF" LIMITS/125
+ - limit.py --collect --multidim-fit --physics-model="cV-cF" LIMITS/125
+ - plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-cV-cF.py LIMITS
+ - ATTENTION: For current combinedLimit tag there are additional directories requiered for cV-cF (ask someone in charge)
+ - ATTENTION: The layout script has to be adjusted for only plotting 125GeV
 
- - run ggH-qqH (spacing 0.02 from 0...5, square) [for a fine scan we can go with half the spacing]
-   lxb-multidim-fit.py -n GGH-QQH --njob 100 --npoints 625 --physics-model 'ggH-qqH=HiggsAnalysis.CombinedLimit.PhysicsModel:floatingXSHiggs' --physics-model-options 'modes=ggH,qqH ggHRange=0:5 qqHRange=0:5' Limits/sm/hcp-fit/ggH-qqH/125
-   lxb-multidim-fit.py --collect --name GGH-QQH
+(11) BestFit
+--------------------------------------
+ - submit.py (--lxq --queue="-l h_cpu=1:00:00 -j y -o /dev/null") --max-likelihood LIMITS/*
+ - plot --max-likelihood HiggsAnalysis/HiggsToTauTau/python/layouts/max-likelihood_sm.py LIMITS
+ - ATTENTION: There is the possibility to do the same with a likelihood-scan, but its not 100% tested atm
 
- - run cV-cF (spacing 0.02 from 0...3, square) [for a fine scan we can go with half the spacing]
-   lxb-multidim-fit.py -n CV-CF --njob 100 --npoints 225 --physics-model 'cV-cF=HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcF' --physics-model-options 'modes=ggH,qqH cVRange=0:3 cFRange=0:3' Limits/sm/hcp-fit/cv-cf/125
+(12) SM 125GeV Higgs as BG
+-------------------------------------
+ - addHiggs2BG.py --uncertainty-cash="HiggsAnalysis/HiggsToTauTau/setup" --mass 125 aux
+ - setup-htt.py -c "em, et, mm, mt, tt" -i aux -o LIMITS
+ - submit.py (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null") --asymptotic LIMITS/*
+ - plot asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-sm.py LIMITS
+
+(13) Likelihood-scan (125GeV)
+------------------------------------
+ - submit.py (--lxq --queue="-l h_cpu=1:00:00 -j y -o /dev/null") --likelihood-scan LIMITS/125
+ - plot --likelihood-scan HiggsAnalysis/HiggsToTauTau/python/layouts/likelihood-scan.py LIMITS/125
+ - ATTENTION: The layout script has to be adjusted for only plotting 125GeV
 
 
 ---------------------------------------------------------------------------------------------------
@@ -201,20 +225,28 @@ MSSM Checklist:
  - submit.py (--lxq --queue="-l h_cpu=1:00:00 -j y -o /dev/null") --asymptotic --physics-model="ggH/bbH" LIMITS/*
  - plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/(limit-mssm-bbH.py, limit-mssm-ggH.py) LIMITS
 
-(8) Best fit calculation (OLD or NOT TESTED)
+(8) Best fit calculation 
 --------------------------------------
- - limit.py --multidim-fit [--stable] --saveResults --algo singles --confidence-level 0.68 --physics-model 
-   'ggH-bbH-model=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH,bbH;
-   ggHRange=0:20;bbHRange=0:20' LIMITS/*
-   - ATTENTION: could also be useful to use lxq/b_limit.py
- - plot multidimfit HiggsAnalysis/HiggsToTauTau/python/layouts/mssm_bestfit_layout.py LIMITS
-   - if you want to plot bestfit of ggH set POI in mssm_bestfit_layout.py to "r_ggH"
-   - if you want to plot bestfit of bbH set POI in mssm_bestfit_layout.py to "r_bbH"
+ - submit.py (--lxq --queue="-l h_cpu=1:00:00 -j y -o /dev/null") --max-likelihood LIMITS/*
+ - plot --max-likelihood HiggsAnalysis/HiggsToTauTau/python/layouts/mssm_bestfit_layout.py LIMITS
+ - ATTENTION: There is the possibility to do the same with a likelihood-scan, but its not 100% tested atm
 
 (9) 2D scans
 --------------------------------------
  - submit.py (--lxq --queue="-l h_cpu=1:00:00 -j y -o /dev/null") --multidim-fit --physics-model="ggH-bbH" LIMITS/*
  - limit.py --collect --multidim-fit --physics-model="ggH-bbH" LIMITS/*
  - In python/mssm_multidim_fit_boundaries.py the ranges of ggH and bbH for different masses are defined. Those may have to be edited if lumi changes!
+ - plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-bbH.py LIMITS
 
 
+
+
+
+
+-------------------------------------
+GENERAL NOTES:
+-------------------------------------
+ - layout scripts may have to be adjusted
+ - name of directories could change
+ - for SM points 0-4 (except blinding, but additional adding bin-by-bin uncertainties) could be done with doSM.py 
+ - dor MSSM points 0-3 (except blinding, but additional adding bin-by-bin uncertainties) could be done with doMSSM.py
