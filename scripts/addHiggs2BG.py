@@ -6,11 +6,13 @@ import ROOT
 from optparse import OptionParser
 
 parser = OptionParser(usage="usage: %prog [options] ARG",
-                      description="This is a script to inject a SM Higgs as background. The mass of the Higgs Boson could be chosen, but has to be available. ARG corresponds to the pull path of the auxiliaries directory to which you want to apply this change. Note that this causes a change of the inputs datacards.")
-parser.add_option("--uncertainty-cash", dest="cash_uncert", default="{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup".format(CMSSW_BASE=os.environ['CMSSW_BASE']), type="string",
+                      description="This is a script to inject a SM Higgs as background. The mass of the Higgs Boson can be chosen freely, but has to be available in the root input files. ARG corresponds to the full path of the auxiliaries directory to which you want to apply this change. Note that this causes a change of the inputs datacards.")
+parser.add_option("--uncert-inputs", dest="cash_uncert", default="{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup".format(CMSSW_BASE=os.environ['CMSSW_BASE']), type="string",
                   help="Add here the path where to find the uncertainty files that these datacards have been produced from. [Default: '{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup']")
-parser.add_option("--mass", dest="mass", default="", type="string",
+parser.add_option("--mass", dest="mass", default="125", type="string",
                   help="Chose which Higgs Mass Hypotheses to add. [Default: '125']")
+parser.add_option("--label", dest="label", default="", type="string",
+                  help="Add an additional label here that you might want to append to the Higgs as background samples. [Default: '']")
 parser.add_option("--scale-rate", dest="scale", default=1.0, type="float",
                   help="Scale the Higgs rate of the injected Higgs. [Default: 1.0]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true",
@@ -145,28 +147,10 @@ for dir in directoryList :
                     if word.find(".root")>-1 :
                         full_rootfile=args[0]+"/sm/{DIR}/".format(DIR=dir)+word
                         rootfile=word.replace("../common/", "")
-                if options.scale==1.0 :
-                    if options.mass=="125" :
-                        output_line = output_line +"""shapes ggH_SM * {ROOTFILE} $CHANNEL/ggH{MASS} $CHANNEL/ggH{MASS}_$SYSTEMATIC 
-shapes qqH_SM * {ROOTFILE} $CHANNEL/qqH{MASS} $CHANNEL/qqH{MASS}_$SYSTEMATIC 
-shapes VH_SM * {ROOTFILE} $CHANNEL/VH{MASS} $CHANNEL/VH{MASS}_$SYSTEMATIC
-""".format(ROOTFILE=rootfile, MASS=options.mass)
-                    else :
-                        output_line = output_line +"""shapes ggH_{MASS} * {ROOTFILE} $CHANNEL/ggH{MASS} $CHANNEL/ggH{MASS}_$SYSTEMATIC 
-shapes qqH_{MASS} * {ROOTFILE} $CHANNEL/qqH{MASS} $CHANNEL/qqH{MASS}_$SYSTEMATIC 
-shapes VH_{MASS} * {ROOTFILE} $CHANNEL/VH{MASS} $CHANNEL/VH{MASS}_$SYSTEMATIC
-""".format(ROOTFILE=rootfile, MASS=options.mass)
-                else:
-                    if options.mass=="125" :
-                        output_line = output_line +"""shapes ggH_SM_{SCALE} * {ROOTFILE} $CHANNEL/ggH{MASS}_{SCALE} $CHANNEL/ggH{MASS}_{SCALE}_$SYSTEMATIC 
-shapes qqH_SM_{SCALE} * {ROOTFILE} $CHANNEL/qqH{MASS}_{SCALE} $CHANNEL/qqH{MASS}_{SCALE}_$SYSTEMATIC 
-shapes VH_SM_{SCALE} * {ROOTFILE} $CHANNEL/VH{MASS}_{SCALE} $CHANNEL/VH{MASS}_{SCALE}_$SYSTEMATIC
-""".format(ROOTFILE=rootfile, MASS=options.mass, SCALE=str(options.scale))
-                    else :
-                        output_line = output_line +"""shapes ggH_{MASS}_{SCALE} * {ROOTFILE} $CHANNEL/ggH{MASS}_{SCALE} $CHANNEL/ggH{MASS}_{SCALE}_$SYSTEMATIC 
-shapes qqH_{MASS}_{SCALE} * {ROOTFILE} $CHANNEL/qqH{MASS}_{SCALE} $CHANNEL/qqH{MASS}_{SCALE}_$SYSTEMATIC 
-shapes VH_{MASS}_{SCALE} * {ROOTFILE} $CHANNEL/VH{MASS}_{SCALE} $CHANNEL/VH{MASS}_{SCALE}_$SYSTEMATIC
-""".format(ROOTFILE=rootfile, MASS=options.mass, SCALE=str(options.scale))
+                output_line = output_line +"""shapes ggH_SM{LABEL} * {ROOTFILE} $CHANNEL/ggH{MASS} $CHANNEL/ggH{MASS}_$SYSTEMATIC 
+shapes qqH_SM{LABEL} * {ROOTFILE} $CHANNEL/qqH{MASS} $CHANNEL/qqH{MASS}_$SYSTEMATIC 
+shapes VH_SM{LABEL} * {ROOTFILE} $CHANNEL/VH{MASS} $CHANNEL/VH{MASS}_$SYSTEMATIC
+""".format(LABEL=options.label, ROOTFILE=rootfile, MASS=options.mass)
                 add_shapes= False
             ## determine the list of all single channels (in standardized format, multiple occurences possible)
             if words[0] == "bin" :
@@ -190,16 +174,7 @@ shapes VH_{MASS}_{SCALE} * {ROOTFILE} $CHANNEL/VH{MASS}_{SCALE} $CHANNEL/VH{MASS
                     if word=="VH" :
                         VH_idx=idx
                 output_line = output_line.replace("\n", "")
-                if options.scale==1.0 :
-                    if(options.mass=="125") :
-                        output_line = output_line + "\t \t ggH_SM" + "\t \t qqH_SM" + "\t \t VH_SM \n"
-                    else :
-                        output_line = output_line + "\t \t ggH_{MASS}".format(MASS=options.mass) + "\t \t qqH_{MASS}".format(MASS=options.mass) + "\t \t VH_{MASS} \n".format(MASS=options.mass)
-                else :
-                    if(options.mass=="125") :
-                        output_line = output_line + "\t \t ggH_SM_{SCALE}".format(SCALE=str(options.scale)) + "\t \t qqH_SM_{SCALE}".format(SCALE=str(options.scale)) + "\t \t VH_SM_{SCALE} \n".format(SCALE=str(options.scale))
-                    else :
-                        output_line = output_line + "\t \t ggH_{MASS}_{SCALE}".format(MASS=options.mass, SCALE=str(options.scale)) + "\t \t qqH_{MASS}_{SCALE}".format(MASS=options.mass, SCALE=str(options.scale)) + "\t \t VH_{MASS}_{SCALE} \n".format(MASS=options.mass, SCALE=str(options.scale))
+                output_line = output_line + "\t \t ggH_SM{LABEL}".format(LABEL=options.label) + "\t \t qqH_SM{LABEL}".format(LABEL=options.label) + "\t \t VH_SM{LABEL} \n".format(LABEL=options.label)
             if words[0] == "rate" :
                 VH_rate=datacard_creator.rate_from_hist(full_rootfile, bin_name, "VH{MASS}".format(MASS=options.mass))*options.scale
                 qqH_rate=datacard_creator.rate_from_hist(full_rootfile, bin_name, "qqH{MASS}".format(MASS=options.mass))*options.scale
