@@ -80,11 +80,11 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
  
   if (std::string(dataset) == std::string("2011"     )){ dataset = "Preliminary, 2011, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}"; }
   if (std::string(dataset) == std::string("2012"     )){ 
-	if (std::string(extra) == std::string("#tau_{#mu}#tau_{#mu}") ) dataset = "Preliminary, 2012, #sqrt{s} = 8 TeV, L = 18.7 fb^{-1}"; 
+	if (std::string(extra) == std::string("#mu#mu") ) dataset = "Preliminary, 2012, #sqrt{s} = 8 TeV, L = 18.7 fb^{-1}"; 
 	else dataset = "Preliminary, 2012, #sqrt{s} = 8 TeV, L = 19.4 fb^{-1}";
   }
   if (std::string(dataset) == std::string("2011+2012")){ 
-	if (std::string(extra) == std::string("#tau_{#mu}#tau_{#mu}") ) dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 23.6 fb^{-1}"; 
+	if (std::string(extra) == std::string("#mu#mu") ) dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 23.6 fb^{-1}"; 
  	else dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 24.3 fb^{-1}";
   }
 
@@ -139,8 +139,10 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
       }
       if(Fakes){ Fakes->Draw("same"); }
     }
+    if(ggH) ggH  ->Draw("histsame");
   }
   else{
+    if(ggH) ggH  ->Draw("histsame");
     if(Zmm){
       EWK->Draw("same");
       Fakes->Draw("same");
@@ -161,7 +163,6 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   if(errorBand){
     errorBand->Draw("e2same");
   }
-  if(ggH) ggH  ->Draw("histsame");
   data->Draw("esame");
   canv->RedrawAxis();
 
@@ -184,7 +185,7 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
     leg->AddEntry(ggH  , "10#times#phi(160 GeV)#rightarrow#tau#tau, tan#beta=8" , "L" );
   }
   else{
-    if(ggH){ leg->AddEntry(ggH  , "H(125)#rightarrow#tau#tau" , "L" ); }
+    if(ggH){ leg->AddEntry(ggH  , "H#rightarrow#tau#tau  m_{H}=125 GeV" , "L" ); }
   }
   leg->AddEntry(data , "observed"                       , "LP");
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );

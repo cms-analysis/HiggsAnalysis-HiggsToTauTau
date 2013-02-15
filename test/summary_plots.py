@@ -40,10 +40,10 @@ categories_mssm = [
     ] 
 
 extra = {
-    "emu"   : "#tau_{e}#tau_{#mu}",
-    "eleTau"  : "#tau_{e}#tau_{h}",
-    "muTau" : "#tau_{#mu}#tau_{h}",
-    "mumu"  : "#tau_{#mu}#tau_{#mu}",
+    "emu"     : "e#mu",
+    "eleTau"  : "e#tau_{h}",
+    "muTau"   : "#mu#tau_{h}",
+    "mumu"    : "#mu#mu",
     }
 
 log = {

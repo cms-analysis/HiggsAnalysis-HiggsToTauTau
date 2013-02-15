@@ -335,15 +335,15 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 #endif
   }
   else{
+#ifndef DROP_SIGNAL
+    ggH  ->Draw("histsame");
+#endif
     Ztt  ->Draw("histsame");
     ttbar->Draw("histsame");
     EWK  ->Draw("histsame");
     EWK1 ->Draw("histsame");
     Fakes->Draw("histsame");
     $DRAW_ERROR
-#ifndef DROP_SIGNAL
-    ggH  ->Draw("histsame");
-#endif
   }
   data->Draw("esame");
   canv->RedrawAxis();
@@ -357,7 +357,7 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   chan->SetTextSize ( 0.05 );
   chan->SetTextColor(    1 );
   chan->SetTextFont (   62 );
-  chan->AddText("#tau_{e}#tau_{h}");
+  chan->AddText("e#tau_{h}");
   chan->Draw();
   
 #ifdef MSSM
