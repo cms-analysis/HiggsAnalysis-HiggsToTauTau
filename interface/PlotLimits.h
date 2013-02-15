@@ -186,6 +186,8 @@ class PlotLimits {
   bool injected_;
   /// indicate whether this is with SM 125GeV Higgs as Background  or not (used for limit plotting)
   bool BG_Higgs_;
+  /// mass label for the injected Higgs boson
+  std::string injectedMass_;
   /// indicate whether the +/- 2 sigma should be shown or not (used for option tanb)
   bool outerband_;
   /// print constraint on mA-tanb plane from Higgs boson at 125 GeV? (used for option tanb)

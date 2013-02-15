@@ -31,6 +31,8 @@ layout = cms.PSet(
     masspoints = cms.vdouble(range(110, 146, 5)),
     ## plot expected only
     expectedOnly = cms.bool(False),
+    ## mass label for the injected signal print band in different layout for signal injected
+    injectedMass=cms.string("125"),    
     ## print band in different layout for signal injected
     injected=cms.bool(False),
     ## print band in different layout if SM 125GeV Higgs has been added to Background

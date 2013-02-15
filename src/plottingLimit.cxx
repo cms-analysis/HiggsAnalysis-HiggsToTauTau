@@ -6,7 +6,7 @@
 #include "TGraphAsymmErrors.h"
 
 void
-plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* unit, std::string& xaxis, std::string& yaxis, double min=0., double max=5., bool log=false, std::string PLOT=std::string("LIMIT"), bool legendOnRight=false)
+plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* unit, std::string& xaxis, std::string& yaxis, double min=0., double max=5., bool log=false, std::string PLOT=std::string("LIMIT"), std::string injectedMass=std::string("125"), bool legendOnRight=false)
 {
   // define PLOT type
   bool injected = (PLOT == std::string("INJECTED"));
@@ -110,9 +110,9 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
     if(outerBand){ leg->AddEntry( outerBand, "#pm 2#sigma injected",  "F" ); }
   }
   else if(BG_Higgs){
-    leg->AddEntry( expected , "expected BKG+H(125)",  "L" );
-    if(innerBand){ leg->AddEntry( innerBand, "#pm 1#sigma expected BG+H(125)",  "F" ); }
-    if(outerBand){ leg->AddEntry( outerBand, "#pm 2#sigma expected BG+H(125)",  "F" ); }  
+    leg->AddEntry( expected , TString::Format("expected BG+Higgs(%s GeV)", injectedMass.c_str()),  "L" );
+    if(innerBand){ leg->AddEntry( innerBand, TString::Format("#pm 1#sigma BG+Higgs(%s GeV)", injectedMass.c_str()),  "F" ); }
+    if(outerBand){ leg->AddEntry( outerBand, TString::Format("#pm 2#sigma BG+Higgs(%s GeV)", injectedMass.c_str()),  "F" ); }  
   }
   else if(bestfit){
     leg->AddEntry( expected , "#sigma/#sigma_{SM} (best fit)",  "PL" );

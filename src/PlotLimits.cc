@@ -64,6 +64,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   // specifics to plot signal strength
   bestfit_ = cfg.existsAs<bool>("bestfit") ? cfg.getParameter<bool>("bestfit") : false;
   // specifics to plot xsec limits
+  injectedMass_ = cfg.existsAs<std::string>("injectedMass") ? cfg.getParameter<std::string>("injectedMass") : std::string();
   injected_ = cfg.existsAs<bool>("injected") ? cfg.getParameter<bool>("injected") : false;
   BG_Higgs_ = cfg.existsAs<bool>("higgsBG") ? cfg.getParameter<bool>("higgsBG") : false;
   // specifics to plot MSSM mA-tanb limits
