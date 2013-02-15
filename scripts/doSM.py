@@ -86,13 +86,18 @@ patterns = {
     'hcp'        : '-hcp',
     }
 
-setup=cmssw_base+"/src/HiggsAnalysis/HiggsToTauTau/setup"
+#setup=cmssw_base+"/src/HiggsAnalysis/HiggsToTauTau/setup"
 
 if options.update_all :
     options.update_cvs=True
     options.update_setup=True
     options.update_datacards=True
     options.update_limits=True
+
+## cash setup in a dedicated tmp directory to make it possible to
+## run several instances of the script in parallel w/o interference
+os.system("cp -r {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup {CMSSW_BASE}/src/.setup-tmp-{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.index))
+setup="{CMSSW_BASE}/src/.setup-tmp-{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.index)
     
 if options.update_cvs :
     print "##"
@@ -138,7 +143,7 @@ if options.update_cvs :
     for chn in channels :
         print "... copy files for channel:", chn
         ## remove legacy
-        for file in glob.glob("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/htt_{CHN}*-sm-*.root".format(CMSSW_BASE=cmssw_base, CHN=chn)) :
+        for file in glob.glob("{SETUP}/{CHN}/htt_{CHN}*-sm-*.root".format(SETUP=setup, CHN=chn)) :
             os.system("rm %s" % file)
         for per in periods :
             if directories[chn][per] == 'None' :
@@ -161,12 +166,14 @@ if options.update_cvs :
                     PATTERN=pattern
                     )
                 for file in glob.glob(source) :
-                    os.system("cp {SOURCE} {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/".format(
+                    os.system("cp {SOURCE} {SETUP}/{CHN}/".format(
                         SOURCE=file,
-                        CMSSW_BASE=cmssw_base,
+                        SETUP=setup,
                         CHN=chn
                         ))
-    ## copy postfit inputs for mm to test directory
+    ## copy postfit inputs for mm to test directory (this still goes
+    ## into the original setup directory as the scripts for postfit
+    ## plots will grab it from there)
     os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/Htt_MuMu_Unblinded/htt_mm*-sm-[78]TeV-postfit-*.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
         CMSSW_BASE=cmssw_base
         )) 
@@ -177,7 +184,7 @@ if options.update_cvs :
                 FILE=file,
                 MASSES=masses
                 ))
-                
+
 if options.update_setup :
     print "##"
     print "## update setups directory:"
@@ -379,3 +386,6 @@ if options.update_limits :
                 LABEL=label,
                 MASSES=masses
                 ))
+
+## remove cash
+os.system("rm -r {CMSSW_BASE}/src/.setup-tmp-{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.index))
