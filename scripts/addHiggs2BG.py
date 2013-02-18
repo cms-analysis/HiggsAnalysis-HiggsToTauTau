@@ -9,10 +9,10 @@ parser = OptionParser(usage="usage: %prog [options] ARG",
                       description="This is a script to inject a SM Higgs as background. The mass of the Higgs Boson can be chosen freely, but has to be available in the root input files. ARG corresponds to the full path of the auxiliaries directory to which you want to apply this change. Note that this causes a change of the inputs datacards.")
 parser.add_option("--uncert-inputs", dest="cash_uncert", default="{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup".format(CMSSW_BASE=os.environ['CMSSW_BASE']), type="string",
                   help="Add here the path where to find the uncertainty files that these datacards have been produced from. [Default: '{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup']")
-parser.add_option("--mass", dest="mass", default="125", type="string",
-                  help="Chose which Higgs Mass Hypotheses to add. [Default: '125']")
 parser.add_option("--label", dest="label", default="", type="string",
                   help="Add an additional label here that you might want to append to the Higgs as background samples. [Default: '']")
+parser.add_option("--mass", dest="mass", default="125", type="string",
+                  help="Chose which Higgs Mass Hypotheses to add. [Default: '125']")
 parser.add_option("--scale-rate", dest="scale", default=1.0, type="float",
                   help="Scale the Higgs rate of the injected Higgs. [Default: 1.0]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true",
@@ -55,7 +55,7 @@ class MakeDatacard :
         ## prepare mA hist
         hist = self.load_hist(file, help)
         new_hist = hist.Clone()
-        new_hist_name = hist_name.replace("{MASS}".format(MASS=options.mass), "{MASS}_{SCALE}".format(MASS=options.mass, SCALE=str(scale))) + uncertainty
+        new_hist_name = hist_name.replace("{MASS}".format(MASS=options.mass), "{MASS}_SCALE{SCALE}".format(MASS=options.mass, SCALE=str(scale))) + uncertainty
         new_hist.Scale(scale)
         ## write modified histogram to file
         #help2 = directory + "/" + hist_name.replace("{MASS}".format(MASS=options.mass), "{MASS}_{SCALE}".format(MASS=options.mass, SCALE=str(scale))) + uncertainty
@@ -147,10 +147,10 @@ for dir in directoryList :
                     if word.find(".root")>-1 :
                         full_rootfile=args[0]+"/sm/{DIR}/".format(DIR=dir)+word
                         rootfile=word.replace("../common/", "")
-                output_line = output_line +"""shapes ggH_SM{LABEL} * {ROOTFILE} $CHANNEL/ggH{MASS} $CHANNEL/ggH{MASS}_$SYSTEMATIC 
-shapes qqH_SM{LABEL} * {ROOTFILE} $CHANNEL/qqH{MASS} $CHANNEL/qqH{MASS}_$SYSTEMATIC 
-shapes VH_SM{LABEL} * {ROOTFILE} $CHANNEL/VH{MASS} $CHANNEL/VH{MASS}_$SYSTEMATIC
-""".format(LABEL=options.label, ROOTFILE=rootfile, MASS=options.mass)
+                output_line = output_line +"""shapes ggH_SM{LABEL} * {ROOTFILE} $CHANNEL/ggH{MASS}_SCALE{SCALE} $CHANNEL/ggH{MASS}_SCALE{SCALE}_$SYSTEMATIC 
+shapes qqH_SM{LABEL} * {ROOTFILE} $CHANNEL/qqH{MASS}_SCALE{SCALE} $CHANNEL/qqH{MASS}_SCALE{SCALE}_$SYSTEMATIC 
+shapes VH_SM{LABEL} * {ROOTFILE} $CHANNEL/VH{MASS}_SCALE{SCALE} $CHANNEL/VH{MASS}_SCALE{SCALE}_$SYSTEMATIC
+""".format(LABEL=options.label, ROOTFILE=rootfile, MASS=options.mass, SCALE=options.scale)
                 add_shapes= False
             ## determine the list of all single channels (in standardized format, multiple occurences possible)
             if words[0] == "bin" :
