@@ -61,6 +61,7 @@ if len(args) < 1 :
 
 import os
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
+from HiggsAnalysis.HiggsToTauTau.utils import is_integer
 from HiggsAnalysis.HiggsToTauTau.utils import mass_category
 
 ## prepare input
@@ -200,8 +201,8 @@ if not os.path.exists(options.out) :
 if not os.path.exists("{OUTPUT}/common".format(OUTPUT=options.out)) :
     os.system("mkdir {OUTPUT}/common".format(OUTPUT=options.out))
 for mass in parseArgs(args) :
-    if not os.path.exists("{OUTPUT}/{MASS}".format(OUTPUT=options.out, MASS=mass)) :
-        os.system("mkdir {OUTPUT}/{MASS}".format(OUTPUT=options.out, MASS=mass))
+    if not os.path.exists("{OUTPUT}/{MASSDIR}".format(OUTPUT=options.out, MASSDIR=str(mass).rstrip('0').rstrip('.'))) :
+        os.system("mkdir {OUTPUT}/{MASSDIR}".format(OUTPUT=options.out, MASSDIR=str(mass).rstrip('0').rstrip('.')))
 
 for period in periods :
     for channel in channels :
@@ -221,17 +222,17 @@ for period in periods :
                     if options.analysis == "mssm" :
                         os.system("cp {INPUT}/{CHN}/{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root {OUTPUT}/common/{PRE}{CHN}.input_{PERIOD}-{MASSCAT}.root".format(
                             INPUT=input, ANA=options.analysis, CHN=channel, OUTPUT=options.out, PRE=prefix, PERIOD=period, MASSCAT=mass_category(mass,category, channel)))
-                        os.system("cp {INPUT}/{CHN}/{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
-                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
-                        os.system("perl -pi -e 's/{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root/..\/common\/{PRE}{CHN}.input_{PERIOD}-{MASSCAT}.root/g' {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
-                            CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period, MASSCAT=mass_category(mass,category,channel)))
+                        os.system("cp {INPUT}/{CHN}/{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASSDIR}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
+                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, MASSDIR=str(mass).rstrip('0').rstrip('.'), OUTPUT=options.out, PRE=prefix))
+                        os.system("perl -pi -e 's/{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root/..\/common\/{PRE}{CHN}.input_{PERIOD}-{MASSCAT}.root/g' {OUTPUT}/{MASSDIR}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
+                            CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, MASSDIR=str(mass).rstrip('0').rstrip('.'), CAT=category, PERIOD=period, MASSCAT=mass_category(mass,category,channel)))
                     else :
                         os.system("cp {INPUT}/{CHN}/{CHN}.inputs-{ANA}-{PERIOD}.root {OUTPUT}/common/{PRE}{CHN}.input_{PERIOD}.root".format(
                             INPUT=input, ANA=options.analysis, CHN=channel, OUTPUT=options.out, PRE=prefix, PERIOD=period))
-                        os.system("cp {INPUT}/{CHN}/{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
-                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
-                        os.system("perl -pi -e 's/{CHN}.inputs-{ANA}-{PERIOD}.root/..\/common\/{PRE}{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
-                            CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period))
+                        os.system("cp {INPUT}/{CHN}/{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASSDIR}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
+                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, MASSDIR=str(mass).rstrip('0').rstrip('.'), OUTPUT=options.out, PRE=prefix))
+                        os.system("perl -pi -e 's/{CHN}.inputs-{ANA}-{PERIOD}.root/..\/common\/{PRE}{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASSDIR}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
+                            CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, MASSDIR=str(mass).rstrip('0').rstrip('.'), CAT=category, PERIOD=period))
                     if options.analysis == "mssm" :
                         add_mass("{CHN}_{CAT}_{PERIOD}".format(CHN=channel, CAT=category, PERIOD=period), mass)
             if channel == "vhtt":
@@ -240,10 +241,10 @@ for period in periods :
                         print "copying datacards for:", period, channel, category, mass
                     os.system("cp {INPUT}/{CHN}/{CHN}.inputs-{ANA}-{PERIOD}.root {OUTPUT}/common/{PRE}{CHN}.input_{PERIOD}.root".format(
                         INPUT=input, ANA=options.analysis, CHN=channel, OUTPUT=options.out, PRE=prefix, PERIOD=period, MASSCAT=mass_category(mass,category, channel)))
-                    os.system("cp {INPUT}/{CHN}/{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
-                        INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
-                    os.system("perl -pi -e 's/{CHN}.inputs-{ANA}-{PERIOD}.root/..\/common\/{PRE}{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASS}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
-                        CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period, MASSCAT=mass_category(mass,category,channel)))
+                    os.system("cp {INPUT}/{CHN}/{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASSDIR}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
+                        INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, MASSDIR=str(mass).rstrip('0').rstrip('.'), OUTPUT=options.out, PRE=prefix))
+                    os.system("perl -pi -e 's/{CHN}.inputs-{ANA}-{PERIOD}.root/..\/common\/{PRE}{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASSDIR}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
+                        CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, MASSDIR=str(mass).rstrip('0').rstrip('.'), CAT=category, PERIOD=period, MASSCAT=mass_category(mass,category,channel)))
             else :
                 for category in categories[channel] :
                     if options.verbose :
@@ -269,10 +270,10 @@ for period in periods :
                         else :
                             os.system("cp {INPUT}/htt_{CHN}/{PRE}htt_{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root {OUTPUT}/common/".format(
                                 INPUT=input, CHN=channel, ANA=options.analysis, PERIOD=period, OUTPUT=options.out, PRE=prefix, MASSCAT=mass_category(mass,category, channel)))
-                        os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
-                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
-                        os.system("perl -pi -e 's/htt_{CHN}.inputs/..\/common\/{PRE}htt_{CHN}.inputs/g' {OUTPUT}/{MASS}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
-                            CHN=channel, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period))
+                        os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASSDIR}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
+                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, MASSDIR=str(mass).rstrip('0').rstrip('.'), OUTPUT=options.out, PRE=prefix))
+                        os.system("perl -pi -e 's/htt_{CHN}.inputs/..\/common\/{PRE}htt_{CHN}.inputs/g' {OUTPUT}/{MASSDIR}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
+                            CHN=channel, PRE=prefix, OUTPUT=options.out, MASS=mass, MASSDIR=str(mass).rstrip('0').rstrip('.'), CAT=category, PERIOD=period))
                     else :
                         if options.no_update:
                             files = ' '.join(os.listdir("{OUTPUT}/common/".format(OUTPUT=options.out)))
@@ -289,7 +290,8 @@ for period in periods :
                         else :
                             os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}.inputs-{ANA}-{PERIOD}.root {OUTPUT}/common/{PRE}htt_{CHN}.input_{PERIOD}.root".format(
                                 INPUT=input, CHN=channel, ANA=options.analysis, OUTPUT=options.out, PRE=prefix, PERIOD=period))
-                        os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASS}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
-                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, OUTPUT=options.out, PRE=prefix))
-                        os.system("perl -pi -e 's/htt_{CHN}.inputs-{ANA}-{PERIOD}.root/..\/common\/{PRE}htt_{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASS}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
-                            CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, CAT=category, PERIOD=period))
+                        os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASSDIR}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
+                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, MASSDIR=str(mass).rstrip('0').rstrip('.'), OUTPUT=options.out, PRE=prefix))
+                        os.system("perl -pi -e 's/htt_{CHN}.inputs-{ANA}-{PERIOD}.root/..\/common\/{PRE}htt_{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASSDIR}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
+                            CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, MASSDIR=str(mass).rstrip('0').rstrip('.'), CAT=category, PERIOD=period))
+                        
