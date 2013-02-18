@@ -66,7 +66,8 @@ def mass_category(mass, category, channel) :
 def parseArgs(args) :
     """
     parse a list of arguments which can be floats, intergers or of type
-    intA-intB where intA<=intB and both intA and intB have to be integers
+    intA-intB:step where intA<=intB and both intA and intB have to be
+    integers or floats 
     and fill this list of arguments into a list
     """
     list = []
