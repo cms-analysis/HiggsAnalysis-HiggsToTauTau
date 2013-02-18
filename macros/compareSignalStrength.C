@@ -398,7 +398,7 @@ void compareSignalStrength(const char* filename, const char* channelstr, const c
     firstPlot=false;
   }
   canv1->RedrawAxis();
-  bool firstLeg=true;
+  //bool firstLeg=true;
   TLegend* leg0;
   /// setup the CMS Preliminary
   if(std::string(type) == std::string("mssm")){
@@ -421,7 +421,7 @@ void compareSignalStrength(const char* filename, const char* channelstr, const c
     leg0->AddEntry( hexp[i] , channel(channels[i]) ? legendEntry(channels[i]).c_str() : legendEntry(channels[i]).append("-Channel").c_str(),  "PL" );
   }
   leg0->Draw("same");
-  firstLeg=false;
+  //firstLeg=false;
   
   canv1->Print(std::string("BestFit").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.png" : "_sm.png").c_str());
   canv1->Print(std::string("BestFit").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.pdf" : "_sm.pdf").c_str());
