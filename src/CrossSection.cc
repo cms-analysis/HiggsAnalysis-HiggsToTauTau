@@ -46,18 +46,26 @@ float
 CrossSection::linear(float mass, std::map<float, float>& map){
   float value = 0;
   if(!(mass<map.begin()->first || map.rbegin()->first<mass)){
-    float lowerBound = map.lower_bound(mass)->first<mass ? map.lower_bound(mass)->first : mass;
+    float lowerBound = map.lower_bound(mass)->first == mass ? mass : (--map.lower_bound(mass))->first;
     float upperBound = map.upper_bound(mass)->first;
-    
+    //std::cout << "mass : " << mass << " - lowerBound : " << lowerBound << " - upperBound : " << upperBound << std::endl;
+
     if(lowerBound == mass){
+      //std::cout << "mass matches lower bound:" << mass << std::endl;
       value = map.lower_bound(mass)->second;
     }
     else if(upperBound == mass){
+      //std::cout << "mass matches upper bound:" << mass << std::endl;
       value = map.upper_bound(mass)->second;
     }
     else{
       // apply simple linear extrapolation
-      value = map.lower_bound(mass)->second + (map.upper_bound(mass)->second - map.lower_bound(mass)->second)*(mass - lowerBound)/(upperBound - lowerBound);
+      float upperValue = map.upper_bound(mass)->second;
+      float lowerValue = (--map.lower_bound(mass))->second;
+      //std::cout << "interpolate: " << lowerValue << "+" 
+      //	<< (upperValue - lowerValue)*(mass - lowerBound)/(upperBound - lowerBound)
+      //	<< std::endl;
+      value = lowerValue + (upperValue - lowerValue)*(mass - lowerBound)/(upperBound - lowerBound);
     }
   }
   return value;
