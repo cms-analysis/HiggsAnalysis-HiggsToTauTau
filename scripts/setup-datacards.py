@@ -19,6 +19,8 @@ parser.add_option("-m", "--merge-no-signal", dest="merge", default=False, action
                   help="Merge the 0-Jet event categories, which are  w/o signal into the boost low pt event category. [Default: \"False\"]")
 parser.add_option("--SM4", dest="SM4", default=False, action="store_true",
                   help="Re-scale signal samples in input file according to SM4 cross section*BR before datacard creation. [Default: False]")
+parser.add_option("--no-fudge-for-mm", dest="no_fudge", default=False, action="store_true",
+                  help="Do not perform fudging for mm in case of treating horizontally morphed inputs. This options skips a commonly applied shortcut that needs to be done on htt_mm inputs that are not yet provided with horizontally morphed inputs by the analysts. [Default: False]")
 parser.add_option("--sm-higgs-as-bkg", dest="sm_higgs_as_bkg", default=False, action="store_true",
                   help="Add the SM Higgs expectation as a background")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
@@ -203,9 +205,12 @@ for channel in channels :
                 ## fudge masspoints for mm, which cannot use 1d-horizontal template morphing
                 fudge_mass = mass
                 fudge_mm_datacards = False
-                if options.analysis == "sm" and "mm" in channel :
-                    mass = closest_simulated_masspoint(mass)
-                    fudge_mm_datacards = float(fudge_mass)-float(mass)!=0
+                if options.no_fudge :
+                    pass
+                else :
+                    if options.analysis == "sm" and "mm" in channel :
+                        mass = closest_simulated_masspoint(mass)
+                        fudge_mm_datacards = float(fudge_mass)-float(mass)!=0
                 ## check validity of mass
                 if (float(mass)< valid_masses[channel][0] or float(mass)> valid_masses[channel][1]) :
                     #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass
