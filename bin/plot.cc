@@ -1,3 +1,4 @@
+
 #include <vector>
 #include <sstream>
 #include <iostream>
@@ -154,10 +155,10 @@ int main(int argc, char* argv[])
     plot.fillCentral(directory, expected, "higgsCombineTest.HybridNew.mH$MASS.quant0.500");
     // 2-sigma uncertainty band
     TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
-    plot.fillBand(directory, outer, "CLS", false);
+    plot.fillBand(directory, outer, "CLs", false);
     // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
-    plot.fillBand(directory, inner, "CLS", true);
+    plot.fillBand(directory, inner, "CLs", true);
     // make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
