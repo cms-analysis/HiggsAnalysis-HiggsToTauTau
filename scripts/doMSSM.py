@@ -150,7 +150,7 @@ if options.update_cvs :
                         CHN=chn
                         ))
     ## copy postfit inputs for mm to test directory
-    os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/Htt_MuMu_Unblinded/htt_mm*-mssm-[78]TeV-[01]-postfit*.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
+    os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/Htt_MuMu_Unblinded/htt_mm*-mssm-[78]TeV-[01]_postfit*.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
         CMSSW_BASE=cmssw_base
         ))
     ## scaling of root files 
