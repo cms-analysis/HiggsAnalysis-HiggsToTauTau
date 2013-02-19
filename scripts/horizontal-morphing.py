@@ -158,9 +158,12 @@ class Morph:
                 for mass_low, mass_high, value in masses_to_morph:
                     self.morph_hist(file, dir, sample, mass_low, mass_high, value)
                     for uncert in self.uncerts :
-                        if not uncert == '' :
-                            self.morph_hist(file, dir, sample+'_'+uncert+'Up', mass_low, mass_high, value)
-                            self.morph_hist(file, dir, sample+'_'+uncert+'Down', mass_low, mass_high, value)
+                        try:
+                            if not uncert == '' :
+                                self.morph_hist(file, dir, sample+'_'+uncert+'Up', mass_low, mass_high, value)
+                                self.morph_hist(file, dir, sample+'_'+uncert+'Down', mass_low, mass_high, value)
+                        except AttributeError:
+                            print "Warning: could not find shape systematic %s, skipping"  % uncert
 
 template_morphing = Morph(args[0],options.categories,options.samples,options.uncerts,options.masses,options.step_size,options.verbose,options.extrapolate)
 template_morphing.run()
