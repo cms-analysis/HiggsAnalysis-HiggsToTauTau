@@ -12,6 +12,8 @@ parser.add_option("-a", "--analyses", dest="analyses", default="std, pruned",
                   help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"std, bin-by-bin, pruned, mvis, hcp, 2012d, inclusive\" [Default: \"std, pruned\"]")
 parser.add_option("--skip-pruning", dest="skip_pruning", default=False, action="store_true",
                   help="Skip pruning step when doing --setup-aux. [Default: False]")
+parser.add_option("--skip-mm-in-scaling", dest="skip_mm", default=False, action="store_true",
+                  help="Skip mm when doing the scaleing. For morphed inputs this has already been done. [Default: False]")
 parser.add_option("--extend-masses", dest="extend_masses", default=False, action="store_true",
                   help="Extend central analysis to lower masses down to 90 GeV. [Default: False]")
 parser.add_option("--label", dest="index", default="", type="string", 
@@ -179,6 +181,9 @@ if options.update_cvs :
         )) 
     ## scale to SM cross section
     for chn in channels :
+        if options.skip_mm :
+            if chn == 'mm' :
+                continue
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
             os.system("scale2SM.py -i {FILE} -s 'ggH, qqH, VH' {MASSES}".format(
                 FILE=file,
