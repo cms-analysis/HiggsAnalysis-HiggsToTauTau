@@ -235,7 +235,7 @@ for period in periods :
                             CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, MASSDIR=str(mass).rstrip('0').rstrip('.'), CAT=category, PERIOD=period))
                     if options.analysis == "mssm" :
                         add_mass("{CHN}_{CAT}_{PERIOD}".format(CHN=channel, CAT=category, PERIOD=period), mass)
-            if channel == "vhtt":
+            elif channel == "vhtt":
                 for category in categories[channel] :
                     if options.verbose :
                         print "copying datacards for:", period, channel, category, mass
