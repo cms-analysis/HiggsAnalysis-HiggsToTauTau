@@ -19,6 +19,8 @@ parser.add_option("-m", "--merge-no-signal", dest="merge", default=False, action
                   help="Merge the 0-Jet event categories, which are  w/o signal into the boost low pt event category. [Default: \"False\"]")
 parser.add_option("--SM4", dest="SM4", default=False, action="store_true",
                   help="Re-scale signal samples in input file according to SM4 cross section*BR before datacard creation. [Default: False]")
+parser.add_option("--sm-higgs-as-bkg", dest="sm_higgs_as_bkg", default=False, action="store_true",
+                  help="Add the SM Higgs expectation as a background")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string",
                  help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
@@ -199,7 +201,7 @@ for channel in channels :
             os.chdir("{PWD}/{CHN}/{PER}-0{CAT}".format(CHN=prefix+channel, PER=period, PWD=base, CAT=cat))
             for mass in parseArgs(args) :
                 ## fudge masspoints for mm, which cannot use 1d-horizontal template morphing
-                fudge_mass = mass 
+                fudge_mass = mass
                 fudge_mm_datacards = False
                 if options.analysis == "sm" and "mm" in channel :
                     mass = closest_simulated_masspoint(mass)
@@ -226,13 +228,14 @@ for channel in channels :
                             CHN=channel,
                             per=period.lower()
                             ))
-                    os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{per}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
+                    os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{per}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS} {SM_HIGGS_BKG}".format(
                         CHN=prefix+channel,
                         ANA=options.analysis,
                         per=period,
                         CAT=cat,
                         PER=period,
-                        MASS=mass
+                        MASS=mass,
+                        SM_HIGGS_BKG='--sm-higgs-as-bkg' if options.sm_higgs_as_bkg else ''
                         ))
                     if "mm" in channel and fudge_mm_datacards :
                         os.system("cp {CHN}_{CAT}_{PER}-{MASS}.txt {CHN}_{CAT}_{PER}-{FUDGE_MASS}.txt".format(
@@ -248,7 +251,7 @@ for channel in channels :
                             CAT=cat,
                             PER=period,
                             FUDGE_MASS=fudge_mass
-                            )) 
+                            ))
             os.system("mv *.* ../")
             os.chdir("{PWD}/{CHN}".format(CHN=prefix+channel, PWD=base))
             os.system("rm -r {PER}-0{CAT}".format(PER=period, CAT=cat))
@@ -264,4 +267,4 @@ if options.merge :
             for mass in parseArgs(args) :
                 os.system("combineCards.py -S {CHN}_0_{PER}-{MASS}.txt {CHN}_1_{PER}-{MASS}.txt {CHN}_2_{PER}-{MASS}.txt {CHN}_3_{PER}-{MASS}.txt > {CHN}_4_{PER}-{MASS}.txt".format(
                     CHN=prefix+channel, PER=period, MASS=mass))
-                
+

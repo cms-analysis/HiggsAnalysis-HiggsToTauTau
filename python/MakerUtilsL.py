@@ -1,3 +1,4 @@
+#flake8: noqa
 import re
 import ROOT
 ROOT.gROOT.SetBatch(True)
@@ -9,7 +10,7 @@ def main():
 
 class DBuilder:
     DividerStr = "------------------------------------------------------------------------------- \n"
-    def __init__(self,uncertainty_file,out_file,root_file,unc_defs,cgs_defs,mass_point,categories=None):
+    def __init__(self,uncertainty_file,out_file,root_file,unc_defs,cgs_defs,mass_point,categories=None,sm_higgs_as_bkg=False):
         ## name of the input file to contain the uncertainties and where
         ## they apply (unc.vals)
         self.uncertainty_file = uncertainty_file
@@ -51,6 +52,8 @@ class DBuilder:
         self.column_zero_width = 0
         ## default name of RooWorkspace
         self.wsName = 'ws'
+        ## if we want to add the SM 126 higgs as a background.
+        self.sm_higgs_as_bkg = sm_higgs_as_bkg
 
     def run(self):
         self.read_cgs()
@@ -232,8 +235,11 @@ class DBuilder:
         outfile.close()
 
     def write_lands(self,outfile):
+        number_of_processes = len(self.samples)-1
+        if self.sm_higgs_as_bkg:
+            number_of_processes += len(self.signals)
         imax_str = "imax    %d     number of categories \n" % (len(self.categories))
-        jmax_str = "jmax    %d     number of samples minus one \n" % (len(self.samples)-1)
+        jmax_str = "jmax    %d     number of samples minus one \n" % (number_of_processes)
         #kmax_str = "kmax    %d     number of nuisance parameters \n" % len(self.uncertainties.keys())
         kmax_str = "kmax    *     number of nuisance parameters \n"
         outfile.write(imax_str+jmax_str+kmax_str+DBuilder.DividerStr)
@@ -251,11 +257,16 @@ class DBuilder:
             for signal in self.signals :
                 ## add extra lines, which contain the corresponding mass, for all signal processes
                 cat_str+="shapes %(signal)s * %(file)s $CHANNEL/%(ws)s$PROCESS$MASS $CHANNEL/%(ws)s$PROCESS$MASS_$SYSTEMATIC \n" % {'signal': signal, 'file': self.rootfile, 'ws': wsPrefix}
+                if self.sm_higgs_as_bkg:
+                    cat_str+= "shapes %(signal)s_SM * %(file)s $CHANNEL/%(ws)s%(signal)s125 $CHANNEL/%(ws)s%(signal)s125_$SYSTEMATIC \n" % {'signal': signal, 'file': self.rootfile, 'ws': wsPrefix}
         else:
             cat_str = "shapes * * %(file)s $CHANNEL/%(ws)s$PROCESS \n" % {'file': self.rootfile, 'ws': wsPrefix}
             for signal in self.signals :
                 ## add extra lines, which contain the corresponding mass, for all signal processes
                 cat_str+= "shapes %(signal)s * %(file)s $CHANNEL/%(ws)s$PROCESS$MASS \n" % {'signal': signal, 'file': self.rootfile, 'ws': wsPrefix}
+                if self.sm_higgs_as_bkg:
+                    cat_str+= "shapes %(signal)s_SM * %(file)s $CHANNEL/%(ws)s%(signal)s126 \n" % {'signal': signal, 'file': self.rootfile, 'ws': wsPrefix}
+
         outfile.write(cat_str)
         outfile.write(DBuilder.DividerStr)
 
@@ -273,7 +284,10 @@ class DBuilder:
         outfile.write(DBuilder.DividerStr)
         bins_str = "bin".ljust(self.column_zero_width)
         for category in self.categories:
-            for index in range(len(self.signals)+len(self.backgrounds)):
+            nbins = len(self.signals)+len(self.backgrounds)
+            if self.sm_higgs_as_bkg:
+                nbins += len(self.signals)
+            for index in range(nbins):
                 bins_str += category.ljust(self.cw)
         bins_str += " \n"
         outfile.write(bins_str)
@@ -283,6 +297,9 @@ class DBuilder:
                 process_str_n += ("%d" % (signal_index-len(self.signals)+1)).ljust(self.cw)
             for background_index in range(1,len(self.backgrounds)+1):
                 process_str_n += ("%d" % (background_index)).ljust(self.cw)
+            if self.sm_higgs_as_bkg:
+                for higgs_background_index in range(len(self.backgrounds)+1, len(self.backgrounds)+1+len(self.signals)):
+                    process_str_n += ("%d" % (higgs_background_index)).ljust(self.cw)
         process_str_n += " \n"
         outfile.write(process_str_n)
         process_str_l = "process".ljust(self.column_zero_width)
@@ -291,6 +308,9 @@ class DBuilder:
                 process_str_l += signal.ljust(self.cw)
             for background in self.backgrounds:
                 process_str_l += background[0:self.cw-2].ljust(self.cw)
+            if self.sm_higgs_as_bkg:
+                for signal in self.signals:
+                    process_str_l += (signal+"_SM").ljust(self.cw)
         process_str_l += " \n"
         process_str_l += "rate".ljust(self.column_zero_width)
         for category in self.categories:
@@ -298,6 +318,10 @@ class DBuilder:
                 process_str_l += ("%6g"  % (self.get_rate(category,signal,self.mass_point))).ljust(self.cw)
             for background in self.backgrounds:
                 process_str_l += ("%6g" % (self.get_rate(category,background))).ljust(self.cw)
+            if self.sm_higgs_as_bkg:
+                for signal in self.signals:
+                    process_str_l += ("%6g"  % (self.get_rate(category,signal,'125'))).ljust(self.cw)
+
             for sample in self.samples:
                 for unc_name,unc in self.uncertainties.iteritems():
                     if unc.vals.has_key(category):
@@ -347,6 +371,17 @@ class DBuilder:
                         uncertainty_is_used = True
                     except KeyError as e:
                         uncert_str += "-".ljust(self.cw)
+                if self.sm_higgs_as_bkg:
+                    for signal in self.signals:
+                        sample_name = signal
+                        try:
+                            uncert_val = uncert.vals[category_name][sample_name]
+                            #print category_name,sample_name,uncert.name,uncert_val
+                            uncert_str += ("%4g" % uncert_val).ljust(self.cw)
+                            uncertainty_is_used = True
+                        except KeyError as e:
+                            uncert_str += "-".ljust(self.cw)
+
             uncert_str += " \n"
             if uncertainty_is_used:
                 outfile.write(uncert_str)

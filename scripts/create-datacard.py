@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#flake8: noqa
 from optparse import OptionParser
 
 ## set up the option parser
@@ -12,6 +13,7 @@ parser.add_option("-c", "--cgs_defs", dest="cgs_defs", default="cgs.conf", type=
 parser.add_option("-d", "--unc_defs", dest="unc_defs", default="unc.conf", type="string", help="All uncertainty parameters listed [Default: unc.config]")
 parser.add_option("-o", "--output_file", dest="out_file", default="datacard.txt", type="string", help="Output name of the datacard [Default: datacard.txt]")
 parser.add_option("--categories", dest="categories", type="string", help="If specified, only build the specified categories")
+parser.add_option("--sm-higgs-as-bkg", dest="sm_higgs_as_bkg", action='store_true', default=False, help="If specified, add an SM m=126 Higgs as background")
 (options,args)=parser.parse_args()
 
 masspoint=0
@@ -35,7 +37,8 @@ dmaker = DBuilder(
     unc_defs=options.unc_defs,
     cgs_defs=options.cgs_defs,
     mass_point=masspoint,
-    categories=desired_categories
+    categories=desired_categories,
+    sm_higgs_as_bkg=options.sm_higgs_as_bkg
     )
 dmaker.run()
 
