@@ -84,8 +84,9 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
   }
   
   int idx=0;
-  int coloredBands[] = {kRed-9, kRed-7, kRed};
-  for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band, ++idx){
+  int coloredBands[] = {kRed, kRed-7, kRed-9}; 
+  for(std::map<double,TGraphAsymmErrors*>::reverse_iterator band = higgsBands.rbegin(); band!=higgsBands.rend(); ++band, ++idx){
+    //for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band, ++idx){
     band->second->SetLineColor(coloredBands[idx]);
     band->second->SetFillColor(coloredBands[idx]);
     band->second->Draw("3same");
@@ -112,7 +113,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
   theory2->Draw();
 
   /// add the proper legend
-  TLegend* leg = new TLegend(0.18, 0.60, 0.50, 0.90);
+  TLegend* leg = new TLegend(0.18, !higgsBands.empty() ? 0.52 : 0.60, !higgsBands.empty() ? 0.63: 0.50, 0.90);
   leg->SetBorderSize(  1 );
   leg->SetFillStyle (1001);
   leg->SetTextSize  (0.04);
@@ -130,7 +131,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
     leg->AddEntry(outerBand, "#pm 2#sigma Expected", "F"); 
   }
   for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band){
-    leg->AddEntry(band->second, TString::Format("mh=125GeV #pm %.0f GeV", band->first), "F");
+    leg->AddEntry(band->second, TString::Format("mh=125GeV #pm %.0fGeV", band->first), "F");
   }
   leg->AddEntry(upperLEP, "LEP", "F");
   leg->Draw("same");
