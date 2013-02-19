@@ -16,7 +16,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
 {
   // mass-points
   bins_=cfg.getParameter<std::vector<double> >("masspoints");
-  for(unsigned int i=0; i<bins_.size(); ++i){ valid_.push_back(true); }
+  for(unsigned int i=0; i<bins_.size(); ++i){ valid_.push_back(true);}
 
   // minima as function of mass (if available as such)
   if(cfg.existsAs<std::vector<edm::ParameterSet> >("xmins")){
@@ -202,7 +202,7 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
       prepareByToy(directory, upper   , innerBand ? "+1SIGMA" : "+2SIGMA");
       prepareByToy(directory, lower   , innerBand ? "-1SIGMA" : "-2SIGMA");
     }
-    else if(std::string(method) == std::string("CLS")){
+    else if(std::string(method) == std::string("CLs")){
       prepareCLs(directory, expected, ".quant0.500");
       prepareCLs(directory, upper   , innerBand ? ".quant0.840" : ".quant0.975");
       prepareCLs(directory, lower   , innerBand ? ".quant0.160" : ".quant0.027");
