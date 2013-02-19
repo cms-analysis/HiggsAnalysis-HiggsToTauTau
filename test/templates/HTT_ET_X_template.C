@@ -141,6 +141,16 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   // defining the common canvas, axes pad styles
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
 
+  // determine category tag
+  const char* category_extra = "";
+  if(std::string(directory) == std::string("eleTau_0jet_low"  )){ category_extra = "0 jet, low p_{T}";  }
+  if(std::string(directory) == std::string("eleTau_0jet_high" )){ category_extra = "0 jet, high p_{T}"; }
+  if(std::string(directory) == std::string("eleTau_boost_low" )){ category_extra = "1 jet, low p_{T}";  }
+  if(std::string(directory) == std::string("eleTau_boost_high")){ category_extra = "1 jet, high p_{T}"; }
+  if(std::string(directory) == std::string("eleTau_vbf"       )){ category_extra = "2 jet (VBF)";       }
+  if(std::string(directory) == std::string("eleTau_nobtag"    )){ category_extra = "No B-Tag";          }
+  if(std::string(directory) == std::string("eleTau_btag"      )){ category_extra = "B-Tag";             }
+
   const char* dataset;
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}";}
   if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 19.4 fb^{-1}";}
@@ -359,6 +369,16 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   chan->SetTextFont (   62 );
   chan->AddText("e#tau_{h}");
   chan->Draw();
+
+  TPaveText* cat      = new TPaveText(0.20, 0.69+0.061, 0.32, 0.69+0.161, "NDC");
+  cat->SetBorderSize(   0 );
+  cat->SetFillStyle(    0 );
+  cat->SetTextAlign(   12 );
+  cat->SetTextSize ( 0.05 );
+  cat->SetTextColor(    1 );
+  cat->SetTextFont (   62 );
+  cat->AddText(category_extra);
+  cat->Draw();
   
 #ifdef MSSM
   TLegend* leg = new TLegend(0.45, 0.65, 0.95, 0.90);

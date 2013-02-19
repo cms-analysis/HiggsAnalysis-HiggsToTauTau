@@ -216,6 +216,30 @@ for chn in channels :
 for chn in channels :
     for cat in categories :
         print chn, cat
-        os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7+8TeV.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",{MIN},{MAX},{LOG}\)".format(CMSSW_BASE=os.environ['CMSSW_BASE'], CHN=chn, CAT=cat, TYPE=type, ANA=options.analysis.upper(), LABEL="2011+2012", EXTRA=extra[chn], MIN=min[chn,cat][0], MAX=max[chn,cat][0], LOG=log[chn,cat][0]))
+        os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7+8TeV.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
+            CMSSW_BASE=os.environ['CMSSW_BASE'],
+            CHN=chn,
+            CAT=cat,
+            TYPE=type,
+            ANA=options.analysis.upper(),
+            LABEL="2011+2012",
+            EXTRA=extra[chn],
+            EXTRA2=cat,
+            MIN=min[chn,cat][0],
+            MAX=max[chn,cat][0],
+            LOG=log[chn,cat][0]
+            ))
         if options.analysis == "mssm" :
-            os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7+8TeV_LOG.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",{MIN},{MAX},{LOG}\)".format(CMSSW_BASE=os.environ['CMSSW_BASE'], CHN=chn, CAT=cat, TYPE=type, ANA=options.analysis.upper(), LABEL="2011+2012", EXTRA=extra[chn], MIN=min[chn,cat][1], MAX=max[chn,cat][1], LOG=log[chn,cat][1]))
+            os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7+8TeV_LOG.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
+                CMSSW_BASE=os.environ['CMSSW_BASE'],
+                CHN=chn,
+                CAT=cat,
+                TYPE=type,
+                ANA=options.analysis.upper(),
+                LABEL="2011+2012",
+                EXTRA=extra[chn],
+                EXTRA2=cat,
+                MIN=min[chn,cat][1],
+                MAX=max[chn,cat][1],
+                LOG=log[chn,cat][1]
+                ))
