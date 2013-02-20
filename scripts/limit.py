@@ -286,8 +286,8 @@ def create_card_workspace_with_physics_model(mass) :
             from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
             ## resolve multidim-fit bounds if they exist
             if "BOUND" in opt :
-                opt = opt.replace("GGH-BOUND", bounds[mass][0])
-                opt = opt.replace("BBH-BOUND", bounds[mass][1])
+                opt = opt.replace("GGH-BOUND", str(bounds[mass][0]))
+                opt = opt.replace("BBH-BOUND", str(bounds[mass][1]))
             ## add options to workspace
             wsopts.append(('--PO', opt))
     return create_card_workspace(mass, inputs, output, wsopts)
