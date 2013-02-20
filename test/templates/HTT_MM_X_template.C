@@ -145,7 +145,10 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   const char* dataset;
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}";}
   if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 18.7 fb^{-1}";}
-  
+#ifdef MSSM
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 12.1 fb^{-1}";}
+#endif
+ 
   TFile* input = new TFile(inputfile);
   TH1F* ZTT = refill((TH1F*)input->Get(TString::Format("%s/ZTT"   , directory)), "ZTT"); InitHist(ZTT, "", "", kOrange-4, 1001);
   TH1F* ZMM    = refill((TH1F*)input->Get(TString::Format("%s/ZMM"     , directory)), "ZMM"); InitHist(ZMM  , "", "", kAzure+2, 1001);
@@ -349,7 +352,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   chan->AddText("#mu#mu");
   chan->Draw();
 
-  TPaveText* cat      = new TPaveText(0.20, 0.69+0.061, 0.32, 0.69+0.161, "NDC");
+  TPaveText* cat      = new TPaveText(0.20, 0.68+0.061, 0.32, 0.69+0.161, "NDC");
   cat->SetBorderSize(   0 );
   cat->SetFillStyle(    0 );
   cat->SetTextAlign(   12 );

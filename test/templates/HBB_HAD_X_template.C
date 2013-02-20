@@ -112,9 +112,17 @@ HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   // define common canvas, axes pad styles
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
 
+  if(std::string(directory) == std::string("bb_had0"  )){ category_extra = "b#bar{b}_{had}";  }
+  if(std::string(directory) == std::string("bb_had1"  )){ category_extra = "b#bar{b}_{had}";  }
+  if(std::string(directory) == std::string("bb_had2"  )){ category_extra = "b#bar{b}_{had}";  }
+  if(std::string(directory) == std::string("bb_had3"  )){ category_extra = "b#bar{b}_{had}";  }
+  if(std::string(directory) == std::string("bb_had4"  )){ category_extra = "b#bar{b}_{had}";  }
+  if(std::string(directory) == std::string("bb_had5"  )){ category_extra = "b#bar{b}_{had}";  }
+  if(std::string(directory) == std::string("bb_lep"   )){ category_extra = "b#bar{b}_{lep}";  }
+
   const char* dataset;
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}";}
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 19.3 fb^{-1}";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 19.4 fb^{-1}";}
   
   TFile* input = new TFile(inputfile);
   TH1F* Bbb  = refill((TH1F*)input->Get(TString::Format("%s/Bbb"   , directory)), "Bbb"); InitHist(Bbb, "", "", kMagenta-10, 1001);
@@ -124,8 +132,8 @@ HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   TH1F* bbX  = refill((TH1F*)input->Get(TString::Format("%s/bbX"   , directory)), "bbX"); InitHist(bbX, "", "", kViolet - 0, 1001);
 #ifdef MSSM
   float bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=8, times 10 for the time being
-  if(std::string(inputfile).find("7TeV")!=std::string::npos){ bbHScale = 10*4030.*0.11/1000.; }
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){ bbHScale = 10*5370.*0.11/1000.; }
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){ bbHScale = 10*4030.*0.89/1000.; }
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){ bbHScale = 10*5370.*0.89/1000.; }
   TH1F* bbH  = refill((TH1F*)input->Get(TString::Format("%s/bbH160"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale(bbHScale);
 #endif
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data", true);
@@ -238,6 +246,16 @@ HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   chan->SetTextFont (   62 );
   chan->AddText("b#bar{b}");
   chan->Draw();
+
+  TPaveText* cat      = new TPaveText(0.20, 0.68+0.061, 0.32, 0.69+0.161, "NDC");
+  cat->SetBorderSize(   0 );
+  cat->SetFillStyle(    0 );
+  cat->SetTextAlign(   12 );
+  cat->SetTextSize ( 0.05 );
+  cat->SetTextColor(    1 );
+  cat->SetTextFont (   62 );
+  cat->AddText(category_extra);
+  cat->Draw();
 
 #ifdef MSSM  
   TLegend* leg = new TLegend(0.45, 0.65, 0.95, 0.90);
