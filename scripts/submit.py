@@ -299,7 +299,7 @@ if options.optMDFit :
         elif "cV-cF" in options.fitModel :
             cmd   = "lxb-multidim-fit.py --name {PRE}-CV-CF-{MASS} --njob 600 --npoints 6".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'cV-cF=HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcF'"
-            opts  = "--physics-model-options 'modes=cV,cF cVRange=0:3 cFRange=0:3'"
+            opts  = "--physics-model-options 'modes=cV,cF cVRange=0:3 cFRange=0:2'"
         ## add lxq compliance
         sys = ""
         if options.lxq :
