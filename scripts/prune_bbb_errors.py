@@ -302,7 +302,10 @@ for file in glob.glob("pruning/common/*.root") :
     load_auxiliaries(file, uncerts, bounds)
 
 ## change directory (needed by sizeUpsystematics.py)
-os.chdir("pruning/{MASS}".format(MASS=options.mass))
+massdir = options.mass
+if '.0' in massdir :
+    massdir = massdir.rstrip('0').rstrip('.')
+os.chdir("pruning/{MASS}".format(MASS=massdir))
 
 glob_all =0
 glob_excl = 0
