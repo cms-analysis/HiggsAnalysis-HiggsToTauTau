@@ -290,8 +290,6 @@ for chn in channels :
                     histfile.replace(".root", "-svfit.root")
             if chn == "hbb" :
                 process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties = parse_dcard("datacards/{CHN}_{CAT}_{PER}.txt".format(CHN=chn, CAT=cat, PER=per), fitresults, "ANYBIN")
-                print "datacards/{CHN}_{CAT}_{PER}.txt".format(CHN=chn, CAT=cat, PER=per)
-                print cat
                 if cat=="6" :
                     plots = Analysis(options.analysis, histfile, category_mapping[chn][cat],
                                  process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
