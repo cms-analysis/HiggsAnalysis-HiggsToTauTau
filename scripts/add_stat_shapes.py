@@ -33,6 +33,7 @@ def walk_and_copy(inputdir, outputdir, pattern, mergers, threshold, prefix, norm
         # Copy all histograms from input -> output directory
         for histo in histos:
             th1 = inputdir.Get(histo)
+            th1.SetName(histo)
             outputdir.cd()
             th1.Write()
             # Check if this histogram has shape uncertainties
