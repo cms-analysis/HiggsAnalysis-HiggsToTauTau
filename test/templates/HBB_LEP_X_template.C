@@ -205,7 +205,7 @@ HBB_LEP_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   chan->AddText("b#bar{b}");
   chan->Draw();
 
-   TPaveText* cat      = new TPaveText(0.20, 0.68+0.061, 0.32, 0.69+0.161, "NDC");
+  TPaveText* cat      = new TPaveText(0.20, 0.68+0.061, 0.32, 0.68+0.161, "NDC");
   cat->SetBorderSize(   0 );
   cat->SetFillStyle(    0 );
   cat->SetTextAlign(   12 );
@@ -213,12 +213,35 @@ HBB_LEP_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   cat->SetTextColor(    1 );
   cat->SetTextFont (   62 );
   cat->AddText(category_extra);
-  cat->Draw();
+  //cat->Draw();
  
+#ifdef MSSM
+  TPaveText* massA      = new TPaveText(0.22, 0.62+0.061, 0.32, 0.62+0.161, "NDC");
+  massA->SetBorderSize(   0 );
+  massA->SetFillStyle(    0 );
+  massA->SetTextAlign(   12 );
+  massA->SetTextSize ( 0.03 );
+  massA->SetTextColor(    1 );
+  massA->SetTextFont (   62 );
+  massA->AddText("m_{A}=160GeV");
+  massA->Draw();
+
+  TPaveText* tanb      = new TPaveText(0.22, 0.58+0.061, 0.32, 0.58+0.161, "NDC");
+  tanb->SetBorderSize(   0 );
+  tanb->SetFillStyle(    0 );
+  tanb->SetTextAlign(   12 );
+  tanb->SetTextSize ( 0.03 );
+  tanb->SetTextColor(    1 );
+  tanb->SetTextFont (   62 );
+  tanb->AddText("tan#beta=8");
+  tanb->Draw();
+#endif
+
+
 #ifdef MSSM  
-  TLegend* leg = new TLegend(0.45, 0.65, 0.95, 0.90);
+  TLegend* leg = new TLegend(0.55, 0.65, 0.94, 0.90);
   SetLegendStyle(leg);
-  leg->AddEntry(bbH  , "10#times#phi(160 GeV)#rightarrowb#bar{b}, tan#beta=8" , "L" );
+  leg->AddEntry(bbH  , "#phi#rightarrowb#bar{b}" , "L" );
 #endif
   leg->AddEntry(data,   "observed"                       , "LP");
   leg->AddEntry(bkgBBB, "bkgBBB"                      , "F" );

@@ -140,6 +140,9 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   const char* dataset;
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}";}
   if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 19.4 fb^{-1}";}
+#ifdef MSSM
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 19.4 fb^{-1}";}
+#endif
 
   // open example histogram file
   TFile* input = new TFile(inputfile);
@@ -321,7 +324,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   chan->AddText("#tau_{h}#tau_{h}");
   chan->Draw();
 
-  TPaveText* cat      = new TPaveText(0.20, 0.68+0.061, 0.32, 0.69+0.161, "NDC");
+  TPaveText* cat      = new TPaveText(0.20, 0.68+0.061, 0.32, 0.68+0.161, "NDC");
   cat->SetBorderSize(   0 );
   cat->SetFillStyle(    0 );
   cat->SetTextAlign(   12 );
@@ -330,11 +333,33 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   cat->SetTextFont (   62 );
   cat->AddText(category_extra);
   cat->Draw();
+
+#ifdef MSSM
+  TPaveText* massA      = new TPaveText(0.22, 0.62+0.061, 0.32, 0.62+0.161, "NDC");
+  massA->SetBorderSize(   0 );
+  massA->SetFillStyle(    0 );
+  massA->SetTextAlign(   12 );
+  massA->SetTextSize ( 0.03 );
+  massA->SetTextColor(    1 );
+  massA->SetTextFont (   62 );
+  massA->AddText("m_{A}=160GeV");
+  massA->Draw();
+
+  TPaveText* tanb      = new TPaveText(0.22, 0.58+0.061, 0.32, 0.58+0.161, "NDC");
+  tanb->SetBorderSize(   0 );
+  tanb->SetFillStyle(    0 );
+  tanb->SetTextAlign(   12 );
+  tanb->SetTextSize ( 0.03 );
+  tanb->SetTextColor(    1 );
+  tanb->SetTextFont (   62 );
+  tanb->AddText("tan#beta=8");
+  tanb->Draw();
+#endif
   
 #ifdef MSSM
   TLegend* leg = new TLegend(0.45, 0.65, 0.95, 0.88);
   SetLegendStyle(leg);
-  leg->AddEntry(ggH  , "10#times#phi(160 GeV)#rightarrow#tau#tau tan#beta=8" , "L" );
+  leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau" , "L" );
 #else
   TLegend* leg = new TLegend(0.50, 0.65, 0.95, 0.88);
   SetLegendStyle(leg);
