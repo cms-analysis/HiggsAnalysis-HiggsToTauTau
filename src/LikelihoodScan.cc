@@ -123,10 +123,10 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
 	//std::cout << "-->new: x=" << bestX << " y=" << bestY << " value=" << bestFit << std::endl;
       }
     }
-    if(verbosity_>0){
-      std::cout << "Bestfit value from likelihood-scan:" << std::endl;
-      std::cout << "x=" << bestX << " value=" << bestFit << std::endl;
-    }
+   //  if(verbosity_>0){
+//       std::cout << "Bestfit value from likelihood-scan:" << std::endl;
+//       std::cout << "x=" << bestX << " value=" << bestFit << std::endl;
+//     }
     TGraph* bestfit = new TGraph();
     bestfit->SetPoint(0, bestX, 0);
     // find quantileExpected values
@@ -134,8 +134,13 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
     float minus_2sigma_below=-99, minus_2sigma_above=-99, minus_2sigma_below_x=-99, minus_2sigma_above_x=-99;
     float plus_1sigma_below=-99,  plus_1sigma_above=-99,  plus_1sigma_below_x=-99,  plus_1sigma_above_x=-99;
     float minus_1sigma_below=-99, minus_1sigma_above=-99, minus_1sigma_below_x=-99, minus_1sigma_above_x=-99;
-    for(int i=0; i<nevent; ++i){\
+    for(int i=0; i<nevent; ++i){
       if (i+1==nevent) break;
+      limit->GetEvent(i);
+      double nll_first=nll;
+      limit->GetEvent(i+1);
+      double nll_second=nll;
+      if( fabs(nll_first-nll_second)>25 ) continue;
       limit->GetEvent(i);
       if (nll>1.92 && x<bestX) {
 	limit->GetEvent(i+1);	
