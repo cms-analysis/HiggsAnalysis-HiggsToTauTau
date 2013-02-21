@@ -1,3 +1,4 @@
+
 #include <iostream>
 
 
@@ -114,12 +115,12 @@ HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   // define common canvas, axes pad styles
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
   const char* category_extra = "";
-  if(std::string(directory) == std::string("bb_had0"  )){ category_extra = "b#bar{b}_{had}";  }
-  if(std::string(directory) == std::string("bb_had1"  )){ category_extra = "b#bar{b}_{had}";  }
-  if(std::string(directory) == std::string("bb_had2"  )){ category_extra = "b#bar{b}_{had}";  }
-  if(std::string(directory) == std::string("bb_had3"  )){ category_extra = "b#bar{b}_{had}";  }
-  if(std::string(directory) == std::string("bb_had4"  )){ category_extra = "b#bar{b}_{had}";  }
-  if(std::string(directory) == std::string("bb_had5"  )){ category_extra = "b#bar{b}_{had}";  }
+  if(std::string(directory) == std::string("bb_had0"  )){ category_extra = "b#bar{b}_{had0}";  }
+  if(std::string(directory) == std::string("bb_had1"  )){ category_extra = "b#bar{b}_{had1}";  }
+  if(std::string(directory) == std::string("bb_had2"  )){ category_extra = "b#bar{b}_{had2}";  }
+  if(std::string(directory) == std::string("bb_had3"  )){ category_extra = "b#bar{b}_{had3}";  }
+  if(std::string(directory) == std::string("bb_had4"  )){ category_extra = "b#bar{b}_{had4}";  }
+  if(std::string(directory) == std::string("bb_had5"  )){ category_extra = "b#bar{b}_{had5}";  }
   if(std::string(directory) == std::string("bb_lep"   )){ category_extra = "b#bar{b}_{lep}";  }
 
   const char* dataset;
@@ -246,8 +247,8 @@ HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   chan->SetTextSize ( 0.05 );
   chan->SetTextColor(    1 );
   chan->SetTextFont (   62 );
-  chan->AddText("b#bar{b}");
-  chan->Draw();
+  chan->AddText("b#bar{b}_{had}");
+  //chan->Draw();
 
   TPaveText* cat      = new TPaveText(0.20, 0.68+0.061, 0.32, 0.68+0.161, "NDC");
   cat->SetBorderSize(   0 );
@@ -257,10 +258,10 @@ HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   cat->SetTextColor(    1 );
   cat->SetTextFont (   62 );
   cat->AddText(category_extra);
-  //cat->Draw();
+  cat->Draw();
 
 #ifdef MSSM
-  TPaveText* massA      = new TPaveText(0.22, 0.62+0.061, 0.32, 0.62+0.161, "NDC");
+  TPaveText* massA      = new TPaveText(0.75, 0.48+0.061, 0.85, 0.48+0.161, "NDC");
   massA->SetBorderSize(   0 );
   massA->SetFillStyle(    0 );
   massA->SetTextAlign(   12 );
@@ -270,7 +271,7 @@ HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   massA->AddText("m_{A}=160GeV");
   massA->Draw();
 
-  TPaveText* tanb      = new TPaveText(0.22, 0.58+0.061, 0.32, 0.58+0.161, "NDC");
+  TPaveText* tanb      = new TPaveText(0.75, 0.44+0.061, 0.85, 0.44+0.161, "NDC");
   tanb->SetBorderSize(   0 );
   tanb->SetFillStyle(    0 );
   tanb->SetTextAlign(   12 );

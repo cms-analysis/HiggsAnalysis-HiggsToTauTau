@@ -1,3 +1,4 @@
+
 #include <iostream>
 
 #include <TH1F.h>
@@ -331,7 +332,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   cat->Draw();
 
 #ifdef MSSM
-  TPaveText* massA      = new TPaveText(0.22, 0.62+0.061, 0.32, 0.62+0.161, "NDC");
+  TPaveText* massA      = new TPaveText(0.75, 0.48+0.061, 0.85, 0.48+0.161, "NDC");
   massA->SetBorderSize(   0 );
   massA->SetFillStyle(    0 );
   massA->SetTextAlign(   12 );
@@ -341,7 +342,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   massA->AddText("m_{A}=160GeV");
   massA->Draw();
 
-  TPaveText* tanb      = new TPaveText(0.22, 0.58+0.061, 0.32, 0.58+0.161, "NDC");
+  TPaveText* tanb      = new TPaveText(0.75, 0.44+0.061, 0.85, 0.44+0.161, "NDC");
   tanb->SetBorderSize(   0 );
   tanb->SetFillStyle(    0 );
   tanb->SetTextAlign(   12 );
@@ -355,7 +356,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 #ifdef MSSM  
   TLegend* leg = new TLegend(0.45, 0.65, 0.95, 0.90);
   SetLegendStyle(leg);
-  leg->AddEntry(ggH  , "#phi(160 GeV)#rightarrow#tau#tau" , "L" );
+  leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau" , "L" );
 #else
   TLegend* leg = new TLegend(0.50, 0.65, 0.95, 0.90);
   SetLegendStyle(leg);
