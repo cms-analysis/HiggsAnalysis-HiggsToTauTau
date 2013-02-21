@@ -86,6 +86,7 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   if (std::string(dataset) == std::string("2011+2012")){ 
 	if (std::string(extra) == std::string("#mu#mu") ) dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 23.6 fb^{-1}"; 
  	else dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 24.3 fb^{-1}";
+	if (MSSM) dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 17 fb^{-1}";
   }
   // determine category tag
   const char* category_extra = "";
