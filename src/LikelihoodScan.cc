@@ -109,10 +109,12 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
     // determine bestfit graph 
     float bestFit=-1.; 
     float buffer=0., bestX=-999.;
+    bool start=false;
     for(int i=0; i<nevent; ++i){
       limit->GetEvent(i);
       buffer=scan1D->GetBinContent(scan1D->FindBin(x));
-      if (bestFit<0 || bestFit>buffer){
+      if(buffer>0.3) start=true;
+      if ((bestFit<0 || bestFit>buffer) && start==true){
 	//std::cout << "update bestFit coordinates: " << std::endl;
 	//std::cout << "-->old: x=" << bestX << " value=" << bestFit << std::endl;
 	// adjust best fit to granularity of scan; we do this to prevent artefacts 
