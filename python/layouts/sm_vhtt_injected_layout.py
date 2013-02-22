@@ -31,6 +31,6 @@ layout = cms.PSet(
     ## define output label
     outputLabel=cms.string("injected_limit"),
     ## define masspoints for limit plot
-    masspoints=cms.vdouble(range(115, 146, 5)),
+    masspoints=cms.vdouble(range(110, 146, 5)),
     injected=cms.bool(True),
 )
