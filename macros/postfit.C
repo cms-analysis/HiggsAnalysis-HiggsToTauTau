@@ -110,7 +110,7 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   TH1F* data   = (TH1F*)input->Get("data_obs"); 
   // determine channel for etau Z->ee (EWK) will be shown separated from the rest (EWK1)
   TH1F* EWK1   = 0;
-  if(std::string(extra) == std::string("#tau_{e}#tau_{h}")){
+  if(std::string(extra) == std::string("e#tau_{h}")){
     EWK1 = refill((TH1F*)input->Get("EWK1"),  "EWK1");
   }
   TH1F* errorBand = (TH1F*)input->Get("errorBand");
