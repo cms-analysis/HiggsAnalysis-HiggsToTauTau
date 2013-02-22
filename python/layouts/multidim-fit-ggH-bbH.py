@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string(", Preliminary, H #rightarrow #tau #tau, L = 17 fb^{-1}"),
+    dataset = cms.string(" Preliminary, Combination, L = 17 fb^{-1}"),
     ## x-axis title
     xaxis = cms.string("gg#rightarrow#phi#timesBR [pb]"),
     ## x-axis title
@@ -46,6 +46,8 @@ layout = cms.PSet(
    ,1000
     ),
     #masspoints = cms.vdouble(140),
+    ## is this mssm?
+    mssm = cms.bool(True),
     ## make a temperature plot?
     temp = cms.bool(False),
     ## define physics-model
