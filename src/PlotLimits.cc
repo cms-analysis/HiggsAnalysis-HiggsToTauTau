@@ -131,6 +131,9 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
     else if(std::string(filename).find("MaxLikelihood") != std::string::npos){
       prepareByValue(directory, central, filename, -1.);
     }
+    else if(std::string(filename).find("mlfit") != std::string::npos){
+      prepareByLikelihood(directory, central, filename);
+    }
     else{
       prepareByFile(directory, central, filename);
     }
@@ -154,7 +157,6 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
   }
   return plot;
 }
-
 TGraphAsymmErrors*
 PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char* method, bool innerBand)
 {

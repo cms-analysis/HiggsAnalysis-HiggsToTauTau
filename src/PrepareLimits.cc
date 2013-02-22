@@ -150,3 +150,41 @@ PlotLimits::prepareByValue(const char* directory, std::vector<double>& values, c
   }
   return;
 }
+
+void
+PlotLimits::prepareByLikelihood(const char* directory, std::vector<double>& values, const char* filename) 
+{
+  std::cout << "+=====> Likelihood " << std::endl;
+  for(unsigned int imass=0; imass<bins_.size(); ++imass){
+    // buffer mass
+    float mass = bins_[imass];
+    double value=-1.;
+    std::string buffer = std::string(filename);
+    TString fullpath(TString::Format("%s/%d/%s.root", directory, (int)mass, filename));
+    if(verbosity_>0) std::cout << "INFO: opening file " << fullpath << std::endl;
+    TFile* file = new TFile(fullpath);
+    if(file->IsZombie()){
+      if(verbosity_>0){ std::cout << "INFO: file not found: " << fullpath  << std::endl; }
+      valid_[imass]=false;
+    }
+    else{
+      TTree* limit = (TTree*) file->Get("tree_fit_sb");
+      if(!limit){
+	if(verbosity_>0){ std::cout << "INFO: tree not found: limit" << std::endl; }
+	valid_[imass]=false;
+      }
+      else{
+	double x; 
+	limit->SetBranchAddress("nll_min", &x);
+	int nevent = limit->GetEntries();
+	for(int i=0; i<nevent; ++i){
+	  limit->GetEvent(i);
+	  value = x;
+	}
+      }
+      file->Close();
+    }
+    values.push_back(value);
+  }
+  return;
+}
