@@ -1,4 +1,3 @@
-
 #include <vector>
 #include <sstream>
 #include <iostream>
@@ -74,6 +73,8 @@ int main(int argc, char* argv[])
   types.push_back(std::string("--max-likelihood"));
   // show signal strength as function of mH/mA as determined from a 2d maxlikelihood fit 
   types.push_back(std::string("--likelihood-scan"));
+  // show 2D scans (still in developement)
+  types.push_back(std::string("--mass-scan"));
   // show 2D scans (still in developement)
   types.push_back(std::string("--multidim-fit"));
   // show limits as of HIG-11-020
@@ -324,6 +325,18 @@ int main(int argc, char* argv[])
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     //plot.plotSignalStrength(*canv, innerBand, central, directory);
     plot.plot1DScan(*canv, directory);
+  }
+  if( std::string(argv[1]) == std::string("--mass-scan") ){
+    // Likelihood
+    TGraph* observed  = new TGraph(); //not needed for plot1DScan
+    plot.fillCentral(directory, observed, "out/mlfit");
+    // +/- 1 sigma to bestfit
+    TGraph* expected  =0;// new TGraph();
+    //plot.fillCentral(directory, expected, "higgsCombinePVAL-exp.ProfileLikelihood.mH$MASS");
+    // make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plotLikelihood(*canv, expected, observed);
   }
   // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--multidim-fit") ){

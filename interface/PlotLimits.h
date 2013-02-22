@@ -99,6 +99,8 @@ class PlotLimits {
   void plotSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0);
   /// plot bestfit values for different parameters dependend on mass on canvas, print out png, pdf, txt, root formats if desired 
   void plotPValue(TCanvas& canv, TGraph* expected, TGraph* observed, const char* directory="");
+  /// plot likelihood scan and make the 1,2,3 sigma bands print out png, pdf, txt, root formats if desired
+  void plotLikelihood(TCanvas& canv, TGraph* expected, TGraph* observed, const char* directory="");
   /// plot 2d-scans for several masses on canvases, print out png, pdf, txt, root formats if desired  
   void plot2DScan(TCanvas& canv, const char* directory="");
   /// plot 1d-scans for several masses on canvases, print out png, pdf, root formats if desired  
@@ -129,6 +131,8 @@ class PlotLimits {
   void prepareCLs(const char* directory, std::vector<double>& values, const char* type) {
     prepareByFile(directory, values, std::string("higgsCombineTest.HybridNew.mH$MASS").append(type).c_str());
   };
+  // fill a single vector values from the out/mlfit.root file for the nll_min
+  void prepareByLikelihood(const char* directory, std::vector<double>& values, const char* filename);
   /// fill officially approved limits for HIG-11-020 (NOTE: these are cross section limits also for MSSM)
   void prepareHIG_11_020(std::vector<double>& values, const char* type, bool xsec, double mass, bool initial);
   /// fill officially approved limits for HIG-11-029 (NOTE: these are direct limits on tanb for MSSM)
