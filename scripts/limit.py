@@ -505,6 +505,7 @@ for directory in args :
             if not options.firstPoint == "":
                 os.system("mv higgsCombine{name}.MultiDimFit.mH{mass}.root higgsCombine{name}.MultiDimFit.mH{mass}-{label}.root".format(
                     name=options.name, mass=mass, label="%s-%s" % (options.firstPoint, options.lastPoint)))
+                os.system("touch .done_{name}".format(name=options.name))
     ##
     ## SIGNIFICANCE
     ##

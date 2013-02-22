@@ -47,6 +47,7 @@ echo "with options {OPTIONS}"
 echo "in directory {DIRECTORY}"
 
 limit.py --multidim-fit --algo grid --points {POINTS} --firstPoint {FIRST} --lastPoint {LAST} --physics-model {MODEL} --name {OUTPUT} {OPTIONS} {DIRECTORY}
+mv {DIRECTORY}/.done_{OUTPUT} {DIERECTORY}/.done_{IDX}
 '''
 
 lxq_fragment = '''
@@ -118,7 +119,8 @@ with open(submit_name, 'w') as submit_script:
                 FIRST = str(idx*npoints+1),
                 LAST = str((idx+1)*npoints),
                 MODEL = model[0],
-                OUTPUT = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))
+                OUTPUT = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10)),
+                IDX = idx
                 ))
             os.system('chmod a+x %s' % script_file_name)
             if options.lxq :
