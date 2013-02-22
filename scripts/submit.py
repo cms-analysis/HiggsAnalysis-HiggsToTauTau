@@ -292,12 +292,12 @@ if options.optMDFit :
             opts  = "--physics-model-options 'modes=ggH,bbH;ggHRange=0:{GGH};bbHRange=0:{BBH}'".format(GGH=bounds[mass][0], BBH=bounds[mass][1])
         ## SM ggH versus qqH (this configuration is optimized for mH=125)
         elif "ggH-qqH" in options.fitModel :
-            cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-QQH-{MASS} --njob 800 --npoints 8".format(PRE=prefix, MASS=mass)
+            cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-QQH-{MASS} --njob 400 --npoints 16".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'ggH-qqH=HiggsAnalysis.CombinedLimit.PhysicsModel:floatingXSHiggs'"
             opts  = "--physics-model-options 'modes=ggH,qqH ggHRange=0:4 qqHRange=0:4'"
         ## SM cV versus cF (this configuration is optimized for mH=125)
         elif "cV-cF" in options.fitModel :
-            cmd   = "lxb-multidim-fit.py --name {PRE}-CV-CF-{MASS} --njob 600 --npoints 6".format(PRE=prefix, MASS=mass)
+            cmd   = "lxb-multidim-fit.py --name {PRE}-CV-CF-{MASS} --njob 300 --npoints 12".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'cV-cF=HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcF'"
             opts  = "--physics-model-options 'modes=cV,cF cVRange=0:3 cFRange=0:2'"
         ## add lxq compliance
@@ -419,7 +419,7 @@ if options.optInject :
                 os.system("lxb-injected.py --name {NAME} --method {METHOD} --input {PATH} {LXQ} {CONDOR} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" {MASSES}".format(
                     NAME=jobname, METHOD=method, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else ""))
     else :
-        ## directories and mases per directory
+        ## directories and masses per directory
         print "Collectiong results"
         struct = directories(args)
         lxb_submit(struct[0], struct[1], "--asymptotic --collect-injected-toys", "{USER}".format(USER=options.opt))
