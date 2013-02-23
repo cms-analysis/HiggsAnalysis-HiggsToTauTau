@@ -115,13 +115,20 @@ HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   // define common canvas, axes pad styles
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
   const char* category_extra = "";
-  if(std::string(directory) == std::string("bb_had0"  )){ category_extra = "b#bar{b}_{had0}";  }
-  if(std::string(directory) == std::string("bb_had1"  )){ category_extra = "b#bar{b}_{had1}";  }
-  if(std::string(directory) == std::string("bb_had2"  )){ category_extra = "b#bar{b}_{had2}";  }
-  if(std::string(directory) == std::string("bb_had3"  )){ category_extra = "b#bar{b}_{had3}";  }
-  if(std::string(directory) == std::string("bb_had4"  )){ category_extra = "b#bar{b}_{had4}";  }
-  if(std::string(directory) == std::string("bb_had5"  )){ category_extra = "b#bar{b}_{had5}";  }
-  if(std::string(directory) == std::string("bb_lep"   )){ category_extra = "b#bar{b}_{lep}";  }
+ //  if(std::string(directory) == std::string("bb_had0"  )){ category_extra = "b#bar{b}_{had0}";  }
+//   if(std::string(directory) == std::string("bb_had1"  )){ category_extra = "b#bar{b}_{had1}";  }
+//   if(std::string(directory) == std::string("bb_had2"  )){ category_extra = "b#bar{b}_{had2}";  }
+//   if(std::string(directory) == std::string("bb_had3"  )){ category_extra = "b#bar{b}_{had3}";  }
+//   if(std::string(directory) == std::string("bb_had4"  )){ category_extra = "b#bar{b}_{had4}";  }
+//   if(std::string(directory) == std::string("bb_had5"  )){ category_extra = "b#bar{b}_{had5}";  }
+//   if(std::string(directory) == std::string("bb_lep"   )){ category_extra = "b#bar{b}_{lep}";  }
+  if(std::string(directory) == std::string("bb_had0"  )){ category_extra = "all-had";  }
+  if(std::string(directory) == std::string("bb_had1"  )){ category_extra = "all-had";  }
+  if(std::string(directory) == std::string("bb_had2"  )){ category_extra = "all-had";  }
+  if(std::string(directory) == std::string("bb_had3"  )){ category_extra = "all-had";  }
+  if(std::string(directory) == std::string("bb_had4"  )){ category_extra = "all-had";  }
+  if(std::string(directory) == std::string("bb_had5"  )){ category_extra = "all-had";  }
+  if(std::string(directory) == std::string("bb_lep"   )){ category_extra = "semi-lep";  }
 
   const char* dataset;
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}";}
@@ -134,9 +141,9 @@ HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   TH1F* bbB  = refill((TH1F*)input->Get(TString::Format("%s/bbB"   , directory)), "bbB"); InitHist(bbB, "", "", kOrange - 4, 1001);
   TH1F* bbX  = refill((TH1F*)input->Get(TString::Format("%s/bbX"   , directory)), "bbX"); InitHist(bbX, "", "", kViolet - 0, 1001);
 #ifdef MSSM
-  float bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=8, times 10 for the time being
-  if(std::string(inputfile).find("7TeV")!=std::string::npos){ bbHScale = 10*4030.*0.89/1000.; }
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){ bbHScale = 10*5370.*0.89/1000.; }
+  float bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=20, A+H for the time being  
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){ bbHScale = (23314.3*0.879 + 21999.3*0.877)/1000.; }
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){ bbHScale = (31087.9*0.879 + 29317.8*0.877)/1000.; }
   TH1F* bbH  = refill((TH1F*)input->Get(TString::Format("%s/bbH160"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale(bbHScale);
 #endif
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data", true);
@@ -247,8 +254,8 @@ HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   chan->SetTextSize ( 0.05 );
   chan->SetTextColor(    1 );
   chan->SetTextFont (   62 );
-  chan->AddText("b#bar{b}_{had}");
-  //chan->Draw();
+  chan->AddText("b#bar{b}");
+  chan->Draw();
 
   TPaveText* cat      = new TPaveText(0.20, 0.68+0.061, 0.32, 0.68+0.161, "NDC");
   cat->SetBorderSize(   0 );
@@ -278,8 +285,18 @@ HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   tanb->SetTextSize ( 0.03 );
   tanb->SetTextColor(    1 );
   tanb->SetTextFont (   62 );
-  tanb->AddText("tan#beta=8");
+  tanb->AddText("tan#beta=20");
   tanb->Draw();
+
+  TPaveText* scen      = new TPaveText(0.75, 0.40+0.061, 0.85, 0.40+0.161, "NDC");
+  scen->SetBorderSize(   0 );
+  scen->SetFillStyle(    0 );
+  scen->SetTextAlign(   12 );
+  scen->SetTextSize ( 0.03 );
+  scen->SetTextColor(    1 );
+  scen->SetTextFont (   62 );
+  scen->AddText("mhmax");
+  scen->Draw();
 #endif
 
 #ifdef MSSM  
