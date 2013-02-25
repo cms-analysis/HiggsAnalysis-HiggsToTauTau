@@ -47,7 +47,7 @@ echo "with options {OPTIONS}"
 echo "in directory {DIRECTORY}"
 
 limit.py --multidim-fit --algo grid --points {POINTS} --firstPoint {FIRST} --lastPoint {LAST} --physics-model {MODEL} --name {OUTPUT} {OPTIONS} {DIRECTORY}
-mv {DIRECTORY}/.done_{OUTPUT} {DIERECTORY}/.done_{IDX}
+mv {DIRECTORY}/.done_{OUTPUT} {DIRECTORY}/.done_{IDX}
 '''
 
 lxq_fragment = '''
