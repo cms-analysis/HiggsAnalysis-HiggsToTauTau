@@ -44,9 +44,9 @@ static const bool BLIND_DATA = false; //false;
 float blinding_MSSM(float mass){ return (100<mass); }
 float maximum(TH1F* h, bool LOG=false){
   if(LOG){
-    if(h->GetMaximum()>1000){ return 1000.*TMath::Nint(500*h->GetMaximum()/1000.); }
-    if(h->GetMaximum()>  10){ return   10.*TMath::Nint( 50*h->GetMaximum()/  10.); }
-    return 50*h->GetMaximum(); 
+    if(h->GetMaximum()>1000){ return 10000.*TMath::Nint(500*h->GetMaximum()/1000.); }
+    if(h->GetMaximum()>  10){ return   100.*TMath::Nint( 50*h->GetMaximum()/  10.); }
+    return 500*h->GetMaximum(); 
   }
   else{
     if(h->GetMaximum()>  12){ return 10.*TMath::Nint((1.3*h->GetMaximum()/10.)); }
@@ -233,8 +233,14 @@ HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
     bbX  ->Draw("histsame");
     Qbb  ->Draw("histsame");
     $DRAW_ERROR
+#ifndef DROP_SIGNAL
+    bbH  ->Draw("histsame");
+#endif
   }
-  else{    
+  else{   
+#ifndef DROP_SIGNAL
+    bbH  ->Draw("histsame");
+#endif 
     Bbb  ->Draw("histsame");
     bbB  ->Draw("histsame");
     Cbb  ->Draw("histsame");
