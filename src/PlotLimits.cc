@@ -52,7 +52,6 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
       ymaxs_[key] = val;
     }
   }
-
   // common configs
   label_ = cfg.existsAs<std::string>("outputLabel") ? cfg.getParameter<std::string>("outputLabel") : std::string();
   verbosity_ = cfg.existsAs<unsigned int>("verbosity") ? cfg.getParameter<unsigned int>("verbosity") : 0,
@@ -131,8 +130,8 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
     else if(std::string(filename).find("MaxLikelihood") != std::string::npos){
       prepareByValue(directory, central, filename, -1.);
     }
-    else if(std::string(filename).find("mlfit") != std::string::npos){
-      prepareByLikelihood(directory, central, filename);
+    else if(std::string(filename).find("NLL") != std::string::npos){
+      prepareByFitOutput(directory, central, "out/mlfit", "tree_fit_sb", "nll_min");
     }
     else{
       prepareByFile(directory, central, filename);
