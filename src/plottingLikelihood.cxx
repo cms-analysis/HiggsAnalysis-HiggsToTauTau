@@ -1,3 +1,5 @@
+#include <iomanip>
+#include <sstream>
 #include <iostream>
 #include "TH1.h"
 #include "TMath.h"
@@ -90,7 +92,19 @@ plottingMassScan(TCanvas& canv, TGraph* plot1D, std::string& xaxis, std::string&
   leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
   leg->AddEntry(plot1D, "Likelihood scan", "L");
-  leg->Draw("same");
+  //leg->Draw("same");
+
+  /// Mass
+  TPaveText * mass = new TPaveText(0.2, 0.71, 0.7, 0.81, "NDC");
+  mass->SetBorderSize( 0);
+  mass->SetFillStyle ( 0);
+  //mass->SetTextAlign ( 0);
+  //mass->SetTextSize  ( 0.06 );
+  mass->SetTextColor( kBlue );
+  //mass->SetTextFont (   62 );
+  std::stringstream massText; massText << "m_{best-fit} = " << minX << "^{+" << std::setprecision(1) << upperBound-minX << "}" << "_{-" << std::setprecision(1) << minX-lowerBound << "}" << " GeV";
+  mass->AddText(massText.str().c_str());
+  mass->Draw("same"); 
   
   /// 1 sigma
   TPaveText * sigma1 = new TPaveText(0.88, (0.6/(max*1.2))+0.08, 0.93, (0.6/max)+0.13, "NDC");
