@@ -80,11 +80,11 @@ class PlotLimits {
   /// print tabulated limits to a txt file, for inner band, outer band, expected and observed, with inner and outer band
   void print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* innerBand, TGraph* expected, TGraph* observed, const char* type="txt");
   /// print tabulated limits to a txt file, for inner band, outer band, expected and observed, with inner and outer band
-  void print(const char* filename, std::string& xval, std::string& yval, TGraph* contour, const char* type="txt");
+  void print(const char* filename, std::string& xval, std::string& yval, std::vector<TGraph*> contour, const char* type="txt");
   /// automatic maximum determination for TGraphs (used for several options)
   float maximum(TGraph* graph); 
   /// make a fillable TGraph out of a non-fillable TGraph that comes out of a contour plot (used for option scan2D)
-  TGraph* convexGraph(TGraph* graph, double lowerBound, double upperBound, double tollerance);
+  TGraph* convexGraph(TGraph* graph, double xLowerBound, double xUpperBound, double yLowerBound, double yUpperBound, double tollerance, bool sort=false);
   /// print 1d uncertainties for a given CL to file (used by scan-2d)
   void band1D(ostream& out, std::string& xval, std::string& yval, TGraph* bestFit, TGraph* band, float xoffset, float yoffset, std::string CL);
   /// fill a graph for the contraints of the H(125) resonance in the mA-tanb exclusion plane (used for option tanb)
@@ -99,8 +99,8 @@ class PlotLimits {
   void plotSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0);
   /// plot bestfit values for different parameters dependend on mass on canvas, print out png, pdf, txt, root formats if desired 
   void plotPValue(TCanvas& canv, TGraph* expected, TGraph* observed, const char* directory="");
-  /// plot likelihood scan and make the 1,2,3 sigma bands print out png, pdf, txt, root formats if desired
-  void plotLikelihood(TCanvas& canv, TGraph* expected, TGraph* observed, const char* directory="");
+  /// plot likelihood mass scan on canvas, print out png, pdf, txt, root formats if desired
+  void plotMassScan(TCanvas& canv, TGraph* nll);
   /// plot 2d-scans for several masses on canvases, print out png, pdf, txt, root formats if desired  
   void plot2DScan(TCanvas& canv, const char* directory="");
   /// plot 1d-scans for several masses on canvases, print out png, pdf, root formats if desired  
@@ -127,12 +127,12 @@ class PlotLimits {
   void prepareByValue(const char* directory, std::vector<double>& values, const char* filename, float value);
   /// fill a single vector of values from a single file given by filename (w/o .root ending).
   void prepareByFile(const char* directory, std::vector<double>& values, const char* filename);
+  /// fill a single vector of values from a mlfit.root fit output file.
+  void prepareByFitOutput(const char* directory, std::vector<double>& values, const char* filename, const char* treename, const char* branchname);
   /// fill a single vector of values according to 2sigma, 1sigma or median from CLs limits;
   void prepareCLs(const char* directory, std::vector<double>& values, const char* type) {
     prepareByFile(directory, values, std::string("higgsCombineTest.HybridNew.mH$MASS").append(type).c_str());
   };
-  // fill a single vector values from the out/mlfit.root file for the nll_min
-  void prepareByLikelihood(const char* directory, std::vector<double>& values, const char* filename);
   /// fill officially approved limits for HIG-11-020 (NOTE: these are cross section limits also for MSSM)
   void prepareHIG_11_020(std::vector<double>& values, const char* type, bool xsec, double mass, bool initial);
   /// fill officially approved limits for HIG-11-029 (NOTE: these are direct limits on tanb for MSSM)

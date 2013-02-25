@@ -2,37 +2,52 @@
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plotting2DScan(TCanvas& canv, TH2F* plot2D, TGraph* graph95, TGraph* graph68, TGraph* bestfit, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp, bool log);
+void plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::vector<TGraph*> graph68, TGraph* bestfit, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp, bool log);
 
 TGraph* 
-PlotLimits::convexGraph(TGraph* graph, double lowerBound, double upperBound, double tollerance)
+PlotLimits::convexGraph(TGraph* graph, double xLowerBound, double xUpperBound, double yLowerBound, double yUpperBound, double tollerance, bool sort)
 {
-  // this function adds points the lower x-axis boundaries (xmin,0), (xmax,0) if 
-  // the graph reaches there to guarantee that the graph is convex and can be 
-  // plotted as filled. It does not cover cases where the ellipes is truncated 
-  // by the right boundary. Note: this function assumes that graphs are filled 
-  // from large x values to small x values. This is true for graphs that have 
+  std::cout << "START: " << graph->GetName()<< std::endl;
+  // this function adds points to the lower x-axis boundaries (xmin,0), (xmax,0)
+  // if the graph reaches there to guarantee that the graph is convex and can be 
+  // plotted as filled. It does not cover cases where the ellipes are truncated 
+  // by the right or lower boundary. Note: this function assumes that graphs are 
+  // filled from large x values to small x values. This is true for graphs that have 
   // been filled from contours.
   int n=graph->GetN();
   double xmin=-1, xmax=-1.;
+  double ymin=-1, ymax=-1.;
   double bx[n]; double by[n];
   for(int idx=0; idx<n; ++idx){ 
     graph->GetPoint(idx, bx[idx],by[idx]);
     // determine boundary values on x-axis
-    if(xmin<1 || bx[idx]<xmin){ xmin=bx[idx]; }
-    if(xmax<1 || bx[idx]>xmax){ xmax=bx[idx]; }
+    if(xmin<0 || bx[idx]<xmin){ xmin=bx[idx]; }
+    if(xmax<0 || bx[idx]>xmax){ xmax=bx[idx]; }
+    // determine boundary values on y-axis
+    if(ymin<0 || by[idx]<ymin){ ymin=by[idx]; }
+    if(ymax<0 || by[idx]>ymax){ ymax=by[idx]; }
   }
-  // set up the convex graph that can be filld for plotting
+  // set up the convex graph that can be filled for plotting
   TGraph* convex = new TGraph(); int idx=0;
-  if(fabs(xmax-upperBound)<tollerance){
-    convex->SetPoint(idx++, upperBound, 0.);
+  if(fabs(xmax-xUpperBound)<tollerance){
+    convex->SetPoint(idx++, xUpperBound, 0.);
+  }
+  if(fabs(ymax-yUpperBound)<tollerance){
+    convex->SetPoint(idx++, 0., yUpperBound);
   }
   for(int isrc=0; isrc<n; ++isrc){
     convex->SetPoint(idx++, bx[isrc], by[isrc]);
   }
-  if(fabs(xmin-lowerBound)<tollerance){
-    convex->SetPoint(idx++, lowerBound, 0.);
+  if(fabs(xmin-xLowerBound)<tollerance){
+    convex->SetPoint(idx++, xLowerBound, 0.);
   }
+  if(fabs(ymin-yLowerBound)<tollerance){
+    convex->SetPoint(idx++, 0., yLowerBound);
+  }
+  if(sort){
+    convex->Sort(&TGraph::CompareArg);
+  }
+  //convex->SetPoint(idx++, 0., 0.);
   //for(int idx=0; idx<convex->GetN(); ++idx){
   //  std::cout << "idx:" << idx << " x:" << convex->GetX()[idx] << " y:" << convex->GetY()[idx] << std::endl;
   //}
@@ -161,30 +176,48 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     bestfit->SetPoint(0, bestX, bestY);
     // determine new contours for 68% CL and 95% CL limits
     double contours[2];
-    contours[0] = 0.5;     //68% CL
-    contours[1] = 1.92;    //95% CL
+    contours[0] = TMath::ChisquareQuantile(0.68,2)/2; //0.5;     //68% CL
+    contours[1] = TMath::ChisquareQuantile(0.95,2)/2; //1.92;    //95% CL
     scan2D->SetContour(2, contours);
     scan2D->Draw("CONT Z LIST");  // draw contours as filled regions, and save points
     canv.Update();                // needed to force the plotting and retrieve the contours in TGraph
     TObjArray* conts = (TObjArray*)gROOT->GetListOfSpecials()->FindObject("contours");
 
-    TGraph* graph68=0; TGraph* filled68=0;;
-    TGraph* graph95=0; TGraph* filled95=0;;
+    std::vector<TGraph*> graph68; std::vector<TGraph*> filled68;
+    std::vector<TGraph*> graph95; std::vector<TGraph*> filled95;
     // get 68% CL and 95% CL contours 
     for(int i=0; i<conts->GetEntries(); ++i){   
       TList* graphlist = (TList*)conts->At(i);  
       for(int g=0; g<graphlist->GetEntries(); ++g){
 	if(i==0){
-	  graph68 = (TGraph*)graphlist->At(g);
-	  filled68 = convexGraph(graph68, xmin, xmax, (xmax-xmin)/nbins);
+	  graph68.push_back((TGraph*)graphlist->At(g));
+	  graph68.back()->SetName(TString::Format("graph68_%d_%d"  , (int)mass , g));
+	  filled68.push_back(convexGraph(graph68.back(), xmin, xmax, ymin, ymax, (xmax-xmin)/nbins));
 	}
 	if(i==1){
-	  graph95 = (TGraph*)graphlist->At(g); 
-	  filled95 = convexGraph(graph95, xmin, xmax, (xmax-xmin)/nbins);
+	  graph95.push_back((TGraph*)graphlist->At(g)); 
+	  graph95.back()->SetName(TString::Format("graph95_%d_%d"  , (int)mass , g));
+	  filled95.push_back(convexGraph(graph95.back(), xmin, xmax, ymin, ymax, (xmax-xmin)/nbins, g==1));
 	}
+	// let's hope that lower left corner also has a graph with index 2
+	// that can be used for plotting
+	//std::cout << "contour: " << i << " -- graph: " << g << std::endl;
       }
     }    
-
+    
+    //for(std::vector<TGraph*>::const_reverse_iterator graph=filled95.rbegin(); graph!=filled95.rend(); ++graph){
+    //  std::cout << "-------------- GRAPH (filled) -------------------" << std::endl;
+    //  for(int bin=0; bin<(*graph)->GetN(); ++bin){
+    //    std::cout << " point: " << bin << " x-value: " << (*graph)->GetX()[bin] << " y-value: " << (*graph)->GetY()[bin] << std::endl;
+    //  }
+    //}
+    //for(std::vector<TGraph*>::const_reverse_iterator graph=graph95.rbegin(); graph!=graph95.rend(); ++graph){
+    //  std::cout << "-------------- GRAPH (non-filled) -------------------" << std::endl;
+    //  for(int bin=0; bin<(*graph)->GetN(); ++bin){
+    //	std::cout << " point: " << bin << " x-value: " << (*graph)->GetX()[bin] << " y-value: " << (*graph)->GetY()[bin] << std::endl;
+    //  }
+    //}
+    
     // get the old contour plot back for plotting, for temperature plots it is filled 
     // as usual. Otherwise it's left empty and only used to set the boundaries for 
     // plotting.
@@ -210,7 +243,7 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     scanOut.open(TString::Format("%s/%d/signal-strength.output", directory, (int)mass));
     scanOut << " --- MultiDimFit ---" << std::endl;
     scanOut << "best fit parameter values and uncertainties from NLL scan:" << std::endl;
-    band1D(scanOut, xval, yval, bestfit, graph68, (xmax-xmin)/nbins/2, (ymax-ymin)/nbins/2, "(68%)");
+    band1D(scanOut, xval, yval, bestfit, graph68.back(), (xmax-xmin)/nbins/2, (ymax-ymin)/nbins/2, "(68%)");
 
     if(png_){
       canv.Print(TString::Format("%s-%s-%s-%d.png", output_.c_str(), label_.c_str(), model_.c_str(), (int)mass));
@@ -232,10 +265,22 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
 	output->mkdir(output_.c_str());
 	output->cd(output_.c_str());
       }
-      if(graph68 ){ graph68 ->Write(TString::Format("graph68_%d"  , (int)mass) ); }
-      if(filled68){ filled68->Write(TString::Format("filled68_%d" , (int)mass) ); }
-      if(graph95 ){ graph95 ->Write(TString::Format("graph95_%d"  , (int)mass) ); }
-      if(filled95){ filled95->Write(TString::Format("filled95_%d" , (int)mass) ); }
+      int idx=0;
+      for(std::vector<TGraph*>::const_iterator g=graph68.begin() ; g!=graph68.end() ; ++g){
+	(*g)->Write(TString::Format("graph68_%d_%d"  , (int)mass , idx++)); 
+      }
+      idx=0;
+      for(std::vector<TGraph*>::const_iterator g=filled68.begin(); g!=filled68.end(); ++g){
+	(*g)->Write(TString::Format("filled68_%d_%d" , (int)mass , idx++)); 
+      }
+      idx=0;
+      for(std::vector<TGraph*>::const_iterator g=graph95.begin() ; g!=graph95.end() ; ++g){
+	(*g)->Write(TString::Format("graph95_%d_%d"  , (int)mass , idx++)); 
+      }
+      idx=0;
+      for(std::vector<TGraph*>::const_iterator g=filled95.begin(); g!=filled95.end(); ++g){
+	(*g)->Write(TString::Format("filled95_%d_%d" , (int)mass , idx++)); 
+      }
       if(bestfit ){ bestfit ->Write(TString::Format("bestfit_%d"  , (int)mass) ); }
       plot2D  ->Write(TString::Format("plot2D_%d"   , (int)mass) );
       output->Close();

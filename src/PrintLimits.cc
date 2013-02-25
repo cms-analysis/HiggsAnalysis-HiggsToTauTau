@@ -1,7 +1,7 @@
 #include "HiggsAnalysis/HiggsToTauTau/interface/PlotLimits.h"
 
 void 
-PlotLimits::print(const char* filename, std::string& xval, std::string& yval, TGraph* contour, const char* type)
+PlotLimits::print(const char* filename, std::string& xval, std::string& yval, std::vector<TGraph*> contour, const char* type)
 {
   if(std::string(type) == std::string("tex")){
     ofstream file;
@@ -11,12 +11,12 @@ PlotLimits::print(const char* filename, std::string& xval, std::string& yval, TG
       << " & " << std::setw(15) << std::right << yval << " (pb) "
       << std::right << "  \\\\"
       << std::endl << "\\hline" << std::endl;
-    if(contour){
+    for(std::vector<TGraph*>::const_iterator g=contour.begin(); g!=contour.end(); ++g){
       unsigned int precision = 5;
-      for(int idx=0; idx<contour->GetN(); ++idx){
+      for(int idx=0; idx<(*g)->GetN(); ++idx){
 	file
-	  << "   " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << contour->GetX()[idx]
-	  << " & " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << contour->GetY()[idx]
+	  << "   " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << (*g)->GetX()[idx]
+	  << " & " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << (*g)->GetY()[idx]
 	  << std::right << "  \\\\"
 	  << std::endl << "\\hline" << std::endl;
       }
@@ -29,12 +29,12 @@ PlotLimits::print(const char* filename, std::string& xval, std::string& yval, TG
       << "   " << std::setw(15) << std::right << xval 
       << "   " << std::setw(15) << std::right << yval
       << std::endl;
-    if(contour){
+    for(std::vector<TGraph*>::const_iterator g=contour.begin(); g!=contour.end(); ++g){
       unsigned int precision = 5;
-      for(int idx=0; idx<contour->GetN(); ++idx){
+      for(int idx=0; idx<(*g)->GetN(); ++idx){
 	file
-	  << "   " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << contour->GetX()[idx]
-	  << "   " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << contour->GetY()[idx]
+	  << "   " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << (*g)->GetX()[idx]
+	  << "   " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << (*g)->GetY()[idx]
 	  << std::endl;
       }
     }
