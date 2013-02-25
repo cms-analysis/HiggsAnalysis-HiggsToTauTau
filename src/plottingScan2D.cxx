@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "TH2F.h"
 #include "TGraph.h"
 #include "TString.h"
@@ -6,7 +8,7 @@
 #include "TPaveText.h"
 
 void
-plotting2DScan(TCanvas& canv, TH2F* plot2D, TGraph* graph95, TGraph* graph68, TGraph* bestfit, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp=false, bool log=false)
+plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::vector<TGraph*> graph68, TGraph* bestfit, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp=false, bool log=false)
 {
   // set up styles
   canv.cd();
@@ -41,37 +43,45 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, TGraph* graph95, TGraph* graph68, TG
   plot2D->Draw("colz");
   
   /// draw contours for 95% CL
-  if(graph95){
+  bool FIRST=true; int igraph=0;
+  for(std::vector<TGraph*>::const_reverse_iterator g=graph95.rbegin(); g!=graph95.rend(); ++g, ++igraph){
     if(!temp){
-      graph95->SetLineStyle(11); 
-      graph95->SetLineColor(kBlack);
-      graph95->SetLineWidth(3); 
-      graph95->SetFillColor(kBlue-10);
-      graph95->Draw("cfsame"); 
-      graph95->Draw("contsame");
+      (*g)->SetLineStyle(11); 
+      (*g)->SetLineColor(kBlack);
+      (*g)->SetLineWidth(3);
+      if(FIRST){
+	(*g)->SetFillColor(kBlue-10);
+	FIRST=false;
+      }
+      else{
+	(*g)->SetFillColor(kWhite);
+      }
+      (*g)->Draw("cfsame"); 
+      (*g)->Draw("contsame");
     }
     else{
-      graph95->SetLineStyle(11); 
-      graph95->SetLineColor(kBlack); 
-      graph95->SetLineWidth(3);
-      graph95->Draw("contsame");
+      (*g)->SetLineStyle(11); 
+      (*g)->SetLineColor(kBlack); 
+      (*g)->SetLineWidth(3);
+      (*g)->Draw("contsame");
     }
   }
   /// draw contours for 68% CL
-  if(graph68){
+  for(std::vector<TGraph*>::const_reverse_iterator g=graph68.rbegin(); g!=graph68.rend(); ++g){
+    //if(*g == graph68.begin()){continue;}
     if(!temp){ 
-      graph68->SetLineStyle(11); 
-      graph68->SetLineColor(kBlack); 
-      graph68->SetLineWidth(3);
-      graph68->SetFillColor(kBlue-8);
-      graph68->Draw("cfsame"); 
-      graph68->Draw("contsame");
+      (*g)->SetLineStyle(11); 
+      (*g)->SetLineColor(kBlack); 
+      (*g)->SetLineWidth(3);
+      (*g)->SetFillColor(kBlue-8);
+      (*g)->Draw("cfsame"); 
+      (*g)->Draw("contsame");
     }
     else{
-      graph68->SetLineStyle(1); 
-      graph68->SetLineColor(kBlack); 
-      graph68->SetLineWidth(3);
-      graph68->Draw("contsame");
+      (*g)->SetLineStyle(1); 
+      (*g)->SetLineColor(kBlack); 
+      (*g)->SetLineWidth(3);
+      (*g)->Draw("contsame");
     }
   }
   /// draw best fit
@@ -85,8 +95,8 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, TGraph* graph95, TGraph* graph68, TG
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
-  if(graph95){ leg->AddEntry(graph95, "95% CL", temp ? "L" : "FL"); }
-  if(graph68){ leg->AddEntry(graph68, "68% CL", temp ? "L" : "FL"); }
+  if(!graph95.empty()){ leg->AddEntry(graph95.back(), "95% CL", temp ? "L" : "FL"); }
+  if(!graph68.empty()){ leg->AddEntry(graph68.back(), "68% CL", temp ? "L" : "FL"); }
   if(bestfit){ leg->AddEntry(bestfit, "Best fit", "P"); }
   leg->Draw("same");
   
