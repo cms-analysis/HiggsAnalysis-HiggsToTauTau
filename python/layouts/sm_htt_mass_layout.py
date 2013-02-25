@@ -4,11 +4,11 @@ layout = cms.PSet(
     ## dataset
     #dataset = cms.string(" 2012, #sqrt{s} = 8 TeV, H #rightarrow #tau #tau, L = 5.0 fb^{-1}"),
     #dataset = cms.string(" 2011, #sqrt{s} = 7 TeV, H #rightarrow #tau #tau, L = 4.9 fb^{-1}"),
-    dataset = cms.string(", #sqrt{s} = 7-8 TeV, H #rightarrow #tau #tau, L = 24 fb^{-1}"),
+    dataset = cms.string(" Preliminary, H #rightarrow #tau #tau, L = 24.3 fb^{-1}"),
     ## x-axis title
     xaxis = cms.string("m_{H} [GeV]"),
     ## x-axis title
-    yaxis = cms.string("#Delta Log Likelihood"),
+    yaxis = cms.string("#Delta NLL"),
     ## plot expected only
     expectedOnly = cms.bool(False),
     ## is this mssm?
