@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string(", Preliminary, H #rightarrow #tau #tau, L=24.3 fb^{-1}"),
+    dataset = cms.string(" Preliminary, H #rightarrow #tau #tau, L=24.3 fb^{-1}"),
     ## x-axis title
     xaxis = cms.string("Signal Strength"),
     ## x-axis title
