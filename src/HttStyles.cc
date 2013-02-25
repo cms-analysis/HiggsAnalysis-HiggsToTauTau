@@ -56,7 +56,7 @@ void SetStyle()
   // Various
   HttStyle->SetMarkerStyle(20);
   HttStyle->SetMarkerColor(kBlack);
-  HttStyle->SetMarkerSize (1.4);
+  HttStyle->SetMarkerSize (1.1);
 
   HttStyle->SetTitleBorderSize(0);
   HttStyle->SetTitleFillColor (0);
@@ -65,7 +65,7 @@ void SetStyle()
   HttStyle->SetTitleSize  (0.055,"X");
   HttStyle->SetTitleOffset(1.200,"X");
   HttStyle->SetLabelOffset(0.005,"X");
-  HttStyle->SetLabelSize  (0.050,"X");
+  HttStyle->SetLabelSize  (0.040,"X");
   HttStyle->SetLabelFont  (42   ,"X");
 
   HttStyle->SetStripDecimals(kFALSE);
@@ -74,7 +74,7 @@ void SetStyle()
   HttStyle->SetTitleSize  (0.055,"Y");
   HttStyle->SetTitleOffset(1.600,"Y");
   HttStyle->SetLabelOffset(0.010,"Y");
-  HttStyle->SetLabelSize  (0.050,"Y");
+  HttStyle->SetLabelSize  (0.040,"Y");
   HttStyle->SetLabelFont  (42   ,"Y");
 
   HttStyle->SetTextSize   (0.055);
@@ -151,7 +151,7 @@ void InitHist(TH1 *hist, const char *xtit, const char *ytit, int color, int styl
   hist->SetTitleSize  (0.055,"X");
   hist->SetTitleOffset(1.300,"X");
   hist->SetLabelOffset(0.014,"X");
-  hist->SetLabelSize  (0.050,"X");
+  hist->SetLabelSize  (0.040,"X");
   hist->SetLabelFont  (42   ,"X");
   hist->SetMarkerStyle(20);
   hist->SetMarkerColor(color);
