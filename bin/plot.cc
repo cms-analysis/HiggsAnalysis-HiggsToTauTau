@@ -74,7 +74,7 @@ int main(int argc, char* argv[])
   // show signal strength as function of mH/mA as determined from a 2d maxlikelihood fit 
   types.push_back(std::string("--likelihood-scan"));
   // show 2D scans (still in developement)
-  types.push_back(std::string("--mass-scan"));
+  types.push_back(std::string("--likelihood-scan-mass"));
   // show 2D scans (still in developement)
   types.push_back(std::string("--multidim-fit"));
   // show limits as of HIG-11-020
@@ -326,17 +326,14 @@ int main(int argc, char* argv[])
     //plot.plotSignalStrength(*canv, innerBand, central, directory);
     plot.plot1DScan(*canv, directory);
   }
-  if( std::string(argv[1]) == std::string("--mass-scan") ){
+  if( std::string(argv[1]) == std::string("--likelihood-scan-mass") ){
     // Likelihood
-    TGraph* observed  = new TGraph(); //not needed for plot1DScan
-    plot.fillCentral(directory, observed, "out/mlfit");
-    // +/- 1 sigma to bestfit
-    TGraph* expected  =0;// new TGraph();
-    //plot.fillCentral(directory, expected, "higgsCombinePVAL-exp.ProfileLikelihood.mH$MASS");
+    TGraph* nll  = new TGraph(); //not needed for plot1DScan
+    plot.fillCentral(directory, nll, "NLL");
     // make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
-    plot.plotLikelihood(*canv, expected, observed);
+    plot.plotMassScan(*canv, nll);
   }
   // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--multidim-fit") ){
