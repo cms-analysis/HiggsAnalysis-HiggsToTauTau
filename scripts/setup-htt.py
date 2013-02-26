@@ -27,7 +27,7 @@ cats2.add_option("--mssm-categories-em", dest="em_mssm_categories", default="8 9
 cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="8 9", type="string", help="List mt of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9", type="string", help="List et of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
-cats2.add_option("--mssm-categories-hmm", dest="hmm_mssm_categories", default="0 1", type="string", help="List of hmm event categories. [Default: \"0 1\"]")
+#cats2.add_option("--mssm-categories-hmm", dest="hmm_mssm_categories", default="0 1", type="string", help="List of hmm event categories. [Default: \"0 1\"]")
 cats2.add_option("--mssm-categories-hbb", dest="hbb_mssm_categories", default="0 1 2 3 4 5 6", type="string", help="List of hbb event categories. [Default: \"0 1 2 3 4 5\"]")
 parser.add_option_group(cats2)
 
@@ -65,7 +65,7 @@ if options.analysis == "mssm" :
         "mt"   : options.mt_mssm_categories.split(),
         "et"   : options.et_mssm_categories.split(),
         "tt"   : options.tt_mssm_categories.split(),
-        "hmm"  : options.hmm_mssm_categories.split(),
+        #"hmm"  : options.hmm_mssm_categories.split(),
         "hbb"  : options.hbb_mssm_categories.split(),
         }
 
@@ -102,10 +102,10 @@ directories = {
     "3"  : ["boost"],
     "4"  : ["2jet"],
     "5"  : ["vbf"],
-    "6"  : ["btag"],
-    "7"  : ["btag"],
-    "8"  : ["nobtag"],
-    "9"  : ["btag"],
+    "6"  : ["btag", "htt"],
+    "7"  : ["btag", "htt"],
+    "8"  : ["nobtag", "htt"],
+    "9"  : ["btag", "htt"],
 }
 
 ## categories are different for the vhtt case
@@ -126,10 +126,10 @@ tt_directories = {
     "1"  : ["vbf"],
 }
 
-hmm_directories = {
-    "0"  : ["btag", "hmm"],
-    "1"  : ["nobtag", "hmm"],
-}
+#hmm_directories = {
+#    "0"  : ["btag", "hmm"],
+#    "1"  : ["nobtag", "hmm"],
+#}
 
 hbb_directories = {
     "0"  : ["bbhad", "hbb"],
