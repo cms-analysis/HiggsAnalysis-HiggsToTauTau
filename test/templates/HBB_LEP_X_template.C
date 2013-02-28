@@ -107,19 +107,12 @@ HBB_LEP_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
 
   // determine category tag
   const char* category_extra = "";
-  // if(std::string(directory) == std::string("bb_had0"  )){ category_extra = "b#bar{b}_{had0}";  }
-//   if(std::string(directory) == std::string("bb_had1"  )){ category_extra = "b#bar{b}_{had1}";  }
-//   if(std::string(directory) == std::string("bb_had2"  )){ category_extra = "b#bar{b}_{had2}";  }
-//   if(std::string(directory) == std::string("bb_had3"  )){ category_extra = "b#bar{b}_{had3}";  }
-//   if(std::string(directory) == std::string("bb_had4"  )){ category_extra = "b#bar{b}_{had4}";  }
-//   if(std::string(directory) == std::string("bb_had5"  )){ category_extra = "b#bar{b}_{had5}";  }
-//   if(std::string(directory) == std::string("bb_lep"   )){ category_extra = "b#bar{b}_{lep}";  }
-  if(std::string(directory) == std::string("bb_had0"  )){ category_extra = "all-had";  }
-  if(std::string(directory) == std::string("bb_had1"  )){ category_extra = "all-had";  }
-  if(std::string(directory) == std::string("bb_had2"  )){ category_extra = "all-had";  }
-  if(std::string(directory) == std::string("bb_had3"  )){ category_extra = "all-had";  }
-  if(std::string(directory) == std::string("bb_had4"  )){ category_extra = "all-had";  }
-  if(std::string(directory) == std::string("bb_had5"  )){ category_extra = "all-had";  }
+  if(std::string(directory) == std::string("bb_had0"  )){ category_extra = "all-had_{0}";  }
+  if(std::string(directory) == std::string("bb_had1"  )){ category_extra = "all-had_{1}";  }
+  if(std::string(directory) == std::string("bb_had2"  )){ category_extra = "all-had_{2}";  }
+  if(std::string(directory) == std::string("bb_had3"  )){ category_extra = "all-had_{3}";  }
+  if(std::string(directory) == std::string("bb_had4"  )){ category_extra = "all-had_{4}";  }
+  if(std::string(directory) == std::string("bb_had5"  )){ category_extra = "all-had_{5}";  }
   if(std::string(directory) == std::string("bb_lep"   )){ category_extra = "semi-lep";  }
 
   const char* dataset;
@@ -129,9 +122,12 @@ HBB_LEP_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   TFile* input = new TFile(inputfile);
   TH1F* bkgBBB  = refill((TH1F*)input->Get(TString::Format("%s/bkgBBB"   , directory)), "bkgBBB"); InitHist(bkgBBB, "", "", kMagenta-10, 1001);;
 #ifdef MSSM
-  float bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=20, A+H for the time being
-  if(std::string(inputfile).find("7TeV")!=std::string::npos){ bbHScale = (23314.3*0.879 + 21999.3*0.877)/1000.; }
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){ bbHScale = (31087.9*0.879 + 29317.8*0.877)/1000.; }
+  //float bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=20, A+H for the time being
+  //if(std::string(inputfile).find("7TeV")!=std::string::npos){ bbHScale = (23314.3*0.879 + 21999.3*0.877)/1000.; }
+  //if(std::string(inputfile).find("8TeV")!=std::string::npos){ bbHScale = (31087.9*0.879 + 29317.8*0.877)/1000.; }
+  float bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=10, A+H for the time being
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){ bbHScale = (6211.6*0.89 + 5145.0*0.85)/1000.; }
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){ bbHScale = (8282.7*0.89 + 6867.8*0.85)/1000.; }
   TH1F* bbH  = refill((TH1F*)input->Get(TString::Format("%s/bbH160"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale(bbHScale);
 #endif
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data", true);
@@ -247,7 +243,7 @@ HBB_LEP_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   tanb->SetTextSize ( 0.03 );
   tanb->SetTextColor(    1 );
   tanb->SetTextFont (   62 );
-  tanb->AddText("tan#beta=20");
+  tanb->AddText("tan#beta=10");
   tanb->Draw();
 
   TPaveText* scen      = new TPaveText(0.75, 0.40+0.061, 0.85, 0.40+0.161, "NDC");
