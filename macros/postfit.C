@@ -190,7 +190,7 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   chan->AddText(extra);
   chan->Draw();
 
-  TPaveText* cat      = new TPaveText(0.20, 0.69+0.061, 0.32, 0.69+0.161, "NDC");
+  TPaveText* cat      = new TPaveText(0.20, 0.68+0.061, 0.32, 0.68+0.161, "NDC");
   cat->SetBorderSize(   0 );
   cat->SetFillStyle(    0 );
   cat->SetTextAlign(   12 );
@@ -200,11 +200,44 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   cat->AddText(category_extra);
   cat->Draw();
 
+if(MSSM){
+  TPaveText* massA      = new TPaveText(0.75, 0.48+0.061, 0.85, 0.48+0.161, "NDC");
+  massA->SetBorderSize(   0 );
+  massA->SetFillStyle(    0 );
+  massA->SetTextAlign(   12 );
+  massA->SetTextSize ( 0.03 );
+  massA->SetTextColor(    1 );
+  massA->SetTextFont (   62 );
+  massA->AddText("m_{A}=160GeV");
+  massA->Draw();
+
+  TPaveText* tanb      = new TPaveText(0.75, 0.44+0.061, 0.85, 0.44+0.161, "NDC");
+  tanb->SetBorderSize(   0 );
+  tanb->SetFillStyle(    0 );
+  tanb->SetTextAlign(   12 );
+  tanb->SetTextSize ( 0.03 );
+  tanb->SetTextColor(    1 );
+  tanb->SetTextFont (   62 );
+  tanb->AddText("tan#beta=10");
+  tanb->Draw();
+ 
+  TPaveText* scen      = new TPaveText(0.75, 0.40+0.061, 0.85, 0.40+0.161, "NDC");
+  scen->SetBorderSize(   0 );
+  scen->SetFillStyle(    0 );
+  scen->SetTextAlign(   12 );
+  scen->SetTextSize ( 0.03 );
+  scen->SetTextColor(    1 );
+  scen->SetTextFont (   62 );
+  scen->AddText("mhmax");
+  scen->Draw();
+}
+
+
   float lower_bound = EWK1 ? 0.60 : 0.65;
   TLegend* leg = new TLegend(MSSM ? 0.45 : 0.50, lower_bound, 0.93, 0.90);
   SetLegendStyle(leg);
   if(MSSM){
-    leg->AddEntry(ggH  , "10#times#phi(160 GeV)#rightarrow#tau#tau, tan#beta=8" , "L" );
+    leg->AddEntry(ggH  , "ph#rightarrow#tau#tau", "L" );
   }
   else{
     if(ggH){ leg->AddEntry(ggH  , "H#rightarrow#tau#tau  m_{H}=125 GeV" , "L" ); }
