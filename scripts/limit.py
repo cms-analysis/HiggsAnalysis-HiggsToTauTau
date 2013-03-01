@@ -443,12 +443,20 @@ for directory in args :
         ## if it does not exist already, create link to executable
         if not os.path.exists("combine") :
             os.system("cp -s $(which combine) .")
+        gridpointsOpts = ""
+        if options.fitAlgo == "grid" :
+            if options.firstPoint == "" :
+                gridpointsOpts = "--points %s --firstPoint 1 --lastPoint %s" % (options.gridPoints, options.gridPoints)
+            else :
+                gridpointsOpts = "--points %s --firstPoint %s --lastPoint %s" % (options.gridPoints, options.firstPoint, options.lastPoint)
+            if options.fastScan :
+                gridpointsOpts+= " --fastScan"
         ## do the likelihhod scan
         wsp = 'tmp' if len(model) == 0 else model[0]
-        print "combine -M MultiDimFit -m {mass} --algo=grid --points={points} --rMin {min} --rMax {max} {user} {wdir}/{wsp}.root".format(
-            mass=mass, points=options.gridPoints, user=options.userOpt, min=options.rMin, max=options.rMax, wdir=options.workingdir, wsp=wsp)
-        os.system("combine -M MultiDimFit -m {mass} --algo=grid --points={points} --rMin {min} --rMax {max} {user} {wdir}/{wsp}.root".format(
-            mass=mass, points=options.gridPoints, user=options.userOpt, min=options.rMin, max=options.rMax, wdir=options.workingdir, wsp=wsp))
+        print "combine -M MultiDimFit -m {mass} --algo=grid {points} --rMin {min} --rMax {max} {user} {wdir}/{wsp}.root".format(
+            mass=mass, points=gridpointsOpts, user=options.userOpt, min=options.rMin, max=options.rMax, wdir=options.workingdir, wsp=wsp)
+        os.system("combine -M MultiDimFit -m {mass} --algo=grid {points} --rMin {min} --rMax {max} {user} {wdir}/{wsp}.root".format(
+            mass=mass, points=gridpointsOpts, user=options.userOpt, min=options.rMin, max=options.rMax, wdir=options.workingdir, wsp=wsp))
     ##
     ## MULTIDIM-FIT
     ##

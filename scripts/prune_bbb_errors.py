@@ -431,6 +431,8 @@ if options.optByPull :
         ## list of all values for monitoring
         vals= []
         ## datacards input file
+        os.system("pwd")
+        print path
         file= open(path,'r')
         toExclude = []
         for line in file :

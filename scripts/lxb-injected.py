@@ -3,7 +3,7 @@ from optparse import OptionParser, OptionGroup
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGS",
                       description="Script to set up a set of scripts for statistical signal injection. The source directory for individual signal injections can be given by the option --inputs. This directory will be cloned in N subdirectories. N can be changed by --njob. in each subdirectory a signal is injected statistically. Afterwards the limit calculation is run for each mass that is found in the subdirectory. ARGS corresponds to the masses which are to be analysed.")
-parser.add_option("--method", dest="method", default="--asymptotic", type="choice", choices = ['--asymptotic', '--significance-frequentist', '--pvalue-frequentist'],
+parser.add_option("--method", dest="method", default="--asymptotic", type="choice", choices = ['--asymptotic', '--significance-frequentist', '--pvalue-frequentist','--max-likelihood'],
                   help="Main option for limit.py to indicate the method that is to be used. [Default: \"--asymptotic\"]")
 parser.add_option("--name", dest="name", default="TEST", type="string",
                   help="Name of the batch submission scripts. [Default: \"TEST\"]")
@@ -11,12 +11,16 @@ parser.add_option("--input", dest="input", default="TEST/INJECT", type="string",
                   help="Name of the input directory that should be used as starting point for signal injection. [Default: \"TEST/INJECT\"]")
 parser.add_option("--limit-options", dest="opts", default="--observedOnly", type="string",
                   help="Options for limit calculation with limit.py. [Default: \"--observedOnly\"]")
-parser.add_option("--batch-options", dest="bsub", default="-q 1nd", type="string",
+parser.add_option("--batch-options", dest="bsub", default="-q 1nh", type="string",
                   help="Submission arguments for the batch queue. [Default: \"-q 1nd\"]")
 parser.add_option("--toys", dest="njob", default="100", type="string",
                   help="Number of toys for which to inject signal. (One toy per job). [Default: \"100\"]")
 parser.add_option("--mass-points-per-job", dest="per_job", type="int", default=10,
                   help="Maximum number of mass points to run per batch job. If more mass points given as arguments the number of jobs will be increased. NOTE: this will be true for each toy. This will increase the number of jobs quadratically. [Default: \"10\"]")
+parser.add_option("--injected-mass", dest="injected_mass", type="string", default="125",
+                  help="Mass of the signal that should be injected into the background only hypothesis from simulation. [Default: 125]")
+parser.add_option("--preinject", dest="preinject", default=False,action="store_true",
+                  help="Use this to make inejcted samples to run on before submittng")
 parser.add_option("--lxq", dest="lxq", default=False, action="store_true",
                   help="Specify this option when running on lxq instead of lxb. [Default: False]")
 parser.add_option("--condor", dest="condor", default=False, action="store_true",
@@ -57,15 +61,20 @@ os.system("pwd")
 
 print "Copying limit folder {PWD}/{PATH}/{DIR} => {TMPDIR}/{USER}/{DIR}_{JOBID}"
 os.system("mkdir -p {TMPDIR}/{USER}")
-os.system("cp -r {PWD}/{PATH}/{DIR} {TMPDIR}/{USER}/{DIR}_{JOBID}")
-os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/inject-signal.py -i {TMPDIR}/{USER}/{DIR}_{JOBID} -o {JOBID} -r {RND} {MASSES} &> /dev/null")
+{INJECTED}os.system("cp -r {PWD}/{PATH}/{DIR}               {TMPDIR}/{USER}/{DIR}_{JOBID}")
+{PREINJECTED}os.system("cp -r {PWD}/{PATH}/{DIR}_{INJID} {TMPDIR}/{USER}/{DIR}_{JOBID}")
+{INJECTED}os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/inject-signal.py -i {TMPDIR}/{USER}/{DIR}_{JOBID} -o {JOBID} -r {RND} -m {INJECTEDMASS} {MASSES} &> /dev/null")
+os.system("cp {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/filter.C .")
 
 masses = "{MASSES}".strip().rstrip().replace(" ", "_").split("_")
 for m in masses :
     if m :
       print "limit.py {METHOD} {OPTS} {TMPDIR}/{USER}/{DIR}_{JOBID}/%s" % m
       os.system("limit.py {METHOD} {OPTS} {TMPDIR}/{USER}/{DIR}_{JOBID}/%s" % m)
-      os.system("cp -v {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/higgsCombine{EXTENSION}.mH%s.root {PWD}/{PATH}/{DIR}/%s/higgsCombine{EXTENSION}.mH%s-{JOBID}.root" % (m, m, m, m))
+      os.system("cp -v {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/higgsCombine{EXTENSION}.mH%s.root {PWD}/{PATH}/{DIR}/%s/higgsCombine{EXTENSION}.mH%s-{JOBID}-{INJECTEDMASS}.root" % (m, m, m, m))
+#      os.system("cp -v {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/out/mlfit.root {PWD}/{PATH}/{DIR}/%s/higgsCombineMLFIT.mH%s-{JOBID}-{INJECTEDMASS}.root" % (m, m, m))
+      os.system("root -b -q filter.C\(%s\,\\\\\\"{TMPDIR}/{USER}/{DIR}_{JOBID}\\\\\\"\)" % (m))
+      os.system("cp -v Output.root {PWD}/{PATH}/{DIR}/%s/higgsCombineMLFIT.mH%s-{JOBID}-{INJECTEDMASS}.root" % (m, m))
 os.system("rm -r {TMPDIR}/{USER}/{DIR}_{JOBID}")
 '''
 
@@ -118,6 +127,14 @@ if options.method == '--significance-frequentist' :
     extension = 'SIG-obs.ProfileLikelihood'
 if options.method == '--pvalue-frequentist' :
     extension = 'PVAL-obs.ProfileLikelihood'
+if options.method == '--max-likelihood' :
+    extension = 'Test.MaxLikelihoodFit'
+    options.method = "--max-likelihood --stable"
+injected=""
+preinjected="#"
+if options.preinject :
+    injected="#"
+    preinjected=""
     
 os.system("mkdir -p %s" % name)
 submit_name = '%s_submit.sh' % name
@@ -132,8 +149,26 @@ with open(submit_name, 'w') as submit_script:
     for idx in range(int(njob)):
         rnd = random.randint(1, 999999)
         log.info("Generating script for limit.py with injected signal for toy %g - %i subjobs will be created", idx, len(mass_groups))
+        if options.preinject :
+            print "Preinjecting {MASSES}".format(MASSES = ' '.join(sum(mass_groups,[])))
+            os.system('cp -r {PWD}/{PATH}/{DIR}  {PWD}/{PATH}/{DIR}_{INJID}'.format(
+                PWD  = os.getcwd(),
+                PATH = input[:input.rfind('/')],
+                DIR  = input[input.rfind('/')+1:],
+                INJID = "%s_%s" % (idx, options.injected_mass)))
+            os.system('python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/inject-signal.py -i {PWD}/{PATH}/{DIR}_{INJID}  -o {INJID} -r {RND} -m {INJECTEDMASS} {MASSES} &> /dev/null'.format(
+                CMSSW_BASE=os.environ["CMSSW_BASE"],
+                PWD= os.getcwd(),
+                MASSES = ' '.join(sum(mass_groups,[])),
+                INJECTEDMASS = options.injected_mass,
+                USER = os.environ['USER'],
+                INJID = "%s_%s" % (idx, options.injected_mass),
+                RND = rnd,
+                PATH = input[:input.rfind('/')],
+                DIR = input[input.rfind('/')+1:]
+                ))
         for mass_grp_idx, mass_group in enumerate(mass_groups):
-            script_file_name = '%s/%s_%i_%i.py' % (name, name, idx, mass_grp_idx)
+            script_file_name = '%s/%s_%i_%i_%s.py' % (name, name, idx, mass_grp_idx, options.injected_mass)
             with open(script_file_name, 'w') as script:
                 script.write(script_template.format(
                     METHOD = options.method,
@@ -141,13 +176,17 @@ with open(submit_name, 'w') as submit_script:
                     CMSSW_BASE=os.environ["CMSSW_BASE"],
                     PWD= os.getcwd(),
                     MASSES = ' '.join(mass_group),
+                    INJECTEDMASS = options.injected_mass,
                     USER = os.environ['USER'],
                     OPTS = opts,
                     PATH = input[:input.rfind('/')],
                     DIR = input[input.rfind('/')+1:],
-                    JOBID = "%s_%s" % (idx, mass_grp_idx),
+                    JOBID = "%s_%s_%s" % (idx, mass_grp_idx, options.injected_mass),
+                    INJID = "%s_%s"    % (idx, options.injected_mass),
                     RND = rnd,
                     TMPDIR=tmpdir,
+                    PREINJECTED=preinjected,
+                    INJECTED=injected
                     ))
             with open(script_file_name.replace('.py', '.sh'), 'w') as sh_file:
                 if options.lxq :

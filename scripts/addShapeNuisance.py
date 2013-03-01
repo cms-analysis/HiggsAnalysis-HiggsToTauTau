@@ -89,5 +89,5 @@ for cat in options.categories :
             new.write(new_line+'\n')
     new.close()
     old.close()
-    os.system("mv %s-tmp.txt %s" % (datacard[0:datacard.rfind('.txt')], datacard))           
+    #os.system("mv %s-tmp.txt %s" % (datacard[0:datacard.rfind('.txt')], datacard))           
 
