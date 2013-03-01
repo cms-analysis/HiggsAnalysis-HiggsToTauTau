@@ -151,7 +151,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/ttbar"   , directory)), "ttbar"); InitHist(ttbar, "", "", kBlue   - 8, 1001);
   TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/Ztt"     , directory)), "Ztt"  ); InitHist(Ztt  , "", "", kOrange - 4, 1001);
 #ifdef MSSM
-  float ggHScale = 1., bbHScale = 1.; scenario for MSSM, mhmax, mA=160, tanb=20, A + H for the time being
+  float ggHScale = 1., bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=20, A + H for the time being
   if(std::string(inputfile).find("7TeV")!=std::string::npos){ ggHScale = (9157.49*0.119 + 10180.7*0.120)/1000.; 
                                                               bbHScale = (23314.3*0.119 + 21999.3*0.120)/1000.; }
   if(std::string(inputfile).find("8TeV")!=std::string::npos){ ggHScale = (11815.3*0.119 + 13124.9*0.120)/1000.; 
