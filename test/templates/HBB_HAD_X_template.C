@@ -134,12 +134,12 @@ HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   TH1F* bbB  = refill((TH1F*)input->Get(TString::Format("%s/bbB"   , directory)), "bbB"); InitHist(bbB, "", "", kOrange - 4, 1001);
   TH1F* bbX  = refill((TH1F*)input->Get(TString::Format("%s/bbX"   , directory)), "bbX"); InitHist(bbX, "", "", kViolet - 0, 1001);
 #ifdef MSSM
-  //float bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=20, A+H for the time being  
-  //if(std::string(inputfile).find("7TeV")!=std::string::npos){ bbHScale = (23314.3*0.879 + 21999.3*0.877)/1000.; }
-  //if(std::string(inputfile).find("8TeV")!=std::string::npos){ bbHScale = (31087.9*0.879 + 29317.8*0.877)/1000.; }
-  float bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=10, A+H for the time being
-  if(std::string(inputfile).find("7TeV")!=std::string::npos){ bbHScale = (6211.6*0.89 + 5145.0*0.85)/1000.; }
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){ bbHScale = (8282.7*0.89 + 6867.8*0.85)/1000.; }
+  float bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=20, A+H for the time being  
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){ bbHScale = (23314.3*0.879 + 21999.3*0.877)/1000.; }
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){ bbHScale = (31087.9*0.879 + 29317.8*0.877)/1000.; }
+  // float bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=10, A+H for the time being
+//   if(std::string(inputfile).find("7TeV")!=std::string::npos){ bbHScale = (6211.6*0.89 + 5145.0*0.85)/1000.; }
+//   if(std::string(inputfile).find("8TeV")!=std::string::npos){ bbHScale = (8282.7*0.89 + 6867.8*0.85)/1000.; }
   TH1F* bbH  = refill((TH1F*)input->Get(TString::Format("%s/bbH160"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale(bbHScale);
 #endif
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data", true);
@@ -287,7 +287,7 @@ HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   tanb->SetTextSize ( 0.03 );
   tanb->SetTextColor(    1 );
   tanb->SetTextFont (   62 );
-  tanb->AddText("tan#beta=10");
+  tanb->AddText("tan#beta=20");
   tanb->Draw();
 
   TPaveText* scen      = new TPaveText(0.75, 0.40+0.061, 0.85, 0.40+0.161, "NDC");

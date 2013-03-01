@@ -157,16 +157,16 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   TH1F* Dibosons  = refill((TH1F*)input->Get(TString::Format("%s/Dibosons"   , directory)), "Dibosons"); InitHist(Dibosons, "", "", kGreen - 4, 1001);
   TH1F* WJets    = refill((TH1F*)input->Get(TString::Format("%s/WJets"     , directory)), "WJets"); InitHist(WJets  , "", "", kRed + 2, 1001);
 #ifdef MSSM
- //  float ggHScale = 1., bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=20, A + H for the time being
-//   if(std::string(inputfile).find("7TeV")!=std::string::npos){ ggHScale = (9157.49*0.119 + 10180.7*0.120)/1000.; 
-//                                                               bbHScale = (23314.3*0.119 + 21999.3*0.120)/1000.; }
-//   if(std::string(inputfile).find("8TeV")!=std::string::npos){ ggHScale = (11815.3*0.119 + 13124.9*0.120)/1000.; 
-//                                                               bbHScale = (31087.9*0.119 + 29317.8*0.120)/1000.; }
-  float ggHScale = 1., bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=10, A + H for the time being
-  if(std::string(inputfile).find("7TeV")!=std::string::npos){ ggHScale = (2111.4*0.11 + 4022.9*0.11)/1000.;
-                                                              bbHScale = (6211.6*0.11 + 5147.0*0.11)/1000.; }
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){ ggHScale = (2729.9*0.11 + 5193.2*0.11)/1000.;
-                                                              bbHScale = (8282.7*0.11 + 6867.8*0.11)/1000.; }
+  float ggHScale = 1., bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=20, A + H for the time being
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){ ggHScale = (9157.49*0.119 + 10180.7*0.120)/1000.; 
+                                                              bbHScale = (23314.3*0.119 + 21999.3*0.120)/1000.; }
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){ ggHScale = (11815.3*0.119 + 13124.9*0.120)/1000.; 
+                                                              bbHScale = (31087.9*0.119 + 29317.8*0.120)/1000.; }
+ //  float ggHScale = 1., bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=10, A + H for the time being
+//   if(std::string(inputfile).find("7TeV")!=std::string::npos){ ggHScale = (2111.4*0.11 + 4022.9*0.11)/1000.;
+//                                                               bbHScale = (6211.6*0.11 + 5147.0*0.11)/1000.; }
+//   if(std::string(inputfile).find("8TeV")!=std::string::npos){ ggHScale = (2729.9*0.11 + 5193.2*0.11)/1000.;
+//                                                               bbHScale = (8282.7*0.11 + 6867.8*0.11)/1000.; }
   TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH160"  , directory)), "ggH"  ); InitSignal(ggH); ggH->Scale(ggHScale);
   TH1F* bbH    = refill((TH1F*)input->Get(TString::Format("%s/bbH160"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale(bbHScale);
 #else
@@ -379,7 +379,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   tanb->SetTextSize ( 0.03 );
   tanb->SetTextColor(    1 );
   tanb->SetTextFont (   62 );
-  tanb->AddText("tan#beta=10");
+  tanb->AddText("tan#beta=20");
   tanb->Draw();
 
   TPaveText* scen      = new TPaveText(0.75, 0.40+0.061, 0.85, 0.40+0.161, "NDC");
