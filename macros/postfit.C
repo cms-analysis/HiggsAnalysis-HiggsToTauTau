@@ -14,8 +14,8 @@
 #include <TAttLine.h>
 #include <TPaveText.h>
 
-#include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
-#include "HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
+#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_2_5/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_2_5/src/HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
 
 /**
    \class   postfit postfit.C "HiggsAnalysis/HiggsToTauTau/macros/postfit.C"
@@ -218,7 +218,7 @@ if(MSSM){
   tanb->SetTextSize ( 0.03 );
   tanb->SetTextColor(    1 );
   tanb->SetTextFont (   62 );
-  tanb->AddText("tan#beta=10");
+  tanb->AddText("tan#beta=20");
   tanb->Draw();
  
   TPaveText* scen      = new TPaveText(0.75, 0.40+0.061, 0.85, 0.40+0.161, "NDC");
@@ -237,7 +237,7 @@ if(MSSM){
   TLegend* leg = new TLegend(MSSM ? 0.45 : 0.50, lower_bound, 0.93, 0.90);
   SetLegendStyle(leg);
   if(MSSM){
-    leg->AddEntry(ggH  , "ph#rightarrow#tau#tau", "L" );
+    leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau", "L" );
   }
   else{
     if(ggH){ leg->AddEntry(ggH  , "H#rightarrow#tau#tau  m_{H}=125 GeV" , "L" ); }
