@@ -16,9 +16,9 @@
 #include "TGraphAsymmErrors.h"
 #include "TLine.h"
 
-#include "HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
-#include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
-#include "HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
+#include "/afs/cern.ch/user/p/pharris/Limits/CMSSW_5_2_5/src/HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
+#include "/afs/cern.ch/user/p/pharris/Limits/CMSSW_5_2_5/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "/afs/cern.ch/user/p/pharris/Limits/CMSSW_5_2_5/src/HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
 
 static const double MARKER_SIZE = 1.3;  // 0.7
 
@@ -67,7 +67,8 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau+l");
   if(channel==std::string("htt"       )) title = std::string("e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu");
   if(channel==std::string("cmb"       )) title = std::string("Combined");
-  if(channel==std::string("cmb+"      )) title = std::string("H#rightarrow#tau#tau + VH#rightarrow#tau#tau+l");
+  //if(channel==std::string("cmb+"      )) title = std::string("H#rightarrow#tau#tau + VH#rightarrow#tau#tau+l");
+  if(channel==std::string("cmb+"      )) title = std::string("Combined");//H#rightarrow#tau#tau + VH#rightarrow#tau#tau+l");
   if(channel==std::string("0jet"      )) title = std::string("0-Jet");
   if(channel==std::string("2jet"      )) title = std::string("V(jj)H(#tau#tau)");
   if(channel==std::string("vbf"       )) title = std::string("2-Jet (VBF)");
@@ -93,7 +94,8 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void compareBestFit(const char* filename, const char* channelstr, const char* type, double mass, double minimum, double maximum, const char* label=" Preliminary, H#rightarrow#tau#tau, L=24.3 fb^{-1}")
+void compareBestFit(const char* filename="test.root", const char* channelstr="boost,vbf,vhtt,cmb+", const char* type="sm", double mass=125, double minimum=-1., double maximum=4.5, const char* label=" Preliminary, H#rightarrow#tau#tau, L=24.3 fb^{-1}")
+//void compareBestFit(const char* filename="test.root", const char* channelstr="boost,vbf,vhtt,cmb+", const char* type="sm", double mass=125, double minimum=-1., double maximum=4.5, const char* label=" Preliminary, H#rightarrow#tau#tau, L=24.3 fb^{-1}")
 {
   SetStyle();
 
@@ -164,7 +166,13 @@ void compareBestFit(const char* filename, const char* channelstr, const char* ty
     hexp.push_back(get<TGraph>(inputFile, std::string(channels[i]).append("/expected").c_str()));
     hband.push_back(get<TGraph>(inputFile, std::string(channels[i]).append("/innerBand").c_str()));
   }
-
+  int massid = 0; 
+  for(int i0  = 0; i0 < hexp[hexp.size()-1]->GetN(); i0++) {   
+    double lX = 0; double lY = 0; 
+    hexp[hexp.size()-1]->GetPoint(i0, lX, lY);
+    if(lX==mass) {massid = i0; break;}
+  }
+    
   /// do the drawing
   TCanvas* canv1 = new TCanvas("canv1", "Best Fit Comparison", 600, 600);
   canv1->cd();
@@ -174,6 +182,18 @@ void compareBestFit(const char* filename, const char* channelstr, const char* ty
   TLine* SM   = new TLine(1, 0, 1, hexp.size());
   TLine* ZERO = new TLine(0, 0, 0, hexp.size());
   
+  double *lBestFitX = new double[4];
+  double *lBestFitY = new double[4]; 
+  lBestFitX[0] = hexp[hexp.size()-1]->Eval(mass) - hband[hband.size()-1]->GetErrorYlow(massid);
+  lBestFitX[1] = hexp[hexp.size()-1]->Eval(mass) + hband[hband.size()-1]->GetErrorYhigh(massid);
+  lBestFitX[3] = hexp[hexp.size()-1]->Eval(mass) - hband[hband.size()-1]->GetErrorYlow(massid);
+  lBestFitX[2] = hexp[hexp.size()-1]->Eval(mass) + hband[hband.size()-1]->GetErrorYhigh(massid);
+  lBestFitY[0] = hexp.size();
+  lBestFitY[1] = hexp.size();
+  lBestFitY[2] = 0;
+  lBestFitY[3] = 0;
+  TGraph* BAND = new TGraph(4,lBestFitX,lBestFitY); BAND->SetFillColor(kYellow);
+  TLine * BEST = new TLine (hexp[hexp.size()-1]->Eval(mass),0,hexp[hexp.size()-1]->Eval(mass),hexp.size()); BEST->SetLineStyle(kDashed); BEST->SetLineColor(kRed);
   bool firstPlot=true;
   for(unsigned int i=0; i<hexp.size(); ++i){
     double value[1] = {hexp[i]->Eval(mass)};
@@ -189,6 +209,7 @@ void compareBestFit(const char* filename, const char* channelstr, const char* ty
       if(x==mass){
 	el=hband[i]->GetErrorYlow(l);
 	eh=hband[i]->GetErrorYhigh(l);
+	break;
       }
     }
 
@@ -217,6 +238,7 @@ void compareBestFit(const char* filename, const char* channelstr, const char* ty
       else{
 	x_title = std::string("best fit for #sigma/#sigma_{SM}");
       }
+      
       gr->GetXaxis()->SetTitle(x_title.c_str());
       gr->GetXaxis()->SetLabelFont(62);
       gr->GetXaxis()->SetTitleFont(62);
@@ -224,12 +246,22 @@ void compareBestFit(const char* filename, const char* channelstr, const char* ty
       gr->GetXaxis()->SetTitleOffset(1.05);
       gr->GetXaxis()->SetLimits(minimum, maximum);
 
+      BAND->GetXaxis()->SetTitle(x_title.c_str());
+      BAND->GetXaxis()->SetLabelFont(62);
+      BAND->GetXaxis()->SetTitleFont(62);
+      BAND->GetXaxis()->SetTitleColor(1);
+      BAND->GetXaxis()->SetTitleOffset(1.05);
+      BAND->GetXaxis()->SetLimits(minimum, maximum);
+
       // format y-axis
-      gr->GetYaxis()->Set(hexp.size(), 0, hexp.size());
+      //BAND->GetYaxis()->Set(hexp.size(), 0, hexp.size());
+      gr  ->GetYaxis()->Set(hexp.size(), 0, hexp.size());
       //std::cout<<gr->GetYaxis()->GetBinCenter(hexp.size()-i)<<std::endl;
+      //BAND->GetYaxis()->SetBinLabel(hexp.size()-1, legendEntry(channels[hexp.size()-1]).c_str());
       for(unsigned int j=0; j<hexp.size(); ++j){
-	gr->GetYaxis()->SetBinLabel(hexp.size()-j, legendEntry(channels[j]).c_str());
+	gr  ->GetYaxis()->SetBinLabel(hexp.size()-j, legendEntry(channels[j]).c_str());
       }
+      gr->GetYaxis()->SetTickLength(0);
       gr->GetYaxis()->SetLabelFont(62);
       gr->GetYaxis()->SetTitleFont(62);
       gr->GetYaxis()->SetLabelSize(0.07);
@@ -237,29 +269,52 @@ void compareBestFit(const char* filename, const char* channelstr, const char* ty
       gr->GetYaxis()->SetLabelFont(62);
       gr->GetYaxis()->SetTitleOffset(1.05);
       gr->GetYaxis()->SetLabelSize(0.03);           
-      gr->GetYaxis()->SetLabelOffset(-0.3);           
+      gr->GetYaxis()->SetLabelOffset(-0.32);           
+
+      BAND->GetYaxis()->SetLabelFont(62);
+      BAND->GetYaxis()->SetTitleFont(62);
+      BAND->GetYaxis()->SetLabelSize(0.07);
+      BAND->GetYaxis()->SetTitle("");
+      BAND->GetYaxis()->SetLabelFont(62);
+      BAND->GetYaxis()->SetTitleOffset(1.05);
+      BAND->GetYaxis()->SetLabelSize(0.03);           
+      BAND->GetYaxis()->SetLabelOffset(-0.32);           
     }
-    gr->GetYaxis()->SetLabelSize(0.07);
+    BAND->GetYaxis()->SetLabelSize(0.07);
+    BAND->SetTitle("");
+    gr  ->GetYaxis()->SetLabelSize(0.07);
     gr->SetTitle("");
     gr->SetLineStyle( 1.);
-    gr->SetLineWidth( 3.); 
-    //gr->SetLineColor(colors.find(channels[i])->second);
-    gr->SetLineColor(kRed);
-    gr->SetMarkerStyle(20);
+    gr->SetLineWidth( 2.); 
+    //gr->SetLineColor(colorzxs.find(channels[i])->second);
+    gr->SetLineColor(kBlack);
+    gr->SetMarkerStyle(kFullCircle);
     gr->SetMarkerSize(MARKER_SIZE);
     //gr->SetMarkerColor(colors.find(channels[i])->second);
     gr->SetMarkerColor(kBlack);
-    gr->Draw(firstPlot ? "APL" : "PLsame");
+    cout << "===> " << gr->GetErrorYhigh(0) << endl;
+    
+    //cout << "==> "<< BAND->GetYaxis()->GetMaximum() << endl;
+    if(firstPlot) gr->Draw("AP");  
+    if(firstPlot) {
+      BAND->Draw("Fsame");  
+      BEST->Draw("l");
+      TLine *lLine = new TLine(minimum,1.0,maximum,1.0); lLine->SetLineWidth(3); lLine->SetLineColor(kBlue+2);
+      lLine->Draw();
+      SM->SetLineWidth(3);
+      SM->SetLineColor(kGreen+3);
+      if(std::string(type).find("mssm")==std::string::npos) SM->Draw("same");
+    }
+    gr->Draw(firstPlot ? "Psame" : "Psame");
     //gr->Draw(firstPlot ? "AL" : "Lsame");
     firstPlot=false;
   }
-  SM->SetLineWidth(3);
-  SM->SetLineColor(kGreen+3);
   ZERO->SetLineWidth(3);
   ZERO->SetLineColor(kBlue);
   ZERO->SetLineStyle(11);
-  ZERO->Draw("same");
-  if(std::string(type).find("mssm")==std::string::npos) SM->Draw("same");
+  //ZERO->Draw("same");
+  
+
   //TPaveText *pt = new TPaveText(2*(maximum+minimum)/3,hexp.size()-0.3,maximum,hexp.size()-0.02);
   TPaveText *pt = new TPaveText(0.76, 0.88, 1.0, 1.0, "NDC");
   if(std::string(type).find("mssm")!=std::string::npos) pt->AddText(TString::Format("m_{A} = %0.0f GeV" , mass));
