@@ -12,8 +12,8 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
 {
   // set up styles
   canv.cd();
-  canv.SetGridx(1);
-  canv.SetGridy(1);
+  //canv.SetGridx(1);
+  //canv.SetGridy(1);
   canv.SetRightMargin(0.14);
   if(log){ 
     canv.SetLogz(1); 
@@ -31,9 +31,9 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
     plot2D->GetYaxis()->SetRange(plot2D->GetYaxis()->FindBin(ymin), plot2D->GetYaxis()->FindBin(ymax)-1);
   }
   plot2D->GetYaxis()->SetLabelFont(62);
-  plot2D->GetYaxis()->SetTitleSize(0.05);
+  plot2D->GetYaxis()->SetTitleSize(0.055);
   plot2D->GetYaxis()->SetTitleOffset(1.4);
-  plot2D->GetYaxis()->SetLabelSize(0.05);
+  plot2D->GetYaxis()->SetLabelSize(0.04);
   plot2D->SetZTitle("#bf{#Delta NLL}");
   plot2D->GetZaxis()->SetLabelFont(62);
   plot2D->GetZaxis()->SetTitleSize(0.04);

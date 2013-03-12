@@ -45,12 +45,15 @@ PlotLimits::convexGraph(TGraph* graph, double xLowerBound, double xUpperBound, d
     convex->SetPoint(idx++, 0., yLowerBound);
   }
   if(sort){
+    std::cout << "SORT BY ARG" << std::endl;
+    //convex->SetPoint(idx++, 0., 0.);
     convex->Sort(&TGraph::CompareArg);
+    //convex->Sort(&TGraph::CompareX);
   }
   //convex->SetPoint(idx++, 0., 0.);
-  //for(int idx=0; idx<convex->GetN(); ++idx){
-  //  std::cout << "idx:" << idx << " x:" << convex->GetX()[idx] << " y:" << convex->GetY()[idx] << std::endl;
-  //}
+  for(int idx=0; idx<convex->GetN(); ++idx){
+    std::cout << "idx:" << idx << " x:" << convex->GetX()[idx] << " y:" << convex->GetY()[idx] << std::endl;
+  }
   return convex;
 }
 
@@ -99,6 +102,9 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
   // catch CV-CF, where there is no prefix 'r_' for the branch names when filling the
   // histogram from the TTree
   bool CVCF = (xval.find("C")!=std::string::npos && yval.find("C")!=std::string::npos);
+  // catch RV-RF, where there is no prefix 'r_' for the branch names when filling the
+  // histogram from the TTree
+  bool RVRF = (xval.find("R")!=std::string::npos && yval.find("R")!=std::string::npos);
   
   // pick up boundaries of the scan from .scan file in masses directory. This
   // requires that you have run imits.py beforehand with option --multidim-fit
@@ -140,8 +146,8 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     float nbins = TMath::Sqrt(points);
     TH2F* scan2D = new TH2F("scan2D", "", nbins, xmin, xmax, nbins, ymin, ymax);
     limit->SetBranchAddress("deltaNLL", &nll );  
-    limit->SetBranchAddress(CVCF ? xval.c_str() : (std::string("r_")+xval).c_str() , &x);  
-    limit->SetBranchAddress(CVCF ? yval.c_str() : (std::string("r_")+yval).c_str() , &y);
+    limit->SetBranchAddress((CVCF || RVRF) ? xval.c_str() : (std::string("r_")+xval).c_str() , &x);  
+    limit->SetBranchAddress((CVCF || RVRF) ? yval.c_str() : (std::string("r_")+yval).c_str() , &y);
     int nevent = limit->GetEntries();
     for(int i=0; i<nevent; ++i){
       limit->GetEvent(i);
@@ -197,7 +203,8 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
 	if(i==1){
 	  graph95.push_back((TGraph*)graphlist->At(g)); 
 	  graph95.back()->SetName(TString::Format("graph95_%d_%d"  , (int)mass , g));
-	  filled95.push_back(convexGraph(graph95.back(), xmin, xmax, ymin, ymax, (xmax-xmin)/nbins, g==1));
+	  //filled95.push_back(convexGraph(graph95.back(), xmin, xmax, ymin, ymax, (xmax-xmin)/nbins, g>0));
+	  filled95.push_back(convexGraph(graph95.back(), xmin, xmax, ymin, ymax, (xmax-xmin)/nbins));
 	}
 	// let's hope that lower left corner also has a graph with index 2
 	// that can be used for plotting
@@ -237,7 +244,8 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
       plotting2DScan(canv, plot2D, filled95, filled68, bestfit, xaxis_, yaxis_, masslabel, mass, xmins_[mass], xmaxs_[mass], ymins_[mass], ymaxs_[mass], temp_, log_);    
     }
     // add the CMS Preliminary stamp
-    CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
+    CMSPrelim(dataset_.c_str(), "", 0.160, 0.835);
+    //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
     // print 1d band
     ofstream scanOut;  
     scanOut.open(TString::Format("%s/%d/signal-strength.output", directory, (int)mass));
@@ -251,6 +259,7 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     if(pdf_){
       canv.Print(TString::Format("%s-%s-%s-%d.pdf", output_.c_str(), label_.c_str(), model_.c_str(), (int)mass));
       canv.Print(TString::Format("%s-%s-%s-%d.eps", output_.c_str(), label_.c_str(), model_.c_str(), (int)mass));
+      canv.Print(TString::Format("%s-%s-%s-%d.C"  , output_.c_str(), label_.c_str(), model_.c_str(), (int)mass));
     }
     if(txt_){
       TString path;
