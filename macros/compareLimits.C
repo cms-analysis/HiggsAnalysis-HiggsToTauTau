@@ -65,8 +65,8 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("mm"        )) title = std::string("#mu#mu");
   if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau+l(l)");
   if(channel==std::string("htt"       )) title = std::string("e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu");
-  if(channel==std::string("cmb"       )) title = std::string("Combined");
-  if(channel==std::string("cmb+"      )) title = std::string("H#rightarrow#tau#tau + VH#rightarrow#tau#tau+l");
+  if(channel==std::string("cmb"       )) title = std::string("Combined(H#rightarrow#tau#tau)");
+  if(channel==std::string("cmb+"      )) title = std::string("H#rightarrow#tau#tau + VH#rightarrow#tau#tau+l(l)");
   if(channel==std::string("0jet"      )) title = std::string("0-Jet");
   if(channel==std::string("2jet"      )) title = std::string("V(jj)H(#tau#tau)");
   if(channel==std::string("vbf"       )) title = std::string("2-Jet (VBF)");
@@ -76,8 +76,8 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("ggH"       )) title = std::string("gg#rightarrow#phi (bbH profiled)");
   if(channel==std::string("bbH"       )) title = std::string("gg#rightarrowbb#phi (ggH profiled)");
   if(channel==std::string("mvis"      )) title = std::string("Visible mass");
-  if(channel==std::string("test-0"    )) title = std::string("original");
-  if(channel==std::string("test-1"    )) title = std::string("extrap. masses");
+  if(channel==std::string("test-0"    )) title = std::string("w/o prefit");
+  if(channel==std::string("test-1"    )) title = std::string("w/o prefit");
   if(channel==std::string("test-2"    )) title = std::string("gg#rightarrowbb#phi (w/o prefit)");
   if(channel==std::string("test-3"    )) title = std::string("gg#rightarrow#phi (w/o prefit)");
   if(channel==std::string("test-4"    )) title = std::string("Test-4");
@@ -92,7 +92,7 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label=" Preliminary, H#rightarrow#tau#tau, L=24.3 fb^{-1}", bool legendOnRight=true, bool legendOnTop=true)
+void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label=" Preliminary, #sqrt{s}=7-8 TeV, L = 24.3 fb^{-1}, H #rightarrow #tau #tau", bool legendOnRight=true, bool legendOnTop=true)
 {
   SetStyle();
 
@@ -108,9 +108,9 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["mt"         ] = kGreen;
   colors["mm"         ] = kMagenta;
   colors["tt"         ] = kMagenta+3;
-  colors["vhtt"       ] = kMagenta+2;
+  colors["vhtt"       ] = kCyan-6;
   colors["cmb"        ] = kBlack;
-  colors["cmb+"       ] = kGray+2;
+  colors["cmb+"       ] = kBlack; //kGray+2;
   colors["htt"        ] = kBlack;
   colors["ggH"        ] = kRed;
   colors["bbH"        ] = kBlue;
@@ -307,7 +307,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 	   }
       else{
 	CMSPrelim(label, "", 0.15, 0.835);
-	leg1 = new TLegend(legendOnRight ? 0.50 : 0.20, hobs.size()<5 ? 0.90-0.08*hobs.size() : 0.6, legendOnRight ? 0.94 : 0.80, 0.90);
+	leg1 = new TLegend(legendOnRight ? 0.50 : 0.20, hobs.size()<5 ? 0.90-0.08*hobs.size() : 0.6, legendOnRight ? 0.94 : 0.64, 0.90);
       }
     }
     //leg1->SetTextSize(0.02);
@@ -345,8 +345,8 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 	   }
       else{
 	CMSPrelim(label, "", 0.15, 0.835);
-	//leg0 = new TLegend(legendOnRight ? 0.50 : 0.20, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.6, legendOnRight ? 0.94 : 0.63, 0.90);
-	leg0 = new TLegend(legendOnRight ? 0.50 : 0.20, hexp.size()<5 ? 0.90-0.08*hexp.size() : 0.6, legendOnRight ? 0.94 : 0.80, 0.90);
+	leg0 = new TLegend(legendOnRight ? 0.50 : 0.20, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.6, legendOnRight ? 0.94 : 0.63, 0.90);
+	//leg0 = new TLegend(legendOnRight ? 0.50 : 0.20, hexp.size()<5 ? 0.90-0.08*hexp.size() : 0.6, legendOnRight ? 0.94 : 0.80, 0.90);
       }
     }
     if(std::string(type) == std::string("mssm-tanb")) {leg0->SetTextSize(0.03);}
