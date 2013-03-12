@@ -2,9 +2,9 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    #dataset = cms.string(", Preliminary 2012, H #rightarrow #tau #tau, L = 19.4 fb^{-1}"),
-    dataset = cms.string(" Preliminary, H #rightarrow #tau #tau, L = 24.3 fb^{-1}"),
-    #dataset = cms.string(", Preliminary 2011, H #rightarrow #tau #tau, L = 4.9 fb^{-1}"),
+    #dataset = cms.string("Preliminary, #sqrt{s}=8 TeV, L = 19.4 fb^{-1}, H #rightarrow #tau #tau"),
+    dataset = cms.string("Preliminary, #sqrt{s}=7-8 TeV, L = 24.3 fb^{-1}, H #rightarrow #tau #tau"),
+    #dataset = cms.string("Preliminary, #sqrt{s}=7 TeV, L = 4.9 fb^{-1}, H #rightarrow #tau #tau"),
     ## x-axis title
     xaxis = cms.string("m_{H} [GeV]"),
     ## x-axis title

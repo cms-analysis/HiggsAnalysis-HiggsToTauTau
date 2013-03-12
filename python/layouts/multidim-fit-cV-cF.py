@@ -2,11 +2,11 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string(", Preliminary, H #rightarrow #tau #tau, L = 24.3 fb^{-1}"),
+    dataset = cms.string("Preliminary, #sqrt{s}=7-8 TeV, L = 24.3 fb^{-1}, H #rightarrow #tau #tau"),
     ## x-axis title
-    xaxis = cms.string("c_{V}"),
+    xaxis = cms.string("#kappa_{V}"),
     ## x-axis title
-    yaxis = cms.string("c_{F}"),
+    yaxis = cms.string("#kappa_{F}"),
     ## min for plotting (for fine tuning)
     min = cms.double(0.),
     ## min for plotting
