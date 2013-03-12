@@ -469,7 +469,7 @@ for directory in args :
             model = options.fitModel.split('=')
             create_card_workspace_with_physics_model(mass)
         elif options.fitModel == "" :
-            print "You must configrue a physics model to run this option"
+            print "You must configure a physics model to run this option"
             exit(1)
         else :
             model = [options.fitModel]
