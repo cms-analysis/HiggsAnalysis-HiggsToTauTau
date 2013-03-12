@@ -67,76 +67,103 @@ class MakeDatacard :
         new_hist.Write(new_hist_name, ROOT.TObject.kOverwrite)
 
 ## cashed uncertainties for each channel
-def cash_uncerts(datacard="htt_em_0_8TeV.txt") :
+def cash_uncerts(dir, backgrounds, categories, signal_processes, datacard="htt_em_0_8TeV.txt") :
     """
     open the uncertainty files for a given datacard, extract the uncertainties that
     should be added for ggH, qqH, VH and return these as a dictionary of dictionaries
     """
-    uncert_VH  = {}
-    uncert_ggH = {}
-    uncert_qqH = {}
+    vhtt = False
+    uncert = {}
+    #uncert_process  = {}
     ## extract info from datacards name unc-sm-8TeV-00.vals
     matcher = re.compile('\w+_(?P<CHN>\w+)_(?P<CAT>\w+)_(?P<PER>\d\w+)\w*')
+    if dir=="vhtt" :
+        vhtt = True
+        matcher = re.compile('(?P<CHN>\w+)_(?P<CAT>\w+)_(?P<PER>\d\w+)\w*')
     chn = matcher.match(datacard).group('CHN')
     cat = matcher.match(datacard).group('CAT')
     per = matcher.match(datacard).group('PER')
     ## parse uncertainty values file
-    input = open(options.cash_uncert+"/{CHN}/unc-sm-{PER}-0{CAT}.vals".format(CHN=chn, PER=per, CAT=cat),'r')
-    for index, line in enumerate(input) :
-        if "#" in line :
-            continue
+    cgs_file = open(options.cash_uncert+"/{CHN}/cgs-sm-{PER}-0{CAT}.conf".format(CHN=chn, PER=per, CAT=cat),'r')
+    #signal_processes = []
+    for index, line in enumerate(cgs_file) :
+        line = line.replace(",", " ")
         words = line.lstrip().strip().split()
-        if len(words)<4 :
+        if len(words)<2 :
             continue
-        if 'signal' in words[1] or 'ggH' in words[1] :
-            uncert_ggH[words[-2]] = words[-1]
-        if 'signal' in words[1] or 'qqH' in words[1] :
-            uncert_qqH[words[-2]] = words[-1]
-        if 'signal' in words[1] or 'VH'  in words[1] :
-            uncert_VH [words[-2]] = words[-1]
-    input.close()
-    cash = {}
-    cash['ggH'] = uncert_ggH
-    cash['qqH'] = uncert_qqH
-    cash['VH' ] = uncert_VH
-    return cash
+        if vhtt :
+            if "#" in line:
+                continue
+        if "$" in words[0] and words[2]=="signal" :
+            for idx, word in enumerate(words) :
+                if idx > 2:
+                    signal_processes.append(word)
+        if "categories" in words[0] :
+            for idx, word in enumerate(words) :
+                if idx > 0:
+                    categories.append(word)
+        if words[0]=="$" and words[2]=="background" :
+            for idx, word in enumerate(words) :
+                if idx > 2:
+                    backgrounds.append(word)
+            
+    ## parse uncertainty values file  
+    for category in categories :
+        uncert_cat  = {}
+        for signal in signal_processes :
+            uncert_signal  = {}
+            input = open(options.cash_uncert+"/{CHN}/unc-sm-{PER}-0{CAT}.vals".format(CHN=chn, PER=per, CAT=cat),'r')
+            for index, line in enumerate(input) :
+                if "#" in line :
+                    continue
+                words = line.lstrip().strip().split()
+                if len(words)<4 :
+                    continue
+                #for category in categories :
+                if category in words[0] :               
+                    #for signal in signal_processes :
+                    if 'signal' in words[1] or signal in words[1] or 'simulated' in words[1] :                      
+                        uncert_signal[words[-2]] = words[-1]
+            input.close()
+            uncert_cat[signal] = uncert_signal
+        uncert[category] = uncert_cat
+    #print uncert
+    return uncert
 
 ## setup datacard creator
 datacard_creator = MakeDatacard()
 
 directoryList = os.listdir(args[0]+"/sm")
-#print directoryList
 for dir in directoryList :
     datacards = os.listdir(args[0]+"/sm/{DIR}".format(DIR=dir))
     for datacard in datacards :
         ## skip first pass of 'bin'
         first_pass_on_bin = True
-        ## does datacard include signal?
-        includesSignal = False
         ## add shape only once
         add_shapes = True
         ## other needed stuff
         full_rootfile=""
         rootfile=""
-        bin_name=""
-        ggH_idx=0
-        qqH_idx=0
-        VH_idx=0
         input_name=""
+        signal_processes = []
+        categories = []
+        backgrounds = []
         if datacard.find(".txt")>-1 :
             input_name = datacard
         else :
             continue
-        ## cash the uncertainties for Higgs as BG. The result is a dictionary of
-        ## dictionaries for ggH, qqH, VH relating uncertainty names to values.
-        cashed_uncerts = cash_uncerts(input_name)
+        cashed_uncerts = cash_uncerts(dir, backgrounds, categories, signal_processes, input_name)
+        if options.verbose :
+            print "signal_processes", signal_processes
+            print "backgrounds", backgrounds
+            print "categories", categories
         ## first file parsing
         input_file = open(args[0]+"/sm/{DIR}/".format(DIR=dir) +input_name,'r')
-        output_file = open(args[0]+"/sm/{DIR}/".format(DIR=dir) +input_name.replace(".txt", "_Higgs.txt"), 'w')
+        output_file = open(args[0]+"/sm/{DIR}/".format(DIR=dir) +input_name.replace(".txt", "_Higgs.txt"), 'w')       
         for index, input_line in enumerate(input_file) :
             words = input_line.split()
             output_line = input_line
-            if len(words) < 1: continue
+            if len(words) < 2: continue
             ## need to fix jmax in the head of the file here
             if words[0] == "jmax" :
                 output_line = output_line.replace(words[1], " *")
@@ -147,74 +174,63 @@ for dir in directoryList :
                     if word.find(".root")>-1 :
                         full_rootfile=args[0]+"/sm/{DIR}/".format(DIR=dir)+word
                         rootfile=word.replace("../common/", "")
-                output_line = output_line +"""shapes ggH_SM{LABEL} * {ROOTFILE} $CHANNEL/ggH{MASS}_SCALE{SCALE} $CHANNEL/ggH{MASS}_SCALE{SCALE}_$SYSTEMATIC 
-shapes qqH_SM{LABEL} * {ROOTFILE} $CHANNEL/qqH{MASS}_SCALE{SCALE} $CHANNEL/qqH{MASS}_SCALE{SCALE}_$SYSTEMATIC 
-shapes VH_SM{LABEL} * {ROOTFILE} $CHANNEL/VH{MASS}_SCALE{SCALE} $CHANNEL/VH{MASS}_SCALE{SCALE}_$SYSTEMATIC
-""".format(LABEL=options.label, ROOTFILE=rootfile, MASS=options.mass, SCALE=options.scale)
-                add_shapes= False
+                for signal in signal_processes :                   
+                    output_line = output_line +"""shapes {SIGNAL}_SM{LABEL} * {ROOTFILE} $CHANNEL/{SIGNAL}{MASS}_SCALE{SCALE} $CHANNEL/{SIGNAL}{MASS}_SCALE{SCALE}_$SYSTEMATIC 
+""".format(SIGNAL=signal, LABEL=options.label, ROOTFILE=rootfile, MASS=options.mass, SCALE=options.scale)
+                add_shapes= False               
             ## determine the list of all single channels (in standardized format, multiple occurences possible)
             if words[0] == "bin" :
                 if not first_pass_on_bin :
-                    bin_name=words[1]
                     output_line = output_line.replace("\n", "")
-                    output_line = output_line + '\t' + bin_name + '\t' + bin_name + '\t' + bin_name + '\n'
-                first_pass_on_bin = False
+                    for category in categories :
+                        for signal in signal_processes :
+                            output_line = output_line + '\t' + category
+                    output_line = output_line + '\n'
+                first_pass_on_bin = False                
             if words[0] == "process" and words[-1].isdigit() :
-                if not words[1].isdigit() :
-                    includesSignal = True
-                final_elem = int(words[-1])
                 output_line = output_line.replace("\n", "")
-                output_line = output_line + ("\t \t %s" % (final_elem+1)) + ("\t \t %s" % (final_elem+2)) + ("\t \t %s \n" % (final_elem+3))
+                for category in categories :
+                    final_elem = int(words[-1])
+                    for signal in signal_processes :
+                        output_line = output_line + ("\t \t %s" % (final_elem+1))
+                        final_elem = final_elem+1
+                output_line = output_line + '\n'     
             if words[0] == "process" and words[-1].isdigit()==False :
-                for (idx, word) in enumerate(words) :
-                    if word=="ggH" :
-                        ggH_idx=idx
-                    if word=="qqH" :
-                        qqH_idx=idx
-                    if word=="VH" :
-                        VH_idx=idx
-                output_line = output_line.replace("\n", "")
-                output_line = output_line + "\t \t ggH_SM{LABEL}".format(LABEL=options.label) + "\t \t qqH_SM{LABEL}".format(LABEL=options.label) + "\t \t VH_SM{LABEL} \n".format(LABEL=options.label)
+                 output_line = output_line.replace("\n", "")
+                 for category in categories :
+                     for signal in signal_processes :
+                         output_line = output_line + "\t \t {SIGNAL}_SM{LABEL}".format(SIGNAL=signal, LABEL=options.label)
+                 output_line = output_line + '\n'               
             if words[0] == "rate" :
-                VH_rate=datacard_creator.rate_from_hist(full_rootfile, bin_name, "VH{MASS}".format(MASS=options.mass))*options.scale
-                qqH_rate=datacard_creator.rate_from_hist(full_rootfile, bin_name, "qqH{MASS}".format(MASS=options.mass))*options.scale
-                ggH_rate=datacard_creator.rate_from_hist(full_rootfile, bin_name, "ggH{MASS}".format(MASS=options.mass))*options.scale
                 output_line = output_line.replace("\n", "")
-                output_line = output_line + '\t \t' + str(ggH_rate) + "\t \t" + str(qqH_rate) + "\t \t" + str(VH_rate) + "\n"
-                ## add new scaled central histograms
-                datacard_creator.scale_histogram(full_rootfile, bin_name, "VH{MASS}".format(MASS=options.mass), options.scale, "")
-                datacard_creator.scale_histogram(full_rootfile, bin_name, "qqH{MASS}".format(MASS=options.mass), options.scale, "")
-                datacard_creator.scale_histogram(full_rootfile, bin_name, "ggH{MASS}".format(MASS=options.mass), options.scale, "")
-            if len(words) > 1 :
-                if words[1]=="lnN" or words[1]=="shape" or words[1]=="gnN" :
-                    if includesSignal :
-                        output_line = output_line.replace("\n", "")
-                        output_line = output_line + "\t" + words[ggH_idx+1] + "\t" + words[qqH_idx+1] + "\t" + words[VH_idx+1] + "\n"
-                    else :
-                        output_line = output_line.replace("\n", "")
-                        ggH_value = '-'
-                        if words[0] in cashed_uncerts['ggH'].keys() :
-                            ggH_value = cashed_uncerts['ggH'][words[0]]
-                        qqH_value = '-'
-                        if words[0] in cashed_uncerts['qqH'].keys() :
-                            qqH_value = cashed_uncerts['qqH'][words[0]]
-                        VH_value  = '-'
-                        if words[0] in cashed_uncerts['VH' ].keys()  :
-                            VH_value  = cashed_uncerts['VH' ][words[0]]
-                        ## add uncertainties channelwise
-                        output_line = output_line + "{GGH} \t {QQH} \t {VH} \n".format(GGH=ggH_value, QQH=qqH_value, VH=VH_value)
-                ## add new scaled uncertainty histograms
-                if words[1]=="shape" :
-                    if words[0] in cashed_uncerts['qqH'].keys() :
-                        datacard_creator.scale_histogram(full_rootfile, bin_name, "VH{MASS}_".format(MASS=options.mass) + words[0], options.scale, "Up")
-                        datacard_creator.scale_histogram(full_rootfile, bin_name, "qqH{MASS}_".format(MASS=options.mass) + words[0], options.scale, "Up")
-                        datacard_creator.scale_histogram(full_rootfile, bin_name, "ggH{MASS}_".format(MASS=options.mass) + words[0], options.scale, "Up")
-                        datacard_creator.scale_histogram(full_rootfile, bin_name, "VH{MASS}_".format(MASS=options.mass) + words[0], options.scale, "Down")
-                        datacard_creator.scale_histogram(full_rootfile, bin_name, "qqH{MASS}_".format(MASS=options.mass) + words[0], options.scale, "Down")
-                        datacard_creator.scale_histogram(full_rootfile, bin_name, "ggH{MASS}_".format(MASS=options.mass) + words[0], options.scale, "Down")  
+                for category in categories :
+                     for signal in signal_processes :
+                         rate=datacard_creator.rate_from_hist(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass))*options.scale
+                         datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass), options.scale, "")
+                         output_line = output_line + '\t \t' + str(rate)
+                output_line = output_line.replace("\n", "")
+                output_line = output_line + "\n"
+            if words[1]=="lnN" or words[1]=="shape" or words[1]=="gnN" :
+                output_line = output_line.replace("\n", "")
+                for category in categories :
+                    for signal in signal_processes :
+                        value = '-'
+                        if words[0] in cashed_uncerts[category][signal].keys() :
+                            value = cashed_uncerts[category][signal][words[0]]
+                        output_line = output_line + "\t {VALUE}".format(VALUE=value)
+                output_line = output_line + "\n"
+            ## add new scaled uncertainty histograms
+            if words[1]=="shape" and str(options.mass) in words[0]:
+                for category in categories :
+                    for signal in signal_processes : 
+                        if words[0] in cashed_uncerts[category][signal].keys() :
+                            datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], options.scale, "Up")
+                            datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], options.scale, "Down") 
             if options.verbose :
-                print output_line
+                print output_line   
             output_file.write(output_line)
+
+        
         ##close files
         input_file.close()
         output_file.close()
