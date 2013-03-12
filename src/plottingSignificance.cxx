@@ -78,7 +78,7 @@ plottingSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   unit3->SetLineStyle(11);
   unit3->Draw("Lsame");
 
-  TPaveText * threeSigma = new TPaveText(0.955, 0.575, 1.0, 0.63, "NDC");
+  TPaveText * threeSigma = new TPaveText(0.955, 0.42, 1.0, 0.52, "NDC");
   threeSigma->SetBorderSize(   0 );
   threeSigma->SetFillStyle(    0 );
   threeSigma->SetTextAlign(   12 );
@@ -93,7 +93,7 @@ plottingSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   unit5->SetLineStyle(11);
   unit5->Draw("Lsame");
 
-  TPaveText * fiveSigma = new TPaveText(0.955, 0.635, 1.0, 0.69, "NDC");
+  TPaveText * fiveSigma = new TPaveText(0.955, 0.645, 1.0, 0.745, "NDC");
   fiveSigma->SetBorderSize(   0 );
   fiveSigma->SetFillStyle(    0 );
   fiveSigma->SetTextAlign(   12 );
