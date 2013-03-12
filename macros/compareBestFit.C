@@ -64,11 +64,10 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("mt"        )) title = std::string("#mu#tau_{h}");
   if(channel==std::string("tt"        )) title = std::string("#tau_{h}#tau_{h}");
   if(channel==std::string("mm"        )) title = std::string("#mu#mu");
-  if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau+l");
+  if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau+l(l)");
   if(channel==std::string("htt"       )) title = std::string("e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu");
-  if(channel==std::string("cmb"       )) title = std::string("Combined");
-  //if(channel==std::string("cmb+"      )) title = std::string("H#rightarrow#tau#tau + VH#rightarrow#tau#tau+l");
-  if(channel==std::string("cmb+"      )) title = std::string("Combined");//H#rightarrow#tau#tau + VH#rightarrow#tau#tau+l");
+  if(channel==std::string("cmb"       )) title = std::string("H#rightarrow#tau#tau");
+  if(channel==std::string("cmb+"      )) title = std::string("H#rightarrow#tau#tau + VH#rightarrow#tau#tau+l(l)");
   if(channel==std::string("0jet"      )) title = std::string("0-Jet");
   if(channel==std::string("2jet"      )) title = std::string("V(jj)H(#tau#tau)");
   if(channel==std::string("vbf"       )) title = std::string("2-Jet (VBF)");
@@ -94,8 +93,7 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void compareBestFit(const char* filename="test.root", const char* channelstr="boost,vbf,vhtt,cmb+", const char* type="sm", double mass=125, double minimum=-1., double maximum=4.5, const char* label=" Preliminary, H#rightarrow#tau#tau, L=24.3 fb^{-1}")
-//void compareBestFit(const char* filename="test.root", const char* channelstr="boost,vbf,vhtt,cmb+", const char* type="sm", double mass=125, double minimum=-1., double maximum=4.5, const char* label=" Preliminary, H#rightarrow#tau#tau, L=24.3 fb^{-1}")
+void compareBestFit(const char* filename="test.root", const char* channelstr="boost,vbf,vhtt,cmb+", const char* type="sm", double mass=125, double minimum=-1., double maximum=4.5, const char* label="Preliminary, #sqrt{s}=7-8 TeV, L = 24.3 fb^{-1}, H #rightarrow #tau #tau")
 {
   SetStyle();
 
