@@ -17,6 +17,8 @@
 #include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_2_5/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 #include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_2_5/src/HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
 
+static const float SIGNAL_SCALE = 1.;
+
 /**
    \class   postfit postfit.C "HiggsAnalysis/HiggsToTauTau/macros/postfit.C"
 
@@ -78,15 +80,15 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   // switch for MSSM/SM
   bool MSSM = std::string(analysis) == std::string("MSSM");
   // determine label
-  if (std::string(dataset) == std::string("2011"     )){ dataset = "Preliminary, 2011, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}"; }
+  if (std::string(dataset) == std::string("2011"     )){ dataset = "Preliminary, 2011, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}, H #rightarrow #tau #tau"; }
   if (std::string(dataset) == std::string("2012"     )){ 
-	if (std::string(extra) == std::string("#mu#mu") ) dataset = "Preliminary, 2012, #sqrt{s} = 8 TeV, L = 18.7 fb^{-1}"; 
-	else dataset = "Preliminary, 2012, #sqrt{s} = 8 TeV, L = 19.4 fb^{-1}";
+	if (std::string(extra) == std::string("#mu#mu") ) dataset = "Preliminary, 2012, #sqrt{s} = 8 TeV, L = 18.7 fb^{-1}, H #rightarrow #tau #tau"; 
+	else dataset = "Preliminary, 2012, #sqrt{s} = 8 TeV, L = 19.4 fb^{-1}, H #rightarrow #tau #tau";
   }
   if (std::string(dataset) == std::string("2011+2012")){ 
-	if (std::string(extra) == std::string("#mu#mu") ) dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 23.6 fb^{-1}"; 
- 	else dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 24.3 fb^{-1}";
-	if (MSSM) dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 17 fb^{-1}";
+	if (std::string(extra) == std::string("#mu#mu") ) dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 23.6 fb^{-1}, H #rightarrow #tau #tau"; 
+ 	else dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 24.3 fb^{-1}, H #rightarrow #tau #tau";
+	if (MSSM) dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 17 fb^{-1}, H #rightarrow #tau #tau";
   }
   // determine category tag
   const char* category_extra = "";
@@ -179,7 +181,7 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   canv->RedrawAxis();
 
   //CMSPrelim(dataset, extra, 0.17, 0.835);
-  CMSPrelim(dataset, "", 0.17, 0.835);  
+  CMSPrelim(dataset, "", 0.16, 0.835);  
   TPaveText* chan     = new TPaveText(0.20, 0.74+0.061, 0.32, 0.74+0.161, "NDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
@@ -240,7 +242,14 @@ if(MSSM){
     leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau", "L" );
   }
   else{
-    if(ggH){ leg->AddEntry(ggH  , "H#rightarrow#tau#tau  m_{H}=125 GeV" , "L" ); }
+    if(ggH){
+      if(SIGNAL_SCALE!=1){
+	leg->AddEntry(ggH  , TString::Format("%.0f#timesH(125 GeV)#rightarrow#tau#tau", SIGNAL_SCALE) , "L" );
+      }
+      else{
+	leg->AddEntry(ggH  , "H(125 GeV)#rightarrow#tau#tau" , "L" );
+      }
+    }
   }
   leg->AddEntry(data , "observed"                       , "LP");
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
