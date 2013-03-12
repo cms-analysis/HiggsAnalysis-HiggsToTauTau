@@ -63,8 +63,8 @@ parser.add_option_group(cgroup)
 ##
 ## MODEL OPTIONS
 ##
-dgroup = OptionGroup(parser, "MODEL OPTIONS", "These are the command line options that can be used to configure the submission of multi-dimensional fits or asymptotic limits that do require specific models. Specific models can be used for option --multidim-fit and for option --asymptotic. Possible model options for option --multidim-fit are: ggH-bbH (MSSM), ggH-qqH (SM) and cV-cF (SM). Possible model options for option --asymptotic are: \"\" (SM), ggH (MSSM) and bbH (MSSM).")
-dgroup.add_option("--physics-model", dest="fitModel", default="", type="choice", choices=["ggH-bbH", "ggH-qqH", "cV-cF", "ggH", "bbH", ""],
+dgroup = OptionGroup(parser, "MODEL OPTIONS", "These are the command line options that can be used to configure the submission of multi-dimensional fits or asymptotic limits that do require specific models. Specific models can be used for option --multidim-fit and for option --asymptotic. Possible model options for option --multidim-fit are: ggH-bbH (MSSM), ggH-qqH (SM), rV-rF (SM) and cV-cF (SM). Possible model options for option --asymptotic are: \"\" (SM), ggH (MSSM) and bbH (MSSM).")
+dgroup.add_option("--physics-model", dest="fitModel", default="", type="choice", choices=["ggH-bbH", "ggH-qqH", "rV-rF", "cV-cF", "ggH", "bbH", ""],
                   help="Define the model for which you want to submit the process with option --multidim-fit ('ggH-bbH' (MSSM), 'ggH-qqH' (SM) and 'cV-cF' (SM)) or option --asymptotic ('ggH' (MSSM), 'bbH' (MSSM) and '' (SM)). [Default: \"\"]")
 parser.add_option_group(dgroup)
 ##
@@ -299,11 +299,17 @@ if options.optMDFit :
             cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-QQH-{MASS} --njob 400 --npoints 16".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'ggH-qqH=HiggsAnalysis.CombinedLimit.PhysicsModel:floatingXSHiggs'"
             opts  = "--physics-model-options 'modes=ggH,qqH ggHRange=0:4 qqHRange=0:4'"
+        ## SM rV versus rF (this configuration is optimized for mH=125)
+        elif "rV-rF" in options.fitModel :
+            cmd   = "lxb-multidim-fit.py --name {PRE}-RV-RF-{MASS} --njob 400 --npoints 16".format(PRE=prefix, MASS=mass)
+            model = "--physics-model 'rV-rF=HiggsAnalysis.CombinedLimit.PhysicsModel:rVrFXSHiggs'"
+            #opts  = "--physics-model-options 'rVRange=0:5 rFRange=0:4'"
+            opts  = "--physics-model-options 'rVRange=-3:5 rFRange=-2:4'"
         ## SM cV versus cF (this configuration is optimized for mH=125)
         elif "cV-cF" in options.fitModel :
             cmd   = "lxb-multidim-fit.py --name {PRE}-CV-CF-{MASS} --njob 300 --npoints 12".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'cV-cF=HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcF'"
-            opts  = "--physics-model-options 'modes=cV,cF cVRange=0:3 cFRange=0:2'"
+            opts  = "--physics-model-options 'modes=cVRange=0:3 cFRange=0:2'"            
         ## add lxq compliance
         sys = ""
         if options.lxq :

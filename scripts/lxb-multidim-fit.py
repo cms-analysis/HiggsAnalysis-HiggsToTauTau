@@ -75,10 +75,7 @@ if ';' in options.fitModelOptions :
 else :
     phys_opts = options.fitModelOptions.split(' ')
 vals = []
-for opt in phys_opts :
-    if "modes" in opt :
-        vals.append(opt.split('=')[1].split(',')[0])
-        vals.append(opt.split('=')[1].split(',')[1])
+vals = model[0].split('-')
 ranges = {}
 for val in vals :
     for opt in phys_opts :
@@ -92,6 +89,10 @@ for val in vals :
         mode = val.upper()
     if 'cF' in val :
         mode = val.upper()
+    if 'rV' in val :
+        mode = val.upper()
+    if 'rF' in val :
+        mode = val.upper()        
     footprint.write("{VAL} : {RANGE}\n".format(VAL=mode, RANGE=ranges[val].replace(':', '\t')))
 footprint.close()
 
