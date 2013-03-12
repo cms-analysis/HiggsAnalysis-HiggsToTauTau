@@ -105,14 +105,14 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
     leg->AddEntry(observed, "observed",  "PL");
   }
   if(injected){
-    leg->AddEntry( expected , "signal injected",  "L" );
-    if(innerBand){ leg->AddEntry( innerBand, "#pm 1#sigma injected",  "F" ); }
-    if(outerBand){ leg->AddEntry( outerBand, "#pm 2#sigma injected",  "F" ); }
+    leg->AddEntry( expected , TString::Format("H(%s GeV) injected", injectedMass.c_str()),  "L" );
+    if(innerBand){ leg->AddEntry( innerBand, TString::Format("#pm 1#sigma H(%s GeV) injected", injectedMass.c_str()),  "F" ); }
+    if(outerBand){ leg->AddEntry( outerBand, TString::Format("#pm 2#sigma H(%s GeV) injected", injectedMass.c_str()),  "F" ); }
   }
   else if(BG_Higgs){
-    leg->AddEntry( expected , TString::Format("expected BG+Higgs(%s GeV)", injectedMass.c_str()),  "L" );
-    if(innerBand){ leg->AddEntry( innerBand, TString::Format("#pm 1#sigma BG+Higgs(%s GeV)", injectedMass.c_str()),  "F" ); }
-    if(outerBand){ leg->AddEntry( outerBand, TString::Format("#pm 2#sigma BG+Higgs(%s GeV)", injectedMass.c_str()),  "F" ); }  
+    leg->AddEntry( expected , TString::Format("H(%s GeV) as BG", injectedMass.c_str()),  "L" );
+    if(innerBand){ leg->AddEntry( innerBand, TString::Format("#pm 1#sigma H(%s GeV) as BG", injectedMass.c_str()),  "F" ); }
+    if(outerBand){ leg->AddEntry( outerBand, TString::Format("#pm 2#sigma H(%s GeV) as BG", injectedMass.c_str()),  "F" ); }  
   }
   else if(bestfit){
     leg->AddEntry( expected , "#sigma/#sigma_{SM} (best fit)",  "PL" );

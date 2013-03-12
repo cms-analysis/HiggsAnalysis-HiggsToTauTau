@@ -27,7 +27,8 @@ PlotLimits::plotMassScan(TCanvas& canv, TGraph* nll)
   // do the plotting
   plottingMassScan(canv, modified, xaxis_, yaxis_, max, log_);    
   // add the CMS Preliminary stamp
-  CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
+  CMSPrelim(dataset_.c_str(), "", 0.160, 0.835);
+  //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
   // write to file  
   if(png_){
     canv.Print(TString::Format("%s-%s.png", output_.c_str(), label_.c_str()));

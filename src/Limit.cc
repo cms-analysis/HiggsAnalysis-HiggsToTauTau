@@ -28,7 +28,19 @@ PlotLimits::plotLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmEr
   if(bestfit_ ){ PLOT=std::string("BESTFIT" ); }
   plottingLimit(canv, innerBand, outerBand, expected, observed, unit, xaxis_, yaxis_, min_, max, log_, PLOT, injectedMass_, mssm_);
   // setup CMS Preliminary
-  CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
+  CMSPrelim(dataset_.c_str(), "", 0.160, 0.835);
+  //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
+
+  //TPaveText* chan     = new TPaveText(0.60, 0.82, 0.80, 0.92, "NDC");
+  //chan->SetBorderSize(   0 );
+  //chan->SetFillStyle(    0 );
+  //chan->SetTextAlign(   12 );
+  //chan->SetTextSize ( 0.05 );
+  //chan->SetTextColor(    1 );
+  //chan->SetTextFont (   62 );
+  //chan->AddText("e#mu, e#tau_{h}, #mu#tau_{h}, #tau_{h}#tau_{h}");
+  //chan->Draw();
+  
   // write results to files
   if(png_){ canv.Print(std::string(output_).append("_").append(label_).append(".png").c_str()); }
   if(pdf_){ 

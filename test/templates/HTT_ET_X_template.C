@@ -152,10 +152,10 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   if(std::string(directory) == std::string("eleTau_btag"      )){ category_extra = "B-Tag";             }
 
   const char* dataset;
-  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}";}
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 19.4 fb^{-1}";}
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}, H #rightarrow #tau #tau";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 19.4 fb^{-1}, H #rightarrow #tau #tau";}
 #ifdef MSSM
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 12.1 fb^{-1}";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 12.1 fb^{-1}, H #rightarrow #tau #tau";}
 #endif
   
   TFile* input = new TFile(inputfile);
@@ -369,7 +369,7 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   canv->RedrawAxis();
 
   //CMSPrelim(dataset, "#tau_{e}#tau_{h}", 0.17, 0.835);
-  CMSPrelim(dataset, "", 0.17, 0.835);  
+  CMSPrelim(dataset, "", 0.16, 0.835);  
   TPaveText* chan     = new TPaveText(0.20, 0.74+0.061, 0.32, 0.74+0.161, "NDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );

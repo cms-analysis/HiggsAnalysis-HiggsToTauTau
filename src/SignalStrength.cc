@@ -51,7 +51,8 @@ PlotLimits::plotSignalStrength(TCanvas& canv, TGraphAsymmErrors* innerBand, TGra
   // do the plotting 
   plottingSignalStrength(canv, innerBand, central, unit, xaxis_, yaxis_, signal_, min_, max_, log_, mssm_);
   // setup the CMS Preliminary
-  CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
+  CMSPrelim(dataset_.c_str(), "", 0.160, 0.835);
+  //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
   // write results to files
   if(png_){
     canv.Print(std::string(output_).append("_").append(label_).append(".png").c_str());

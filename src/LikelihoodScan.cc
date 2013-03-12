@@ -235,7 +235,8 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
     std::string masslabel = mssm_ ? std::string("m_{#phi}") : std::string("m_{H}");
     plotting1DScan(canv, scan1D, xaxis_, yaxis_, masslabel, mass, max_, lowerBin, upperBin, log_);    
     // add the CMS Preliminary stamp
-    CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
+    CMSPrelim(dataset_.c_str(), "", 0.160, 0.835);
+    //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
     // print 1d band
     //ofstream scanOut;  
     //scanOut.open(TString::Format("%s/%d/multi-dim.fitresult", directory, (int)mass));
