@@ -55,7 +55,7 @@ class MakeDatacard :
         ## prepare mA hist
         hist = self.load_hist(file, help)
         new_hist = hist.Clone()
-        new_hist_name = hist_name.replace("{MASS}".format(MASS=options.mass), "{MASS}_SCALE{SCALE}".format(MASS=options.mass, SCALE=str(scale))) + uncertainty
+        new_hist_name = hist_name.replace("{MASS}".format(MASS=options.mass), "{MASS}_SCALE{SCALE}".format(MASS=options.mass, SCALE=str(scale)), 1) + uncertainty
         new_hist.Scale(scale)
         ## write modified histogram to file
         #help2 = directory + "/" + hist_name.replace("{MASS}".format(MASS=options.mass), "{MASS}_{SCALE}".format(MASS=options.mass, SCALE=str(scale))) + uncertainty
@@ -210,7 +210,7 @@ for dir in directoryList :
                          output_line = output_line + '\t \t' + str(rate)
                 output_line = output_line.replace("\n", "")
                 output_line = output_line + "\n"
-            if words[1]=="lnN" or words[1]=="shape" or words[1]=="gnN" :
+            if words[1]=="lnN" or words[1]=="shape" or words[1]=="gmN" :
                 output_line = output_line.replace("\n", "")
                 for category in categories :
                     for signal in signal_processes :
