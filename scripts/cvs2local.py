@@ -13,8 +13,8 @@ parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="
                   help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice",
                   help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
-parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string",
-                  help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et\"]")
+parser.add_option("-c", "--channels", dest="channels", default="mm em mt et tt", type="string",
+                  help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et tt\"]")
 parser.add_option("-u", "--no-update", dest="no_update", default=False, action="store_true",
                   help="If there are already root files in common, do not recopy them. This should be used by other tools only to speed up copy jobs. [Default: False]")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
