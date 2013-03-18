@@ -89,6 +89,8 @@ int main(int argc, char* argv[])
   types.push_back(std::string("--HIG-12-043"));
   // show limits as of HIG-12-050
   types.push_back(std::string("--HIG-12-050"));
+  // show limits as of HIG-13-004
+  types.push_back(std::string("--HIG-13-004"));
 
   // parse arguments
   if(argc<3){
@@ -481,6 +483,28 @@ int main(int argc, char* argv[])
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plotTanb(*canv, inner, outer, expected, observed);
+  }
+  // -----------------------------------------------------------------------------------------------------------------------
+  if( std::string(argv[1]) == std::string("--HIG-13-004") ){
+    // observed limit
+    TGraph* observed  = 0;
+    if(!expectedOnly){
+      observed = new TGraph();
+      plot.fillCentral("HIG-13-004", observed, "HIG-13-004-obs");
+    }
+    // expected limit
+    TGraph* expected  = new TGraph();
+    plot.fillCentral("HIG-13-004", expected, "HIG-13-004-exp");
+    // 1-sigma uncertainty band
+    TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
+    plot.fillBand("HIG-13-004", inner, "HIG-13-004", true);
+    // 2-sigma uncertainty band
+    TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
+    plot.fillBand("HIG-13-004", outer, "HIG-13-004", false);
+    // make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plotLimit(*canv, inner, outer, expected, observed);
   }
   return 0;
 }

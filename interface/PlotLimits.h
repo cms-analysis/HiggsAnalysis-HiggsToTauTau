@@ -145,6 +145,8 @@ class PlotLimits {
   void prepareHIG_12_043(std::vector<double>& values, const char* type, double mass, bool initial);
   /// fill officially approved limits for HIG-12-050 (NOTE: these are only MSSM limits)
   void prepareHIG_12_050(std::vector<double>& values, const char* type, double mass, bool initial);
+  /// fill officially approved limits for HIG-13-004 (NOTE: these are only SM limits including vhtt)
+  void prepareHIG_13_004(std::vector<double>& values, const char* type, double mass, bool initial);
 
   /*
     Limits for comparison
@@ -227,6 +229,8 @@ class PlotLimits {
 #include "HiggsAnalysis/HiggsToTauTau/interface/HIG-12-043.h"
 /// official limits from HIG-12-050
 #include "HiggsAnalysis/HiggsToTauTau/interface/HIG-12-050.h"
+/// official limits from HIG-13-004 (including vhtt)
+#include "HiggsAnalysis/HiggsToTauTau/interface/HIG-13-004.h"
 
 inline void
 PlotLimits::upperLEPLimits(TGraph* graph)

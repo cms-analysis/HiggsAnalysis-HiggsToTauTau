@@ -115,6 +115,12 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
       else if(std::string(filename)==std::string("HIG-12-050-exp")){
 	prepareHIG_12_050(central, "expected", bins_[imass], initial);
       }
+      else if(std::string(filename)==std::string("HIG-13-004-obs")){
+	prepareHIG_13_004(central, "observed", bins_[imass], initial);
+      }
+      else if(std::string(filename)==std::string("HIG-13-004-exp")){
+	prepareHIG_13_004(central, "expected", bins_[imass], initial);
+      }
     }
   }
   else{
@@ -194,6 +200,11 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
 	prepareHIG_12_050(expected, "expected"                       , bins_[imass], initial);
 	prepareHIG_12_050(upper   , innerBand ? "+1sigma" : "+2sigma", bins_[imass], initial);
 	prepareHIG_12_050(lower   , innerBand ? "-1sigma" : "-2sigma", bins_[imass], initial);
+      }
+      else if(std::string(method) == std::string("HIG-13-004")){
+	prepareHIG_13_004(expected, "expected"                       , bins_[imass], initial);
+	prepareHIG_13_004(upper   , innerBand ? "+1sigma" : "+2sigma", bins_[imass], initial);
+	prepareHIG_13_004(lower   , innerBand ? "-1sigma" : "-2sigma", bins_[imass], initial);
       }
     }
   }
