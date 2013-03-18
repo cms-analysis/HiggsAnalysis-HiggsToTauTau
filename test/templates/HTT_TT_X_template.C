@@ -138,10 +138,10 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   if(std::string(directory) == std::string("tauTau_btag"      )){ category_extra = "B-Tag";             }
 
   const char* dataset;
-  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}, H #rightarrow #tau #tau";}
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 19.4 fb^{-1}, H #rightarrow #tau #tau";}
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  19.4 fb^{-1} at 8 TeV";}
 #ifdef MSSM
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 19.4 fb^{-1}, H #rightarrow #tau #tau";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS Preliminary, #sqrt{s} = 8 TeV, L = 19.4 fb^{-1}, H #rightarrow #tau #tau";}
 #endif
 
   // open example histogram file
@@ -159,7 +159,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
                                                               bbHScale = (23314.3*0.119 + 21999.3*0.120)/1000.; }
   if(std::string(inputfile).find("8TeV")!=std::string::npos){ ggHScale = (11815.3*0.119 + 13124.9*0.120)/1000.; 
                                                               bbHScale = (31087.9*0.119 + 29317.8*0.120)/1000.; }
- //  float ggHScale = 1., bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=10, A + H for the time being
+//   float ggHScale = 1., bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=10, A + H for the time being
 //   if(std::string(inputfile).find("7TeV")!=std::string::npos){ ggHScale = (2111.4*0.11 + 4022.9*0.11)/1000.;
 //                                                               bbHScale = (6211.6*0.11 + 5147.0*0.11)/1000.; }
 //   if(std::string(inputfile).find("8TeV")!=std::string::npos){ ggHScale = (2729.9*0.11 + 5193.2*0.11)/1000.;
@@ -320,7 +320,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   canv->RedrawAxis();
 
   //CMSPrelim(dataset, "#tau_{h}#tau_{h}", 0.17, 0.835);
-  CMSPrelim(dataset, "", 0.16, 0.835);  
+  CMSPrelim(dataset, "", 0.18, 0.835);  
   TPaveText* chan     = new TPaveText(0.20, 0.74+0.061, 0.32, 0.74+0.161, "NDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );

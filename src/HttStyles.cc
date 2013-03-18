@@ -178,21 +178,25 @@ void SetLegendStyle(TLegend* leg)
 
 void CMSPrelim(const char* dataset, const char* channel, double lowX, double lowY)
 {
+  /*
   TPaveText* cmsprel  = new TPaveText(lowX, lowY+0.06, lowX+0.30, lowY+0.16, "NDC");
   cmsprel->SetBorderSize(   0 );
   cmsprel->SetFillStyle(    0 );
   cmsprel->SetTextAlign(   12 );
-  cmsprel->SetTextSize ( 0.035);
+  cmsprel->SetTextSize ( 0.03 );
   cmsprel->SetTextColor(    1 );
   cmsprel->SetTextFont (   62 );
   cmsprel->AddText("CMS");
   cmsprel->Draw();
 
   TPaveText* lumi     = new TPaveText(lowX+0.08, lowY+0.061, lowX+0.45, lowY+0.161, "NDC");
+  */
+
+  TPaveText* lumi  = new TPaveText(lowX, lowY+0.06, lowX+0.30, lowY+0.16, "NDC");
   lumi->SetBorderSize(   0 );
   lumi->SetFillStyle(    0 );
   lumi->SetTextAlign(   12 );
-  lumi->SetTextSize ( 0.035);
+  lumi->SetTextSize ( 0.03 );
   lumi->SetTextColor(    1 );
   lumi->SetTextFont (   62 );
   lumi->AddText(dataset);

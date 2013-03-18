@@ -67,10 +67,10 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("htt"       )) title = std::string("e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu");
   if(channel==std::string("cmb"       )) title = std::string("Combined(H#rightarrow#tau#tau)");
   if(channel==std::string("cmb+"      )) title = std::string("H#rightarrow#tau#tau + VH#rightarrow#tau#tau+l(l)");
-  if(channel==std::string("0jet"      )) title = std::string("0-Jet");
+  if(channel==std::string("0jet"      )) title = std::string("0 jet");
   if(channel==std::string("2jet"      )) title = std::string("V(jj)H(#tau#tau)");
-  if(channel==std::string("vbf"       )) title = std::string("2-Jet (VBF)");
-  if(channel==std::string("boost"     )) title = std::string("1-Jet");
+  if(channel==std::string("vbf"       )) title = std::string("2 jet (VBF)");
+  if(channel==std::string("boost"     )) title = std::string("1 jet");
   if(channel==std::string("btag"      )) title = std::string("B-Tag");
   if(channel==std::string("nobtag"    )) title = std::string("No B-Tag");
   if(channel==std::string("ggH"       )) title = std::string("gg#rightarrow#phi (bbH profiled)");
@@ -92,7 +92,7 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label=" Preliminary, #sqrt{s}=7-8 TeV, L = 24.3 fb^{-1}, H #rightarrow #tau #tau", bool legendOnRight=true, bool legendOnTop=true)
+void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV", bool legendOnRight=true, bool legendOnTop=true)
 {
   SetStyle();
 

@@ -14,8 +14,8 @@
 #include <TAttLine.h>
 #include <TPaveText.h>
 
-#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_2_5/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
-#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_5_2_5/src/HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
+#include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
 
 static const float SIGNAL_SCALE = 1.;
 
@@ -80,15 +80,15 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   // switch for MSSM/SM
   bool MSSM = std::string(analysis) == std::string("MSSM");
   // determine label
-  if (std::string(dataset) == std::string("2011"     )){ dataset = "Preliminary, 2011, #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}, H #rightarrow #tau #tau"; }
+  if (std::string(dataset) == std::string("2011"     )){ dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV"; }
   if (std::string(dataset) == std::string("2012"     )){ 
-	if (std::string(extra) == std::string("#mu#mu") ) dataset = "Preliminary, 2012, #sqrt{s} = 8 TeV, L = 18.7 fb^{-1}, H #rightarrow #tau #tau"; 
-	else dataset = "Preliminary, 2012, #sqrt{s} = 8 TeV, L = 19.4 fb^{-1}, H #rightarrow #tau #tau";
+	if (std::string(extra) == std::string("#mu#mu") ) dataset = "MS Preliminary,  H#rightarrow#tau#tau, 18.7 fb^{-1} at 8 TeV"; 
+	else dataset = "MS Preliminary,  H#rightarrow#tau#tau, 19.4 fb^{-1} at 8 TeV";
   }
   if (std::string(dataset) == std::string("2011+2012")){ 
-	if (std::string(extra) == std::string("#mu#mu") ) dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 23.6 fb^{-1}, H #rightarrow #tau #tau"; 
- 	else dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 24.3 fb^{-1}, H #rightarrow #tau #tau";
-	if (MSSM) dataset = "Preliminary, #sqrt{s} = 7-8 TeV, L = 17 fb^{-1}, H #rightarrow #tau #tau";
+	if (std::string(extra) == std::string("#mu#mu") ) dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 18.6 fb^{-1} at 8 TeV"; 
+ 	else dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV";
+	if (MSSM) dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 12.1 fb^{-1} at 8 TeV";
   }
   // determine category tag
   const char* category_extra = "";
@@ -181,7 +181,7 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   canv->RedrawAxis();
 
   //CMSPrelim(dataset, extra, 0.17, 0.835);
-  CMSPrelim(dataset, "", 0.16, 0.835);  
+  CMSPrelim(dataset, "", 0.18, 0.835);  
   TPaveText* chan     = new TPaveText(0.20, 0.74+0.061, 0.32, 0.74+0.161, "NDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
@@ -202,39 +202,39 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
   cat->AddText(category_extra);
   cat->Draw();
 
-if(MSSM){
-  TPaveText* massA      = new TPaveText(0.75, 0.48+0.061, 0.85, 0.48+0.161, "NDC");
-  massA->SetBorderSize(   0 );
-  massA->SetFillStyle(    0 );
-  massA->SetTextAlign(   12 );
-  massA->SetTextSize ( 0.03 );
-  massA->SetTextColor(    1 );
-  massA->SetTextFont (   62 );
-  massA->AddText("m_{A}=160GeV");
-  massA->Draw();
-
-  TPaveText* tanb      = new TPaveText(0.75, 0.44+0.061, 0.85, 0.44+0.161, "NDC");
-  tanb->SetBorderSize(   0 );
-  tanb->SetFillStyle(    0 );
-  tanb->SetTextAlign(   12 );
-  tanb->SetTextSize ( 0.03 );
-  tanb->SetTextColor(    1 );
-  tanb->SetTextFont (   62 );
-  tanb->AddText("tan#beta=20");
-  tanb->Draw();
- 
-  TPaveText* scen      = new TPaveText(0.75, 0.40+0.061, 0.85, 0.40+0.161, "NDC");
-  scen->SetBorderSize(   0 );
-  scen->SetFillStyle(    0 );
-  scen->SetTextAlign(   12 );
-  scen->SetTextSize ( 0.03 );
-  scen->SetTextColor(    1 );
-  scen->SetTextFont (   62 );
-  scen->AddText("mhmax");
-  scen->Draw();
-}
-
-
+  if(MSSM){
+    TPaveText* massA      = new TPaveText(0.75, 0.48+0.061, 0.85, 0.48+0.161, "NDC");
+    massA->SetBorderSize(   0 );
+    massA->SetFillStyle(    0 );
+    massA->SetTextAlign(   12 );
+    massA->SetTextSize ( 0.03 );
+    massA->SetTextColor(    1 );
+    massA->SetTextFont (   62 );
+    massA->AddText("m_{A}=160GeV");
+    massA->Draw();
+    
+    TPaveText* tanb      = new TPaveText(0.75, 0.44+0.061, 0.85, 0.44+0.161, "NDC");
+    tanb->SetBorderSize(   0 );
+    tanb->SetFillStyle(    0 );
+    tanb->SetTextAlign(   12 );
+    tanb->SetTextSize ( 0.03 );
+    tanb->SetTextColor(    1 );
+    tanb->SetTextFont (   62 );
+    tanb->AddText("tan#beta=20");
+    tanb->Draw();
+    
+    TPaveText* scen      = new TPaveText(0.75, 0.40+0.061, 0.85, 0.40+0.161, "NDC");
+    scen->SetBorderSize(   0 );
+    scen->SetFillStyle(    0 );
+    scen->SetTextAlign(   12 );
+    scen->SetTextSize ( 0.03 );
+    scen->SetTextColor(    1 );
+    scen->SetTextFont (   62 );
+    scen->AddText("mhmax");
+    scen->Draw();
+  }
+  
+  
   float lower_bound = EWK1 ? 0.60 : 0.65;
   TLegend* leg = new TLegend(MSSM ? 0.45 : 0.50, lower_bound, 0.93, 0.90);
   SetLegendStyle(leg);
@@ -267,6 +267,48 @@ if(MSSM){
     leg->AddEntry(errorBand, "bkg. uncertainty" , "F" );
   }
   leg->Draw();
+
+  /*
+  TPaveText* ext0     = new TPaveText(0.50, lower_bound-0.08, 0.70, lower_bound-0.03, "NDC");
+  ext0->SetBorderSize(   0 );
+  ext0->SetFillStyle(    0 );
+  ext0->SetTextAlign(   12 );
+  ext0->SetTextSize ( 0.035 );
+  ext0->SetTextColor(    1 );
+  ext0->SetTextFont (   42 );
+  ext0->AddText("CMS Preliminary");
+  ext0->Draw();
+
+  TPaveText* ext1     = new TPaveText(0.50, lower_bound-0.13, 0.70, lower_bound-0.08, "NDC");
+  ext1->SetBorderSize(   0 );
+  ext1->SetFillStyle(    0 );
+  ext1->SetTextAlign(   12 );
+  ext1->SetTextSize ( 0.035 );
+  ext1->SetTextColor(    1 );
+  ext1->SetTextFont (   42 );
+  ext1->AddText("#sqrt{s} = 7 TeV, L = 4.9 fb^{-1}");
+  ext1->Draw();
+
+  TPaveText* ext2     = new TPaveText(0.50, lower_bound-0.18, 0.70, lower_bound-0.13, "NDC");
+  ext2->SetBorderSize(   0 );
+  ext2->SetFillStyle(    0 );
+  ext2->SetTextAlign(   12 );
+  ext2->SetTextSize ( 0.035 );
+  ext2->SetTextColor(    1 );
+  ext2->SetTextFont (   42 );
+  ext2->AddText("#sqrt{s} = 8 TeV, L = 19.4 fb^{-1}");
+  ext2->Draw();
+  
+  TPaveText* ext3     = new TPaveText(0.50, lower_bound-0.23, 0.70, lower_bound-0.18, "NDC");
+  ext3->SetBorderSize(   0 );
+  ext3->SetFillStyle(    0 );
+  ext3->SetTextAlign(   12 );
+  ext3->SetTextSize ( 0.035 );
+  ext3->SetTextColor(    1 );
+  ext3->SetTextFont (   42 );
+  ext3->AddText("H#rightarrow#tau#tau");
+  ext3->Draw();
+  */
 
   /*
     prepare output
