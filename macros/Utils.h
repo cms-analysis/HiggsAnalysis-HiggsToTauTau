@@ -1,8 +1,27 @@
-#include "string"
-#include "iostream"
+#include <string>
+#include <iostream>
 
 #include "TFile.h"
+#include "TGraph.h"
 
+float
+maximum(TGraph* graph, double max_)
+{
+  float maximum = -1;
+  if(max_<0){
+    for(int ibin=0; ibin<graph->GetN(); ++ibin){
+      if(maximum<0 || graph->GetY()[ibin]>maximum){
+	maximum=graph->GetY()[ibin];
+      }
+    }
+    maximum*=2.5;
+  }
+  else{
+    maximum=max_;
+  }
+  std::cout << "M A X I M U M   I S : " << maximum << std::endl;
+  return maximum;
+}
 
 template <class Type>
 Type* get(TFile* file, const char* hist) 
