@@ -5,56 +5,97 @@
 void plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::vector<TGraph*> graph68, TGraph* bestfit, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp, bool log);
 
 TGraph* 
-PlotLimits::convexGraph(TGraph* graph, double xLowerBound, double xUpperBound, double yLowerBound, double yUpperBound, double tollerance, bool sort)
+PlotLimits::sortedGraph(TGraph* graph, double minX, double minY)
 {
-  std::cout << "START: " << graph->GetName()<< std::endl;
-  // this function adds points to the lower x-axis boundaries (xmin,0), (xmax,0)
-  // if the graph reaches there to guarantee that the graph is convex and can be 
-  // plotted as filled. It does not cover cases where the ellipes are truncated 
-  // by the right or lower boundary. Note: this function assumes that graphs are 
-  // filled from large x values to small x values. This is true for graphs that have 
-  // been filled from contours.
+  // map graph to minimum around zero for sorting
+  TGraph* buffer = new TGraph();
+  for(int p=0; p<graph->GetN(); ++p){
+    buffer->SetPoint(p, graph->GetX()[p]-minX, graph->GetY()[p]-minY);
+  }
+  // do sorting by ARG
+  buffer->Sort(&TGraph::CompareArg);
+  // map back to original graph
+  TGraph* sorted = new TGraph();
+  for(int p=0; p<buffer->GetN(); ++p){
+    sorted->SetPoint(p, buffer->GetX()[p]+minX, buffer->GetY()[p]+minY);
+  }
+  delete buffer;
+  return sorted;
+}
+
+TGraph* 
+PlotLimits::convexGraph(TGraph* graph, double minX, double minY, double xLowerBound, double xUpperBound, double yLowerBound, double yUpperBound, double tollerance, bool sort)
+{
+  /*
+    first boundaries with the scan window in the x and y direction are determined. Then points are added to guarantee that the graph be convex.
+    On the x-axis graphs are closed to the x==0 axis as trapezes. On the y-axis graphs are closed to the y==0 axis as trapezes. In a last step 
+    all points are sorted again by angle around the minimum. This last sorting step requires that the added points form trapezes.
+  */
+  double buffer[4]; buffer[0]=-1., buffer[1]=-1., buffer[2]=-1., buffer[3]=-1.; 
   int n=graph->GetN();
-  double xmin=-1, xmax=-1.;
-  double ymin=-1, ymax=-1.;
+  unsigned int lowerX=0, upperX=0;
+  unsigned int lowerY=0, upperY=0;
   double bx[n]; double by[n];
   for(int idx=0; idx<n; ++idx){ 
     graph->GetPoint(idx, bx[idx],by[idx]);
-    // determine boundary values on x-axis
-    if(xmin<0 || bx[idx]<xmin){ xmin=bx[idx]; }
-    if(xmax<0 || bx[idx]>xmax){ xmax=bx[idx]; }
-    // determine boundary values on y-axis
-    if(ymin<0 || by[idx]<ymin){ ymin=by[idx]; }
-    if(ymax<0 || by[idx]>ymax){ ymax=by[idx]; }
+    if(fabs(bx[idx]-xUpperBound)<tollerance){ if(fabs(buffer[0]-by[idx])>3*tollerance){ ++upperX; buffer[0]=by[idx];} }
+    if(fabs(bx[idx]-xLowerBound)<tollerance){ if(fabs(buffer[1]-by[idx])>3*tollerance){ ++lowerX; buffer[1]=by[idx];} }
+    if(fabs(by[idx]-yUpperBound)<tollerance){ if(fabs(buffer[2]-bx[idx])>3*tollerance){ ++upperY; buffer[2]=bx[idx];} }
+    if(fabs(by[idx]-yLowerBound)<tollerance){ if(fabs(buffer[3]-bx[idx])>3*tollerance){ ++lowerY; buffer[3]=bx[idx];} }
   }
   // set up the convex graph that can be filled for plotting
   TGraph* convex = new TGraph(); int idx=0;
-  if(fabs(xmax-xUpperBound)<tollerance){
-    convex->SetPoint(idx++, xUpperBound, 0.);
+  if(upperX>0){
+    convex->SetPoint(idx++, xUpperBound+9999., 0.);
   }
-  if(fabs(ymax-yUpperBound)<tollerance){
-    convex->SetPoint(idx++, 0., yUpperBound);
+  if(upperY>0){
+    if(upperX>0){
+      convex->SetPoint(idx++, 0., yUpperBound+9999.);
+    }
+    else{
+      if(upperY>1){
+	// for cases where there are two intercepts with a boundary
+	convex->SetPoint(idx++, minX, yUpperBound+tollerance);
+      }
+      else{
+	// for cases where there is only one intercept with a boundary
+	convex->SetPoint(idx++, 0., yUpperBound+9.);
+      }
+    }
   }
   for(int isrc=0; isrc<n; ++isrc){
     convex->SetPoint(idx++, bx[isrc], by[isrc]);
   }
-  if(fabs(xmin-xLowerBound)<tollerance){
-    convex->SetPoint(idx++, xLowerBound, 0.);
+  if(lowerX>0){
+    convex->SetPoint(idx++, xLowerBound-9999., 0.);
   }
-  if(fabs(ymin-yLowerBound)<tollerance){
-    convex->SetPoint(idx++, 0., yLowerBound);
+  if(lowerY>0){
+    if(lowerX>0){
+      std::cout << "adding far away point to close" << std::endl;
+      convex->SetPoint(idx++, 0., yLowerBound-9999.);
+    }
+    else{
+      if(lowerY>1){
+	// for cases where there are two intercepts with a boundary
+	convex->SetPoint(idx++, minX, 0.);
+      }
+      else{
+	// for cases where there is only one intercept with a boundary
+	convex->SetPoint(idx++, 0., yLowerBound-9999.);
+      }
+    }
   }
+  TGraph* sorted = convex ;
   if(sort){
-    std::cout << "SORT BY ARG" << std::endl;
-    //convex->SetPoint(idx++, 0., 0.);
-    convex->Sort(&TGraph::CompareArg);
-    //convex->Sort(&TGraph::CompareX);
+    sorted = sortedGraph(convex, minX, minY);
   }
-  //convex->SetPoint(idx++, 0., 0.);
-  for(int idx=0; idx<convex->GetN(); ++idx){
-    std::cout << "idx:" << idx << " x:" << convex->GetX()[idx] << " y:" << convex->GetY()[idx] << std::endl;
+  /*
+  // uncomment for debugging
+  for(int idx=0; idx<sorted->GetN(); ++idx){
+    std::cout << "idx:" << idx << " x:" << sorted->GetX()[idx] << " y:" << sorted->GetY()[idx] << std::endl;
   }
-  return convex;
+  */
+  return sorted;
 }
 
 void 
@@ -195,16 +236,19 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     for(int i=0; i<conts->GetEntries(); ++i){   
       TList* graphlist = (TList*)conts->At(i);  
       for(int g=0; g<graphlist->GetEntries(); ++g){
+	if(((TGraph*)graphlist->At(g))->GetN()<5){
+	  continue;
+	}
 	if(i==0){
 	  graph68.push_back((TGraph*)graphlist->At(g));
 	  graph68.back()->SetName(TString::Format("graph68_%d_%d"  , (int)mass , g));
-	  filled68.push_back(convexGraph(graph68.back(), xmin, xmax, ymin, ymax, (xmax-xmin)/nbins));
+	  filled68.push_back(convexGraph(graph68.back(), bestX, bestY, xmin, xmax, ymin, ymax, (xmax-xmin)/nbins, true));
 	}
 	if(i==1){
 	  graph95.push_back((TGraph*)graphlist->At(g)); 
 	  graph95.back()->SetName(TString::Format("graph95_%d_%d"  , (int)mass , g));
 	  //filled95.push_back(convexGraph(graph95.back(), xmin, xmax, ymin, ymax, (xmax-xmin)/nbins, g>0));
-	  filled95.push_back(convexGraph(graph95.back(), xmin, xmax, ymin, ymax, (xmax-xmin)/nbins));
+	  filled95.push_back(convexGraph(graph95.back(), bestX, bestY, xmin, xmax, ymin, ymax, (xmax-xmin)/nbins, true));
 	}
 	// let's hope that lower left corner also has a graph with index 2
 	// that can be used for plotting
