@@ -13,10 +13,10 @@
 #include "HiggsAnalysis/HiggsToTauTau/src/plottingLimit.cxx"
 
 void
-plotLimits(const char* filename, const char* channel, std::string TYPE="LIMIT", double min_=0., double max_=-1., bool log_=false, std::string injectedMass_="125", std::string dataset_="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV", std::string xaxis_="m_{H} [GeV]", std::string yaxis_="95% CL limit on #sigma/#sigma_{SM}", bool mssm_=false)
+plotAsymptotic(const char* filename, const char* channel, std::string TYPE="LIMIT", double min_=0., double max_=-1., bool log_=false, std::string injectedMass_="125", std::string dataset_="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV", std::string xaxis_="m_{H} [GeV]", std::string yaxis_="95% CL limit on #sigma/#sigma_{SM}", bool mssm_=false)
 {
   /*
-    TYPE can be: LIMIT, INJECTED, BG_HIGGS, BESTFIT
+    TYPE can be: LIMIT, INJECTED, BG_HIGGS
   */
   TFile* file = TFile::Open(filename);
   // retrieve TGraphs from file
