@@ -101,6 +101,10 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
     expected ->Write("expected" );
     innerBand->Write("innerBand");
     outerBand->Write("outerBand");
+    // auxiliary graphs
+    upperLEP->Write("upperLEP");
+    lowerLEP->Write("lowerLEP");
+    plain->Write("plain");
     output->Close();
   }
   return;
