@@ -12,8 +12,8 @@ plottingPValue(TCanvas& canv, TGraph* expected, TGraph* observed, std::string& x
 {
   // set up styles
   canv.cd();
-  canv.SetGridx(1);
-  canv.SetGridy(1);
+  //canv.SetGridx(1);
+  //canv.SetGridy(1);
   if(log){ 
     canv.SetLogy(1); 
   }

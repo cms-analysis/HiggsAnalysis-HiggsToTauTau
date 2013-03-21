@@ -15,8 +15,8 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
 
   // set up styles
   canv.cd();
-  canv.SetGridx(1);
-  canv.SetGridy(1);
+  //canv.SetGridx(1);
+  //canv.SetGridy(1);
   if(log){ 
     canv.SetLogy(1); 
   }
@@ -28,6 +28,7 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   hr->GetXaxis()->SetLabelFont(62);
   hr->GetXaxis()->SetLabelSize(0.045);
   hr->GetXaxis()->SetLabelOffset(0.015);
+  hr->GetXaxis()->SetTitleSize(0.05);
   hr->GetXaxis()->SetTitleFont(62);
   hr->GetXaxis()->SetTitleColor(1);
   hr->GetXaxis()->SetTitleOffset(1.05);
@@ -37,7 +38,7 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   hr->GetYaxis()->SetTitleSize(0.05);
   hr->GetYaxis()->SetTitleOffset(1.30);
   hr->GetYaxis()->SetLabelSize(0.045);
-  hr->SetNdivisions(505);
+  hr->SetNdivisions(505, "X");
 
   if(outerBand){
     outerBand->SetLineWidth(1.);
