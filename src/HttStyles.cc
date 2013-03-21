@@ -46,7 +46,7 @@ void SetStyle()
   HttStyle->SetHistLineColor(1);
   HttStyle->SetHistLineStyle(0);
   HttStyle->SetHistLineWidth(3);
-  HttStyle->SetNdivisions(505);
+  HttStyle->SetNdivisions(505, "X");
 
   // Functions
   HttStyle->SetFuncColor(1);
