@@ -10,8 +10,8 @@ plottingSignalStrength(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraph* cent
 {
   // set up styles
   canv.cd();
-  canv.SetGridx(1);
-  canv.SetGridy(1);
+  //canv.SetGridx(1);
+  //canv.SetGridy(1);
   if(log){ 
     canv.SetLogy(1); 
   }

@@ -14,8 +14,8 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
 {
   // set up styles
   canv.cd();
-  canv.SetGridx(1);
-  canv.SetGridy(1);
+  //canv.SetGridx(1);
+  //canv.SetGridy(1);
   if(log){ 
     canv.SetLogy(1); 
   }
