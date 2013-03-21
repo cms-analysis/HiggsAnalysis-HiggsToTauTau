@@ -125,10 +125,10 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
 	//std::cout << "-->new: x=" << bestX << " y=" << bestY << " value=" << bestFit << std::endl;
       }
     }
-   //  if(verbosity_>0){
-//       std::cout << "Bestfit value from likelihood-scan:" << std::endl;
-//       std::cout << "x=" << bestX << " value=" << bestFit << std::endl;
-//     }
+    //  if(verbosity_>0){
+    //    std::cout << "Bestfit value from likelihood-scan:" << std::endl;
+    //    std::cout << "x=" << bestX << " value=" << bestFit << std::endl;
+    //  }
     TGraph* bestfit = new TGraph();
     bestfit->SetPoint(0, bestX, 0);
     // find quantileExpected values
