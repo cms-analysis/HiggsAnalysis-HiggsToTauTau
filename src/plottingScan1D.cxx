@@ -12,7 +12,6 @@ plotting1DScan(TCanvas& canv, TH1F* plot1D, std::string& xaxis, std::string& yax
   canv.cd();
   canv.SetGridx(1);
   canv.SetGridy(1);
-  canv.SetRightMargin(0.14);
   if(log){ 
     canv.SetLogy(1); 
   }
@@ -25,7 +24,7 @@ plotting1DScan(TCanvas& canv, TH1F* plot1D, std::string& xaxis, std::string& yax
   plot1D->GetYaxis()->SetLabelFont(62);
   plot1D->GetYaxis()->SetTitleSize(0.05);
   plot1D->GetYaxis()->SetTitleOffset(1.4);
-  plot1D->GetYaxis()->SetLabelSize(0.05);
+  plot1D->GetYaxis()->SetLabelSize(0.04);
   plot1D->GetXaxis()->SetRange(lowerBin+1, upperBin);
   plot1D->SetMinimum( 0.);
   if(max>0){

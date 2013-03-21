@@ -14,7 +14,9 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
   canv.cd();
   //canv.SetGridx(1);
   //canv.SetGridy(1);
-  canv.SetRightMargin(0.14);
+  if(temp){
+    canv.SetRightMargin(0.14);
+  }
   if(log){ 
     canv.SetLogz(1); 
   }
@@ -39,6 +41,8 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
   plot2D->GetZaxis()->SetTitleSize(0.04);
   plot2D->GetZaxis()->SetTitleOffset(1.03);
   plot2D->GetZaxis()->SetLabelSize(0.04);
+  plot2D->SetNdivisions(505, "X");
+  plot2D->SetNdivisions(505, "Y");
   plot2D->SetMinimum(0.);
   plot2D->Draw("colz");
   
