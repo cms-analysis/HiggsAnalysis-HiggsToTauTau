@@ -13,6 +13,9 @@ parser.add_option("-o", "--out", dest="output", default="", type="string", help=
 parser.add_option("-m", "--mass", dest="mass_injected", default="125", type="string", help="Mass of the signal that should be injected into the background only hypothesis from simulation. [Default: 125]")
 parser.add_option("-s", "--signal-strength", dest="signal_strength", default="1", type="string", help="Strength of the signal that should be injected into the BG only hypothesis. The signal strength should be given as a scale factor of the signal strength in the original root input file. [Default: \"1\"]")
 parser.add_option("-r", "--random", dest="rnd", default="-1", type="int", help="To randomize the obtained yields in the data_obs histograms, enter random seed here. The value -1 will switch the randomization off. [Default: \"-1\"]")
+parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="string", help="The anaylsis which is considered here. Chose between SM and MSSM. [Default: \"sm\"]")
+parser.add_option("--sm-to-mssm", dest="sm_to_mssm", default=False, action="store_true", help="Turn true if SM higgs should be added to MSSM datacards. Only useful if analysis used is mssm. [Default: False]")
+#parser.add_option("-t", "--sm-to-mssm", dest="sm_to_mssm", default="", type="string", help="Full path to directory where SM rootfiles could be found. [Default: \"sm\"]")
 sub1 = OptionGroup(parser, "BACKGROUNDS", "Backgrounds to be considered to replace data_obs.")
 sub1.add_option("--backgrounds-mm", dest="backgrounds_mm", default="ZTT,ZMM,QCD,TTJ,WJets,Dibosons", type="string", help="List of backgrounds for mm channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"ZTT,ZMM,QCD,TTJ,WJets,Dibosons\"]")
 sub1.add_option("--backgrounds-em", dest="backgrounds_em", default="Fakes,EWK,ttbar,Ztt", type="string", help="List of backgrounds for em channel. NOTE: should be comma separated, NO spaces allowed. [Default: \"Fakes,EWK,ttbar,Ztt\"]")
@@ -102,21 +105,29 @@ directories = {
     ("mm", "2") : "mumu_boost_low",
     ("mm", "3") : "mumu_boost_high",
     ("mm", "5") : "mumu_vbf",
+    ("mm", "8") : "mumu_nobtag",
+    ("mm", "9") : "mumu_btag",
     ("em", "0") : "emu_0jet_low",
     ("em", "1") : "emu_0jet_high",
     ("em", "2") : "emu_boost_low",
     ("em", "3") : "emu_boost_high",
     ("em", "5") : "emu_vbf",
+    ("em", "8") : "emu_nobtag",
+    ("em", "9") : "emu_btag",
     ("et", "0") : "eTau_0jet_low",
     ("et", "1") : "eTau_0jet_high",
     ("et", "2") : "eTau_boost_low",
     ("et", "3") : "eTau_boost_high",
     ("et", "5") : "eTau_vbf",
+    ("et", "8") : "eTau_nobtag",
+    ("et", "9") : "eTau_btag",
     ("mt", "0") : "muTau_0jet_low",
     ("mt", "1") : "muTau_0jet_high",
     ("mt", "2") : "muTau_boost_low",
     ("mt", "3") : "muTau_boost_high",
     ("mt", "5") : "muTau_vbf",
+    ("mt", "8") : "muTau_nobtag",
+    ("mt", "9") : "muTau_btag",
     ("tt", "0") : "tauTau_boost",
     ("tt", "1") : "tauTau_vbf",
     ("wh", "0") : ["emt", "mmt"], # WH is always category 0, and is 2 channels
@@ -147,6 +158,21 @@ signals = {
     "zh" : options.signals_vhtt,
     "vhtt" : options.signals_vhtt,
     }
+
+## SM xs*BR for injecting SM to MSSM (mH=125GeV) xs(process)*BR(Htt), VH = ZH+WH
+## 8TeV taken from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt8TeV
+## 7TeV taken from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt7TeV
+SM_xs = {
+    ("ggH", "8TeV") : 19.52*0.0632,
+    ("bbH", "8TeV") : 0.0*0.0632,
+    ("qqH", "8TeV") : 1.578*0.0632,
+    ("VH" , "8TeV") : (0.3943+0.6966)*0.0632,
+    ("ggH", "7TeV") : 15.32*0.0632,
+    ("bbH", "7TeV") : 0.0*0.0632,
+    ("qqH", "7TeV") : 1.222*0.0632,
+    ("VH" , "7TeV") : (0.3158+0.5729)*0.0632,
+    }
+
 
 ## pick up the lists of channels, categories and periods from the files in the
 ## pointed to input directory. Add some communiation on what is actually done.
@@ -210,7 +236,7 @@ print "-------------------------------------------------------------------------
 print "Expecting datacards of type htt_chn_cat_per.txt, with the following valid "
 print "variables: "
 print " - chn : em, et, mt, mm, tt"
-print " - cat : 0, 1, 2, 3, 5, 6, 7"
+print " - cat : 0, 1, 2, 3, 5, 6, 7, 8, 9"
 print " - per : 7TeV, 8TeV, 14TeV"
 print "------------------------------------------------------------------------------"
 print "Picked up categories are:", categories
@@ -223,18 +249,39 @@ def get_shape_file(channel, period):
     '''
     Map a channel + run period to a shape .root file
     '''
-    if channel not in ['zh', 'wh']:
-        return options.input+"/common/htt_"+channel+".input_"+period+".root"
+    if options.analysis=="sm":
+        if channel not in ['zh', 'wh']:
+            return options.input+"/common/htt_"+channel+".input_"+period+".root"
+        else :
+            return options.input+"/common/vhtt.input_"+period+".root"
     else:
-        return options.input+"/common/vhtt.input_"+period+".root"
-
+        return options.input+"/common/htt_"+channel+".inputs-mssm-"+period+"-0.root"
+        
 ## randomize observation for all potential hist input files
+
 for chn in channels :
     for per in periods :
         if options.verbose:
             print "Channel: %s Per: %s" % (chn, per)
+### Here was the idea to take over histos from SM rootfile to MSSM rootfile - not tested not finished
+   ##      if not options.sm_to_mssm=="" :
+##             ## Add the SM signal histograms from a SM rootfile to the MSSM rootfile
+##             #mssm_file = ROOT.TFile(get_shape_file(chn, per), "UPDATE")
+##             #sm_file = ROOT.TFile(options.sm_to_mssm + FILE , "READ")
+##             for signal in signals[chn].format(MASS=options.mass_injected) :
+##                 for cat in ["8", "9"] :
+##                     sm_file = ROOT.TFile(options.sm_to_mssm, "READ")
+##                     help = directories[chn, cat] + "/" + signal
+##                     hist = self.load_hist(sm_file, help)
+##                     new_hist = hist.Clone()
+##                     sm_file.close()
+##                     mssm_file = ROOT.TFile(get_shape_file(chn, per), "UPDATE")
+##                     mssm_file.cd(directory)
+##                     new_hist.Write(signal, ROOT.TObject.kOverwrite)
+##                     mssm_file.close()           
+        signal_processes = signals[chn].format(MASS="").split(",")
         re.sub(r'\s', '', signals[chn])
-        signals[chn] = signals[chn].format(MASS=options.mass_injected)
+        signals_used = signals[chn].format(MASS=options.mass_injected)
         re.sub(r'\s', '', backgrounds[chn])
         histfile = get_shape_file(chn, per)
         if os.path.exists(histfile) :
@@ -250,16 +297,21 @@ for chn in channels :
                 directories_to_randomize = '\*_zh'
             elif chn == 'wh':
                 directories_to_randomize = 'emt,mmt,mtt,ett'
+            scale=float(options.signal_strength)
+            if options.sm_to_mssm and options.analysis=="mssm":
+                for signal in signal_processes :
+                    scale=float(options.signal_strength)*SM_xs[signal, per]
+                    print SM_xs[signal, per], scale
             command = "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/blindData.C+\\(\\\"{FILE}\\\",\\\"{BACKGROUNDS}\\\",\\\"{SIGNALS}\\\",\\\"{DIRS}\\\",true,{RND},{SCALE},\\\"{OUTPUT}\\\",2\)"
             yields = subprocess.Popen(
                 shlex.split(command.format(
                 CMSSW_BASE=os.environ["CMSSW_BASE"],
                 FILE=histfile,
                 BACKGROUNDS=backgrounds[chn],
-                SIGNALS=signals[chn],
+                SIGNALS=signals_used,
                 DIRS=directories_to_randomize,
                 RND=options.rnd,
-                SCALE=options.signal_strength,
+                SCALE=scale,
                 OUTPUT=options.output,
                 )), stdout=subprocess.PIPE)
 
