@@ -127,7 +127,7 @@ getSoB(TH1F*hsig,TH1F*hbkg)
 
   double sig=FSig.Integral(xlow,xhigh);
   double bkg=FBkg.Integral(xlow,xhigh);
-  double bkgerr=FErr.Integral(xlow,xhigh);
+  //double bkgerr=FErr.Integral(xlow,xhigh);
 
   return sig/bkg; //purity
   //return sig/sqrt(sig+bkg);//statistical significance
