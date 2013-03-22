@@ -29,9 +29,9 @@ Authors: Jose Benitez, Lorenzo Bianchini
 #include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 #include "HiggsAnalysis/HiggsToTauTau/test/templates/sobWeightedCombine.C"
 
-void sobCombine(TString name, TString* Input,const char* dataset , const char* channel, const char* cat, int weight=1, float MuValue=1.0)
+void sobCombine(TString name, TString* Input,const char* dataset , const char* channel, const char* cat, int weight=1, float muValue=1.0)
 {
-  sobWeightedCombine(Input,name,weight,MuValue);
+  sobWeightedCombine(Input,name,weight,muValue);
   /*                                     |-> mu value from the fit to Data
                       |     |     |->option to apply or not apply weights
                       |     |-> name for this plot
@@ -40,7 +40,7 @@ void sobCombine(TString name, TString* Input,const char* dataset , const char* c
   sobWeightedPlot(name,dataset,channel,cat);
 }
 
-void sobWeightedCombineAll()
+void sobWeightedCombineAll(float muValue=1.10)
 {
   SetStyle();
 
@@ -218,29 +218,28 @@ void sobWeightedCombineAll()
   E8TeVNoTauTau[7]="eleTau_vbf_rescaled_8TeV_";
   E8TeVNoTauTau[8]="muTau_vbf_rescaled_8TeV_";
 
-  float muvalue=1.10;
   TString dataset="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.3 fb^{-1} at 8 TeV";
 
-  sobCombine("All"  , All  , dataset, "e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}" , ""           , 1, muvalue);
-  sobCombine("Boost", Boost, dataset, "e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}" , "1 jet"      , 1, muvalue);
-  sobCombine("VBF"  , VBF  , dataset, "e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}" , "2 jet (VBF)", 1, muvalue);  
-//   sobCombine("EMu",EMu,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e#mu",1,muvalue);
-//   sobCombine("ETau",ETau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e#tau_{h}",1,muvalue);
-//   sobCombine("MuTau",MuTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","#mu-#tau_{h}",1,muvalue);
-//   sobCombine("TauTau",TauTau,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#tau_{h}-#tau_{h}",1,muvalue);
-//   sobCombine("BoostLow",BoostLow,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","1jet_low",1,muvalue);
-//   sobCombine("BoostHigh",BoostHigh,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","1jet_high",1,muvalue);
-//   sobCombine("E7TeV",E7TeV,"#sqrt{s} = 7 TeV ,   L = 4.9 fb^{-1}","e#mu,e#tau_{h},#mu-#tau_{h}",1,muvalue);
-//   sobCombine("E8TeV",E8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","e#mu,e#tau_{h},#mu-#tau_{h},#tau_{h}-#tau_{h}",1,muvalue);
+  sobCombine("All"  , All  , dataset, "e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}" , ""           , 1, muValue);
+  sobCombine("Boost", Boost, dataset, "e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}" , "1 jet"      , 1, muValue);
+  sobCombine("VBF"  , VBF  , dataset, "e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}" , "2 jet (VBF)", 1, muValue);  
+//   sobCombine("EMu",EMu,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e#mu",1,muValue);
+//   sobCombine("ETau",ETau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e#tau_{h}",1,muValue);
+//   sobCombine("MuTau",MuTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","#mu-#tau_{h}",1,muValue);
+//   sobCombine("TauTau",TauTau,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#tau_{h}-#tau_{h}",1,muValue);
+//   sobCombine("BoostLow",BoostLow,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","1jet_low",1,muValue);
+//   sobCombine("BoostHigh",BoostHigh,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","1jet_high",1,muValue);
+//   sobCombine("E7TeV",E7TeV,"#sqrt{s} = 7 TeV ,   L = 4.9 fb^{-1}","e#mu,e#tau_{h},#mu-#tau_{h}",1,muValue);
+//   sobCombine("E8TeV",E8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","e#mu,e#tau_{h},#mu-#tau_{h},#tau_{h}-#tau_{h}",1,muValue);
   
-//   sobCombine("AllNoTauTau",AllNoTauTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e#mu,e#tau_{h},#mu-#tau_{h}",1,muvalue);
-//   sobCombine("BoostHighNoTauTau",BoostHighNoTauTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","Boost_High No TauTau",1,muvalue);
-//   sobCombine("VBFNoTauTau",VBFNoTauTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","VBF No TauTau",1,muvalue);
-//   sobCombine("E8TeVNoTauTau",E8TeVNoTauTau,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","e#mu,e#tau_{h},#mu-#tau_{h}",1,muvalue);
+//   sobCombine("AllNoTauTau",AllNoTauTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e#mu,e#tau_{h},#mu-#tau_{h}",1,muValue);
+//   sobCombine("BoostHighNoTauTau",BoostHighNoTauTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","Boost_High No TauTau",1,muValue);
+//   sobCombine("VBFNoTauTau",VBFNoTauTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","VBF No TauTau",1,muValue);
+//   sobCombine("E8TeVNoTauTau",E8TeVNoTauTau,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","e#mu,e#tau_{h},#mu-#tau_{h}",1,muValue);
 
-//   sobCombine("MuTauBoost8TeV",MuTauBoost8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h} Boost",1,muvalue);
-//   sobCombine("MuTau8TeV",MuTau8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h}",1,muvalue);
-//   sobCombine("MuTau0Jet8TeV",MuTau0Jet8TeV,2,0,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h} 0-Jet",1,muvalue);
+//   sobCombine("MuTauBoost8TeV",MuTauBoost8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h} Boost",1,muValue);
+//   sobCombine("MuTau8TeV",MuTau8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h}",1,muValue);
+//   sobCombine("MuTau0Jet8TeV",MuTau0Jet8TeV,2,0,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h} 0-Jet",1,muValue);
   gROOT->ProcessLine(".q");
 }
 
