@@ -173,6 +173,16 @@ SM_xs = {
     ("VH" , "7TeV") : (0.3158+0.5729)*0.0632,
     }
 
+## MSSM xs*BR tanb=20 mA=160 (A+H)
+## 8TeV taken MSSM Neutral Higgs Group
+## 7TeV taken MSSM Neutral Higgs Group
+MSSM_xs = {
+    ("ggH", "8TeV") : (13124+11915)*0.12/1000,
+    ("bbH", "8TeV") : (31087+29317)*0.12/1000,
+    ("ggH", "7TeV") : ( 9157+10180)*0.12/1000,
+    ("bbH", "7TeV") : (23314+21999)*0.12/1000,
+    }
+
 
 ## pick up the lists of channels, categories and periods from the files in the
 ## pointed to input directory. Add some communiation on what is actually done.
@@ -298,10 +308,15 @@ for chn in channels :
             elif chn == 'wh':
                 directories_to_randomize = 'emt,mmt,mtt,ett'
             scale=float(options.signal_strength)
-            if options.sm_to_mssm and options.analysis=="mssm":
-                for signal in signal_processes :
-                    scale=float(options.signal_strength)*SM_xs[signal, per]
-                    print SM_xs[signal, per], scale
+            if options.analysis=="mssm" :
+                if options.sm_to_mssm:
+                    for signal in signal_processes :
+                        scale=float(options.signal_strength)*SM_xs[signal, per]
+                        print SM_xs[signal, per], scale
+                else :
+                    for signal in signal_processes :
+                        scale=float(options.signal_strength)*MSSM_xs[signal, per]
+                        print "signal, xs*BR and scale: ", signal, MSSM_xs[signal, per], scale
             command = "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/blindData.C+\\(\\\"{FILE}\\\",\\\"{BACKGROUNDS}\\\",\\\"{SIGNALS}\\\",\\\"{DIRS}\\\",true,{RND},{SCALE},\\\"{OUTPUT}\\\",2\)"
             yields = subprocess.Popen(
                 shlex.split(command.format(
