@@ -47,9 +47,6 @@ Standard Model Checklist:
  - setup-htt.py [-i aux] -o LIMITS [-p '7TeV 8TeV'] -a sm -c 'em et mt mm tt' 110-145:5
    - rule of thumb to memorize the relevant options: "iOPAC"
    - attention, there is no comma separation allowed in -c
-   - the directory structure should now contain LIMITS/0jet, LIMITS/boost, LIMITS/vbf, 
-     LIMITS/fermionic, LIMITS/gauge, LIMITS/em, LIMITS/mt, LIMITS/mm, LIMITS/et,
-     LIMITS/cmb
 
 (5) Check pulls
 --------------------------------------
@@ -76,7 +73,7 @@ Standard Model Checklist:
 (7) Limit calculation
 --------------------------------------
  - submit.py (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null")  --asymptotic LIMITS/*
- - plot asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-sm.py LIMITS
+ - plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-sm.py LIMITS
 
 (8) Significance calculation (/w bands) (NOT TESTED?)
 --------------------------------------
@@ -84,7 +81,7 @@ Standard Model Checklist:
  - limit.py --status LIMITS/*
  - limit.py --getoutput LIMITS/*
  - limit.py --significance LIMITS/*
- - plot significance HiggsAnalysis/HiggsToTauTau/python/layouts/sm_sig_layout.py LIMITS
+ - plot --significance HiggsAnalysis/HiggsToTauTau/python/layouts/sm_sig_layout.py LIMITS
  - this works only for lxbatch or equivalent.  
 
 (8a) Frequentist significance calculation (w/o bands)
@@ -127,7 +124,7 @@ cV-cF
  - addHiggs2BG.py --uncertainty-cash="HiggsAnalysis/HiggsToTauTau/setup" --mass 125 aux
  - setup-htt.py -c "em, et, mm, mt, tt" -i aux -o LIMITS
  - submit.py (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null") --asymptotic LIMITS/*
- - plot asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-sm.py LIMITS
+ - plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-sm.py LIMITS
 
 (13) Likelihood-scan (125GeV)
 ------------------------------------
@@ -139,10 +136,6 @@ cV-cF
 ---------------------------------------------------------------------------------------------------
 MSSM Checklist:
 ---------------------------------------------------------------------------------------------------
-
-(0) Bin-by-bin uncertainties + scaling(SM case) + setup-directory structure (OLD or NOT TESTED)
---------------------------------------
- - reload.py (options) (masses)  
 
 (1) Copy datacard inputs into package
 --------------------------------------
@@ -216,7 +209,7 @@ MSSM Checklist:
 (6) Limit calculation in tanb-mA plane
 --------------------------------------
  - lxb-xsec2tanb.py (--lxq) (--name xsec2tanb) LIMITS/*
- - submit.py --tanb+ (--options "--multi-core=4") (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null)  LIMITS/*
+ - submit.py --tanb+ (--options "--multi-core=4") (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null")  LIMITS/*
  - plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/mssm_tanb_layout.py LIMITS
  - Higgs band plotting: Set higgs125_bands to "true" in mssm_tanb_layout.py
 
