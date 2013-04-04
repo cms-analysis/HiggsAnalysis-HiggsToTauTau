@@ -444,6 +444,7 @@ for directory in args :
         if not os.path.exists("combine") :
             os.system("cp -s $(which combine) .")
         gridpointsOpts = ""
+        options.fitAlgo = "grid" 
         if options.fitAlgo == "grid" :
             if options.firstPoint == "" :
                 gridpointsOpts = "--points %s --firstPoint 1 --lastPoint %s" % (options.gridPoints, options.gridPoints)
