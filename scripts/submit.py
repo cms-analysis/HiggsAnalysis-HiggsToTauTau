@@ -141,10 +141,14 @@ if len(args) < 1 :
 
 import re
 import os
+import time
 
 from HiggsAnalysis.HiggsToTauTau.utils import contained
 from HiggsAnalysis.HiggsToTauTau.utils import is_number
 from HiggsAnalysis.HiggsToTauTau.utils import get_mass
+
+start = time.time()
+start_cpu = time.clock()
 
 def subvec(vec, min, max):
     '''
@@ -251,11 +255,11 @@ if options.optMLFit :
 ##
 if options.optNLLScan :
     ## add the footprint of the scan
-    for dir in args :
-        footprint = open("{DIR}/.scan".format(DIR=dir), "w")
-        footprint.write("points : {POINTS}\n".format(POINTS=options.points))
-        footprint.write("r : {RMIN} \t {RMAX}\n".format(RMIN=options.rMin, RMAX=options.rMax))
-        footprint.close()
+    #for dir in args :
+    #    footprint = open("{DIR}/.scan".format(DIR=dir), "w")
+    #    footprint.write("points : {POINTS}\n".format(POINTS=options.points))
+    #    footprint.write("r : {RMIN} \t {RMAX}\n".format(RMIN=options.rMin, RMAX=options.rMax))
+    #    footprint.close()
     if options.interactive :
         for dir in args :
             mass = get_mass(dir)
@@ -580,3 +584,9 @@ if options.optTanb or options.optTanbPlus :
                 struct = directories(args)
                 lxb_submit(struct[0], struct[1], "--tanb+", options.opt)
         cycle = cycle-1
+
+
+elapsed = time.time() - start
+elapsed_cpu = time.clock() - start_cpu
+
+print "time needed: ", elapsed, elapsed_cpu
