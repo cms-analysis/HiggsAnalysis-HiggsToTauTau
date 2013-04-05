@@ -63,28 +63,39 @@ def walk_and_copy(inputdir, outputdir, pattern, mergers, threshold, prefix, norm
                         error_clone.Add(to_merge)
 
                 for ibin in range(1, th1.GetNbinsX()+1):
-                    if th1.GetBinContent(ibin):
-                        error = error_clone.GetBinError(ibin)
-                        val = th1.GetBinContent(ibin)
-                        # Check if we are above threshold
+                    error = error_clone.GetBinError(ibin)
+                    val = th1.GetBinContent(ibin)
+                    # Check if we are above threshold
+                    above_threshold = False
+                    if val:
                         if error/val > threshold:
-                            err_up = th1.Clone(
-                                th1.GetName() + "_%s_%s_bin_%iUp" % (prefix, histo, ibin))
-                            err_down = th1.Clone(
-                                th1.GetName() + "_%s_%s_bin_%iDown" % (prefix, histo, ibin))
-                            # Print to stdout, so we can capture the uncertainties
-                            print "%s_%s_bin_%i" % (prefix, histo, ibin)
-                            err_up.SetBinContent(ibin, val + error)
-                            err_down.SetBinContent(ibin, val - error if val > error else 0.)
-                            if normalize:
-                                err_up.Scale(th1.Integral()/err_up.Integral())
-                                err_down.Scale(th1.Integral()/err_down.Integral())
-                            if val < error:
-                                log.warning("%s_%s_bin_%iDown, is negative, pegged to zero", prefix, histo, ibin)
-                            outputdir.cd()
-                            err_up.Write()
-                            err_down.Write()
-                            log.info("==> built shape for %s bin %i", histo, ibin)
+                            above_threshold = True
+                    else:
+                        # If there is nothing in the bin, but there is
+                        # an error, we respect this.
+                        if error:
+                            log.info("%s_%s_bin_%i is zero, but will have a non-zero error.",
+                                     prefix, histo, ibin)
+                            above_threshold = True
+
+                    if above_threshold:
+                        err_up = th1.Clone(
+                            th1.GetName() + "_%s_%s_bin_%iUp" % (prefix, histo, ibin))
+                        err_down = th1.Clone(
+                            th1.GetName() + "_%s_%s_bin_%iDown" % (prefix, histo, ibin))
+                        # Print to stdout, so we can capture the uncertainties
+                        print "%s_%s_bin_%i" % (prefix, histo, ibin)
+                        err_up.SetBinContent(ibin, val + error)
+                        err_down.SetBinContent(ibin, val - error if val > error else 0.)
+                        if normalize:
+                            err_up.Scale(th1.Integral()/err_up.Integral())
+                            err_down.Scale(th1.Integral()/err_down.Integral())
+                        if val < error:
+                            log.warning("%s_%s_bin_%iDown, is negative, pegged to zero", prefix, histo, ibin)
+                        outputdir.cd()
+                        err_up.Write()
+                        err_down.Write()
+                        log.info("==> built shape for %s bin %i", histo, ibin)
 
         # Now copy and recurse into subdirectories
         for subdir in directories:
@@ -141,5 +152,5 @@ if __name__ == "__main__":
              args.input, args.output)
     main(args.input, args.output, args.filter, args.merge,
          args.threshold, args.prefix, args.normalize)
-    log.info("Moving temprorary output to final destination")    
+    log.info("Moving temprorary output to final destination")
     shutil.move(args.output, args.output.replace('.tmp.root', '.root'))
