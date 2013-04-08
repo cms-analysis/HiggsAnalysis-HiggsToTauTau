@@ -129,7 +129,7 @@ cV-cF
 (13) Likelihood-scan (125GeV)
 ------------------------------------
  - submit.py (--lxq --queue="-l h_cpu=1:00:00 -j y -o /dev/null") --likelihood-scan LIMITS/125
- - plot --likelihood-scan HiggsAnalysis/HiggsToTauTau/python/layouts/likelihood-scan.py LIMITS/125
+ - plot --likelihood-scan HiggsAnalysis/HiggsToTauTau/python/layouts/likelihood-scan.py LIMITS
  - ATTENTION: The layout script has to be adjusted for only plotting 125GeV
 
 
