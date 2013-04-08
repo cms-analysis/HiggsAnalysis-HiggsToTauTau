@@ -108,6 +108,13 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
   string2Vector(cleanupWhitespaces(background_patterns), samples);
   samples.insert(samples.end(), signals.begin(), signals.end());
 
+  // check if mssm or sm input file
+  bool sm=true;
+  if(std::string(filename).find("mssm") != std::string::npos){
+    sm=false;
+    std::cerr << "INFO  : MSSM File " << std::endl;
+  }
+
   // in case data_obs is supposed to be written to an extra output file
   // open the file, otherwise the data_obs in the input file will be
   // overwritten
@@ -154,17 +161,21 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
 	    // macro with ZLL, ZL, ZJ in the background samples. Those samples,
 	    // which do not apply for one or the other event category are 
 	    // skipped here.
-	    if(std::string(idir->GetName()).find("vbf") != std::string::npos  && (*sample == std::string("ZL") || *sample == std::string("ZJ"))){
-	      continue;
+	    if(sm==true){
+	      if(std::string(idir->GetName()).find("vbf") != std::string::npos  && (*sample == std::string("ZL") || *sample == std::string("ZJ"))){
+		continue;
+	      }
+	      else if(std::string(idir->GetName()).find("vbf") == std::string::npos  && *sample == std::string("ZLL")){
+		continue;
+	      }
 	    }
-	    else if(std::string(idir->GetName()).find("vbf") == std::string::npos && *sample == std::string("ZLL")){
+	    else{
+	      if(std::string(idir->GetName()).find("nobtag") == std::string::npos && (*sample == std::string("ZL") || *sample == std::string("ZJ"))){
 	      continue;
-	    }
-	    else if( std::string(idir->GetName()).find("_btag") != std::string::npos && *sample == std::string("ZLL")){
+	      }
+	      else if(std::string(idir->GetName()).find("nobtag") != std::string::npos && *sample == std::string("ZLL")){
 	      continue;
-	    }
-	    else if( std::string(idir->GetName()).find("_btag") == std::string::npos && (*sample == std::string("ZL") || *sample == std::string("ZJ"))){
-	      continue;
+	      }  
 	    }
 	    buffer = (TH1F*)file->Get((std::string(idir->GetName())+"/"+(*sample)).c_str()); 
 	    if (!buffer) {
