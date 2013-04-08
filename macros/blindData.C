@@ -154,10 +154,16 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
 	    // macro with ZLL, ZL, ZJ in the background samples. Those samples,
 	    // which do not apply for one or the other event category are 
 	    // skipped here.
-	    if(std::string(idir->GetName()).find("vbf") != std::string::npos && (*sample == std::string("ZL") || *sample == std::string("ZJ"))){
+	    if(std::string(idir->GetName()).find("vbf") != std::string::npos  && (*sample == std::string("ZL") || *sample == std::string("ZJ"))){
 	      continue;
 	    }
 	    else if(std::string(idir->GetName()).find("vbf") == std::string::npos && *sample == std::string("ZLL")){
+	      continue;
+	    }
+	    else if( std::string(idir->GetName()).find("_btag") != std::string::npos && *sample == std::string("ZLL")){
+	      continue;
+	    }
+	    else if( std::string(idir->GetName()).find("_btag") == std::string::npos && (*sample == std::string("ZL") || *sample == std::string("ZJ"))){
 	      continue;
 	    }
 	    buffer = (TH1F*)file->Get((std::string(idir->GetName())+"/"+(*sample)).c_str()); 
