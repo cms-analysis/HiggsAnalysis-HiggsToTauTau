@@ -307,26 +307,42 @@ for chn in channels :
                 directories_to_randomize = '\*_zh'
             elif chn == 'wh':
                 directories_to_randomize = 'emt,mmt,mtt,ett'
-            scale=float(options.signal_strength)
             if options.analysis=="mssm" :
+                idx=0
                 if options.sm_to_mssm:
                     for signal in signal_processes :
-                        scale=float(options.signal_strength)*SM_xs[signal, per]
-                        print SM_xs[signal, per], scale
+                        
+                        scale=SM_xs[signal, per]
+                        print "signal, xs*BR and scale: ", idx, signal+options.mass_injected, SM_xs[signal, per], scale
+                        if idx==0 :
+                            os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(false,{SCALE},\"{FILE}\",\"{SIGNAL}\",0\)".format(
+                                CMSSW_BASE=os.environ.get("CMSSW_BASE"), SCALE=scale, FILE=histfile, SIGNAL=signal+options.mass_injected))
+                        else :
+                            os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{FILE}\",\"{SIGNAL}\",0\)".format(
+                                CMSSW_BASE=os.environ.get("CMSSW_BASE"), SCALE=scale, FILE=histfile+"_scaled", SIGNAL=signal+options.mass_injected))
+                        idx=idx+1
                 else :
                     for signal in signal_processes :
-                        scale=float(options.signal_strength)*MSSM_xs[signal, per]
-                        print "signal, xs*BR and scale: ", signal, MSSM_xs[signal, per], scale
+                        scale=MSSM_xs[signal, per]
+                        print "signal, xs*BR and scale: ", idx, signal+options.mass_injected, MSSM_xs[signal, per], scale
+                        if idx==0 :
+                            os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(false,{SCALE},\"{FILE}\",\"{SIGNAL}\",0\)".format(
+                                CMSSW_BASE=os.environ.get("CMSSW_BASE"), SCALE=scale, FILE=histfile, SIGNAL=signal+options.mass_injected))
+                        else :
+                            os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{FILE}\",\"{SIGNAL}\",0\)".format(
+                                CMSSW_BASE=os.environ.get("CMSSW_BASE"), SCALE=scale, FILE=histfile+"_scaled", SIGNAL=signal+options.mass_injected))
+                        idx=idx+1
+                            
             command = "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/blindData.C+\\(\\\"{FILE}\\\",\\\"{BACKGROUNDS}\\\",\\\"{SIGNALS}\\\",\\\"{DIRS}\\\",true,{RND},{SCALE},\\\"{OUTPUT}\\\",2\)"
             yields = subprocess.Popen(
                 shlex.split(command.format(
                 CMSSW_BASE=os.environ["CMSSW_BASE"],
-                FILE=histfile,
+                FILE=histfile if options.analysis!="mssm" else histfile+"_scaled",
                 BACKGROUNDS=backgrounds[chn],
                 SIGNALS=signals_used,
                 DIRS=directories_to_randomize,
                 RND=options.rnd,
-                SCALE=scale,
+                SCALE=float(options.signal_strength),
                 OUTPUT=options.output,
                 )), stdout=subprocess.PIPE)
 
