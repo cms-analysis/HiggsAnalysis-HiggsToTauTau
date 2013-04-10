@@ -141,14 +141,10 @@ if len(args) < 1 :
 
 import re
 import os
-import time
 
 from HiggsAnalysis.HiggsToTauTau.utils import contained
 from HiggsAnalysis.HiggsToTauTau.utils import is_number
 from HiggsAnalysis.HiggsToTauTau.utils import get_mass
-
-start = time.time()
-start_cpu = time.clock()
 
 def subvec(vec, min, max):
     '''
@@ -297,7 +293,15 @@ if options.optMDFit :
             from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
             cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-BBH-{MASS} --njob 50 --npoints 800".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'ggH-bbH=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
-            opts  = "--physics-model-options 'modes=ggH,bbH;ggHRange=0:{GGH};bbHRange=0:{BBH}'".format(GGH=bounds[mass][0], BBH=bounds[mass][1])
+            opts  = "--physics-model-options 'modes=ggH,bbH;ggHRange=0:{GGH};bbHRange=0:{BBH}'".format(GGH=bounds["ggH-bbH",mass][0], BBH=bounds["ggH-bbH",mass][1])
+            print mass, bounds["ggH-bbH",mass][0], bounds["ggH-bbH",mass][1]
+        ## MSSM cb versus ctau
+        if "cb-ctau" in options.fitModel :
+            from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
+            cmd   = "lxb-multidim-fit.py --name {PRE}-CB-CTAU-{MASS} --njob 50 --npoints 800".format(PRE=prefix, MASS=mass)
+            model = "--physics-model 'cb-ctau=HiggsAnalysis.HiggsToTauTau.BSMVectorsAndFermionsModels:CbCtauMSSMHiggs'"
+            opts  = "--physics-model-options 'cbRange=0:{CB};ctauRange=0:{CTAU}'".format(CB=bounds["cb-ctau",mass][0], CTAU=bounds["cb-ctau",mass][1])
+        ## MSSM cb versus ctau 
         ## SM ggH versus qqH (this configuration is optimized for mH=125)
         elif "ggH-qqH" in options.fitModel :
             cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-QQH-{MASS} --njob 400 --npoints 16".format(PRE=prefix, MASS=mass)
@@ -586,7 +590,3 @@ if options.optTanb or options.optTanbPlus :
         cycle = cycle-1
 
 
-elapsed = time.time() - start
-elapsed_cpu = time.clock() - start_cpu
-
-print "time needed: ", elapsed, elapsed_cpu
