@@ -428,11 +428,11 @@ for directory in args :
     ##
     ## LIKELIHOOD-SCAN
     ##
-    footprint = open("{DIR}/.scan".format(DIR=options.workingdir), "w")
-    footprint.write("points : {POINTS}\n".format(POINTS=options.gridPoints))
-    footprint.write("r : {RMIN} \t {RMAX}\n".format(RMIN=options.rMin, RMAX=options.rMax))
-    footprint.close
-    if options.optNLLScan :
+    if options.optNLLScan :        
+        footprint = open("{DIR}/.scan".format(DIR=options.workingdir), "w")
+        footprint.write("points : {POINTS}\n".format(POINTS=options.gridPoints))
+        footprint.write("r : {RMIN} \t {RMAX}\n".format(RMIN=options.rMin, RMAX=options.rMax))
+        footprint.close
         ## determine mass value from directory name
         mass  = get_mass(directory)
         ## prepare workspace
