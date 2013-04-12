@@ -162,14 +162,14 @@ if options.update_cvs :
     ## scaling of root files 
     ##acceptance correction
     print "INFO: Acceptance correction scaling"
-    os.system("scale2accept.py -i {SETUP} -c '{CHN}' 90 100-200:20 130 250-500:50 600-1000:100".format(
+    os.system("python HiggsAnalysis/HiggsToTauTau/scripts/scale2accept.py -i {SETUP} -c '{CHN}' 90 100-200:20 130 250-500:50 600-1000:100".format(
         CHN=options.channels,
         SETUP=setup
         ))
-    #os.system("scale2accept.py -i {SETUP} -c tt -p 8TeV 90 100-200:20 130 250-500:50".format(
+    #os.system("python HiggsAnalysis/HiggsToTauTau/scripts/scale2accept.py -i {SETUP} -c tt -p 8TeV 90 100-200:20 130 250-500:50".format(
     #    SETUP=setup
     #    ))
-    #os.system("scale2accept.py -i {SETUP} -c hbb -p 7TeV 90 100-200:20 130 250-350:50".format(
+    #os.system("python HiggsAnalysis/HiggsToTauTau/scripts/scale2accept.py -i {SETUP} -c hbb -p 7TeV 90 100-200:20 130 250-350:50".format(
     #    SETUP=setup
     #    ))
 
