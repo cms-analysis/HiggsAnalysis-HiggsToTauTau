@@ -30,8 +30,8 @@ parser.add_option("--inputs-et", dest="inputs_et", default="Imperial", type="cho
                   help="Input files for htt_et analysis. [Default: \"Imperial\"]")
 parser.add_option("--inputs-mt", dest="inputs_mt", default="Imperial", type="choice", choices=['Wisconsin', 'Imperial', 'LLR', 'CERN', 'MIT'],
                   help="Input files for htt_mt analysis. [Default: \"Imperial\"]")
-#parser.add_option("--inputs-tt", dest="inputs_tt", default="MIT", type="choice", choices=['CERN', 'MIT'],
-#                  help="Input files for htt_tt analysis. [Default: \"MIT\"]")
+parser.add_option("--inputs-tt", dest="inputs_tt", default="MIT", type="choice", choices=['CERN', 'MIT'],
+                  help="Input files for htt_tt analysis. [Default: \"MIT\"]")
 parser.add_option("--inputs-hbb", dest="inputs_hbb", default="DESY", type="choice", choices=['DESY'],
                   help="Input files for hbb analysis. [Default: \"MIT\"]")
 ##
@@ -78,14 +78,14 @@ cmssw_base=os.environ['CMSSW_BASE']
 ## setup a backup directory
 os.system("mkdir -p backup")
 
-## define inputs from cvs; Note: not all analyses are available for all inputs
-## directories = {}
-## from HiggsAnalysis.HiggsToTauTau.moriond_analyses_cfg import htt_mm, htt_em, htt_et, htt_mt, htt_tt
-## directories['mm'] = htt_mm(options.inputs_mm)
-## directories['em'] = htt_em(options.inputs_em)
-## directories['et'] = htt_et(options.inputs_et)
-## directories['mt'] = htt_mt(options.inputs_mt)
-## directories['tt'] = htt_tt(options.inputs_tt)
+##define inputs from cvs; Note: not all analyses are available for all inputs
+directories = {}
+from HiggsAnalysis.HiggsToTauTau.moriond_analyses_cfg import htt_mm, htt_em, htt_et, htt_mt, htt_tt
+directories['mm'] = htt_mm(options.inputs_mm)
+directories['em'] = htt_em(options.inputs_em)
+directories['et'] = htt_et(options.inputs_et)
+directories['mt'] = htt_mt(options.inputs_mt)
+directories['tt'] = htt_tt(options.inputs_tt)
 
 ## postfix pattern for input files
 patterns = {
@@ -131,15 +131,19 @@ if options.update_cvs :
         for file in glob.glob("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/{FULLNAME}*.root".format(CMSSW_BASE=cmssw_base, CHN=chn, FULLNAME=fullname[chn])) :
             os.system("rm %s" % file)
         for per in periods :
-            #if directories[chn][per] == 'None' :
-            #    continue
+            if chn == 'tt' :
+                    if per == '7TeV' :
+                        continue
+            if directories[chn][per] == 'None' :
+                continue
             for ana in analyses :
                 pattern = patterns[ana]
-                source="{CMSSW_BASE}/src/auxiliaries/datacards/mssm/{FULLNAME}/{FULLNAME}*-mssm-{PER}-[01]{PATTERN}.root".format(
+                #source="{CMSSW_BASE}/src/auxiliaries/datacards/mssm/{FULLNAME}/{FULLNAME}*-mssm-{PER}-[01]{PATTERN}.root".format(
+                source="{CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/{FULLNAME}*-mssm-{PER}-[01]{PATTERN}.root".format(
                     CMSSW_BASE=cmssw_base,
                     CHN=chn,
                     PER=per,
-                    #DIR=directories[chn][per],  here must go back if new files are uploaded to collected
+                    DIR=directories[chn][per],  
                     PATTERN=pattern,
                     FULLNAME=fullname[chn]
                     )
@@ -149,14 +153,17 @@ if options.update_cvs :
                         CMSSW_BASE=cmssw_base,
                         CHN=chn
                         ))
-    ## copy postfit inputs for mm to test directory
-    os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/mssm/htt_mm/htt_mm*-mssm-[78]TeV-[01]_postfit*.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
-        CMSSW_BASE=cmssw_base
-        ))
+            if chn=="mm" :
+                ## copy postfit inputs for mm to test directory
+                #os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/mssm/htt_mm/htt_mm*-mssm-[78]TeV-[01]_postfit*.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format( 
+                os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/Htt_MuMu_Unblinded/htt_mm*-mssm-[78]TeV-[01]_postfit*.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
+                    CMSSW_BASE=cmssw_base         
+                    ))
     ## scaling of root files 
     ##acceptance correction
     print "INFO: Acceptance correction scaling"
-    os.system("scale2accept.py -i {SETUP} -c 'em, et, mt, mm' 90 100-200:20 130 250-500:50 600-1000:100".format(
+    os.system("scale2accept.py -i {SETUP} -c '{CHN}' 90 100-200:20 130 250-500:50 600-1000:100".format(
+        CHN=options.channels,
         SETUP=setup
         ))
     #os.system("scale2accept.py -i {SETUP} -c tt -p 8TeV 90 100-200:20 130 250-500:50".format(
