@@ -75,7 +75,7 @@ def adjust_datacard(datacard, new_values, new_file) :
                 ## copy line for background samples
                 new_words = words
                 new_words[1] = "data_obs"
-                new_words[3] = words[3][0:words[3].rfind('.')]+'_'+new_file+'.root'
+                new_words[3] = words[3][0:words[3].rfind('.')]+'_'+new_file+'.root' if new_file!="" else words[3]
                 new_line = " ".join(new_words)
                 new.write(line + '\n')
                 new.write(new_line + '\n')
@@ -331,8 +331,7 @@ for chn in channels :
                         else :
                             os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{FILE}\",\"{SIGNAL}\",0\)".format(
                                 CMSSW_BASE=os.environ.get("CMSSW_BASE"), SCALE=scale, FILE=histfile+"_scaled", SIGNAL=signal+options.mass_injected))
-                        idx=idx+1
-                            
+                        idx=idx+1 
             command = "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/blindData.C+\\(\\\"{FILE}\\\",\\\"{BACKGROUNDS}\\\",\\\"{SIGNALS}\\\",\\\"{DIRS}\\\",true,{RND},{SCALE},\\\"{OUTPUT}\\\",2\)"
             yields = subprocess.Popen(
                 shlex.split(command.format(
