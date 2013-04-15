@@ -162,16 +162,17 @@ signals = {
 ## SM xs*BR for injecting SM to MSSM (mH=125GeV) xs(process)*BR(Htt), VH = ZH+WH
 ## 8TeV taken from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt8TeV
 ## 7TeV taken from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt7TeV
-SM_xs = {
-    ("ggH", "8TeV") : 19.52*0.0632,
-    ("bbH", "8TeV") : 0.0*0.0632,
-    ("qqH", "8TeV") : 1.578*0.0632,
-    ("VH" , "8TeV") : (0.3943+0.6966)*0.0632,
-    ("ggH", "7TeV") : 15.32*0.0632,
-    ("bbH", "7TeV") : 0.0*0.0632,
-    ("qqH", "7TeV") : 1.222*0.0632,
-    ("VH" , "7TeV") : (0.3158+0.5729)*0.0632,
-    }
+## not needed anymore since the ggH125 VH125 and qqH125 histos are saved in the rootfiles
+## SM_xs = {
+##     ("ggH", "8TeV") : 19.52*0.0632,
+##     ("bbH", "8TeV") : 0.0*0.0632,
+##     ("qqH", "8TeV") : 1.578*0.0632,
+##     ("VH" , "8TeV") : (0.3943+0.6966)*0.0632,
+##     ("ggH", "7TeV") : 15.32*0.0632,
+##     ("bbH", "7TeV") : 0.0*0.0632,
+##     ("qqH", "7TeV") : 1.222*0.0632,
+##     ("VH" , "7TeV") : (0.3158+0.5729)*0.0632,
+##  }
 
 ## MSSM xs*BR tanb=20 mA=160 (A+H)
 ## 8TeV taken MSSM Neutral Higgs Group
@@ -206,6 +207,10 @@ def info(type, value, tb):
       pdb.pm()
 
 sys.excepthook = info
+
+## catch up user input errors with analsis=sm and sm_to_mssm=True
+if options.analysis=="sm" :
+    options.sm_to_mssm=False
 
 ## detemine list of channels and list of periods from the datacards in the input
 ## directory
@@ -272,23 +277,7 @@ def get_shape_file(channel, period):
 for chn in channels :
     for per in periods :
         if options.verbose:
-            print "Channel: %s Per: %s" % (chn, per)
-### Here was the idea to take over histos from SM rootfile to MSSM rootfile - not tested not finished
-   ##      if not options.sm_to_mssm=="" :
-##             ## Add the SM signal histograms from a SM rootfile to the MSSM rootfile
-##             #mssm_file = ROOT.TFile(get_shape_file(chn, per), "UPDATE")
-##             #sm_file = ROOT.TFile(options.sm_to_mssm + FILE , "READ")
-##             for signal in signals[chn].format(MASS=options.mass_injected) :
-##                 for cat in ["8", "9"] :
-##                     sm_file = ROOT.TFile(options.sm_to_mssm, "READ")
-##                     help = directories[chn, cat] + "/" + signal
-##                     hist = self.load_hist(sm_file, help)
-##                     new_hist = hist.Clone()
-##                     sm_file.close()
-##                     mssm_file = ROOT.TFile(get_shape_file(chn, per), "UPDATE")
-##                     mssm_file.cd(directory)
-##                     new_hist.Write(signal, ROOT.TObject.kOverwrite)
-##                     mssm_file.close()           
+            print "Channel: %s Per: %s" % (chn, per)      
         signal_processes = signals[chn].format(MASS="").split(",")
         re.sub(r'\s', '', signals[chn])
         signals_used = signals[chn].format(MASS=options.mass_injected)
@@ -309,18 +298,26 @@ for chn in channels :
                 directories_to_randomize = 'emt,mmt,mtt,ett'
             if options.analysis=="mssm" :
                 idx=0
+                ##not needed anymore since VH125, ggH125 and qqH125 are stored directly in rootfiles
                 if options.sm_to_mssm:
-                    for signal in signal_processes :
+                    print signals_used
+                    signals_used=""
+                    print signals_used
+                    print backgrounds[chn]
+                    backgrounds[chn]=backgrounds[chn]+",ggH_SM125,qqH_SM125,VH_SM125"
+                    print backgrounds[chn]
+                ##not needed anymore since VH125, ggH125 and qqH125 are stored directly in rootfiles
+                    ## for signal in signal_processes :
                         
-                        scale=SM_xs[signal, per]
-                        print "signal, xs*BR and scale: ", idx, signal+options.mass_injected, SM_xs[signal, per], scale
-                        if idx==0 :
-                            os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(false,{SCALE},\"{FILE}\",\"{SIGNAL}\",0\)".format(
-                                CMSSW_BASE=os.environ.get("CMSSW_BASE"), SCALE=scale, FILE=histfile, SIGNAL=signal+options.mass_injected))
-                        else :
-                            os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{FILE}\",\"{SIGNAL}\",0\)".format(
-                                CMSSW_BASE=os.environ.get("CMSSW_BASE"), SCALE=scale, FILE=histfile+"_scaled", SIGNAL=signal+options.mass_injected))
-                        idx=idx+1
+##                         scale=SM_xs[signal, per]
+##                         print "signal, xs*BR and scale: ", idx, signal+options.mass_injected, SM_xs[signal, per], scale
+##                         if idx==0 :
+##                             os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(false,{SCALE},\"{FILE}\",\"{SIGNAL}\",0\)".format(
+##                                 CMSSW_BASE=os.environ.get("CMSSW_BASE"), SCALE=scale, FILE=histfile, SIGNAL=signal+options.mass_injected))
+##                         else :
+##                             os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{FILE}\",\"{SIGNAL}\",0\)".format(
+##                                 CMSSW_BASE=os.environ.get("CMSSW_BASE"), SCALE=scale, FILE=histfile+"_scaled", SIGNAL=signal+options.mass_injected))
+##                         idx=idx+1
                 else :
                     for signal in signal_processes :
                         scale=MSSM_xs[signal, per]
@@ -331,18 +328,18 @@ for chn in channels :
                         else :
                             os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{FILE}\",\"{SIGNAL}\",0\)".format(
                                 CMSSW_BASE=os.environ.get("CMSSW_BASE"), SCALE=scale, FILE=histfile+"_scaled", SIGNAL=signal+options.mass_injected))
-                        idx=idx+1 
+                        idx=idx+1
             command = "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/blindData.C+\\(\\\"{FILE}\\\",\\\"{BACKGROUNDS}\\\",\\\"{SIGNALS}\\\",\\\"{DIRS}\\\",true,{RND},{SCALE},\\\"{OUTPUT}\\\",2\)"
             yields = subprocess.Popen(
                 shlex.split(command.format(
                 CMSSW_BASE=os.environ["CMSSW_BASE"],
-                FILE=histfile if options.analysis!="mssm" else histfile+"_scaled",
+                FILE=histfile if (options.sm_to_mssm or options.analysis=="sm") else histfile+"_scaled",
                 BACKGROUNDS=backgrounds[chn],
                 SIGNALS=signals_used,
                 DIRS=directories_to_randomize,
                 RND=options.rnd,
                 SCALE=float(options.signal_strength),
-                OUTPUT=options.output if options.analysis=="sm" else "MSSM" , # this one is needed for MSSM injection, make sure data_obs in correct file is changed
+                OUTPUT=options.output if (options.sm_to_mssm or options.analysis=="sm") else "MSSM", # this one is needed for MSSM injection, make sure data_obs in correct file is changed
                 )), stdout=subprocess.PIPE)
 
             (stdout, _) = yields.communicate()
