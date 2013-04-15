@@ -114,20 +114,28 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
     sm=false;
     std::cerr << "INFO  : MSSM File " << std::endl;
   }
-
+  
   // in case data_obs is supposed to be written to an extra output file
   // open the file, otherwise the data_obs in the input file will be
   // overwritten
+  string used_filename=string(filename);
   TFile* outputFile = 0; 
   if(!std::string(outputLabel).empty()){
-    std::string out = std::string(filename); 
-    outputFile = new TFile((out.substr(0, out.rfind("."))+"_"+outputLabel+".root").c_str(), "update"); 
+    std::string out = std::string(used_filename); 
+    if(std::string(outputLabel).find("MSSM") != std::string::npos){
+      outputFile = new TFile((out.substr(0, out.rfind("."))+".root").c_str(), "update"); 
+    }
+    // make sure data_obs in correct file for MSSM injection is changed
+    // this is the old file which is overwritten 
+    else{
+      outputFile = new TFile((out.substr(0, out.rfind("."))+"_"+outputLabel+".root").c_str(), "update"); 
+    }
   }
 
   TKey* idir;
   TH1F* buffer = 0;
   TH1F* blind_data_obs = 0;
-  TFile* file = new TFile(filename, "update");
+  TFile* file = new TFile(used_filename.c_str(), "update");
   TIter nextDirectory(file->GetListOfKeys());
   while((idir = (TKey*)nextDirectory())){
     if( idir->IsFolder() ){
@@ -216,8 +224,16 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
 	  }
 	  if(outputFile){
 	    // write to a dedicated new file with name output in case output has been specified
-	    outputFile->mkdir(idir->GetName()); outputFile->cd(idir->GetName());
-	    blind_data_obs->Write("data_obs");
+	    // make sure data_obs in correct file for MSSM injection is changed
+	    // this is the old file which is overwritten 
+	    if(std::string(outputLabel).find("MSSM") != std::string::npos){
+	      outputFile->cd(idir->GetName());
+	      blind_data_obs->Write("data_obs", TObject::kOverwrite);
+	    }
+	    else{
+	      outputFile->mkdir(idir->GetName()); outputFile->cd(idir->GetName());
+	      blind_data_obs->Write("data_obs"); 
+	    }
 	  }
 	  else{
 	    // override old data_obs in the inputfile otherwise

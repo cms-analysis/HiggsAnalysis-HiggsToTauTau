@@ -342,7 +342,7 @@ for chn in channels :
                 DIRS=directories_to_randomize,
                 RND=options.rnd,
                 SCALE=float(options.signal_strength),
-                OUTPUT=options.output,
+                OUTPUT=options.output if options.analysis=="sm" else "MSSM" , # this one is needed for MSSM injection, make sure data_obs in correct file is changed
                 )), stdout=subprocess.PIPE)
 
             (stdout, _) = yields.communicate()
