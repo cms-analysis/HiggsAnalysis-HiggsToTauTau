@@ -42,8 +42,8 @@ layout = cms.PSet(
    ,600
    ,700
    ,800
-   ,900
-   ,1000
+  #,900
+  #,1000
     ),
     #masspoints = cms.vdouble(140),
     ## is this mssm?

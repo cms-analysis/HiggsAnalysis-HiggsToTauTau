@@ -44,8 +44,8 @@ layout = cms.PSet(
    ,600.
    ,700.
    ,800.
-   ,900.
-   ,1000.
+   #,900.
+   #,1000.
      ),
     ## is this mssm?
     mssm = cms.bool(True),
