@@ -1,0 +1,16 @@
+# unc.vals: specification of uncertainty values by category, sample, and uncertainty name
+ee_nobtag		signal,Dibosons,WJets           lumi_8TeV            		1.042
+ee_nobtag		signal,ZTT,TTJ,WJets,Dibosons 	CMS_eff_m 			1.04
+ee_nobtag		signal,ZEE,TTJ,WJets,Dibosons	CMS_scale_j_8TeV		0.96
+ee_nobtag		signal,ZEE,TTJ,WJets,Dibosons   CMS_scale_met_8TeV		1.035
+ee_nobtag		signal,ZEE,TTJ,WJets,Dibosons 	CMS_eff_b_8TeV 			0.99
+ee_nobtag		signal,ZEE,TTJ,WJets,Dibosons 	CMS_fake_b_8TeV			0.99
+ee_nobtag		ZTT				CMS_htt_zttNorm_8TeV 		1.03
+ee_nobtag		TTJ				CMS_htt_ttbarNorm_8TeV		1.10
+ee_nobtag		Dibosons			CMS_htt_ee_DiBosonNorm_8TeV	1.30
+ee_nobtag		ZTT				CMS_htt_ee_zttLikelihood_8TeV	1.04
+ee_nobtag		ZEE				CMS_htt_ee_ZEENorm_8TeV		1.07
+ee_nobtag		QCD				CMS_htt_ee_QCDNorm_08_8TeV	1.10
+ee_nobtag             bbH                            	CMS_htt_ee_bbH_MCStat_08_8TeV 	1.11
+ee_nobtag             ggH                             CMS_htt_ee_ggH_MCStat_08_8TeV   1.06
+ee_nobtag		WJets				CMS_htt_ee_WJetsNorm_08_8TeV	1.27
