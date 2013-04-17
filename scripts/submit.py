@@ -559,11 +559,11 @@ if options.optTanb or options.optTanbPlus :
             if len(subvec(args, 500, 1000))>0 :
                 dirs = vec2str(subvec(args, 500, 1000))
                 if options.printOnly :
-                    print "{CMD} -n  3 --min  1.0  --max  5.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                    print "{CMD} -n  3 --min  4.0  --max  8.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
                     print "{CMD} -n  4 --min 10.0  --max 25.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
                     print "{CMD} -n  5 --min 30.0  --max 70.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
                 else :
-                    os.system("{CMD} -n  3 --min  1.0  --max  5.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs))
+                    os.system("{CMD} -n  3 --min  4.0  --max  8.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs))
                     os.system("{CMD} -n  4 --min 10.0  --max 25.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs))
                     os.system("{CMD} -n  5 --min 30.0  --max 70.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs))
         else :
