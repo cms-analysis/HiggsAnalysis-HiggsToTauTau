@@ -142,7 +142,7 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
     std::cout << "****************************************************************" << std::endl;
     std::cout << "* [" << np+1 << "|" << point->second << "] asymptotic limit(";
     std::cout << limitType(itype) << ") :" << crossing[np] << " -- " << limit << " deltaM : " << deltaM;
-    // if(((upper_exclusion && point->second) || (!upper_exclusion && !(point->second))) && !filled){
+//     if(((upper_exclusion && point->second) || (!upper_exclusion && !(point->second))) && !filled){
 //       //std::cout << "limit is taken from linear interpolation at the moment" << std::endl;
 //       //limit = crossing;
 //       std::cout << "    [-->to file]"; filled=true; tree->Fill();
@@ -188,15 +188,15 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
   if( verbosity>0 ){
     std::string monitor = std::string("SCAN-")+limitType(itype);
     TCanvas* canv = new TCanvas(monitor.c_str(), monitor.c_str(), 600, 600);
-    TH1F* frame = canv->DrawFrame(graph->GetX()[0]-0.1, 0., graph->GetX()[graph->GetN()-1]+0.1, 3.);
+    TH1F* frame = canv->DrawFrame(graph->GetX()[0]-0.1, 0., graph->GetX()[graph->GetN()-1]+0.1, 10.);
     canv->SetGridx(1); canv->SetGridy(1); canv->cd(); 
     graph->SetMarkerStyle(20.); 
     graph->SetMarkerColor(kBlack); 
     graph->SetMarkerSize(1.3); 
     graph->Draw("P");
-    spline->SetLineColor(kBlue); 
-    spline->SetLineWidth(3.); 
-    spline->Draw("same");
+    //spline->SetLineColor(kBlue); 
+    //spline->SetLineWidth(3.); 
+    //spline->Draw("same");
     if(filled) fnc->SetLineColor(kRed);
     if(filled) fnc->SetLineWidth(3.);
     if(filled) fnc->Draw("same");
