@@ -27,7 +27,6 @@ cats2.add_option("--mssm-categories-em", dest="em_mssm_categories", default="8 9
 cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="8 9", type="string", help="List mt of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9", type="string", help="List et of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
-#cats2.add_option("--mssm-categories-hmm", dest="hmm_mssm_categories", default="0 1", type="string", help="List of hmm event categories. [Default: \"0 1\"]")
 cats2.add_option("--mssm-categories-hbb", dest="hbb_mssm_categories", default="0 1 2 3 4 5 6", type="string", help="List of hbb event categories. [Default: \"0 1 2 3 4 5\"]")
 parser.add_option_group(cats2)
 
@@ -65,21 +64,8 @@ if options.analysis == "mssm" :
         "mt"   : options.mt_mssm_categories.split(),
         "et"   : options.et_mssm_categories.split(),
         "tt"   : options.tt_mssm_categories.split(),
-        #"hmm"  : options.hmm_mssm_categories.split(),
         "hbb"  : options.hbb_mssm_categories.split(),
         }
-
-## setup directory structure in case it does not exist, yet
-if not os.path.exists(options.out) :
-    os.system("mkdir {OUTPUT}/".format(OUTPUT=options.out))
-if not os.path.exists("{OUTPUT}/cmb{LABEL}".format(OUTPUT=options.out, ANA=options.analysis, LABEL=label)) :
-    os.system("mkdir {OUTPUT}/cmb{LABEL}".format(OUTPUT=options.out, ANA=options.analysis, LABEL=label))
-for channel in channels :
-    if not os.path.exists("{OUTPUT}/{CHN}{LABEL}".format(OUTPUT=options.out, CHN=channel, LABEL=label)) :
-        os.system("mkdir {OUTPUT}/{CHN}{LABEL}".format(OUTPUT=options.out, CHN=channel, LABEL=label))
-for category in categories :
-    if not os.path.exists("{OUTPUT}/{CAT}{LABEL}".format(OUTPUT=options.out, CAT=category, LABEL=label)) :
-        os.system("mkdir {OUTPUT}/{CAT}{LABEL}".format(OUTPUT=options.out, CAT=category, LABEL=label))
 
 #directories = {
 #    "0"  : ["0jet", "fermionic", "htt"],
@@ -95,17 +81,24 @@ for category in categories :
 #}
 
 ## configuration for Moriond
-directories = {
+directories_sm = {
     "0"  : ["boost", "vbf"],
     "1"  : ["boost", "vbf"],
     "2"  : ["boost"],
     "3"  : ["boost"],
     "4"  : ["2jet"],
     "5"  : ["vbf"],
-    "6"  : ["btag", "htt"],
-    "7"  : ["btag", "htt"],
-    "8"  : ["nobtag", "htt"],
-    "9"  : ["btag", "htt"],
+}
+
+directories_mssm = {
+    "0"  : ["nobtag", "btag"],
+    "1"  : ["nobtag", "btag"],
+    "2"  : ["nobtag"],
+    "3"  : ["nobtag"],
+    "6"  : ["btag"],
+    "7"  : ["btag"],
+    "8"  : ["nobtag"],
+    "9"  : ["btag"],
 }
 
 ## categories are different for the vhtt case
@@ -141,29 +134,52 @@ hbb_directories = {
     "6"  : ["bblep", "hbb"],
 }
 
+## determine directories
+def directories(channel) :
+    if options.analysis == "sm" :
+        category_names = directories_sm
+    else :
+        category_names = directories_mssm
+    if 'vhtt' in channel:
+        category_names = vhtt_directories
+    if channel == 'tt':
+        category_names = tt_directories
+    if channel == 'hmm':
+        category_names = hmm_directories
+    if channel == 'hbb':
+        category_names = hbb_directories 
+    return category_names
+
+## setup directory structure in case it does not exist, yet
+if not os.path.exists(options.out) :
+    os.system("mkdir {OUTPUT}/".format(OUTPUT=options.out))
+if not os.path.exists("{OUTPUT}/cmb{LABEL}".format(OUTPUT=options.out, ANA=options.analysis, LABEL=label)) :
+    os.system("mkdir {OUTPUT}/cmb{LABEL}".format(OUTPUT=options.out, ANA=options.analysis, LABEL=label))
+for channel in channels :
+    if not os.path.exists("{OUTPUT}/{CHN}{LABEL}".format(OUTPUT=options.out, CHN=channel, LABEL=label)) :
+        os.system("mkdir {OUTPUT}/{CHN}{LABEL}".format(OUTPUT=options.out, CHN=channel, LABEL=label))
+for channel in channels :
+    category_names = directories(channel)
+    for cat in categories[channel] :
+        for dir in category_names[cat]:
+            if not os.path.exists("{OUTPUT}/{DIR}{LABEL}".format(OUTPUT=options.out, DIR=dir, LABEL=label)) :
+                os.system("mkdir {OUTPUT}/{DIR}{LABEL}".format(OUTPUT=options.out, DIR=dir, LABEL=label))
+
 verb = "-v" if options.verbose else ""
 
 for channel in channels :
+    category_names = directories(channel)
     for period in periods :
         for cat in categories[channel] :
-            category_names = directories
-            if 'vhtt' in channel:
-                category_names = vhtt_directories
-            if channel == 'tt':
-                category_names = tt_directories
-            if channel == 'hmm':
-                category_names = hmm_directories
-            if channel == 'hbb':
-                category_names = hbb_directories 
             for mass in parseArgs(args) :
                 print "setup directory structure for", options.analysis, period, channel, cat, mass
                 ## setup combined
-                os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --no-update {VERB} {MASS}".format(
-                    INPUT=options.input, OUTPUT=options.out+"/cmb"+label, PER=period, ANA=options.analysis, CHN=channel, VERB=verb, MASS=mass))
+                os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --no-update --{ANA}-categories-{CHN} {CAT} {VERB} {MASS}".format(
+                    INPUT=options.input, OUTPUT=options.out+"/cmb"+label, PER=period, ANA=options.analysis, CHN=channel, CAT=cat, VERB=verb, MASS=mass))
                 if options.setup == "all" or options.setup == "chn" :
                     ## setup channel-wise
-                    os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --no-update {VERB} {MASS}".format(
-                        INPUT=options.input, OUTPUT=options.out+"/"+channel+label, PER=period, ANA=options.analysis, CHN=channel, VERB=verb, MASS=mass))
+                    os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --no-update --{ANA}-categories-{CHN} {CAT} {VERB} {MASS}".format(
+                        INPUT=options.input, OUTPUT=options.out+"/"+channel+label, PER=period, ANA=options.analysis, CHN=channel, CAT=cat, VERB=verb, MASS=mass))
                 if options.setup == "all" or options.setup == "cat" :
                     ## setup category-wise
                     for category in category_names[cat]:
