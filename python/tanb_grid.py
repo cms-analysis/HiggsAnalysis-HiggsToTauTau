@@ -151,7 +151,7 @@ class MakeDatacard :
               """
               if mode == "mode-0" :
                      for chn in ["mm", "em", "et", "mt"] :
-                            for cat in ["8", "9"] : #"0", "1", "2", "3", "4", "5", "6", "7"] :
+                            for cat in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"] :
                                    for period in ["7TeV", "8TeV"] :
                                           decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
                                           self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses"
@@ -173,7 +173,7 @@ class MakeDatacard :
                      self.decay_channel_to_interpolation_method["hbb_6_7TeV"      ] = "non-degenerate-masses"
               if mode == "mode-1" :
                      for chn in ["mm", "em", "et", "mt"] :
-                            for cat in ["8", "9"] : #"0", "1", "2", "3", "4", "5", "6", "7"] :
+                            for cat in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"] :
                                    for period in ["7TeV", "8TeV"] :
                                           decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
                                           if chn == "mm" :
@@ -198,7 +198,7 @@ class MakeDatacard :
                      self.decay_channel_to_interpolation_method["hbb_6_7TeV"      ] = "non-degenerate-masses"
               if mode == "mode-2" :
                      for chn in ["mm", "em", "et", "mt"] :
-                            for cat in ["8", "9"] : #"0", "1", "2", "3", "4", "5", "6", "7"] :
+                            for cat in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"] :
                                    for period in ["7TeV", "8TeV"] :
                                           decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
                                           if chn == "mm" :
@@ -223,7 +223,7 @@ class MakeDatacard :
                      self.decay_channel_to_interpolation_method["hbb_6_7TeV"      ] = "non-degenerate-masses"
               if mode == "mode-3" :
                      for chn in ["mm", "em", "et", "mt"] :
-                            for cat in ["8", "9"] : #"0", "1", "2", "3", "4", "5", "6", "7"] :
+                            for cat in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"] :
                                    for period in ["7TeV", "8TeV"] : 
                                           decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
                                           self.decay_channel_to_interpolation_method[decay_channel] = "non-degenerate-masses-light"
@@ -245,7 +245,7 @@ class MakeDatacard :
                      self.decay_channel_to_interpolation_method["hbb_6_7TeV"      ] = "non-degenerate-masses-light"
               if mode == "mode-4" :
                      for chn in ["mm", "em", "et", "mt"] :
-                            for cat in ["8", "9"] : #"0", "1", "2", "3", "4", "5", "6", "7"] :
+                            for cat in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"] :
                                    for period in ["7TeV", "8TeV"] :
                                           decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
                                           if chn == "mm" :
@@ -270,7 +270,7 @@ class MakeDatacard :
                      self.decay_channel_to_interpolation_method["hbb_6_7TeV"      ] = "non-degenerate-masses-light"
               if mode == "mode-5" :
                      for chn in ["mm", "em", "et", "mt"] :
-                            for cat in ["8", "9"] : #"0", "1", "2", "3", "4", "5", "6", "7"] :
+                            for cat in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"] :
                                    for period in ["7TeV", "8TeV"] :
                                           decay_channel = "htt_{CHN}_{CAT}_{PERIOD}".format(CHN=chn, CAT=cat, PERIOD=period)
                                           self.decay_channel_to_interpolation_method[decay_channel] = "degenerate-masses"
@@ -835,8 +835,8 @@ class MakeDatacard :
               """
               scale = 1.
               if m_upper>m_lower:
-                     scale = hist_lower.Integral()+abs(hist_upper.Integral()-hist_lower.Integral())/abs(m_upper-m_lower)*(mass-m_lower)
-              return scale
+                     scale = hist_lower.Integral()+(hist_upper.Integral()-hist_lower.Integral())/(m_upper-m_lower)*(mass-m_lower)
+              return scale//hist_lower.Integral()
 
        def expand_filename(self, filename, mass=-1) :
               """
