@@ -24,6 +24,8 @@ parser.add_option("--no-fudge-for-mm", dest="no_fudge", default=False, action="s
 parser.add_option("--sm-higgs-as-bkg", dest="sm_higgs_as_bkg", default=False, action="store_true",
                   help="Add the SM Higgs expectation as a background")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
+cats1.add_option("--sm-categories-ee", dest="ee_sm_categories", default="0 1 2 3 5", type="string",
+                 help="List ee of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string",
                  help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 5", type="string",
@@ -40,6 +42,8 @@ cats1.add_option("--sm-categories-vhbb", dest="vhbb_sm_categories", default="0 1
                  help="List of vhbb event categories. [Default: \"0 1 2 3 4 5 6 7 8 9\"]")
 parser.add_option_group(cats1)
 cats2 = OptionGroup(parser, "MSSM EVENT CATEGORIES", "Event categories to be used for the MSSM analysis.")
+cats2.add_option("--mssm-categories-ee", dest="ee_mssm_categories", default="8 9", type="string",
+                 help="List ee of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="8 9", type="string",
                  help="List mm of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-em", dest="em_mssm_categories", default="8 9", type="string",
@@ -92,6 +96,7 @@ os.chdir(options.out)
 ## valid mass range per category
 if options.analysis == "sm" :
     valid_masses = {
+        "ee"   : ( 90, 145),
         "mm"   : ( 90, 145),
         "em"   : ( 90, 145),
         "mt"   : ( 90, 145),
@@ -102,6 +107,7 @@ if options.analysis == "sm" :
     }
 if options.analysis == "mssm" :
     valid_masses = {
+        "ee"   : (90, 1000),
         "mm"   : (90, 1000),
         "em"   : (90, 1000),
         "mt"   : (90, 1000),
@@ -121,6 +127,7 @@ print
 ## valid run periods
 if options.analysis == "sm" :
     valid_periods = {
+        "ee"   : "7TeV 8TeV 14TeV",
         "mm"   : "7TeV 8TeV 14TeV",
         "em"   : "7TeV 8TeV 14TeV",
         "mt"   : "7TeV 8TeV 14TeV",
@@ -131,6 +138,7 @@ if options.analysis == "sm" :
         }
 if options.analysis == "mssm" :
     valid_periods = {
+        "ee"   : "7TeV 8TeV",
         "mm"   : "7TeV 8TeV",
         "em"   : "7TeV 8TeV",
         "mt"   : "7TeV 8TeV",
@@ -151,6 +159,7 @@ print
 if options.analysis == "sm" :
     os.chdir("sm")
     categories = {
+        "ee"   : options.mm_sm_categories.split(),
         "mm"   : options.mm_sm_categories.split(),
         "em"   : options.em_sm_categories.split(),
         "mt"   : options.mt_sm_categories.split(),
@@ -164,6 +173,7 @@ if options.analysis == "sm" :
 if options.analysis == "mssm" :
     os.chdir("mssm")
     categories = {
+        "ee"   : options.mm_mssm_categories.split(),
         "mm"   : options.mm_mssm_categories.split(),
         "em"   : options.em_mssm_categories.split(),
         "mt"   : options.mt_mssm_categories.split(),
