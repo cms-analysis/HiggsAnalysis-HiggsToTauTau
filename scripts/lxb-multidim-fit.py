@@ -53,7 +53,7 @@ mv {DIRECTORY}/.done_{OUTPUT} {DIRECTORY}/.done_{IDX}
 lxq_fragment = '''
 #!/bin/bash
 export SCRAM_ARCH=$scram_arch
-ini cmssw
+ini cmssw_cvmfs
 ini autoproxy
 '''
 

@@ -59,7 +59,7 @@ $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} {director
 
 lxq_fragment = '''#!/bin/bash
 export SCRAM_ARCH=$scram_arch
-ini cmssw
+ini cmssw_cvmfs
 ini autoproxy
 '''
 

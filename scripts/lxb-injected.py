@@ -82,7 +82,7 @@ lxq_fragment = '''
 #!/usr/bin/bash
 
 export SCRAM_ARCH=$scram_arch
-ini cmssw
+ini cmssw_cvmfs
 ini autoproxy
 '''
 

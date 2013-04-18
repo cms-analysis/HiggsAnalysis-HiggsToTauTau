@@ -48,7 +48,7 @@ lxq_fragment = '''
 #!/usr/bin/bash
 #$ -l h_cpu=1:00:00
 export SCRAM_ARCH=$scram_arch
-ini cmssw
+ini cmssw_cvmfs
 ini autoproxy
 '''
 
