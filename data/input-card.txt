@@ -27,6 +27,6 @@ out.mhmax-mu+600-7TeV-nnlo.root            auxiliaries/models/out.mhmax-mu+600-7
 out.mhmax-mu+800-7TeV-nnlo.root            auxiliaries/models/out.mhmax-mu+800-7TeV-nnlo.root
 out.nomix-mu+200-7TeV-nnlo.root            auxiliaries/models/out.nomix-mu+200-7TeV-nnlo.root
 out.nomix-mu-200-7TeV-nnlo.root            auxiliaries/models/out.nomix-mu-200-7TeV-nnlo.root
-out.mhmax-mu+200-8TeV-tanbHigh-nnlo.root   auxiliaries/models/out.mhmax-mu+200-7TeV-tanbHigh-nnlo.root
-out.mhmax-mu+200-8TeV-tanbLow-nnlo.root    auxiliaries/models/out.mhmax-mu+200-7TeV-tanbLow-nnlo.root
+out.mhmax-mu+200-8TeV-tanbHigh-nnlo.root   auxiliaries/models/out.mhmax-mu+200-8TeV-tanbHigh-nnlo.root
+out.mhmax-mu+200-8TeV-tanbLow-nnlo.root    auxiliaries/models/out.mhmax-mu+200-8TeV-tanbLow-nnlo.root
 out.nomix-mu+200-8TeV-nnlo.root            auxiliaries/models/out.nomix-mu+200-8TeV-nnlo.root
