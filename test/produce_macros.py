@@ -10,6 +10,8 @@ parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choic
 parser.add_option("-c", "--channels", dest="channels", default="em, et, mt, mm", type="string", help="Channels for which postfit plots should be made. Individual channels should be separated by comma or whitespace. [Default: 'em, et, mt, mm']")
 parser.add_option("-y", "--yields", dest="yields", default="1", type="int", help="Shift yield uncertainties. [Default: '1']")
 parser.add_option("-s", "--shapes", dest="shapes", default="1", type="int", help="Shift shape uncertainties. [Default: '1']")
+parser.add_option("--mA", dest="mA", default="160", type="float", help="Mass of pseudoscalar mA only needed for mssm. [Default: '160']")
+parser.add_option("--tanb", dest="tanb", default="20", type="float", help="Tanb only needed for mssm. [Default: '20']")
 parser.add_option("-u", "--uncertainties", dest="uncertainties", default="1", type="int", help="Set uncertainties of backgrounds. [Default: '1']")
 parser.add_option("-v", "--verbose", dest="verbose", action="store_true", default=False, help="Run in verbose more. [Default: 'False']")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
@@ -39,6 +41,7 @@ if len(args) > 0 :
 ## sample name strings to fit weights
 from DatacardUtils import parse_dcard
 from ROOT import *
+from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools ##not needed atm
 import math
 import os
 
@@ -94,7 +97,35 @@ class Analysis:
          """
          input_file = open(self.template_fname,'r')
          output_file = open(self.output_fname,'w')
-         
+
+         if(options.analysis=="mssm") :
+             foundEnergy="7TeV"
+             if self.histfile.find("8TeV")>-1 :
+                 foundEnergy="8TeV"
+             br="BR"
+             if self.histfile.find("hbb")>-1 :
+                 br="BR-hbb"                 
+             path="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{ECMS}-{TANBINTERVALL}-nnlo.root".format(
+                 ECMS=foundEnergy,
+                 TANBINTERVALL="tanbHigh" if options.tanb>=1.0 else "tanbLow"
+                 )
+             mssm_scan = mssm_xsec_tools("{CMSSW_BASE}/src/{PATH}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], PATH=path))
+             mssm_xsec = mssm_scan.query(options.mA, options.tanb)
+             bbH_xseff_A=mssm_xsec['higgses']['A']['xsec']['santander']*mssm_xsec['higgses']['A'][br]
+             ggH_xseff_A=mssm_xsec['higgses']['A']['xsec']['ggF'      ]*mssm_xsec['higgses']['A'][br]
+             bbH_xseff_H=mssm_xsec['higgses']['H']['xsec']['santander']*mssm_xsec['higgses']['H'][br]
+             ggH_xseff_H=mssm_xsec['higgses']['H']['xsec']['ggF'      ]*mssm_xsec['higgses']['H'][br]
+             bbH_xseff_h=mssm_xsec['higgses']['h']['xsec']['santander']*mssm_xsec['higgses']['h'][br]
+             ggH_xseff_h=mssm_xsec['higgses']['h']['xsec']['ggF'      ]*mssm_xsec['higgses']['h'][br]
+             bbH_xseff_hH=bbH_xseff_H
+             ggH_xseff_hH=ggH_xseff_H
+             if options.mA==130 :
+                 bbH_xseff_hH=bbH_xseff_H+bbH_xseff_h
+                 ggH_xseff_hH=ggH_xseff_H+ggH_xseff_h
+             if options.mA<130 :
+                 bbH_xseff_hH=bbH_xseff_h
+                 ggH_xseff_hH=ggH_xseff_h
+                 
          curr_name = ""
          for line in input_file:
              move_on = False
@@ -108,6 +139,10 @@ class Analysis:
              line = line.replace(template_name, output_name)
              line = line.replace("$HISTFILE", self.histfile)
              line = line.replace("$CATEGORY", self.category)
+             line = line.replace("$MSSM_SIGNAL_ggH_xseff_A" , str(ggH_xseff_A))
+             line = line.replace("$MSSM_SIGNAL_ggH_xseff_hH", str(ggH_xseff_hH))
+             line = line.replace("$MSSM_SIGNAL_bbH_xseff_A" , str(bbH_xseff_A))
+             line = line.replace("$MSSM_SIGNAL_bbH_xseff_hH", str(bbH_xseff_hH))
 	     if options.uncertainties and (options.yields or options.shapes):
                 line = line.replace("$DRAW_ERROR", 'if(scaled) errorBand->Draw("e2same");')
                 line = line.replace("$ERROR_LEGEND", 'if(scaled) leg->AddEntry(errorBand, "bkg. uncertainty" , "F" );')
