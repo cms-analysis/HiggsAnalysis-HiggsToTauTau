@@ -143,6 +143,8 @@ class Analysis:
              line = line.replace("$MSSM_SIGNAL_ggH_xseff_hH", str(ggH_xseff_hH))
              line = line.replace("$MSSM_SIGNAL_bbH_xseff_A" , str(bbH_xseff_A))
              line = line.replace("$MSSM_SIGNAL_bbH_xseff_hH", str(bbH_xseff_hH))
+             line = line.replace("$MA" , str(int(options.mA)))
+             line = line.replace("$TANB", str(int(options.tanb)))
 	     if options.uncertainties and (options.yields or options.shapes):
                 line = line.replace("$DRAW_ERROR", 'if(scaled) errorBand->Draw("e2same");')
                 line = line.replace("$ERROR_LEGEND", 'if(scaled) leg->AddEntry(errorBand, "bkg. uncertainty" , "F" );')

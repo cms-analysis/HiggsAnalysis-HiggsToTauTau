@@ -235,7 +235,7 @@ HBB_LEP_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   massA->SetTextSize ( 0.03 );
   massA->SetTextColor(    1 );
   massA->SetTextFont (   62 );
-  massA->AddText("m_{A}=160GeV");
+  massA->AddText("m_{A}=$MAGeV");
   massA->Draw();
 
   TPaveText* tanb      = new TPaveText(0.75, 0.44+0.061, 0.85, 0.44+0.161, "NDC");
@@ -245,7 +245,7 @@ HBB_LEP_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   tanb->SetTextSize ( 0.03 );
   tanb->SetTextColor(    1 );
   tanb->SetTextFont (   62 );
-  tanb->AddText("tan#beta=20");
+  tanb->AddText("tan#beta=$TANB");
   tanb->Draw();
 
   TPaveText* scen      = new TPaveText(0.75, 0.40+0.061, 0.85, 0.40+0.161, "NDC");
