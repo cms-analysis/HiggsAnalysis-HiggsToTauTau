@@ -105,7 +105,7 @@ class Analysis:
              br="BR"
              if self.histfile.find("hbb")>-1 :
                  br="BR-hbb"                 
-             path="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{ECMS}-{TANBINTERVALL}-nnlo.root".format(
+             path="auxiliaries/models/out.mhmax-mu+200-{ECMS}-{TANBINTERVALL}-nnlo.root".format(
                  ECMS=foundEnergy,
                  TANBINTERVALL="tanbHigh" if options.tanb>=1.0 else "tanbLow"
                  )
