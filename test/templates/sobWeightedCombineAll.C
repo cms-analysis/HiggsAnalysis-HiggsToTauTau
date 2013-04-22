@@ -218,11 +218,64 @@ void sobWeightedCombineAll(float muValue=1.10)
   E8TeVNoTauTau[7]="eleTau_vbf_rescaled_8TeV_";
   E8TeVNoTauTau[8]="muTau_vbf_rescaled_8TeV_";
 
-  TString dataset="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.3 fb^{-1} at 8 TeV";
+  TString ALL_MSSM_2cat[NMAXINPUT];
+  ALL_MSSM_2cat[0]="emu_nobtag_rescaled_7TeV_";
+  ALL_MSSM_2cat[1]="emu_nobtag_rescaled_8TeV_";
+  ALL_MSSM_2cat[2]="emu_btag_rescaled_7TeV_";
+  ALL_MSSM_2cat[3]="emu_btag_rescaled_8TeV_"; 
+  ALL_MSSM_2cat[0]="eleTau_nobtag_rescaled_7TeV_";
+  ALL_MSSM_2cat[1]="eleTau_nobtag_rescaled_8TeV_";
+  ALL_MSSM_2cat[2]="eleTau_btag_rescaled_7TeV_";
+  ALL_MSSM_2cat[3]="eleTau_btag_rescaled_8TeV_";
+  ALL_MSSM_2cat[0]="mumu_nobtag_rescaled_7TeV_";
+  ALL_MSSM_2cat[1]="mumu_nobtag_rescaled_8TeV_";
+  ALL_MSSM_2cat[2]="mumu_btag_rescaled_7TeV_";
+  ALL_MSSM_2cat[3]="mumu_btag_rescaled_8TeV_";
+  ALL_MSSM_2cat[0]="muTau_nobtag_rescaled_7TeV_";
+  ALL_MSSM_2cat[1]="muTau_nobtag_rescaled_8TeV_";
+  ALL_MSSM_2cat[2]="muTau_btag_rescaled_7TeV_";
+  ALL_MSSM_2cat[3]="muTau_btag_rescaled_8TeV_";
+  ALL_MSSM_2cat[0]="tauTau_nobtag_rescaled_7TeV_";
+  ALL_MSSM_2cat[1]="tauTau_nobtag_rescaled_8TeV_";
+  ALL_MSSM_2cat[2]="tauTau_btag_rescaled_7TeV_";
+  ALL_MSSM_2cat[3]="tauTau_btag_rescaled_8TeV_";
 
-  sobCombine("All"  , All  , dataset, "e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}" , ""           , 1, muValue);
-  sobCombine("Boost", Boost, dataset, "e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}" , "1 jet"      , 1, muValue);
-  sobCombine("VBF"  , VBF  , dataset, "e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}" , "2 jet (VBF)", 1, muValue);  
+  TString EMu_MSSM_2cat[NMAXINPUT];
+  EMu_MSSM_2cat[0]="emu_nobtag_rescaled_7TeV_";
+  EMu_MSSM_2cat[1]="emu_nobtag_rescaled_8TeV_";
+  EMu_MSSM_2cat[2]="emu_btag_rescaled_7TeV_";
+  EMu_MSSM_2cat[3]="emu_btag_rescaled_8TeV_";
+
+  TString ETau_MSSM_2cat[NMAXINPUT];
+  ETau_MSSM_2cat[0]="eleTau_nobtag_rescaled_7TeV_";
+  ETau_MSSM_2cat[1]="eleTau_nobtag_rescaled_8TeV_";
+  ETau_MSSM_2cat[2]="eleTau_btag_rescaled_7TeV_";
+  ETau_MSSM_2cat[3]="eleTau_btag_rescaled_8TeV_";
+
+  TString MuMu_MSSM_2cat[NMAXINPUT];
+  MuMu_MSSM_2cat[0]="mumu_nobtag_rescaled_7TeV_";
+  MuMu_MSSM_2cat[1]="mumu_nobtag_rescaled_8TeV_";
+  MuMu_MSSM_2cat[2]="mumu_btag_rescaled_7TeV_";
+  MuMu_MSSM_2cat[3]="mumu_btag_rescaled_8TeV_";
+
+  TString MuTau_MSSM_2cat[NMAXINPUT];
+  MuTau_MSSM_2cat[0]="muTau_nobtag_rescaled_7TeV_";
+  MuTau_MSSM_2cat[1]="muTau_nobtag_rescaled_8TeV_";
+  MuTau_MSSM_2cat[2]="muTau_btag_rescaled_7TeV_";
+  MuTau_MSSM_2cat[3]="muTau_btag_rescaled_8TeV_";
+
+  TString TauTau_MSSM_2cat[NMAXINPUT];
+  TauTau_MSSM_2cat[0]="tauTau_nobtag_rescaled_7TeV_";
+  TauTau_MSSM_2cat[1]="tauTau_nobtag_rescaled_8TeV_";
+  TauTau_MSSM_2cat[2]="tauTau_btag_rescaled_7TeV_";
+  TauTau_MSSM_2cat[3]="tauTau_btag_rescaled_8TeV_";
+  
+
+  TString dataset="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV";
+
+  //  sobCombine("All"  , All  , dataset, "e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}" , ""           , 1, muValue);
+  //  sobCombine("Boost", Boost, dataset, "e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}" , "1 jet"      , 1, muValue);
+  // sobCombine("VBF"  , VBF  , dataset, "e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}" , "2 jet (VBF)", 1, muValue);  
 //   sobCombine("EMu",EMu,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e#mu",1,muValue);
 //   sobCombine("ETau",ETau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","e#tau_{h}",1,muValue);
 //   sobCombine("MuTau",MuTau,"#sqrt{s} = 7 - 8 TeV ,   L = 24.3 fb^{-1}","#mu-#tau_{h}",1,muValue);
@@ -240,7 +293,14 @@ void sobWeightedCombineAll(float muValue=1.10)
 //   sobCombine("MuTauBoost8TeV",MuTauBoost8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h} Boost",1,muValue);
 //   sobCombine("MuTau8TeV",MuTau8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h}",1,muValue);
 //   sobCombine("MuTau0Jet8TeV",MuTau0Jet8TeV,2,0,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h} 0-Jet",1,muValue);
+
+//  sobCombine("All_MSSM_2Cat", All_MSSM_2cat  , dataset, "#scale[1]e#mu_{h}, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#mu_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}" , ""           , 1, muValue);
+  sobCombine("EMu_MSSM_2Cat", EMu_MSSM_2cat, dataset, "#scale[1]{e}#mu_{h}" , ""      , 1, muValue);
+  //  sobCombine("ETau_MSSM_2Cat", ETau_MSSM_2cat, dataset, "#scale[1]{e}#tau_{h}" , ""      , 1, muValue);
+  //  sobCombine("MuMu_MSSM_2Cat", MuMu_MSSM_2cat, dataset, "#scale[1]{#mu}#mu" , ""      , 1, muValue);
+  //  sobCombine("MuTau_MSSM_2Cat", MuTau_MSSM_2cat, dataset, "#scale[1]{#mu}#tau_{h}" , ""      , 1, muValue);
+  //  sobCombine("TauTau_MSSM_2Cat", TauTau_MSSM_2cat, dataset, "#scale[1]{#tau_{h}}#tau_{h}" , ""      , 1, muValue);
+
   gROOT->ProcessLine(".q");
 }
-
-
+ 
