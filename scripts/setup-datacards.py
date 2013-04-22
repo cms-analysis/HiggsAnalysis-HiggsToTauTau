@@ -52,10 +52,8 @@ cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="8 9
                  help="List mt of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9", type="string",
                  help="List et of event categories. [Default: \"8 9\"]")
-cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="0 1", type="string",
-                 help="List of tt event categories. [Default: \"0 1\"]")
-#cats2.add_option("--mssm-categories-hmm", dest="hmm_mssm_categories", default="0 1", type="string",
-#                 help="List of hmm event categories. [Default: \"0 1\"]")
+cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="8 9", type="string",
+                 help="List of tt event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-hbb", dest="hbb_mssm_categories", default="0 1 2 3 4 5 6", type="string",
                  help="List of hbb event categories. [Default: \"0 1 2 3 4 5 6\"]")
 parser.add_option_group(cats2)
@@ -112,8 +110,7 @@ if options.analysis == "mssm" :
         "em"   : (90, 1000),
         "mt"   : (90, 1000),
         "et"   : (90, 1000),
-        "tt"   : (90,  500),
-        #"hmm"  : (120, 300),
+        "tt"   : (90, 1000),
         "hbb"  : (90,  350),
     }
 

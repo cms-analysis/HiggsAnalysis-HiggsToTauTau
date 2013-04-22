@@ -26,7 +26,7 @@ cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="8 9
 cats2.add_option("--mssm-categories-em", dest="em_mssm_categories", default="8 9", type="string", help="List em of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="8 9", type="string", help="List mt of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9", type="string", help="List et of event categories. [Default: \"8 9\"]")
-cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
+cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="8 9", type="string", help="List of tt event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-hbb", dest="hbb_mssm_categories", default="0 1 2 3 4 5 6", type="string", help="List of hbb event categories. [Default: \"0 1 2 3 4 5\"]")
 parser.add_option_group(cats2)
 
@@ -114,9 +114,14 @@ vhtt_directories = {
 #    "1"  : ["vbf", "gauge", "htt"],
 #}
 
-tt_directories = {
+tt_sm_directories = {
     "0"  : ["boost"],
     "1"  : ["vbf"],
+}
+
+tt_mssm_directories = {
+    "8"  : ["btag"],
+    "9"  : ["nobtag"],
 }
 
 #hmm_directories = {
@@ -143,7 +148,10 @@ def directories(channel) :
     if 'vhtt' in channel:
         category_names = vhtt_directories
     if channel == 'tt':
-        category_names = tt_directories
+        if options.analysis == "sm" :
+            category_names = tt_sm_directories
+        else:
+            category_names = tt_mssm_directories
     if channel == 'hmm':
         category_names = hmm_directories
     if channel == 'hbb':
