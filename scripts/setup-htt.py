@@ -120,8 +120,8 @@ tt_sm_directories = {
 }
 
 tt_mssm_directories = {
-    "8"  : ["btag"],
-    "9"  : ["nobtag"],
+    "8"  : ["nobtag"],
+    "9"  : ["btag"],
 }
 
 #hmm_directories = {
