@@ -86,9 +86,9 @@ postfit(const char* inputfile, const char* analysis = "SM", const char* dataset 
 	else dataset = "MS Preliminary,  H#rightarrow#tau#tau, 19.4 fb^{-1} at 8 TeV";
   }
   if (std::string(dataset) == std::string("2011+2012")){ 
-	if (std::string(extra) == std::string("#mu#mu") ) dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 18.6 fb^{-1} at 8 TeV"; 
+	if (std::string(extra) == std::string("#mu#mu") ) dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 18.7 fb^{-1} at 8 TeV"; 
  	else dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV";
-	if (MSSM) dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 12.1 fb^{-1} at 8 TeV";
+	if (MSSM) dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV";
   }
   // determine category tag
   const char* category_extra = "";
