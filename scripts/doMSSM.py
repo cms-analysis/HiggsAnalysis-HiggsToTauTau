@@ -13,6 +13,8 @@ parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="
                   help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analyses", dest="analyses", default="std, pruned",
                   help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"std, bin-by-bin, pruned\" [Default: \"std, pruned\"]")
+parser.add_option("--split-categories", dest="split_categories", default=False, action="store_true",
+                  help="Using split categories, means categories 0, 1, 2, 3, 6, 7 instead of 8, 9 [Default: False]")
 parser.add_option("--label", dest="index", default="", type="string", 
                   help="Possibility to give the setups, aux and LIMITS directory a index (example LIMITS-bbb). [Default: \"\"]")
 parser.add_option("--fit-result", dest="fit_result", default="",  type="string",
@@ -104,7 +106,7 @@ fullname = {
     'mt'   : 'htt_mt',
     'em'   : 'htt_em',
     'et'   : 'htt_et', 
-    #'tt'   : 'htt_tt',
+    'tt'   : 'htt_tt',
     'hbb'  : 'hbb',
     }
 
@@ -166,9 +168,6 @@ if options.update_cvs :
         CHN=options.channels,
         SETUP=setup
         ))
-    #os.system("python HiggsAnalysis/HiggsToTauTau/scripts/scale2accept.py -i {SETUP} -c tt -p 8TeV 90 100-200:20 130 250-500:50".format(
-    #    SETUP=setup
-    #    ))
     #os.system("python HiggsAnalysis/HiggsToTauTau/scripts/scale2accept.py -i {SETUP} -c hbb -p 7TeV 90 100-200:20 130 250-350:50".format(
     #    SETUP=setup
     #    ))
@@ -273,14 +272,15 @@ if options.update_datacards :
     os.system("mkdir -p {DIR}".format(DIR=dir))    
     ##creation of datacards
     for ana in analyses :
-        os.system("setup-datacards.py -i {CMSSW_BASE}/src/MSSM_setups{INDEX}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a mssm -c '{CHN}' {MASSES}".format(
+        os.system("setup-datacards.py -i {CMSSW_BASE}/src/MSSM_setups{INDEX}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a mssm -c '{CHN}' {CATEGORIES} {MASSES}".format(
             INDEX='' if options.index == '' else '_'+options.index,
             CMSSW_BASE=cmssw_base,
             ANA=ana,
             DIR=dir,
             PER=options.periods,
             CHN=options.channels,
-            MASSES=options.masses
+            MASSES=options.masses,
+            CATEGORIES="--mssm-categories-em='0 1 2 3 6 7' --mssm-categories-et='0 1 2 3 6 7' --mssm-categories-mm='0 1 2 3 6 7' --mssm-categories-mt='0 1 2 3 6 7'" if options.split_categories else ""
             ))
         if ana == "pruned" :
             if not options.skip_pruning :
@@ -311,13 +311,14 @@ if options.update_limits :
         print "setup limits structure for:", ana, "mssm"
         ## this os a try to live w/o the additional label, which is really annoying once it coem to plotting 
         label = '' #if ana == 'std' else '-l '+ana
-        os.system("setup-htt.py -i MSSM_aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a mssm -c '{CHN}' {LABEL} {MASSES}".format(
+        os.system("setup-htt.py -i MSSM_aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a mssm -c '{CHN}' {LABEL} {CATEGORIES} {MASSES}".format(
             INDEX='' if options.index == '' else '_'+options.index,                
             ANA=ana,
             DIR=dir,
             PER=options.periods,
             CHN=options.channels,
             LABEL=label,
-            MASSES=options.masses
+            MASSES=options.masses,
+            CATEGORIES="--mssm-categories-em='0 1 2 3 6 7' --mssm-categories-et='0 1 2 3 6 7' --mssm-categories-mm='0 1 2 3 6 7' --mssm-categories-mt='0 1 2 3 6 7'" if options.split_categories else ""
             ))
 
