@@ -104,9 +104,9 @@ void rescale(TH1F* hin, unsigned int idx)
   $Fakes
 #if defined MSSM
   case 5: // ggH
-  ${MSSM}ggH160
+  ${MSSM}ggH$MA
   case 6: // bbH
-  ${MSSM}bbH160
+  ${MSSM}bbH$MA
 #else
 #ifndef DROP_SIGNAL
   case 5: // ggH
@@ -164,8 +164,8 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 //                                                               bbHScale = (6211.6*0.11 + 5147.0*0.11)/1000.; }
 //   if(std::string(inputfile).find("8TeV")!=std::string::npos){ ggHScale = (2729.9*0.11 + 5193.2*0.11)/1000.;
 //                                                               bbHScale = (8282.7*0.11 + 6867.8*0.11)/1000.; }
-  TH1F* ggH  = refill((TH1F*)input->Get(TString::Format("%s/ggH160"  , directory)), "ggH"  ); InitSignal(ggH); ggH->Scale(ggHScale);
-  TH1F* bbH  = refill((TH1F*)input->Get(TString::Format("%s/bbH160"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale(bbHScale);
+  TH1F* ggH  = refill((TH1F*)input->Get(TString::Format("%s/ggH$MA"  , directory)), "ggH"  ); InitSignal(ggH); ggH->Scale(ggHScale);
+  TH1F* bbH  = refill((TH1F*)input->Get(TString::Format("%s/bbH$MA"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale(bbHScale);
 #else
 #ifndef DROP_SIGNAL
   TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125"  , directory)), "ggH"  ); InitSignal(ggH); ggH->Scale(SIGNAL_SCALE);

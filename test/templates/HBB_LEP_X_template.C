@@ -92,7 +92,7 @@ void rescale(TH1F* hin, unsigned int idx)
   $bkgBBB
 #if defined MSSM
   case 2: // bbH
-  ${MSSM}bbH160
+  ${MSSM}bbH$MA
 #endif
   default :
     std::cout << "error histograms not known?!?" << std::endl;
@@ -130,7 +130,7 @@ HBB_LEP_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
  //  float bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=10, A+H for the time being
 //   if(std::string(inputfile).find("7TeV")!=std::string::npos){ bbHScale = (6211.6*0.89 + 5145.0*0.85)/1000.; }
 //   if(std::string(inputfile).find("8TeV")!=std::string::npos){ bbHScale = (8282.7*0.89 + 6867.8*0.85)/1000.; }
-  TH1F* bbH  = refill((TH1F*)input->Get(TString::Format("%s/bbH160"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale(bbHScale);
+  TH1F* bbH  = refill((TH1F*)input->Get(TString::Format("%s/bbH$MA"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale(bbHScale);
 #endif
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data", true);
   InitHist(data, "#bf{m_{b#bar{b}} [GeV]}", "#bf{dN/dm_{b#bar{b}} [1/GeV]}"); InitData(data);
