@@ -296,7 +296,7 @@ void sobWeightedCombineAll(float muValue=1.10, bool log=false, int mass=125, int
 
 //  sobCombine("All_MSSM_2Cat", All_MSSM_2cat  , dataset, "#scale[1]e#mu_{h}, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#mu_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}" , ""           , 1, muValue);
   //  sobCombine("EMu_MSSM_2Cat", EMu_MSSM_2cat, dataset, "#scale[1]{e}#mu_{h}" , ""      , 1, muValue, log, mass, tanb);
-  sobCombine("ETau_MSSM_2Cat", ETau_MSSM_2cat, dataset, "#scale[1]{e}#tau_{h}" , ""      , 1, muValue, log, mass, tanb);
+   sobCombine("ETau_MSSM_2Cat", ETau_MSSM_2cat, dataset, "#scale[1]{e}#tau_{h}" , ""      , 1, muValue, log, mass, tanb);
   //  sobCombine("MuMu_MSSM_2Cat", MuMu_MSSM_2cat, dataset, "#scale[1]{#mu}#mu" , ""      , 1, muValue, log, mass, tanb);
   //  sobCombine("MuTau_MSSM_2Cat", MuTau_MSSM_2cat, dataset, "#scale[1]{#mu}#tau_{h}" , ""      , 1, muValue, log, mass, tanb);
   //  sobCombine("TauTau_MSSM_2Cat", TauTau_MSSM_2cat, dataset, "#scale[1]{#tau_{h}}#tau_{h}" , ""      , 1, muValue, log, mass, tanb);

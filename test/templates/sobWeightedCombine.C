@@ -477,7 +477,11 @@ findMinY(TH1F* h,int opt=0,float lowx=0.,float highx=0.)
 
 void 
 sobWeightedPlot(TString filename,const char* dataset , const char* channel,const char* cat, bool log, int mass, int tanb)
-{
+{ 
+  TCanvas C(filename,"",600,600);
+  C.cd();
+  if(log) C.SetLogy(1);
+
   TFile F((TString("Plot_")+filename+".root").Data(),"READ");
   gROOT->cd();
   TH1F* data=(TH1F*)F.Get("data_obs");
@@ -489,15 +493,19 @@ sobWeightedPlot(TString filename,const char* dataset , const char* channel,const
   TH1F* fakes=(TH1F*)F.Get("Fakes");
   if(!sig){cout<<"No input histograms in file: "<<filename.Data()<<endl; return;}
 
-  // float xmininset=60; float xmaxinset=180;
+  float xmininset=60; float xmaxinset=180;
   //float xmininset=0; float xmaxinset=340;//full range
-  float xmininset=mass-100; float xmaxinset=mass+100; 
+  if(tanb>0) {
+    xmininset=mass-100; 
+    xmaxinset=mass+100; 
+  }
 
   ////Format the histograms
   Ztt->GetYaxis()->SetRangeUser(0.,1.3*findMaxY(data,0));
+  if(log) Ztt->GetYaxis()->SetRangeUser(0.001,50*findMaxY(data,0));
   Ztt->GetXaxis()->SetTitle("#bf{m_{#tau#tau}  [GeV]}");
   Ztt->GetYaxis()->SetTitle("#bf{S/B Weighted dN/dm_{#tau#tau} [1/GeV]}");
-  if(tanb>0) Ztt->GetXaxis()->SetRangeUser(0.,mass+200);
+  if(tanb>0 && !log) Ztt->GetXaxis()->SetRangeUser(0.,mass+200);
   Ztt->SetTitleOffset(1.300, "Y");
   Ztt->SetTitleOffset(1.000, "X");
   Ztt->SetNdivisions(505);
@@ -534,51 +542,11 @@ sobWeightedPlot(TString filename,const char* dataset , const char* channel,const
   errorBand->SetFillStyle(3013);
   errorBand->SetLineWidth(1);
 
- //  TPaveText* massA=0;
-//   TPaveText* tanbtext=0;
-//   TPaveText* scen=0;
-//   if(tanb>0){
-//     massA      = new TPaveText(0.75, 0.48+0.061, 0.85, 0.48+0.161, "NDC");
-//     massA->SetBorderSize(   0 );
-//     massA->SetFillStyle(    0 );
-//     massA->SetTextAlign(   12 );
-//     massA->SetTextSize ( 0.03 );
-//     massA->SetTextColor(    1 );
-//     massA->SetTextFont (   62 );
-//     std::string text1 = "m_{A}="+std::to_string(mass)+"GeV";
-//     massA->AddText(text1.c_str());
-//     //massA->Draw();
-
-//     tanbtext      = new TPaveText(0.75, 0.44+0.061, 0.85, 0.44+0.161, "NDC");
-//     tanbtext->SetBorderSize(   0 );
-//     tanbtext->SetFillStyle(    0 );
-//     tanbtext->SetTextAlign(   12 );
-//     tanbtext->SetTextSize ( 0.03 );
-//     tanbtext->SetTextColor(    1 );
-//     tanbtext->SetTextFont (   62 );
-//     std::string text2 = "tan#beta="+std::to_string(tanb);
-//     tanbtext->AddText(text2.c_str());
-//     //tanbtext->Draw();
-    
-//     scen      = new TPaveText(0.75, 0.40+0.061, 0.85, 0.40+0.161, "NDC");
-//     scen->SetBorderSize(   0 );
-//     scen->SetFillStyle(    0 );
-//     scen->SetTextAlign(   12 );
-//     scen->SetTextSize ( 0.03 );
-//     scen->SetTextColor(    1 );
-//     scen->SetTextFont (   62 );
-//     scen->AddText("mhmax");
-//     //scen->Draw();
-//   }
-
   TLegend legend;
   TString mssmlabel = "";
-  //if(tanb>0) mssmlabel = "m_{A}="+std::to_string(mass)+"GeV, tan#beta="+std::to_string(tanb);
   if(tanb>0) mssmlabel = "tan#beta=" + std::to_string(tanb);
   TString higgslabel="H(125 GeV)#rightarrow#tau#tau";
-  //if(tanb>0) higgslabel="#Phi("+std::to_string(mass)+"GeV/"+std::to_string(tanb)+")#rightarrow#tau#tau";
   if(tanb>0) higgslabel="#Phi("+std::to_string(mass)+"GeV)#rightarrow#tau#tau";
-  //if(tanb>0) higgslabel="#Phi#rightarrow#tau#tau";
   legend.SetFillStyle(0);
   legend.SetFillColor(0);
   legend.SetBorderSize(0);
@@ -594,6 +562,12 @@ sobWeightedPlot(TString filename,const char* dataset , const char* channel,const
   legend.SetX2NDC(1.05);
   legend.SetY1NDC(0.27);
   legend.SetY2NDC(0.48);
+  if(log){
+    legend.SetX1NDC(0.18);
+    legend.SetX2NDC(0.60);
+    legend.SetY1NDC(0.17);
+    legend.SetY2NDC(0.38);
+  }
   legend.SetTextSize(.028);
   legend.SetTextAlign(   12 );
 
@@ -613,7 +587,7 @@ sobWeightedPlot(TString filename,const char* dataset , const char* channel,const
   errBandFrame.GetYaxis()->SetNdivisions(5);
   errBandFrame.GetYaxis()->SetLabelSize(0.06);
   errBandFrame.GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}    ");
-   errBandFrame.GetXaxis()->SetTitleColor(kBlack);
+  errBandFrame.GetXaxis()->SetTitleColor(kBlack);
   errBandFrame.GetXaxis()->SetTitleSize(0.07);
   errBandFrame.GetXaxis()->SetTitleOffset(0.95);
   errBandFrame.GetXaxis()->SetLabelSize(0.06);
@@ -631,11 +605,16 @@ sobWeightedPlot(TString filename,const char* dataset , const char* channel,const
   legendDiff.SetX2NDC(0.88);
   legendDiff.SetY1NDC(0.67);
   legendDiff.SetY2NDC(0.88);
+  if(dataDiff->GetBinContent(dataDiff->FindBin(mass))<0){
+    legendDiff.SetX1NDC(0.45);
+    legendDiff.SetX2NDC(0.88);
+    legendDiff.SetY1NDC(0.24);
+    legendDiff.SetY2NDC(0.45); 
+  }
   legendDiff.SetTextSize(.045);
   legendDiff.SetTextAlign(12);
 
 
-  TCanvas C(filename,"",600,600);
   TPad padBack("padBack","padBack",0.57,0.58,0.975,0.956);//TPad must be created after TCanvas otherwise ROOT crashes
   padBack.SetFillColor(0);
   TPad pad("diff","diff",0.45,0.5,0.9765,0.957);//TPad must be created after TCanvas otherwise ROOT crashes
@@ -651,12 +630,11 @@ sobWeightedPlot(TString filename,const char* dataset , const char* channel,const
   legendDiff.Draw();
   pad.RedrawAxis();
 
-  C.cd();
+  C.cd();  
   Ztt->Draw("hist");
   ggH->Draw("histsame");
   Ztt->Draw("histsame");
   errorBand->Draw("e2same");
-
   tt->Draw("histsame");
   ewk->Draw("histsame");
   fakes->Draw("histsame");
@@ -667,11 +645,6 @@ sobWeightedPlot(TString filename,const char* dataset , const char* channel,const
   pad.Draw();
 
   CMSPrelim(dataset,channel,cat);
-  // if(tanb>0){
-//     scen->Draw();
-//     massA->Draw();
-//     tanbtext->Draw();
-//   }
   C.Print(TString("Plot_")+filename+".eps");
   C.Print(TString("Plot_")+filename+".png");
   C.Print(TString("Plot_")+filename+".pdf");
