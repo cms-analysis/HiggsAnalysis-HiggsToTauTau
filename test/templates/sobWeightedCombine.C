@@ -16,7 +16,7 @@ Authors: Jose Benitez, Lorenzo Bianchini
 #include <iostream>
 #include <iomanip>
 
-#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_6_1_1/src/HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
+#include "HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
 
 using namespace std;
 

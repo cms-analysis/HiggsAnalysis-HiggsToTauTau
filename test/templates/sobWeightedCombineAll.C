@@ -26,8 +26,8 @@ root -b /PATH/sobWeightedCombineAll.C
 Authors: Jose Benitez, Lorenzo Bianchini 
 */
 
-#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_6_1_1/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
-#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_6_1_1/src/HiggsAnalysis/HiggsToTauTau/test/templates/sobWeightedCombine.C"
+#include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "HiggsAnalysis/HiggsToTauTau/test/templates/sobWeightedCombine.C"
 
 void sobCombine(TString name, TString* Input,const char* dataset , const char* channel, const char* cat, int weight=1, float muValue=1.0, bool log=false, int mass=125, int tanb=0)
 {
