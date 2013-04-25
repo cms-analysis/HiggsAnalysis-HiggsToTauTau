@@ -26,10 +26,10 @@ root -b /PATH/sobWeightedCombineAll.C
 Authors: Jose Benitez, Lorenzo Bianchini 
 */
 
-#include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
-#include "HiggsAnalysis/HiggsToTauTau/test/templates/sobWeightedCombine.C"
+#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_6_1_1/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_6_1_1/src/HiggsAnalysis/HiggsToTauTau/test/templates/sobWeightedCombine.C"
 
-void sobCombine(TString name, TString* Input,const char* dataset , const char* channel, const char* cat, int weight=1, float muValue=1.0)
+void sobCombine(TString name, TString* Input,const char* dataset , const char* channel, const char* cat, int weight=1, float muValue=1.0, bool log=false, int mass=125, int tanb=0)
 {
   sobWeightedCombine(Input,name,weight,muValue);
   /*                                     |-> mu value from the fit to Data
@@ -37,10 +37,10 @@ void sobCombine(TString name, TString* Input,const char* dataset , const char* c
                       |     |-> name for this plot
                       |->array of input postfit root files 
   */
-  sobWeightedPlot(name,dataset,channel,cat);
+  sobWeightedPlot(name,dataset,channel,cat,log,mass,tanb);
 }
 
-void sobWeightedCombineAll(float muValue=1.10)
+void sobWeightedCombineAll(float muValue=1.10, bool log=false, int mass=125, int tanb=0)
 {
   SetStyle();
 
@@ -295,11 +295,11 @@ void sobWeightedCombineAll(float muValue=1.10)
 //   sobCombine("MuTau0Jet8TeV",MuTau0Jet8TeV,2,0,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h} 0-Jet",1,muValue);
 
 //  sobCombine("All_MSSM_2Cat", All_MSSM_2cat  , dataset, "#scale[1]e#mu_{h}, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#mu_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}" , ""           , 1, muValue);
-  sobCombine("EMu_MSSM_2Cat", EMu_MSSM_2cat, dataset, "#scale[1]{e}#mu_{h}" , ""      , 1, muValue);
-  //  sobCombine("ETau_MSSM_2Cat", ETau_MSSM_2cat, dataset, "#scale[1]{e}#tau_{h}" , ""      , 1, muValue);
-  //  sobCombine("MuMu_MSSM_2Cat", MuMu_MSSM_2cat, dataset, "#scale[1]{#mu}#mu" , ""      , 1, muValue);
-  //  sobCombine("MuTau_MSSM_2Cat", MuTau_MSSM_2cat, dataset, "#scale[1]{#mu}#tau_{h}" , ""      , 1, muValue);
-  //  sobCombine("TauTau_MSSM_2Cat", TauTau_MSSM_2cat, dataset, "#scale[1]{#tau_{h}}#tau_{h}" , ""      , 1, muValue);
+  //  sobCombine("EMu_MSSM_2Cat", EMu_MSSM_2cat, dataset, "#scale[1]{e}#mu_{h}" , ""      , 1, muValue, log, mass, tanb);
+  sobCombine("ETau_MSSM_2Cat", ETau_MSSM_2cat, dataset, "#scale[1]{e}#tau_{h}" , ""      , 1, muValue, log, mass, tanb);
+  //  sobCombine("MuMu_MSSM_2Cat", MuMu_MSSM_2cat, dataset, "#scale[1]{#mu}#mu" , ""      , 1, muValue, log, mass, tanb);
+  //  sobCombine("MuTau_MSSM_2Cat", MuTau_MSSM_2cat, dataset, "#scale[1]{#mu}#tau_{h}" , ""      , 1, muValue, log, mass, tanb);
+  //  sobCombine("TauTau_MSSM_2Cat", TauTau_MSSM_2cat, dataset, "#scale[1]{#tau_{h}}#tau_{h}" , ""      , 1, muValue, log, mass, tanb);
 
   gROOT->ProcessLine(".q");
 }
