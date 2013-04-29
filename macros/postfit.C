@@ -14,8 +14,8 @@
 #include <TAttLine.h>
 #include <TPaveText.h>
 
-#include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
-#include "HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
+#include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
 
 static const float SIGNAL_SCALE = 1.;
 
