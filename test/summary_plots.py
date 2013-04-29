@@ -6,6 +6,8 @@ parser = OptionParser(usage="usage: %prog [options]",
 ## direct options
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
 parser.add_option("-t", "--type", dest="type", default="rescaled", type="string", help="Type of plots, unscaled or rescaled. [Default: \"rescaled\"]")
+parser.add_option("--mA", dest="mA", default="160", type="float", help="Mass of pseudoscalar mA only needed for mssm. [Default: '160']")
+parser.add_option("--tanb", dest="tanb", default="20", type="float", help="Tanb only needed for mssm. [Default: '20']")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 
@@ -15,7 +17,7 @@ channels   = [
     "emu",
     "eleTau",
     "muTau",
-    "mumu",
+    #"mumu",
     ]
 
 categories_sm = [
@@ -212,11 +214,22 @@ for chn in channels :
             if options.analysis == "mssm" :
                 os.system("hadd -f {CHN}_{CAT}_{TYPE}_7+8TeV_LOG.root {CHN}_{CAT}_{TYPE}_7TeV_LOG.root {CHN}_{CAT}_{TYPE}_8TeV_LOG.root".format(
                     CHN=chn, CAT=cat, TYPE=type))#, LOG="LOG" if log[(chn, cat)]==True else ""))
+
+##print in the right Signal label for MSSM
+postfit_base = open("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit.C".format(CMSSW_BASE=os.environ['CMSSW_BASE']),'r')
+postfit_use  = open("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C".format(CMSSW_BASE=os.environ['CMSSW_BASE']),'w')
+for line in postfit_base :
+    line = line.replace("$MA" , str(int(options.mA)))
+    line = line.replace("$TANB", str(int(options.tanb)))
+    postfit_use.write(line)
+postfit_base.close()
+postfit_use.close()
+                
 ## make plots
 for chn in channels :
     for cat in categories :
         print chn, cat
-        os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7+8TeV.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
+        os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7+8TeV.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
             CMSSW_BASE=os.environ['CMSSW_BASE'],
             CHN=chn,
             CAT=cat,
@@ -230,7 +243,7 @@ for chn in channels :
             LOG=log[chn,cat][0]
             ))
         if options.analysis == "mssm" :
-            os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7+8TeV_LOG.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
+            os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7+8TeV_LOG.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
                 CMSSW_BASE=os.environ['CMSSW_BASE'],
                 CHN=chn,
                 CAT=cat,
