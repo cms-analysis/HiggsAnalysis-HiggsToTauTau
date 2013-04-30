@@ -319,4 +319,28 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   canv->Print(TString::Format("%s.png", newName.c_str())); 
   canv->Print(TString::Format("%s.pdf", newName.c_str())); 
   canv->Print(TString::Format("%s.eps", newName.c_str())); 
+
+
+  /*
+    Ratio Data over MC
+  */
+  TCanvas *canv0 = MakeCanvas("canv0", "histograms", 600, 400);
+  canv0->SetGridx();
+  canv0->SetGridy();
+  canv0->cd();
+  TH1F* rat1 = (TH1F*)input->Get("datamc" ); 
+  TH1F* zero = (TH1F*)input->Get("datamc0"); 
+  rat1->SetMarkerStyle(20);
+  rat1->SetMarkerSize(1.1);
+  rat1->Draw("PE");
+  zero->Draw("same");
+  canv0->RedrawAxis();
+  
+  /*
+    prepare output
+  */
+  newName = std::string(inputfile).substr(0, std::string(inputfile).find(".root")) + "_datamc";
+  canv0->Print(TString::Format("%s.png", newName.c_str())); 
+  canv0->Print(TString::Format("%s.pdf", newName.c_str())); 
+  canv0->Print(TString::Format("%s.eps", newName.c_str())); 
 }
