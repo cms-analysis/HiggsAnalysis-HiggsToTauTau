@@ -15,8 +15,8 @@ parser.add_option("--tanb", dest="tanb", default="20", type="float", help="Tanb 
 ## a set of pre-defined lists
 channels   = [
     "emu",
-    "eleTau",
-    "muTau",
+    #"eleTau",
+    #"muTau",
     #"mumu",
     ]
 
@@ -219,6 +219,7 @@ for chn in channels :
 postfit_base = open("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit.C".format(CMSSW_BASE=os.environ['CMSSW_BASE']),'r')
 postfit_use  = open("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C".format(CMSSW_BASE=os.environ['CMSSW_BASE']),'w')
 for line in postfit_base :
+    line = line.replace("$CMSSW_BASE", os.environ['CMSSW_BASE'])
     line = line.replace("$MA" , str(int(options.mA)))
     line = line.replace("$TANB", str(int(options.tanb)))
     postfit_use.write(line)
