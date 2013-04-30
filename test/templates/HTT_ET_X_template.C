@@ -594,8 +594,6 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   canv2->Print(TString::Format("%s_sample_%sscaled_%s_%s.eps", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
   TFile* output = new TFile(TString::Format("%s_%sscaled_%s_%s.root", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""), "update");
   output->cd();
-  zero ->Write("datamc0" );
-  rat1 ->Write("datamc"  ); 
   data ->Write("data_obs");
   Fakes->Write("Fakes"   );
   EWK  ->Write("EWK"     );
