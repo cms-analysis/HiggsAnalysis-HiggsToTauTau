@@ -327,15 +327,29 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   TCanvas *canv0 = MakeCanvas("canv0", "histograms", 600, 400);
   canv0->SetGridx();
   canv0->SetGridy();
-  canv0->cd();
-  TH1F* rat1 = (TH1F*)input->Get("datamc" ); 
-  TH1F* zero = (TH1F*)input->Get("datamc0"); 
-  rat1->SetMarkerStyle(20);
-  rat1->SetMarkerSize(1.1);
-  rat1->Draw("PE");
+  canv0->cd(); 
+  TH1F* zero = (TH1F*)Ztt->Clone("zero"); zero->Clear();
+  TH1F* rat1 = (TH1F*)data->Clone("rat"); 
+  rat1->Divide(Ztt);
+  for(int ibin=0; ibin<rat1->GetNbinsX(); ++ibin){
+    if(rat1->GetBinContent(ibin+1)>0){
+      // catch cases of 0 bins, which would lead to 0-alpha*0-1
+      rat1->SetBinContent(ibin+1, rat1->GetBinContent(ibin+1)-1.);
+    }
+    zero->SetBinContent(ibin+1, 0.);
+  }
+  rat1->SetLineColor(kBlack);
+  rat1->SetFillColor(kGray );
+  rat1->SetMaximum(+0.5);
+  rat1->SetMinimum(-0.5);
+  rat1->GetYaxis()->CenterTitle();
+  rat1->GetYaxis()->SetTitle("#bf{Data/MC-1}");
+  rat1->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}");
+  rat1->Draw();
+  zero->SetLineColor(kBlack);
   zero->Draw("same");
   canv0->RedrawAxis();
-  
+
   /*
     prepare output
   */
