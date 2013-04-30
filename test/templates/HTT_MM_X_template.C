@@ -573,6 +573,8 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 
   TFile* output = new TFile(TString::Format("%s_%sscaled_%s_%s.root", directory, scaled ? "re" : "un", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""), "update");
   output->cd();
+  zero ->Write("datamc0" );
+  rat1 ->Write("datamc"  ); 
   data ->Write("data_obs");
   ZTT->Write("Ztt"   );
   ZMM->Write("Zmm"     );
