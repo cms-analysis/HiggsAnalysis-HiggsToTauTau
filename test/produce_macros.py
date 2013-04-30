@@ -27,7 +27,7 @@ cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="8 9
 cats2.add_option("--mssm-categories-em", dest="em_mssm_categories", default="8 9", type="string", help="List em of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="8 9", type="string", help="List mt of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9", type="string", help="List et of event categories. [Default: \"8 9\"]")
-#cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
+cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="8 9", type="string", help="List of tt event categories. [Default: \"8 9\"]")
 #cats2.add_option("--mssm-categories-hmm", dest="hmm_mssm_categories", default="0 1", type="string", help="List of hmm event categories. [Default: \"0 1\"]")
 cats2.add_option("--mssm-categories-hbb", dest="hbb_mssm_categories", default="0 1 2 3 4 5 6", type="string", help="List of hbb event categories. [Default: \"0 1 2 3 4 5 6\"]")
 parser.add_option_group(cats2)
@@ -274,7 +274,7 @@ if options.analysis == "mssm" :
         "em"   : options.em_mssm_categories.split(),
         "mt"   : options.mt_mssm_categories.split(),
         "et"   : options.et_mssm_categories.split(),
-        #"tt"   : options.tt_mssm_categories.split(),
+        "tt"   : options.tt_mssm_categories.split(),
         #"hmm"  : options.hmm_mssm_categories.split(),
         "hbb"  : options.hbb_mssm_categories.split(),
         }
@@ -297,6 +297,8 @@ category_mapping_classic = {
 category_mapping_tautau = {
     "0" : "boost",
     "1" : "vbf",
+    "8" : "nobtag",
+    "9" : "btag",
     }
 category_mapping_bb = {
     "0" : "had0",
