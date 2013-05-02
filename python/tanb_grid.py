@@ -511,7 +511,6 @@ class MakeDatacard :
                                    ##       cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR-bb"] 
                                    if key == "h" : ## this one is already discovered :) 
                                           cross_sections[key] = 0
-                                          print "hello", options.BR, key
                      else :
                             for key in cross_sections :
                                    if decay_channel == "htt" :
@@ -651,13 +650,24 @@ class MakeDatacard :
               scan = mssm_xsec_tools(inputFileName)
               htt_query = scan.query(self.mA, self.tanb)
               ## fill uncertainties of Up/Down type
-              for key in cross_sections :
-                     if decay_channel == "htt" :
-                            cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR"]
-                     if decay_channel == "hmm" :
-                            cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR-mumu"]
-                     if decay_channel == "hbb" :
-                            cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR-bb"]
+              if(options.independent) :
+                     for key in cross_sections :
+                            if decay_channel == "htt" :
+                                   cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*options.BR
+                            ##if decay_channel == "hmm" :
+                            ##       cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR-mumu"]
+                            ##if decay_channel == "hbb" :
+                            ##       cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR-bb"] 
+                            if key == "h" : ## this one is already discovered :) 
+                                   cross_sections[key] = 0
+              else :
+                     for key in cross_sections :
+                            if decay_channel == "htt" :
+                                   cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR"]
+                            if decay_channel == "hmm" :
+                                   cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR-mumu"]
+                            if decay_channel == "hbb" :
+                                   cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR-bb"]
               if options.verbose :
                      print production_channel, period, decay_channel, uncertainty_type, uncertainty_direction, cross_sections
               return cross_sections
