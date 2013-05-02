@@ -3,13 +3,13 @@ from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGs",
-                      description="This is a script to scale MSSM datacards by the acceptance corrections that have been derived for the restrictioin of the mass window on generator level. The acceptance corrections are obtained from HiggsAnalysis/HiggsToTauTau/python/acceptance_correction.py. The output will override the input datacards and corresponding input histogram files. ARGs corresponds to the mass points for which the datacards should be scaled.")
-parser.add_option("-i", "--input", dest="input", default="LIMITS", type="string",
-                  help="Input directory where to find the datacards to be scaled [Default: LIMITS]")
+                      description="This is a script to scale MSSM input histograms by the acceptance corrections that have been derived for the restriction of the signal event in pre-defined mass windows on generator level. The acceptance corrections are obtained from HiggsAnalysis/HiggsToTauTau/python/acceptance_correction.py. ATTENTION: the output will override the input histogram files with the original normalization. ARGs corresponds to the mass points for which the signal histograms should be scaled.")
+parser.add_option("-i", "--input", dest="input", default="HiggsAnalysis/HiggsToTauTau/setup", type="string",
+                  help="Input directory where to find the input files to be scaled [Default: HiggsAnalysis/HiggsToTauTau/setup]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
                   help="Choose between run periods [Default: \"7TeV 8TeV\"]")
 parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string",
-                  help="List of channels, for which datacards should be created. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et\"]")
+                  help="List of channels, for which inputs should be scaled. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et\"]")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 if len(args) < 1 :
