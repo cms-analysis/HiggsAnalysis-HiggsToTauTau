@@ -121,6 +121,8 @@ parser.add_option_group(ggroup)
 hgroup = OptionGroup(parser, "TANB+ OPTIONS", "These are the command line options that can be used to configure the submission of tanb+. This option is special in the way that it needs modifications of the directory structure before the limits can be run. Via the script submit.py this setup can only be run interactively using the commend option --setup. Once the directory structure has been set up the limit calculation can be run interactively or in batrch mode.")
 hgroup.add_option("--setup", dest="setup", default=False, action="store_true",
                   help="Use the script to setup the directory structure for direct mA-tanb limits interactively. If false the the script will assume that this has already been done and execute the limit calculation either in batch mode or interactive. [Default: False]")
+parser.add_option_group(hgroup)
+
 ##
 ## FULL CLs
 ##
