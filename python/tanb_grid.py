@@ -7,8 +7,9 @@ parser = OptionParser(usage="usage: %prog [options] datacatd.txt",
 parser.add_option("-m", "--mA",    dest="mA",       default=120.,  type="float",   help="Value of mA. [Default: 120.]")
 parser.add_option("-t", "--tanb",  dest="tanb",     default='20.',   type="string",   help="Values of tanb. [Default: 20.]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode")
+parser.add_option("--model-independent",dest="independent", default=False, action="store_true", help="If applied the branching ratio given by option --BR into tautau will be used for limit calculation. This only works for tautau datacards atm. Production xs is still taken from model-rootfiles. They are more or less only dependent on tanb and mA.")
+parser.add_option("--BR", dest="BR", default=0.1, type="float", help="Branching ratio to tautau. This option is only valid if model independent limits should be calculated, by using the option --model-independent. [Default: 0.1]")
 parser.add_option("--sm-like", dest="sm_like", default=False, action="store_true", help="Do not divide by the value of tanb, but only scale to MSSM xsec according to tanb value. (Will result in typical SM limit on signal strength for given value of tanb). Used for debugging. [Default: False]")
-parser.add_option("--no-acc-corr", dest="no_acc_corr", default=False, action="store_true", help="Do not apply acceptance corrections for masswindow that has been applied for cross section calculation. Kept for legacy. [Default: False]")
 parser.add_option("--model", dest="model", default='auxiliaries/models/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root', type="string", help="Model to be applied for the limit calculation. [Default: 'auxiliaries/models/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root']")
 parser.add_option("--interpolation", dest="interpolation_mode", default='mode-1', type="choice", help="Mode for mass interpolation for direct tanb limits. Choices are: mode-0 -- non-degenerate-masses for all htt channels, mode-1 -- non-degenerate-masses for classic htt channels non-degenerate-masses-light for htt_mm, mode-2 -- non-degenerate-masses for classic htt channels degenerate-masses for htt_mm, mode-3 -- non-degenerate-masses-light for all htt channels, mode-4 -- non-degenerate-masses-light for classic htt channels degenerate-masses for htt_mm, mode-5 -- degenerate-masses for all htt channels [Default: mode-1]", choices=["mode-0", "mode-1", "mode-2", "mode-3", "mode-4", "mode-5"])
 (options, args) = parser.parse_args()
@@ -28,11 +29,9 @@ ROOT.gSystem.Load('$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so'
 from ROOT import th1fmorph
 # from ROOT import th1fmorph, th2fmorph - th2 morphing not armed yet
 from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools
-from HiggsAnalysis.HiggsToTauTau.acceptance_correction import interval 
-from HiggsAnalysis.HiggsToTauTau.acceptance_correction import acceptance_correction 
 
 class MakeDatacard :
-       def __init__(self, tanb, mA, model="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root", feyn_higgs_model="", sm_like=False, acc_corr=True) :
+       def __init__(self, tanb, mA, model="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root", feyn_higgs_model="", sm_like=False) :
               ## full path for the input file for the htt xsec tools, expected in the data directory of the package
               ## This file is used to determine the cross sections and uncertainties for calculations for htt, as
               ## as for determining the masses for htt and hww
@@ -44,8 +43,6 @@ class MakeDatacard :
               self.feyn_higgs_model = feyn_higgs_model
               ## do not divide yields by value of tanb but only rescale by xsec for given value of tanb
               self.sm_like = sm_like
-              ## apply acceptance corrections for restricted mass window in cross section calculation or not
-              self.acc_corr = acc_corr
               ## tanb as float
               self.tanb = tanb
               ## mA as float
@@ -504,13 +501,25 @@ class MakeDatacard :
                      scan = mssm_xsec_tools("{CMSSW_BASE}/src/{PATH}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], PATH=path))
                      htt_query = scan.query(self.mA, self.tanb)
                      ## fill cross section (central values)
-                     for key in cross_sections :
-                            if decay_channel == "htt" :
-                                   cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR"]
-                            if decay_channel == "hmm" :
-                                   cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR-mumu"]
-                            if decay_channel == "hbb" :
-                                   cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR-bb"]                                   
+                     if(options.independent) :
+                            for key in cross_sections :
+                                   if decay_channel == "htt" :
+                                          cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*options.BR
+                                   ##if decay_channel == "hmm" :
+                                   ##       cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR-mumu"]
+                                   ##if decay_channel == "hbb" :
+                                   ##       cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR-bb"] 
+                                   if key == "h" : ## this one is already discovered :) 
+                                          cross_sections[key] = 0
+                                          print "hello", options.BR, key
+                     else :
+                            for key in cross_sections :
+                                   if decay_channel == "htt" :
+                                          cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR"]
+                                   if decay_channel == "hmm" :
+                                          cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR-mumu"]
+                                   if decay_channel == "hbb" :
+                                          cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR-bb"]      
               if options.verbose :
                      print production_channel, decay_channel, period, cross_sections
               return cross_sections
@@ -918,8 +927,7 @@ class MakeDatacard :
               hist_mA_value = buff_mA_value.Clone(hist_name)
               #print "RESCALING OF HIST STARTING: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
 
-              acc_mA = acceptance_correction(self.standardized_signal_process(process), self.mA) if self.acc_corr else 1.
-              hist_mA_value.Scale(cross_sections["A"]/self.tanb*acc_mA) 
+              hist_mA_value.Scale(cross_sections["A"]/self.tanb*self.mA) 
               ## determine upper and lower mass edges for mh
               (mh_failed, mh_lower, mh_upper) = self.embracing_masses(self.mh, masses)
               if not mh_failed :
@@ -944,28 +952,24 @@ class MakeDatacard :
                                    hist_mh_value = hist_mh_upper
                             if hist_mh_value.Integral()>0 :
                                    norm_mh_value = cross_sections["h"]/self.tanb*self.scale(hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh)
-                                   acc_mh = acceptance_correction(self.standardized_signal_process(process), self.mh) if self.acc_corr else 1.
-                                   hist_mh_value.Scale(norm_mh_value/hist_mh_value.Integral()*acc_mh)
+                                   hist_mh_value.Scale(norm_mh_value/hist_mh_value.Integral()*self.mh)
                      else:
-                            norm_mh_value = cross_sections["h"]/self.tanb*self.scale(hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh)
-                            acc_mh = acceptance_correction(self.standardized_signal_process(process), self.mh) if self.acc_corr else 1.                            
+                            norm_mh_value = cross_sections["h"]/self.tanb*self.scale(hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh)                   
                             if channel.find("htt_mm")>-1 :
                                    hist_mh_value = th1fmorph("I","mh_"+hist_name,hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh, norm_mh_value, 0)
                                    ##hist_mH_value = th2fmorph("I","mH_"+hist_name,hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, norm_mh_value, true) ## change to th2 morphing - not armed yet
                             else :
                                    hist_mh_value = th1fmorph("I","mh_"+hist_name,hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh, norm_mh_value, 0)
 
-                            hist_mh_value.Scale(acc_mh)
+                            hist_mh_value.Scale(self.mh)
               else :
                      hist_mh_value = hist_mA_value.Clone(hist_name)
-                     acc_mh = acceptance_correction(self.standardized_signal_process(process), self.mh) if self.acc_corr else 1.
-                     hist_mh_value.Scale(cross_sections["h"]/self.tanb*acc_mh) 
+                     hist_mh_value.Scale(cross_sections["h"]/self.tanb*self.mh) 
               ## catch cases where the morphing failed. Fallback to mA
               ## in this case and scale according to cross section of mh
               if not hist_mA_value.GetNbinsX() == hist_mh_value.GetNbinsX() :
                      hist_mh_value = hist_mA_value.Clone(hist_name)
-                     acc_mh = acceptance_correction(self.standardized_signal_process(process), self.mh) if self.acc_corr else 1.
-                     hist_mh_value.Scale(cross_sections["h"]/self.tanb*acc_mh) 
+                     hist_mh_value.Scale(cross_sections["h"]/self.tanb*self.mh) 
               else :
                      hist_mA_value.Add(hist_mh_value)
 
@@ -993,27 +997,23 @@ class MakeDatacard :
                                    hist_mH_value = hist_mH_upper
                             if hist_mH_value.Integral()>0 :
                                    norm_mH_value = cross_sections["H"]/self.tanb*self.scale(hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH)
-                                   acc_mH = acceptance_correction(self.standardized_signal_process(process), self.mH) if self.acc_corr else 1.
-                                   hist_mH_value.Scale(norm_mH_value/hist_mH_value.Integral()*acc_mH)
+                                   hist_mH_value.Scale(norm_mH_value/hist_mH_value.Integral()*self.mH)
                      else :
                             norm_mH_value = cross_sections["H"]/self.tanb*self.scale(hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH)
-                            acc_mH = acceptance_correction(self.standardized_signal_process(process), self.mH) if self.acc_corr else 1.
                             if channel.find("htt_mm")>-1 :
                                    hist_mH_value = th1fmorph("I","mH_"+hist_name,hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH, norm_mH_value, 0) 
                                    ##hist_mH_value = th2fmorph("I","mH_"+hist_name,hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, norm_mH_value, true) ## change to th2 morphing - not armed yet
                             else :
                                  hist_mH_value = th1fmorph("I","mH_"+hist_name, hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH, norm_mH_value, 0)                              
-                            hist_mH_value.Scale(acc_mH)
+                            hist_mH_value.Scale(self.mH)
               else :
                      hist_mH_value = hist_mA_value.Clone(hist_name)
-                     acc_mH = acceptance_correction(self.standardized_signal_process(process), self.mH) if self.acc_corr else 1.
-                     hist_mH_value.Scale(cross_sections["H"]/self.tanb*acc_mH) 
+                     hist_mH_value.Scale(cross_sections["H"]/self.tanb*self.mH) 
               ## catch cases where the morphing failed. Fallback to mA
               ## in this case and scale according to cross section of mH
               if not hist_mA_value.GetNbinsX() == hist_mH_value.GetNbinsX() :
                      hist_mH_value = hist_mA_value.Clone(hist_name)
-                     acc_mH = acceptance_correction(self.standardized_signal_process(process), self.mH) if self.acc_corr else 1.
-                     hist_mH_value.Scale(cross_sections["H"]/self.tanb*acc_mH) 
+                     hist_mH_value.Scale(cross_sections["H"]/self.tanb*self.mH) 
               else :
                      hist_mA_value.Add(hist_mH_value)
               #print "RESCALING OF HIST FINISHED: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
@@ -1063,8 +1063,7 @@ class MakeDatacard :
               if self.mA == 130. :
                      cross_section = cross_sections["A"]+cross_sections["H"]+cross_sections["h"]
               ## rescale histogram
-              acc_mA = acceptance_correction(self.standardized_signal_process(process), self.mA) if self.acc_corr else 1.
-              hist_mA_value.Scale(cross_section/self.tanb*acc_mA) 
+              hist_mA_value.Scale(cross_section/self.tanb*self.mA) 
               ## write modified histogram to file
               if self.path(dir)=="" :
                      file_mA_value.cd()
@@ -1107,12 +1106,10 @@ class MakeDatacard :
               #print "RESCALING OF HIST STARTING: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
               if self.mA<self.hww_cross_point :
                      ## rescale histogram
-                     acc_mA = acceptance_correction(self.standardized_signal_process(process), self.mH) if self.acc_corr else 1.
-                     hist_mA_value.Scale(cross_sections["H"]/(1. if self.sm_like else self.tanb)*acc_mA) 
+                     hist_mA_value.Scale(cross_sections["H"]/(1. if self.sm_like else self.tanb)*self.mA) 
               else :
                      ## rescale histogram
-                     acc_mA = acceptance_correction(self.standardized_signal_process(process), self.mh) if self.acc_corr else 1.
-                     hist_mA_value.Scale(cross_sections["h"]/(1. if self.sm_like else self.tanb)*acc_mA) 
+                     hist_mA_value.Scale(cross_sections["h"]/(1. if self.sm_like else self.tanb)*self.mA) 
               #print "RESCALING OF HIST FINISHED: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
 
               ## write modified histogram to file
@@ -1541,9 +1538,6 @@ if len(args) < 1 :
        parser.print_help()
        exit(1)
 
-## decide whether to run with acceptions or not 
-#acc_corr = False if options.no_acc_corr else True
-acc_corr = False 
 ## skip first pass of 'bin'
 first_pass_on_bin = True
 ## name of the input datacard
@@ -1552,9 +1546,9 @@ input_name = args[0]
 print "creating datacard for mA=%s, tanb=%s" % (options.mA, options.tanb)
 if options.model.find("feyn-higgs")>-1:
        model = options.model[options.model.find("::")+2:]
-       datacard_creator = MakeDatacard(tanb=float(options.tanb), mA=float(options.mA), feyn_higgs_model=options.model[options.model.find("::")+2:], sm_like=options.sm_like, acc_corr=acc_corr)
+       datacard_creator = MakeDatacard(tanb=float(options.tanb), mA=float(options.mA), feyn_higgs_model=options.model[options.model.find("::")+2:], sm_like=options.sm_like)
 else:
-       datacard_creator = MakeDatacard(tanb=float(options.tanb), mA=float(options.mA), model=options.model, sm_like=options.sm_like, acc_corr=acc_corr)
+       datacard_creator = MakeDatacard(tanb=float(options.tanb), mA=float(options.mA), model=options.model, sm_like=options.sm_like)
 datacard_creator.init(options.interpolation_mode)
 
 ## first file parsing
