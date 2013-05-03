@@ -7,10 +7,6 @@ parser.add_option("--name", dest="name", default="submit", type="string",
                   help="Set the name of the submission. All scripts concerned with the submission will be located in a directory with that name in your working directory. [Default: \"submit\"]")
 parser.add_option("--lxq", dest="lxq", default=False, action="store_true",
                   help="Specify this option when running on lxq instead of lxb. [Default: False]")
-parser.add_option("--model-independent",dest="independent", default=False, action="store_true",
-                  help="If applied the branching ratio given by option --BR into tautau will be used for limit calculation. This only works for tautau datacards atm. Production xs is still taken from model-rootfiles. They are more or less only dependent on tanb and mA.")
-parser.add_option("--BR", dest="BR", default=0.1, type="float",
-                  help="Branching ratio to tautau. This option is only valid if model independent limits should be calculated, by using the option --model-independent. Only valid in combination with tanb/tanb+ options. [Default: 0.1]")
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -45,7 +41,7 @@ eval `scram runtime -sh`
 echo "Running submit.py:"
 echo "in directory {directory}"
 
-$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/submit.py --tanb+ --setup {options} {directory}
+$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/submit.py --tanb+ --setup {directory}
 '''
 
 lxq_fragment = '''
@@ -83,8 +79,7 @@ def submit(name, key, masses) :
             with open(script_file_name, 'w') as script:
                 script.write(script_template.format(
                     working_dir = os.getcwd(),
-                    directory = dir,
-                    options = '--options "--BR {BR} --model-independent"'.format(BR=options.BR) if options.independent else ""
+                    directory = dir
                     ))
             os.system('chmod a+x %s' % script_file_name)
             if options.lxq :
