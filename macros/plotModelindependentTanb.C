@@ -37,7 +37,7 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void modelindependentTanbPlot(const char* filename, const char* channelstr, bool expected, bool observed, double minimum=0., double maximum=20., const char* label="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV")
+void plotModelindependentTanb(const char* filename, const char* channelstr, bool expected, bool observed, double minimum=0., double maximum=20., const char* label="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV")
 {
   SetStyle();
 
