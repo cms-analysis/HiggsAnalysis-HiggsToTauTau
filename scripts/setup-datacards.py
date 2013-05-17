@@ -36,8 +36,8 @@ cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3
                  help="List et of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1", type="string",
                  help="List of tt event categories. [Default: \"0 1\"]")
-cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1", type="string",
-                 help="List of vhtt event categories. [Default: \"0 1\"]")
+cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1 2", type="string",
+                 help="List of vhtt event categories. [Default: \"0 1 2\"]")
 cats1.add_option("--sm-categories-vhbb", dest="vhbb_sm_categories", default="0 1 2 3 4 5 6 7 8 9", type="string",
                  help="List of vhbb event categories. [Default: \"0 1 2 3 4 5 6 7 8 9\"]")
 parser.add_option_group(cats1)
@@ -124,14 +124,14 @@ print
 ## valid run periods
 if options.analysis == "sm" :
     valid_periods = {
-        "ee"   : "7TeV 8TeV 14TeV",
-        "mm"   : "7TeV 8TeV 14TeV",
-        "em"   : "7TeV 8TeV 14TeV",
-        "mt"   : "7TeV 8TeV 14TeV",
-        "et"   : "7TeV 8TeV 14TeV",
-        "tt"   :      "8TeV 14TeV",
-        "vhtt" : "7TeV 8TeV 14TeV",
-        "vhbb" : "7TeV 8TeV 14TeV",
+        "ee"   : "7TeV 8TeV 13TeV 14TeV",
+        "mm"   : "7TeV 8TeV 13TeV 14TeV",
+        "em"   : "7TeV 8TeV 13TeV 14TeV",
+        "mt"   : "7TeV 8TeV 13TeV 14TeV",
+        "et"   : "7TeV 8TeV 13TeV 14TeV",
+        "tt"   :      "8TeV 13TeV 14TeV",
+        "vhtt" : "7TeV 8TeV 13TeV 14TeV",
+        "vhbb" : "7TeV 8TeV 13TeV 14TeV",
         }
 if options.analysis == "mssm" :
     valid_periods = {
@@ -206,8 +206,8 @@ for channel in channels :
             if not period in valid_periods[channel] :
                 #print "drop due to failing period: ", channel, valid_periods[channel], period
                 continue
-            os.system("datacard-project.py -i {PATH} -c {CHN} -e {ANA}-{PER}-0{CAT} {PER}-0{CAT}".format(PATH=options.input, CHN=channel, ANA=options.analysis, PER=period, CAT=cat))
-            os.chdir("{PWD}/{CHN}/{PER}-0{CAT}".format(CHN=prefix+channel, PER=period, PWD=base, CAT=cat))
+            os.system("datacard-project.py -i {PATH} -c {CHN} -e {ANA}-{PER}-{CAT} {PER}-{CAT}".format(PATH=options.input, CHN=channel, ANA=options.analysis, PER=period, CAT=cat.zfill(2)))
+            os.chdir("{PWD}/{CHN}/{PER}-{CAT}".format(CHN=prefix+channel, PER=period, PWD=base, CAT=cat.zfill(2)))
             for mass in parseArgs(args) :
                 ## fudge masspoints for mm, which cannot use 1d-horizontal template morphing
                 fudge_mass = mass
@@ -266,7 +266,7 @@ for channel in channels :
                             ))
             os.system("mv *.* ../")
             os.chdir("{PWD}/{CHN}".format(CHN=prefix+channel, PWD=base))
-            os.system("rm -r {PER}-0{CAT}".format(PER=period, CAT=cat))
+            os.system("rm -r {PER}-{CAT}".format(PER=period, CAT=cat.zfill(2)))
             os.system("rm -r cgs.* unc.*")
 
 if options.merge :
