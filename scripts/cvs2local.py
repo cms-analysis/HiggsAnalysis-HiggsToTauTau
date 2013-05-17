@@ -180,14 +180,14 @@ if options.verbose :
 ## valid run periods
 if options.analysis == "sm" :
     valid_periods = {
-        "ee"   : "7TeV 8TeV 14TeV",
-        "mm"   : "7TeV 8TeV 14TeV",
-        "em"   : "7TeV 8TeV 14TeV",
-        "mt"   : "7TeV 8TeV 14TeV",
-        "et"   : "7TeV 8TeV 14TeV",
-        "tt"   :      "8TeV 14TeV",
-        "vhtt" : "7TeV 8TeV 14TeV",
-        "vhbb" : "7TeV 8TeV 14TeV",
+        "ee"   : "7TeV 8TeV 13TeV 14TeV",
+        "mm"   : "7TeV 8TeV 13TeV 14TeV",
+        "em"   : "7TeV 8TeV 13TeV 14TeV",
+        "mt"   : "7TeV 8TeV 13TeV 14TeV",
+        "et"   : "7TeV 8TeV 13TeV 14TeV",
+        "tt"   :      "8TeV 13TeV 14TeV",
+        "vhtt" : "7TeV 8TeV 13TeV 14TeV",
+        "vhbb" : "7TeV 8TeV 13TeV 14TeV",
         }
 if options.analysis == "mssm" :
     valid_periods = {
