@@ -159,21 +159,6 @@ signals = {
     "vhtt" : options.signals_vhtt,
     }
 
-## SM xs*BR for injecting SM to MSSM (mH=125GeV) xs(process)*BR(Htt), VH = ZH+WH
-## 8TeV taken from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt8TeV
-## 7TeV taken from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt7TeV
-## not needed anymore since the ggH125 VH125 and qqH125 histos are saved in the rootfiles
-## SM_xs = {
-##     ("ggH", "8TeV") : 19.52*0.0632,
-##     ("bbH", "8TeV") : 0.0*0.0632,
-##     ("qqH", "8TeV") : 1.578*0.0632,
-##     ("VH" , "8TeV") : (0.3943+0.6966)*0.0632,
-##     ("ggH", "7TeV") : 15.32*0.0632,
-##     ("bbH", "7TeV") : 0.0*0.0632,
-##     ("qqH", "7TeV") : 1.222*0.0632,
-##     ("VH" , "7TeV") : (0.3158+0.5729)*0.0632,
-##  }
-
 ## MSSM xs*BR tanb=20 mA=160 (A+H)
 ## 8TeV taken MSSM Neutral Higgs Group
 ## 7TeV taken MSSM Neutral Higgs Group
@@ -300,24 +285,13 @@ for chn in channels :
                 idx=0
                 ##not needed anymore since VH125, ggH125 and qqH125 are stored directly in rootfiles
                 if options.sm_to_mssm:
-                    print signals_used
+                    #print signals_used
                     signals_used=""
-                    print signals_used
-                    print backgrounds[chn]
-                    backgrounds[chn]=backgrounds[chn]+",ggH_SM125,qqH_SM125,VH_SM125"
-                    print backgrounds[chn]
-                ##not needed anymore since VH125, ggH125 and qqH125 are stored directly in rootfiles
-                    ## for signal in signal_processes :
-                        
-##                         scale=SM_xs[signal, per]
-##                         print "signal, xs*BR and scale: ", idx, signal+options.mass_injected, SM_xs[signal, per], scale
-##                         if idx==0 :
-##                             os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(false,{SCALE},\"{FILE}\",\"{SIGNAL}\",0\)".format(
-##                                 CMSSW_BASE=os.environ.get("CMSSW_BASE"), SCALE=scale, FILE=histfile, SIGNAL=signal+options.mass_injected))
-##                         else :
-##                             os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{FILE}\",\"{SIGNAL}\",0\)".format(
-##                                 CMSSW_BASE=os.environ.get("CMSSW_BASE"), SCALE=scale, FILE=histfile+"_scaled", SIGNAL=signal+options.mass_injected))
-##                         idx=idx+1
+                    #print signals_used
+                    #print backgrounds[chn]
+                    if backgrounds[chn].find("ggH_SM125,qqH_SM125,VH_SM125")==-1:
+                        backgrounds[chn]=backgrounds[chn]+",ggH_SM125,qqH_SM125,VH_SM125"
+                    #print backgrounds[chn]
                 else :
                     for signal in signal_processes :
                         scale=MSSM_xs[signal, per]
