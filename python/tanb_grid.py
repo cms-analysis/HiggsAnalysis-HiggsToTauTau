@@ -31,6 +31,9 @@ from ROOT import th1fmorph
 from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools
 
 class MakeDatacard :
+       """
+
+       """
        def __init__(self, tanb, mA, model="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root", feyn_higgs_model="", sm_like=False) :
               ## full path for the input file for the htt xsec tools, expected in the data directory of the package
               ## This file is used to determine the cross sections and uncertainties for calculations for htt, as
@@ -855,7 +858,7 @@ class MakeDatacard :
               scale = 1.
               if m_upper>m_lower:
                      scale = hist_lower.Integral()+(hist_upper.Integral()-hist_lower.Integral())/(m_upper-m_lower)*(mass-m_lower)
-              return scale//hist_lower.Integral()
+              return scale/hist_lower.Integral()
 
        def expand_filename(self, filename, mass=-1) :
               """
