@@ -6,7 +6,7 @@ from optparse import OptionParser, OptionGroup
 parser = OptionParser(usage="usage: %prog [options] ARG",
                       description="This is a script to do quick blinding of datacard inputs. ARG correspond to the file of interest.\n")
 parser.add_option("-s", "--signal", dest="signal", default="ggH{MASS},qqH{MASS},VH{MASS}", type="string",
-                  help="The signal sample to be injected. Should include a variable string for the mass, e.g. ggH{MASS}. If empty only no signal will be injected. The default corresponds to a SM signal. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
+                  help="The signal sample to be injected. Should include a variable string for the mass, e.g. ggH{MASS}. If empty no signal will be injected. The default corresponds to a SM signal. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
 parser.add_option("-m", "--mass", dest="mass", default="125", type="string",
                   help="The mass of the signal that should be injected. the default corresponds to 125 GeV. Default: \"125\"]")
 parser.add_option("-d", "--dir", dest="dir", default="\\*", type="string",
