@@ -28,7 +28,7 @@
     file will be written out with file extension *_rescaled 
 */
 
-void rescaleLumi(const char* filename, float oldLumi=4.9, float newLumi=12., unsigned int debug=0)
+void rescaleLumi(const char* filename, float oldLumi=4.9, float newLumi=12., unsigned int debug=0, bool armed=false)
 {
   std::vector<TString> paths, dirs;
   TFile* old_file = new TFile(filename, "Read");
@@ -52,7 +52,13 @@ void rescaleLumi(const char* filename, float oldLumi=4.9, float newLumi=12., uns
 	  }
 	}
       }
-    }    
+    }
+    else{
+      if(debug>2){ std::cout << " ...found object: " << idir->GetName() << std::endl; }
+      if(!std::count(paths.begin(), paths.end(), idir->GetName())){ 
+	paths.push_back(idir->GetName());
+      }     
+    }
   }
   // setup directory structure in new file
   TFile* new_file = new TFile(TString::Format("%s_scaled", filename), "Update");
@@ -63,21 +69,29 @@ void rescaleLumi(const char* filename, float oldLumi=4.9, float newLumi=12., uns
   // do the rescaling and write new object to file
   for(std::vector<TString>::const_iterator path = paths.begin(); path!=paths.end(); ++path){ 
     TH1F* h = (TH1F*)old_file->Get(*path);
+    std::string dirstr;
+    std::string pathstr(*path);
+    std::string histstr(*path);
+    if(pathstr.find("/")!=std::string::npos){
+      dirstr  = pathstr.substr(0, pathstr.find("/"));
+      histstr = pathstr.substr(pathstr.find("/")+1, std::string::npos);
+    }
+    h->SetName(histstr.c_str());
     if(debug>1){ std::cout << "histogram: " << *path << std::endl; }
     if(debug>1){ std::cout << "...old scale : " << h->Integral() << std::endl; }
     h->Scale(newLumi/oldLumi);  
-    if(std::string(*path).find("data_obs")!=std::string::npos){
+    if(histstr.find("data_obs")!=std::string::npos){
       if (h->Integral() > 0)  h->Scale((int)h->Integral()/h->Integral());
     }
     if(debug>1){ std::cout << "...new scale : " << h->Integral() << std::endl; }
-    std::string str = std::string(*path);
-    std::string dir = str.substr(0, str.find("/"));
-    std::string hist = str.substr(str.find("/")+1, std::string::npos);
     new_file->cd();;
-    new_file->cd(dir.c_str());
-    h->Write(hist.c_str()); 
+    new_file->cd(dirstr.c_str());
+    h->Write(histstr.c_str()); 
   }
   old_file->Close();
   new_file->Close();
+  if(armed){
+    system(TString::Format("mv %s_scaled %s", filename, filename));
+  }
   return;
 }
