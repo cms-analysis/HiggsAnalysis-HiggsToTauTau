@@ -111,12 +111,16 @@ class Analysis:
                  )
              mssm_scan = mssm_xsec_tools("{CMSSW_BASE}/src/{PATH}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], PATH=path))
              mssm_xsec = mssm_scan.query(options.mA, options.tanb)
-             bbH_xseff_A=mssm_xsec['higgses']['A']['xsec']['santander']*mssm_xsec['higgses']['A'][br]
-             ggH_xseff_A=mssm_xsec['higgses']['A']['xsec']['ggF'      ]*mssm_xsec['higgses']['A'][br]
-             bbH_xseff_H=mssm_xsec['higgses']['H']['xsec']['santander']*mssm_xsec['higgses']['H'][br]
-             ggH_xseff_H=mssm_xsec['higgses']['H']['xsec']['ggF'      ]*mssm_xsec['higgses']['H'][br]
-             bbH_xseff_h=mssm_xsec['higgses']['h']['xsec']['santander']*mssm_xsec['higgses']['h'][br]
-             ggH_xseff_h=mssm_xsec['higgses']['h']['xsec']['ggF'      ]*mssm_xsec['higgses']['h'][br]
+             bbH_xseff_A=mssm_xsec['higgses']['A']['xsec']['santander']*mssm_xsec['higgses']['A'][br]/1000
+             ggH_xseff_A=mssm_xsec['higgses']['A']['xsec']['ggF'      ]*mssm_xsec['higgses']['A'][br]/1000
+             bbH_xseff_H=mssm_xsec['higgses']['H']['xsec']['santander']*mssm_xsec['higgses']['H'][br]/1000
+             ggH_xseff_H=mssm_xsec['higgses']['H']['xsec']['ggF'      ]*mssm_xsec['higgses']['H'][br]/1000
+             bbH_xseff_h=mssm_xsec['higgses']['h']['xsec']['santander']*mssm_xsec['higgses']['h'][br]/1000
+             ggH_xseff_h=mssm_xsec['higgses']['h']['xsec']['ggF'      ]*mssm_xsec['higgses']['h'][br]/1000
+             #print "bbH", mssm_xsec['higgses']['H']['xsec']['santander']
+             #print "bbA", mssm_xsec['higgses']['A']['xsec']['santander']
+             #print "ggH", mssm_xsec['higgses']['H']['xsec']['ggF']
+             #print "ggA", mssm_xsec['higgses']['A']['xsec']['ggF']
              bbH_xseff_hH=bbH_xseff_H
              ggH_xseff_hH=ggH_xseff_H
              if options.mA==130 :
@@ -125,6 +129,7 @@ class Analysis:
              if options.mA<130 :
                  bbH_xseff_hH=bbH_xseff_h
                  ggH_xseff_hH=ggH_xseff_h
+             
                  
          curr_name = ""
          for line in input_file:
