@@ -57,7 +57,7 @@ match(const char *string, char *pattern)
 }
 
 void 
-rescaleSignal(bool armed, double scale, const char* filename, const char* pattern="", unsigned int debug=0)
+rescaleSignal(bool armed, double scale, const char* filename, const char* pattern="", unsigned int debug=0, const char* replace="")
 {
   std::vector<TString> paths, dirs;
   TFile* old_file = new TFile(filename, "Read");
@@ -81,7 +81,13 @@ rescaleSignal(bool armed, double scale, const char* filename, const char* patter
 	  }
 	}
       }
-    }    
+    }
+    else{
+      if(debug>2){ std::cout << " ...found object: " << idir->GetName() << std::endl; }
+      if(!std::count(paths.begin(), paths.end(), idir->GetName())){ 
+	paths.push_back(idir->GetName());
+      }
+    }
   }
   // setup directory structure in new file
   TFile* new_file = new TFile(TString::Format("%s_scaled", filename), "Update");
@@ -93,25 +99,49 @@ rescaleSignal(bool armed, double scale, const char* filename, const char* patter
   for(std::vector<TString>::const_iterator path = paths.begin(); path!=paths.end(); ++path){ 
     if(debug>2){ std::cout << "...getting histogram: " << *path << std::endl; }
     TH1F* h = (TH1F*)old_file->Get(*path);
-    std::string histname(*path);
-    if(histname.find("/")!=std::string::npos){
-      //std::cout << "hist name should be:" << histname.substr(histname.find("/")+1,std::string::npos) << std::endl;
-      h->SetName(histname.substr(histname.find("/")+1,std::string::npos).c_str());
+    std::string dirstr;
+    std::string pathstr(*path);
+    std::string histstr(*path);
+    if(pathstr.find("/")!=std::string::npos){
+      dirstr  = pathstr.substr(0, pathstr.find("/"));
+      histstr = pathstr.substr(pathstr.find("/")+1, std::string::npos);
     }
+    h->SetName(histstr.c_str());
+    TString histtstr(h->GetName());
     if(match(h->GetName(), (char*)pattern)){
-      if(debug>1){ std::cout << "...[" << h->GetName() << "]: " << "old scale : " << h->Integral() << std::endl; }
-      h->Scale(scale);  
-      if(std::string(*path).find("data_obs")!=std::string::npos){
-	if (h->Integral() > 0)  h->Scale((int)h->Integral()/h->Integral());
+      // skip cases where the match indeed occures in the name of the uncertainty 
+      // in case of histograms for shape uncertainties
+      bool doScale=true;
+      if(histtstr.Contains("Up") || histtstr.Contains("Down")){
+	if(histtstr.First(pattern)>0){
+	  if(debug>0){
+	    std::cout << "skipped from scaling -> pattern: " << pattern << " histname: " << histtstr << std::endl;
+	  }
+	  doScale=false;
+	}
       }
-      if(debug>1){ std::cout << "...[" << h->GetName() << "]: " << "new scale : " << h->Integral() << std::endl; }
+      if(debug>1){ std::cout << "...[" << h->GetName() << "]: " << "old scale : " << h->Integral() << " (" << doScale << ")" << std::endl; }
+      if(doScale){
+	h->Scale(scale);  
+	if(histstr.find("data_obs")!=std::string::npos){
+	  if (h->Integral() > 0)  h->Scale((int)h->Integral()/h->Integral());
+	}
+	if(debug>1){ std::cout << "...[" << h->GetName() << "]: " << "new scale : " << h->Integral() << std::endl; }
+      }
     }
-    std::string str = std::string(*path);
-    std::string dir = str.substr(0, str.find("/"));
-    std::string hist = str.substr(str.find("/")+1, std::string::npos);
+    // add potential replacements e.g. for cases, where center of
+    // mass energies appear in histogram names for uncertainties
+    if(!std::string(replace).empty()){
+      std::string replacestr(replace);
+      std::string old_label = replacestr.substr(0, replacestr.find(":"));
+      std::string new_label = replacestr.substr(replacestr.find(":")+1, std::string::npos);
+      if(histtstr.Contains(old_label.c_str())){
+	histtstr.Replace(histtstr.Index(old_label.c_str()), old_label.length(), new_label.c_str());
+      }
+    }
     new_file->cd();;
-    new_file->cd(dir.c_str());
-    h->Write(hist.c_str(), TObject::kOverwrite); 
+    new_file->cd(dirstr.c_str());
+    h->Write(histtstr, TObject::kOverwrite); 
   }
   old_file->Close();
   new_file->Close();
