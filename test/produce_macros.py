@@ -329,7 +329,7 @@ for chn in channels :
             if chn == "hbb" :
                 histfile = "{CHN}.input_{PER}-0.root".format(CHN=chn, PER=per) ## mass 160 therefore masscat=0
             else :
-                histfile = "htt_{CHN}.input_{PER}.root".format(CHN=chn, PER=per) if options.analysis == "sm" else "htt_{CHN}.inputs-mssm-{PER}-0.root".format(CHN=chn, PER=per)
+                histfile = "htt_{CHN}.input_{PER}.root".format(CHN=chn, PER=per) if options.analysis == "sm" else "htt_{CHN}.inputs-mssm-{PER}-0_{MA}_{TANB}.00.root".format(CHN=chn, PER=per, MA=str(int(options.mA)), TANB=str(int(options.tanb)))
                 if chn == "mm" :
                 ## there is one speciality for mm, which need special input files
                     histfile.replace(".root", "-svfit.root")
