@@ -156,7 +156,7 @@ print
 if options.analysis == "sm" :
     os.chdir("sm")
     categories = {
-        "ee"   : options.mm_sm_categories.split(),
+        "ee"   : options.ee_sm_categories.split(),
         "mm"   : options.mm_sm_categories.split(),
         "em"   : options.em_sm_categories.split(),
         "mt"   : options.mt_sm_categories.split(),
@@ -170,7 +170,7 @@ if options.analysis == "sm" :
 if options.analysis == "mssm" :
     os.chdir("mssm")
     categories = {
-        "ee"   : options.mm_mssm_categories.split(),
+        "ee"   : options.ee_mssm_categories.split(),
         "mm"   : options.mm_mssm_categories.split(),
         "em"   : options.em_mssm_categories.split(),
         "mt"   : options.mt_mssm_categories.split(),

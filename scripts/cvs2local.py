@@ -136,7 +136,7 @@ if options.analysis == "sm" :
 ## switch to mssm event categories
 if options.analysis == "mssm" :
     categories = {
-        "ee"   : options.mm_mssm_categories.split(),
+        "ee"   : options.ee_mssm_categories.split(),
         "mm"   : options.mm_mssm_categories.split(),
         "em"   : options.em_mssm_categories.split(),
         "mt"   : options.mt_mssm_categories.split(),
