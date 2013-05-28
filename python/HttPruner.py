@@ -10,7 +10,9 @@ class HttPruner(DatacardPruner) :
     This class is derived from the class DatacardPruner. The base class is extended by an option to prevent nuisance
     parameters, which are supposed to correspond to bin-by-bin uncertainties in pre-defined windows of the input histograms
     to be pruned. These windows are supposed to be given as a tuple of type (center, size), where center corresponds to the
-    center of the window and size to its relative size.
+    center of the window and size to its relative size. Nuisance parameters that correspond to bin-by-bin uncertainties are
+    supposed to contain a regex of type '\s*\w+bin\_*(\d*)' in their name as it is automatically the case when using the htt
+    tool to add bin-by-bin uncertainties.
     """
     def __init__(self, fit_results, metric='max', mass='125', threshold='0.05', blacklist=[], whitelist=[], comment_nuisances=False, windows=[], pattern='\s*\w+bin\_*(\d*)') :
         ## list of windows of type (center, size)
