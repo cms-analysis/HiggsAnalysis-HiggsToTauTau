@@ -854,6 +854,10 @@ class MakeDatacard :
               Determine the residual scale due to potential differences in reconstruction and
               selection efficiencies for the interpolated mass histogram from the embacing
               mass histograms.
+
+              NOTE: in order to be a scale the return value would have to be divided by the
+              integral of the histogram to which to apply the scale. This HAS TO BE DONE in
+              in the function from where self.scale is called!
               """
               scale = 1.
               if m_upper>m_lower:
@@ -975,7 +979,7 @@ class MakeDatacard :
                                    hist_mh_value = th1fmorph("I","mh_"+hist_name,hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh, norm_mh_value, 0)
               else :
                      hist_mh_value = hist_mA_value.Clone(hist_name)
-                     hist_mh_value.Scale(cross_sections["h"]/self.tanb*self.mh) 
+                     hist_mh_value.Scale(cross_sections["h"]/self.tanb) 
               ## catch cases where the morphing failed. Fallback to mA
               ## in this case and scale according to cross section of mh
               if not hist_mA_value.GetNbinsX() == hist_mh_value.GetNbinsX() :
