@@ -858,7 +858,7 @@ class MakeDatacard :
               scale = 1.
               if m_upper>m_lower:
                      scale = hist_lower.Integral()+(hist_upper.Integral()-hist_lower.Integral())/(m_upper-m_lower)*(mass-m_lower)
-              return scale/hist_lower.Integral()
+              return scale
 
        def expand_filename(self, filename, mass=-1) :
               """
