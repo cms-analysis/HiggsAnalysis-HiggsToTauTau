@@ -91,6 +91,7 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   
   if(iRebin) { 
     double lAxis[32]={0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200,225,250,275,300,325,350,400,500,700,1000,1500};
+    lH0     = rebin(lH0    ,31,lAxis);
     lH      = rebin(lH     ,31,lAxis);
     lHUp    = rebin(lHUp   ,31,lAxis);
     lHDown  = rebin(lHDown ,31,lAxis);
@@ -105,13 +106,12 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   lHUp1  ->Write(); 
   lHDown1->Write(); 
 
-  /* Validation plots
+  /* Debug Plots
   lH     ->SetLineColor(kBlue);
   lHUp   ->SetLineColor(kRed);
   lHDown ->SetLineColor(kRed);
   lHUp1  ->SetLineColor(kBlue);
   lHDown1->SetLineColor(kBlue);
-  cout << "===> " << lHUp->Integral() << endl;
   TCanvas *lC0 = new TCanvas("Can","Can",800,600);
   lH0->Draw();
   lH     ->Draw("hist sames");
@@ -121,12 +121,11 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   lHDown1->Draw("hist sames");
   lC0->SetLogy();
   */
-
   lFile->Close();
   return;
 }
-void addFitNuisance(std::string iFileName="htt_tt.inputs-sm-8TeV.root",std::string iChannel="tauTau",std::string iBkg="QCD",std::string iEnergy="8TeV",std::string iName="shift",bool iBTag=true,bool iRebin=false) { 
-  addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet",iRebin);
-  //addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtag",iRebin);
-  //if(iBTag) addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag",iRebin);
+void addFitNuisance(std::string iFileName="htt_tt.inputs-sm-8TeV.root",std::string iChannel="tauTau",std::string iBkg="QCD",std::string iEnergy="8TeV",std::string iName="shift",bool iBTag=true,bool iRebin=true) { 
+  //addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet",iRebin);
+  addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtag",iRebin);
+  if(iBTag) addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag",iRebin);
 }
