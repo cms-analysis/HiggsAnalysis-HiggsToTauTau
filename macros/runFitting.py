@@ -7,21 +7,30 @@ import os, sys, re
 os.system("mkdir NEWFILES")
 
 modes = ["mu", "ele"]
-energies = ["7TeV", "8TeV"]
-specialHistos = ["W", "QCD", "TT"]
+#modes = ["mu"]
+#energies = ["7TeV", "8TeV"]
+energies = ["8TeV"]
+specialHistos = ["QCD", "W", "TT"]
+#specialHistos = ["W"]
 
 #create a simple macro that does compilation
 for mode in modes:
     for energy in energies:
+        fileName = "htt_mt.inputs-mssm-"+energy+"-0.root"
+        specialDirs = ["muTau_nobtag","muTau_btag"]
+        if mode == "ele":
+            fileName = "htt_et.inputs-mssm-"+energy+"-0.root"
+            specialDirs = ["eleTau_nobtag","eleTau_btag"]        
         file = open("test.C", "w")
         file.write("void test() {\n")
         file.write("  gROOT->ProcessLine(\".L FitTails.C+\");\n")
-        file.write("  gROOT->ProcessLine(\"FitTails(\\\"" + mode + "\\\",\\\"" + energy + "\\\")\");\n")
+        #file.write("  gROOT->ProcessLine(\"FitTails(\\\"" + mode + "\\\",\\\"" + energy + "\\\")\");\n")
+        file.write("  gROOT->ProcessLine(\"FitTails(\\\"" + mode + "\\\",\\\"" + energy + "\\\",\\\"" + fileName + "\\\")\");\n")
         file.write("  gROOT->ProcessLine(\".q\");\n")
         file.write("}\n")
         file.close()
         os.system("root -l -b test.C")
-os.system("rm test.C")
+#os.system("rm test.C")
 
 #all input histograms are ready to be inserted in root files
 
@@ -38,22 +47,24 @@ for mode in modes:
         file = open("produce.C", "w")
         file.write("void produce(){\n")
         
-        fileName = "htt_mt.inputs-mssm-"+energy+".root"
-        specialDirs = ["muTau_btag_high","muTau_btag_low","muTau_boost_high"]
+        fileName = "htt_mt.inputs-mssm-"+energy+"-0.root"
+        #specialDirs = ["muTau_btag_high","muTau_btag_low","muTau_boost_high"]
+        specialDirs = ["muTau_nobtag","muTau_btag"]
         if mode == "ele":
-            fileName = "htt_et.inputs-mssm-"+energy+".root"
-            specialDirs = ["eleTau_btag_high","eleTau_btag_low","eleTau_boost_high"]
+            fileName = "htt_et.inputs-mssm-"+energy+"-0.root"
+            #specialDirs = ["eleTau_btag_high","eleTau_btag_low","eleTau_boost_high"]
+            specialDirs = ["eleTau_nobtag","eleTau_btag"]
         file.write("  TH1F* tmp;\n")
         file.write("  TFile* in   = TFile::Open(\"" + fileName + "\");\n")
         file.write("  TFile* W0   = TFile::Open(\"" + specialDirs[0] + "_W.root\");\n")
         file.write("  TFile* W1   = TFile::Open(\"" + specialDirs[1] + "_W.root\");\n")
-        file.write("  TFile* W2   = TFile::Open(\"" + specialDirs[2] + "_W.root\");\n") 
+        #file.write("  TFile* W2   = TFile::Open(\"" + specialDirs[2] + "_W.root\");\n") 
         file.write("  TFile* QCD0 = TFile::Open(\"" + specialDirs[0] + "_QCD.root\");\n")
         file.write("  TFile* QCD1 = TFile::Open(\"" + specialDirs[1] + "_QCD.root\");\n")
-        file.write("  TFile* QCD2 = TFile::Open(\"" + specialDirs[2] + "_QCD.root\");\n") 
+        #file.write("  TFile* QCD2 = TFile::Open(\"" + specialDirs[2] + "_QCD.root\");\n") 
         file.write("  TFile* TT0  = TFile::Open(\"" + specialDirs[0] + "_TT.root\");\n")
         file.write("  TFile* TT1  = TFile::Open(\"" + specialDirs[1] + "_TT.root\");\n")
-        file.write("  TFile* TT2  = TFile::Open(\"" + specialDirs[2] + "_TT.root\");\n") 
+        #file.write("  TFile* TT2  = TFile::Open(\"" + specialDirs[2] + "_TT.root\");\n") 
 
         file.write("  TFile* out = TFile::Open(\"NEWFILES\/" + fileName + "\",\"RECREATE\");\n") 
         
@@ -70,8 +81,8 @@ for mode in modes:
                         counter = 0
                     if dir[:-1] == specialDirs[1]:
                         counter = 1
-                    if dir[:-1] == specialDirs[2]:
-                        counter = 2
+                    #if dir[:-1] == specialDirs[2]:
+                    #    counter = 2
                     for inHisto in newHistos:
                         file.write("  tmp = (TH1F*)" + histo[:-1] + str(counter) + "->Get(\"" + inHisto[:-1] + "\");\n")
                         file.write("  tmp->Write();\n")
@@ -86,7 +97,7 @@ for mode in modes:
         file.write("}\n")
         file.close()
         os.system("root -l produce.C")
-        os.system("rm produce.C")
+        #os.system("rm produce.C")
             
                 
         
