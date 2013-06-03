@@ -7,8 +7,6 @@ parser = OptionParser(usage="usage: %prog [options] datacatd.txt",
 parser.add_option("-m", "--mA",    dest="mA",       default=120.,  type="float",   help="Value of mA. [Default: 120.]")
 parser.add_option("-t", "--tanb",  dest="tanb",     default='20.',   type="string",   help="Values of tanb. [Default: 20.]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode")
-parser.add_option("--model-independent",dest="independent", default=False, action="store_true", help="If applied the branching ratio given by option --BR into tautau will be used for limit calculation. This only works for tautau datacards atm. Production xs is still taken from model-rootfiles. They are more or less only dependent on tanb and mA.")
-parser.add_option("--BR", dest="BR", default=0.1, type="float", help="Branching ratio to tautau. This option is only valid if model independent limits should be calculated, by using the option --model-independent. [Default: 0.1]")
 parser.add_option("--sm-like", dest="sm_like", default=False, action="store_true", help="Do not divide by the value of tanb, but only scale to MSSM xsec according to tanb value. (Will result in typical SM limit on signal strength for given value of tanb). Used for debugging. [Default: False]")
 parser.add_option("--model", dest="model", default='auxiliaries/models/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root', type="string", help="Model to be applied for the limit calculation. [Default: 'auxiliaries/models/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root']")
 parser.add_option("--interpolation", dest="interpolation_mode", default='mode-1', type="choice", help="Mode for mass interpolation for direct tanb limits. Choices are: mode-0 -- non-degenerate-masses for all htt channels, mode-1 -- non-degenerate-masses for classic htt channels non-degenerate-masses-light for htt_mm, mode-2 -- non-degenerate-masses for classic htt channels degenerate-masses for htt_mm, mode-3 -- non-degenerate-masses-light for all htt channels, mode-4 -- non-degenerate-masses-light for classic htt channels degenerate-masses for htt_mm, mode-5 -- degenerate-masses for all htt channels [Default: mode-1]", choices=["mode-0", "mode-1", "mode-2", "mode-3", "mode-4", "mode-5"])
@@ -504,24 +502,13 @@ class MakeDatacard :
                      scan = mssm_xsec_tools("{CMSSW_BASE}/src/{PATH}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], PATH=path))
                      htt_query = scan.query(self.mA, self.tanb)
                      ## fill cross section (central values)
-                     if(options.independent) :
-                            for key in cross_sections :
-                                   if decay_channel == "htt" :
-                                          cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*options.BR
-                                   ##if decay_channel == "hmm" :
-                                   ##       cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR-mumu"]
-                                   ##if decay_channel == "hbb" :
-                                   ##       cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR-bb"] 
-                                   if key == "h" : ## this one is already discovered :) 
-                                          cross_sections[key] = 0
-                     else :
-                            for key in cross_sections :
-                                   if decay_channel == "htt" :
-                                          cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR"]
-                                   if decay_channel == "hmm" :
-                                          cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR-mumu"]
-                                   if decay_channel == "hbb" :
-                                          cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR-bb"]      
+                     for key in cross_sections :
+                            if decay_channel == "htt" :
+                                   cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR"]
+                            if decay_channel == "hmm" :
+                                   cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR-mumu"]
+                            if decay_channel == "hbb" :
+                                   cross_sections[key] = htt_query["higgses"][key]["xsec"][production_channel]*htt_query["higgses"][key]["BR-bb"]      
               if options.verbose :
                      print production_channel, decay_channel, period, cross_sections
               return cross_sections
@@ -653,24 +640,13 @@ class MakeDatacard :
               scan = mssm_xsec_tools(inputFileName)
               htt_query = scan.query(self.mA, self.tanb)
               ## fill uncertainties of Up/Down type
-              if(options.independent) :
-                     for key in cross_sections :
-                            if decay_channel == "htt" :
-                                   cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*options.BR
-                            ##if decay_channel == "hmm" :
-                            ##       cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR-mumu"]
-                            ##if decay_channel == "hbb" :
-                            ##       cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR-bb"] 
-                            if key == "h" : ## this one is already discovered :) 
-                                   cross_sections[key] = 0
-              else :
-                     for key in cross_sections :
-                            if decay_channel == "htt" :
-                                   cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR"]
-                            if decay_channel == "hmm" :
-                                   cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR-mumu"]
-                            if decay_channel == "hbb" :
-                                   cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR-bb"]
+              for key in cross_sections :
+                     if decay_channel == "htt" :
+                            cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR"]
+                     if decay_channel == "hmm" :
+                            cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR-mumu"]
+                     if decay_channel == "hbb" :
+                            cross_sections[key] = htt_query["higgses"][key][uncertainty_type][production_channel][uncertainty_direction]*htt_query["higgses"][key]["BR-bb"]
               if options.verbose :
                      print production_channel, period, decay_channel, uncertainty_type, uncertainty_direction, cross_sections
               return cross_sections
