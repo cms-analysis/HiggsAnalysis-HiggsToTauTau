@@ -78,7 +78,7 @@ for idx in range(len(analyses)) : analyses[idx] = analyses[idx].rstrip(',')
 ## CMSSW_BASE
 cmssw_base=os.environ['CMSSW_BASE']
 ## setup a backup directory
-os.system("mkdir -p backup")
+os.system("mkdir -p MSSM_backup")
 
 ##define inputs from cvs; Note: not all analyses are available for all inputs
 directories = {}
@@ -171,6 +171,7 @@ if options.update_cvs :
     #os.system("python HiggsAnalysis/HiggsToTauTau/scripts/scale2accept.py -i {SETUP} -c hbb -p 7TeV 90 100-200:20 130 250-350:50".format(
     #    SETUP=setup
     #    ))
+    
 
 if options.update_setup:
     print "##"
@@ -185,6 +186,27 @@ if options.update_setup:
     os.system("mkdir -p {DIR}".format(DIR=dir))
     for ana in analyses :
         os.system("cp -r {SETUP} {DIR}/{ANA}".format(SETUP=setup, DIR=dir, ANA=ana))
+
+        #### NEW TO BE TESTED!!
+        print "INFO: Fitting of the background tails"
+        for period in periods :
+            if options.channels.find("em") > -1:
+                os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'Fakes EWK ttbar' -k '{CATEGORIES}'".format(
+                    DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
+            if options.channels.find("et") > -1:
+                os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'W QCD TT' -k '{CATEGORIES}'".format(
+                    DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
+            if options.channels.find("mm") > -1:
+                os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mm.inputs-mssm-{PER}-0.root -c mm -e {PER} -b 'WJets QCD TTJ' -k '{CATEGORIES}'".format(
+                    DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
+            if options.channels.find("mt") > -1:
+                os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'W QCD TT' -k '{CATEGORIES}'".format(
+                    DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
+        if options.channels.find("tt") > -1:
+            os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_tt.inputs-mssm-8TeV-0.root -c tt -e 8TeV -b 'QCD' -k '8 9'".format(
+                DIR=dir, ANA=ana))
+        #####
+         
         if ana == 'std' :
             pass      
         if ana == 'bin-by-bin'  or ana == 'pruned' :
