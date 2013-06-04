@@ -1,49 +1,50 @@
 #!/usr/bin/env python
 
 from optparse import OptionParser, OptionGroup
+from HiggsAnalysis.CombinedLimit.DatacardParser import *
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARG",
-                      description="This is a script to do quick blinding of datacard inputs. ARG correspond to the file of interest.\n")
-parser.add_option("-s", "--signal", dest="signal", default="ggH{MASS},qqH{MASS},VH{MASS}", type="string",
-                  help="The signal sample to be injected. Should include a variable string for the mass, e.g. ggH{MASS}. If empty no signal will be injected. The default corresponds to a SM signal. [Default: \"ggH{MASS},qqH{MASS},VH{MASS}\"]")
-parser.add_option("-m", "--mass", dest="mass", default="125", type="string",
-                  help="The mass of the signal that should be injected. the default corresponds to 125 GeV. Default: \"125\"]")
-parser.add_option("-d", "--dir", dest="dir", default="\\*", type="string",
-                  help="The directories in the root input file, corresponding to the event categories to which to apply the blinding. [Default: \"\\*\"]")
-pgroup = OptionGroup(parser, "BACKGROUNDS", "Command options to customize the backgrounds per channel.")
-parser.add_option("--backgrounds-em", dest="bg_em", default="Ztt,ttbar,EWK,Fakes", type="string",
-                  help="Backgrounds for blinding for em channel. [Default: 'Ztt,ttbar,EWK,Fakes']")
-parser.add_option("--backgrounds-et", dest="bg_et", default="ZTT,QCD,W,ZJ,ZL,TT,VV", type="string",
-                  help="Backgrounds for blinding for et channel. [Default: 'ZTT,QCD,W,ZJ,ZL,TT,VV']")
-parser.add_option("--backgrounds-mt", dest="bg_mt", default="ZTT,QCD,W,ZJ,ZL,TT,VV", type="string",
-                  help="Backgrounds for blinding for mt channel. [Default: 'ZTT,QCD,W,ZJ,ZL,TT,VV']")
-parser.add_option("--backgrounds-mm", dest="bg_mm", default="ZTT,ZMM,QCD,TTJ,WJets,Dibosons", type="string",
-                  help="Backgrounds for blinding for mm channel. [Default: 'ZTT,ZMM,QCD,TTJ,WJets,Dibosons']")
-parser.add_option("--backgrounds-tt", dest="bg_tt", default="ZTT,ZJ,ZL,QCD,TT,W,VV", type="string",
-                  help="Backgrounds for blinding for tt channel. [Default: 'ZTT,ZJ,ZL,QCD,TT,W,VV']")
+                      description="This is a script to apply blinding to a set of datacards located in the directory given by ARG. Depending on the configuration of the script signal can be added or not. In case it is added it can be scaled by factor, which is common to all signal processes indicated in the datacards. If necessary the mass of the signal to be injected can be given. If a random seed larger equal 0 is chosen the created asimov dataset is being randomized after creation. The script can work with binned shape analyses, based on root histograms or counting experiments.\n")
+parser_opts = OptionGroup(parser, "DATACARD PARSER OPTIONS", "These are the options that can be passed on to configure the datacard parsing.")
+addDatacardParserOptions(parser_opts)
+parser.add_option_group(parser_opts)
+asimov_opts = OptionGroup(parser, "ASIMOV DATACARD OPTIONS", "These are the options that can be passed on to configre the creation of the asomiv dataset used fro blinding.")
+asimov_opts.add_option("--seed", dest="seed", default="-1", type="string",
+                       help="Random seed. If you want the asimov dataset to be randomized after being created use a random seed, which is larger equal to 0. Default: \"-1\"]")
+asimov_opts.add_option("--inject-signal", dest="inject_signal", default=False, action="store_true",
+                  help="Use this option if you want signal to be added to the asimov dataset. In case all signal contribution, as indicated in the datacards will be chosen. [Default: False]")
+asimov_opts.add_option("--injected-scale", dest="injected_scale", default="1", type="string",
+                       help="Scale for signal. This is only of relevance if signal should be added to the asimov dataset. The scale factor will than be applied equally to each signal contribution. Default: \"1\"]")
+asimov_opts.add_option("--injected-mass", dest="injected_mass", default="125", type="string",
+                       help="The mass of the signal that should be injected. Default: \"125\"]")
+parser.add_option_group(asimov_opts)
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
+## check number of arguments; in case print usage
+if len(args) < 1 :
+    parser.print_usage()
+    exit(1)
 
-import os
+from HiggsAnalysis.HiggsToTauTau.AsimovDatacard import *
 
-input_file = args[0]
-backgrounds = ""
-if "htt_em" in input_file :
-    backgrounds = options.bg_em
-if "htt_et" in input_file :
-    backgrounds = options.bg_et
-if "htt_mt" in input_file :
-    backgrounds = options.bg_mt
-if "htt_mm" in input_file :
-    backgrounds = options.bg_mm
-if "htt_tt" in input_file :
-    backgrounds = options.bg_tt
+def main() :
+    print "# --------------------------------------------------------------------------------------"
+    print "# Blinding datacards. "
+    print "# --------------------------------------------------------------------------------------"
+    print "# You are using the following configuration: "
+    print "# --seed           :", options.seed
+    print "# --inject-signal  :", options.inject_signal
+    print "# --injected-scale :", options.injected_scale
+    print "# --injected-mass  :", options.injected_mass
+    print "# Check option --help in case of doubt about the meaning of one or more of these confi-"
+    print "# guration parameters.                           "
+    print "# --------------------------------------------------------------------------------------"
 
-os.system("root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/blindData.C+\\(\\\"{INPUT}\\\",\\\"{BG}\\\",\\\"{SIG}\\\",\\\"{DIR}\\\",true\\)".format(
-    CMSSW_BASE = os.environ['CMSSW_BASE'],
-    INPUT = input_file,
-    BG = backgrounds,
-    SIG = options.signal.format(MASS=options.mass),
-    DIR = options.dir
-    ))
+    ## clean up directory from former trials
+    os.system("rm {PATH}/../common/*_asimov".format(PATH=args[0]))
+    cardMaker = AsimovDatacard(options, options.seed, options.inject_signal, options.injected_mass, options.injected_scale)
+    cardMaker.make_asimov_datacards(args[0])
+
+main()
+exit(0)
