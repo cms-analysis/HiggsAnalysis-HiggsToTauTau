@@ -17,7 +17,7 @@
 #include "TCanvas.h"
 #include "TSpline.h"
 
-#include "HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
+#include "/scratch/hh/dust/naf/cms/user/frensch/CMSSW_6_1_1/src/HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
 
 
 /// typedef CrossPoint to a bin plus flag on falling or rising intercept, true for falling
@@ -106,7 +106,7 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
   // determine smooth curve on graph for interpolation
   TSpline3* spline = new TSpline3("spline", graph, "r", 3., 10.);
   // linear polarisation func
-  TF1 *fnc;
+  TF1 *fnc = 0;
   // determine all crossing points with y==1 
   std::vector<CrossPoint> points = crossPoints(graph);
 
@@ -169,8 +169,8 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
 	if(itype == plus_2sigma)  { limit=5.00; }
 	if(itype == plus_1sigma)  { limit=4.00; }
 	if(itype == expected)     { limit=3.00; }
-	if(itype == minus_1sigma) { limit=2.00; }
-	if(itype == minus_2sigma) { limit=1.00; }
+	if(itype == minus_1sigma) { limit=2.50; }
+	if(itype == minus_2sigma) { limit=2.00; }
 	tree->Fill();
       }
     else
