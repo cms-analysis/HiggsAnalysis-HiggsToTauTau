@@ -8,7 +8,7 @@ parser.add_option("-i"  ,"--input", dest="input", default="test.root", type="str
 parser.add_option("-b"  ,"--background", dest="background", default="TT QCD EWK",      type="string",   help="Template to change [TT QCD EWK]")
 parser.add_option("-n"  ,"--name",       dest="name",       default="shift",   type="string",   help="shift")
 parser.add_option("-e"  ,"--energy",     dest="energy",     default="8TeV",    type="string",   help="Energy [Default: 8 TeV]")
-parser.add_option("-c"  ,"--channel",    dest="channel",    default="tt",      type="string",   help="channel [Default: tauTau]")
+parser.add_option("-c"  ,"--channel",    dest="channel",    default="tt",      type="string",   help="channel [Default: tt]")
 parser.add_option("-k"  ,"--categories", dest="categories", default="8 9",     type="string",   help="Categories [Default: 8 9 ]")
 parser.add_option("-s"  ,"--setup",      dest="setup",      default="HiggsAnalysis/HiggsToTauTau/setup",    type="string",  help="Setup Directory : HiggsAnalysis/HiggsToTauTau/setup")
 parser.add_option("-v"  ,"--verbose",    dest="verbose",    default=False, action="store_true", help="increase verbosity. [Default: False]")
@@ -45,11 +45,12 @@ print " channel : ",  channelName[options.channel]
 ## add shift Nuisance (ignore the VBF Option right now)
 os.system(r"cp {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rootlogon.C .".format(CMSSW_BASE=os.environ.get("CMSSW_BASE")))
 
-for bkg in options.background.split() : 
-    os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/addFitNuisance.C+\(\"{FILENAME}\"\,\"{CHANNEL}\"\,\"{BKG}\"\,\"{ENERGY}\"\,\"{NAME}\"\)".format(
-        CMSSW_BASE=os.environ.get("CMSSW_BASE"), FILENAME=options.input,CHANNEL=channelName[options.channel],BKG=bkg,ENERGY=options.energy,NAME=options.name))
+for cat in options.categories.split() :
+    for bkg in options.background.split() : 
+        os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/addFitNuisance.C+\(\"{FILENAME}\"\,\"{CHANNEL}\"\,\"{BKG}\"\,\"{ENERGY}\"\,\"{NAME}\"\,\"{CATEGORY}\"\)".format(
+            CMSSW_BASE=os.environ.get("CMSSW_BASE"), FILENAME=options.setup+'/'+options.channel+'/'+options.input,CHANNEL=channelName[options.channel],BKG=bkg,ENERGY=options.energy,NAME=options.name,CATEGORY=cat))
 
-for cat in options.categories :
+for cat in options.categories.split() :
     if cat == ' ' :
         continue
 ## add Nuisance to the conf
@@ -64,7 +65,8 @@ for cat in options.categories :
             continue
         if '#' in words[0] :
             continue
-        if ('_scale_t_' or '_scale_e_') in words[2] :
+        #if ('_scale_t_' or '_scale_e_') in words[2] :
+        if  words[2].find('_scale_t_')>-1 or words[2].find('_scale_e_')>-1 :
             new_words    = words 
             new_words[1] = options.background
             new_words[2] = 'CMS_'+options.name+'1_' + channelName[options.channel] + '_' + options.energy
@@ -79,6 +81,7 @@ for cat in options.categories :
 
 ## add Nuisance to the vals
     datacard=options.setup+'/'+options.channel+'/unc-mssm-'+options.energy+'-0'+cat+'.conf'
+    print "datacard: ",datacard
     old = open(datacard, 'r')
     new = open("%s-tmp.txt" % datacard[0:datacard.rfind('.txt')], 'w')
     for line in old :
@@ -88,7 +91,8 @@ for cat in options.categories :
             continue
         if '#' in words[0] :
             continue
-        if  ('_scale_t_' or '_scale_e_') in words[0] :
+        #if  ('_scale_t_' or '_scale_e_') in words[0] :
+        if  words[0].find('_scale_t_')>-1 or words[0].find('_scale_e_')>-1 :
             new_words    = words 
             new_words[0] = 'CMS_'+options.name+'1_' + channelName[options.channel] + '_' + options.energy
             new_line1     = '                      '.join(new_words)
