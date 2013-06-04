@@ -252,7 +252,8 @@ void makeFits(TString fileName,
 	      TString energy){
 
   bool debug = true;//false;
-  
+  double goodChi2 = 1.5;
+
   if (debug)
     cout << "========= Now fitting ========= " << directory << " " << hName << endl;
   
@@ -297,6 +298,7 @@ void makeFits(TString fileName,
   std::vector<double> initialPars;
   std::vector<double> initialParErrors;
   bool parHasLargeUnc = false;
+  bool tryAnotherFit = false;
   bool tryThirdFit = false;
   bool fittingDidNotWork = false;
   for (int ipar=0; ipar<numberOfPars; ++ipar){
@@ -304,18 +306,25 @@ void makeFits(TString fileName,
     double parerror = f11->GetParError(ipar);
     initialPars.push_back(par);
     initialParErrors.push_back(parerror);
-    if (TMath::Abs(parerror/par)>0.95){
+    if (TMath::Abs(parerror/par)>0.5){
       parHasLargeUnc = true;
     }
   }
 
+  if (chisquare > goodChi2)
+    tryAnotherFit = true;
+
   //======== If the parameter(s) of fit are comaptible with zero
   //======== Redifine fit with simpler function
-  if (parHasLargeUnc) {
+  //  if (parHasLargeUnc) {
+  if (tryAnotherFit) {
     if (debug) 
       cout << "+++++++++++++ Redifining fit " << endl;
     parHasLargeUnc = false;
+    tryAnotherFit = false;
     fitFormula = fitFormulaAlt;
+    if (debug)
+      cout << "fit function " << fitFormula << endl;
     f11 = new TF1("f11",fitFormula,xmin_fit,xmax_fit);
     hDensity->Fit(f11,"","",xmin_fit,xmax_fit);
     chisquare =  f11->GetChisquare()/f11->GetNDF();
@@ -331,42 +340,46 @@ void makeFits(TString fileName,
       initialPars.push_back(par);
       initialParErrors.push_back(parerror);
       if (ipar>0) {
-	if (TMath::Abs(parerror/par)>0.95){
+	if (TMath::Abs(parerror/par)>0.5){
 	  parHasLargeUnc = true;
-	  tryThirdFit = true;
+	}
+      }
+      if ( chisquare > goodChi2 )
+	tryThirdFit = true;
+    }
+  
+    //Try third fit
+    //    if (parHasLargeUnc && tryThirdFit || chisquare > 2) {
+    if (tryThirdFit) {
+      if (debug)
+	cout << "+++++++++++++ Redifining fit third times " << endl;
+      parHasLargeUnc = false;
+      tryThirdFit = false;
+      fitFormula = fitFormulaAlt2;
+      if (debug) 
+	cout << "fit function " << fitFormula << endl;
+      f11 = new TF1("f11",fitFormula,xmin_fit,xmax_fit);
+      hDensity->Fit(f11,"","",xmin_fit,xmax_fit);
+      chisquare =  f11->GetChisquare()/f11->GetNDF();
+      if (f11->GetNDF()!=0) 
+	cout << "Goodness of fit ======= " << chisquare << endl;
+      
+      numberOfPars = f11->GetNpar(); 
+      initialPars.clear();
+      initialParErrors.clear();
+      for (int ipar=0; ipar<numberOfPars; ++ipar){
+	double par = f11->GetParameter(ipar);
+	double parerror = f11->GetParError(ipar);
+	initialPars.push_back(par);
+	initialParErrors.push_back(parerror);
+	if (TMath::Abs(parerror/par)>1.){
+	  parHasLargeUnc = true;
+	  fittingDidNotWork = true;
 	}
       }
     }
   }
   
-  //Try third fit
-  if (parHasLargeUnc && tryThirdFit || chisquare > 2) {
-    if (debug)
-      cout << "+++++++++++++ Redifining fit third times " << endl;
-    parHasLargeUnc = false;
-    tryThirdFit = false;
-    fitFormula = fitFormulaAlt2;
-    f11 = new TF1("f11",fitFormula,xmin_fit,xmax_fit);
-    hDensity->Fit(f11,"","",xmin_fit,xmax_fit);
-    chisquare =  f11->GetChisquare()/f11->GetNDF();
-    if (f11->GetNDF()!=0) 
-      cout << "Goodness of fit ======= " << chisquare << endl;
-    
-    numberOfPars = f11->GetNpar(); 
-    initialPars.clear();
-    initialParErrors.clear();
-    for (int ipar=0; ipar<numberOfPars; ++ipar){
-      double par = f11->GetParameter(ipar);
-      double parerror = f11->GetParError(ipar);
-      initialPars.push_back(par);
-      initialParErrors.push_back(parerror);
-      if (TMath::Abs(parerror/par)>1.){
-	parHasLargeUnc = true;
-	fittingDidNotWork = true;
-      }
-    }
-  }
-
   double par0 = initialPars[0];
   f11->FixParameter(0,par0);
   TFitResultPtr fitRes=hDensity->Fit(f11,"S","",xmin_fit,xmax_fit);
@@ -375,7 +388,7 @@ void makeFits(TString fileName,
   
   if (f11->GetNDF()!=0) 
     cout << f11->GetChisquare()/f11->GetNDF() << endl;
-
+  
   int parToVary = numberOfPars-1;
   TMatrixDSym covNew(parToVary);
   for (int ix=0; ix<parToVary; ++ix){
@@ -386,14 +399,14 @@ void makeFits(TString fileName,
   cout << endl << endl;
   covNew.Print();
   cout << endl << endl;
-
+  
   int numFitParameter = covNew.GetNrows();
   //Find the Eigenvectors and Eigen value of the covariance matrix
   TMatrixDSymEigen eigencov = covNew;  
   //Get the matrix of Eigen vector
   const TMatrixD eigenvector_matrix = eigencov.GetEigenVectors();
   const TVectorD eigenvalues = eigencov.GetEigenValues();
-
+  
   std::vector<TVectorD*> eigenvectors;
   if (debug)
     cout << "eigenvector_matrix.GetNrows() " <<  eigenvector_matrix.GetNrows() << endl;
@@ -410,7 +423,7 @@ void makeFits(TString fileName,
     }
     std::cout << " }" << std::endl;
   }
-
+  
   std::vector<TF1*> systFunctions;
   std::vector<TString> names;
   for( int i = 0; i < numFitParameter; ++i ) {
@@ -472,7 +485,7 @@ void makeFits(TString fileName,
     f12Down->Draw("same");
     systFunctions.push_back(f12Down);
     names.push_back(f12DownName);
-	
+    
     if (debug) {
       for (int j=1;j<initialPars.size();++j){
 	cout << " _________ " << j << endl;
@@ -482,10 +495,10 @@ void makeFits(TString fileName,
       }
     }
   }
-
-  if (debug) {
-    c1->Print("Fits/"+directory+"_"+hName+"_"+energy+"_fit_log.gif");
   
+  if (debug) {
+    c1->Print("Fits_withCorr/"+directory+"_"+hName+"_"+energy+"_fit_log.gif");
+    
     cout << "Number of fit functions " << systFunctions.size() << endl;
     cout << "Order of functions is such: " << endl;
     cout << "[0] -- par1 Up" << endl;
@@ -494,7 +507,7 @@ void makeFits(TString fileName,
     cout << "[3] -- par2 Down" << endl;
     cout << "Etc......" << endl;
   }
-
+  
   //Now convert functions to histograms 
   //and store in root file
   TFile* out = new TFile(directory+"_"+hName+".root","recreate"); 
@@ -502,7 +515,7 @@ void makeFits(TString fileName,
   h->SetTitle(hName+"_Initial");
   h->Write();
   h->SetLineColor(1);
-
+  
   //First convert nominal fit into histogram
   TH1F* hCentral = convert(f11, h, 200);
   hCentral->SetName(hName);
@@ -528,9 +541,9 @@ void makeFits(TString fileName,
     thisHisto->DrawNormalized("same");
   }
   out->Close();
-
+  
   if (debug)
-    c1->Print("Fits/"+directory+"_"+hName+"_"+energy+"_histo.gif");
+    c1->Print("Fits_withCorr/"+directory+"_"+hName+"_"+energy+"_histo.gif");
 }
 
 void makeFitsSimple(TString fileName, 
@@ -855,10 +868,10 @@ void makeFitsSimple(TString fileName,
   h->SetTitle(hName+"_Initial");
   h->Write();
   out->Close();
-
+  
   if (debug) 
     c2->Print("Fits/"+directory+"_"+hName+"_"+energy+"_histo.gif");
-
+  
 }
 
 void FitTails(TString mode = "mu", TString energy = "8TeV", TString file="htt_mt.inputs-mssm-8TeV-0.root") {
@@ -868,25 +881,26 @@ void FitTails(TString mode = "mu", TString energy = "8TeV", TString file="htt_mt
   char* fitFormulaExp2 = "[0]*exp([1]*x)";
   char* fitFormulaHyp = "[0]/TMath::Power(x,[1])";
   //  char* fitFormulaHyp = "1./([0]+[1]*x+[2]*x*x)";
-
+  
   TString hName[3] = {"QCD", "W", "TT"};
   //TString hName[1] = {"W"};
   TString category[2] = {mode + "Tau_nobtag",
   			 mode + "Tau_btag"};
   //  TString category[1] = {mode + "Tau_btag"};
-
+  
   //  double xmin_fit[3] = {120, 200, 200};
   double xmin_fit[3] = {150, 150, 150};
   double xmax_fit[3] = {1500, 1500, 1500};
   
   cout << mode << '\t' << file << endl;
-
+  
   for(int icat = 0; icat < 2; ++icat) {
     // loop over categories
     TString cat = category[icat];
-    for(int iname = 0; iname < 3; ++iname) {
+    for(int iname = 2; iname < 3; ++iname) {
       TString name = hName[iname];
-      makeFitsSimple(file, cat, name, xmin_fit[iname], xmax_fit[iname], isDatacard, fitFormulaExp2, fitFormulaExp1, fitFormulaHyp, energy);
+      //      makeFitsSimple(file, cat, name, xmin_fit[iname], xmax_fit[iname], isDatacard, fitFormulaExp2, fitFormulaExp1, fitFormulaHyp, energy);
+      makeFits(file, cat, name, xmin_fit[iname], xmax_fit[iname], isDatacard, fitFormulaExp1, fitFormulaExp2, fitFormulaHyp, energy);
       //      makeFits(file, cat, name, xmin_fit[iname], xmax_fit[iname], isDatacard, fitFormulaExp1, fitFormulaExp2, fitFormulaHyp, energy);
     }
   }
