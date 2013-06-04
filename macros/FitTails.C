@@ -899,8 +899,8 @@ void FitTails(TString mode = "mu", TString energy = "8TeV", TString file="htt_mt
     TString cat = category[icat];
     for(int iname = 2; iname < 3; ++iname) {
       TString name = hName[iname];
-      //      makeFitsSimple(file, cat, name, xmin_fit[iname], xmax_fit[iname], isDatacard, fitFormulaExp2, fitFormulaExp1, fitFormulaHyp, energy);
-      makeFits(file, cat, name, xmin_fit[iname], xmax_fit[iname], isDatacard, fitFormulaExp1, fitFormulaExp2, fitFormulaHyp, energy);
+      makeFitsSimple(file, cat, name, xmin_fit[iname], xmax_fit[iname], isDatacard, fitFormulaExp1, fitFormulaExp2, fitFormulaHyp, energy);
+      //      makeFits(file, cat, name, xmin_fit[iname], xmax_fit[iname], isDatacard, fitFormulaExp1, fitFormulaExp2, fitFormulaHyp, energy);
       //      makeFits(file, cat, name, xmin_fit[iname], xmax_fit[iname], isDatacard, fitFormulaExp1, fitFormulaExp2, fitFormulaHyp, energy);
     }
   }
