@@ -41,6 +41,7 @@ for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
 
 for channel in channels :
     for period in periods :
+        print period
         for cat in ['0'] :
             for mass in parseArgs(args) :
                 for process in ['ggH', 'bbH'] :
@@ -48,7 +49,7 @@ for channel in channels :
                     os.system(r"root -l -b -q {EXE}\(true,{SCALE},\"{PATH}/{CHN}/htt_{CHN}.inputs-mssm-{PER}-{MASSCAT}.root\",\"{PROCESS}\",0\)".format(
                         EXE=exe,
                         PATH=source_path,
-                        SCALE=acceptance_correction(process, mass),
+                        SCALE=acceptance_correction(process, mass, period),
                         CHN=channel,
                         PER=period,
                         MASSCAT=mass_category(mass,cat,'htt_'+channel),
