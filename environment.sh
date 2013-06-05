@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Setup environment variables for HTT limit packages
 #
 # Usage: 
@@ -12,4 +14,5 @@ export PATH=$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts:$PATH
 pushd $CMSSW_BASE/src
 root -b -q HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C+  
 root -b -q HiggsAnalysis/HiggsToTauTau/macros/blindData.C+  
+root -b -q HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+
 popd
