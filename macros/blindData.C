@@ -62,6 +62,7 @@
                             will be written to a new otuput file with postfix outputLabel. 
 			    If armed and outputLabel is an empty string the inputfile 
 			    will be updated with the new data_obs histogram(s).
+   data_obs               : indicate special histogram names for data_obs if necessary.
    debug                  : invoke several debug output levels. 
 */
 
@@ -75,13 +76,12 @@ void randomize(TH1F* hist, unsigned int seed, unsigned int debug=0.)
 {
   TRandom3* rnd = new TRandom3(seed); rnd->SetSeed();
   for(int idx=0; idx<hist->GetNbinsX(); ++idx){
-    if(debug>0){
-      std::cerr << "[" << idx+1 << "] : " << "mean=" << hist->GetBinContent(idx+1) << "  rnd=" << rnd->Poisson(hist->GetBinContent(idx+1)) << std::endl;  
-    }
+    // --------------------------------- DEBUG > 2 ------------------------------- //
+    if(debug>2){ std::cout << "[" << idx+1 << "] : " << "mean=" << hist->GetBinContent(idx+1) << "  rnd=" << rnd->Poisson(hist->GetBinContent(idx+1)) << std::endl;  }
     float value = rnd->Poisson(hist->GetBinContent(idx+1));
     hist->SetBinContent(idx+1, value); hist->SetBinError(idx+1, TMath::Sqrt(value));
   }
-  // Make sure there is no rounding error, and the total is truly an integer.
+  // make sure there is no rounding error, and the total is really an integer.
   hist->Scale(TMath::Nint(hist->Integral())/hist->Integral());
   delete rnd;
 }
@@ -99,7 +99,70 @@ bool inPatterns(const std::string& test, const char* patterns)
   return false;
 }
 
-void blindData(const char* filename, const char* background_patterns="Fakes, EWK, ttbar, Ztt", const char* signal_patterns="ggH125, qqH125, VH125", const char* directory_patterns="*", bool armed=false, int rnd=-1, float signal_scale=1., const char* outputLabel="", unsigned int debug=1)
+void
+blinding(TFile* inputFile, TFile* outputFile, std::string dir, std::string hist, std::vector<std::string> samples, const char* signal_patterns, double signal_scale, int rnd, bool armed, unsigned int debug)
+{
+  if(!dir.empty()){ dir+='/'; }
+  TH1F* buffer = (TH1F*)inputFile->Get((dir+hist).c_str());
+  if(!buffer){
+    // --------------------------------- DEBUG > 0 ------------------------------- //
+    if(debug>0){ std::cout << "WARNING: Did not find data_obs histogram of type " << hist << " in directory " << dir << ". Directory will be skipped." << std::endl; }
+    return;
+  }
+  TH1F* blind_data_obs = (TH1F*)buffer->Clone(hist.c_str()); 
+  if(!samples.empty()){
+    blind_data_obs->Reset();
+    for(std::vector<std::string>::const_iterator sample = samples.begin(); sample!=samples.end(); ++sample){
+      // ------------------------------- DEBUG > 1 ------------------------------- //
+      if( debug>1 ){ std::cerr << "Looking for histogram: " << (dir+(*sample)) << std::endl; }
+      buffer = (TH1F*)inputFile->Get((dir+(*sample)).c_str()); 
+      if (!buffer) {
+	std::cerr << "ERROR : Could not get histogram " << dir+(*sample) << ". Histogram will be skipped from asimov dataset." << std::endl;
+	continue;
+      }
+      if(inPatterns(*sample, signal_patterns)) {
+	// ----------------------------- DEBUG > 1 ------------------------------- //
+	if( debug>1 ){ std::cerr << "INFO  : Scale signal sample " << *sample << " by scale " << signal_scale << std::endl; }
+	buffer->Scale(signal_scale);
+      }
+      blind_data_obs->Add(buffer);
+      // ------------------------------- DEBUG > 1 ------------------------------- //
+      if (debug > 1){ std::cerr << "INFO  : Adding: " << buffer->GetName() << " -- " << buffer->Integral() << " --> New value: " << blind_data_obs->Integral() << std::endl; }
+    }
+  }
+  else{
+    std::cout << "INFO  : Data are not blinded." << std::endl;
+  }
+  if(rnd>=0){
+    // randomize histogram; this will automatically have integer integral
+    std::cout << "-- R A N D O M I Z I N G --" << std::endl;
+    randomize(blind_data_obs, rnd, debug);
+  }
+  else{
+    // use expected mean with signal injected
+    blind_data_obs->Scale(TMath::Nint(blind_data_obs->Integral())/blind_data_obs->Integral());
+    // adjust uncertainties
+    adjustUncerts(blind_data_obs);
+  }
+  std::cout << "INFO  : New data_obs yield in dir (" << dir << "):   " << blind_data_obs->Integral() << std::endl;
+  if(armed){
+    // --------------------------------- DEBUG > 1 ------------------------------- //
+    if (debug > 1){ std::cerr << "INFO  : Writing to file: " << blind_data_obs->GetName() << std::endl; }
+    if(outputFile){
+      // write to a dedicated new file with name output in case output has been specified
+      outputFile->mkdir(dir.c_str()); outputFile->cd(dir.c_str());
+      blind_data_obs->Write(hist.c_str()); 
+    }
+    else{
+      // override old data_obs in the inputfile otherwise
+      inputFile->cd(dir.c_str());
+      blind_data_obs->Write(hist.c_str(), TObject::kOverwrite); 
+    }
+  }
+}
+
+
+void blindData(const char* filename, const char* background_patterns="Fakes, EWK, ttbar, Ztt", const char* signal_patterns="ggH125, qqH125, VH125", const char* directory_patterns="*", bool armed=false, int rnd=-1, float signal_scale=1., const char* outputLabel="", const char* data_obs="data_obs", unsigned int debug=1)
 {
   /// prepare input parameters
   std::vector<std::string> signals;
@@ -108,143 +171,38 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
   string2Vector(cleanupWhitespaces(background_patterns), samples);
   samples.insert(samples.end(), signals.begin(), signals.end());
 
-  // check if mssm or sm input file
-  bool sm=true;
-  if(std::string(filename).find("mssm") != std::string::npos){
-    sm=false;
-    std::cerr << "INFO  : MSSM File " << std::endl;
-  }
-  
-  // in case data_obs is supposed to be written to an extra output file
-  // open the file, otherwise the data_obs in the input file will be
-  // overwritten
-  std::string used_filename=std::string(filename);
+  // in case data_obs is supposed to be written to an extra output file open
+  // the file, otherwise the data_obs in the input file will be overwritten
   TFile* outputFile = 0; 
+  std::string out(filename);
   if(!std::string(outputLabel).empty()){
-    std::string out = std::string(used_filename); 
-    if(std::string(outputLabel).find("MSSM") != std::string::npos){
-      outputFile = new TFile((out.substr(0, out.rfind("."))+".root").c_str(), "update"); 
-    }
-    // make sure data_obs in correct file for MSSM injection is changed
-    // this is the old file which is overwritten 
-    else{
-      outputFile = new TFile((out.substr(0, out.rfind("."))+"_"+outputLabel+".root").c_str(), "update"); 
-    }
+    outputFile = new TFile((out.substr(0, out.rfind("."))+"_"+outputLabel+".root").c_str(), "update"); 
   }
 
   TKey* idir;
-  TH1F* buffer = 0;
-  TH1F* blind_data_obs = 0;
-  TFile* file = new TFile(used_filename.c_str(), "update");
-  TIter nextDirectory(file->GetListOfKeys());
+  TFile* inputFile = new TFile(filename, "update");
+  TIter nextDirectory(inputFile->GetListOfKeys());
   while((idir = (TKey*)nextDirectory())){
     if( idir->IsFolder() ){
-      file->cd(); // make sure to start in directory head 
+      inputFile->cd(); // make sure to start in directory head 
+      // ------------------------------- DEBUG > 0 ------------------------------- //
       if( debug>0 ){ std::cerr << "Found directory: " << idir->GetName() << std::endl; }
       // check if we want to muck w/ this directory. For the vhtt case, we 
       // have different background types in the same root file, so we have 
       // to run blindData twice.
       if (!inPatterns(std::string(idir->GetName()), directory_patterns)) {
-        if( debug>0 ){ 
-	  std::cerr << "WARNING: Skipping directory: " << idir->GetName() << std::endl;
-	  std::cerr << "         No match found in pattern: " << directory_patterns << std::endl; 
-	}
+	// ----------------------------- DEBUG > 0 ------------------------------- //
+        if( debug>0 ){ std::cerr << "WARNING: Skipping directory: " << idir->GetName() << ". No match found in pattern: " << directory_patterns << std::endl; }
         continue;
       }
-      if( file->GetDirectory(idir->GetName()) ){
-	file->cd(idir->GetName()); // change to sub-directory
-	buffer = (TH1F*)file->Get((std::string(idir->GetName())+"/data_obs").c_str());
-	if(!buffer){
-	  std::cout << "WARNING: Did not find histogram data_obs in directory: " << idir->GetName() << std::endl;
-	  std::cout << "         Will skip directory: " << std::endl;
-	  continue;
-	}
-        blind_data_obs = (TH1F*)buffer->Clone("data_obs"); 
-	if(!samples.empty()){
-	  blind_data_obs->Reset();
-	  std::cout << "INFO  : Blinding datacads now." << std::endl;
-	  for(std::vector<std::string>::const_iterator sample = samples.begin(); sample!=samples.end(); ++sample){
-	    if( debug>0 ){ std::cerr << "Looking for histogram: " << (std::string(idir->GetName())+"/"+(*sample)) << std::endl; }
-	    // add special treatment for et/mt ZLL,ZJ,ZL here. You can run the
-	    // macro with ZLL, ZL, ZJ in the background samples. Those samples,
-	    // which do not apply for one or the other event category are 
-	    // skipped here.
-	    if(sm==true){
-	      if(std::string(idir->GetName()).find("vbf") != std::string::npos  && (*sample == std::string("ZL") || *sample == std::string("ZJ"))){
-		continue;
-	      }
-	      else if(std::string(idir->GetName()).find("vbf") == std::string::npos  && *sample == std::string("ZLL")){
-		continue;
-	      }
-	    }
-	    else{
-	      if(std::string(idir->GetName()).find("nobtag") == std::string::npos && (*sample == std::string("ZL") || *sample == std::string("ZJ"))){
-	      continue;
-	      }
-	      else if(std::string(idir->GetName()).find("nobtag") != std::string::npos && *sample == std::string("ZLL")){
-	      continue;
-	      }  
-	    }
-	    buffer = (TH1F*)file->Get((std::string(idir->GetName())+"/"+(*sample)).c_str()); 
-	    if (!buffer) {
-	      std::cerr << "ERROR : Could not get histogram from: " << std::string(idir->GetName())+"/"+(*sample) << std::endl;
-	      std::cerr << "        Histogram will be skipped   : " << std::string(idir->GetName())+"/"+(*sample) << std::endl;
-	      continue;
-	    }
-	    if(inPatterns(*sample, signal_patterns)) {
-	      if( debug>1 ){
-		std::cerr << "INFO  : Scale signal sample " << *sample << " by scale " << signal_scale << std::endl;
-	      }
-	      buffer->Scale(signal_scale);
-	    }
-	    blind_data_obs->Add(buffer);
-	    if (debug > 1){
-	      std::cerr << "INFO  : Adding: " << buffer->GetName() << " -- " << buffer->Integral() << " --> New value: " << blind_data_obs->Integral() << std::endl;
-	    }
-	  }
-	}
-	else{
-	  std::cout << "INFO  : Data are not blinded." << std::endl;
-	}
-	if(rnd>=0){
-	  // randomize histogram; this will automatically have integer integral
-	  std::cerr << "-- R A N D O M I Z I N G --" << std::endl;
-	  randomize(blind_data_obs, rnd, debug);
-	}
-	else{
-	  // use expected mean with signal injected
-	  blind_data_obs->Scale(TMath::Nint(blind_data_obs->Integral())/blind_data_obs->Integral());
-	  // adjust uncertaintie
-	  adjustUncerts(blind_data_obs);
-	}
-	std::cout << "INFO  : New data_obs yield: " << idir->GetName() << "   " << TMath::Nint(blind_data_obs->Integral()) << std::endl;
-	if(armed){
-          if (debug > 1){
-            std::cerr << "INFO  : Writing to file: " << blind_data_obs->GetName() << std::endl;
-	  }
-	  if(outputFile){
-	    // write to a dedicated new file with name output in case output has been specified
-	    // make sure data_obs in correct file for MSSM injection is changed
-	    // this is the old file which is overwritten 
-	    if(std::string(outputLabel).find("MSSM") != std::string::npos){
-	      outputFile->cd(idir->GetName());
-	      blind_data_obs->Write("data_obs", TObject::kOverwrite);
-	    }
-	    else{
-	      outputFile->mkdir(idir->GetName()); outputFile->cd(idir->GetName());
-	      blind_data_obs->Write("data_obs"); 
-	    }
-	  }
-	  else{
-	    // override old data_obs in the inputfile otherwise
-	    file->cd(idir->GetName());
-	    blind_data_obs->Write("data_obs", TObject::kOverwrite); 
-	  }
-	}
+      if( inputFile->GetDirectory(idir->GetName()) ){
+	inputFile->cd(idir->GetName()); // change to sub-directory
+	blinding(inputFile, outputFile, idir->GetName(), data_obs, samples, signal_patterns, signal_scale, rnd, armed, debug);
       }
     }
   }
-  file->Close();
+  blinding(inputFile, outputFile, "", data_obs, samples, signal_patterns, signal_scale, rnd, armed, debug);
+  inputFile->Close();
   if(outputFile){
     outputFile->Close();
   }
