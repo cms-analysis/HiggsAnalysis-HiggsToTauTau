@@ -74,7 +74,7 @@ for cat in options.categories.split() :
         #if ('_scale_t_' or '_scale_e_') in words[2] :
         if  words[2].find('_scale_t_')>-1 or words[2].find('_scale_e_')>-1 :
             new_words    = words 
-            new_words[1] = options.background
+            new_words[1] = options.background.replace(' ',',')
             new_words[2] = 'CMS_'+options.name+'1_' + channelName[options.channel] + '_' + options.energy
             new_line1     = '                      '.join(new_words)
             new_words[2] = 'CMS_'+options.name+'2_' + channelName[options.channel] + '_' + options.energy
