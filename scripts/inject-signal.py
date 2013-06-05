@@ -7,7 +7,7 @@ import shlex
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGS",
-                      description="Script to inject signal with fixed mass into a BG only hypothesis from simulation. The mass of the signal to be injected can be determined by option --mass. The data_obs histogram for each event category found in the input root file is rescaled and the datacard is ajusted accordingly. The data_obs histogram can be randomized. The signal can be scaled before injection. ARGS will be the mass values for the limit calculation for which the signal should be injected. Usial syntax works on this: e.g. 110-145:5.")
+                      description="Script to inject signal with fixed mass into a BG only hypothesis from simulation. The mass of the signal to be injected can be determined by option --mass. The data_obs histogram for each event category found in the input root file is modified and the datacard is ajusted accordingly. The data_obs histogram can be randomized. The signal can be scaled before injection. ARGS will be the mass values for the limit calculation for which the signal should be injected. Usual syntax works on this: e.g. 110-145:5.")
 parser.add_option("-i", "--in", dest="input", default="MY-LIMITS/cmb", type="string", help="Name of the input directory, where to find all inputfiles and datacards in the usual structure for limits calculation. [Default: MY-LIMITS/cmb]")
 parser.add_option("-o", "--out", dest="output", default="", type="string", help="Per default the root input file will be updated with the injected signal histograms. If you want to created an extra root input file containing the data_obs injected signal histograms you can give an output label for this file here. It will have the same name as the input file then extended by this label. The datacards will be adapted accordingly. An empty string will update the original root input file. [Default: \"\"]")
 parser.add_option("-m", "--mass", dest="mass_injected", default="125", type="string", help="Mass of the signal that should be injected into the background only hypothesis from simulation. [Default: 125]")
@@ -149,13 +149,13 @@ backgrounds = {
     }
 ## mapping out signals
 signals = {
-    "mm" : options.signals_mm,
-    "em" : options.signals_em,
-    "et" : options.signals_et,
-    "mt" : options.signals_mt,
-    "tt" : options.signals_tt,
-    "wh" : options.signals_vhtt,
-    "zh" : options.signals_vhtt,
+    "mm"   : options.signals_mm,
+    "em"   : options.signals_em,
+    "et"   : options.signals_et,
+    "mt"   : options.signals_mt,
+    "tt"   : options.signals_tt,
+    "wh"   : options.signals_vhtt,
+    "zh"   : options.signals_vhtt,
     "vhtt" : options.signals_vhtt,
     }
 
@@ -168,7 +168,6 @@ MSSM_xs = {
     ("ggH", "7TeV") : ( 9157+10180)*0.12/1000,
     ("bbH", "7TeV") : (23314+21999)*0.12/1000,
     }
-
 
 ## pick up the lists of channels, categories and periods from the files in the
 ## pointed to input directory. Add some communiation on what is actually done.
@@ -193,7 +192,7 @@ def info(type, value, tb):
 
 sys.excepthook = info
 
-## catch up user input errors with analsis=sm and sm_to_mssm=True
+## catch up user input errors with analysis=sm and sm_to_mssm=True
 if options.analysis=="sm" :
     options.sm_to_mssm=False
 
@@ -258,11 +257,10 @@ def get_shape_file(channel, period):
         return options.input+"/common/htt_"+channel+".inputs-mssm-"+period+"-0.root"
         
 ## randomize observation for all potential hist input files
-
 for chn in channels :
     for per in periods :
         if options.verbose:
-            print "Channel: %s Per: %s" % (chn, per)      
+            print "channel: %s period: %s" % (chn, per)      
         signal_processes = signals[chn].format(MASS="").split(",")
         re.sub(r'\s', '', signals[chn])
         signals_used = signals[chn].format(MASS=options.mass_injected)
