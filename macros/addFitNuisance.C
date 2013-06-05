@@ -72,9 +72,10 @@ TH1F* rebin(TH1F* iH,int iNBins,double *iAxis) {
     lH->SetBinError  (lNBin,sqrt(lOldE*lOldE+lErr*lErr));
   }
   const char *lName = iH->GetName();
-  delete iH;
+  cout << iH->GetName() << " " << lName << endl;
   lH->SetName (lName);
   lH->SetTitle(lName);
+  delete iH;
   return lH;
 }
 //Merge Histogram with function histogram
@@ -197,7 +198,7 @@ void addVarBinNuisance(std::string iFileName,std::string iChannel,std::string iB
   lEigVecs(1,0) = lEigVecs(1,1);
   lEigVecs(0,1) = lEigVecs(0,2);
   lEigVecs(1,1) = lEigVecs(1,2);
-
+  
   TH1F* lH     = makeHist(lFit,lH0,"Def");
   lFit->SetParameter(0,lACentral + lEigVals(0)*lEigVecs(0,0));
   lFit->SetParameter(1,lBCentral + lEigVals(0)*lEigVecs(1,0));
@@ -212,7 +213,7 @@ void addVarBinNuisance(std::string iFileName,std::string iChannel,std::string iB
   lFit->SetParameter(0,lACentral - lEigVals(1)*lEigVecs(0,1));
   lFit->SetParameter(1,lBCentral - lEigVals(1)*lEigVecs(1,1));
   TH1F* lHDown1 = makeHist(lFit,lH0,"Down1");
-
+  
   //lFirst = 200;
   std::string lNuisance1 =  iBkg+"_"+"CMS_"+iName+"1_" + iChannel + "_" + iEnergy;
   std::string lNuisance2 =  iBkg+"_"+"CMS_"+iName+"2_" + iChannel + "_" + iEnergy;
@@ -220,8 +221,7 @@ void addVarBinNuisance(std::string iFileName,std::string iChannel,std::string iB
   lHDown  = merge(lNuisance1 + "Down" ,lFirst,lH0,lHDown);
   lHUp1   = merge(lNuisance2 + "Up"   ,lFirst,lH0,lHUp1);
   lHDown1 = merge(lNuisance2 + "Down" ,lFirst,lH0,lHDown1);
-  lH      = merge(lH0->GetName()      ,lFirst,lH0,lH);
-
+  lH      = merge(lH0->GetName()      ,lFirst,lH0,lH);  
   if(iRebin) { 
     const int lNBins = lData->GetNbinsX();
     double *lAxis    = getAxis(lData);
