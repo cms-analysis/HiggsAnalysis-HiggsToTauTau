@@ -10,6 +10,10 @@ parser.add_option("-n"  ,"--name",       dest="name",       default="shift",   t
 parser.add_option("-e"  ,"--energy",     dest="energy",     default="8TeV",    type="string",   help="Energy [Default: 8 TeV]")
 parser.add_option("-c"  ,"--channel",    dest="channel",    default="tt",      type="string",   help="channel [Default: tt]")
 parser.add_option("-k"  ,"--categories", dest="categories", default="8 9",     type="string",   help="Categories [Default: 8 9 ]")
+parser.add_option("-r"  ,"--range",      dest="first",      default="200",     type="int",      help="Beginning of fit range [Default: 200]")
+parser.add_option("-f"  ,"--fitmodel",   dest="fitmodel",   default="0",       type="int",      help="Fit model 0(exp(m/(a+b*m)) 1(exp(a*m*pow(b)) [Default:0]")
+parser.add_option("-o"  ,"--varbin",     dest="varbin",     default=False,action="store_true",  help="Use variable binned fits    [Default: False]")
+parser.add_option("-m"  ,"--rebin",      dest="rebin",      default=False,action="store_true",  help="Rebin histogram to data_obs [Default: False]")
 parser.add_option("-s"  ,"--setup",      dest="setup",      default="HiggsAnalysis/HiggsToTauTau/setup",    type="string",  help="Setup Directory : HiggsAnalysis/HiggsToTauTau/setup")
 parser.add_option("-v"  ,"--verbose",    dest="verbose",    default=False, action="store_true", help="increase verbosity. [Default: False]")
 
@@ -47,8 +51,10 @@ os.system(r"cp {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rootlogon.C .
 
 for cat in options.categories.split() :
     for bkg in options.background.split() : 
-        os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/addFitNuisance.C+\(\"{FILENAME}\"\,\"{CHANNEL}\"\,\"{BKG}\"\,\"{ENERGY}\"\,\"{NAME}\"\,\"{CATEGORY}\"\)".format(
-            CMSSW_BASE=os.environ.get("CMSSW_BASE"), FILENAME=options.setup+'/'+options.channel+'/'+options.input,CHANNEL=channelName[options.channel],BKG=bkg,ENERGY=options.energy,NAME=options.name,CATEGORY=cat))
+        os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/addFitNuisance.C+\(\"{FILENAME}\"\,\"{CHANNEL}\"\,\"{BKG}\"\,\"{ENERGY}\"\,\"{NAME}\"\,\"{CATEGORY}\"\,{FIRST}\,{FITMODEL}\,{VARBIN}\,{REBIN}\)".format(
+            CMSSW_BASE=os.environ.get("CMSSW_BASE"), FILENAME=options.setup+'/'+options.channel+'/'+options.input,CHANNEL=channelName[options.channel],BKG=bkg,ENERGY=options.energy,NAME=options.name,CATEGORY=cat,FIRST=options.first,FITMODEL=options.fitmodel,VARBIN=str(options.varbin).lower(),REBIN=str(options.rebin).lower()))
+        os.system("mv %s %s.bak"      %  (options.setup+'/'+options.channel+'/'+options.input,options.setup+'/'+options.channel+'/'+options.input))
+        os.system("mv Output.root %s" %  (options.setup+'/'+options.channel+'/'+options.input))
 
 for cat in options.categories.split() :
     if cat == ' ' :
