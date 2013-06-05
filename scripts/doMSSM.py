@@ -195,7 +195,7 @@ if options.update_setup:
             for period in periods :
                 ## if i understand it correct the option --varbin has to be kicked out as soon as we have finner binned (equidistant binning) inputs 
                 if options.channels.find("em") > -1:
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'Fakes EWK ttbar' -k '{CATEGORIES}' --rebin".format(
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'Fakes EWK ttbar' -k '{CATEGORIES}' --varbin --rebin".format(
                         DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
                 if options.channels.find("et") > -1:
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'W QCD TT' -k '{CATEGORIES}' --varbin --rebin".format(
