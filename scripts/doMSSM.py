@@ -204,7 +204,7 @@ if options.update_setup:
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mm.inputs-mssm-{PER}-0.root -c mm -e {PER} -b 'WJets QCD TTJ' -k '{CATEGORIES}' --varbin --rebin".format(
                         DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
                 if options.channels.find("mt") > -1:
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'W QCD TT' -k '{CATEGORIES}'--varbin --rebin".format(
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'W QCD TT' -k '{CATEGORIES}' --varbin --rebin".format(
                         DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
                 if options.channels.find("tt") > -1:
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_tt.inputs-mssm-8TeV-0.root -c tt -e 8TeV -b 'QCD' -k '8 9' --varbin --rebin".format(
