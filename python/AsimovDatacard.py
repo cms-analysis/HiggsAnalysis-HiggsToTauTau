@@ -27,16 +27,20 @@ class AsimovDatacard() :
         ## options for the datacard parser
         self.options = parser_options
     
-    def list2string(self, l, append=None) :
+    def list2string(self, card, bin, procs) :
         """
-        Translate a list to a string that can be used for blindData.C. If append is not None it will be appended to each
-        element in the list.
+        Translate a list of processes to a string that contains the names of the actual histograms and can actually be used
+        for blindData.C. The name of the histograms is obtained from the Daracard::path_of_shape for given bin and process,
+        there potential directories are snipped off the path. This automatically contains any prefixes or postfixes (including
+        the keyword $MASS, that will be replaced during later steps of the processing in the class) that might be needed to
+        find the shape histogram. 
         """
         s = ''
-        for e in l :
-            if append :
-                e=e+append
-            s += e+','
+        for proc in procs :
+            buffer = card.path_to_shape(bin, proc)
+            if '/' in buffer :
+                buffer = buffer[buffer.rfind('/')+1:]
+            s += buffer+','
         return s.strip(',')
 
     def adapt_shapes_lines(self, path) :
@@ -106,7 +110,7 @@ class AsimovDatacard() :
         for line in old_file :
             new_line = line
             words = line.lstrip().split()
-            if words[0] == 'observation' :
+            if words[0].lower() == 'observation' :
                 for bin in card.list_of_bins() :
                     value = 0
                     if card.path_to_file(bin, 'data_obs') == '' :
@@ -152,19 +156,19 @@ class AsimovDatacard() :
                 continue
             file = open(dir+'/'+name, 'r')
             card = parseCard(file, self.options)
-            ## determine background list
-            bkg_list = self.list2string(card.list_of_procs('b'))
-            ## determine signal list
-            sig_list = self.list2string(card.list_of_procs('s'), '$MASS') if self.add_signal else ''
             for bin in card.list_of_bins() :
                 for proc in card.list_of_procs() :
                     path = card.path_to_file(bin, proc)
+                    ## determine background list
+                    bkg_list = self.list2string(card, bin, card.list_of_procs('b'))
+                    ## determine signal list
+                    sig_list = self.list2string(card, bin, card.list_of_procs('s')) if self.add_signal else ''
                     if not path == '' :
                         if not (path, bin) in processed_files_bins :
                             processed_files_bins.append((path, bin))
                             if not path in processed_files :
                                 processed_files.append(path)
-                            os.system("root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/blindData.C+\\(\\\"{INPUT}\\\",\\\"{BKG}\\\",\\\"{SIG}\\\",\\\"{DIR}\\\",true,{SEED},{SCALE},\\\"{IDX}\\\",0\\)".format(
+                            os.system("root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/blindData.C+\\(\\\"{INPUT}\\\",\\\"{BKG}\\\",\\\"{SIG}\\\",\\\"{DIR}\\\",true,{SEED},{SCALE},\\\"{IDX}\\\",\\\"{DATA_OBS}\\\",0\\)".format(
                                 CMSSW_BASE = os.environ['CMSSW_BASE'],
                                 INPUT = dir+'/'+path,
                                 BKG = bkg_list,
@@ -172,7 +176,8 @@ class AsimovDatacard() :
                                 DIR = bin,
                                 SEED = self.seed,
                                 SCALE = self.signal_scale,
-                                IDX = index
+                                IDX = index,
+                                DATA_OBS = self.list2string(card, bin, ['data_obs']) 
                                 ))
                             index += 1
             file.close()
@@ -195,11 +200,17 @@ class AsimovDatacard() :
         input files, indicatd by the postfix _asimov. All datacards are then adapted accordingly. If configured such
         the data_obs histograms / entries are randomized according to a Poisson distribution.
         """
+        print "...creating asimov datasets."
         self.asimov_shapes(dir)
+        print "...redirect input files in datacards."
         for card in os.listdir(dir) :
             if not card.endswith('.txt') :
                 continue
             self.adapt_shapes_lines(dir+'/'+card)
+        print "... adjust observation to modified shapes."
+        for card in os.listdir(dir) :
+            if not card.endswith('.txt') :
+                continue
             self.adapt_observation_lines(dir+'/'+card)
 
 
