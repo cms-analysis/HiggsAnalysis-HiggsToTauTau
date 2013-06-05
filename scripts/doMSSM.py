@@ -15,6 +15,8 @@ parser.add_option("-a", "--analyses", dest="analyses", default="std, pruned",
                   help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"std, bin-by-bin, pruned\" [Default: \"std, pruned\"]")
 parser.add_option("--split-categories", dest="split_categories", default=False, action="store_true",
                   help="Using split categories, means categories 0, 1, 2, 3, 6, 7 instead of 8, 9 [Default: False]")
+parser.add_option("--fit-tails", dest="fit_tails", default=False, action="store_true",
+                  help="Fitting of the MSSM m(tautau) tails for certain backgrounds [Default: False]")
 parser.add_option("--label", dest="index", default="", type="string", 
                   help="Possibility to give the setups, aux and LIMITS directory a index (example LIMITS-bbb). [Default: \"\"]")
 parser.add_option("--fit-result", dest="fit_result", default="",  type="string",
@@ -186,26 +188,28 @@ if options.update_setup:
     os.system("mkdir -p {DIR}".format(DIR=dir))
     for ana in analyses :
         os.system("cp -r {SETUP} {DIR}/{ANA}".format(SETUP=setup, DIR=dir, ANA=ana))
-
+       
         #### NEW TO BE TESTED!!
-        print "INFO: Fitting of the background tails"
-        for period in periods :
-            if options.channels.find("em") > -1:
-                os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'Fakes EWK ttbar' -k '{CATEGORIES}'".format(
-                    DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
-            if options.channels.find("et") > -1:
-                os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'W QCD TT' -k '{CATEGORIES}'".format(
-                    DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
-            if options.channels.find("mm") > -1:
-                os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mm.inputs-mssm-{PER}-0.root -c mm -e {PER} -b 'WJets QCD TTJ' -k '{CATEGORIES}'".format(
-                    DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
-            if options.channels.find("mt") > -1:
-                os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'W QCD TT' -k '{CATEGORIES}'".format(
-                    DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
-        if options.channels.find("tt") > -1:
-            os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_tt.inputs-mssm-8TeV-0.root -c tt -e 8TeV -b 'QCD' -k '8 9'".format(
-                DIR=dir, ANA=ana))
-        #####
+        if options.fit_tails:     
+            print "INFO: Fitting of the background tails"
+            for period in periods :
+                ## if i understand it correct the option --varbin has to be kicked out as soon as we have finner binned (equidistant binning) inputs 
+                if options.channels.find("em") > -1:
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'Fakes EWK ttbar' -k '{CATEGORIES}' --rebin".format(
+                        DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
+                if options.channels.find("et") > -1:
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'W QCD TT' -k '{CATEGORIES}' --varbin --rebin".format(
+                        DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
+                if options.channels.find("mm") > -1:
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mm.inputs-mssm-{PER}-0.root -c mm -e {PER} -b 'WJets QCD TTJ' -k '{CATEGORIES}' --varbin --rebin".format(
+                        DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
+                if options.channels.find("mt") > -1:
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'W QCD TT' -k '{CATEGORIES}'--varbin --rebin".format(
+                        DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
+                if options.channels.find("tt") > -1:
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_tt.inputs-mssm-8TeV-0.root -c tt -e 8TeV -b 'QCD' -k '8 9' --varbin --rebin".format(
+                        DIR=dir, ANA=ana))
+        ##################
          
         if ana == 'std' :
             pass      
