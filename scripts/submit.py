@@ -64,7 +64,7 @@ parser.add_option_group(cgroup)
 ## MODEL OPTIONS
 ##
 dgroup = OptionGroup(parser, "MODEL OPTIONS", "These are the command line options that can be used to configure the submission of multi-dimensional fits or asymptotic limits that do require specific models. Specific models can be used for option --multidim-fit and for option --asymptotic. Possible model options for option --multidim-fit are: ggH-bbH (MSSM), ggH-qqH (SM), rV-rF (SM) and cV-cF (SM). Possible model options for option --asymptotic are: \"\" (SM), ggH (MSSM) and bbH (MSSM).")
-dgroup.add_option("--physics-model", dest="fitModel", default="", type="choice", choices=["ggH-bbH", "ggH-qqH", "rV-rF", "cV-cF", "ggH", "bbH", ""],
+dgroup.add_option("--physics-model", dest="fitModel", default="", type="choice", choices=["cb-ctau", "ggH-bbH", "ggH-qqH", "rV-rF", "cV-cF", "ggH", "bbH", ""],
                   help="Define the model for which you want to submit the process with option --multidim-fit ('ggH-bbH' (MSSM), 'ggH-qqH' (SM) and 'cV-cF' (SM)) or option --asymptotic ('ggH' (MSSM), 'bbH' (MSSM) and '' (SM)). [Default: \"\"]")
 parser.add_option_group(dgroup)
 ##
@@ -301,9 +301,8 @@ if options.optMDFit :
         if "cb-ctau" in options.fitModel :
             from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
             cmd   = "lxb-multidim-fit.py --name {PRE}-CB-CTAU-{MASS} --njob 50 --npoints 800".format(PRE=prefix, MASS=mass)
-            model = "--physics-model 'cb-ctau=HiggsAnalysis.HiggsToTauTau.BSMVectorsAndFermionsModels:CbCtauMSSMHiggs'"
+            model = "--physics-model 'cb-ctau=HiggsAnalysis.HiggsToTauTau.BSMHiggsCouplings_bottom-tau:CbCtauMSSMHiggs'"
             opts  = "--physics-model-options 'cbRange=0:{CB};ctauRange=0:{CTAU}'".format(CB=bounds["cb-ctau",mass][0], CTAU=bounds["cb-ctau",mass][1])
-        ## MSSM cb versus ctau 
         ## SM ggH versus qqH (this configuration is optimized for mH=125)
         elif "ggH-qqH" in options.fitModel :
             cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-QQH-{MASS} --njob 400 --npoints 16".format(PRE=prefix, MASS=mass)
