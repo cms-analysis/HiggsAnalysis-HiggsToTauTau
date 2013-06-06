@@ -20,7 +20,7 @@ layout = cms.PSet(
     ## print to root
     root = cms.bool(True),
     ## define verbosity level
-    verbosity = cms.uint32(0),
+    verbosity = cms.uint32(3),
     ## define output label
     outputLabel = cms.string("scan"),
     ## define masspoints for limit plot
@@ -48,7 +48,7 @@ layout = cms.PSet(
     ## make a temperature plot?
     temp = cms.bool(False),
     ## define physics-model
-    model = cms.string("Cb-Ctau"),
+    model = cms.string("CB-CTAU"),
     ## max for plotting (for fine tuning)
     xmaxs = cms.VPSet(
     cms.PSet(mass = cms.double(  90.), max = cms.double(-1.)),
