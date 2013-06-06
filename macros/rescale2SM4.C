@@ -156,7 +156,6 @@ void rescale2SM4(bool armed, const char* filename, double ecms=7., double mass=-
       continue; 
     }
     else {
-
       file->cd();
       float mdx = atof(massName.c_str());
       TH1F* h = (TH1F*)file->Get(hist->c_str());
