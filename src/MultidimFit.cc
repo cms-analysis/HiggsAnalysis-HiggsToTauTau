@@ -142,11 +142,14 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
   std::string yval = model_.substr(model_.find('-')+1);
   // catch CV-CF, where there is no prefix 'r_' for the branch names when filling the
   // histogram from the TTree
-  bool CVCF = (xval.find("C")!=std::string::npos && yval.find("C")!=std::string::npos);
+  bool CVCF = (xval.find("CV")!=std::string::npos && yval.find("CF")!=std::string::npos);
   // catch RV-RF, where there is no prefix 'r_' for the branch names when filling the
   // histogram from the TTree
   bool RVRF = (xval.find("R")!=std::string::npos && yval.find("R")!=std::string::npos);
-  
+  // catch CV-CF, where there is no prefix 'r_' for the branch names when filling the
+  // histogram from the TTree
+  bool CBCTAU = (xval.find("CB")!=std::string::npos && yval.find("CTAU")!=std::string::npos);
+
   // pick up boundaries of the scan from .scan file in masses directory. This
   // requires that you have run imits.py beforehand with option --multidim-fit
   char type[20]; 
@@ -187,8 +190,8 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     float nbins = TMath::Sqrt(points);
     TH2F* scan2D = new TH2F("scan2D", "", nbins, xmin, xmax, nbins, ymin, ymax);
     limit->SetBranchAddress("deltaNLL", &nll );  
-    limit->SetBranchAddress((CVCF || RVRF) ? xval.c_str() : (std::string("r_")+xval).c_str() , &x);  
-    limit->SetBranchAddress((CVCF || RVRF) ? yval.c_str() : (std::string("r_")+yval).c_str() , &y);
+    limit->SetBranchAddress((CVCF || RVRF || CBCTAU) ? xval.c_str() : (std::string("r_")+xval).c_str() , &x);  
+    limit->SetBranchAddress((CVCF || RVRF || CBCTAU) ? yval.c_str() : (std::string("r_")+yval).c_str() , &y);
     int nevent = limit->GetEntries();
     for(int i=0; i<nevent; ++i){
       limit->GetEvent(i);

@@ -92,7 +92,11 @@ for val in vals :
     if 'rV' in val :
         mode = val.upper()
     if 'rF' in val :
-        mode = val.upper()        
+        mode = val.upper()
+    if 'cb' in val :
+        mode = val.upper()
+    if 'ctau' in val :
+        mode = val.upper() 
     footprint.write("{VAL} : {RANGE}\n".format(VAL=mode, RANGE=ranges[val].replace(':', '\t')))
 footprint.close()
 
