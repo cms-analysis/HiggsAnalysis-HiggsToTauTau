@@ -1,5 +1,6 @@
 from HiggsAnalysis.CombinedLimit.PhysicsModel import PhysicsModel
-from HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel import MSSMLikeHiggsModel #PhysicsBSMModel 
+from HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel import MSSMLikeHiggsModel #PhysicsBSMModel
+from HiggsAnalysis.CombinedLimit.SMHiggsBuilder import SMHiggsBuilder
 from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools ##not needed atm
 import ROOT, os
 
@@ -7,7 +8,8 @@ import ROOT, os
 ## i believe there must be a normalization to something in order to define the contribution of hbb and htt
 
 class CbCtauMSSMHiggs(MSSMLikeHiggsModel):
-    "assume the MSSM coupling but let the Higgs mass to float"
+    "testing Cb and Ctau. MH is fixed for now. In ggH loop assume SM for all but Cb. Everything normalized to SM. Just testing cb vs ctau."
+    
     def __init__(self):
         MSSMLikeHiggsModel.__init__(self) # not using 'super(x,self).__init__' since I don't understand it
         self.floatMass = False
@@ -15,6 +17,7 @@ class CbCtauMSSMHiggs(MSSMLikeHiggsModel):
         self.tanb   = 30
         self.cbRange = ['-2','2']
         self.ctauRange = ['-2','2']
+
         
     def setPhysicsOptions(self,physOptions):
         for po in physOptions:
@@ -38,6 +41,8 @@ class CbCtauMSSMHiggs(MSSMLikeHiggsModel):
                     raise RuntimeError, "ctau signal strength range requires minimal and maximal value"
                 elif float(self.ctauRange[0]) >= float(self.ctauRange[1]):
                     raise RuntimeError, "minimal and maximal range swapped. Second value must be larger first one"
+
+                
     def doParametersOfInterest(self):
         """Create POI out of signal strength and MH"""
         # --- Signal Strength as only POI --- 
@@ -58,7 +63,9 @@ class CbCtauMSSMHiggs(MSSMLikeHiggsModel):
             else:
                 self.modelBuilder.doVar("MH[%g]" % self.options.mass) 
             self.modelBuilder.doSet("POI",'Cb,Ctau')
+        self.SMH = SMHiggsBuilder(self.modelBuilder)
         self.setup()
+
         
     def setup(self):
         self.decayScaling = {
@@ -66,134 +73,84 @@ class CbCtauMSSMHiggs(MSSMLikeHiggsModel):
             'hbb':'hbb',
             }
         self.productionScaling = {
-            'ggH':'Cb',
             'bbH':'Cb',
-            }
-        ## get xs and br for MSSM mhmax scenario
-##         tanbintervall = "tanbHigh" if self.tanb>=1.0 else "tanbLow"
-##         decaySource   = self.options.fileName # by default, energy comes from the datacard name
-##         foundDecay = None
-##         br=""
-##         for D in [ "hbb", "htt", "hmm" ]:
-##             if D in decaySource:
-##                 if D=="hbb" :
-##                     br="BR-bb"
-##                 elif D=="htt" :
-##                     br="BR"
-##                 elif D=="hmm" :
-##                     br="BR-mumu"               
-##                 if foundDecay: raise RuntimeError, "Validation Error: decay string %s contains multiple known decay names" % decaySource
-##                 foundDecay = D
-##         if not foundDecay: raise RuntimeError, "Validation Error: decay string %s does not contain any known decay name" % decaySource
-##         foundEnergy = None
-##         for D in [ "7TeV", "8TeV" ]:
-##             if D in decaySource:
-##                 if foundEnergy: raise RuntimeError, "Validation Error: decay string %s contains multiple known energies" % decaySource
-##                 foundEnergy = D
-##         if not foundEnergy:
-##             foundEnergy = "7TeV" ## To ensure backward compatibility
-##             print "Warning: decay string %s does not contain any known energy, assuming %s" % (decaySource, foundEnergy)
-##         path="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{ECMS}-{TANBINTERVALL}-nnlo.root".format(ECMS=foundEnergy, TANBINTERVALL=tanbintervall)
-##         mssm_scan = mssm_xsec_tools("{CMSSW_BASE}/src/{PATH}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], PATH=path))
-##         mssm_xsec = mssm_scan.query(self.options.mass, float(self.tanb))
-##         self.modelBuilder.doVar("bbH_xsec[%g]" % (mssm_xsec['higgses']['A']['xsec']['santander']*mssm_xsec['higgses']['A'][br]))
-##         self.modelBuilder.doVar("ggH_xsec[%g]" % (mssm_xsec['higgses']['A']['xsec']['ggF'      ]*mssm_xsec['higgses']['A'][br]))
-        
-        ##partial widths, not normalized, for decays scaling with b, tau and total
-        self.modelBuilder.factory_('expr::CbCtau_Gscal_sumb("@0*@0", Cb)') 
-        self.modelBuilder.factory_('expr::CbCtau_Gscal_sumtau("@0*@0", Ctau)') 
-        self.modelBuilder.factory_('sum::CbCtau_Gscal_tot(CbCtau_Gscal_sumb, CbCtau_Gscal_sumtau)')
-        ## BRs, not normalized: they scale as (coupling)^2 / (totWidth)^2 
+            }       
+        # scalings of the loops
+        self.BSMscaling('ggH', Cb='Cb', Ctau='Ctau')
+        self.BSMscaling('hgg', Cb='Cb', Ctau='Ctau')
+        self.BSMscaling('hzg', Cb='Cb', Ctau='Ctau')
+
+        ##partial widths, normalized to SM, for decays scaling with b, tau and total
+        for d in [ "htt", "hbb", "hcc", "hww", "hzz", "hgluglu", "htoptop", "hgg", "hzg", "hmm", "hss"]:
+            self.SMH.makeBR(d)
+        self.modelBuilder.factory_('expr::CbCtau_Gscal_sumb("@0*@0 * @1", Cb, SM_BR_hbb)') 
+        self.modelBuilder.factory_('expr::CbCtau_Gscal_sumtau("@0*@0 * @1", Ctau, SM_BR_htt)')
+        self.modelBuilder.factory_('expr::CbCtau_Gscal_gg("@0 * @1", Scaling_hgg, SM_BR_hgg)') 
+        self.modelBuilder.factory_('expr::CbCtau_Gscal_Zg("@0 * @1", Scaling_hzg, SM_BR_hzg)')
+        self.modelBuilder.factory_('sum::CbCtau_Gscal_tot(CbCtau_Gscal_sumb, CbCtau_Gscal_sumtau, CbCtau_Gscal_gg, CbCtau_Gscal_Zg, SM_BR_hcc, SM_BR_htoptop, SM_BR_hgluglu, SM_BR_hmm, SM_BR_hss, SM_BR_hww, SM_BR_hzz)')
+        ## BRs, normalized to SM: they scale as (coupling/partial_SM)^2 / (totWidth/total_SM)^2 
         self.modelBuilder.factory_('expr::CbCtau_BRscal_hbb("@0*@0/@1", Cb, CbCtau_Gscal_tot)')
-        self.modelBuilder.factory_('expr::CbCtau_BRscal_htautau("@0*@0/@1", Ctau, CbCtau_Gscal_tot)')
-        
+        self.modelBuilder.factory_('expr::CbCtau_BRscal_htautau("@0*@0/@1", Ctau, CbCtau_Gscal_tot)')       
         self.modelBuilder.out.Print()
+
+        
     def getHiggsSignalYieldScale(self,production,decay,energy):
 
         name = "CbCtau_XSBRscal_%s_%s" % (production,decay)
         if self.modelBuilder.out.function(name):
             return name
         
+        if production == 'ggH':
+            self.productionScaling[production] = 'Scaling_ggH_' + energy
+            name += '_%(energy)s' % locals()
+        
         XSscal = self.productionScaling[production]
         BRscal = self.decayScaling[decay]
         self.modelBuilder.factory_('expr::%s("@0*@0 * @1", %s, CbCtau_BRscal_%s)' % (name, XSscal, BRscal))
         return name
 
-## class CvCfXgHiggs(SMLikeHiggsModel):
-##     "assume the SM coupling but let the Higgs mass to float"
-##     def __init__(self):
-##         SMLikeHiggsModel.__init__(self) # not using 'super(x,self).__init__' since I don't understand it
-##         self.floatMass = False
-##     def setPhysicsOptions(self,physOptions):
-##         for po in physOptions:
-##             if po.startswith("higgsMassRange="):
-##                 self.floatMass = True
-##                 self.mHRange = po.replace("higgsMassRange=","").split(",")
-##                 print 'The Higgs mass range:', self.mHRange
-##                 if len(self.mHRange) != 2:
-##                     raise RuntimeError, "Higgs mass range definition requires two extrema."
-##                 elif float(self.mHRange[0]) >= float(self.mHRange[1]):
-##                     raise RuntimeError, "Extrema for Higgs mass range defined with inverterd order. Second must be larger the first."
-##     def doParametersOfInterest(self):
-##         """Create POI out of signal strength and MH"""
-##         # --- Signal Strength as only POI --- 
-##         self.modelBuilder.doVar("CV[1,0.0,1.5]")
-##         self.modelBuilder.doVar("CF[1,-1.5,1.5]")
-##         self.modelBuilder.doVar("XG[0,-4,4]")
-##         if self.floatMass:
-##             if self.modelBuilder.out.var("MH"):
-##                 self.modelBuilder.out.var("MH").setRange(float(self.mHRange[0]),float(self.mHRange[1]))
-##                 self.modelBuilder.out.var("MH").setConstant(False)
-##             else:
-##                 self.modelBuilder.doVar("MH[%s,%s]" % (self.mHRange[0],self.mHRange[1])) 
-##             self.modelBuilder.doSet("POI",'CV,CF,XG,MH')
-##         else:
-##             if self.modelBuilder.out.var("MH"):
-##                 self.modelBuilder.out.var("MH").setVal(self.options.mass)
-##                 self.modelBuilder.out.var("MH").setConstant(True)
-##             else:
-##                 self.modelBuilder.doVar("MH[%g]" % self.options.mass) 
-##             self.modelBuilder.doSet("POI",'CV,CF,XG')
-##         self.SMH = SMHiggsBuilder(self.modelBuilder)
-##         self.setup()
-##     def setup(self):
-##         ## Add some common ingredients
-##         datadir = os.environ['CMSSW_BASE']+'/src/HiggsAnalysis/CombinedLimit/data/lhc-hxswg'
-##         self.SMH.textToSpline( 'mb', os.path.join(datadir, 'running_constants.txt'), ycol=2 );
-##         mb = self.modelBuilder.out.function('mb')
-##         mH = self.modelBuilder.out.var('MH')
-##         CF = self.modelBuilder.out.var('CF')
-##         CV = self.modelBuilder.out.var('CV')
-##         XG = self.modelBuilder.out.var('XG')
-
-##         RHggCvCfXg = ROOT.RooScaleHGamGamLOSMPlusX('CvCfXg_cgammaSq', 'LO SM Hgamgam scaling', mH, CF, CV, mb, CF, XG)
-##         self.modelBuilder.out._import(RHggCvCfXg)
-##         #Rgluglu = ROOT.RooScaleHGluGluLOSMPlusX('Rgluglu', 'LO SM Hgluglu scaling', mH, CF, mb, CF)
-##         #self.modelBuilder.out._import(Rgluglu)
-        
-##         ## partial witdhs, normalized to the SM one, for decays scaling with F, V and total
-##         for d in [ "htt", "hbb", "hcc", "hww", "hzz", "hgluglu", "htoptop", "hgg", "hZg", "hmm", "hss" ]:
-##             self.SMH.makeBR(d)
-##         self.modelBuilder.factory_('expr::CvCfXg_Gscal_sumf("@0*@0 * (@1+@2+@3+@4+@5+@6+@7)", CF, SM_BR_hbb, SM_BR_htt, SM_BR_hcc, SM_BR_htoptop, SM_BR_hgluglu, SM_BR_hmm, SM_BR_hss)') 
-##         self.modelBuilder.factory_('expr::CvCfXg_Gscal_sumv("@0*@0 * (@1+@2+@3)", CV, SM_BR_hww, SM_BR_hzz, SM_BR_hZg)') 
-##         self.modelBuilder.factory_('expr::CvCfXg_Gscal_gg("@0 * @1", CvCfXg_cgammaSq, SM_BR_hgg)') 
-##         self.modelBuilder.factory_('sum::CvCfXg_Gscal_tot(CvCfXg_Gscal_sumf, CvCfXg_Gscal_sumv, CvCfXg_Gscal_gg)')
-##         ## BRs, normalized to the SM ones: they scale as (coupling/coupling_SM)^2 / (totWidth/totWidthSM)^2 
-##         self.modelBuilder.factory_('expr::CvCfXg_BRscal_hgg("@0/@1", CvCfXg_cgammaSq, CvCfXg_Gscal_tot)')
-##         self.modelBuilder.factory_('expr::CvCfXg_BRscal_hf("@0*@0/@1", CF, CvCfXg_Gscal_tot)')
-##         self.modelBuilder.factory_('expr::CvCfXg_BRscal_hv("@0*@0/@1", CV, CvCfXg_Gscal_tot)')
-        
-##         self.modelBuilder.out.Print()
-##     def getHiggsSignalYieldScale(self,production,decay,energy):
-##         name = "CvCfXg_XSBRscal_%s_%s" % (production,decay)
-##         if self.modelBuilder.out.function(name) == None: 
-##             XSscal = 'CF' if production in ["ggH","ttH"] else 'CV'
-##             BRscal = "hgg"
-##             if decay in ["hww", "hzz"]: BRscal = "hv"
-##             if decay in ["hbb", "htt"]: BRscal = "hf"
-##             self.modelBuilder.factory_('expr::%s("@0*@0 * @1", %s, CvCfXg_BRscal_%s)' % (name, XSscal, BRscal))
-##         return name
-
+    
+    def BSMscaling(self,what, Cb='Cb', Ctau='Ctau'):
+        prefix = 'SM_%(what)s_' % locals()
+        if  what == 'ggH':
+            structure = {'sigma_tt':2, 'sigma_bb':3, 'sigma_tb':4}
+            for sqrts in ('7TeV', '8TeV'):
+                for qty, column in structure.iteritems():
+                    rooName = prefix+qty+'_'+sqrts
+                    self.SMH.textToSpline(rooName, os.path.join(self.SMH.coupPath, 'ggH_%(sqrts)s.txt'%locals()), ycol=column )
+                scalingName = 'Scaling_'+what+'_'+sqrts
+                #print 'Building '+scalingName
+                rooExpr = 'expr::%(scalingName)s(\
+"(1*1)*@1  + (@0*@0)*@2 + (1*@0)*@3",\
+ %(Cb)s,\
+ %(prefix)ssigma_tt_%(sqrts)s, %(prefix)ssigma_bb_%(sqrts)s, %(prefix)ssigma_tb_%(sqrts)s\
+)'%locals()
+                #print  rooExpr
+                self.modelBuilder.factory_(rooExpr)
+        elif what in ['hgg', 'hzg']:
+            fileFor = {'hgg':'Gamma_Hgammagamma.txt',
+                       'hzg':'Gamma_HZgamma.txt'}
+            structure = {'Gamma_tt':2, 'Gamma_bb':3, 'Gamma_WW':4,
+                         'Gamma_tb':5, 'Gamma_tW':6, 'Gamma_bW':7,
+                         'Gamma_ll':8,
+                         'Gamma_tl':9, 'Gamma_bl':10, 'Gamma_lW':11}
+            for qty, column in structure.iteritems():
+                rooName = prefix+qty
+                self.SMH.textToSpline(rooName, os.path.join(self.SMH.coupPath, fileFor[what]), ycol=column )
+            scalingName = 'Scaling_'+what
+#            print 'Building '+scalingName
+            rooExpr = 'expr::%(scalingName)s(\
+"(1*1)*@2  + (@0*@0)*@3 + (1*1)*@4 + (1*@0)*@5 + (1*1)*@6 + (@0*1)*@7 + (@1*@1)*@8 + (1*@1)*@9 + (@0*@1)*@10 + (1*@1)*@11",\
+ %(Cb)s, %(Ctau)s,\
+ %(prefix)sGamma_tt, %(prefix)sGamma_bb, %(prefix)sGamma_WW,\
+ %(prefix)sGamma_tb, %(prefix)sGamma_tW, %(prefix)sGamma_bW,\
+ %(prefix)sGamma_ll,\
+ %(prefix)sGamma_tl, %(prefix)sGamma_bl, %(prefix)sGamma_lW\
+)'%locals()
+#            print  rooExpr
+            self.modelBuilder.factory_(rooExpr)
+        else:
+            raise RuntimeError, "There is no scaling defined for %(what)s" % locals()
 
 ## this is the entry point for text2workspace.py
 CbCtauMSSMHiggs = CbCtauMSSMHiggs()
