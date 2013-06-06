@@ -4,9 +4,9 @@ layout = cms.PSet(
     ## dataset
     dataset = cms.string("Preliminary, #sqrt{s}=7-8 TeV, L = 24.3 fb^{-1}, H #rightarrow #tau #tau"),
     ## x-axis title
-    xaxis = cms.string("c_{b} [pb]"),
+    xaxis = cms.string("c_{b}"),
     ## x-axis title
-    yaxis = cms.string("c_{#tau} [pb]"),
+    yaxis = cms.string("c_{#tau}"),
     ## min for plotting (for fine tuning)
     min = cms.double(0.),
     ## min for plotting
@@ -48,7 +48,7 @@ layout = cms.PSet(
     ## make a temperature plot?
     temp = cms.bool(False),
     ## define physics-model
-    model = cms.string("cb-ctau"),
+    model = cms.string("Cb-Ctau"),
     ## max for plotting (for fine tuning)
     xmaxs = cms.VPSet(
     cms.PSet(mass = cms.double(  90.), max = cms.double(-1.)),
