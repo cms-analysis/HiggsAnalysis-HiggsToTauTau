@@ -148,7 +148,7 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
   bool RVRF = (xval.find("R")!=std::string::npos && yval.find("R")!=std::string::npos);
   // catch CV-CF, where there is no prefix 'r_' for the branch names when filling the
   // histogram from the TTree
-  bool CBCTAU = (xval.find("CB")!=std::string::npos && yval.find("CTAU")!=std::string::npos);
+  bool CBCTAU = (xval.find("Cb")!=std::string::npos && yval.find("Ctau")!=std::string::npos);
 
   // pick up boundaries of the scan from .scan file in masses directory. This
   // requires that you have run imits.py beforehand with option --multidim-fit
