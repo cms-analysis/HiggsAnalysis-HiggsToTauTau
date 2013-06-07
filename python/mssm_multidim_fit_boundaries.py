@@ -46,10 +46,25 @@ mssm_multidim_fit_boundaries = {
     ("cb-ctau", "130")  : (3.00, 3.00), 
     ("cb-ctau", "140")  : (3.00, 3.00),
 
-### only makes since 90-140 GeV atm since SM ggH loop contributions are only available for those masses
-    ("cl-cq",  "90")  : (10.00, 10.00),
-    ("cl-cq", "100")  : (10.00, 10.00),
-    ("cl-cq", "120")  : (10.00, 10.00),
-    ("cl-cq", "130")  : (10.00, 10.00), 
-    ("cl-cq", "140")  : (10.00, 10.00),
+### only makes since 90-140 GeV for model normalized to SM atm since SM ggH loop contributions are only available for those masses
+### no assumption on total widht could be used for all mases
+    ("cl-cq",  "90")  : (3.00, 3.00),
+    ("cl-cq", "100")  : (3.00, 3.00),
+    ("cl-cq", "120")  : (3.00, 3.00),
+    ("cl-cq", "130")  : (3.00, 3.00), 
+    ("cl-cq", "140")  : (3.00, 3.00),
+    ("cl-cq", "160")  : (3.00, 3.00), 
+    ("cl-cq", "180")  : (3.00, 3.00),
+    ("cl-cq", "200")  : (3.00, 3.00), 
+    ("cl-cq", "250")  : (3.00, 3.00),
+    ("cl-cq", "300")  : (3.00, 3.00),
+    ("cl-cq", "350")  : (3.00, 3.00),
+    ("cl-cq", "400")  : (3.00, 3.00),
+    ("cl-cq", "450")  : (3.00, 3.00),
+    ("cl-cq", "500")  : (3.00, 3.00),
+    ("cl-cq", "600")  : (3.00, 3.00),
+    ("cl-cq", "700")  : (3.00, 3.00),
+    ("cl-cq", "800")  : (3.00, 3.00),
+    ("cl-cq", "900")  : (3.00, 3.00),
+    ("cl-cq","1000")  : (3.00, 3.00),
     }
