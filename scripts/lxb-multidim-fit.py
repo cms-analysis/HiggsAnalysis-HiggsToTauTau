@@ -96,7 +96,11 @@ for val in vals :
     if 'cb' in val :
         mode = "Cb"
     if 'ctau' in val :
-        mode = "Ctau" 
+        mode = "Ctau"
+    if 'cl' in val :
+        mode = "Cl"
+    if 'cq' in val :
+        mode = "Cq" 
     footprint.write("{VAL} : {RANGE}\n".format(VAL=mode, RANGE=ranges[val].replace(':', '\t')))
 footprint.close()
 
