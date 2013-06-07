@@ -198,22 +198,22 @@ class ClCqMSSMHiggs(MSSMLikeHiggsModel):
         ##partial widths, normalized to SM, for decays scaling with b, tau and total
         for d in [ "htt", "hbb", "hcc", "hww", "hzz", "hgluglu", "htoptop", "hgg", "hzg", "hmm", "hss"]:
             self.SMH.makeBR(d)
-        self.modelBuilder.factory_('expr::CqCq_Gscal_sumq("@0*@0 * (@1+@2+@3+@4+@5+@6+@7)", Cl, SM_BR_hbb, SM_BR_hcc, SM_BR_htoptop, SM_BR_hss)') 
-        self.modelBuilder.factory_('expr::CqCq_Gscal_suml("@0*@0 * @1", Cq, SM_BR_htt, SM_BR_hmm)')
-        self.modelBuilder.factory_('expr::CqCq_Gscal_gg("@0 * @1", Scaling_hgg, SM_BR_hgg)') 
-        self.modelBuilder.factory_('expr::CqCq_Gscal_Zg("@0 * @1", Scaling_hzg, SM_BR_hzg)')
-        self.modelBuilder.factory_('sum::CqCq_Gscal_tot(CqCl_Gscal_sumb, CqCl_Gscal_sumtau, CqCl_Gscal_gg, CqCl_Gscal_Zg, SM_BR_hgluglu, SM_BR_hww, SM_BR_hzz)')
+        self.modelBuilder.factory_('expr::ClCq_Gscal_sumq("@0*@0 * (@1+@2+@3+@4+@5+@6+@7)", Cq, SM_BR_hbb, SM_BR_hcc, SM_BR_htoptop, SM_BR_hss)') 
+        self.modelBuilder.factory_('expr::ClCq_Gscal_suml("@0*@0 * @1", Cl, SM_BR_htt, SM_BR_hmm)')
+        self.modelBuilder.factory_('expr::ClCq_Gscal_gg("@0 * @1", Scaling_hgg, SM_BR_hgg)') 
+        self.modelBuilder.factory_('expr::ClCq_Gscal_Zg("@0 * @1", Scaling_hzg, SM_BR_hzg)')
+        self.modelBuilder.factory_('sum::ClCq_Gscal_tot(ClCq_Gscal_sumq, ClCq_Gscal_suml, ClCq_Gscal_gg, ClCq_Gscal_Zg, SM_BR_hgluglu, SM_BR_hww, SM_BR_hzz)')
         ## BRs, normalized to SM: they scale as (coupling/partial_SM)^2 / (totWidth/total_SM)^2 - only used datacards needed
-        self.modelBuilder.factory_('expr::CqCl_BRscal_hbb("@0*@0/@1", Cq, CqCl_Gscal_tot)')
-        self.modelBuilder.factory_('expr::CqCl_BRscal_hmm("@0*@0/@1", Cl, CqCl_Gscal_tot)')
-        self.modelBuilder.factory_('expr::CqCl_BRscal_htautau("@0*@0/@1", Cl, CqCl_Gscal_tot)')       
+        self.modelBuilder.factory_('expr::ClCq_BRscal_hbb("@0*@0/@1", Cq, ClCq_Gscal_tot)')
+        self.modelBuilder.factory_('expr::ClCq_BRscal_hmm("@0*@0/@1", Cl, ClCq_Gscal_tot)')
+        self.modelBuilder.factory_('expr::ClCq_BRscal_htautau("@0*@0/@1", Cl, ClCq_Gscal_tot)')       
         self.modelBuilder.out.Print()
 
         
     def getHiggsSignalYieldScale(self,production,decay,energy):
 
         #print production, decay, energy 
-        name = "CqCl_XSBRscal_%s_%s" % (production,decay)
+        name = "ClCq_XSBRscal_%s_%s" % (production,decay)
 
         if self.modelBuilder.out.function(name):
             #print "name", name
@@ -221,7 +221,7 @@ class ClCqMSSMHiggs(MSSMLikeHiggsModel):
         
         XSscal = self.productionScaling[production]
         BRscal = self.decayScaling[decay]
-        self.modelBuilder.factory_('expr::%s("@0*@0 * @1", %s, CbCtau_BRscal_%s)' % (name, XSscal, BRscal))
+        self.modelBuilder.factory_('expr::%s("@0*@0 * @1", %s, ClCq_BRscal_%s)' % (name, XSscal, BRscal))
         #print "name", name
         return name
 
