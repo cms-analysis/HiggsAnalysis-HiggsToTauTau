@@ -15,7 +15,7 @@ class AsimovDatacard() :
     should be added to the background processes. If a random seed>=0 is given the asimov dataset is randomized according
     to a poinsson dirstribution.
     """
-    def __init__(self, parser_options, seed='-1', add_signal=True, mass='125', signal_scale='1.') :
+    def __init__(self, parser_options, seed='-1', add_signal=True, mass='125', signal_scale='1.', extra_templates='') :
         ## random seed in case the asimov dataset should be randomized (-1 will indicate that no randomization should be applied) 
         self.seed = seed
         ## should be true if signal should be considered for the asimov dataset
@@ -26,6 +26,8 @@ class AsimovDatacard() :
         self.signal_scale = signal_scale
         ## options for the datacard parser
         self.options = parser_options
+        ## in case any other templates should be added to the asimov dataset (e.g. SM signal to MSSM datacards)
+        self.extra_templates = extra_templates
     
     def list2string(self, card, bin, procs) :
         """
@@ -161,6 +163,7 @@ class AsimovDatacard() :
                     path = card.path_to_file(bin, proc)
                     ## determine background list
                     bkg_list = self.list2string(card, bin, card.list_of_procs('b'))
+                    bkg_list = bkg_list + ',' + self.extra_templates.replace(' ','') if self.extra_templates!="" else bkg_list
                     ## determine signal list
                     sig_list = self.list2string(card, bin, card.list_of_procs('s')) if self.add_signal else ''
                     if not path == '' :
