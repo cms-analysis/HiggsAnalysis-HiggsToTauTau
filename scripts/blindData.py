@@ -18,6 +18,7 @@ asimov_opts.add_option("--injected-scale", dest="injected_scale", default="1", t
                        help="Scale for signal. This is only of relevance if signal should be added to the asimov dataset. The scale factor will than be applied equally to each signal contribution. Default: \"1\"]")
 asimov_opts.add_option("--injected-mass", dest="injected_mass", default="125", type="string",
                        help="The mass of the signal that should be injected. Default: \"125\"]")
+asimov_opts.add_option("--extra-templates", dest="extra_templates", default="", type="string", help="List of extra background or signal templates which should be injected to the asimov dataset. Needs to be comma seperated list. For example to inject SM signal into MSSM datacards. [Default: \"\"]")
 parser.add_option_group(asimov_opts)
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -43,7 +44,7 @@ def main() :
 
     ## clean up directory from former trials
     os.system("rm {PATH}/../common/*_asimov".format(PATH=args[0]))
-    cardMaker = AsimovDatacard(options, options.seed, options.inject_signal, options.injected_mass, options.injected_scale)
+    cardMaker = AsimovDatacard(options, options.seed, options.inject_signal, options.injected_mass, options.injected_scale, options.extra_templates)
     cardMaker.make_asimov_datacards(args[0])
 
 main()
