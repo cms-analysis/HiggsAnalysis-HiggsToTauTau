@@ -1,6 +1,8 @@
 import re
 import ROOT
 
+## structure for parameters of given models
+from HiggsAnalysis.HiggsToTauTau.MODEL_PARAMS import MODEL_PARAMS
 ## needed to make th1morph known to class
 ROOT.gSystem.Load('$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so')
 from ROOT import th1fmorph
@@ -12,13 +14,15 @@ class ModelTemplate():
     This class is meant to provide template histograms for arbitary (BSM) Higgs signal processes based on raw templates for
     these processes for a given set of pivotal masses. It requires the masses of the Higgs bosons contributing to the given
     process and a normalization factor corresponding to the cross section times BR of the Higgs boson in the corresponding
-    model. the latter are passed in for of MODEL_PARAMS.
+    model. The latter are passed in form of MODEL_PARAMS.
     """
-    def __init__(self, path) :
+    def __init__(self, path, hist_label='') :
         ## path to root input file
         self.path = path
         ## root input file where to find the raw templates
         self.input_file = ROOT.TFile(path)
+        ## a label that can optionally be added to the new model template, when writing it to file
+        self.hist_label = hist_label
         ## dict of type {dir : [pivotal masses]} for each dir in the root file
         self.pivotals = {}
 
@@ -168,27 +172,18 @@ class ModelTemplate():
                 ## write combined template to output file
                 output_file.cd('' if dir == '.' else dir)
                 if combined_template :
-                    print 'write histogram to file: ', proc+param.masses['A']  
-                    combined_template.Write(proc+param.masses['A'], ROOT.TObject.kOverwrite)
+                    print 'write histogram to file: ', proc+param.masses['A']+self.hist_label  
+                    combined_template.Write(proc+param.masses['A']+self.hist_label, ROOT.TObject.kOverwrite)
         output_file.Close()
         return 
-                    
-def main() :
-    ## toy model 
-    class MODEL_PARAMS():
-        def __init__(self) :
-            self.list_of_higgses = ['A', 'H', 'h']
-            self.masses = {'A' : '120', 'H' : '130', 'h' : '118'}
-            self.xsecs  = {'A' : '3'  , 'H' : '2'  , 'h' : '1'  }
-            self.brs    = {'A' : '0.1', 'H' : '0.1', 'h' : '0.1'}
-            self.tanb   = 15
-    param = MODEL_PARAMS()
-    model = {'ggH': param,
-             'qqH': param
-             }
 
-    ## and do the testing
-    template = ModelTemplate("htt_mt.input_8TeV.root")
-    template.create_templates(model, '_test')
+#def test() :
+#    param = MODEL_PARAMS()
+#    model = {'ggH': param,
+#             'qqH': param
+#             }
+#    ## and do the testing
+#    template = ModelTemplate("htt_mt.input_8TeV.root")
+#    template.create_templates(model, '_test')
 
-main()
+#test()
