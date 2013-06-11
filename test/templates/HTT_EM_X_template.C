@@ -1,4 +1,3 @@
-okay
 #include <iostream>
 
 #include <TH1F.h>
