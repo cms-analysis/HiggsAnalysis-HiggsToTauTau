@@ -3,17 +3,22 @@ import os
 
 class feyn_higgs_mssm:
     """
-    Class for determination of masses, crosssections and branchingratios for a given higgs model.
-    Arguments are mA, tanb and model, with model being 'sm', 'mssm'.
+    Description:
+    Class for determination of masses, cross-sections and branchingratios for a given higgs model.
+    Arguments are mA, tanb, model, fmodel and period
+      - model is from  'sm', 'mssm'.
+      - fmodel is from 'mhmax', 'gluph', 'saeff'
+      - period is from '7TeV', '8TeV'
     Allowed channels for get_xs are gg[h,H,A], qq[h,H,A]
     Allowed channels for get_br are [h,H,A]tt, [h,H,A]mm, [h,H,A]bb
     """
-    def __init__(self, mA, tanb, model, period):
+    def __init__(self, mA, tanb, model, fmodel, period):
         self.mA = mA
         self.tanb = tanb
         self.model = model
-        fmodel = 'mhmax-'+period
-        path = os.getenv("CMSSW_BASE")+'/src/HiggsAnalysis/HiggsToTauTau/data/feyn-higgs-mssm-scan-'+fmodel
+        if fmodel == '':
+            fmodel = 'mhmax'
+        path = os.getenv("CMSSW_BASE")+'/src/HiggsAnalysis/HiggsToTauTau/data/feyn-higgs-mssm-scan-'+fmodel+'-'+period
         if self.tanb < 10:
             self.scan = feyn_higgs_scan(path+'-fine.root', "mssm_scan", 90, 1, 10, 96, 50, 1010) 
         else:
@@ -25,15 +30,26 @@ class feyn_higgs_mssm:
         mH = self.scan.mass("mH", self.mA, self.tanb)
         return mH
     def get_xs(self, channel):
-        """ return xs for a given production-channel """
+        """
+        This function returns the cross-section for a given production-channel.
+        """
         xs = self.scan.get(channel, self.model, "xs",  self.mA, self.tanb)
         return xs
     def get_br(self, channel):
-        """ return br for a given decay-channel """
+        """
+        This function returns the branchingratio for a given decay-channel.
+        """
         br = self.scan.get(channel, self.model, "br",  self.mA, self.tanb)
         return br
 
 class feyn_higgs_scan:
+    """
+    Description:
+
+    Basic class to determine branchingratios, cross-sections and masses of higgses.
+    As input it takes the name of the rootfile and the TTree to be used as well as the
+    parameters for the tanb and mA range.
+    """
     def __init__(self, filename, treename, ntanb, mintanb, maxtanb, nmA, minmA, maxmA):
         self.mintanb = mintanb
         self.maxtanb = maxtanb
