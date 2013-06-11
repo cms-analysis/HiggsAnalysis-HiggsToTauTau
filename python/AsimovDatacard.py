@@ -1,8 +1,11 @@
 import os
 import ROOT
-from HiggsAnalysis.CombinedLimit.DatacardParser import *
 
-class AsimovDatacard() :
+from HiggsAnalysis.CombinedLimit.DatacardParser import *
+from HiggsAnalysis.HiggsToTauTau.DatacardAdaptor import DatacardAdaptor
+
+
+class AsimovDatacard(DatacardAdaptor) :
     """
     Description:
 
@@ -24,76 +27,11 @@ class AsimovDatacard() :
         self.mass = mass
         ## in case signal should be considered for the asimov dataset scale factor that should be used for the signal template
         self.signal_scale = signal_scale
-        ## options for the datacard parser
-        self.options = parser_options
         ## in case any other templates should be added to the asimov dataset (e.g. SM signal to MSSM datacards)
         self.extra_templates = extra_templates
+        ## initialize base class
+        super(AsimovDatacard, self).__init__(parser_options)
     
-    def list2string(self, card, bin, procs) :
-        """
-        Translate a list of processes to a string that contains the names of the actual histograms and can actually be used
-        for blindData.C. The name of the histograms is obtained from the Daracard::path_of_shape for given bin and process,
-        there potential directories are snipped off the path. This automatically contains any prefixes or postfixes (including
-        the keyword $MASS, that will be replaced during later steps of the processing in the class) that might be needed to
-        find the shape histogram. 
-        """
-        s = ''
-        for proc in procs :
-            buffer = card.path_to_shape(bin, proc)
-            if '/' in buffer :
-                buffer = buffer[buffer.rfind('/')+1:]
-            s += buffer+','
-        return s.strip(',')
-
-    def adapt_shapes_lines(self, path) :
-        """
-        Find the lines starting with keyword 'shapes' in the datacard located at path. If there exists a shapes line
-        for process data_obs modify it to point to the same input file with ending _asimov. If there exists no shapes
-        line add a new shapes line with the shapes line for process '*' as template. 
-        """
-        old_file = open(path, 'r')
-        card = parseCard(old_file, self.options)
-        old_file.close()
-        ## modify the input paths for the new datacards
-        new_paths = []
-        new_data_obs = []
-        for bin in card.shapeMap.keys() :
-            for proc in card.shapeMap[bin].keys() :
-                ## define new_shapes line for process data_obs that points to asimov dataset. If there is a shapes line for process
-                ## data_obs it is modified accordingly. If not '*' serves as template for a the new shapes for data_obs that and a
-                ## new is added.
-                if 'data_obs' in proc :
-                    new_data_obs_shapes = list(card.shapeMap[bin][proc])
-                    if not '.root_asimov' in new_data_obs_shapes[0] :
-                        new_data_obs_shapes[0] = new_data_obs_shapes[0].replace('.root','.root_asimov')
-                elif '*' in proc :
-                    new_data_obs_shapes = list(card.shapeMap[bin][proc])
-                    if not '.root_asimov' in new_data_obs_shapes[0] :
-                        new_data_obs_shapes[0] = new_data_obs_shapes[0].replace('.root','.root_asimov')
-                ## for all but data_obs everything remains as is.
-                if not 'data_obs' in proc :
-                    new_paths.append('shapes\t'+proc+'\t'+bin+'\t'+'\t'.join(card.shapeMap[bin][proc]))
-            ## add the new path to data_obs to the end of all shapes; shape uncertainties are not needed for data_obs. This should be
-            ## done for each bin.
-            new_paths.append('shapes\tdata_obs'+'\t'+bin+'\t'+'\t'.join(new_data_obs_shapes))
-        ## write new shapes lines to file
-        first_pass = True
-        old_file = open(path, 'r')
-        new_file = open(path+'_tmp', 'w')
-        for line in old_file :
-            new_line = line
-            words = line.lstrip().split()
-            if words[0] == 'shapes' :
-                if first_pass :
-                    first_pass = False
-                    new_line = '\n'.join(new_paths)+'\n'
-                else :
-                    continue
-            new_file.write(new_line)
-        new_file.close()
-        old_file.close()
-        os.system("mv {TMP} {FINAL}".format(TMP=path+'_tmp', FINAL=path))
-                  
     def adapt_observation_lines(self, path) :
         """
         Find the lines starting with keyword 'observations' in the datacard located at path. For each bin in the datacards
@@ -209,7 +147,7 @@ class AsimovDatacard() :
         for card in os.listdir(dir) :
             if not card.endswith('.txt') :
                 continue
-            self.adapt_shapes_lines(dir+'/'+card)
+            self.adapt_shapes_lines(dir+'/'+card, 'data_obs', '_asimov')
         print "... adjust observation to modified shapes."
         for card in os.listdir(dir) :
             if not card.endswith('.txt') :
