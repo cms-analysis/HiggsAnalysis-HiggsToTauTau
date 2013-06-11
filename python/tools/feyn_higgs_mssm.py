@@ -5,29 +5,31 @@ class feyn_higgs_mssm:
     """
     Class for determination of masses, crosssections and branchingratios for a given higgs model.
     Arguments are mA, tanb and model, with model being 'sm', 'mssm'.
+    Allowed channels for get_xs are gg[h,H,A], qq[h,H,A]
+    Allowed channels for get_br are [h,H,A]tt, [h,H,A]mm, [h,H,A]bb
     """
-    def __init__(self, mA, tanb, model):
+    def __init__(self, mA, tanb, model, period):
         self.mA = mA
         self.tanb = tanb
         self.model = model
-        fmodel = 'mhmax-7TeV'
-        path = os.getenv("CMSSW_BASE")+'/src/HiggsAnalysis/HiggsToTauTau/data/feyn-higgs-mssm-scan-'+fmodel+'-fine.root'
-        if tanb < 10:
-            self.scan = feyn_higgs_scan(path, "mssm_scan", 90, 1, 10, 96, 50, 1010) 
+        fmodel = 'mhmax-'+period
+        path = os.getenv("CMSSW_BASE")+'/src/HiggsAnalysis/HiggsToTauTau/data/feyn-higgs-mssm-scan-'+fmodel
+        if self.tanb < 10:
+            self.scan = feyn_higgs_scan(path+'-fine.root', "mssm_scan", 90, 1, 10, 96, 50, 1010) 
         else:
-            self.scan = feyn_higgs_scan(path, "mssm_scan", 70, 1, 71, 96, 50, 1010)
-        self.mh = self.scan.mass("mh", self.mA, self.tanb)
-        self.mH = self.scan.mass("mH", self.mA, self.tanb)
+            self.scan = feyn_higgs_scan(path+'.root', "mssm_scan", 70, 1, 71, 96, 50, 1010)
     def get_mh(self):
-        return self.mh
+        mh = self.scan.mass("mh", self.mA, self.tanb)
+        return mh
     def get_mH(self):
-        return self.mH
+        mH = self.scan.mass("mH", self.mA, self.tanb)
+        return mH
     def get_xs(self, channel):
-        " return xs for a given channel "
+        """ return xs for a given production-channel """
         xs = self.scan.get(channel, self.model, "xs",  self.mA, self.tanb)
         return xs
     def get_br(self, channel):
-        " return br for a given channel "
+        """ return br for a given decay-channel """
         br = self.scan.get(channel, self.model, "br",  self.mA, self.tanb)
         return br
 
