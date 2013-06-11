@@ -109,7 +109,6 @@ class Analysis:
                  ECMS=foundEnergy,
                  TANBINTERVALL="tanbHigh" if options.tanb>=1.0 else "tanbLow"
                  )
-             #print foundEnergy, br
              mssm_scan = mssm_xsec_tools("{CMSSW_BASE}/src/{PATH}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], PATH=path))
              mssm_xsec = mssm_scan.query(options.mA, options.tanb)
              bbH_xseff_A=mssm_xsec['higgses']['A']['xsec']['santander']*mssm_xsec['higgses']['A'][br]
@@ -145,18 +144,19 @@ class Analysis:
              line = line.replace(template_name, output_name)
              line = line.replace("$HISTFILE", self.histfile)
              line = line.replace("$CATEGORY", self.category)
-             line = line.replace("$MSSM_SIGNAL_ggH_xseff_A" , str(ggH_xseff_A))
-             line = line.replace("$MSSM_SIGNAL_ggH_xseff_hH", str(ggH_xseff_hH))
-             line = line.replace("$MSSM_SIGNAL_bbH_xseff_A" , str(bbH_xseff_A))
-             line = line.replace("$MSSM_SIGNAL_bbH_xseff_hH", str(bbH_xseff_hH))
-             line = line.replace("$MA" , str(int(options.mA)))
-             line = line.replace("$TANB", str(int(options.tanb)))
+             if(options.analysis=="mssm") :
+                 line = line.replace("$MSSM_SIGNAL_ggH_xseff_A" , str(ggH_xseff_A))
+                 line = line.replace("$MSSM_SIGNAL_ggH_xseff_hH", str(ggH_xseff_hH))
+                 line = line.replace("$MSSM_SIGNAL_bbH_xseff_A" , str(bbH_xseff_A))
+                 line = line.replace("$MSSM_SIGNAL_bbH_xseff_hH", str(bbH_xseff_hH))
+                 line = line.replace("$MA" , str(int(options.mA)))
+                 line = line.replace("$TANB", str(int(options.tanb)))
 	     if options.uncertainties and (options.yields or options.shapes):
-                line = line.replace("$DRAW_ERROR", 'if(scaled) errorBand->Draw("e2same");')
-                line = line.replace("$ERROR_LEGEND", 'if(scaled) leg->AddEntry(errorBand, "bkg. uncertainty" , "F" );')
+                 line = line.replace("$DRAW_ERROR", 'if(scaled) errorBand->Draw("e2same");')
+                 line = line.replace("$ERROR_LEGEND", 'if(scaled) leg->AddEntry(errorBand, "bkg. uncertainty" , "F" );')
 	     else:
-                line = line.replace("$DRAW_ERROR", '')
-                line = line.replace("$ERROR_LEGEND", '')
+                 line = line.replace("$DRAW_ERROR", '')
+                 line = line.replace("$ERROR_LEGEND", '')
              word_arr=line.split("\n")
              uncertainties_set=[]
              for process_name in self.process_weight.keys():
