@@ -23,6 +23,7 @@ parser.add_option("--fit-result", dest="fit_result", default="",  type="string",
                   help="The full path to the result file of the fit (mlfit.txt) if it exists already for pruning of bin-by-bin uncertainties. If empty the fit will be performed within this script. ATTENTION: this can take a few hours depending on the number of additional bin-by-bin uncertainties. [Default: \"\"]")
 parser.add_option("-m", "--masses", dest="masses", default="100-200:20", type="string",
                   help="List of masses for which the datacards are set up. [Default: \"100-200:20\"]")
+parser.add_option("--extra-templates", dest="extra_templates", default="", type="string", help="List of extra background or signal templates which should be injected to the asimov dataset. Needs to be comma seperated list. Here used to inject SM signal into MSSM datacards. [Default: \"\"]")
 ##
 ## INPUTS OPTIONS
 ##
@@ -53,6 +54,8 @@ parser.add_option("--update-LIMITS", dest="update_limits", default=False, action
                   help="update LIMITS directory for the indicated analyses. [Default: False]")
 parser.add_option("--skip-pruning", dest="skip_pruning", default=False, action="store_true",
                   help="Skip pruning step when doing --setup-aux. [Default: False]")
+parser.add_option("--blind-datacards", dest="blind_datacards", default=False, action="store_true",
+                  help="Option to blind datacards. Also needs to be turned on to inject SM to datacards. [Default: False]")
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -193,7 +196,7 @@ if options.update_setup:
         if options.fit_tails:     
             print "INFO: Fitting of the background tails"
             for period in periods :
-                ## if i understand it correct the option --varbin has to be kicked out as soon as we have finner binned (equidistant binning) inputs 
+                ## if i understand it correct the option "--varbin" has to be kicked out as soon as we have finner binned (equidistant binning) inputs 
                 if options.channels.find("em") > -1:
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'Fakes EWK ttbar' -k '{CATEGORIES}' --varbin --rebin".format(
                         DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
@@ -321,6 +324,14 @@ if options.update_datacards :
                     DIR=dir,
                     ANA=ana
                     ))
+        if options.blind_datacards :
+            for chn in channels :
+                os.system("python HiggsAnalysis/HiggsToTauTau/scripts/blindData.py --extra-templates '{EXTRA_TEMPLATES}' {DIR}/{ANA}/mssm/{CHN}".format(
+                    EXTRA_TEMPLATES = options.extra_templates,
+                    ANA=ana,
+                    DIR=dir,
+                    CHN=fullname[chn]
+                    ))
 
 if options.update_limits :
     print "##"
@@ -347,4 +358,5 @@ if options.update_limits :
             MASSES=options.masses,
             CATEGORIES="--mssm-categories-em='0 1 2 3 6 7' --mssm-categories-et='0 1 2 3 6 7' --mssm-categories-mm='0 1 2 3 6 7' --mssm-categories-mt='0 1 2 3 6 7'" if options.split_categories else ""
             ))
+        
 
