@@ -14,24 +14,26 @@ class ModelParams_BASE:
     MODEL_PARAMS.
     The main function to be used for creation of the MODEL_PARAMS is 'create_model_params'
     """
-    def __init__(self, mA, tanb, mu_f, mu_r):
+    def __init__(self, mA, tanb):
         self.mA = mA
         self.tanb = tanb
-        self.mu_f = mu_f # currently unused
-        self.mu_r = mu_r # currently unused
     
-    def create_model_params(self, period, channel, decay, modelpath, modeltype='mssm_xsec'):
+    def create_model_params(self, period, channel, decay, mu, pdf, modelpath, modeltype='mssm_xsec'):
         """
         Main function to be used for creating a object of type MODEL_PARAMS for a given period,
         production channel, decay channel and model.
         periode is one of '7TeV', '8TeV'
         channel is of type gg[h,H,A]
         decay is of type [h,H,A]tt
+        mu and pdf specify the uncertainties (scale and pdf) to be taken into account. Allowed values are +1,-1,0
+        +1 and -1 stand for an plus/minus variation of the uncertainty. 0 specifies that the uncertainty is not taken into account.
         modelpath corresponds to the fileto be used for the model specified in modeltype
           - feyn_higgs_mssm : modelpath is the name of the model to be used (e.g. mhmax)
           - mssm_xsec_tools : modelpath is the name of the model to be used including uncerts (e.g mhmax-mu+200)
         modeltype can be 'mssm_xsec' or 'feyn_higgs'
         """
+        self.mu = float(mu)
+        self.pdf = float(pdf)
         model_params = MODEL_PARAMS()
         if modeltype == 'feyn_higgs':
             self.use_feyn_higgs(modelpath, period, channel, decay, model_params)
@@ -44,9 +46,8 @@ class ModelParams_BASE:
                 mssm_xsec_tools_path = getenv('CMSSW_BASE')+'/src/HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-'+period+'-'+tanbregion+'-nnlo.root'
             else:
                 mssm_xsec_tools_path = getenv('CMSSW_BASE')+'/src/HiggsAnalysis/HiggsToTauTau/data/out.'+modelpath+'-'+period+'-'+tanbregion+'-nnlo.root'
-            self.use_mssm_xsec(mssm_xsec_tools_path, model_params)
+            self.use_mssm_xsec(mssm_xsec_tools_path, channel, decay, model_params)
         else:
-#            print 'ERROR: modeltype not in allowed parameters'
             exit('ERROR: modeltype \'%s\' not supported'%modeltype)
         return model_params
 
@@ -65,7 +66,7 @@ class ModelParams_BASE:
             brs = scan.get_br(higgs+decay[1:])
             model_params.brs[higgs] = brs
 
-    def use_mssm_xsec(self, path, model_params):
+    def use_mssm_xsec(self, path, channel, decay, model_params):
         """
         This function takes the imput from create_model_params and uses mssm_xsec_tools to determine the masses,
         cross-sections and branchingratios for the given production and decay channels
@@ -92,13 +93,19 @@ class ModelParams_BASE:
         This function uses the mssm_xsec_tools.
         Currently only 'ggh', 'santander' and 'bbh' are supported
         """
-        channels = {'ggh':'ggF', 'santander':'santander', 'bbh':'bbh'} #check mapping
+        channels = {'ggh':'ggF', 'santander':'santander', 'bbh':'bbh'}
         if channel not in channels:
-#            print 'ERROR: Production channel not supported'
             exit('ERROR: Production channel \'%s\' not supported'%channel)
         scan = mssm_xsec_tools(path)
         htt_query = scan.query(self.mA, self.tanb)
-        return htt_query['higgses'][higgs]['xsec'][channels[channel]]
+        if self.mu == 0 and self.pdf == 0:
+            return htt_query['higgses'][higgs]['xsec'][channels[channel]]
+        elif abs(self.pdf) == 1 and self.mu == 0:
+            return htt_query['higgses'][higgs]['pdf'][channels[channel]][self.pdf]
+        elif abs(self.mu) == 1 and self.pdf == 0:
+            return htt_query['higgses'][higgs]['mu'][channels[channel]][self.mu]
+        else:
+            exit("ERROR: mu = %i and pdf = %i is not supported"%(self.mu, self.pdf))
 
     def query_br(self, higgs, decay, path):
         """
@@ -108,7 +115,6 @@ class ModelParams_BASE:
         """
         brname = {'tt':'BR','bb':'BR-bb', 'mm' : 'BR-mumu'}
         if decay[1:] not in brname:
-#            print 'ERROR: Decay channel not supported'
             exit('ERROR: Decay channel \'%s\' not supported'%decay)
         scan = mssm_xsec_tools(path)
         htt_query = scan.query(self.mA, self.tanb)
