@@ -226,10 +226,22 @@ MSSM Checklist:
 
 (9) 2D scans
 --------------------------------------
+ggH-bbH
  - submit.py (--lxq --queue="-l h_cpu=1:00:00 -j y -o /dev/null") --multidim-fit --physics-model="ggH-bbH" LIMITS/*
  - limit.py --collect --multidim-fit --physics-model="ggH-bbH" LIMITS/*
- - In python/mssm_multidim_fit_boundaries.py the ranges of ggH and bbH for different masses are defined. Those may have to be edited if lumi changes!
  - plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-bbH.py LIMITS
+cb-ctau #works but not official
+ - submit.py (--lxq --queue="-l h_cpu=1:00:00 -j y -o /dev/null") --multidim-fit --physics-model="cb-ctau" LIMITS/*
+ - limit.py --collect --multidim-fit --physics-model="cb-ctau" LIMITS/*
+ - plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-cb-ctau.py LIMITS
+cl-cq #works but not official
+ - submit.py (--lxq --queue="-l h_cpu=1:00:00 -j y -o /dev/null") --multidim-fit --physics-model="cl-cq" LIMITS/*
+ - limit.py --collect --multidim-fit --physics-model="cl-cq" LIMITS/*
+ - plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-cl-cq.py LIMITS
+
+
+- NOTE: In python/mssm_multidim_fit_boundaries.py the ranges of the parameter of interests for different masses are defined. Those may have to be edited if lumi changes or due to other 
+  reasons!
 
 
 
