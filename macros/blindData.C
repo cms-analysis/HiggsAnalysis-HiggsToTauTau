@@ -59,9 +59,10 @@
                             you can give an arbitary scale here. 1 corresponds to the 
 			    SM case. 
    outputLabel            : if non empty and armed is true the output of data_obs (only!)
-                            will be written to a new otuput file with postfix outputLabel. 
-			    If armed and outputLabel is an empty string the inputfile 
-			    will be updated with the new data_obs histogram(s).
+                            will be written to a new output file with postfix outputLabel. 
+			    If armed and outputLabel is an empty string (a) new data_obs
+			    histogram(s) with name(s) data_obs_asimov will be added to the 
+			    inputfile.
    data_obs               : indicate special histogram names for data_obs if necessary.
    debug                  : invoke several debug output levels. 
 */
@@ -154,9 +155,9 @@ blinding(TFile* inputFile, TFile* outputFile, std::string dir, std::string hist,
       blind_data_obs->Write(hist.c_str()); 
     }
     else{
-      // override old data_obs in the inputfile otherwise
+      // add new data_obs as old data_obs_asimov in the inputfile otherwise
       inputFile->cd(dir.c_str());
-      blind_data_obs->Write(hist.c_str(), TObject::kOverwrite); 
+      blind_data_obs->Write((hist.append(std::string("_asimov"))).c_str(), TObject::kOverwrite); 
     }
   }
 }
@@ -183,19 +184,19 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
   TFile* inputFile = new TFile(filename, "update");
   TIter nextDirectory(inputFile->GetListOfKeys());
   while((idir = (TKey*)nextDirectory())){
-    if( idir->IsFolder() ){
+    if(idir->IsFolder()){
       inputFile->cd(); // make sure to start in directory head 
       // ------------------------------- DEBUG > 0 ------------------------------- //
-      if( debug>0 ){ std::cerr << "Found directory: " << idir->GetName() << std::endl; }
+      if(debug>0){ std::cerr << "Found directory: " << idir->GetName() << std::endl; }
       // check if we want to muck w/ this directory. For the vhtt case, we 
       // have different background types in the same root file, so we have 
       // to run blindData twice.
-      if (!inPatterns(std::string(idir->GetName()), directory_patterns)) {
+      if(!inPatterns(std::string(idir->GetName()), directory_patterns)) {
 	// ----------------------------- DEBUG > 0 ------------------------------- //
-        if( debug>0 ){ std::cerr << "WARNING: Skipping directory: " << idir->GetName() << ". No match found in pattern: " << directory_patterns << std::endl; }
+        if(debug>0){ std::cerr << "WARNING: Skipping directory: " << idir->GetName() << ". No match found in pattern: " << directory_patterns << std::endl; }
         continue;
       }
-      if( inputFile->GetDirectory(idir->GetName()) ){
+      if(inputFile->GetDirectory(idir->GetName())){
 	inputFile->cd(idir->GetName()); // change to sub-directory
 	blinding(inputFile, outputFile, idir->GetName(), data_obs, samples, signal_patterns, signal_scale, rnd, armed, debug);
       }
