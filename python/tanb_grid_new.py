@@ -1,5 +1,5 @@
 from optparse import OptionParser, OptionGroup
-from HiggsAnalysis.CombinedLimit.DatacardParser import * 
+from HiggsAnalysis.CombinedLimit.DatacardParser import *
 
 ##
 ##
@@ -22,12 +22,15 @@ if len(args) < 1 :
     parser.print_usage()
     exit(1)
 
+from HiggsAnalysis.HiggsToTauTau.MODEL_PARAMS import MODEL_PARAMS
+from HiggsAnalysis.HiggsToTauTau.ModelDatacard import ModelDatacard
+
 def test(path=args[0]) :
     ## prepare dummy model
     param = MODEL_PARAMS()
     model = {'ggH': param}
     ## adapt datacards
-    adaptor = ModelDatacard(options, path[path.rfind('/')+1:], model, '_new_model')
+    adaptor = ModelDatacard(options, path[path.rfind('/')+1:], model, '_new_model', True)
     adaptor.make_model_datacards(path)
     
 test()
