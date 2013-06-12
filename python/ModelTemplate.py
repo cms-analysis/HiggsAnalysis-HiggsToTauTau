@@ -14,7 +14,9 @@ class ModelTemplate():
     This class is meant to provide template histograms for arbitary (BSM) Higgs signal processes based on raw templates for
     these processes for a given set of pivotal masses. It requires the masses of the Higgs bosons contributing to the given
     process and a normalization factor corresponding to the cross section times BR of the Higgs boson in the corresponding
-    model. The latter are passed in form of MODEL_PARAMS.
+    model. The latter are passed in form of MODEL_PARAMS. The class will automatically determine all shapes for central value
+    and all available shape uncertainties for each bin (=directory in the root input file) and each available pivotal for
+    each bin.
     """
     def __init__(self, path, hist_label='') :
         ## path to root input file
@@ -25,11 +27,39 @@ class ModelTemplate():
         self.hist_label = hist_label
         ## dict of type {dir : [pivotal masses]} for each dir in the root file
         self.pivotals = {}
+        ## dict of type {dir : [shape_labels]} for each dir in the root file. The central shape has an empty label. The shapes
+        ## for uncertainties are saved from the last digit of the mass value till the end of the name string.
+        self.shape_labels = {}
 
     def __del__(self) :
         ## close input root file
         self.input_file.Close()
-        
+
+    def fill_shape_labels(self, proc, dir) :
+        """
+        Loop all objects for given proc in dir. When another directory is found decend. When an object of type TH1 is found
+        check for a match to proc+integer/float. Add any remainder beyond the last digit of the float to self.shape_labels.
+        """
+        ## list of pivotals in dir
+        shape_labels = []
+        ## match for raw templates for different masses and process proc
+        proc_match = re.compile("{PROC}(?P<MASS>[0-9]*\.?[0-9]*)(?P<LABEL>_?\w*)?".format(PROC=proc))
+        ## iterate each object in dir
+        for key in dir.GetListOfKeys() :
+            name=key.GetName()
+            if key.GetClassName().startswith('TDirectory') :
+                self.fill_shape_labels(proc, dir.Get(name))
+            else :
+                if isinstance(dir.Get(name), ROOT.TH1) :
+                    if proc_match.match(name) :
+                        shape_label = proc_match.match(name).group('LABEL')
+                        mass_label = proc_match.match(name).group('MASS')
+                        if not shape_label in shape_labels :
+                            shape_labels.append(shape_label)
+        if not dir.GetName() in self.shape_labels.keys() :
+            self.shape_labels['.' if dir.GetName() == self.input_file.GetName() else dir.GetName()] = shape_labels
+        return
+
     def fill_pivotals(self, proc, dir) :
         """
         Loop all objects for given proc in dir. When another directory is found decend. When an object of type TH1 is found
@@ -41,7 +71,7 @@ class ModelTemplate():
         ## list of pivotals in dir
         pivotals = []
         ## match for raw templates for different masses and process proc
-        proc_match = re.compile("{PROC}(\d*.?\d*)$".format(PROC=proc))
+        proc_match = re.compile("{PROC}([0-9]*\.?[0-9]*)$".format(PROC=proc))
         ## iterate each object in dir
         for key in dir.GetListOfKeys() :
             name=key.GetName()
@@ -94,7 +124,7 @@ class ModelTemplate():
         """
         return 1+(stop[1]-start[1])/(stop[0]-start[0])/start[1]*(x-start[0])
 
-    def single_template(self, dir, proc, mass, scale, MODE='MORPHED') :
+    def single_template(self, dir, proc, mass, label, scale, MODE='MORPHED') :
         """
         Return a single template histogram for a given dir, proc and mass. The histogram will be scaled by scale (corres-
         ponding to the cross section times BR of the corresponding Higgs boson). Scale will be modified by a linea inter-
@@ -111,13 +141,13 @@ class ModelTemplate():
             return None
         if float(window[0]) == float(mass) and float(mass) == float(window[1]) :
             ## exact match with pivotal: clone exact pivotal
-            single_template = self.load_hist(dir+'/'+proc+mass).Clone(proc+'_template')
+            single_template = self.load_hist(dir+'/'+proc+mass+label).Clone(proc+mass+label+'_template')
         elif float(window[0]) > float(mass) :
             ## mass out of bounds of pivotals (too small)
-            single_template = self.load_hist(dir+'/'+proc+window[0]).Clone(proc+'_template')
+            single_template = self.load_hist(dir+'/'+proc+window[0]+label).Clone(proc+window[0]+label+'_template')
         elif float(window[1]) < float(mass) :
             ## mass out of bounds of pivotals (too large)
-            single_template = self.load_hist(dir+'/'+proc+window[1]).Clone(proc+'_template')
+            single_template = self.load_hist(dir+'/'+proc+window[1]+label).Clone(proc+window[1]+label+'_template')
         else :
             ## mass somewhere between pivotals: masses is the tuple of the embracing pivotals, histos is the tuple of
             ## corresponding template histograms. The closest pivotal to mass is the first element in each of the tuples,
@@ -125,16 +155,16 @@ class ModelTemplate():
             if (float(mass) - float(window[0])) < (float(window[1]) - float(mass)) :
                 ## lower bound pivotal closer to mass
                 masses = (float(window[0]),float(window[1]))
-                histos = (self.load_hist(dir+'/'+proc+window[0]),self.load_hist(dir+'/'+proc+window[1]))
+                histos = (self.load_hist(dir+'/'+proc+window[0]+label),self.load_hist(dir+'/'+proc+window[1]+label))
             else :
                 ## upper bound pivotal closer to mass
                 masses = (float(window[1]),float(window[0]))
-                histos = (self.load_hist(dir+'/'+proc+window[1]),self.load_hist(dir+'/'+proc+window[0]))
+                histos = (self.load_hist(dir+'/'+proc+window[1]+label),self.load_hist(dir+'/'+proc+window[0]+label))
             scale*= self.interpolation_scale((float(masses[0]),histos[0].Integral()), (float(masses[1]),histos[1].Integral()), float(mass))
             if MODE == 'MORPHED' :
-                single_template = th1fmorph(proc+'_template', proc+mass, histos[0], histos[1], masses[0], masses[1], float(mass), scale*histos[0].Integral(), 0)
+                single_template = th1fmorph(proc+'_template', proc+mass+label, histos[0], histos[1], masses[0], masses[1], float(mass), scale*histos[0].Integral(), 0)
             if MODE == 'CLOSEST_NEIGHBOUR' :
-                single_template = histos[0].Clone(proc+'_template'); single_template.Scale(scale)
+                single_template = histos[0].Clone(proc+mass+label+'_template'); single_template.Scale(scale)
         return single_template
 
     def create_templates(self, model, label, MODE='MORPHED') :
@@ -151,29 +181,32 @@ class ModelTemplate():
         """
         output_file = ROOT.TFile(self.path+label, 'UPDATE')
         for (proc,param) in model.iteritems() :
-            self.fill_pivotals(proc, self.input_file)
-            for dir in self.pivotals.keys() :
-                ## skip directories that did not contain templates for proc in the input file
-                if len(self.pivotals[dir]) == 0 :
+            ## determine all available shapes (central value and uncerts) for given proc
+            self.fill_shape_labels(proc, self.input_file)
+            for dir in self.shape_labels.keys() :
+                ## skip directories that did not contain any templates for proc in the input file
+                if len(self.shape_labels[dir]) == 0 :
                     continue
                 ## build up directory structure in output file
                 if not output_file.GetDirectory(dir) :
                     if not dir == '.' :
                         output_file.mkdir(dir)
-                ## build up combined template histogram
-                combined_template = None
-                for higgs in param.list_of_higgses :
-                    scale = float(param.xsecs[higgs])*float(param.brs[higgs])
-                    histo = self.single_template(dir, proc, param.masses[higgs], scale, MODE)
-                if combined_template :
-                    combined_template.Add(histo)
-                else:
-                    combined_template = histo
-                ## write combined template to output file
-                output_file.cd('' if dir == '.' else dir)
-                if combined_template :
-                    print 'write histogram to file: ', proc+param.masses['A']+self.hist_label  
-                    combined_template.Write(proc+param.masses['A']+self.hist_label, ROOT.TObject.kOverwrite)
+                ## build up combined template histogram for each central value and each shape uncertainty for bin and proc
+                for label in self.shape_labels[dir] :
+                    combined_template = None
+                    self.fill_pivotals(proc+label, self.input_file)
+                    for higgs in param.list_of_higgses :
+                        scale = float(param.xsecs[higgs])*float(param.brs[higgs])
+                        histo = self.single_template(dir, proc, param.masses[higgs], label, scale, MODE)
+                        if combined_template :
+                            combined_template.Add(histo)
+                        else:
+                            combined_template = histo
+                    ## write combined template to output file
+                    output_file.cd('' if dir == '.' else dir)
+                    if combined_template :
+                        print 'write histogram to file: ', proc+param.masses['A']+self.hist_label+label  
+                        combined_template.Write(proc+param.masses['A']+self.hist_label+label, ROOT.TObject.kOverwrite)
         output_file.Close()
         return 
 
