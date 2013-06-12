@@ -1,5 +1,7 @@
 import os
 import ROOT
+import string
+import random
 
 from HiggsAnalysis.CombinedLimit.DatacardParser import *
 from HiggsAnalysis.HiggsToTauTau.MODEL_PARAMS import MODEL_PARAMS
@@ -15,13 +17,16 @@ class ModelDatacard(DatacardAdaptor) :
     rates lines for signal processes for shape analyses with binned likelihoods.NB:  At the moment counting experiments are
     not yet supported, though they can in principle. This functionality will be added later. 
     """
-    def __init__(self, parser_options, mass, model, model_label) :
+    def __init__(self, parser_options, mass, model, model_label, update_file=False) :
         ## postfix label for the root input file where to find the rates modified according to the given model
         self.model_label = model_label
         ## model that should be applied to the raw input datacards: model is expected to be of type {proc, MODEL_PARAMS}
         self.model = model
         ## mass for which to evaluate the model
         self.mass = mass
+        ## write the the new template histogram with new histogram name into the same file (i.e. update the existing file)
+        ## or write the new template histogram with the usual process name in a new root file?
+        self.update_file = update_file
         ## initialize base class
         super(ModelDatacard, self).__init__(parser_options)
 
@@ -100,18 +105,31 @@ class ModelDatacard(DatacardAdaptor) :
                     shape_file = card.path_to_file(bin, proc)
                     if not shape_file in shape_files :
                         shape_files.append(shape_file)
-        ## create the new templates with modified signal model
+        ## create the new templates with modified signal model. In case of self.update_file hadd the newly created model file 
         for shape_file in shape_files :
             print 'creating templates for', dir+'/'+shape_file  
-            template = ModelTemplate(dir+'/'+shape_file)
-            template.create_templates(self.model, self.model_label)
+            if self.update_file :
+                template = ModelTemplate(dir+'/'+shape_file, self.model_label)
+                template.create_templates(self.model, self.model_label)
+                tmp = '/tmp/'+''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))
+                os.system("hadd {TMP} {SOURCE} {SOURCE}{MODEL}".format(TMP=tmp, SOURCE=dir+'/'+shape_file, MODEL=self.model_label))
+                os.system("mv {TMP} {SOURCE}".format(TMP=tmp, SOURCE=dir+'/'+shape_file))
+                os.system("rm {SOURCE}{MODEL}".format(SOURCE=dir+'/'+shape_file,MODEL=self.model_label))
+            else :
+                template = ModelTemplate(dir+'/'+shape_file)
+                template.create_templates(self.model, self.model_label)
         ## adapt datacards to pick up proper signal rates
         for name in os.listdir(dir) :
             if not name.endswith('.txt') :
                 continue
             print 'adapt inputs for', dir+'/'+name
             for proc in self.model.keys() :
-                self.adapt_shapes_lines(dir+'/'+name, proc, self.model_label)
+                if self.update_file :
+                    ## histogram name gets label self.model_label, filename remains as is
+                    self.adapt_shapes_lines(dir+'/'+name, proc, self.model_label, '')
+                else :
+                    ## filename gets label self.model_label, histogram name remains as is
+                    self.adapt_shapes_lines(dir+'/'+name, proc, '', self.model_label)
             self.adapt_rate_lines(dir+'/'+name, self.model.keys())
 
 #def test(path=args[0]) :
