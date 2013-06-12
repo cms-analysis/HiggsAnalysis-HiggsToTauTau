@@ -10,6 +10,8 @@ parser_opts = OptionGroup(parser, "DATACARD PARSER OPTIONS", "These are the opti
 addDatacardParserOptions(parser_opts)
 parser.add_option_group(parser_opts)
 asimov_opts = OptionGroup(parser, "ASIMOV DATACARD OPTIONS", "These are the options that can be passed on to configre the creation of the asomiv dataset used fro blinding.")
+asimov_opts.add_option("--update-file", dest="update_file", default=False, action="store_true",
+                  help="Use this option if you want to update the same file instead of writing a new file. In the case of --update_file=True a new temaplte histogram will be written to file with the name data_obs_asimov for each template histogram with name data_obs that is found. In case of --update-file=False the new data_obs template histograms will be written into a new file with additional label _asimov at the same location as the original file and with the same file structure. [Default: False]")
 asimov_opts.add_option("--seed", dest="seed", default="-1", type="string",
                        help="Random seed. If you want the asimov dataset to be randomized after being created use a random seed, which is larger equal to 0. Default: \"-1\"]")
 asimov_opts.add_option("--inject-signal", dest="inject_signal", default=False, action="store_true",
@@ -34,6 +36,7 @@ def main() :
     print "# Blinding datacards. "
     print "# --------------------------------------------------------------------------------------"
     print "# You are using the following configuration: "
+    print "# --update-file    :", options.update_file
     print "# --seed           :", options.seed
     print "# --inject-signal  :", options.inject_signal
     print "# --injected-scale :", options.injected_scale
@@ -43,8 +46,9 @@ def main() :
     print "# --------------------------------------------------------------------------------------"
 
     ## clean up directory from former trials
-    os.system("rm {PATH}/../common/*_asimov".format(PATH=args[0]))
-    cardMaker = AsimovDatacard(options, options.seed, options.inject_signal, options.injected_mass, options.injected_scale, options.extra_templates)
+    if '_asimov' in os.listdir(args[0]) :
+        os.system("rm {PATH}/../common/*_asimov".format(PATH=args[0]))
+    cardMaker = AsimovDatacard(options, options.update_file, options.seed, options.inject_signal, options.injected_mass, options.injected_scale, options.extra_templates)
     cardMaker.make_asimov_datacards(args[0])
 
 main()
