@@ -15,6 +15,7 @@ parser.add_option("-v", "--verbose", dest="verbose", default=False, action="stor
 parser.add_option("--SM4", dest="SM4", default=False, action="store_true", help="Copy datacards for SM4 (for SM only). [Default: False]")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
+cats1.add_option("--sm-categories-ee", dest="ee_sm_categories", default="0 1 2 3 5", type="string", help="List ee of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 5", type="string", help="List em of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3 5", type="string", help="List mt of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 5", type="string", help="List et of event categories. [Default: \"0 1 2 3 5\"]")
@@ -23,6 +24,7 @@ cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1
 parser.add_option_group(cats1)
 cats2 = OptionGroup(parser, "MSSM EVENT CATEGORIES", "Event categories to be used for the MSSM analysis.")
 cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="8 9", type="string", help="List mm of event categories. [Default: \"8 9\"]")
+cats2.add_option("--mssm-categories-ee", dest="ee_mssm_categories", default="8 9", type="string", help="List ee of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-em", dest="em_mssm_categories", default="8 9", type="string", help="List em of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="8 9", type="string", help="List mt of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9", type="string", help="List et of event categories. [Default: \"8 9\"]")
@@ -49,6 +51,7 @@ for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
 if options.analysis == "sm" :
     categories = {
         "mm"   : options.mm_sm_categories.split(),
+        "ee"   : options.ee_sm_categories.split(),
         "em"   : options.em_sm_categories.split(),
         "mt"   : options.mt_sm_categories.split(),
         "et"   : options.et_sm_categories.split(),
@@ -60,6 +63,7 @@ if options.analysis == "sm" :
 if options.analysis == "mssm" :
     categories = {
         "mm"   : options.mm_mssm_categories.split(),
+        "ee"   : options.ee_mssm_categories.split(),
         "em"   : options.em_mssm_categories.split(),
         "mt"   : options.mt_mssm_categories.split(),
         "et"   : options.et_mssm_categories.split(),
