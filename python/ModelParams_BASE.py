@@ -27,7 +27,7 @@ class ModelParams_BASE:
         decay is of type [h,H,A]tt
         mu and pdf specify the uncertainties (scale and pdf) to be taken into account. Allowed values are +1,-1,0
         +1 and -1 stand for an plus/minus variation of the uncertainty. 0 specifies that the uncertainty is not taken into account.
-        modelpath corresponds to the fileto be used for the model specified in modeltype
+        modelpath corresponds to the file to be used for the model specified in modeltype
           - feyn_higgs_mssm : modelpath is the name of the model to be used (e.g. mhmax)
           - mssm_xsec_tools : modelpath is the name of the model to be used including uncerts (e.g mhmax-mu+200)
         modeltype can be 'mssm_xsec' or 'feyn_higgs'
@@ -76,7 +76,6 @@ class ModelParams_BASE:
             model_params.xsecs[higgs] = self.query_xsec(higgs, channel, path)
             model_params.brs[higgs] = self.query_br(higgs, decay, path)
         
-    
     def query_masses(self, higgs, path):
         """
         Determine the mass of the higgs given as input. This function uses the
