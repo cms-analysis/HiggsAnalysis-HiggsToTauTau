@@ -65,7 +65,7 @@ requirements = HasAFS_OSG && TARGET.FilesystemDomain =!= UNDEFINED && TARGET.UWC
 '''
 
 if options.lxq :
-    script_template = script_template.replace('#!/usr/bin/bash', lxq_fragment)
+    script_template = script_template.replace('#!/bin/bash', lxq_fragment)
 
 def submit(name, key, masses) :
     '''
@@ -108,7 +108,7 @@ def submit(name, key, masses) :
                     % (os.getcwd(), script_file_name.replace('.sh', '.stderr')))
                 submit_script.write("queue\n")
             elif options.lxq :
-                submit_script.write('qsub -l site=hh -j y -o /dev/null -l h_vmem=4000M -v scram_arch -v cmssw_base %s\n' % script_file_name)
+                submit_script.write('qsub -l site=hh -j y -o /dev/null -l h_vmem=4000M -v scram_arch -v cmssw_base %s\n' % script_file_name) 
             else :
                 os.system('touch {PWD}/log/{LOG}'.format(
                     PWD=os.getcwd(), LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log')))
