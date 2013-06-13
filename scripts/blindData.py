@@ -9,7 +9,7 @@ parser = OptionParser(usage="usage: %prog [options] ARG",
 parser_opts = OptionGroup(parser, "DATACARD PARSER OPTIONS", "These are the options that can be passed on to configure the datacard parsing.")
 addDatacardParserOptions(parser_opts)
 parser.add_option_group(parser_opts)
-asimov_opts = OptionGroup(parser, "ASIMOV DATACARD OPTIONS", "These are the options that can be passed on to configre the creation of the asomiv dataset used fro blinding.")
+asimov_opts = OptionGroup(parser, "ASIMOV DATACARD OPTIONS", "These are the options that can be passed on to configure the creation of the asomiv dataset used fro blinding.")
 asimov_opts.add_option("--update-file", dest="update_file", default=False, action="store_true",
                   help="Use this option if you want to update the same file instead of writing a new file. In the case of --update_file=True a new temaplte histogram will be written to file with the name data_obs_asimov for each template histogram with name data_obs that is found. In case of --update-file=False the new data_obs template histograms will be written into a new file with additional label _asimov at the same location as the original file and with the same file structure. [Default: False]")
 asimov_opts.add_option("--seed", dest="seed", default="-1", type="string",
