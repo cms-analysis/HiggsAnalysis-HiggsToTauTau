@@ -37,11 +37,6 @@ class MODEL(object) :
         self.modelpath = modelpath
         ## model type (as defined in ModelParams_BASE)
         self.modeltype = modeltype
-        ## mapping common process names to toll specific names
-        self.proc_map_mssm_xsec = {
-        'ggH' : 'ggh',
-        'bbH' : 'santander'       
-        }
         ## central value of type {'proc' : MODEL_PARAMS}
         self.value = {}
         ## shifts of type {'type' : {'proc' : (MODEL_PARAMS,MODEL_PARAMS)}}
@@ -64,12 +59,8 @@ class MODEL(object) :
         for shift in shifts :
             buffer = {}
             for proc in procs :
-                if shift == 'mu' :
-                    buffer[proc] = (modelMaker.create_model_params(period, proc_map[proc], decay, -1, 0, self.modelpath, self.modeltype),
-                                    modelMaker.create_model_params(period, proc_map[proc], decay, +1, 0, self.modelpath, self.modeltype))
-                elif shift == 'pdf' :
-                    buffer[proc] = (modelMaker.create_model_params(period, proc_map[proc], decay, 0, -1, self.modelpath, self.modeltype),
-                                    modelMaker.create_model_params(period, proc_map[proc], decay, 0, +1, self.modelpath, self.modeltype))
+                buffer[proc] = (modelMaker.create_model_params(period, proc_map[proc], decay, shift+'-', self.modelpath, self.modeltype),
+                                modelMaker.create_model_params(period, proc_map[proc], decay, shift+'+', self.modelpath, self.modeltype))
             self.shifts[shift] = buffer
             
 def main() :
