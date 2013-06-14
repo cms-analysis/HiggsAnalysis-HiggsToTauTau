@@ -8,11 +8,11 @@
 #include "TH1F.h"
 #include "TCanvas.h"
 #include "TLegend.h"
-#include "RooBinning.h"                                                                                                                                                                                   
-#include "RooRealVar.h"                                                                                                                                                                                   
-#include "RooDataHist.h"                                                                                                                                                                                  
-#include "RooDataSet.h"                                                                                                                                                                                   
-#include "RooHistPdf.h"                                                                                                                                                                                   
+#include "RooBinning.h"                                                                                                                                                               
+#include "RooRealVar.h"   
+#include "RooDataHist.h"   
+#include "RooDataSet.h"    
+#include "RooHistPdf.h"     
 #include "RooGenericPdf.h"
 #include "RooFitResult.h"
 #include "TMatrixDSym.h"
@@ -42,7 +42,10 @@ void copyDir(TDirectory *source,std::string iSkipHist,bool iFirst=true) {
       source->cd();
       TObject *obj = key->ReadObj();
       std::string pFullName = std::string(adir->GetName())+"/"+std::string(obj->GetName());
-      if(pFullName.find(iSkipHist) != std::string::npos ) {
+      std::string iSkipHist2 = iSkipHist;
+      std::string fine_binning = "_fine_binning";
+      iSkipHist2.replace(iSkipHist2.find(fine_binning), fine_binning.length(),"");
+      if(pFullName.find(iSkipHist) != std::string::npos || pFullName.find(iSkipHist2) != std::string::npos) {
 	continue;
       }
       adir->cd();
@@ -71,10 +74,11 @@ TH1F* rebin(TH1F* iH,int iNBins,double *iAxis) {
     lH->SetBinContent(lNBin,lVal+lOldV);
     lH->SetBinError  (lNBin,sqrt(lOldE*lOldE+lErr*lErr));
   }
-  const char *lName = iH->GetName();
-  cout << iH->GetName() << " " << lName << endl;
-  lH->SetName (lName);
-  lH->SetTitle(lName);
+  std::string lName2 = iH->GetName();
+  std::string fine_binning = "_fine_binning";
+  lName2.replace(lName2.find(fine_binning),fine_binning.length(),"");
+  lH->SetName (lName2.c_str());
+  lH->SetTitle(lName2.c_str());
   delete iH;
   return lH;
 }
@@ -267,6 +271,7 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   std::cout << "======> " << iDir << "/" << iBkg << " -- " << iFileName << std::endl;  
   if(iVarBin) addVarBinNuisance(iFileName,iChannel,iBkg,iEnergy,iName,iDir,iRebin,iFitModel,iFirst,iLast);
   if(iVarBin) return;
+
   TFile *lFile = new TFile(iFileName.c_str());
   TH1F  *lH0   = (TH1F*) lFile->Get((iDir+"/"+iBkg).c_str());
   TH1F  *lData = (TH1F*) lFile->Get((iDir+"/data_obs").c_str());
@@ -282,12 +287,11 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   RooFitResult  *lRFit = 0;
   double lFirst = iFirst;
   double lLast  = iLast;
-  //lRFit = lFit.chi2FitTo(*pH0,RooFit::Save(kTRUE),RooFit::Range(lFirst,lLast));
-  lRFit = lFit->fitTo(*pH0,RooFit::Save(kTRUE),RooFit::Range(lFirst,lLast),RooFit::Strategy(0));
-  TMatrixDSym lCovMatrix   = lRFit->covarianceMatrix();
+  //lRFit = lFit->chi2FitTo(*pH0,RooFit::Save(kTRUE),RooFit::Range(lFirst,lLast));
+  lRFit = lFit->fitTo(*pH0,RooFit::Save(kTRUE),RooFit::Range(lFirst,lLast),RooFit::Strategy(0)); 
+  TMatrixDSym lCovMatrix   = lRFit->covarianceMatrix(); 
   TMatrixD  lEigVecs(2,2);    lEigVecs = TMatrixDSymEigen(lCovMatrix).GetEigenVectors();
   TVectorD  lEigVals(2);      lEigVals = TMatrixDSymEigen(lCovMatrix).GetEigenValues();
-
   cout << " Ve---> " << lEigVecs(0,0) << " -- " << lEigVecs(1,0) << " -- " << lEigVecs(0,1) << " -- " << lEigVecs(1,1) << endl;
   cout << " Co---> " << lCovMatrix(0,0) << " -- " << lCovMatrix(1,0) << " -- " << lCovMatrix(0,1) << " -- " << lCovMatrix(1,1) << endl;
   double lACentral = lA.getVal();
