@@ -18,22 +18,22 @@ class ModelParams_BASE:
         self.mA = mA
         self.tanb = tanb
     
-    def create_model_params(self, period, channel, decay, mu, pdf, modelpath, modeltype='mssm_xsec'):
+    def create_model_params(self, period, channel, decay, uncert, modelpath, modeltype='mssm_xsec'):
         """
         Main function to be used for creating a object of type MODEL_PARAMS for a given period,
         production channel, decay channel and model.
         periode is one of '7TeV', '8TeV'
         channel is of type gg[h,H,A]
         decay is of type [h,H,A]tt
-        mu and pdf specify the uncertainties (scale and pdf) to be taken into account. Allowed values are +1,-1,0
-        +1 and -1 stand for an plus/minus variation of the uncertainty. 0 specifies that the uncertainty is not taken into account.
+        uncert specifies the uncertainty to be used. It can be 'mu+', 'mu-', 'pdf+', 'pdf-' or ''
+        The trailing +/- corresponds to an up/down fluctuation of the uncertainty.
+        '' specifies no uncertainty to be used.
         modelpath corresponds to the file to be used for the model specified in modeltype
           - feyn_higgs_mssm : modelpath is the name of the model to be used (e.g. mhmax)
           - mssm_xsec_tools : modelpath is the name of the model to be used including uncerts (e.g mhmax-mu+200)
         modeltype can be 'mssm_xsec' or 'feyn_higgs'
         """
-        self.mu = float(mu)
-        self.pdf = float(pdf)
+        self.uncert = uncert
         model_params = MODEL_PARAMS()
         if modeltype == 'feyn_higgs':
             self.use_feyn_higgs(modelpath, period, channel, decay, model_params)
@@ -90,21 +90,21 @@ class ModelParams_BASE:
         """
         Determine the cross-section of the specified production channel for a given higgs.
         This function uses the mssm_xsec_tools.
-        Currently only 'ggh', 'santander' and 'bbh' are supported
+        Currently only 'ggH' and 'bbH' are supported
         """
-        channels = {'ggh':'ggF', 'santander':'santander', 'bbh':'bbh'}
+        channels = {'ggH':'ggF', 'bbH':'santander'}
         if channel not in channels:
             exit('ERROR: Production channel \'%s\' not supported'%channel)
         scan = mssm_xsec_tools(path)
         htt_query = scan.query(self.mA, self.tanb)
-        if self.mu == 0 and self.pdf == 0:
+        if self.uncert == '':
             return htt_query['higgses'][higgs]['xsec'][channels[channel]]
-        elif abs(self.pdf) == 1 and self.mu == 0:
-            return htt_query['higgses'][higgs]['pdf'][channels[channel]][self.pdf]
-        elif abs(self.mu) == 1 and self.pdf == 0:
-            return htt_query['higgses'][higgs]['mu'][channels[channel]][self.mu]
+        elif self.uncert[-1] == '+':
+            return htt_query['higgses'][higgs][self.uncert[:-1]][channels[channel]][1]
+        elif self.uncert[-1] == '-':
+            return htt_query['higgses'][higgs][self.uncert[:-1]][channels[channel]][-1]
         else:
-            exit("ERROR: mu = %i and pdf = %i is not supported"%(self.mu, self.pdf))
+            exit("ERROR: uncertainty %s is not supported"%(self.uncert))
 
     def query_br(self, higgs, decay, path):
         """
@@ -118,3 +118,7 @@ class ModelParams_BASE:
         scan = mssm_xsec_tools(path)
         htt_query = scan.query(self.mA, self.tanb)
         return htt_query['higgses'][higgs][brname[decay[1:]]]
+
+#test
+model = ModelParams_BASE(110, 5)
+
