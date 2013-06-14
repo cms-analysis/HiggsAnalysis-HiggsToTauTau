@@ -18,12 +18,12 @@ class ModelParams_BASE:
         self.mA = mA
         self.tanb = tanb
     
-    def create_model_params(self, period, channel, decay, uncert, modelpath, modeltype='mssm_xsec'):
+    def create_model_params(self, period, channel, decay, uncert='', modelpath='mhmax-mu+200', modeltype='mssm_xsec'):
         """
         Main function to be used for creating a object of type MODEL_PARAMS for a given period,
         production channel, decay channel and model.
         periode is one of '7TeV', '8TeV'
-        channel is of type gg[h,H,A]
+        channel is of type ggH
         decay is of type [h,H,A]tt
         uncert specifies the uncertainty to be used. It can be 'mu+', 'mu-', 'pdf+', 'pdf-' or ''
         The trailing +/- corresponds to an up/down fluctuation of the uncertainty.
@@ -42,10 +42,7 @@ class ModelParams_BASE:
                 tanbregion = 'tanbLow'
             else:
                 tanbregion = 'tanbHigh'
-            if modelpath == '':
-                mssm_xsec_tools_path = getenv('CMSSW_BASE')+'/src/HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-'+period+'-'+tanbregion+'-nnlo.root'
-            else:
-                mssm_xsec_tools_path = getenv('CMSSW_BASE')+'/src/HiggsAnalysis/HiggsToTauTau/data/out.'+modelpath+'-'+period+'-'+tanbregion+'-nnlo.root'
+            mssm_xsec_tools_path = getenv('CMSSW_BASE')+'/src/HiggsAnalysis/HiggsToTauTau/data/out.'+modelpath+'-'+period+'-'+tanbregion+'-nnlo.root'
             self.use_mssm_xsec(mssm_xsec_tools_path, channel, decay, model_params)
         else:
             exit('ERROR: modeltype \'%s\' not supported'%modeltype)
@@ -120,5 +117,20 @@ class ModelParams_BASE:
         return htt_query['higgses'][higgs][brname[decay[1:]]]
 
 #test
-model = ModelParams_BASE(110, 5)
-
+base = ModelParams_BASE(110, 5)
+model = base.create_model_params('7TeV', 'ggH', 'htt', '', 'mhmax-mu+200', 'mssm_xsec')
+print model.masses
+print model.xsecs
+print model.brs
+model = base.create_model_params('8TeV', 'ggH', 'htt', '', 'mhmax-mu+200', 'mssm_xsec')
+print model.masses
+print model.xsecs
+print model.brs
+model = base.create_model_params('7TeV', 'ggH', 'htt', 'pdf+', 'mhmax-mu+200', 'mssm_xsec')
+print model.masses
+print model.xsecs
+print model.brs
+model = base.create_model_params('7TeV', 'ggH', 'htt', 'pdf-', 'mhmax-mu+200', 'mssm_xsec')
+print model.masses
+print model.xsecs
+print model.brs
