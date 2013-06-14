@@ -263,7 +263,7 @@ void addVarBinNuisance(std::string iFileName,std::string iChannel,std::string iB
   gPad->SetLogy();
   lC0->cd(2)->SetPad(0,0,1.0,0.2); gPad->SetLeftMargin(0.2) ;
   drawDifference(lH0,lH,lHUp,lHDown,lHUp1,lHDown1);
-  lC0->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iChannel + "_" + iEnergy+".png").c_str());
+  lC0->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+".png").c_str());
   //lFile->Close();
   return;
 }
@@ -361,7 +361,7 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   gPad->SetLogy();
   lC0->cd(2)->SetPad(0,0,1.0,0.2); gPad->SetLeftMargin(0.2) ;
   drawDifference(lH0,lH,lHUp,lHDown,lHUp1,lHDown1);
-  lC0->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iChannel + "_" + iEnergy+".png").c_str());
+  lC0->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+".png").c_str());
   //lFile->Close();
   return;
 }
