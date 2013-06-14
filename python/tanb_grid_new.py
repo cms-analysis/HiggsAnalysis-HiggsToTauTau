@@ -47,20 +47,17 @@ class MODEL(object) :
         Setup the mdoel for given self.modelpath, self.modeltype, self.mass, self.tanb, period, procs and decay. In case that
         shifts is a non-emty list also shifts in mu or pdf are returned. Other shifts are currently not supported.
         """
-        proc_map = {}
-        if self.modeltype == 'mssm_xsec' :
-            proc_map = self.proc_map_mssm_xsec
         ## create model
         modelMaker = ModelParams_BASE(self.mass, self.tanb)
         ## create central value
         for proc in procs :
-            self.value[proc] = modelMaker.create_model_params(period, proc_map[proc], decay, 0, 0, self.modelpath, self.modeltype)
+            self.value[proc] = modelMaker.create_model_params(period, proc, decay, '', self.modelpath, self.modeltype)
         ## create shifts
         for shift in shifts :
             buffer = {}
             for proc in procs :
-                buffer[proc] = (modelMaker.create_model_params(period, proc_map[proc], decay, shift+'-', self.modelpath, self.modeltype),
-                                modelMaker.create_model_params(period, proc_map[proc], decay, shift+'+', self.modelpath, self.modeltype))
+                buffer[proc] = (modelMaker.create_model_params(period, proc, decay, shift+'-', self.modelpath, self.modeltype),
+                                modelMaker.create_model_params(period, proc, decay, shift+'+', self.modelpath, self.modeltype))
             self.shifts[shift] = buffer
             
 def main() :
