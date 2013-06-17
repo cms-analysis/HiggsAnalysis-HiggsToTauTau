@@ -139,6 +139,15 @@ void drawDifference(TH1* iH0,TH1 *iH1,TH1 *iHH=0,TH1 *iHL=0,TH1 *iHH1=0,TH1 *iHL
   }
   lHDiff->SetMarkerStyle(kFullCircle);
   //lHDiff->Draw("EP");
+  
+  lXHDiff1->SetStats(0);
+  lXHDiff2->SetStats(0);
+  lHDiff->SetStats(0);
+  lHDiffH->SetStats(0);
+  lHDiffL->SetStats(0);
+  lHDiffH1->SetStats(0);
+  lHDiffL1->SetStats(0);
+
   lXHDiff1->Draw("hist");
   lXHDiff2->Draw("hist sames");
   lHDiff->Draw("EP sames");
@@ -284,6 +293,8 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   RooGenericPdf *lFit  = 0; lFit = new RooGenericPdf("genPdf","exp(-m/(a+b*m))",RooArgList(lM,lA,lB));
   if(iFitModel == 1) lFit = new RooGenericPdf("genPdf","exp(-a*pow(m,b))",RooArgList(lM,lA,lB));
   if(iFitModel == 1) {lA.setVal(0.3); lB.setVal(0.5);}
+  if(iFitModel == 2) lFit = new RooGenericPdf("genPdf","a*exp(b*m)",RooArgList(lM,lA,lB));
+  if(iFitModel == 3) lFit = new RooGenericPdf("genPdf","a/pow(m,b)",RooArgList(lM,lA,lB));
   RooFitResult  *lRFit = 0;
   double lFirst = iFirst;
   double lLast  = iLast;
@@ -344,6 +355,12 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   lHDown1->Write(); 
 
   // Debug Plots
+  lH0->SetStats(0);
+  lH->SetStats(0);
+  lHUp->SetStats(0);
+  lHDown->SetStats(0);
+  lHUp1->SetStats(0);
+  lHDown1->SetStats(0);
   lH0    ->SetLineWidth(1); lH0->SetMarkerStyle(kFullCircle);
   lH     ->SetLineColor(kGreen);
   lHUp   ->SetLineColor(kRed);
@@ -351,7 +368,7 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   lHUp1  ->SetLineColor(kBlue);
   lHDown1->SetLineColor(kBlue);
   TCanvas *lC0 = new TCanvas("Can","Can",800,600);
-  lC0->Divide(1,2); lC0->cd();  lC0->cd(1)->SetPad(0,0.2,1.0,1.0); gPad->SetLeftMargin(0.2) ;  
+  lC0->Divide(1,2); lC0->cd();  lC0->cd(1)->SetPad(0,0.2,1.0,1.0); gPad->SetLeftMargin(0.2) ; 
   lH0->Draw();
   lH     ->Draw("hist sames");
   lHUp   ->Draw("hist sames");
@@ -359,8 +376,26 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   lHUp1  ->Draw("hist sames");
   lHDown1->Draw("hist sames");
   gPad->SetLogy();
+  
+  TLegend* leg1;
+  /// setup the CMS Preliminary
+  leg1 = new TLegend(0.7, 0.80, 1, 1); 
+  leg1->SetBorderSize( 0 );
+  leg1->SetFillStyle ( 1001 );
+  leg1->SetFillColor (kWhite);
+  leg1->AddEntry( lH0 , "orignal",  "PL" );
+  leg1->AddEntry( lH , "cental fit",  "L" );
+  leg1->AddEntry( lHUp , "shift1 up",  "L" );
+  leg1->AddEntry( lHDown , "shift1 down",  "L" );
+  leg1->AddEntry( lHUp1 , "shift2 up",  "L" );
+  leg1->AddEntry( lHDown1 , "shift2 down",  "L" );
+  leg1->Draw("same");
+
+
   lC0->cd(2)->SetPad(0,0,1.0,0.2); gPad->SetLeftMargin(0.2) ;
   drawDifference(lH0,lH,lHUp,lHDown,lHUp1,lHDown1);
+  lH0->SetStats(0);
+  lC0->Update();
   lC0->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+".png").c_str());
   //lFile->Close();
   return;
