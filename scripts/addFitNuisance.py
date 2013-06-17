@@ -49,11 +49,12 @@ print " channel : ",  channelName[options.channel]
 ## add shift Nuisance (ignore the VBF Option right now)
 os.system(r"cp {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rootlogon.C .".format(CMSSW_BASE=os.environ.get("CMSSW_BASE")))
 
+os.system("cp %s %s.bak"      %  (options.setup+'/'+options.channel+'/'+options.input,options.setup+'/'+options.channel+'/'+options.input))
 for cat in options.categories.split() :
     for bkg in options.background.split() : 
         os.system(r"root -l -b -q rootlogon.C {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/addFitNuisance.C+\(\"{FILENAME}\"\,\"{CHANNEL}\"\,\"{BKG}\"\,\"{ENERGY}\"\,\"{NAME}\"\,\"{CATEGORY}\"\,{FIRST}\,{FITMODEL}\,{VARBIN}\,{REBIN}\)".format(
             CMSSW_BASE=os.environ.get("CMSSW_BASE"), FILENAME=options.setup+'/'+options.channel+'/'+options.input,CHANNEL=channelName[options.channel],BKG=bkg,ENERGY=options.energy,NAME=options.name,CATEGORY=cat,FIRST=options.first,FITMODEL=options.fitmodel,VARBIN=str(options.varbin).lower(),REBIN=str(options.rebin).lower()))
-        os.system("mv %s %s.bak"      %  (options.setup+'/'+options.channel+'/'+options.input,options.setup+'/'+options.channel+'/'+options.input))
+        os.system("rm %s"      %  (options.setup+'/'+options.channel+'/'+options.input))
         os.system("mv Output.root %s" %  (options.setup+'/'+options.channel+'/'+options.input))
 
 for cat in options.categories.split() :
@@ -75,9 +76,9 @@ for cat in options.categories.split() :
         if  words[2].find('_scale_t_')>-1 or words[2].find('_scale_e_')>-1 :
             new_words    = words 
             new_words[1] = options.background.replace(' ',',')
-            new_words[2] = 'CMS_'+options.name+'1_' + channelName[options.channel] + '_' + options.energy
+            new_words[2] = 'CMS_'+options.name.replace("_fine_binning", "")+'1_' + channelName[options.channel] + '_' + options.energy
             new_line1     = '                      '.join(new_words)
-            new_words[2] = 'CMS_'+options.name+'2_' + channelName[options.channel] + '_' + options.energy
+            new_words[2] = 'CMS_'+options.name.replace("_fine_binning", "")+'2_' + channelName[options.channel] + '_' + options.energy
             new_line2     = '                      '.join(new_words)
             new.write(new_line1+'\n')
             new.write(new_line2+'\n')
@@ -100,9 +101,9 @@ for cat in options.categories.split() :
         #if  ('_scale_t_' or '_scale_e_') in words[0] :
         if  words[0].find('_scale_t_')>-1 or words[0].find('_scale_e_')>-1 :
             new_words    = words 
-            new_words[0] = 'CMS_'+options.name+'1_' + channelName[options.channel] + '_' + options.energy
+            new_words[0] = 'CMS_'+options.name.replace("_fine_binning", "")+'1_' + channelName[options.channel] + '_' + options.energy
             new_line1     = '                      '.join(new_words)
-            new_words[0] = 'CMS_'+options.name+'2_' + channelName[options.channel] + '_' + options.energy
+            new_words[0] = 'CMS_'+options.name.replace("_fine_binning", "")+'2_' + channelName[options.channel] + '_' + options.energy
             new_line2     = '                      '.join(new_words)
             new.write(new_line1+'\n')
             new.write(new_line2+'\n')
