@@ -28,6 +28,12 @@ from HiggsAnalysis.HiggsToTauTau.ModelParams_BASE import ModelParams_BASE
 
 
 class MODEL(object) :
+    """
+    This is a class to characterize a complete physics model with cross section and BR estimates for a required set of run
+    periods in terms of center of mass energy, decay channels and production processes. Though it is not a strong requirement
+    uncertainties should be available also for each of these configuring parameters. The model needs to be set up consistent
+    to resemble the analysed set of datacards. 
+    """
     def __init__(self, mass, tanb, modelpath='mhmax-mu+200', modeltype='mssm_xsec') :
         ## mass
         self.mass = mass
@@ -37,10 +43,20 @@ class MODEL(object) :
         self.modelpath = modelpath
         ## model type (as defined in ModelParams_BASE)
         self.modeltype = modeltype
-        ## central value of type {'proc' : MODEL_PARAMS}
-        self.value = {}
-        ## shifts of type {'type' : {'proc' : (MODEL_PARAMS,MODEL_PARAMS)}}
-        self.shifts = {}
+        ## central value of type {(period,decay,proc) : MODEL_PARAMS}
+        self.central = {}
+        ## shifts for uncertainties of type {'type' : {(period,decay,proc) : (MODEL_PARAMS,MODEL_PARAMS)}}
+        self.uncerts = {}
+
+    def save_float_conversion(self, float_value) :
+        """
+        Convert a float into a string. Remove trailing .0's, which are not present for integer masses and would spoil the
+        histogram search in the root input file.
+        """
+        value_str = str(float_value)
+        if re.match('^\d*\.0$', value_str) :
+            value_str = value_str[:value_str.rfind('.0')]
+        return value_str
 
     def setup_model(self, period, decay, procs, shifts=[]) :
         """
@@ -51,14 +67,17 @@ class MODEL(object) :
         modelMaker = ModelParams_BASE(self.mass, self.tanb)
         ## create central value
         for proc in procs :
-            self.value[proc] = modelMaker.create_model_params(period, proc, decay, '', self.modelpath, self.modeltype)
+            self.central[(period,decay,proc)] = modelMaker.create_model_params(period, proc, decay, '', self.modelpath, self.modeltype)
         ## create shifts
         for shift in shifts :
             buffer = {}
             for proc in procs :
-                buffer[proc] = (modelMaker.create_model_params(period, proc, decay, shift+'-', self.modelpath, self.modeltype),
-                                modelMaker.create_model_params(period, proc, decay, shift+'+', self.modelpath, self.modeltype))
-            self.shifts[shift] = buffer
+                buffer[(period,decay,proc)] = (modelMaker.create_model_params(period, proc, decay, shift+'-', self.modelpath, self.modeltype),
+                                               modelMaker.create_model_params(period, proc, decay, shift+'+', self.modelpath, self.modeltype))
+            if shift in self.uncerts.keys() :
+                self.uncerts[shift].update(buffer)
+            else :
+                self.uncerts[shift] = buffer
             
 def main() :
     print "# --------------------------------------------------------------------------------------"
@@ -72,39 +91,38 @@ def main() :
     print "# --------------------------------------------------------------------------------------"
 
     ## directory that contains all datacards in question
-    dir = args[0]
+    path = args[0]
     label = '_{MASS}_{TANB}'.format(MASS=options.mA, TANB=options.tanb)
     ## complete model for given mass and tanb value (including uncertainties)
-    #model = MODEL(float(options.mA), float(options.tanb))
     models = {}
     ## adaptor of the datacard for given mass and tanb value
-    adaptor = ModelDatacard(options, options.mA, label, False)
-    adaptor.cleanup(dir, label)
-
-    ## iterate through all datacards in dir
-    for datacard in os.listdir(dir) :
-        if not datacard.endswith('.txt') :
-            continue
-        ## determine decay channel and period
-        card_match = re.compile('(?P<DECAY>\w*)_\w*_[0-9]?_(?P<PERIOD>[0-9]*\w*)')
-        decay  = card_match.match(datacard).group('DECAY' )
-        period = card_match.match(datacard).group('PERIOD')
-        unique = decay+period
-        ## parse datacards
-        old_file = open(dir+'/'+datacard, 'r')
-        card = parseCard(old_file, options)
-        old_file.close()
-        ## determine model
-        if not unique in models.keys() :
-            models[unique] = MODEL(float(options.mA), float(options.tanb))
-            models[unique].setup_model(period, decay, card.list_of_signals(), ['mu', 'pdf'])
-        ## adapt datacards
-        adaptor.make_model_datacard(dir+'/'+datacard, models[unique].value)
-        ## add uncertainty lines
-        for proc in card.list_of_signals() :
-            for shift in models[unique].shifts.keys() :
-                moment = 1 if shift == 'mu' else 2
-                adaptor.add_uncert_line(card, dir+'/'+datacard, proc, proc+'_'+shift, models[unique].value, models[unique].shifts[shift], moment)
+    adaptor = ModelDatacard(options, label, False)
+    adaptor.cleanup(path[:path.rfind('/')], label)
+    ## parse datacard
+    old_file = open(path, 'r')
+    card = parseCard(old_file, options)
+    old_file.close()
+    
+    ## determine MODEL for given datacard.
+    model = MODEL(float(options.mA), float(options.tanb))
+    match = re.compile('(?P<CHN>\w*)_\w*_[0-9]?_(?P<PER>[0-9]*\w*)')
+    for bin in card.list_of_bins() :
+        ## a bin can be made up of different decay channels or different run periods. Pick decay channel (chn) and run period
+        ## (per) either from bin or from from datacards name in case it is not accessible from bin.
+        if match.match(bin) :
+            chn = match.match(bin).group('CHN')
+            per = match.match(bin).group('PER')
+        else :
+            chn = match.match(path[path.rfind('/')+1:]).group('CHN')
+            per = match.match(path[path.rfind('/')+1:]).group('PER')
+        if not (per,chn) in model.central.keys() :
+            print "updating model to parameter set:", per, chn, card.list_of_signals(), ['mu', 'pdf']
+            model.setup_model(per, chn, card.list_of_signals(), ['mu', 'pdf'])
+    ## create new datacard
+    new_name = path[:path.rfind('.txt')]+'_%.2f'%float(options.tanb)+'.txt'
+    os.system("cp {SRC} {TARGET}".format(SRC=path, TARGET=new_name))
+    ## adapt datacards
+    adaptor.make_model_datacard(new_name, model)
 
 main()
 exit(0)

@@ -11,9 +11,9 @@ class MODEL_PARAMS :
         
     def effective(self, MOMENT=1, higgses=None) :
         """Return xsec*br for all elements indicated in higgses"""
-        value = 0
+        value = 0.
         if not higgses :
             higgses = self.list_of_higgses
         for x in higgses :
             value+=math.pow(float(self.xsecs[x])*float(self.brs[x]), MOMENT)
-        return value if MOMENT == 1 else math.pow(value, 1/MOMENT)
+        return value if MOMENT == 1 else math.pow(value, 1./MOMENT)

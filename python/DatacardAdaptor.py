@@ -1,7 +1,8 @@
 import os
+import glob
 import ROOT
 
-from HiggsAnalysis.CombinedLimit.DatacardParser import *
+#from HiggsAnalysis.CombinedLimit.DatacardParser import *
 
 class DatacardAdaptor(object) :
     """
@@ -15,9 +16,9 @@ class DatacardAdaptor(object) :
     tional postfilx label to distinguish it from the original file. Only the templates corresponding to a given process will
     be picked up from the modified input file.
     """
-    def __init__(self, parser_options) :
-        ## options for the datacard parser
-        self.options = parser_options
+    def __init__(self) :
+        ## keep this for explicit initializations in future
+        pass
     
     def list2string(self, card, bin, procs) :
         """
@@ -41,26 +42,25 @@ class DatacardAdaptor(object) :
         """
         Cleanup all datacards and input files in dir before re-evaluation.
         """
-        if label in os.listdir(dir+'/../common/') :
-            os.system('rm {DIR}/../common/*{LABEL}'.format(DIR=dir, LABEL=label))
+        if glob.glob('{DIR}/../common/*{LABEL}*'.format(DIR=dir, LABEL=label)) :
+            os.system('rm {DIR}/../common/*{LABEL}*'.format(DIR=dir, LABEL=label))
         for name in os.listdir(dir) :
+            if not name.endswith('.txt') :
+                continue
             os.system("perl -pi -e 's/{LABEL}//g' {DIR}/{DATACARD}".format(LABEL=label, DIR=dir, DATACARD=name))
 
-    def adapt_shapes_lines(self, path, target_proc, hist_label, file_label) :
+    def adapt_shapes_lines(self, path, card, target_proc, hist_label, file_label) :
         """
         This is a function to modify 'shapes' lines in datacards to point to modified template histograms potentially
         located in new root input files. It finds the lines starting with keyword 'shapes' in the datacard located at
         path. If there exists a shapes line for process target_proc it is modified. If hist_label is non-empty the name
         of the histogram to look for will be modified. If file_label is non-empty the path to the root input file will
         be modified. The labels are expected to be postfixes. If there exists no shapes line a new line of type 'shapes'
-        is added to the datacard with the 'shapes' line for process '*' as template and corresponding modification. 
+        is added to the datacard with the 'shapes' line for process '*' as template and corresponding modification.
+        The parameter card corresponds to the parsed datacard using the method parseCard of the HCG datacard parser.
         """
-        old_file = open(path, 'r')
-        card = parseCard(old_file, self.options)
-        old_file.close()
         ## modify the input paths for the new datacards
         new_paths = []
-        new_data_obs = []
         for bin in card.shapeMap.keys() :
             shape = ''
             procs = card.shapeMap[bin].keys()
@@ -73,6 +73,10 @@ class DatacardAdaptor(object) :
                         new_target_proc_shapes = list(card.shapeMap[bin][proc])
                         shape = card.shape(bin, proc, False)
                 else :
+                    if not '*' in procs :
+                        print "Warning: no adequat 'shapes' line found in datacard loacated at path:", path
+                        print "at least a 'shapes' line for process type '*' is needed to proceed."
+                        exit()
                     if '*' == proc :
                         new_target_proc_shapes = list(card.shapeMap[bin][proc])
                         shape = card.shape(bin, proc, False)
@@ -80,12 +84,17 @@ class DatacardAdaptor(object) :
                 if not target_proc in proc :
                     new_paths.append('shapes\t'+proc+'\t'+bin+'\t'+'\t'.join(card.shapeMap[bin][proc]))
             ## add the new path to target_proc to the end of all shapes. This should be done for each bin.
+            ## new_target_proc_shapes has entries [0]: path to input root file, [1]: path to histogram for
+            ## central shape witin root input file, [2]: path to histograms for uncertainty shapes (optio-
+            ## nal)        
             if new_target_proc_shapes :
                 if not '.root'+file_label in new_target_proc_shapes[0] :
                     new_target_proc_shapes[0] = new_target_proc_shapes[0].replace('.root','.root'+file_label)
-                new_target_proc_shapes[1] = new_target_proc_shapes[1].replace(shape,shape+hist_label)
+                if not shape+hist_label in new_target_proc_shapes[1] :
+                    new_target_proc_shapes[1] = new_target_proc_shapes[1].replace(shape,shape+hist_label)
                 if len(new_target_proc_shapes)>2 :
-                    new_target_proc_shapes[2] = new_target_proc_shapes[2].replace(shape,shape+hist_label)
+                    if not shape+hist_label in new_target_proc_shapes[2] :
+                        new_target_proc_shapes[2] = new_target_proc_shapes[2].replace(shape,shape+hist_label)
             new_paths.append('shapes\t'+target_proc+'\t'+bin+'\t'+'\t'.join(new_target_proc_shapes))
         ## write new shapes lines to file
         first_pass = True
