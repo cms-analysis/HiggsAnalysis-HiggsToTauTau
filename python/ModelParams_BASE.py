@@ -42,7 +42,7 @@ class ModelParams_BASE:
                 tanbregion = 'tanbLow'
             else:
                 tanbregion = 'tanbHigh'
-            mssm_xsec_tools_path = getenv('CMSSW_BASE')+'/src/HiggsAnalysis/HiggsToTauTau/data/out.'+modelpath+'-'+period+'-'+tanbregion+'-nnlo.root'
+            mssm_xsec_tools_path = getenv('CMSSW_BASE')+'/src/auxiliaries/models/out.'+modelpath+'-'+period+'-'+tanbregion+'-nnlo.root'
             self.use_mssm_xsec(mssm_xsec_tools_path, channel, decay, model_params)
         else:
             exit('ERROR: modeltype \'%s\' not supported'%modeltype)
@@ -117,20 +117,20 @@ class ModelParams_BASE:
         return htt_query['higgses'][higgs][brname[decay[1:]]]
 
 #test
-base = ModelParams_BASE(110, 5)
-model = base.create_model_params('7TeV', 'ggH', 'htt', '', 'mhmax-mu+200', 'mssm_xsec')
-print model.masses
-print model.xsecs
-print model.brs
-model = base.create_model_params('8TeV', 'ggH', 'htt', '', 'mhmax-mu+200', 'mssm_xsec')
-print model.masses
-print model.xsecs
-print model.brs
-model = base.create_model_params('7TeV', 'ggH', 'htt', 'pdf+', 'mhmax-mu+200', 'mssm_xsec')
-print model.masses
-print model.xsecs
-print model.brs
-model = base.create_model_params('7TeV', 'ggH', 'htt', 'pdf-', 'mhmax-mu+200', 'mssm_xsec')
-print model.masses
-print model.xsecs
-print model.brs
+#base = ModelParams_BASE(110, 5)
+#model = base.create_model_params('7TeV', 'ggH', 'htt', '', 'mhmax-mu+200', 'mssm_xsec')
+#print model.masses
+#print model.xsecs
+#print model.brs
+#model = base.create_model_params('8TeV', 'ggH', 'htt', '', 'mhmax-mu+200', 'mssm_xsec')
+#print model.masses
+#print model.xsecs
+#print model.brs
+#model = base.create_model_params('7TeV', 'ggH', 'htt', 'pdf+', 'mhmax-mu+200', 'mssm_xsec')
+#print model.masses
+#print model.xsecs
+#print model.brs
+#model = base.create_model_params('7TeV', 'ggH', 'htt', 'pdf-', 'mhmax-mu+200', 'mssm_xsec')
+#print model.masses
+#print model.xsecs
+#print model.brs
