@@ -34,8 +34,10 @@ class AsimovDatacard(DatacardAdaptor) :
         ## write the asomiv dataset with new histogram name into the same file (i.e. update the existing file) or write the
         ## asimov dataset with the same histogram name in a new root file?
         self.update_file = update_file
+        ## options for the datacard parser
+        self.options = parser_options
         ## initialize base class
-        super(AsimovDatacard, self).__init__(parser_options)
+        super(AsimovDatacard, self).__init__()
     
     def adapt_observation_lines(self, path) :
         """
@@ -151,20 +153,25 @@ class AsimovDatacard(DatacardAdaptor) :
         """
         print "...creating asimov datasets."
         self.asimov_shapes(dir)
-        print "...redirect input files in datacards."
-        for card in os.listdir(dir) :
-            if not card.endswith('.txt') :
+        print "...redirecting input files in datacards."
+        for name in os.listdir(dir) :
+            if not name.endswith('.txt') :
                 continue
+            path = dir+'/'+name
+            ## parse datacard
+            old_file = open(path, 'r')
+            card = parseCard(old_file, self.options)
+            old_file.close()
             if self.update_file :
                 ## histogram name gets label _asimov, filename remains as is
-                self.adapt_shapes_lines(dir+'/'+card, 'data_obs', '_asimov', '')
+                self.adapt_shapes_lines(path, card, 'data_obs', '_asimov', '')
             else:
                 ## filename gets label _asimov, histogram name remains as is
-                self.adapt_shapes_lines(dir+'/'+card, 'data_obs', '', '_asimov')
-        print "... adjust observation to modified shapes."
-        for card in os.listdir(dir) :
-            if not card.endswith('.txt') :
+                self.adapt_shapes_lines(path, card, 'data_obs', '', '_asimov')
+        print "... adjusting observation to modified shapes."
+        for name in os.listdir(dir) :
+            if not name.endswith('.txt') :
                 continue
-            self.adapt_observation_lines(dir+'/'+card)
+            self.adapt_observation_lines(dir+'/'+name)
 
 
