@@ -50,8 +50,8 @@ class ModelDatacard(DatacardAdaptor) :
         old_file = open(path, 'r')        
         for line in old_file :
             words = line.lstrip().split()
-            if words[0].lower() == 'bin' :
-                if len(words[1:]) == len(card.list_of_bins())*len(card.list_of_procs()) :
+            if words[0].lower() == 'bin':
+                if len(words[1:]) > len(card.list_of_bins()) :
                     bin_list = words[1:]
             if words[0].lower() == 'process' :
                 if len(list(set(words[1:]).intersection(card.list_of_procs()))) > 0 :
