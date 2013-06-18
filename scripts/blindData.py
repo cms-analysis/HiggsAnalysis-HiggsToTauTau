@@ -29,6 +29,7 @@ if len(args) < 1 :
     parser.print_usage()
     exit(1)
 
+import glob
 from HiggsAnalysis.HiggsToTauTau.AsimovDatacard import *
 
 def main() :
@@ -44,11 +45,9 @@ def main() :
     print "# Check option --help in case of doubt about the meaning of one or more of these confi-"
     print "# guration parameters.                           "
     print "# --------------------------------------------------------------------------------------"
-
-    ## clean up directory from former trials
-    if '_asimov' in os.listdir(args[0]) :
-        os.system("rm {PATH}/../common/*_asimov".format(PATH=args[0]))
     cardMaker = AsimovDatacard(options, options.update_file, options.seed, options.inject_signal, options.injected_mass, options.injected_scale, options.extra_templates)
+    ## clean up directory from former trials
+    cardMaker.cleanup(args[0], '_asimov')
     cardMaker.make_asimov_datacards(args[0])
 
 main()
