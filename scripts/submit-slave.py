@@ -233,14 +233,18 @@ for directory in args :
                 ## determine masspoint from directory name
                 masspoint = directory[directory.rfind("/")+1:]
                 ## prepare additional workspace creation
+                ## old
+                #os.system("cp $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/python/tanb_grid.py .")
+                ## new
                 os.system("cp $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/python/tanb_grid_new.py .")
                 ## determine grid of tanb values from min and max
                 dx = (float(options.max)-float(options.min))/(options.points-1)
                 points = [ float(options.min) + dx*i for i in range(options.points) ]
                 ## create additional workspaces
                 for tanb in points :
-                    print "python tanb_grid_new.py --mA {mass} --tanb {tanb} tmp.txt".format(mass=masspoint, tanb=tanb)
+                    ## new
                     os.system("python tanb_grid_new.py --mA {mass} --tanb {tanb} tmp.txt".format(mass=masspoint, tanb=tanb))
+                    ## old
                     #os.system("python tanb_grid.py -m {mass} -t {tanb} --model {model} --interpolation {interpolation} tmp.txt".format(
                     #   mass=masspoint, tanb=tanb, model=options.model, interpolation=options.interpolation_mode))
                 ## setup the batchjob creation for combine -M CLs with tanb grid points instead of cross section grid points
