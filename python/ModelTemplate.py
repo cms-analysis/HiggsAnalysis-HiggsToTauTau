@@ -83,8 +83,9 @@ class ModelTemplate():
             else :
                 if isinstance(dir.Get(name), ROOT.TH1) :
                     for pivotal in proc_match.findall(name) :
-                        if not pivotal in pivotals :
-                            pivotals.append(pivotal)
+                        if dir.Get(name).Integral()>0 :
+                            if not pivotal in pivotals :
+                                pivotals.append(pivotal)
         if not dir.GetName() in self.pivotals.keys() :
             self.pivotals['.' if dir.GetName() == self.input_file.GetName() else dir.GetName()] = pivotals
         return
