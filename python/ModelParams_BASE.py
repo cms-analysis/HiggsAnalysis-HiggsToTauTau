@@ -38,7 +38,7 @@ class ModelParams_BASE:
         if modeltype == 'feyn_higgs':
             self.use_feyn_higgs(modelpath, period, channel, decay, model_params)
         elif modeltype == 'mssm_xsec':
-            if float(self.tanb) <= 1:
+            if float(self.tanb) < 1:
                 tanbregion = 'tanbLow'
             else:
                 tanbregion = 'tanbHigh'
