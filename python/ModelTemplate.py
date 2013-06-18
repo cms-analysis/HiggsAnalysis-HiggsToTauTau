@@ -18,7 +18,7 @@ class ModelTemplate():
     and all available shape uncertainties for each bin (=directory in the root input file) and each available pivotal for
     each bin.
     """
-    def __init__(self, path, hist_label='') :
+    def __init__(self, path, hist_label='', verbosity=0) :
         ## path to root input file
         self.path = path
         ## root input file where to find the raw templates
@@ -30,6 +30,8 @@ class ModelTemplate():
         ## dict of type {dir : [shape_labels]} for each dir in the root file. The central shape has an empty label. The shapes
         ## for uncertainties are saved from the last digit of the mass value till the end of the name string.
         self.shape_labels = {}
+        ## determine verbosity level
+        self.verbosity = verbosity
 
     def __del__(self) :
         ## close input root file
@@ -39,6 +41,7 @@ class ModelTemplate():
         """
         Loop all objects for a given proc in dir. When another directory is found decend. When an object of type TH1 is found
         check for a match to proc+integer/float. Add any remainder beyond the last digit of the float to self.shape_labels.
+        This is needed to pick up all shapes corresponding to central value or to shape uncertainties.
         """
         ## list of pivotals in dir
         shape_labels = []
@@ -71,7 +74,6 @@ class ModelTemplate():
         ## list of pivotals in dir
         pivotals = []
         ## match for raw templates for different masses and process proc
-        #proc_match = re.compile("{PROC}([0-9]*\.?[0-9]*)$".format(PROC=proc))
         proc_match = re.compile("{PROC}([0-9]*\.?[0-9]*){LABEL}".format(PROC=proc, LABEL=label))
         ## iterate each object in dir
         for key in dir.GetListOfKeys() :
@@ -127,7 +129,7 @@ class ModelTemplate():
                 pmw = (value,pivotals[min(idx+1,len(pivotals)-1)])
         return pmw
 
-    def interpolation_scale(self, start, stop, x) :
+    def interpolation_scale(self, start, stop, x, debug=False) :
         """
         Determine the residual scale due to differences in acceptance and reconstruction efficiency when interpolating from
         embracing pivotal masses to mass. Start and stop are passed tuples of type (x-value,y-value). x is the value to
@@ -135,14 +137,14 @@ class ModelTemplate():
         """
         return 1+(stop[1]-start[1])/(stop[0]-start[0])/start[1]*(x-start[0])
 
-    def single_template(self, dir, proc, mass, label, scale, MODE='MORPHED') :
+    def single_template(self, dir, proc, mass, label, scale, MODE='MORPHED', debug=False) :
         """
         Return a single template histogram for a given dir, proc, mass and label. The histogram will be scaled by scale
         (corresponding to the cross section times BR of the corresponding Higgs boson). Scale will be modified by a linear
         interpolation scale taking into account differences in acceptance and reconstruction efficiency as a function of
         mass. Two modes exist to determine the template: MORPHED - will use horizontal template morphing (the morphing will
         always be applied from the pivotal, which is closest to mass to minimize uncertainties from the interplation);
-        CLOSEST_NEIGHBOUR - will use the closest mass point in the list of pivotals w/o any additional horizontal inter-
+        NEAREST_NEIGHBOUR - will use the closest mass point in the list of pivotals w/o any additional horizontal inter-
         polation. 
         """
         ## window of closest pivotal masses below/above mass. Window can be None, if no pivotals exist for a given dir. In
@@ -152,13 +154,13 @@ class ModelTemplate():
             return None
         if float(window[0]) == float(mass) and float(mass) == float(window[1]) :
             ## exact match with pivotal: clone exact pivotal
-            single_template = self.load_hist(dir+'/'+proc+mass+label).Clone(proc+mass+label+'_template')
+            single_template = self.load_hist(dir+'/'+proc+mass+label).Clone(proc+mass+label+'_template'); single_template.Scale(scale)
         elif float(window[0]) > float(mass) :
             ## mass out of bounds of pivotals (too small)
-            single_template = self.load_hist(dir+'/'+proc+window[0]+label).Clone(proc+window[0]+label+'_template')
+            single_template = self.load_hist(dir+'/'+proc+window[0]+label).Clone(proc+window[0]+label+'_template'); single_template.Scale(scale)
         elif float(window[1]) < float(mass) :
             ## mass out of bounds of pivotals (too large)
-            single_template = self.load_hist(dir+'/'+proc+window[1]+label).Clone(proc+window[1]+label+'_template')
+            single_template = self.load_hist(dir+'/'+proc+window[1]+label).Clone(proc+window[1]+label+'_template'); single_template.Scale(scale)
         else :
             ## mass somewhere between pivotals: masses is the tuple of the embracing pivotals, histos is the tuple of
             ## corresponding template histograms. The closest pivotal to mass is the first element in each of the tuples,
@@ -171,27 +173,29 @@ class ModelTemplate():
                 ## upper bound pivotal closer to mass
                 masses = (float(window[1]),float(window[0]))
                 histos = (self.load_hist(dir+'/'+proc+window[1]+label),self.load_hist(dir+'/'+proc+window[0]+label))
-            scale*= self.interpolation_scale((float(masses[0]),histos[0].Integral()), (float(masses[1]),histos[1].Integral()), float(mass))
+            scale*= self.interpolation_scale((float(masses[0]),histos[0].Integral()), (float(masses[1]),histos[1].Integral()), float(mass), debug)
             if MODE == 'MORPHED' :
                 single_template = th1fmorph(proc+str(mass)+label+'_template', proc+mass+label, histos[0], histos[1], masses[0], masses[1], float(mass), scale*histos[0].Integral(), 0)
-            if MODE == 'CLOSEST_NEIGHBOUR' :
+            if MODE == 'NEAREST_NEIGHBOUR' :
                 single_template = histos[0].Clone(proc+str(mass)+label+'_template'); single_template.Scale(scale)
         return single_template
 
-    def create_templates(self, model, label, MODE='MORPHED') :
+    def create_templates(self, reduced_model, file_label, hist_scale=1., MODE='MORPHED', debug=False) :
         """
-        Determine a combined template built up from single templates for Higgs bosons with different masses and cross sections.
-        Model is expected to be a dictionary of type {proc : MODEL_PARAMS}, where all information about available Higgses,
-        their masses, BRs and cross sections are encoded in the class MODEL_PARAMS. Proc indicates the process to which
-        MODEL_PARAMS applies. Proc should be present as a raw template for at least one mass in the root input file. The
-        pivotal masses that do exist for each corresponding proc in each directory of the root input files are determined.
-        The single templates are derived and summed. The directory structure relevant for each proc is set up in a root output
-        file to which these new combined templates are written to. The output file will be located in the same directory as
-        the root input file. It will be distinguished by the postfix label from the input file. It will only contain the
-        combined signal templates for the procs given as keys in model.
+        Determine a combined template, built up from single templates for Higgs bosons with different masses and cross
+        sections. Model is expected to be a dictionary of type {(period,decay,proc) : MODEL_PARAMS}, where all information
+        about available Higgses, their masses, BRs and cross sections are encoded in the class MODEL_PARAMS. In the key,
+        period, indicates the run period in terms of center of mass energy, decay indicates the decay channel and proc
+        indicates the process, to which MODEL_PARAMS applies. Proc should be present as a raw template for at least one mass
+        in the root input file. The pivotal masses that do exist for each corresponding proc in each directory of the root
+        input files are determined. The single templates are derived and summed. The directory structure relevant for each
+        proc is set up in a root output file, to which these new combined templates are written to. The output file will be
+        located in the same directory as the root input file. It will be distinguished by the postfix rootfile_label from the
+        input file. It will only contain the combined signal templates for the procs given as keys in model. The templates
+        can optionally be scaled by an additional parameter (like 1./float(model.tanb)).
         """
-        output_file = ROOT.TFile(self.path+label, 'UPDATE')
-        for (proc,param) in model.iteritems() :
+        output_file = ROOT.TFile(self.path+file_label, 'UPDATE')
+        for (proc, params) in reduced_model :
             ## determine all available shapes (central value and uncerts) for given proc
             self.shape_labels = {}; self.fill_shape_labels(proc, self.input_file)
             for dir in self.shape_labels.keys() :
@@ -206,9 +210,9 @@ class ModelTemplate():
                 for label in self.shape_labels[dir] :
                     combined_template = None
                     self.pivotals = {}; self.fill_pivotals(proc, label, self.input_file)
-                    for higgs in param.list_of_higgses :
-                        scale = float(param.xsecs[higgs])*float(param.brs[higgs])
-                        histo = self.single_template(dir, proc, self.save_float_conversion(param.masses[higgs]), label, scale, MODE)
+                    for higgs in params.list_of_higgses :
+                        scale = float(params.xsecs[higgs])*float(params.brs[higgs])*hist_scale
+                        histo = self.single_template(dir, proc, self.save_float_conversion(params.masses[higgs]), label, scale, MODE)
                         if combined_template :
                             combined_template.Add(histo)
                         else:
@@ -216,8 +220,9 @@ class ModelTemplate():
                     ## write combined template to output file
                     output_file.cd('' if dir == '.' else dir)
                     if combined_template :
-                        print 'write histogram to file: ', dir+'/'+proc+self.save_float_conversion(param.masses['A'])+self.hist_label+label  
-                        combined_template.Write(proc+self.save_float_conversion(param.masses['A'])+self.hist_label+label, ROOT.TObject.kOverwrite)
+                        if self.verbosity>0 :
+                            print 'write histogram to file: ', dir+'/'+proc+self.save_float_conversion(params.masses['A'])+self.hist_label+label  
+                        combined_template.Write(proc+self.save_float_conversion(params.masses['A'])+self.hist_label+label, ROOT.TObject.kOverwrite)
         output_file.Close()
         return 
 
