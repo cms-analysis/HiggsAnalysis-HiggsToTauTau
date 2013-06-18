@@ -48,6 +48,17 @@ class MODEL(object) :
         ## shifts for uncertainties of type {'type' : {(period,decay,proc) : (MODEL_PARAMS,MODEL_PARAMS)}}
         self.uncerts = {}
 
+    def missing_procs(self, decay, period, procs) :
+        """
+        Return a list of missing_procs in procs, which are still missing  in the model for given decay and period. Check
+        centrals as it migth be some procs do not have uncertainties.
+        """
+        missing_procs = []
+        for proc in procs :
+            if not (period,decay,proc) in self.central.keys() :
+                missing_procs.append(proc)
+        return missing_procs
+        
     def save_float_conversion(self, float_value) :
         """
         Convert a float into a string. Remove trailing .0's, which are not present for integer masses and would spoil the
@@ -97,7 +108,7 @@ def main() :
     models = {}
     ## adaptor of the datacard for given mass and tanb value
     adaptor = ModelDatacard(options, label, False)
-    adaptor.cleanup(path[:path.rfind('/')], label)
+    adaptor.cleanup('.' if not path.find('/')>0 else path[:path.rfind('/')], label)
     ## parse datacard
     old_file = open(path, 'r')
     card = parseCard(old_file, options)
@@ -115,9 +126,11 @@ def main() :
         else :
             chn = match.match(path[path.rfind('/')+1:]).group('CHN')
             per = match.match(path[path.rfind('/')+1:]).group('PER')
-        if not (per,chn) in model.central.keys() :
-            print "updating model to parameter set:", per, chn, card.list_of_signals(), ['mu', 'pdf']
-            model.setup_model(per, chn, card.list_of_signals(), ['mu', 'pdf'])
+        ## check which processes are still missing for given decay channel and run period
+        missing_procs = model.missing_procs(chn, per, card.list_of_signals())
+        if len(missing_procs)>0 :
+            print "updating model to parameter set:", per, chn, missing_procs, ['mu', 'pdf']
+            model.setup_model(per, chn, missing_procs, ['mu', 'pdf'])
     ## create new datacard
     new_name = path[:path.rfind('.txt')]+'_%.2f'%float(options.tanb)+'.txt'
     os.system("cp {SRC} {TARGET}".format(SRC=path, TARGET=new_name))
