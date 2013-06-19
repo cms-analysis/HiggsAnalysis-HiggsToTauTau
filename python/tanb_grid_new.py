@@ -76,15 +76,16 @@ class MODEL(object) :
         """
         ## create model
         modelMaker = ModelParams_BASE(self.mass, self.tanb)
+        modelMaker.setup_model(period, self.modelpath, self.modeltype)
         ## create central value
         for proc in procs :
-            self.central[(period,decay,proc)] = modelMaker.create_model_params(period, proc, decay, '', self.modelpath, self.modeltype)
+            self.central[(period,decay,proc)] = modelMaker.create_model_params(period, proc, decay, '')
         ## create shifts
         for shift in shifts :
             buffer = {}
             for proc in procs :
-                buffer[(period,decay,proc)] = (modelMaker.create_model_params(period, proc, decay, shift+'-', self.modelpath, self.modeltype),
-                                               modelMaker.create_model_params(period, proc, decay, shift+'+', self.modelpath, self.modeltype))
+                buffer[(period,decay,proc)] = (modelMaker.create_model_params(period, proc, decay, shift+'-'),
+                                               modelMaker.create_model_params(period, proc, decay, shift+'+'))
             if shift in self.uncerts.keys() :
                 self.uncerts[shift].update(buffer)
             else :
