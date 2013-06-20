@@ -120,23 +120,3 @@ class ModelParams_BASE:
         if decay[1:] not in brname:
             exit('ERROR: Decay channel \'%s\' not supported'%decay)
         return query['higgses'][higgs][brname[decay[1:]]]
-
-#test
-base = ModelParams_BASE(110, 5)
-base.setup_model('7TeV', 'mhmax-mu+200', 'mssm_xsec') 
-model = base.create_model_params('7TeV', 'ggH', 'htt', '')
-print model.masses
-print model.xsecs
-print model.brs
-#model = base.create_model_params('8TeV', 'ggH', 'htt', '', 'mhmax-mu+200', 'mssm_xsec')
-#print model.masses
-#print model.xsecs
-#print model.brs
-#model = base.create_model_params('7TeV', 'ggH', 'htt', 'pdf+', 'mhmax-mu+200', 'mssm_xsec')
-#print model.masses
-#print model.xsecs
-#print model.brs
-#model = base.create_model_params('7TeV', 'ggH', 'htt', 'pdf-', 'mhmax-mu+200', 'mssm_xsec')
-#print model.masses
-#print model.xsecs
-#print model.brs
