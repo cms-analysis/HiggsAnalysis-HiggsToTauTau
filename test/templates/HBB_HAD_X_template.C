@@ -18,6 +18,7 @@
 #include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 #include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
 
+$DEFINE_ASIMOV
 $DEFINE_DROP_SIGNAL
 $DEFINE_MSSM
 
@@ -144,7 +145,11 @@ HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
 //   if(std::string(inputfile).find("8TeV")!=std::string::npos){ bbHScale = (8282.7*0.89 + 6867.8*0.85)/1000.; }
   TH1F* bbH  = refill((TH1F*)input->Get(TString::Format("%s/bbH$MA"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale(bbHScale);
 #endif
+#ifdef ASIMOV
+  TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs_asimov", directory)), "data", true);
+#else
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data", true);
+#endif
   InitHist(data, "#bf{m_{b#bar{b}} [GeV]}", "#bf{dN/dm_{b#bar{b}} [1/GeV]}"); InitData(data);
 
   TH1F* ref=(TH1F*)Qbb->Clone("ref");

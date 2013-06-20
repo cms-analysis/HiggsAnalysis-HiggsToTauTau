@@ -19,6 +19,7 @@
 
 static const float SIGNAL_SCALE = 1.;
 
+$DEFINE_ASIMOV
 $DEFINE_DROP_SIGNAL
 $DEFINE_EXTRA_SAMPLES
 $DEFINE_MSSM
@@ -182,7 +183,11 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   TH1F* VH     = refill((TH1F*)input->Get(TString::Format("%s/VH125" , directory)), "VH" ); InitSignal(VH ); VH  ->Scale(SIGNAL_SCALE);
 #endif
 #endif
+#ifdef ASIMOV
+  TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs_asimov", directory)), "data", true);
+#else
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data", true);
+#endif
   InitHist(data, "#bf{m_{#tau#tau} [GeV]}", "#bf{dN/dm_{#tau#tau} [1/GeV]}"); InitData(data);
 
   TH1F* ref=(TH1F*)Fakes->Clone("ref");
