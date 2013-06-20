@@ -1,7 +1,7 @@
 def htt_mm(TYPE='KIT') :
     dict = {}
-    dict['7TeV'] = 'Htt_MuMu_Unblinded'
-    dict['8TeV'] = 'Htt_MuMu_Unblinded'
+    dict['7TeV'] = 'Htt_MuMu'
+    dict['8TeV'] = 'Htt_MuMu'
     return dict
 
 def htt_em(TYPE='MIT') :
