@@ -89,7 +89,8 @@ TH1F * merge(std::string iName,double iMergePoint,TH1F *iH,TH1F *iFunc) {
   lH->SetFillStyle(0);
   int lMergeBin = iH->GetXaxis()->FindBin(iMergePoint);
   double lVal  = iH->GetBinContent(lMergeBin);
-  iFunc->Scale(lVal/iFunc->GetBinContent(lMergeBin));
+  //iFunc->Scale(lVal/iFunc->GetBinContent(lMergeBin));
+  iFunc->Scale( (iH->Integral(lMergeBin, iH->GetXaxis()->FindBin(1500))) / (iFunc->Integral(lMergeBin, iFunc->GetXaxis()->FindBin(1500)) )); // felix - last fit bin = 1500; this approach seems to work much better
   for(int i0 = 0;         i0 < lMergeBin;         i0++) lH->SetBinContent(i0,iH->GetBinContent(i0));
   for(int i0 = lMergeBin; i0 < iH->GetNbinsX()+1; i0++) lH->SetBinContent(i0,iFunc->GetBinContent(iFunc->GetXaxis()->FindBin(lH->GetXaxis()->GetBinCenter(i0))));
   lH->SetName(iName.c_str());
