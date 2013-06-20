@@ -198,19 +198,19 @@ if options.update_setup:
             for period in periods :
                 ## if i understand it correct the option "--varbin" has to be kicked out as soon as we have finner binned (equidistant binning) inputs 
                 if options.channels.find("em") > -1:
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'Fakes EWK ttbar' -k '{CATEGORIES}' --varbin --rebin".format(
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'ttbar_fine_binning Fakes_fine_binning EWK_fine_binning' -k '{CATEGORIES}' --range 200 --fitmodel 0".format( 
                         DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
                 if options.channels.find("et") > -1:
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'W QCD TT' -k '{CATEGORIES}' --varbin --rebin".format(
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'W QCD TT' -k '{CATEGORIES}' --rebin".format(
                         DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
                 if options.channels.find("mm") > -1:
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mm.inputs-mssm-{PER}-0.root -c mm -e {PER} -b 'WJets QCD TTJ' -k '{CATEGORIES}' --varbin --rebin".format(
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mm.inputs-mssm-{PER}-0.root -c mm -e {PER} -b 'WJets QCD TTJ' -k '{CATEGORIES}' --rebin".format(
                         DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
                 if options.channels.find("mt") > -1:
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'W QCD TT' -k '{CATEGORIES}' --varbin --rebin".format(
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'W QCD TT' -k '{CATEGORIES}' --rebin".format(
                         DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
                 if options.channels.find("tt") > -1:
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_tt.inputs-mssm-8TeV-0.root -c tt -e 8TeV -b 'QCD' -k '8 9' --varbin --rebin".format(
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_tt.inputs-mssm-8TeV-0.root -c tt -e 8TeV -b 'QCD' -k '8 9' --rebin".format(
                         DIR=dir, ANA=ana))
         ##################
          
@@ -323,10 +323,10 @@ if options.update_datacards :
                     CHN=options.channels,
                     DIR=dir,
                     ANA=ana
-                    ))
+                    ))                
         if options.blind_datacards :
             for chn in channels :
-                os.system("python HiggsAnalysis/HiggsToTauTau/scripts/blindData.py --extra-templates '{EXTRA_TEMPLATES}' {DIR}/{ANA}/mssm/{CHN}".format(
+                os.system("python HiggsAnalysis/HiggsToTauTau/scripts/blindData.py --update-file --extra-templates '{EXTRA_TEMPLATES}' {DIR}/{ANA}/mssm/{CHN}".format(
                     EXTRA_TEMPLATES = options.extra_templates,
                     ANA=ana,
                     DIR=dir,
@@ -358,5 +358,18 @@ if options.update_limits :
             MASSES=options.masses,
             CATEGORIES="--mssm-categories-em='0 1 2 3 6 7' --mssm-categories-et='0 1 2 3 6 7' --mssm-categories-mm='0 1 2 3 6 7' --mssm-categories-mt='0 1 2 3 6 7'" if options.split_categories else ""
             ))
+       ## if options.blind_datacards :
+       ##     for dir in os.listdir("{DIR}/{ANA}".format(DIR=dir,ANA=ana)) :
+       ##         os.system("MSSM_aux{INDEX}/{ANA}/mssm/
+        
+    ##     if options.blind_datacards :
+##             for mass in parseArgs(options.masses) :
+##                 for chn in channels :
+##                     os.system("python HiggsAnalysis/HiggsToTauTau/scripts/blindData.py --extra-templates '{EXTRA_TEMPLATES}' {DIR}/{ANA}/mssm/{CHN}".format(
+##                         EXTRA_TEMPLATES = options.extra_templates,
+##                         ANA=ana,
+##                         DIR=dir,
+##                         CHN=fullname[chn]
+##                         ))
         
 
