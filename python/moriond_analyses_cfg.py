@@ -1,3 +1,9 @@
+def htt_ee(TYPE='KIT') :
+    dict = {}
+    dict['7TeV'] = 'Htt_EE'
+    dict['8TeV'] = 'Htt_EE'
+    return dict
+
 def htt_mm(TYPE='KIT') :
     dict = {}
     dict['7TeV'] = 'Htt_MuMu'
