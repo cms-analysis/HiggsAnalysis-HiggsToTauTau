@@ -72,9 +72,7 @@ TH1F* rebin(TH1F* iH,int iNBins,double *iAxis) {
     double lOldV = lH->GetBinContent(lNBin);
     double lOldE = lH->GetBinError  (lNBin);
     lH->SetBinContent(lNBin,lVal+lOldV);
-    // we dont need this bin errors since we do not use them (fit tails replaces bin-by-bin error!), therefore i set all errors to 0, this also saves us from modifying the add_bbb_error.py script in which I otherwise would have to include a option for adding bbb only in specific ranges
-    //lH->SetBinError  (lNBin,sqrt(lOldE*lOldE+lErr*lErr));
-    lH->SetBinError  (lNBin,0);
+    lH->SetBinError  (lNBin,sqrt(lOldE*lOldE+lErr*lErr));
   }
   std::string lName2 = iH->GetName();
   std::string fine_binning = "_fine_binning";
@@ -347,6 +345,17 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
     lHUp1   = rebin(lHUp1  ,lNBins,lAxis);
     lHDown1 = rebin(lHDown1,lNBins,lAxis);
   }
+
+  // we dont need this bin errors since we do not use them (fit tails replaces bin-by-bin error!), therefore i set all errors to 0, this also saves us from modifying the add_bbb_error.py script in which I otherwise would have to include a option for adding bbb only in specific ranges
+  int lMergeBin = lH->GetXaxis()->FindBin(iFirst);
+  for(int i0 = lMergeBin; i0 < lH->GetNbinsX()+1; i0++){
+    lH->SetBinError  (i0,0);
+    lHUp->SetBinError  (i0,0);
+    lHDown->SetBinError  (i0,0);
+    lHUp1->SetBinError  (i0,0);
+    lHDown1->SetBinError  (i0,0);
+  }
+
 
   TFile *lOutFile =new TFile("Output.root","RECREATE");
   cloneFile(lOutFile,lFile,iDir+"/"+iBkg);
