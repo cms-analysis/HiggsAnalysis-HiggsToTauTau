@@ -407,7 +407,11 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   }
 #endif
 #endif
-  leg->AddEntry(data , "observed"                    , "LP");
+#ifdef ASIMOV
+  leg->AddEntry(data , "sum(bkg) + SM125 GeV signal"    , "LP");
+#else
+  leg->AddEntry(data , "observed"                       , "LP");
+#endif
   leg->AddEntry(ZTT  , "Z#rightarrow#tau#tau"        , "F" );
   leg->AddEntry(ZMM  , "Z#rightarrow#mu#mu"          , "F" );
   leg->AddEntry(TTJ  , "t#bar{t}"                    , "F" );

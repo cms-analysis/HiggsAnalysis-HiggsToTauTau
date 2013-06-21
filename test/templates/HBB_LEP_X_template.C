@@ -269,7 +269,11 @@ HBB_LEP_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   SetLegendStyle(leg);
   leg->AddEntry(bbH  , "#phi#rightarrowb#bar{b}" , "L" );
 #endif
-  leg->AddEntry(data,   "observed"                       , "LP");
+#ifdef ASIMOV
+  leg->AddEntry(data , "sum(bkg) + SM125 GeV signal"    , "LP");
+#else
+  leg->AddEntry(data , "observed"                       , "LP");
+#endif
   leg->AddEntry(bkgBBB, "bkgBBB"                      , "F" );
   $ERROR_LEGEND
   leg->Draw();

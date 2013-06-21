@@ -385,7 +385,11 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
     leg->AddEntry(ggH  , "H(125 GeV)#rightarrow#tau#tau" , "L" );
   }
 #endif
+#ifdef ASIMOV
+  leg->AddEntry(data , "sum(bkg) + SM125 GeV signal"    , "LP");
+#else
   leg->AddEntry(data , "observed"                       , "LP");
+#endif
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
   leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
   leg->AddEntry(EWK  , "electroweak"                    , "F" );
