@@ -74,7 +74,7 @@ class ModelTemplate():
         ## list of pivotals in dir
         pivotals = []
         ## match for raw templates for different masses and process proc
-        proc_match = re.compile("{PROC}([0-9]*\.?[0-9]*){LABEL}".format(PROC=proc, LABEL=label))
+        proc_match = re.compile("^{PROC}([0-9]+\.?[0-9]*){LABEL}$".format(PROC=proc, LABEL=label))
         ## iterate each object in dir
         for key in dir.GetListOfKeys() :
             name=key.GetName()
@@ -84,7 +84,7 @@ class ModelTemplate():
                 if isinstance(dir.Get(name), ROOT.TH1) :
                     for pivotal in proc_match.findall(name) :
                         if dir.Get(name).Integral()>0 :
-                            if not pivotal in pivotals :
+                            if not pivotal in pivotals:
                                 pivotals.append(pivotal)
         if not dir.GetName() in self.pivotals.keys() :
             self.pivotals['.' if dir.GetName() == self.input_file.GetName() else dir.GetName()] = pivotals
