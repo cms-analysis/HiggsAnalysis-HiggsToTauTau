@@ -426,16 +426,16 @@ if options.optInject :
     if not options.calculate_injected :
         ## prepare options
         opts = options.opt
-        if not method == "--max-likelihood" :
+        if not options.injected_method == "--max-likelihood" :
             opts+=" --observedOnly"
         if not options.nuisances == "" :
             opts+=" --no-prefit --external-pulls \"{PATH}\" --signal-plus-background {SPLUSB}".format(PATH=options.nuisances, SPLUSB=options.signal_plus_BG)
         method = options.injected_method#"--asymptotic"
-        if options.injected_method == "max-likelihood" :
+        if options.injected_method == "--max-likelihood" :
             method = "--max-likelihood"
-        if options.injected_method == "significance" :
+        if options.injected_method == "--significance-frequentist" :
             method = "--significance-frequentist"
-        if options.injected_method == "pvalue" :
+        if options.injected_method == "--pvalue-frequentist" :
             method = "--pvalue-frequentist"
         ## do the submit
         for path in paths :
