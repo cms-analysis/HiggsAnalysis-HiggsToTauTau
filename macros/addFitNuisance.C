@@ -72,7 +72,9 @@ TH1F* rebin(TH1F* iH,int iNBins,double *iAxis) {
     double lOldV = lH->GetBinContent(lNBin);
     double lOldE = lH->GetBinError  (lNBin);
     lH->SetBinContent(lNBin,lVal+lOldV);
-    lH->SetBinError  (lNBin,sqrt(lOldE*lOldE+lErr*lErr));
+    // we dont need this bin errors since we do not use them (fit tails replaces bin-by-bin error!), therefore i set all errors to 0, this also saves us from modifying the add_bbb_error.py script in which I otherwise would have to include a option for adding bbb only in specific ranges
+    //lH->SetBinError  (lNBin,sqrt(lOldE*lOldE+lErr*lErr));
+    lH->SetBinError  (lNBin,0);
   }
   std::string lName2 = iH->GetName();
   std::string fine_binning = "_fine_binning";
