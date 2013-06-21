@@ -154,6 +154,7 @@ class ModelDatacard(DatacardAdaptor) :
                 value = model.central[key].effective()
                 lower = params[0].effective(1 if type == 'mu' else 2)
                 upper = params[1].effective(1 if type == 'mu' else 2)
+                uncerts = []
                 for bin in card.list_of_bins() :
                     if not (decay in bin or '*' in bin) :
                         continue
@@ -161,21 +162,22 @@ class ModelDatacard(DatacardAdaptor) :
                         continue
                     for proc_in_card in card.list_of_signals() :
                         if proc_in_card == proc :
-                            uncerts = []
+                            ## first fill whole list with placeholders then replace with uncertainty numbers at right places
+                            if len(uncerts)==0 :
+                                for idx in range(len(index_order)) :
+                                    uncerts.append('-')
                             for idx in range(len(index_order)) :
                                 if idx == index_order.index(bin+'_'+proc) :
                                     if type == 'mu' :
                                         if  value>0 and lower/value!=1 :
-                                            uncerts.append(" \t\t %.3f/%.3f " % (1./(1.-lower/value), 1.+upper/value))
+                                            uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.-lower/value), 1.+upper/value)
                                         else :
-                                            uncerts.append(" \t\t 0.1 ")
+                                            uncerts[idx]=" \t\t 0.1 "
                                     if type == 'pdf' :
                                         if value>0 :
-                                            uncerts.append(" \t\t %.3f/%.3f " % (1./(1.+lower/value), 1.+upper/value))
+                                            uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.+lower/value), 1.+upper/value)
                                         else :
-                                            uncerts.append(" \t\t 0.1 ")
-                                else :
-                                    uncerts.append('-')
+                                            uncerts[idx]=" \t\t 0.1 "
                 ## in case label is not yet in dict, add uncerts as they are. Otherwise update '-' entries in existing list
                 ## of uncerts
                 if not label in uncert_appendix :
