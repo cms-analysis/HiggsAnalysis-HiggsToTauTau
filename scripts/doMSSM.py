@@ -3,18 +3,18 @@ from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options]",
-                      description="Script to setup all datacards and directories. The script assumes that all datacards (but unscaled) are located in '$CMSSW_BASE/src/auxiliaries/datacards/mssm/[htt_em, htt_et, htt_mm, htt_mt, hbb].'")
+                      description="Script to setup all datacards and directories. The script assumes that all datacards (but unscaled) are located in '$CMSSW_BASE/src/auxiliaries/datacards/mssm/[htt_ee, htt_em, htt_et, htt_mm, htt_mt, htt_tt, hbb].'")
 ##
 ## GENERAL OPTIONS
 ##
-parser.add_option("-c", "--channels", dest="channels", default="mm em mt et hbb", type="string",
-                  help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hbb. [Default: \"mm em mt et hbb\"]")
+parser.add_option("-c", "--channels", dest="channels", default="ee mm em mt et tt hbb", type="string",
+                  help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hbb. [Default: \"ee mm em et mt tt hbb\"]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
                   help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analyses", dest="analyses", default="std, pruned",
                   help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"std, bin-by-bin, pruned\" [Default: \"std, pruned\"]")
-parser.add_option("--split-categories", dest="split_categories", default=False, action="store_true",
-                  help="Using split categories, means categories 0, 1, 2, 3, 6, 7 instead of 8, 9 [Default: False]")
+#parser.add_option("--split-categories", dest="split_categories", default=False, action="store_true",
+#                  help="Using split categories, means categories 0, 1, 2, 3, 6, 7 instead of 8, 9 [Default: False]")
 parser.add_option("--fit-tails", dest="fit_tails", default=False, action="store_true",
                   help="Fitting of the MSSM m(tautau) tails for certain backgrounds [Default: False]")
 parser.add_option("--label", dest="index", default="", type="string", 
@@ -29,6 +29,8 @@ parser.add_option("--extra-templates", dest="extra_templates", default="", type=
 ##
 ## INPUTS OPTIONS
 ##
+parser.add_option("--inputs-ee", dest="inputs_ee", default="KIT", type="choice", choices=['KIT'],
+                  help="Input files for htt_ee analysis. [Default: \"KIT\"]")
 parser.add_option("--inputs-mm", dest="inputs_mm", default="KIT", type="choice", choices=['KIT'],
                   help="Input files for htt_mm analysis. [Default: \"KIT\"]")
 parser.add_option("--inputs-em", dest="inputs_em", default="MIT", type="choice", choices=['MIT', 'Imperial'],
@@ -89,9 +91,10 @@ os.system("mkdir -p MSSM_backup")
 
 ##define inputs from cvs; Note: not all analyses are available for all inputs
 directories = {}
-from HiggsAnalysis.HiggsToTauTau.moriond_analyses_cfg import htt_mm, htt_em, htt_et, htt_mt, htt_tt
+from HiggsAnalysis.HiggsToTauTau.moriond_analyses_cfg import htt_mm, htt_em, htt_et, htt_mt, htt_tt, htt_tt
 directories['mm'] = htt_mm(options.inputs_mm)
 directories['em'] = htt_em(options.inputs_em)
+directories['ee'] = htt_em(options.inputs_ee)
 directories['et'] = htt_et(options.inputs_et)
 directories['mt'] = htt_mt(options.inputs_mt)
 directories['tt'] = htt_tt(options.inputs_tt)
@@ -111,6 +114,7 @@ patterns = {
 fullname = {
     'mm'   : 'htt_mm',
     'mt'   : 'htt_mt',
+    'ee'   : 'htt_ee',
     'em'   : 'htt_em',
     'et'   : 'htt_et', 
     'tt'   : 'htt_tt',
@@ -198,21 +202,23 @@ if options.update_setup:
         if options.fit_tails:     
             print "INFO: Fitting of the background tails"
             for period in periods :
-                ## if i understand it correct the option "--varbin" has to be kicked out as soon as we have finner binned (equidistant binning) inputs 
                 if options.channels.find("em") > -1:
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'ttbar_fine_binning Fakes_fine_binning EWK_fine_binning' -k '{CATEGORIES}' --range 200 --fitmodel 0".format( 
-                        DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_ee.inputs-mssm-{PER}-0.root -c ee -e {PER} -b 'WJets_fine_binning QCD_fine_binning TTJ_fine_binning' -k '{CATEGORIES}' --range 200 --rebin".format( 
+                        DIR=dir, ANA=ana, PER=period, CATEGORIES="8 9"))
+                if options.channels.find("em") > -1:
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'ttbar_fine_binning Fakes_fine_binning EWK_fine_binning' -k '{CATEGORIES}' --range 200 --rebin".format( 
+                        DIR=dir, ANA=ana, PER=period, CATEGORIES="8 9"))
                 if options.channels.find("et") > -1:
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'W QCD TT' -k '{CATEGORIES}' --rebin".format(
-                        DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
-                if options.channels.find("mm") > -1:
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mm.inputs-mssm-{PER}-0.root -c mm -e {PER} -b 'WJets QCD TTJ' -k '{CATEGORIES}' --rebin".format(
-                        DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'W_fine_binning QCD_fine_binning TT_fine_binning' -k '{CATEGORIES}' --range 200 --rebin".format(
+                        DIR=dir, ANA=ana, PER=period, CATEGORIES="8 9"))
+             ##    if options.channels.find("mm") > -1:
+##                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mm.inputs-mssm-{PER}-0.root -c mm -e {PER} -b 'WJets_fine_binning QCD_fine_binning TTJ_fine_binning' -k '{CATEGORIES}' --range 200 --rebin".format(
+##                         DIR=dir, ANA=ana, PER=period, CATEGORIES="8 9"))
                 if options.channels.find("mt") > -1:
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'W QCD TT' -k '{CATEGORIES}' --rebin".format(
-                        DIR=dir, ANA=ana, PER=period, CATEGORIES="0 1 2 3 6 7" if options.split_categories else "8 9"))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'W_fine_binning QCD_fine_binning TT_fine_binning' -k '{CATEGORIES}' --range 200 --rebin".format(
+                        DIR=dir, ANA=ana, PER=period, CATEGORIES="8 9"))
                 if options.channels.find("tt") > -1:
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_tt.inputs-mssm-8TeV-0.root -c tt -e 8TeV -b 'QCD' -k '8 9' --rebin".format(
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_tt.inputs-mssm-8TeV-0.root -c tt -e 8TeV -b 'QCD_fine_binning' -k '8 9' --range 200 --rebin".format(
                         DIR=dir, ANA=ana))
         ##################
          
@@ -220,7 +226,15 @@ if options.update_setup:
             pass      
         if ana == 'bin-by-bin'  or ana == 'pruned' :
             ##bin-by-bin uncertainties
-            print "INFO: Adding bin-by-bin uncertainties"  
+            print "INFO: Adding bin-by-bin uncertainties"
+            if 'ee' in channels :
+                ## setup bbb uncertainties for ee 
+                os.system("add_bbb_errors.py 'ee:7TeV,8TeV:08,09:WJets,QCD,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
+                    DIR=dir,
+                    ANA=ana
+                    ))
+                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
             if 'mm' in channels :
                 ## setup bbb uncertainties for mm 
                 os.system("add_bbb_errors.py 'mm:7TeV,8TeV:08,09:WJets,QCD,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
@@ -290,10 +304,11 @@ if options.update_datacards :
             PER=options.periods,
             CHN=options.channels,
             MASSES=options.masses,
-            CATEGORIES="--mssm-categories-em='0 1 2 3 6 7' --mssm-categories-et='0 1 2 3 6 7' --mssm-categories-mm='0 1 2 3 6 7' --mssm-categories-mt='0 1 2 3 6 7'" if options.split_categories else ""
+            CATEGORIES=""
             ))
         if ana == "pruned" :
             if not options.skip_pruning :
+                os.system("rm -r pruning_results")
                 print "...pruning bbb uncertainties:"
                 if options.drop_list == "" :
                     ## setup bbb uncertainty pruning
@@ -302,7 +317,7 @@ if options.update_datacards :
                         ANA=ana,
                         PER=options.periods,
                         CHN=options.channels,
-                        CATEGORIES="--mssm-categories-em='0 1 2 3 6 7' --mssm-categories-et='0 1 2 3 6 7' --mssm-categories-mm='0 1 2 3 6 7' --mssm-categories-mt='0 1 2 3 6 7'" if options.split_categories else ""
+                        CATEGORIES="" 
                         ))
                     ## maximum-likelihood-fit
                     os.system("limit.py --max-likelihood --stable --rMin -5 --rMax 5 pruning_results/cmb/160")               
@@ -350,5 +365,5 @@ if options.update_limits :
             CHN=options.channels,
             LABEL=label,
             MASSES=options.masses,
-            CATEGORIES="--mssm-categories-em='0 1 2 3 6 7' --mssm-categories-et='0 1 2 3 6 7' --mssm-categories-mm='0 1 2 3 6 7' --mssm-categories-mt='0 1 2 3 6 7'" if options.split_categories else ""
+            CATEGORIES=""
             ))
