@@ -57,6 +57,8 @@ def get_channel_name(finalstate, category):
     tt_cat_map = {
         '00' : 'boost',
         '01' : 'vbf',
+        '08' : 'nobtag',
+        '09' : 'btag',      
     }
     if finalstate == 'tt':
         return '_'.join((fs_map[finalstate], tt_cat_map[category]))
