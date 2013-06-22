@@ -16,7 +16,6 @@ tauTau_1jet_high_mediumhiggs			qqH				CMS_scale_j_8TeV				0.98
 #tauTau_1jet_high_mediumhiggs         		ZL,ZJ				CMS_scale_j_8TeV				1.00
 tauTau_1jet_high_mediumhiggs         		W				CMS_htt_scale_met_8TeV				1.015
 tauTau_1jet_high_mediumhiggs         		TT				CMS_htt_scale_met_8TeV				1.02
-tauTau_1jet_high_mediumhiggs         		ZL,ZJ				CMS_htt_scale_met_8TeV				1.03
 tauTau_1jet_high_mediumhiggs			signal,ZJ,ZL,TT,VV	        CMS_eff_b_8TeV		        		0.97
 tauTau_1jet_high_mediumhiggs			signal,ZJ,ZL,TT,VV	        CMS_fake_b_8TeV		        		0.98
 tauTau_1jet_high_mediumhiggs         		QCD				CMS_htt_QCDSyst_tautau_1jet_high_mediumhiggs_8TeV		1.35              
