@@ -10,8 +10,11 @@ eleTau_nobtag        	VV				CMS_scale_j_8TeV				0.95
 eleTau_nobtag        	ZL				CMS_scale_j_8TeV				0.90
 eleTau_nobtag	 	signal	   			CMS_htt_scale_met_8TeV				0.99
 eleTau_nobtag	 	TT,ZL,ZJ		    	CMS_htt_scale_met_8TeV				1.01
-eleTau_nobtag		signal,ZJ,ZL,TT,VV 		CMS_eff_b_8TeV 					0.98
-eleTau_nobtag		signal,ZJ,ZL,TT,VV 		CMS_fake_b_8TeV 				0.98
+eleTau_nobtag		bbH 				CMS_eff_b_8TeV 					0.99
+eleTau_nobtag		VV 				CMS_eff_b_8TeV 					0.98
+eleTau_nobtag		TT 				CMS_eff_b_8TeV 					0.89
+eleTau_nobtag		TT 				CMS_fake_b_8TeV 				0.97
+eleTau_nobtag		VV 				CMS_fake_b_8TeV 				0.99
 eleTau_nobtag		ZTT,ZL,ZJ			CMS_htt_zttNorm_8TeV 				1.03
 eleTau_nobtag		TT				CMS_htt_ttbarNorm_8TeV				1.10
 eleTau_nobtag		VV				CMS_htt_DiBosonNorm_8TeV			1.15

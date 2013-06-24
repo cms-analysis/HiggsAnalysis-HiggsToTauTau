@@ -10,8 +10,14 @@ muTau_btag      	TT		  	CMS_scale_j_8TeV 			1.10
 muTau_btag      	VV		  	CMS_scale_j_8TeV 			1.03
 muTau_btag      	signal		  	CMS_htt_scale_met_8TeV			0.99
 muTau_btag      	TT,W,ZL,ZJ	  	CMS_htt_scale_met_8TeV			1.01
-muTau_btag		signal,TT,VV,ZLL        CMS_eff_b_8TeV                  	1.09
-muTau_btag		signal,TT,VV,ZLL        CMS_fake_b_8TeV                 	1.02
+muTau_btag		bbH        		CMS_eff_b_8TeV                  	1.04
+muTau_btag		ggH        		CMS_eff_b_8TeV                  	1.01
+muTau_btag		TT        		CMS_eff_b_8TeV                  	1.02
+muTau_btag		ZL,VV        		CMS_eff_b_8TeV                  	1.04
+muTau_btag		bbH        		CMS_fake_b_8TeV                 	1.10
+muTau_btag		TT,VV        		CMS_fake_b_8TeV                 	1.01
+muTau_btag		ZL        		CMS_fake_b_8TeV                 	1.02
+muTau_btag		ZJ        		CMS_fake_b_8TeV                 	1.16
 muTau_btag		ZTT,ZLL        		CMS_htt_zttNorm_8TeV 			1.03
 muTau_btag		ZTT,ZLL	          	CMS_htt_extrap_ztt_btag_8TeV		1.03
 muTau_btag		TT     		  	CMS_htt_ttbarNorm_8TeV 			1.10
