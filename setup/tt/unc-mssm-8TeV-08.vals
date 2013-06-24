@@ -8,7 +8,7 @@ tauTau_nobtag         		VV				CMS_scale_j_8TeV				1.03
 tauTau_nobtag			signal,ZJ,ZL,TT,VV 		CMS_eff_b_8TeV 					0.98
 tauTau_nobtag			signal,ZJ,ZL,TT,VV 		CMS_fake_b_8TeV 				0.98
 tauTau_nobtag         		QCD				CMS_htt_QCDSyst_tautau_nobtag_8TeV		1.35              
-tauTau_nobtag			W				CMS_htt_WNorm_tautau_nobtag_8TeV			1.30                  
+tauTau_nobtag			W				CMS_htt_WNorm_tautau_nobtag_8TeV		1.30                  
 tauTau_nobtag			ZTT,ZL,ZJ		        CMS_htt_zttNorm_8TeV 				1.033           
 tauTau_nobtag			ZTT			        CMS_htt_extrap_ztt_tautau_nobtag_8TeV		1.030           
 tauTau_nobtag			TT				CMS_htt_ttbarNorm_8TeV				1.10
