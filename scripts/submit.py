@@ -1,4 +1,4 @@
-ave#!/usr/bin/env python
+#!/usr/bin/env python
 #flake8: noqa
 from optparse import OptionParser, OptionGroup
 
