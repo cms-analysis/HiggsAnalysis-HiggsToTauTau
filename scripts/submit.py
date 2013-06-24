@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+ave#!/usr/bin/env python
 #flake8: noqa
 from optparse import OptionParser, OptionGroup
 
@@ -541,14 +541,16 @@ if options.optTanb or options.optTanbPlus :
             if len(subvec(args, 400, 599))>0 :
                 dirs = vec2str(subvec(args, 400,  599))
                 grid = [
-                     "{CMD} -n  3 --min 10.0  --max 20.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                     "{CMD} -n  2 --min  5.0  --max 10.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                    ,"{CMD} -n  3 --min 10.0  --max 20.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
                     ,"{CMD} -n  5 --min 25.0  --max 45.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
                     ,"{CMD} -n  3 --min 50.0  --max 70.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
                 ]                                
             if len(subvec(args, 600, 1000))>0 :
                 dirs = vec2str(subvec(args, 600, 1000))
                 grid = [
-                     "{CMD} -n  3 --min 10.0  --max 20.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                     "{CMD} -n  2 --min  5.0  --max 10.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                    ,"{CMD} -n  3 --min 10.0  --max 20.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
                     ,"{CMD} -n  5 --min 30.0  --max 50.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
                     ,"{CMD} -n  4 --min 55.0  --max 70.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
                 ]                                                
