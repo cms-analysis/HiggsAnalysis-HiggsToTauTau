@@ -421,9 +421,9 @@ for directory in args :
         os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f latex mlfit.root > mlfit.tex")
         os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f html mlfit.root > mlfit.html")
         ## add a version with only problematic values
-        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A  -f text mlfit.root > mlfit_largest-pulls.txt")
-        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A  -f latex mlfit.root > mlfit_largest-pulls.tex")
-        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A  -f html mlfit.root > mlfit_largest-pulls.html")
+        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --vtol2 2.0 -f text mlfit.root > mlfit_largest-pulls.txt")
+        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --vtol2 2.0 -f latex mlfit.root > mlfit_largest-pulls.tex")
+        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --vtol2 2.0 -f html mlfit.root > mlfit_largest-pulls.html")
         os.chdir(subdirectory)
     ##
     ## LIKELIHOOD-SCAN
