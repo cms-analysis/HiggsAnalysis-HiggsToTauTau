@@ -122,7 +122,11 @@ class ModelTemplate():
         if len(pivotals)>0 :
             ## get index and value of closest element to mass in list of pivotals
             (idx, value) = min(enumerate(pivotals), key=lambda x: abs(float(x[1])-mass))
-            if float(value) > mass :
+            if mass < 90 : #this fix is hardcoded and could be done better for sure, but my head is spinning ... problem was that for mass<90 pivotals[max(idx-1,0)] returned 900 for et, mt
+                pmw = (value,value)
+            elif mass > 1000 : #this fix is hardcoded and could be done better for sure, but my head is spinning ... problem was that for mass<90 pivotals[max(idx-1,0)] returned 900 for et, mt
+                pmw = (value,value)
+            elif float(value) > mass :
                 pmw = (pivotals[max(idx-1,0)],value)
             elif float(value) == mass :
                 pmw = (value,value)
@@ -149,7 +153,7 @@ class ModelTemplate():
         polation. 
         """
         ## window of closest pivotal masses below/above mass. Window can be None, if no pivotals exist for a given dir. In
-        ## this case retiurn None
+        ## this case return None
         window = self.pivotal_mass_window(float(mass), self.pivotals[dir])
         if not window :
             return None
@@ -158,7 +162,7 @@ class ModelTemplate():
             single_template = self.load_hist(dir+'/'+proc+mass+label).Clone(proc+mass+label+'_template'); single_template.Scale(scale)
         elif float(window[0]) > float(mass) :
             ## mass out of bounds of pivotals (too small)
-            single_template = self.load_hist(dir+'/'+proc+window[0]+label).Clone(proc+window[0]+label+'_template'); single_template.Scale(scale)
+            single_template = self.load_hist(dir+'/'+proc+window[0]+label).Clone(proc+window[0]+label+'_template'); single_template.Scale(scale) 
         elif float(window[1]) < float(mass) :
             ## mass out of bounds of pivotals (too large)
             single_template = self.load_hist(dir+'/'+proc+window[1]+label).Clone(proc+window[1]+label+'_template'); single_template.Scale(scale)
