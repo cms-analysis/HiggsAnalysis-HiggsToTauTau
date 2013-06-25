@@ -9,7 +9,7 @@ parser.add_option("-t", "--tanb",  dest="tanb",     default='20.',   type="strin
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode")
 parser.add_option("--sm-like", dest="sm_like", default=False, action="store_true", help="Do not divide by the value of tanb, but only scale to MSSM xsec according to tanb value. (Will result in typical SM limit on signal strength for given value of tanb). Used for debugging. [Default: False]")
 parser.add_option("--model", dest="model", default='auxiliaries/models/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root', type="string", help="Model to be applied for the limit calculation. [Default: 'auxiliaries/models/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root']")
-parser.add_option("--interpolation", dest="interpolation_mode", default='mode-1', type="choice", help="Mode for mass interpolation for direct tanb limits. Choices are: mode-0 -- non-degenerate-masses for all htt channels, mode-1 -- non-degenerate-masses for classic htt channels non-degenerate-masses-light for htt_mm, mode-2 -- non-degenerate-masses for classic htt channels degenerate-masses for htt_mm, mode-3 -- non-degenerate-masses-light for all htt channels, mode-4 -- non-degenerate-masses-light for classic htt channels degenerate-masses for htt_mm, mode-5 -- degenerate-masses for all htt channels [Default: mode-1]", choices=["mode-0", "mode-1", "mode-2", "mode-3", "mode-4", "mode-5"])
+parser.add_option("--interpolation", dest="interpolation_mode", default='mode-1', type="choice", help="Mode for mass interpolation for direct tanb limits. Choices are: mode-0 -- non-degenerate-masses for all htt channels, mode-1 -- non-degenerate-masses for classic htt channels non-degenerate-masses-light for htt_mm, mode-2 -- non-degenerate-masses for classic htt channels degenerate-masses for htt_mm, mode-3 -- non-degenerate-masses-light for all htt channels, mode-4 -- non-degenerate-masses-light for classic htt channels degenerate-masses for htt_mm, mode-5 -- degenerate-masses for all htt channels [Default: mode-1]", choices=["mode-0", "mode-1", "mode-2", "mode-3", "mode-4", "mode-5"]) 
 (options, args) = parser.parse_args()
 
 import re
@@ -920,7 +920,7 @@ class MakeDatacard :
               hist_mA_value = buff_mA_value.Clone(hist_name)
               #print "RESCALING OF HIST STARTING: ", hist_mA_value.GetName(), " -- ", hist_mA_value.Integral()
 
-              hist_mA_value.Scale(cross_sections["A"]/self.tanb) 
+              hist_mA_value.Scale(cross_sections["A"]/self.tanb)
               ## determine upper and lower mass edges for mh
               (mh_failed, mh_lower, mh_upper) = self.embracing_masses(self.mh, masses)
               if not mh_failed :
@@ -952,10 +952,13 @@ class MakeDatacard :
                                    hist_mh_value = th1fmorph("I","mh_"+hist_name,hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh, norm_mh_value, 0)
                                    ##hist_mH_value = th2fmorph("I","mH_"+hist_name,hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, norm_mh_value, true) ## change to th2 morphing - not armed yet
                             else :
-                                   hist_mh_value = th1fmorph("I","mh_"+hist_name,hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh, norm_mh_value, 0)
+                                   hist_mh_value = th1fmorph("I","mh_"+hist_name,hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh, norm_mh_value, 0) 
               else :
-                     hist_mh_value = hist_mA_value.Clone(hist_name)
-                     hist_mh_value.Scale(cross_sections["h"]/self.tanb) 
+                     new_filename  = self.expand_filename(filename, 90) #hardcoded could be done better!
+                     file_mh_lower = ROOT.TFile(new_filename, "READ")
+                     buff_mh_value = self.load_hist(file_mA_value if single_file else file_mh_lower, path_name.replace("%.0f" % self.mA, "%.0f" % 90) if self.mA!=90 else path_name)
+                     hist_mh_value = buff_mh_value.Clone(hist_name.replace(str(self.mA), "%.0f" % 90))
+                     hist_mh_value.Scale(cross_sections["h"]/self.tanb)            
               ## catch cases where the morphing failed. Fallback to mA
               ## in this case and scale according to cross section of mh
               if not hist_mA_value.GetNbinsX() == hist_mh_value.GetNbinsX() :
@@ -997,7 +1000,10 @@ class MakeDatacard :
                             else :
                                  hist_mH_value = th1fmorph("I","mH_"+hist_name, hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH, norm_mH_value, 0) 
               else :
-                     hist_mH_value = hist_mA_value.Clone(hist_name)
+                     new_filename  = self.expand_filename(filename, 1000)
+                     file_mH_upper = ROOT.TFile(new_filename, "READ")
+                     buff_mH_upper = self.load_hist(file_mA_value if single_file else file_mH_upper, path_name.replace("%0.f" % self.mA, "%.0f" % 1000)  if mH_upper!=self.mA else path_name)
+                     hist_mH_value = buff_mH_value.Clone(hist_name.replace(str(self.mA), "%.0f" % 1000))
                      hist_mH_value.Scale(cross_sections["H"]/self.tanb) 
               ## catch cases where the morphing failed. Fallback to mA
               ## in this case and scale according to cross section of mH
@@ -1016,12 +1022,12 @@ class MakeDatacard :
               hist_mA_value.Write(hist_name, ROOT.TObject.kOverwrite)
               file_mA_value.Close()
               if not single_file :
-                     if not mh_failed :
-                            file_mh_upper.Close()
-                            file_mh_lower.Close()
-                     if not mH_failed :
-                            file_mH_upper.Close()
-                            file_mH_lower.Close()
+                     #if not mh_failed :
+                     file_mh_upper.Close()
+                     file_mh_lower.Close()
+                     #if not mH_failed :
+                     file_mH_upper.Close()
+                     file_mH_lower.Close()
 
        def rescale_histogram_degenerate(self, filename, dir, process, cross_sections, channel, uncertainty="") :
               """
