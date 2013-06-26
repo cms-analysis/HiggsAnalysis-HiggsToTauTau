@@ -206,16 +206,16 @@ class ModelDatacard(DatacardAdaptor) :
                 file.write(label+'\t lnN \t'+'\t'.join(uncerts)+'\n')
                 file.close()
 
-    def make_model_datacard(self, path, model) :
+    def make_model_datacard(self, path, model, morph) :
         """
         For a datacard located at path, determine the root input files that correspond to bins and procs indicated by the
-        model, as defined in the class MODEL in tanb_grid_new.py. The function creates new signal templates from the raw
-        templates located in the original root input file using the class ModelTemplate. Depending on the configuration of
-        the class the new templates will be located in a new root input file at the same location as the old one but with
-        label self.model_label or in the same root input file, while the histgorams will have modified names (option
-        self.update_file==True). The function does adapt the shapes and the rate lines in the datacards accordingly after
-        the new templates have been created. The function parameter card corresponds to the parsed datacard using the method
-        parseCard of the HCG datacard parser.
+        model, as defined in the class MODEL in tanb_grid_new.py. The dict morph indicates the morphing mode, that should be
+        used for each corresponding bin. The function creates new signal templates from the raw templates located in the
+        original root input file using the class ModelTemplate. Depending on the configuration of the class the new templates
+        will be located in a new root input file at the same location as the old one but with label self.model_label or in
+        the same root input file, while the histgorams will have modified names (option self.update_file==True). The function
+        does adapt the shapes and the rate lines in the datacards accordingly after the new templates have been created. The
+        function parameter card corresponds to the parsed datacard using the method parseCard of the HCG datacard parser.
         """
         ## create the new templates with modified signal model. For this purpose the dict of central values is iterated first.
         ## In case of self.update_file hadd the newly created model file. Make sure that no file that has been processed
@@ -228,6 +228,7 @@ class ModelDatacard(DatacardAdaptor) :
         file.close()
         ## determine schedule for the files and procs that need to be processed. Schedule is of type {'file_name':['proc']}
         schedule = {}
+        morph_per_file = {}
         for (key,params) in model.central.iteritems() :
             ## expected key elements are (period,decay,proc)
             period = key[0]; decay = key[1]; proc = key[2]
@@ -240,16 +241,22 @@ class ModelDatacard(DatacardAdaptor) :
                     if proc_in_card == proc :
                         shape_file = card.path_to_file(bin, proc)
                         if not shape_file in schedule.keys() :
+                            ## define schedule
                             schedule[shape_file] = [(proc,params)]
+                            ## define morphing mode (per file)
+                            for subchn in morph.keys() :
+                                if subchn in bin :
+                                    if not shape_file in morph_per_file.keys() :
+                                        morph_per_file[shape_file] = morph[subchn]
                         else :
                             if not (proc,params) in schedule[shape_file] :
                                 schedule[shape_file].append((proc,params))
-        ## process each file exactly once. treat all processes in one iteration
+        ## process each file exactly once. Treat all processes in one iteration
         for (shape_file,reduced_model) in schedule.iteritems() :
-            print 'creating template(s) :', dir+shape_file
+            print 'creating template(s) :', dir+shape_file, '(morphing mode is', morph_per_file[shape_file]+')'
             if self.update_file :
                 template = ModelTemplate(dir+shape_file, self.model_label)
-                template.create_templates(reduced_model, self.model_label, 1./float(model.tanb))
+                template.create_templates(reduced_model, self.model_label, 1./float(model.tanb), morph_per_file[shape_file])
                 tmp = '/tmp/'+''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))
                 os.system("hadd {TMP} {SOURCE} {SOURCE}{MODEL}".format(TMP=tmp, SOURCE=dir+shape_file, MODEL=self.model_label))
                 os.system("mv {TMP} {SOURCE}".format(TMP=tmp, SOURCE=dir+shape_file))

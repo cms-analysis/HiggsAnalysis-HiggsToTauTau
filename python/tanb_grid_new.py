@@ -13,6 +13,20 @@ model_opts.add_option("--mA", dest="mA", default="", type="string",
 model_opts.add_option("--tanb", dest="tanb", default="", type="string",
                        help="The value of tanb in the model. Default: \"\"]")
 parser.add_option_group(model_opts)
+morph_opts = OptionGroup(parser, "MORPHING OPTIONS", "With these options you can configure what kind of morphing should be applied for a given decay channel. Note that the same morphing mode is applied to all templates in a given input file.")
+morph_opts.add_option("--morphing-htt_ee", dest="morphing_htt_ee", default="NEAREST_NEIGHBOUR", type="choice",
+                 help="Choose the morphing type for the htt_ee decay channel. [Default: \"NEAREST_NEIGHBOUR\"]", choices=["MORPHED", "NEAREST_NEIGHBOUR"])
+morph_opts.add_option("--morphing-htt_em", dest="morphing_htt_em", default="MORPHED", type="choice",
+                 help="Choose the morphing type for the htt_em decay channel. [Default: \"MORPHED\"]", choices=["MORPHED", "NEAREST_NEIGHBOUR"])
+morph_opts.add_option("--morphing-htt_mm", dest="morphing_htt_mm", default="NEAREST_NEIGHBOUR", type="choice",
+                 help="Choose the morphing type for the htt_mm decay channel. [Default: \"NEAREST_NEIGHBOUR\"]", choices=["MORPHED", "NEAREST_NEIGHBOUR"])
+morph_opts.add_option("--morphing-htt_mt", dest="morphing_htt_mt", default="MORPHED", type="choice",
+                 help="Choose the morphing type for the htt_mt decay channel. [Default: \"MORPHED\"]", choices=["MORPHED", "NEAREST_NEIGHBOUR"])
+morph_opts.add_option("--morphing-htt_et", dest="morphing_htt_et", default="MORPHED", type="choice",
+                 help="Choose the morphing type for the htt_et decay channel. [Default: \"MORPHED\"]", choices=["MORPHED", "NEAREST_NEIGHBOUR"])
+morph_opts.add_option("--morphing-htt_tt", dest="morphing_htt_tt", default="MORPHED", type="choice",
+                 help="Choose the morphing type for the htt_tt decay channel. [Default: \"MORPHED\"]", choices=["MORPHED", "NEAREST_NEIGHBOUR"])
+parser.add_option_group(morph_opts)
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 ## check number of arguments; in case print usage
@@ -96,8 +110,14 @@ def main() :
     print "# tangb_grid_new.py "
     print "# --------------------------------------------------------------------------------------"
     print "# You are using the following configuration: "
-    print "# --tanb    :", options.tanb
-    print "# --mA      :", options.mA
+    print "# --tanb            :", options.tanb
+    print "# --mA              :", options.mA
+    print "# --morphing-htt_ee : ", options.morphing_htt_ee
+    print "# --morphing-htt_em : ", options.morphing_htt_em
+    print "# --morphing-htt_mm : ", options.morphing_htt_mm
+    print "# --morphing-htt_mt : ", options.morphing_htt_mt
+    print "# --morphing-htt_et : ", options.morphing_htt_et
+    print "# --morphing-htt_tt : ", options.morphing_htt_tt
     print "# Check option --help in case of doubt about the meaning of one or more of these confi-"
     print "# guration parameters.                           "
     print "# --------------------------------------------------------------------------------------"
@@ -105,12 +125,21 @@ def main() :
     ## directory that contains all datacards in question
     path = args[0]
     label = '_{MASS}_{TANB}'.format(MASS=options.mA, TANB=options.tanb)
+    ## mophing configuration
+    morph = {
+        'htt_ee' : options.morphing_htt_ee,
+        'htt_em' : options.morphing_htt_em,
+        'htt_mm' : options.morphing_htt_mm,
+        'htt_mt' : options.morphing_htt_mt,
+        'htt_et' : options.morphing_htt_et,
+        'htt_tt' : options.morphing_htt_tt,
+        }
     ## complete model for given mass and tanb value (including uncertainties)
     models = {}
     ## adaptor of the datacard for given mass and tanb value
     adaptor = ModelDatacard(options, label, False)
     adaptor.cleanup('.' if not path.find('/')>0 else path[:path.rfind('/')], label)
-    ## parse datacard
+    ## parse datacard (first go)
     old_file = open(path, 'r')
     card = parseCard(old_file, options)
     old_file.close()
@@ -136,7 +165,7 @@ def main() :
     new_name = path[:path.rfind('.txt')]+'_%.2f'%float(options.tanb)+'.txt'
     os.system("cp {SRC} {TARGET}".format(SRC=path, TARGET=new_name))
     ## adapt datacards
-    adaptor.make_model_datacard(new_name, model)
+    adaptor.make_model_datacard(new_name, model, morph)
 
 main()
 exit(0)
