@@ -188,16 +188,16 @@ class ModelTemplate():
     def create_templates(self, reduced_model, file_label, hist_scale=1., MODE='MORPHED', debug=False) :
         """
         Determine a combined template, built up from single templates for Higgs bosons with different masses and cross
-        sections. Model is expected to be a dictionary of type {(period,decay,proc) : MODEL_PARAMS}, where all information
-        about available Higgses, their masses, BRs and cross sections are encoded in the class MODEL_PARAMS. In the key,
-        period, indicates the run period in terms of center of mass energy, decay indicates the decay channel and proc
-        indicates the process, to which MODEL_PARAMS applies. Proc should be present as a raw template for at least one mass
-        in the root input file. The pivotal masses that do exist for each corresponding proc in each directory of the root
-        input files are determined. The single templates are derived and summed. The directory structure relevant for each
-        proc is set up in a root output file, to which these new combined templates are written to. The output file will be
-        located in the same directory as the root input file. It will be distinguished by the postfix rootfile_label from the
-        input file. It will only contain the combined signal templates for the procs given as keys in model. The templates
-        can optionally be scaled by an additional parameter (like 1./float(model.tanb)).
+        sections. Reduced_model is expected to be a dictionary of type {(period,decay,proc) : MODEL_PARAMS}, where all
+        information about available Higgses, their masses, BRs and cross sections are encoded in the class MODEL_PARAMS. In
+        the key, period, indicates the run period in terms of center of mass energy, decay indicates the decay channel and
+        proc indicates the process, to which MODEL_PARAMS applies. Proc should be present as a raw template for at least one
+        mass in the root input file. The pivotal masses that do exist for each corresponding proc in each directory of the
+        root input files are determined. The single templates are derived and summed. The directory structure relevant for
+        each proc is set up in a root output file, to which these new combined templates are written to. The output file will
+        be located in the same directory as the root input file. It will be distinguished by the postfix rootfile_label from
+        the input file. It will only contain the combined signal templates for the procs given as keys in model. The
+        templates can optionally be scaled by an additional parameter (like 1./float(model.tanb)).
         """
         output_file = ROOT.TFile(self.path+file_label, 'UPDATE')
         for (proc, params) in reduced_model :
