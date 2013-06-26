@@ -119,6 +119,7 @@ class ModelTemplate():
         the list of pivotals is empty None will be returned. The pivotal mass window is used for linear scale interpolation.
         """
         pmw = None
+        pivotals.sort(key=float)
         if len(pivotals)>0 :
             ## get index and value of closest element to mass in list of pivotals
             (idx, value) = min(enumerate(pivotals), key=lambda x: abs(float(x[1])-mass))
