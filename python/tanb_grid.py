@@ -930,14 +930,14 @@ class MakeDatacard :
                      buff_mh_lower = self.load_hist(
                             file_mA_value if single_file else file_mh_lower, path_name.replace("%.0f" % self.mA, "%.0f" % mh_lower) if self.mA!=mh_lower else path_name
                             )
-                     hist_mh_lower = buff_mh_lower.Clone(hist_name.replace(str(self.mA), "%.0f" % mh_lower))
+                     hist_mh_lower = buff_mh_lower.Clone(hist_name.replace(str(int(self.mA)), "%.0f" % mh_lower))
                      if not single_file :
                             new_filename  = self.expand_filename(filename, mh_upper)
                             file_mh_upper = ROOT.TFile(new_filename, "READ")
                      buff_mh_upper = self.load_hist(
                             file_mA_value if single_file else file_mh_upper, path_name.replace("%.0f" % self.mA, "%.0f" % mh_upper) if mh_upper!=self.mA else path_name
                             )
-                     hist_mh_upper = buff_mh_upper.Clone(hist_name.replace(str(self.mA), "%.0f" % mh_upper))
+                     hist_mh_upper = buff_mh_upper.Clone(hist_name.replace(str(int(self.mA)), "%.0f" % mh_upper))
                      if interpolation_method == "light" :
                             if (self.mh-mh_lower)<(mh_upper-self.mh) :
                                    hist_mh_value = hist_mh_lower
@@ -952,13 +952,13 @@ class MakeDatacard :
                                    hist_mh_value = th1fmorph("I","mh_"+hist_name,hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh, norm_mh_value, 0)
                                    ##hist_mH_value = th2fmorph("I","mH_"+hist_name,hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, norm_mh_value, true) ## change to th2 morphing - not armed yet
                             else :
-                                   hist_mh_value = th1fmorph("I","mh_"+hist_name,hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh, norm_mh_value, 0) 
+                                   hist_mh_value = th1fmorph("I","mh_"+hist_name,hist_mh_lower, hist_mh_upper, mh_lower, mh_upper, self.mh, norm_mh_value, 0)
               else :
                      new_filename  = self.expand_filename(filename, 90) #hardcoded could be done better!
                      file_mh_lower = ROOT.TFile(new_filename, "READ")
                      buff_mh_value = self.load_hist(file_mA_value if single_file else file_mh_lower, path_name.replace("%.0f" % self.mA, "%.0f" % 90) if self.mA!=90 else path_name)
-                     hist_mh_value = buff_mh_value.Clone(hist_name.replace(str(self.mA), "%.0f" % 90))
-                     hist_mh_value.Scale(cross_sections["h"]/self.tanb)            
+                     hist_mh_value = buff_mh_value.Clone(hist_name.replace(str(int(self.mA)), "%.0f" % 90))
+                     hist_mh_value.Scale(cross_sections["h"]/self.tanb)
               ## catch cases where the morphing failed. Fallback to mA
               ## in this case and scale according to cross section of mh
               if not hist_mA_value.GetNbinsX() == hist_mh_value.GetNbinsX() :
@@ -976,14 +976,14 @@ class MakeDatacard :
                      buff_mH_lower = self.load_hist(
                             file_mA_value if single_file else file_mH_lower, path_name.replace("%0.f" % self.mA, "%.0f" % mH_lower)  if self.mA!=mH_lower else path_name
                             )
-                     hist_mH_lower = buff_mH_lower.Clone(hist_name.replace(str(self.mA), "%.0f" % mH_lower))
+                     hist_mH_lower = buff_mH_lower.Clone(hist_name.replace(str(int(self.mA)), "%.0f" % mH_lower))
                      if not single_file :
                             new_filename  = self.expand_filename(filename, mH_upper)
                             file_mH_upper = ROOT.TFile(new_filename, "READ")
                      buff_mH_upper = self.load_hist(
                             file_mA_value if single_file else file_mH_upper, path_name.replace("%0.f" % self.mA, "%.0f" % mH_upper)  if mH_upper!=self.mA else path_name
                             )
-                     hist_mH_upper = buff_mH_upper.Clone(hist_name.replace(str(self.mA), "%.0f" % mH_upper))
+                     hist_mH_upper = buff_mH_upper.Clone(hist_name.replace(str(int(self.mA)), "%.0f" % mH_upper))
                      if interpolation_method == "light" :
                             if (self.mH-mH_lower)<(mH_upper-self.mH) :
                                    hist_mH_value = hist_mH_lower
@@ -998,12 +998,12 @@ class MakeDatacard :
                                    hist_mH_value = th1fmorph("I","mH_"+hist_name,hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH, norm_mH_value, 0) 
                                    ##hist_mH_value = th2fmorph("I","mH_"+hist_name,hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, norm_mH_value, true) ## change to th2 morphing - not armed yet
                             else :
-                                 hist_mH_value = th1fmorph("I","mH_"+hist_name, hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH, norm_mH_value, 0) 
+                                   hist_mH_value = th1fmorph("I","mH_"+hist_name, hist_mH_lower, hist_mH_upper, mH_lower, mH_upper, self.mH, norm_mH_value, 0) 
               else :
                      new_filename  = self.expand_filename(filename, 1000)
                      file_mH_upper = ROOT.TFile(new_filename, "READ")
                      buff_mH_upper = self.load_hist(file_mA_value if single_file else file_mH_upper, path_name.replace("%0.f" % self.mA, "%.0f" % 1000)  if mH_upper!=self.mA else path_name)
-                     hist_mH_value = buff_mH_value.Clone(hist_name.replace(str(self.mA), "%.0f" % 1000))
+                     hist_mH_value = buff_mH_value.Clone(hist_name.replace(str(int(self.mA)), "%.0f" % 1000))
                      hist_mH_value.Scale(cross_sections["H"]/self.tanb) 
               ## catch cases where the morphing failed. Fallback to mA
               ## in this case and scale according to cross section of mH
