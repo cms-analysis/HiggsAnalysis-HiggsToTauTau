@@ -8,7 +8,7 @@ tauTau_1jet_high_highhiggs			VH				QCDscale_VH	 						1.04
 tauTau_1jet_high_highhiggs		   	signal				UEPS								1.04
 tauTau_1jet_high_highhiggs 			signal,ZTT,TT,VV		CMS_eff_t_tautau_8TeV 						1.19
 tauTau_1jet_high_highhiggs			signal,ZTT   			CMS_scale_t_tautau_8TeV 					1.00        
-tauTau_1jet_high_highhiggs			qqH				CMS_scale_j_8TeV						0.98
+tauTau_1jet_high_highhiggs			qqH				CMS_scale_j_8TeV						0.99
 #tauTau_1jet_high_highhiggs			ggH				CMS_scale_j_8TeV						1.00
 #tauTau_1jet_high_highhiggs         		VH				CMS_scale_j_8TeV						1.00
 #tauTau_1jet_high_highhiggs         		TT				CMS_scale_j_8TeV						1.00
@@ -17,8 +17,10 @@ tauTau_1jet_high_highhiggs			qqH				CMS_scale_j_8TeV						0.98
 #tauTau_1jet_high_highhiggs         		W				CMS_htt_scale_met_8TeV						1.015
 tauTau_1jet_high_highhiggs         		TT				CMS_htt_scale_met_8TeV						1.02
 tauTau_1jet_high_highhiggs         		signal				CMS_htt_scale_met_8TeV						1.03
-tauTau_1jet_high_highhiggs			signal,ZJ,ZL,TT,VV	        CMS_eff_b_8TeV		        				0.97
-tauTau_1jet_high_highhiggs			signal,ZJ,ZL,TT,VV	        CMS_fake_b_8TeV		        				0.98
+tauTau_1jet_high_highhiggs			VH,VV	        		CMS_eff_b_8TeV		        				0.99
+tauTau_1jet_high_highhiggs			TT	        		CMS_eff_b_8TeV		        				0.83
+tauTau_1jet_high_highhiggs			signal,ZJ,ZL,TT,VV	        CMS_fake_b_8TeV		        				0.99
+tauTau_1jet_high_highhiggs			TT	        		CMS_fake_b_8TeV		        				0.83
 tauTau_1jet_high_highhiggs         		QCD				CMS_htt_QCDSyst_tautau_1jet_high_highhiggs_8TeV			1.35              
 tauTau_1jet_high_highhiggs			W				CMS_htt_WNorm_tautau_1jet_high_highhiggs_8TeV			1.30                  
 tauTau_1jet_high_highhiggs			ZTT,ZL,ZJ		        CMS_htt_zttNorm_8TeV 						1.033           
