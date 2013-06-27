@@ -17,10 +17,10 @@ parser.add_option("--asimov", dest="asimov", action="store_true", default=False,
 parser.add_option("-v", "--verbose", dest="verbose", action="store_true", default=False, help="Run in verbose more. [Default: 'False']")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
-cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 5", type="string", help="List em of event categories. [Default: \"0 1 2 3 5\"]")
-cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3 5", type="string", help="List mt of event categories. [Default: \"0 1 2 3 5\"]")
-cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 5", type="string", help="List et of event categories. [Default: \"0 1 2 3 5\"]")
-cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
+cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0   2 3 4   6 7", type="string", help="List em of event categories. [Default: \"0   2 3 4   6 7\"]")
+cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3 4 5 6 7", type="string", help="List mt of event categories. [Default: \"0 1 2 3 4 5 6 7\"]")
+cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 4 5 6 7", type="string", help="List et of event categories. [Default: \"0 1 2 3 4 5 6 7\"]")
+cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1 2", type="string", help="List of tt event categories. [Default: \"0 1 2\"]")
 cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1", type="string", help="List of tt event categories. [Default: \"0 1\"]")
 parser.add_option_group(cats1)
 cats2 = OptionGroup(parser, "MSSM EVENT CATEGORIES", "Event categories to be used for the MSSM analysis.")
@@ -292,19 +292,21 @@ for key in categories :
 fitresults = options.fitresults.format(ANALYSIS=options.analysis)
 ## post-fit plots for all channels in sm and mssm
 category_mapping_classic = {
-    "0" : "0jet_low",
-    "1" : "0jet_high",
-    "2" : "boost_low",
-    "3" : "boost_high",
-    "5" : "vbf",
-    "6" : "btag_low",
-    "7" : "btag_high",
+    "0" : "0jet_low"   ,
+    "1" : "0jet_medium",
+    "2" : "0jet_high",
+    "3" : "1jet_medium",
+    "4" : "1jet_high_lowhiggs",
+    "5" : "1jet_high_mediumhiggs",
+    "6" : "vbf","vbf_loose",
+    "7" : "vbf_tight",
     "8" : "nobtag",
     "9" : "btag",
     }
 category_mapping_tautau = {
-    "0" : "boost",
-    "1" : "vbf",
+    '0' : '1jet_high_mediumhiggs',
+    '1' : '1jet_high_highhiggs',
+    '2' : 'vbf',
     "8" : "nobtag",
     "9" : "btag",
     }
