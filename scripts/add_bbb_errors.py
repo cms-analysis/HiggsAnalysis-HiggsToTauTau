@@ -45,18 +45,20 @@ def get_channel_name(finalstate, category):
     }
     cat_map = {
         '00' : '0jet_low',
-        '01' : '0jet_high',
-        '02' : 'boost_low',
-        '03' : 'boost_high',
-        '05' : 'vbf',
-        '06' : 'btag_low',
-        '07' : 'btag_high',
+        '01' : '0jet_medium',
+        '02' : '0jet_high',
+        '03' : '1jet_medium',
+        '04' : '1jet_high_lowhiggs',
+        '05' : '1jet_high_mediumhiggs',
+        '06' : 'vbf_loose',
+        '07' : 'vbf_tight',
         '08' : 'nobtag',
         '09' : 'btag',
     }
     tt_cat_map = {
-        '00' : 'boost',
-        '01' : 'vbf',
+        '00' : '1jet_high_mediumhiggs',
+        '01' : '1jet_high_highhiggs',
+        '02' : 'vbf',
         '08' : 'nobtag',
         '09' : 'btag',      
     }

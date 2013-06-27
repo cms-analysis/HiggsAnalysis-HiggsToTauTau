@@ -82,12 +82,14 @@ if options.analysis == "mssm" :
 
 ## configuration for Moriond
 directories_sm = {
-    "0"  : ["boost", "vbf"],
-    "1"  : ["boost", "vbf"],
-    "2"  : ["boost"],
-    "3"  : ["boost"],
-    "4"  : ["2jet"],
-    "5"  : ["vbf"],
+    "0"  : ["0jet_low"   ],
+    "1"  : ["0jet_medium"],
+    "2"  : ["0jet_high"],
+    "3"  : ["1jet_medium"],
+    "4"  : ["1jet_high_lowhiggs"],
+    "5"  : ["1jet_high_mediumhiggs"],
+    "6"  : ["vbf","vbf_loose"],
+    "7"  : ["vbf_tight"],
 }
 
 directories_mssm = {
@@ -115,8 +117,9 @@ vhtt_directories = {
 #}
 
 tt_sm_directories = {
-    "0"  : ["boost"],
-    "1"  : ["vbf"],
+    "0"  : ["1jet_high_mediumhiggs"],
+    "1"  : ["1jet_high_highhiggs"],
+    "2"  : ["vbf"],
 }
 
 tt_mssm_directories = {
