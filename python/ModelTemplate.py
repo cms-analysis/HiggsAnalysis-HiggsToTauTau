@@ -123,15 +123,20 @@ class ModelTemplate():
         if len(pivotals)>0 :
             ## get index and value of closest element to mass in list of pivotals
             (idx, value) = min(enumerate(pivotals), key=lambda x: abs(float(x[1])-mass))
-            if mass < 90 : #this fix is hardcoded and could be done better for sure, but my head is spinning ... problem was that for mass<90 pivotals[max(idx-1,0)] returned 900 for et, mt
+            if mass < float(pivotals[0]) :
+                ## mass value beyond lower bound
                 pmw = (value,value)
-            elif mass > 1000 : #this fix is hardcoded and could be done better for sure, but my head is spinning ... problem was that for mass<90 pivotals[max(idx-1,0)] returned 900 for et, mt
+            elif mass > float(pivotals[-1]) : 
+                ## mass value beyond upper bound
                 pmw = (value,value)
             elif float(value) > mass :
+                ## mass closer to lower bound
                 pmw = (pivotals[max(idx-1,0)],value)
             elif float(value) == mass :
+                ## mass sits directly on one of the bounds
                 pmw = (value,value)
             else :
+                ## mass closer to upper bound 
                 pmw = (value,pivotals[min(idx+1,len(pivotals)-1)])
         return pmw
 
