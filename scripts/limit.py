@@ -186,6 +186,8 @@ import os
 import re
 import sys
 import glob
+import string
+import random
 import hashlib
 
 from HiggsAnalysis.HiggsToTauTau.utils import get_mass
@@ -413,19 +415,25 @@ for directory in args :
             stableopt+= "--rMin {MIN} --rMax {MAX} ".format(MIN=options.rMin, MAX=options.rMax)
         redirect = ""
         if options.hide_fitresult :
-            redirect = '> out/'+'fitresult.txt' #''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))
+            redirect = '> /tmp/'+''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))
         ## run maximum likelihood fit
-        print "combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} {wdir}/tmp.root --out=out {redir}".format(
-            mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt, wdir=options.workingdir, redir=redirect)
+        print "combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} {wdir}/tmp.root --out=out".format(
+            mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt, wdir=options.workingdir)
         os.system("combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} {wdir}/tmp.root --out=out {redir}".format(
             mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt, wdir=options.workingdir, redir=redirect))
         ## change to sub-directory out and prepare formated output
         os.chdir(os.path.join(subdirectory, "out"))
         print "formating output..."
-        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f text mlfit.root > mlfit.txt")
-        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f latex mlfit.root > mlfit.tex")
-        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f html mlfit.root > mlfit.html")
-        ## add a version with only problematic values
+        if options.hide_fitresult :
+            ## this is only done in txt mode. Other modes will currently not be provided with this option
+            os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f text mlfit.root > mlfit.txt")
+            os.system("head -n-1 mlfit.txt > mlfit.txt_blind")
+            os.system("rm mlfit.txt")
+        else:
+            os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f text mlfit.root > mlfit.txt")
+            os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f latex mlfit.root > mlfit.tex")
+            os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f html mlfit.root > mlfit.html")
+        ## add a version with only problematic values (the signal pull is not part of of the listing)
         os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --vtol2 2.0 -f text mlfit.root > mlfit_largest-pulls.txt")
         os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --vtol2 2.0 -f latex mlfit.root > mlfit_largest-pulls.tex")
         os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --vtol2 2.0 -f html mlfit.root > mlfit_largest-pulls.html")
