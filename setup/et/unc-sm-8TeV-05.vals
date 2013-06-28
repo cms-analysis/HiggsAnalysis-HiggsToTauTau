@@ -22,8 +22,8 @@ eleTau_1jet_high_mediumhiggs	ZL		    		CMS_htt_scale_met_8TeV				1.12
 eleTau_1jet_high_mediumhiggs	ZJ		    		CMS_htt_scale_met_8TeV				0.97
 eleTau_1jet_high_mediumhiggs	W		    		CMS_htt_scale_met_8TeV				1.03
 eleTau_1jet_high_mediumhiggs	TT		    		CMS_htt_scale_met_8TeV				1.01
-eleTau_1jet_high_mediumhiggs	signal,background	        CMS_eff_b_8TeV		        		0.97
-eleTau_1jet_high_mediumhiggs	signal,background	        CMS_fake_b_8TeV		        		0.98
+eleTau_1jet_high_mediumhiggs	TT	        		CMS_eff_b_8TeV		        		0.98
+#eleTau_1jet_high_mediumhiggs	signal,background	        CMS_fake_b_8TeV		        		1.00
 eleTau_1jet_high_mediumhiggs	ZTT,ZJ,ZL			CMS_htt_zttNorm_8TeV 				1.03
 eleTau_1jet_high_mediumhiggs	TT				CMS_htt_ttbarNorm_8TeV				1.10
 eleTau_1jet_high_mediumhiggs	W				CMS_htt_WNorm_etau_1jet_high_mediumhiggs_8TeV		1.10
