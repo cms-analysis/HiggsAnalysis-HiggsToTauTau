@@ -20,6 +20,7 @@ muTau_vbf_tight         qqH				CMS_scale_j_8TeV				1.03
 muTau_vbf_tight         VH				CMS_scale_j_8TeV				1.15
 muTau_vbf_tight         TT				CMS_scale_j_8TeV				1.05
 muTau_vbf_tight         VV				CMS_scale_j_8TeV				1.10
+muTau_vbf_tight         ZL				CMS_scale_j_8TeV				1.05
 muTau_vbf_tight   	signal	    			CMS_htt_scale_met_8TeV				0.99
 muTau_vbf_tight	   	ZL,ZJ		    		CMS_htt_scale_met_8TeV				1.03
 muTau_vbf_tight	   	TT,W		    		CMS_htt_scale_met_8TeV				1.03

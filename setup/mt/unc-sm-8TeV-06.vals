@@ -16,11 +16,12 @@ muTau_vbf_loose		signal,ZTT,TT,VV 		CMS_eff_t_mutau_medium_8TeV 			1.01
 muTau_vbf_loose		signal,ZTT,TT,VV 		CMS_eff_t_mutau_high_8TeV 			1.012
 muTau_vbf_loose		signal,ZTT			CMS_scale_t_mutau_8TeV 				1.00
 muTau_vbf_loose         ggH				CMS_scale_j_8TeV				1.10
-muTau_vbf_loose         qqH				CMS_scale_j_8TeV				1.03
+muTau_vbf_loose         qqH				CMS_scale_j_8TeV				1.04
 muTau_vbf_loose         VH				CMS_scale_j_8TeV				1.15
 muTau_vbf_loose         TT				CMS_scale_j_8TeV				1.05
-muTau_vbf_loose         VV				CMS_scale_j_8TeV				1.10
-muTau_vbf_loose         ZL				CMS_scale_j_8TeV				1.12
+muTau_vbf_loose         VV				CMS_scale_j_8TeV				1.08
+muTau_vbf_loose         ZL				CMS_scale_j_8TeV				1.05
+muTau_vbf_loose         ZJ				CMS_scale_j_8TeV				1.10
 muTau_vbf_loose   	signal	    			CMS_htt_scale_met_8TeV				0.99
 muTau_vbf_loose   	ZL,ZJ	    			CMS_htt_scale_met_8TeV				1.03
 muTau_vbf_loose	   	TT,W		    		CMS_htt_scale_met_8TeV				1.04
