@@ -2,7 +2,7 @@
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 eleTau_nobtag		signal	  	            	lumi_8TeV            				1.042
 eleTau_nobtag		signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_e 					1.02
-eleTau_nobtag		signal,ZTT,TT,VV 		CMS_eff_t_8TeV 					1.08
+eleTau_nobtag		signal,ZTT,TT,VV 		CMS_eff_t_etau_8TeV				1.08
 eleTau_nobtag		signal,ZTT			CMS_scale_t_etau_8TeV 				1.00
 eleTau_nobtag        	signal				CMS_scale_j_8TeV				0.98
 eleTau_nobtag        	TT				CMS_scale_j_8TeV				0.95
