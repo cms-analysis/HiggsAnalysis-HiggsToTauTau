@@ -450,7 +450,7 @@ if options.optInject :
                     NAME=jobname, METHOD=method, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else ""))
     else :
         ## directories and masses per directory
-        print "Collectiong results"
+        print "Collecting results"
         struct = directories(args)
         lxb_submit(struct[0], struct[1], "--asymptotic --collect-injected-toys", "{USER}".format(USER=options.opt))
 ##
