@@ -6,8 +6,8 @@ def htt_ee(TYPE='KIT') :
 
 def htt_mm(TYPE='KIT') :
     dict = {}
-    dict['7TeV'] = 'Htt_MuMu'
-    dict['8TeV'] = 'Htt_MuMu'
+    dict['7TeV'] = 'DESY-KIT' #Htt_MuMu
+    dict['8TeV'] = 'DESY-KIT' #Htt_MuMu
     return dict
 
 def htt_em(TYPE='MIT') :
