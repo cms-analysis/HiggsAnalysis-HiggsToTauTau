@@ -1,7 +1,9 @@
 mumu_boost_low		  	signal,Dibosons,WJets           lumi_8TeV				1.045
 mumu_boost_low			signal,ZTT,TTJ,WJets,Dibosons 	CMS_eff_m				1.04
-mumu_boost_low			signal,ZMM,TTJ,WJets,Dibosons	CMS_scale_j_8TeV			1.045
-mumu_boost_low			signal,ZMM,TTJ,WJets,Dibosons   CMS_htt_scale_met_8TeV			1.035
+# mumu_boost_low			signal,ZMM,TTJ,WJets,Dibosons	CMS_scale_j_8TeV			1.045
+mumu_boost_low			signal,TTJ,Dibosons	CMS_scale_j_8TeV			0.5
+# mumu_boost_low			signal,ZMM,TTJ,WJets,Dibosons   CMS_htt_scale_met_8TeV			1.035
+mumu_boost_low			signal,TTJ,Dibosons   CMS_htt_scale_met_8TeV			0.5
 mumu_boost_low			signal,ZMM,TTJ,WJets,Dibosons 	CMS_eff_b_8TeV				0.98
 mumu_boost_low			signal,ZMM,TTJ,WJets,Dibosons 	CMS_fake_b_8TeV				0.98
 mumu_boost_low			ggH				pdf_gg					1.08
@@ -14,11 +16,13 @@ mumu_boost_low			signal				UEPS					1.04
 mumu_boost_low			ZTT				CMS_htt_zttNorm_8TeV			1.03
 mumu_boost_low			TTJ				CMS_htt_ttbarNorm_8TeV			1.10
 mumu_boost_low			Dibosons			CMS_htt_mm_DiBosonNorm_8TeV		1.30
-mumu_boost_low			ZTT				CMS_htt_mm_zttLikelihood_8TeV		1.04
-mumu_boost_low			ZMM				CMS_htt_mm_zmmNorm_8TeV			1.07
+# mumu_boost_low			ZTT				CMS_htt_mm_zttLikelihood_8TeV		1.04
+mumu_boost_low				ZTT					CMS_htt_mm_zttShape_boost_low_8TeV	1.0
+# mumu_boost_low			ZMM				CMS_htt_mm_zmmNorm_8TeV			1.07
+mumu_boost_low			ZMM				CMS_htt_mm_zmmShape_boost_8TeV			0.5
 mumu_boost_low			QCD				CMS_htt_mm_QCDNorm_02_8TeV		1.12
-mumu_boost_low			ZTT				CMS_htt_ztt_extrap_boost_8TeV		1.04
-mumu_boost_low			ZMM				CMS_htt_mm_zmm_extrap_boost_8TeV	1.03
+# mumu_boost_low			ZTT				CMS_htt_ztt_extrap_boost_8TeV		1.04
+# mumu_boost_low			ZMM				CMS_htt_mm_zmm_extrap_boost_8TeV	1.03
 mumu_boost_low                  VH                              CMS_htt_mm_VH_MCStat_02_8TeV    	1.13
 mumu_boost_low                  qqH                             CMS_htt_mm_qqH_MCStat_02_8TeV   	1.08
 mumu_boost_low                  ggH                             CMS_htt_mm_ggH_MCStat_02_8TeV   	1.07

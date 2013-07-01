@@ -1,7 +1,9 @@
 mumu_0jet_high		  	signal,Dibosons,WJets           lumi_8TeV            		1.042
 mumu_0jet_high			signal,ZTT,TTJ,WJets,Dibosons 	CMS_eff_m 			1.04
-mumu_0jet_high			signal,ZMM,TTJ,WJets,Dibosons	CMS_scale_j_8TeV		0.96
-mumu_0jet_high			signal,ZMM,TTJ,WJets,Dibosons   CMS_htt_scale_met_8TeV		1.03
+# mumu_0jet_high			signal,ZMM,TTJ,WJets,Dibosons	CMS_scale_j_8TeV		0.96
+mumu_0jet_high			signal,TTJ,Dibosons	CMS_scale_j_8TeV		0.5
+# mumu_0jet_high			signal,ZMM,TTJ,WJets,Dibosons   CMS_htt_scale_met_8TeV		1.03
+mumu_0jet_high			signal,TTJ,Dibosons   CMS_htt_scale_met_8TeV		0.5
 mumu_0jet_high			signal,ZMM,TTJ,WJets,Dibosons 	CMS_eff_b_8TeV 			0.99
 mumu_0jet_high			signal,ZMM,TTJ,WJets,Dibosons 	CMS_fake_b_8TeV			0.99
 mumu_0jet_high			ggH				pdf_gg    			1.08
@@ -14,8 +16,10 @@ mumu_0jet_high			signal				UEPS				0.96
 mumu_0jet_high			ZTT				CMS_htt_zttNorm_8TeV 		1.03
 mumu_0jet_high			TTJ				CMS_htt_ttbarNorm_8TeV		1.10
 mumu_0jet_high			Dibosons			CMS_htt_mm_DiBosonNorm_8TeV	1.30
-mumu_0jet_high			ZTT				CMS_htt_mm_zttLikelihood_8TeV	1.05
-mumu_0jet_high			ZMM				CMS_htt_mm_zmmNorm_8TeV		1.07
+# mumu_0jet_high			ZTT				CMS_htt_mm_zttLikelihood_8TeV	1.05
+mumu_0jet_high				ZTT					CMS_htt_mm_zttShape_0jet_high_8TeV	1.0
+# mumu_0jet_high			ZMM				CMS_htt_mm_zmmNorm_8TeV		1.07
+mumu_0jet_high			ZMM				CMS_htt_mm_zmmShape_0jet_8TeV		0.5
 mumu_0jet_high			QCD				CMS_htt_mm_QCDNorm_01_8TeV	1.08
 mumu_0jet_high                  VH                              CMS_htt_mm_VH_MCStat_01_8TeV    1.06
 mumu_0jet_high                  qqH                             CMS_htt_mm_qqH_MCStat_01_8TeV   1.12
