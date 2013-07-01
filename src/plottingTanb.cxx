@@ -10,7 +10,7 @@
 #include "TGraphAsymmErrors.h"
 
 void
-plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* lowerLEP, TGraph* upperLEP, std::map<double, TGraphAsymmErrors*> higgsBands, std::string& xaxis, std::string& yaxis, double min=0., double max=50., bool log=false)
+plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* lowerLEP, TGraph* upperLEP, std::map<double, TGraphAsymmErrors*> higgsBands, std::string& xaxis, std::string& yaxis, double min=0., double max=60., bool log=false)
 {
   // set up styles
   canv.cd();
