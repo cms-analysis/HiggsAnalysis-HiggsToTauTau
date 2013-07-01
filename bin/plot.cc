@@ -61,6 +61,10 @@ int main(int argc, char* argv[])
   types.push_back(std::string("--bayesian"));
   // show asymptotic cross section limits with signal injected
   types.push_back(std::string("--injected"));
+  // show frequentist significances with signal injected
+  types.push_back(std::string("--injected-sig"));
+  // show frequentist pvalue with signal injected
+  types.push_back(std::string("--injected-pval"));
   // show asymptotic cross section (times BR) limits
   types.push_back(std::string("--asymptotic"));
   // show significances with bands (run with toys)
@@ -235,6 +239,51 @@ int main(int argc, char* argv[])
     plot.plotLimit(*canv, inner, outer, expected, observed);
   }
   // -----------------------------------------------------------------------------------------------------------------------
+  if( std::string(argv[1]) == std::string("--injected-sig") ){
+    // observed limit
+    TGraph* observed  = 0;
+    if(!expectedOnly){
+      observed = new TGraph();
+      plot.fillCentral(directory, observed, "higgsCombineSIG-obs.ProfileLikelihood.mH$MASS");
+    }
+    // expected limit (for --injected 'MEDIAN' and 'MEAN' are sensible parameters)
+    TGraph* expected  = new TGraph();
+    plot.fillCentral(directory, expected, "MEDIAN");
+    plot.fillCentral(directory, expected, "higgsCombineSIG-exp.ProfileLikelihood.mH$MASS");
+    // 1-sigma uncertainty band
+    TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
+    plot.fillBand(directory, inner, "TOYBASED", true);
+    // 2-sigma uncertainty band
+    TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
+    plot.fillBand(directory, outer, "TOYBASED", false);
+    // make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plotSignificance(*canv, inner, outer, expected, observed);
+  }
+  // -----------------------------------------------------------------------------------------------------------------------
+  if( std::string(argv[1]) == std::string("--injected-pval") ){
+    // observed limit
+    TGraph* observed  = 0;
+    if(!expectedOnly){
+      observed = new TGraph();
+      plot.fillCentral(directory, observed, "higgsCombinePVAL-obs.ProfileLikelihood.mH$MASS");
+    }
+    // expected limit (for --injected 'MEDIAN' and 'MEAN' are sensible parameters)
+    TGraph* expected  = new TGraph();
+    plot.fillCentral(directory, expected, "higgsCombinePVAL-exp.ProfileLikelihood.mH$MASS");
+    // 1-sigma uncertainty band
+    TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
+    plot.fillBand(directory, inner, "TOYBASED", true);
+    // 2-sigma uncertainty band
+    TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
+    plot.fillBand(directory, outer, "TOYBASED", false);
+    // make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plotPValue(*canv, inner, outer, expected, observed);
+  }
+  // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--asymptotic") ){
     // observed limit
     TGraph* observed  = 0;
@@ -279,10 +328,10 @@ int main(int argc, char* argv[])
   }
   // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--significance-frequentist") ){
-    // observed p-value
+    // observed significance
     TGraph* observed  = new TGraph();
     plot.fillCentral(directory, observed, "higgsCombineSIG-obs.ProfileLikelihood.mH$MASS");
-    // expected p-value
+    // expected significance
     TGraph* expected  = new TGraph();
     plot.fillCentral(directory, expected, "higgsCombineSIG-exp.ProfileLikelihood.mH$MASS");
     // make the plot
@@ -301,7 +350,7 @@ int main(int argc, char* argv[])
     // make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
-    plot.plotPValue(*canv, expected, observed);
+    plot.plotPValue(*canv, 0, 0, expected, observed);
   }
   // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--max-likelihood") ){

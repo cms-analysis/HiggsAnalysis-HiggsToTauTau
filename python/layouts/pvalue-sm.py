@@ -10,7 +10,7 @@ layout = cms.PSet(
     ## x-axis title
     yaxis = cms.string("Local p-value"),
     ## indicate that this is bestfit
-    bestfit = cms.bool(True),
+#    bestfit = cms.bool(True),
     ## print to png
     png  = cms.bool(True),
     ## print to pdf
@@ -30,5 +30,9 @@ layout = cms.PSet(
     ## define output label
     outputLabel = cms.string("p-value"),
     ## define masspoints for limit plot
-    masspoints = cms.vdouble(range(110, 146, 5))
+    masspoints = cms.vdouble(range(110, 146, 5)),
+    ## mass label for the injected signal print band in different layout for signal injected
+    injectedMass=cms.string("125"),    
+    ## print band in different layout for signal injected
+    injected=cms.bool(True),
 )

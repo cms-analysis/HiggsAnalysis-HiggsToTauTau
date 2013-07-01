@@ -2,7 +2,7 @@
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plottingSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* unit3, TGraph* unit5, std::string& xaxis, std::string& yaxis, double min, double max, bool log, bool legendOnRight);
+void plottingSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* unit3, TGraph* unit5, std::string& xaxis, std::string& yaxis, double min, double max, bool log, std::string PLOT, std::string injectedMass, bool legendOnRight);
 
 void
 PlotLimits::plotSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed)
@@ -22,7 +22,9 @@ PlotLimits::plotSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraph
   // set proper maximum
   float max = maximum(expected);
   // do the plotting 
-  plottingSignificance(canv, innerBand, outerBand, expected, observed, unit3, unit5, xaxis_, yaxis_, min_, max, log_, mssm_);
+  std::string PLOT("LIMIT");
+  if(injected_){ PLOT=std::string("INJECTED"); }
+  plottingSignificance(canv, innerBand, outerBand, expected, observed, unit3, unit5, xaxis_, yaxis_, min_, max, log_, PLOT, injectedMass_, mssm_);
   /// setup the CMS Preliminary
   //CMSPrelim(dataset_.c_str(), "", 0.160, 0.835);
   CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
@@ -78,6 +80,8 @@ PlotLimits::plotSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraph
   if(txt_){
     print(std::string(output_).append("_").append(label_).c_str(), expected, observed, "txt");
     print(std::string(output_).append("_").append(label_).c_str(), expected, observed, "tex");
+    if(innerBand && outerBand) print(std::string(output_).append("_").append(label_).c_str(), outerBand, innerBand, expected, observed, "txt");
+    if(innerBand && outerBand) print(std::string(output_).append("_").append(label_).c_str(), outerBand, innerBand, expected, observed, "tex");
   }
   if(root_){
     TFile* output = new TFile(std::string("limits_").append(label_).append(".root").c_str(), "update");
@@ -86,7 +90,7 @@ PlotLimits::plotSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraph
       output->cd(output_.c_str());
     }
     if(observed){ observed ->Write("observed" );}
-    expected ->Write("expected" );
+    if(expected){ expected ->Write("expected" );}
     if(innerBand){ innerBand->Write("innerBand" );}
     if(outerBand){ outerBand->Write("outerBand" );}
     output->Close();

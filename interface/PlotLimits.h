@@ -100,7 +100,7 @@ class PlotLimits {
   /// plot significance on canvas, print out png, pdf, txt, root formats if desired  
   void plotSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0);
   /// plot bestfit values for different parameters dependend on mass on canvas, print out png, pdf, txt, root formats if desired 
-  void plotPValue(TCanvas& canv, TGraph* expected, TGraph* observed, const char* directory="");
+  void plotPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0);
   /// plot likelihood mass scan on canvas, print out png, pdf, txt, root formats if desired
   void plotMassScan(TCanvas& canv, TGraph* nll);
   /// plot 2d-scans for several masses on canvases, print out png, pdf, txt, root formats if desired  

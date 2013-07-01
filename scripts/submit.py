@@ -433,26 +433,20 @@ if options.optInject :
         if not options.nuisances == "" :
             opts+=" --no-prefit --external-pulls \"{PATH}\" --signal-plus-background {SPLUSB}".format(PATH=options.nuisances, SPLUSB=options.signal_plus_BG)
         method = options.injected_method#"--asymptotic"
-        if options.injected_method == "--max-likelihood" :
-            method = "--max-likelihood"
-        if options.injected_method == "--significance-frequentist" :
-            method = "--significance-frequentist"
-        if options.injected_method == "--pvalue-frequentist" :
-            method = "--pvalue-frequentist"
         ## do the submit
         for path in paths :
             jobname = "injected-"+path[path.rstrip('/').rfind('/')+1:]
             if options.printOnly :
                 print "lxb-injected.py --name {NAME} --method {METHOD} --input {PATH} {LXQ} {CONDOR} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" --injected-mass {INJECTEDMASS} {MASSES}".format(
-                    NAME=jobname, METHOD=method, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else "")
+                    NAME=jobname, METHOD=options.injected_method, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else "")
             else :
                 os.system("lxb-injected.py --name {NAME} --method {METHOD} --input {PATH} {LXQ} {CONDOR} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" --injected-mass {INJECTEDMASS} {MASSES}".format(
-                    NAME=jobname, METHOD=method, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else ""))
+                    NAME=jobname, METHOD=options.injected_method, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else ""))
     else :
         ## directories and masses per directory
         print "Collecting results"
         struct = directories(args)
-        lxb_submit(struct[0], struct[1], "--asymptotic --collect-injected-toys", "{USER}".format(USER=options.opt))
+        lxb_submit(struct[0], struct[1], "{METHOD} --collect-injected-toys".format(METHOD=options.injected_method), "{USER}".format(USER=options.opt))
 ##
 ## CLs
 ##
