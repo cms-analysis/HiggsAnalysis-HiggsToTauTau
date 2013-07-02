@@ -203,9 +203,9 @@ if options.update_setup:
         if options.fit_tails:     
             print "INFO: Fitting of the background tails"
             for period in periods :
-                if options.channels.find("ee") > -1:
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_ee.inputs-mssm-{PER}-0.root -c ee -e {PER} -b 'WJets_fine_binning QCD_fine_binning TTJ_fine_binning' -k '{CATEGORIES}' --range 200 --rebin".format( 
-                        DIR=dir, ANA=ana, PER=period, CATEGORIES="8 9"))
+              ##   if options.channels.find("ee") > -1:
+##                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_ee.inputs-mssm-{PER}-0.root -c ee -e {PER} -b 'WJets_fine_binning QCD_fine_binning TTJ_fine_binning' -k '{CATEGORIES}' --range 200 --rebin".format( 
+##                         DIR=dir, ANA=ana, PER=period, CATEGORIES="8 9"))
                 if options.channels.find("em") > -1:
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'ttbar_fine_binning Fakes_fine_binning EWK_fine_binning' -k '{CATEGORIES}' --range 200 --rebin".format( 
                         DIR=dir, ANA=ana, PER=period, CATEGORIES="8 9"))
@@ -216,11 +216,11 @@ if options.update_setup:
 ##                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mm.inputs-mssm-{PER}-0.root -c mm -e {PER} -b 'WJets_fine_binning QCD_fine_binning TTJ_fine_binning' -k '{CATEGORIES}' --range 200 --rebin".format(
 ##                         DIR=dir, ANA=ana, PER=period, CATEGORIES="8 9"))
                 if options.channels.find("mt") > -1:
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'QCD_fine_binning' -k '{CATEGORIES}' --range 200 --rebin".format( #'W_fine_binning QCD_fine_binning TT_fine_binning'
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'W_fine_binning QCD_fine_binning TT_fine_binning' -k '{CATEGORIES}' --range 200 --rebin".format(
                         DIR=dir, ANA=ana, PER=period, CATEGORIES="8 9"))
-                if options.channels.find("tt") > -1:
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_tt.inputs-mssm-8TeV-0.root -c tt -e 8TeV -b 'QCD_fine_binning' -k '8 9' --range 200 --rebin".format(
-                        DIR=dir, ANA=ana))
+            if options.channels.find("tt") > -1:
+                os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_tt.inputs-mssm-8TeV-0.root -c tt -e 8TeV -b 'QCD_fine_binning' -k '8 9' --range 200 --rebin".format(
+                    DIR=dir, ANA=ana))
         ##################
          
         if ana == 'std' :
