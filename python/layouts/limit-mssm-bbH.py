@@ -2,7 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string(", Preliminary, H #rightarrow #tau #tau, L = 17 fb^{-1}"),
+    dataset = cms.string("CMS Preliminary, H #rightarrow #tau #tau, 19.8 fb^{-1} at 8 TeV"),
+    #dataset = cms.string("CMS Preliminary, H #rightarrow #tau #tau, 4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV"),
     ## x-axis title
     xaxis = cms.string("m_{#phi} [GeV]"),
     ## x-axis title
@@ -24,7 +25,7 @@ layout = cms.PSet(
     ## define verbosity level
     verbosity = cms.uint32(0),
     ## define output label
-    outputLabel = cms.string("mssm"), 
+    outputLabel = cms.string("bbH"), 
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
     90.
@@ -49,5 +50,7 @@ layout = cms.PSet(
     ),
     ## is this mssm?
     mssm = cms.bool(True),
+    ## plot expected only
+    expectedOnly = cms.bool(True),
 
 )
