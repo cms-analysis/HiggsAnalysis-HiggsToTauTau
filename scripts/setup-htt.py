@@ -14,18 +14,20 @@ parser.add_option("-s", "--setup", dest="setup", default="all", type="choice", h
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode. [Default: False]")
 parser.add_option("--SM4", dest="SM4", default=False, action="store_true", help="Copy datacards for SM4 (for SM only). [Default: False]")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
-cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
-cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 4 5", type="string", help="List em of event categories. [Default: \"0 1 2 3 4 5\"]")
-cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3 4 5 6 7", type="string", help="List mt of event categories. [Default: \"0 1 2 3 4 5 6 7 \"]")
-cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 4 5 6 7", type="string", help="List et of event categories. [Default: \"0 1 2 3 4 5 6 7 \"]")
+cats1.add_option("--sm-categories-ee", dest="ee_sm_categories", default="0 1 2 3 5", type="string", help="List of ee event categories. [Default: \"0 1 2 3 5\"]")
+cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List of mm event categories. [Default: \"0 1 2 3 5\"]")
+cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 4", type="string", help="List of em event categories. [Default: \"0 1 2 3 4\"]")
+cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3 4 5 6 7", type="string", help="List of mt event categories. [Default: \"0 1 2 3 4 5 6 7 \"]")
+cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 4 5 6 7", type="string", help="List of et event categories. [Default: \"0 1 2 3 4 5 6 7 \"]")
 cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1 2", type="string", help="List of tt event categories. [Default: \"0 1 2\"]")
-cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1 2", type="string", help="List of vhtt event categories. [Default: \"0 1\"]")
+cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1 2", type="string", help="List of vhtt event categories. [Default: \"0 1 2\"]")
 parser.add_option_group(cats1)
 cats2 = OptionGroup(parser, "MSSM EVENT CATEGORIES", "Event categories to be used for the MSSM analysis.")
-cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="8 9", type="string", help="List mm of event categories. [Default: \"8 9\"]")
-cats2.add_option("--mssm-categories-em", dest="em_mssm_categories", default="8 9", type="string", help="List em of event categories. [Default: \"8 9\"]")
-cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="8 9", type="string", help="List mt of event categories. [Default: \"8 9\"]")
-cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9", type="string", help="List et of event categories. [Default: \"8 9\"]")
+cats2.add_option("--mssm-categories-ee", dest="ee_mssm_categories", default="8 9", type="string", help="List of ee event categories. [Default: \"8 9\"]")
+cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="8 9", type="string", help="List of mm event categories. [Default: \"8 9\"]")
+cats2.add_option("--mssm-categories-em", dest="em_mssm_categories", default="8 9", type="string", help="List of em event categories. [Default: \"8 9\"]")
+cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="8 9", type="string", help="List of mt event categories. [Default: \"8 9\"]")
+cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9", type="string", help="List of et event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="8 9", type="string", help="List of tt event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-hbb", dest="hbb_mssm_categories", default="0 1 2 3 4 5 6", type="string", help="List of hbb event categories. [Default: \"0 1 2 3 4 5\"]")
 parser.add_option_group(cats2)
@@ -48,6 +50,7 @@ for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
 ## switch to sm event categories
 if options.analysis == "sm" :
     categories = {
+        "ee"   : options.ee_sm_categories.split(),
         "mm"   : options.mm_sm_categories.split(),
         "em"   : options.em_sm_categories.split(),
         "mt"   : options.mt_sm_categories.split(),
@@ -59,6 +62,7 @@ if options.analysis == "sm" :
 ## switch to mssm event categories
 if options.analysis == "mssm" :
     categories = {
+        "ee"   : options.ee_mssm_categories.split(),
         "mm"   : options.mm_mssm_categories.split(),
         "em"   : options.em_mssm_categories.split(),
         "mt"   : options.mt_mssm_categories.split(),
@@ -67,79 +71,79 @@ if options.analysis == "mssm" :
         "hbb"  : options.hbb_mssm_categories.split(),
         }
 
-#directories = {
-#    "0"  : ["0jet", "fermionic", "htt"],
-#    "1"  : ["0jet", "fermionic", "htt"],
-#    "2"  : ["boost", "fermionic", "htt"],
-#    "3"  : ["boost", "fermionic", "htt"],
-#    "4"  : ["2jet", "htt"],
-#    "5"  : ["vbf", "gauge", "htt"],
-#    "6"  : ["btag", "htt"],
-#    "7"  : ["btag", "htt"],
-#    "8"  : ["nobtag", "htt"],
-#    "9"  : ["btag", "htt"],
-#}
-
-## configuration for Moriond
+## configuration for summer13
 directories_sm = {
-    "0"  : ["0jet_low"   ],
-    "1"  : ["0jet_medium"],
-    "2"  : ["0jet_high"],
-    "3"  : ["1jet_medium"],
-    "4"  : ["1jet_high_lowhiggs"],
-    "5"  : ["1jet_high_mediumhiggs"],
-    "6"  : ["vbf","vbf_loose"],
-    "7"  : ["vbf_tight"],
+    'em' : {
+    '0' : ['1jet', 'vbf', 'htt', 'cmb'],
+    '1' : ['1jet', 'vbf', 'htt', 'cmb'],
+    '2' : ['1jet', 'htt', 'cmb'],
+    '3' : ['1jet', 'htt', 'cmb'],
+    '4' : ['vbf' , 'htt', 'cmb'],
+    '5' : ['vbf' , 'htt', 'cmb'],
+    },
+    'et' : {
+    '0' : ['1jet', 'vbf', 'htt', 'cmb'],
+    '1' : ['1jet', 'vbf', 'htt', 'cmb'],
+    '2' : ['1jet', 'vbf', 'htt', 'cmb'],
+    '3' : ['1jet', 'htt', 'cmb'],
+    '4' : ['1jet', 'htt', 'cmb'],
+    '5' : ['1jet', 'htt', 'cmb'],
+    '6' : ['vbf' , 'htt', 'cmb'],
+    '7' : ['vbf' , 'htt', 'cmb'],
+    },
+    'mt' : {
+    '0' : ['1jet', 'vbf', 'htt', 'cmb'],
+    '1' : ['1jet', 'vbf', 'htt', 'cmb'],
+    '2' : ['1jet', 'vbf', 'htt', 'cmb'],
+    '3' : ['1jet', 'htt', 'cmb'],
+    '4' : ['1jet', 'htt', 'cmb'],
+    '5' : ['1jet', 'htt', 'cmb'],
+    '6' : ['vbf' , 'htt', 'cmb'],
+    '7' : ['vbf' , 'htt', 'cmb'],
+    },
+    'tt' : {
+    '0' : ['1jet', 'htt', 'cmb'],
+    '1' : ['1jet', 'htt', 'cmb'],
+    '2' : ['vbf' , 'htt', 'cmb'],
+    },
+    'vhtt' :{
+    '0' : ['wh'    , 'vhtt', 'cmb'],
+    '1' : ['wh'    , 'vhtt', 'cmb'],
+    '2' : ['wh'    , 'vhtt', 'cmb'],
+    '3' : ['zh'    , 'vhtt', 'cmb'],
+    '4' : ['zh'    , 'vhtt', 'cmb'],
+    '5' : ['zh'    , 'vhtt', 'cmb'],
+    '6' : ['zh'    , 'vhtt', 'cmb'],
+    '7' : ['wh_had', 'vhtt', 'cmb'],
+    '8' : ['wh_had', 'vhtt', 'cmb'],
+    },
 }
 
 directories_mssm = {
-    "0"  : ["nobtag", "btag"],
-    "1"  : ["nobtag", "btag"],
-    "2"  : ["nobtag"],
-    "3"  : ["nobtag"],
-    "6"  : ["btag"],
-    "7"  : ["btag"],
-    "8"  : ["nobtag"],
-    "9"  : ["btag"],
-}
-
-## categories are different for the vhtt case
-vhtt_directories = {
-    "0" : ["llt", "gauge", "htt"],
-    "1" : ["4l", "gauge", "htt"],
-    "2" : ["ltt", "gauge", "htt"],
-}
-
-## for htt_tt, 0 = boost, 1 = vbf
-#tt_directories = {
-#    "0"  : ["boost", "fermionic", "htt"],
-#    "1"  : ["vbf", "gauge", "htt"],
-#}
-
-tt_sm_directories = {
-    "0"  : ["1jet_high_mediumhiggs"],
-    "1"  : ["1jet_high_highhiggs"],
-    "2"  : ["vbf"],
-}
-
-tt_mssm_directories = {
-    "8"  : ["nobtag"],
-    "9"  : ["btag"],
-}
-
-#hmm_directories = {
-#    "0"  : ["btag", "hmm"],
-#    "1"  : ["nobtag", "hmm"],
-#}
-
-hbb_directories = {
-    "0"  : ["bbhad", "hbb"],
-    "1"  : ["bbhad", "hbb"],
-    "2"  : ["bbhad", "hbb"],
-    "3"  : ["bbhad", "hbb"],
-    "4"  : ["bbhad", "hbb"],
-    "5"  : ["bbhad", "hbb"],
-    "6"  : ["bblep", "hbb"],
+    'ee' : {
+    '8'  : ['nobtag'],
+    '9'  : ['btag'  ],
+    },
+    'mm' : {
+    '8'  : ['nobtag'],
+    '9'  : ['btag'  ],
+    },
+    'em' : {
+    '8'  : ['nobtag'],
+    '9'  : ['btag'  ],
+    },    
+    'et' : {
+    '8'  : ['nobtag'],
+    '9'  : ['btag'  ],
+    },
+    'mt' : {
+    '8'  : ['nobtag'],
+    '9'  : ['btag'  ],
+    },
+    'tt' : {
+    '8'  : ['nobtag'],
+    '9'  : ['btag'  ],
+    },
 }
 
 ## determine directories
@@ -148,20 +152,9 @@ def directories(channel) :
         category_names = directories_sm
     else :
         category_names = directories_mssm
-    if 'vhtt' in channel:
-        category_names = vhtt_directories
-    if channel == 'tt':
-        if options.analysis == "sm" :
-            category_names = tt_sm_directories
-        else:
-            category_names = tt_mssm_directories
-    if channel == 'hmm':
-        category_names = hmm_directories
-    if channel == 'hbb':
-        category_names = hbb_directories 
     return category_names
 
-## setup directory structure in case it does not exist, yet
+## setup directory structure in case it does not exist, yet.
 if not os.path.exists(options.out) :
     os.system("mkdir {OUTPUT}/".format(OUTPUT=options.out))
 if not os.path.exists("{OUTPUT}/cmb{LABEL}".format(OUTPUT=options.out, ANA=options.analysis, LABEL=label)) :
@@ -172,7 +165,7 @@ for channel in channels :
 for channel in channels :
     category_names = directories(channel)
     for cat in categories[channel] :
-        for dir in category_names[cat]:
+        for dir in category_names[channel][cat]:
             if not os.path.exists("{OUTPUT}/{DIR}{LABEL}".format(OUTPUT=options.out, DIR=dir, LABEL=label)) :
                 os.system("mkdir {OUTPUT}/{DIR}{LABEL}".format(OUTPUT=options.out, DIR=dir, LABEL=label))
 
@@ -193,7 +186,7 @@ for channel in channels :
                         INPUT=options.input, OUTPUT=options.out+"/"+channel+label, PER=period, ANA=options.analysis, CHN=channel, CAT=cat, VERB=verb, MASS=mass))
                 if options.setup == "all" or options.setup == "cat" :
                     ## setup category-wise
-                    for category in category_names[cat]:
+                    for category in category_names[channel][cat]:
                         os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --no-update  --{ANA}-categories-{CHN} {CAT} {VERB} {MASS}".format(
                             INPUT=options.input, OUTPUT=options.out+"/"+category+label, PER=period, ANA=options.analysis, CHN=channel, CAT=cat, VERB=verb, MASS=mass))
 
