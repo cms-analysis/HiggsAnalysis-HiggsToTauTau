@@ -43,8 +43,6 @@ def get_channel_name(finalstate, category):
         'mm' : 'mumu',
         'ee' : 'ee',
         'tt' : 'tauTau',
-        '08' : 'nobtag',
-        '09' : 'btag',
     }
     cat_map = {
         'ee' : {
@@ -53,6 +51,8 @@ def get_channel_name(finalstate, category):
         '02' : '1jet_low',
         '03' : '1jet_high',
         '04' : 'vbf',
+        '08' : 'nobtag',
+        '09' : 'btag',
         },
         'mm' : {
         '00' : '0jet_low',
