@@ -326,7 +326,7 @@ if options.optMDFit :
         elif "cV-cF" in options.fitModel :
             cmd   = "lxb-multidim-fit.py --name {PRE}-CV-CF-{MASS} --njob 300 --npoints 12".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'cV-cF=HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcF'"
-            opts  = "--physics-model-options 'modes=cVRange=0:3 cFRange=0:2'"            
+            opts  = "--physics-model-options 'cVRange=0:3 cFRange=0:2'"            
         ## add lxq compliance
         sys = ""
         if options.lxq :
@@ -428,6 +428,14 @@ if options.optInject :
     if not options.calculate_injected :
         ## prepare options
         opts = options.opt
+        if options.injected_method == "--max-likelihood" :
+            folder_extension = "-mle"
+        elif options.injected_method == "--asymptotic" :
+            folder_extension = "-limit"
+        elif options.injected_method == "--significance-frequentist" :
+            folder_extension = "-sig"
+        elif options.injected_method == "--pvalue-frequentist" :
+            folder_extension = "-pval"
         if not options.injected_method == "--max-likelihood" :
             opts+=" --observedOnly"
         if not options.nuisances == "" :
@@ -435,7 +443,7 @@ if options.optInject :
         method = options.injected_method#"--asymptotic"
         ## do the submit
         for path in paths :
-            jobname = "injected-"+path[path.rstrip('/').rfind('/')+1:]
+            jobname = "injected-"+path[path.rstrip('/').rfind('/')+1:]+folder_extension
             if options.printOnly :
                 print "lxb-injected.py --name {NAME} --method {METHOD} --input {PATH} {LXQ} {CONDOR} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" --injected-mass {INJECTEDMASS} {MASSES}".format(
                     NAME=jobname, METHOD=options.injected_method, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else "")
