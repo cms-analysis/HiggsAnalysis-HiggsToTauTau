@@ -263,7 +263,7 @@ class ModelDatacard(DatacardAdaptor) :
                 os.system("rm {SOURCE}{MODEL}".format(SOURCE=dir+shape_file,MODEL=self.model_label))
             else :
                 template = ModelTemplate(dir+shape_file)
-                template.create_templates(reduced_model, self.model_label, 1./float(model.tanb))
+                template.create_templates(reduced_model, self.model_label, 1./float(model.tanb), morph_per_file[shape_file])
         ## adapt datacards to pick up proper signal rates
         print 'adapting datacard(s) :', path
         for key in model.central.keys() :
