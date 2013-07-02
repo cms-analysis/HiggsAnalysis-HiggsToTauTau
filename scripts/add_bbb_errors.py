@@ -41,9 +41,39 @@ def get_channel_name(finalstate, category):
         'et' : 'eleTau',
         'em' : 'emu',
         'mm' : 'mumu',
+        'ee' : 'ee',
         'tt' : 'tauTau',
+        '08' : 'nobtag',
+        '09' : 'btag',
     }
     cat_map = {
+        'ee' : {
+        '00' : '0jet_low',
+        '01' : '0jet_high',
+        '02' : '1jet_low',
+        '03' : '1jet_high',
+        '04' : 'vbf',
+        },
+        'mm' : {
+        '00' : '0jet_low',
+        '01' : '0jet_high',
+        '02' : '1jet_low',
+        '03' : '1jet_high',
+        '04' : 'vbf',
+        '08' : 'nobtag',
+        '09' : 'btag',
+        },
+        'em' : {
+        '00' : '0jet_low',
+        '01' : '0jet_high',
+        '02' : '1jet_low',
+        '03' : '1jet_high',
+        '04' : 'vbf_loose',
+        '05' : 'vbf_tight',
+        '08' : 'nobtag',
+        '09' : 'btag',
+        },
+        'et' : {
         '00' : '0jet_low',
         '01' : '0jet_medium',
         '02' : '0jet_high',
@@ -54,18 +84,28 @@ def get_channel_name(finalstate, category):
         '07' : 'vbf_tight',
         '08' : 'nobtag',
         '09' : 'btag',
-    }
-    tt_cat_map = {
+        },
+        'mt' : {
+        '00' : '0jet_low',
+        '01' : '0jet_medium',
+        '02' : '0jet_high',
+        '03' : '1jet_medium',
+        '04' : '1jet_high_lowhiggs',
+        '05' : '1jet_high_mediumhiggs',
+        '06' : 'vbf_loose',
+        '07' : 'vbf_tight',
+        '08' : 'nobtag',
+        '09' : 'btag',
+        },
+        'tt' : {
         '00' : '1jet_high_mediumhiggs',
         '01' : '1jet_high_highhiggs',
         '02' : 'vbf',
         '08' : 'nobtag',
-        '09' : 'btag',      
+        '09' : 'btag',              
+        },
     }
-    if finalstate == 'tt':
-        return '_'.join((fs_map[finalstate], tt_cat_map[category]))
-    else:
-        return '_'.join((fs_map[finalstate], cat_map[category]))
+    return '_'.join((fs_map[finalstate], cat_map[finalstate][category]))
 
 
 def get_shape_file(sourcedir, channel, period, ana='sm'):
