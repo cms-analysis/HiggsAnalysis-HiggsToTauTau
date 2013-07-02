@@ -52,9 +52,10 @@ TH1F* refill(TH1F* hin, const char* sample)
     bool skip = false;
     if(std::string(sample).find("ggH")==std::string::npos){ skip == true ; }
     if(skip || std::string(sample).find("Zmm")==std::string::npos){ skip == true; }
+    if(skip || std::string(sample).find("Zee")==std::string::npos){ skip == true; }
     if(skip || std::string(sample).find("Fakes/QCD")==std::string::npos){ skip == true; }
     if(skip){
-      std::cout << "hist is not of type signal, Fakes/QCD, Zmm in mumu, close here" << std::endl;
+      std::cout << "hist is not of type signal, Fakes/QCD, Zmm in mumu, Zee in ee, close here" << std::endl;
       exit(1);
     }
     else{
@@ -82,21 +83,23 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   // determine label
   if (std::string(dataset) == std::string("2011"     )){ dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV"; }
   if (std::string(dataset) == std::string("2012"     )){ 
-	if (std::string(extra) == std::string("#mu#mu") ) dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 18.7 fb^{-1} at 8 TeV"; 
-	else dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 19.4 fb^{-1} at 8 TeV";
+    //if (std::string(extra) == std::string("#mu#mu") ) dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 18.7 fb^{-1} at 8 TeV"; 
+    //else 
+    dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 19.8 fb^{-1} at 8 TeV";
   }
   if (std::string(dataset) == std::string("2011+2012")){ 
-	if (std::string(extra) == std::string("#mu#mu") ) dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 18.7 fb^{-1} at 8 TeV"; 
- 	else dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV";
+    //if (std::string(extra) == std::string("#mu#mu") ) dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 18.7 fb^{-1} at 8 TeV"; 
+    //else 
+    dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV";
   }
   // determine category tag
   const char* category_extra = "";
   if(std::string(extra2) == std::string("0jet_low"  )){ category_extra = "0 jet, low p_{T}";  }
   if(std::string(extra2) == std::string("0jet_high" )){ category_extra = "0 jet, high p_{T}"; }
   if(std::string(extra2) == std::string("0jet"      )){ category_extra = "0 jet";             }
-  if(std::string(extra2) == std::string("boost_low" )){ category_extra = "1 jet, low p_{T}";  }
-  if(std::string(extra2) == std::string("boost_high")){ category_extra = "1 jet, high p_{T}"; }
-  if(std::string(extra2) == std::string("boost"     )){ category_extra = "1 jet";             }
+  if(std::string(extra2) == std::string("1jet_low"  )){ category_extra = "1 jet, low p_{T}";  }
+  if(std::string(extra2) == std::string("1jet_high" )){ category_extra = "1 jet, high p_{T}"; }
+  if(std::string(extra2) == std::string("1jet"      )){ category_extra = "1 jet";             }
   if(std::string(extra2) == std::string("vbf"       )){ category_extra = "2 jet (VBF)";       }
   if(std::string(extra2) == std::string("nobtag"    )){ category_extra = "No B-Tag";          }
   if(std::string(extra2) == std::string("btag"      )){ category_extra = "B-Tag";             }
@@ -107,6 +110,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   TH1F* ttbar  = refill((TH1F*)input->Get("ttbar"   ), "ttbar"    ); 
   TH1F* Ztt    = refill((TH1F*)input->Get("Ztt"     ), "Ztt"      ); 
   TH1F* Zmm    = refill((TH1F*)input->Get("Zmm"     ), "Zmm"      ); 
+  TH1F* Zee    = refill((TH1F*)input->Get("Zee"     ), "Zee"      ); 
   TH1F* ggH    = refill((TH1F*)input->Get("ggH"     ), "ggH"      ); 
   TH1F* data   = (TH1F*)input->Get("data_obs"); 
   // determine channel for etau Z->ee (EWK) will be shown separated from the rest (EWK1)
@@ -143,6 +147,13 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       Zmm  ->Draw("same");
       Ztt  ->Draw("same");
     }
+    else if(Zee){
+      EWK  ->Draw("same");
+      ttbar->Draw("same");
+      Fakes->Draw("same");
+      Zee  ->Draw("same");
+      Ztt  ->Draw("same");
+    }
     else{
       Ztt  ->Draw("same");
       ttbar->Draw("same");
@@ -162,8 +173,14 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       ttbar->Draw("same");
       Zmm->Draw("same");
       Ztt->Draw("same");
-    }
-    else{
+    }   
+    else if(Zee){
+      EWK->Draw("same");
+      Fakes->Draw("same");
+      ttbar->Draw("same");
+      Zee->Draw("same");
+      Ztt->Draw("same");
+    }else{
       Ztt  ->Draw("same");
       ttbar->Draw("same");
       EWK  ->Draw("same");
@@ -253,6 +270,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   leg->AddEntry(data , "observed"                       , "LP");
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
   if(Zmm){ leg->AddEntry(Zmm  , "Z#rightarrow#mu#mu"    , "F" ); }
+  if(Zee){ leg->AddEntry(Zee  , "Z#rightarrowee"        , "F" ); }
   if(EWK1){
     leg->AddEntry(EWK  , "Z#rightarrow ee"              , "F" );
     leg->AddEntry(EWK1 , "electroweak"                  , "F" );
