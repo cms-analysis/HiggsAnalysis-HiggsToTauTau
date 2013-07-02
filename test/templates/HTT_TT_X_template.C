@@ -126,7 +126,7 @@ void rescale(TH1F* hin, unsigned int idx)
 }
 
 void 
-HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const char* inputfile="root/$HISTFILE", const char* directory="tauTau_$CATEGORY")
+HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string inputfile="root/$HISTFILE", const char* directory="tauTau_$CATEGORY")
 {
   // defining the common canvas, axes pad styles
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
@@ -146,7 +146,10 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 #endif
 
   // open example histogram file
-  TFile* input = new TFile(inputfile);
+  TFile* input = new TFile(inputfile.c_str());
+#ifdef MSSM
+  TFile* input2 = new TFile((inputfile+"_$MA_$TANB.0").c_str());
+#endif
   TH1F* Fakes  = refill((TH1F*)input->Get(TString::Format("%s/QCD"   , directory)), "QCD"); InitHist(Fakes, "", "", kMagenta-10, 1001);
   TH1F* EWK1   = refill((TH1F*)input->Get(TString::Format("%s/W"     , directory)), "W"  ); InitHist(EWK1 , "", "", kRed    + 2, 1001);
   TH1F* EWK2   = refill((TH1F*)input->Get(TString::Format("%s/ZJ"    , directory)), "ZJ" ); InitHist(EWK2 , "", "", kRed    + 2, 1001);
@@ -158,8 +161,8 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   // float ggHScale = 1., bbHScale = 1.;
 //   ggHScale = ($MSSM_SIGNAL_ggH_xseff_A + $MSSM_SIGNAL_ggH_xseff_hH);
 //   bbHScale = ($MSSM_SIGNAL_bbH_xseff_A + $MSSM_SIGNAL_bbH_xseff_hH);
-  TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH$MA", directory)), "ggH"); InitSignal(ggH); ggH->Scale($TANB); //ggH ->Scale(ggHScale);
-  TH1F* bbH    = refill((TH1F*)input->Get(TString::Format("%s/bbH$MA", directory)), "bbH"); InitSignal(bbH); bbH->Scale($TANB); //bbH ->Scale(bbHScale);
+  TH1F* ggH    = refill((TH1F*)input2->Get(TString::Format("%s/ggH$MA", directory)), "ggH"); InitSignal(ggH); ggH->Scale($TANB); //ggH ->Scale(ggHScale);
+  TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA", directory)), "bbH"); InitSignal(bbH); bbH->Scale($TANB); //bbH ->Scale(bbHScale);
 #else
   TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125", directory)), "ggH"); InitSignal(ggH); ggH ->Scale(SIGNAL_SCALE);
   TH1F* qqH    = refill((TH1F*)input->Get(TString::Format("%s/qqH125", directory)), "qqH"); InitSignal(qqH); qqH ->Scale(SIGNAL_SCALE);

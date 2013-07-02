@@ -42,7 +42,7 @@ $DEFINE_MSSM
    are supposed to be made.
 */
 
-static const bool BLIND_DATA = false; //false;
+static const bool BLIND_DATA = true; //false;
 float blinding_SM(float mass){ return (100<mass && mass<150); }
 float blinding_MSSM(float mass){ return (100<mass); }
 float maximum(TH1F* h, bool LOG=false){
@@ -135,7 +135,7 @@ void rescale(TH1F* hin, unsigned int idx)
 }
 
 void 
-HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const char* inputfile="root/$HISTFILE", const char* directory="muTau_$CATEGORY")
+HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string inputfile="root/$HISTFILE", const char* directory="muTau_$CATEGORY")
 {
   // defining the common canvas, axes pad styles
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
@@ -158,7 +158,10 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
 #endif
  
   // open example histogram file
-  TFile* input = new TFile(inputfile);
+  TFile* input = new TFile(inputfile.c_str());
+#ifdef MSSM
+  TFile* input2 = new TFile((inputfile+"_$MA_$TANB.0").c_str());
+#endif
   TH1F* Fakes  = refill((TH1F*)input->Get(TString::Format("%s/QCD"   , directory)), "QCD"); InitHist(Fakes, "", "", kMagenta-10, 1001);
   TH1F* EWK1   = refill((TH1F*)input->Get(TString::Format("%s/W"     , directory)), "W"  ); InitHist(EWK1 , "", "", kRed    + 2, 1001);
 #ifdef EXTRA_SAMPLES
@@ -174,8 +177,8 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   // float ggHScale = 1., bbHScale = 1.;
 //   ggHScale = ($MSSM_SIGNAL_ggH_xseff_A + $MSSM_SIGNAL_ggH_xseff_hH);
 //   bbHScale = ($MSSM_SIGNAL_bbH_xseff_A + $MSSM_SIGNAL_bbH_xseff_hH);
-  TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH$MA", directory)), "ggH"); InitSignal(ggH); ggH->Scale($TANB); //ggH ->Scale(ggHScale);
-  TH1F* bbH    = refill((TH1F*)input->Get(TString::Format("%s/bbH$MA", directory)), "bbH"); InitSignal(bbH); bbH->Scale($TANB); //bbH ->Scale(bbHScale);
+  TH1F* ggH    = refill((TH1F*)input2->Get(TString::Format("%s/ggH$MA", directory)), "ggH"); InitSignal(ggH); ggH->Scale($TANB); //ggH ->Scale(ggHScale);
+  TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA", directory)), "bbH"); InitSignal(bbH); bbH->Scale($TANB); //bbH ->Scale(bbHScale);
 #else
 #ifndef DROP_SIGNAL
   TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125", directory)), "ggH"); InitSignal(ggH); ggH ->Scale(SIGNAL_SCALE);

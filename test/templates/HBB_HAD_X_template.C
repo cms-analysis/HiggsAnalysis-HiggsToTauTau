@@ -110,7 +110,7 @@ void rescale(TH1F* hin, unsigned int idx)
 }
 
 void 
-HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const char* inputfile="root/$HISTFILE", const char* directory="bb_$CATEGORY")
+HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string inputfile="root/$HISTFILE", const char* directory="bb_$CATEGORY")
 {
   // define common canvas, axes pad styles
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
@@ -127,23 +127,20 @@ HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const c
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 7 TeV, L = 2.7 fb^{-1}";}
   if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "Preliminary, #sqrt{s} = 8 TeV, L = 19.4 fb^{-1}";}
   
-  TFile* input = new TFile(inputfile);
+  TFile* input = new TFile(inputfile.c_str());
+#ifdef MSSM
+  TFile* input2 = new TFile((inputfile+"_$MA_$TANB.0").c_str());
+#endif
   TH1F* Bbb  = refill((TH1F*)input->Get(TString::Format("%s/Bbb"   , directory)), "Bbb"); InitHist(Bbb, "", "", kMagenta-10, 1001);
   TH1F* Cbb  = refill((TH1F*)input->Get(TString::Format("%s/Cbb"   , directory)), "Cbb"); InitHist(Cbb, "", "", kRed    + 2, 1001);
   TH1F* Qbb  = refill((TH1F*)input->Get(TString::Format("%s/Qbb"   , directory)), "Qbb"); InitHist(Qbb, "", "", kBlue   - 8, 1001);
   TH1F* bbB  = refill((TH1F*)input->Get(TString::Format("%s/bbB"   , directory)), "bbB"); InitHist(bbB, "", "", kOrange - 4, 1001);
   TH1F* bbX  = refill((TH1F*)input->Get(TString::Format("%s/bbX"   , directory)), "bbX"); InitHist(bbX, "", "", kViolet - 0, 1001);
 #ifdef MSSM
-  float bbHScale = 1.;
+  //float bbHScale = 1.;
   //ggHScale = ($MSSM_SIGNAL_ggH_xseff_A + $MSSM_SIGNAL_ggH_xseff_hH);
-  bbHScale = ($MSSM_SIGNAL_bbH_xseff_A + $MSSM_SIGNAL_bbH_xseff_hH);
- //  float bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=20, A+H for the time being  
-//   if(std::string(inputfile).find("7TeV")!=std::string::npos){ bbHScale = (23314.3*0.879 + 21999.3*0.877)/1000.; }
-//   if(std::string(inputfile).find("8TeV")!=std::string::npos){ bbHScale = (31087.9*0.879 + 29317.8*0.877)/1000.; }
-  // float bbHScale = 1.; // scenario for MSSM, mhmax, mA=160, tanb=10, A+H for the time being
-//   if(std::string(inputfile).find("7TeV")!=std::string::npos){ bbHScale = (6211.6*0.89 + 5145.0*0.85)/1000.; }
-//   if(std::string(inputfile).find("8TeV")!=std::string::npos){ bbHScale = (8282.7*0.89 + 6867.8*0.85)/1000.; }
-  TH1F* bbH  = refill((TH1F*)input->Get(TString::Format("%s/bbH$MA"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale(bbHScale);
+  //bbHScale = ($MSSM_SIGNAL_bbH_xseff_A + $MSSM_SIGNAL_bbH_xseff_hH);
+  TH1F* bbH  = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale($TANB); //bbH->Scale(bbHScale);
 #endif
 #ifdef ASIMOV
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs_asimov", directory)), "data", true);
