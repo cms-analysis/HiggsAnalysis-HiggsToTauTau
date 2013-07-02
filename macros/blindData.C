@@ -75,11 +75,11 @@ void adjustUncerts(TH1F* hist){
 
 void randomize(TH1F* hist, unsigned int seed, unsigned int debug=0.)
 {
-  TRandom3* rnd = new TRandom3(seed); rnd->SetSeed();
+  TRandom3* rnd = new TRandom3(); rnd->SetSeed(seed);
   for(int idx=0; idx<hist->GetNbinsX(); ++idx){
-    // --------------------------------- DEBUG > 2 ------------------------------- //
-    if(debug>2){ std::cout << "[" << idx+1 << "] : " << "mean=" << hist->GetBinContent(idx+1) << "  rnd=" << rnd->Poisson(hist->GetBinContent(idx+1)) << std::endl;  }
     float value = rnd->Poisson(hist->GetBinContent(idx+1));
+    // --------------------------------- DEBUG > 2 ------------------------------- //
+    if(debug>2){ std::cout << "[" << idx+1 << "] : " << "mean=" << hist->GetBinContent(idx+1) << "  rnd=" << value << std::endl;  }
     hist->SetBinContent(idx+1, value); hist->SetBinError(idx+1, TMath::Sqrt(value));
   }
   // make sure there is no rounding error, and the total is really an integer.
