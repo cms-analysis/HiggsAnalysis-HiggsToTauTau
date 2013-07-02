@@ -146,17 +146,17 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., const ch
   const char* category_extra = "";
   if(std::string(directory) == std::string("eleTau_0jet_low"  )){ category_extra = "0 jet, low p_{T}";  }
   if(std::string(directory) == std::string("eleTau_0jet_high" )){ category_extra = "0 jet, high p_{T}"; }
-  if(std::string(directory) == std::string("eleTau_boost_low" )){ category_extra = "1 jet, low p_{T}";  }
-  if(std::string(directory) == std::string("eleTau_boost_high")){ category_extra = "1 jet, high p_{T}"; }
+  if(std::string(directory) == std::string("eleTau_1jet_low"  )){ category_extra = "1 jet, low p_{T}";  }
+  if(std::string(directory) == std::string("eleTau_1jet_high" )){ category_extra = "1 jet, high p_{T}"; }
   if(std::string(directory) == std::string("eleTau_vbf"       )){ category_extra = "2 jet (VBF)";       }
   if(std::string(directory) == std::string("eleTau_nobtag"    )){ category_extra = "No B-Tag";          }
   if(std::string(directory) == std::string("eleTau_btag"      )){ category_extra = "B-Tag";             }
 
   const char* dataset;
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV";}
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 19.4 fb^{-1} at 8 TeV";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 19.8 fb^{-1} at 8 TeV";}
 #ifdef MSSM
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 19.4 fb^{-1} at 8 TeV";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 19.8 fb^{-1} at 8 TeV";}
 #endif
   
   TFile* input = new TFile(inputfile);
