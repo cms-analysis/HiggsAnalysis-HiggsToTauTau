@@ -3,36 +3,36 @@
 # Example:
 # emu_vbf,emu_novbf,emu_boost     signal,EWK              lumi            1.045
 
-mtt,ett		signal,wz,zz			lumi_8TeV                     1.044
-mtt,ett		signal,wz,zz			pdf_vh                        1.043
-mtt,ett		signal,wz,zz			eff_trigger                   1.035
-mtt,ett		signal,wz,zz			CMS_eff_e                     1.029
-mtt,ett		signal,wz,zz			CMS_eff_m                     1.014
-mtt,ett		signal,wz,zz			CMS_eff_t                     1.120
-mtt,ett		signal,wz,zz			CMS_scale_e                   1.000
-mtt,ett		signal,wz,zz			CMS_scale_m                   1.000
-mtt,ett		signal,wz,zz			CMS_scale_t                   1.030
-mtt,ett		signal,wz,zz			CMS_scale_met                 1.037
-mtt,ett		signal,wz,zz			CMS_vhtt_el_veto              1.038
-mtt,ett		signal,wz,zz			CMS_vhtt_mu_veto              1.007
-mtt,ett		fakes				CMS_vhtt_fakes                1.212
-mtt fakes CMS_vhtt_8TeV_mtt_shape_fakes_bin_1 1.0
-mtt fakes CMS_vhtt_8TeV_mtt_shape_fakes_bin_2 1.0
-mtt fakes CMS_vhtt_8TeV_mtt_shape_fakes_bin_3 1.0
-mtt fakes CMS_vhtt_8TeV_mtt_shape_fakes_bin_4 1.0
-mtt fakes CMS_vhtt_8TeV_mtt_shape_fakes_bin_5 1.0
-mtt fakes CMS_vhtt_8TeV_mtt_shape_fakes_bin_6 1.0
-mtt fakes CMS_vhtt_8TeV_mtt_shape_fakes_bin_7 1.0
-mtt fakes CMS_vhtt_8TeV_mtt_shape_fakes_bin_8 1.0
-mtt fakes CMS_vhtt_8TeV_mtt_shape_fakes_bin_9 1.0
-mtt fakes CMS_vhtt_8TeV_mtt_shape_fakes_bin_10 1.0
-ett fakes CMS_vhtt_8TeV_ett_shape_fakes_bin_1 1.0
-ett fakes CMS_vhtt_8TeV_ett_shape_fakes_bin_2 1.0
-ett fakes CMS_vhtt_8TeV_ett_shape_fakes_bin_3 1.0
-ett fakes CMS_vhtt_8TeV_ett_shape_fakes_bin_4 1.0
-ett fakes CMS_vhtt_8TeV_ett_shape_fakes_bin_5 1.0
-ett fakes CMS_vhtt_8TeV_ett_shape_fakes_bin_6 1.0
-ett fakes CMS_vhtt_8TeV_ett_shape_fakes_bin_7 1.0
-ett fakes CMS_vhtt_8TeV_ett_shape_fakes_bin_8 1.0
-ett fakes CMS_vhtt_8TeV_ett_shape_fakes_bin_9 1.0
-ett fakes CMS_vhtt_8TeV_ett_shape_fakes_bin_10 1.0
+eet simulated lumi_8TeV      1.042
+
+# Efficiency uncertainties
+eet simulated CMS_eff_e 1.02
+eet simulated CMS_eff_t 1.08
+
+# Scale uncertainties
+eet simulated CMS_scale_t 1.03
+
+# Efficiency of b-jet veto
+eet simulated CMS_fake_b_8TeV 1.01
+
+# Background uncertainties - due to the theoretical unc. on the xsection
+eet zz pdf_qqbar 1.033
+eet zz QCDscale_VV 1.023
+
+eet wz pdf_qqbar 1.04
+eet wz QCDscale_VV 1.04
+
+eet signal pdf_qqbar 1.034
+eet signal QCDscale_VH 1.004
+
+#charge flip uncertainty
+eet charge_fakes CMS_vhtt_eet_chargeFlip_8TeV 1.0
+# Stat shape uncertainties
+eet fakes CMS_vhtt_8TeV_eet_fakeshape_fakes_bin_3 1.0
+eet fakes CMS_vhtt_8TeV_eet_fakeshape_fakes_bin_4 1.0
+eet fakes CMS_vhtt_8TeV_eet_fakeshape_fakes_bin_5 1.0
+eet fakes CMS_vhtt_8TeV_eet_fakeshape_fakes_bin_6 1.0
+eet fakes CMS_vhtt_8TeV_eet_fakeshape_fakes_bin_7 1.0
+eet fakes CMS_vhtt_8TeV_eet_fakeshape_fakes_bin_8 1.0
+eet fakes CMS_vhtt_8TeV_eet_fakeshape_fakes_bin_9 1.0
+eet fakes CMS_vhtt_eet_fakes_8TeV 1.14
