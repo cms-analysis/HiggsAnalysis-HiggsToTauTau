@@ -11,9 +11,10 @@ void
 mlfit_result(const char* path, const char* value="nll_min") 
 { 
   TFile* outFile = new TFile(TString::Format("%s/mlfit_result.root", path),"RECREATE");
-  TTree *outTree = new TTree("tree_fit_sb","tree_fit_sb");
-  float val_s = 0; outTree->Branch(value, &val_s, TString::Format("%s/F", value));
-  float val_b = 0; outTree->Branch(TString::Format("%s_b", value), &val_b, TString::Format("%s_b/F", value));
+  TTree *outTree = new TTree("limit","limit");
+  char* output_value = (value =="nll_min") ? "limit" : value;
+  double val_s = 0; outTree->Branch(output_value, &val_s, TString::Format("%s/D", output_value));
+  double val_b = 0; outTree->Branch(TString::Format("%s_b", output_value), &val_b, TString::Format("%s_b/D", output_value));
   val_s = read_value(path, value, false);
   val_b = read_value(path, value, true );
   outFile->cd();

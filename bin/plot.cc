@@ -79,6 +79,7 @@ int main(int argc, char* argv[])
   types.push_back(std::string("--likelihood-scan"));
   // show 2D scans (still in developement)
   types.push_back(std::string("--likelihood-scan-mass"));
+  types.push_back(std::string("--mass-estimate"));
   // show 2D scans (still in developement)
   types.push_back(std::string("--multidim-fit"));
   // show limits as of HIG-11-020
@@ -226,7 +227,7 @@ int main(int argc, char* argv[])
     }
     // expected limit (for --injected 'MEDIAN' and 'MEAN' are sensible parameters)
     TGraph* expected  = new TGraph();
-    plot.fillCentral(directory, expected, "MEDIAN");
+    plot.fillCentral(directory, expected, "higgsCombine-exp.Asymptotic.mH$MASS");
     // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
     plot.fillBand(directory, inner, "TOYBASED", true);
@@ -248,7 +249,6 @@ int main(int argc, char* argv[])
     }
     // expected limit (for --injected 'MEDIAN' and 'MEAN' are sensible parameters)
     TGraph* expected  = new TGraph();
-    plot.fillCentral(directory, expected, "MEDIAN");
     plot.fillCentral(directory, expected, "higgsCombineSIG-exp.ProfileLikelihood.mH$MASS");
     // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
@@ -379,12 +379,29 @@ int main(int argc, char* argv[])
   }
   if( std::string(argv[1]) == std::string("--likelihood-scan-mass") ){
     // Likelihood
-    TGraph* nll  = new TGraph(); //not needed for plot1DScan
-    plot.fillCentral(directory, nll, "NLL");
+    TGraph* observed  = new TGraph(); //not needed for plot1DScan
+    plot.fillCentral(directory, observed, "NLL");
     // make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
-    plot.plotMassScan(*canv, nll);
+    plot.plotMassScan(*canv, observed);
+  }
+  if( std::string(argv[1]) == std::string("--mass-estimate") ){
+    // Likelihood
+    TGraph* observed  = new TGraph(); //not needed for plot1DScan
+    plot.fillCentral(directory, observed, "NLL");
+    TGraph* expected = new TGraph();
+    plot.fillCentral(directory, expected, "MEDIAN");
+    // 1-sigma uncertainty band
+    TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
+    plot.fillBand(directory, inner, "TOYBASED", true);
+    // 2-sigma uncertainty band
+    TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
+    plot.fillBand(directory, outer, "TOYBASED", false);
+    // make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plotMassEstimate(*canv, inner, outer, expected, observed);
   }
   // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--multidim-fit") ){

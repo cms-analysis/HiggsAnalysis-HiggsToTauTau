@@ -79,7 +79,7 @@ PlotLimits::prepareByToy(const char* directory, std::vector<double>& values, con
     float mass = bins_[imass];
 
     double value=-1.;
-    TString fullpath(TString::Format("%s/%d/batch_collected.root", directory, (int)mass));
+    TString fullpath(TString::Format("%s/%d/batch_collected_%s.root", directory, (int)mass, label_.c_str()));
     if(verbosity_>0) std::cout << "INFO: opening file " << fullpath << std::endl;
     TFile* file = new TFile(fullpath);
     if(file->IsZombie()){
@@ -99,16 +99,14 @@ PlotLimits::prepareByToy(const char* directory, std::vector<double>& values, con
 	std::vector<double> limits;
 	limit->SetBranchAddress("limit", &x);
 	int nevent = limit->GetEntries();
-	for(int i=0; i<nevent; ++i){
-	  limit->GetEvent(i);
-	  if(0<x && x<999999){
-	    // fill for median determination
-	    limits.push_back(x);
-	    // mean(x)
-	    mean +=1./(i+1)*(x-mean);
-	    // mean(x**2)
-	    var  +=1./(i+1)*(x*x-var);
-	  }
+    for(int i=0; i<nevent; ++i){
+      limit->GetEvent(i);
+	  // fill for median determination
+	  limits.push_back(x);
+	  // mean(x)
+	  mean +=1./(i+1)*(x-mean);
+	  // mean(x**2)
+	  var  +=1./(i+1)*(x*x-var);
 	}
 	// var = mean(x**2)-mean(x)**2
 	var-= mean*mean;

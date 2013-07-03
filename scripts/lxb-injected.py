@@ -127,7 +127,7 @@ if options.method == '--pvalue-frequentist' :
     extension = 'PVAL-obs.ProfileLikelihood'
 if options.method == '--max-likelihood' :
     extension = 'Test.MaxLikelihoodFit'
-    options.method = "--max-likelihood --stable"
+    options.method = "--max-likelihood"
     
 os.system("mkdir -p %s" % name)
 submit_name = '%s_submit.sh' % name

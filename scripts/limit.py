@@ -398,6 +398,42 @@ for directory in args :
         mass  = get_mass(directory)
         ## prepare workspace
         create_card_workspace(mass)
+        if options.optCollect :
+            ## NOTE the toys are only used for the band when run with these options.
+            ## the expected is taken from the actual calculation to prevent miss-
+            ## matches with the results of the HCG
+            collect_file ="mass_scan"
+            if os.path.exists("batch_collected_%s.root" %collect_file) :
+                if options.fromScratch :
+                    os.system("rm batch_collected_%s.root" %collect_file)
+                else :
+                    os.system("mv batch_collected_%s.root old.root" %collect_file)                
+            ## to allow for more files to be combined distinguish by first digit in a first
+            ## iteration, than combine the resulting 10 files to the final output file.
+            njob = 0
+            extension = 'MLFIT'
+            globdir = "higgsCombine{EXT}.mH{MASS}-*_*.root".format(EXT=extension, MASS=mass)
+            #print glob.glob(globdir)
+            for job in glob.glob(globdir) :
+                njob=njob+1
+            for idx in range(10 if njob>10 else njob) :
+                os.system("hadd -f batch_collected_{METHOD}_{IDX}.root higgsCombine{EXT}.mH{MASS}-*{IDX}_*.root".format(
+                    METHOD=collect_file,
+                    EXT=extension,
+                    MASS=mass,
+                    IDX=idx
+                    ))
+            ## clean up the files that have been combined
+            os.system("rm %s" % globdir)
+            ## combined sub-combinations
+            os.system("hadd batch_collected_%s.root batch_collected_%s_*.root"%(collect_file, collect_file))
+            ## clean up the files that have been combined
+            os.system("rm batch_collected_%s_*.root"%collect_file)
+            ## combine with previous submissions
+            if os.path.exists("old_%s.root"%collect_file) :
+                os.system("mv batch_collected_%s.root new.root"%collect_file)
+                os.system("hadd batch_collected_%s.root old_%s.root new_%s.root"%(collect_file, collect_file, collect_file))
+                os.system("rm old_%s.root new_%s.root"%(collect_file, collect_file))
         ## create sub-directory out from scratch
         if os.path.exists("out") :
             os.system("rm -r out")
@@ -438,6 +474,7 @@ for directory in args :
         os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --vtol2 2.0 -f latex mlfit.root > mlfit_largest-pulls.tex")
         os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --vtol2 2.0 -f html mlfit.root > mlfit_largest-pulls.html")
         os.chdir(subdirectory)
+            
     ##
     ## LIKELIHOOD-SCAN
     ##
@@ -585,11 +622,15 @@ for directory in args :
             ## NOTE the toys are only used for the band when run with these options.
             ## the expected is taken from the actual calculation to prevent miss-
             ## matches with the results of the HCG
-            if os.path.exists("batch_collected.root") :
+            if options.optSigFreq :
+                collect_file ="significance"
+            else :
+                collect_file ="p-value"
+            if os.path.exists("batch_collected_%s.root" %collect_file) :
                 if options.fromScratch :
-                    os.system("rm batch_collected.root")
+                    os.system("rm batch_collected_%s.root" %collect_file)
                 else :
-                    os.system("mv batch_collected.root old.root")                
+                    os.system("mv batch_collected_%s.root old.root" %collect_file)                
             ## to allow for more files to be combined distinguish by first digit in a first
             ## iteration, than combine the resulting 10 files to the final output file.
             njob = 0
@@ -602,7 +643,8 @@ for directory in args :
             for job in glob.glob(globdir) :
                 njob=njob+1
             for idx in range(10 if njob>10 else njob) :
-                os.system("hadd -f batch_collected_{IDX}.root higgsCombine{EXT}.mH{MASS}-*{IDX}_*.root".format(
+                os.system("hadd -f batch_collected_{METHOD}_{IDX}.root higgsCombine{EXT}.mH{MASS}-*{IDX}_*.root".format(
+                    METHOD=collect_file,
                     EXT=extension,
                     MASS=mass,
                     IDX=idx
@@ -610,14 +652,14 @@ for directory in args :
             ## clean up the files that have been combined
             os.system("rm %s" % globdir)
             ## combined sub-combinations
-            os.system("hadd batch_collected.root batch_collected_*.root")
+            os.system("hadd batch_collected_%s.root batch_collected_%s_*.root"%(collect_file, collect_file))
             ## clean up the files that have been combined
-            os.system("rm batch_collected_*.root")
+            os.system("rm batch_collected_%s_*.root"%collect_file)
             ## combine with previous submissions
-            if os.path.exists("old.root") :
-                os.system("mv batch_collected.root new.root")
-                os.system("hadd batch_collected.root old.root new.root")
-                os.system("rm old.root new.root")
+            if os.path.exists("old_%s.root"%collect_file) :
+                os.system("mv batch_collected_%s.root new.root"%collect_file)
+                os.system("hadd batch_collected_%s.root old_%s.root new_%s.root"%(collect_file, collect_file, collect_file))
+                os.system("rm old_%s.root new_%s.root"%(collect_file, collect_file))
         ## prepare workspace
         create_card_workspace(mass)
         ## distinguish between (frequentist) significance and pvalue, which are conceptionally very similar
@@ -646,11 +688,11 @@ for directory in args :
         ## determine mass value from directory name
         mass  = get_mass(directory)
         if options.optCollect :
-            if os.path.exists("batch_collected.root") :
+            if os.path.exists("batch_collected_limit.root") :
                 if options.fromScratch :
-                    os.system("rm batch_collected.root")
+                    os.system("rm batch_collected_limit.root")
                 else :
-                    os.system("mv batch_collected.root old.root")
+                    os.system("mv batch_collected_limit.root old_limit.root")
             ## to allow for more files to be combined distinguish by first digit in a first
             ## iteration, than combine the resulting 10 files to the final output file.
             njob = 0
@@ -659,21 +701,21 @@ for directory in args :
             for job in glob.glob(globdir) :
                 njob=njob+1
             for idx in range(10 if njob>10 else njob) :
-                os.system("hadd -f batch_collected_{IDX}.root higgsCombine-obs.Asymptotic.mH{MASS}-*{IDX}_*.root".format(
+                os.system("hadd -f batch_collected_limit_{IDX}.root higgsCombine-obs.Asymptotic.mH{MASS}-*{IDX}_*.root".format(
                     MASS=mass,
                     IDX=idx
                     ))
             ## clean up the files that have been combined
             os.system("rm %s" % globdir)
             ## combined sub-combinations
-            os.system("hadd batch_collected.root batch_collected_*.root")
+            os.system("hadd batch_collected_limit.root batch_collected_limit_*.root")
             ## clean up the files that have been combined
-            os.system("rm batch_collected_*.root")
+            os.system("rm batch_collected_limit_*.root")
             ## combine with previous submissions
-            if os.path.exists("old.root") :
-                os.system("mv batch_collected.root new.root")
-                os.system("hadd batch_collected.root old.root new.root")
-                os.system("rm old.root new.root")
+            if os.path.exists("old_limit.root") :
+                os.system("mv batch_collected_limit.root new_limit.root")
+                os.system("hadd batch_collected_limit.root old_limit.root new_limit.root")
+                os.system("rm old_limit.root new_limit.root")
         ## prepare workspace
         model = []
         if options.optCollect and options.expectedOnly :
@@ -705,12 +747,11 @@ for directory in args :
         massopt = "-m %s " % mass
         ## run expected limits
         wsp = 'tmp' if len(model) == 0 else model[0]
-        if not options.optCollect :
-            if not options.observedOnly :
-                print "combine -M Asymptotic --run expected -C {cl} {minuit} {prefit} --minimizerStrategy {strategy} -n '-exp' {mass} {user} {wdir}/{wsp}.root".format(
-                    cl=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt, strategy=options.strategy, mass=massopt, user=options.userOpt, wdir=options.workingdir, wsp=wsp)
-                os.system("combine -M Asymptotic --run expected -C {cl} {minuit} {prefit} --minimizerStrategy {strategy} -n '-exp' {mass} {user} {wdir}/{wsp}.root".format(
-                    cl=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt, strategy=options.strategy, mass=massopt, user=options.userOpt, wdir=options.workingdir, wsp=wsp))
+        if not options.observedOnly :
+            print "combine -M Asymptotic --run expected -C {cl} {minuit} {prefit} --minimizerStrategy {strategy} -n '-exp' {mass} {user} {wdir}/{wsp}.root".format(
+                cl=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt, strategy=options.strategy, mass=massopt, user=options.userOpt, wdir=options.workingdir, wsp=wsp)
+            os.system("combine -M Asymptotic --run expected -C {cl} {minuit} {prefit} --minimizerStrategy {strategy} -n '-exp' {mass} {user} {wdir}/{wsp}.root".format(
+                cl=options.confidenceLevel, minuit=minuitopt, prefit=prefitopt, strategy=options.strategy, mass=massopt, user=options.userOpt, wdir=options.workingdir, wsp=wsp))
         ## run observed limit
         if not options.expectedOnly :
             print "combine -M Asymptotic --run observed -C {cl} {minuit} --minimizerStrategy {strategy} -n '-obs' {qtilde} {mass} {user} {wdir}/{wsp}.root".format(

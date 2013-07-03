@@ -19,13 +19,13 @@ layout = cms.PSet(
     min = cms.double(0.),
     ## max for plotting
     max = cms.double(4),
-    ## min for plotting
+    ## log for plotting
     log = cms.int32(0),
     ## define verbosity level
     verbosity   = cms.uint32(0),
     ## define output label
     outputLabel = cms.string("mass_scan"),
     ## define masspoints for limit plot
-    #masspoints = cms.vdouble(range(110, 146, 5))
-    masspoints = cms.vdouble(range(110, 146, 1))
+    masspoints = cms.vdouble(range(110, 146, 5))
+#    masspoints = cms.vdouble(range(110, 146, 1))
 )
