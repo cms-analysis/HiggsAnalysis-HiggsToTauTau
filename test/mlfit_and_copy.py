@@ -45,11 +45,32 @@ if options.analysis == "sm" :
 
 if options.analysis == "mssm" :
     system("cp -v %s/out/mlfit.txt ./fitresults/mlfit_mssm.txt" % dir)
-    system("cp -v %s/*.txt ./datacards" % dir)
+    system("cp -v %s/*.txt ./datacards" % dir)   
     ##system("cp -v %s/../common/hbb.input_[78]TeV-[01].root ./root" % dir)
-    system("cp -v %s/../common/htt_*.inputs-mssm-[78]TeV-0.root_%s_%s.0 ./root" % (dir, options.mA, options.tanb))
+    #system("cp -v %s/../common/htt_*.inputs-mssm-[78]TeV-0.root_%s_%s.0 ./root" % (dir, options.mA, options.tanb))
     system("cp -v %s/../common/htt_*.inputs-mssm-[78]TeV-0.root ./root" % (dir))
+    
     ## for mm override the histograms as used for the limit calculation in favour of something more human readible
-    ##os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-mssm-8TeV-0_postfit.root ./root/htt_mm.inputs-mssm-8TeV-0.root")
-    ##os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-mssm-7TeV-0_postfit.root ./root/htt_mm.inputs-mssm-7TeV-0.root")
+    os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-mssm-8TeV-0-msv.root ./root/htt_mm.inputs-mssm-8TeV-0.root")
+    os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-mssm-7TeV-0-msv.root ./root/htt_mm.inputs-mssm-7TeV-0.root")
+    
+    optcards = ""  
+    for datacard in os.listdir("datacards"):
+        if datacard.endswith(".txt"):
+            optcards += datacard[:datacard.find(".txt")]
+            optcards += "=datacards/"
+            ## add datacard for combination
+            optcards += datacard
+            optcards += " "
+    print optcards
+    system("combineCards.py -S %s > datacards/tmp.txt" % optcards)
+    system("perl -pi -e 's/datacards//g' datacards/{DATACARD}".format(DATACARD="tmp.txt"))
+    system("perl -pi -e 's/common/root/g' datacards/{DATACARD}".format(DATACARD="tmp.txt"))
+    system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/python/tanb_grid_new.py --mA {MA} --tanb {TANB} datacards/{PATH}".format(
+        CMSSW_BASE=os.environ['CMSSW_BASE'],
+        MA=options.mA,
+        TANB=options.tanb,
+        PATH="tmp.txt"
+        ))
+    system("rm datacards/tmp*")
 

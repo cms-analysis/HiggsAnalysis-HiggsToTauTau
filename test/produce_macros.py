@@ -43,6 +43,8 @@ if len(args) > 0 :
 from DatacardUtils import parse_dcard
 from ROOT import *
 from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools ##not needed atm
+from HiggsAnalysis.HiggsToTauTau.ModelParams_BASE import ModelParams_BASE
+
 import math
 import os
 
@@ -97,42 +99,9 @@ class Analysis:
          Inserts the weights into the macros
          """
          input_file = open(self.template_fname,'r')
-         output_file = open(self.output_fname,'w')
-
-         if(options.analysis=="mssm") :
-             foundEnergy="7TeV"
-             if self.histfile.find("8TeV")>-1 :
-                 foundEnergy="8TeV"
-             br="BR"
-             if self.histfile.find("hbb")>-1 :
-                 br="BR-hbb"                 
-             path="auxiliaries/models/out.mhmax-mu+200-{ECMS}-{TANBINTERVALL}-nnlo.root".format(
-                 ECMS=foundEnergy,
-                 TANBINTERVALL="tanbHigh" if options.tanb>=1.0 else "tanbLow"
-                 )
-             mssm_scan = mssm_xsec_tools("{CMSSW_BASE}/src/{PATH}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], PATH=path))
-             mssm_xsec = mssm_scan.query(options.mA, options.tanb)
-             bbH_xseff_A=mssm_xsec['higgses']['A']['xsec']['santander']*mssm_xsec['higgses']['A'][br]
-             ggH_xseff_A=mssm_xsec['higgses']['A']['xsec']['ggF'      ]*mssm_xsec['higgses']['A'][br]
-             bbH_xseff_H=mssm_xsec['higgses']['H']['xsec']['santander']*mssm_xsec['higgses']['H'][br]
-             ggH_xseff_H=mssm_xsec['higgses']['H']['xsec']['ggF'      ]*mssm_xsec['higgses']['H'][br]
-             bbH_xseff_h=mssm_xsec['higgses']['h']['xsec']['santander']*mssm_xsec['higgses']['h'][br]
-             ggH_xseff_h=mssm_xsec['higgses']['h']['xsec']['ggF'      ]*mssm_xsec['higgses']['h'][br]
-             #print "bbHtt", mssm_xsec['higgses']['H']['xsec']['santander']*mssm_xsec['higgses']['H'][br]
-             #print "bbAtt", mssm_xsec['higgses']['A']['xsec']['santander']*mssm_xsec['higgses']['A'][br]
-             #print "ggHtt", mssm_xsec['higgses']['H']['xsec']['ggF']*mssm_xsec['higgses']['H'][br]
-             #print "ggAtt", mssm_xsec['higgses']['A']['xsec']['ggF']*mssm_xsec['higgses']['A'][br]
-             bbH_xseff_hH=bbH_xseff_H
-             ggH_xseff_hH=ggH_xseff_H
-             if options.mA==130 :
-                 bbH_xseff_hH=bbH_xseff_H+bbH_xseff_h
-                 ggH_xseff_hH=ggH_xseff_H+ggH_xseff_h
-             if options.mA<130 :
-                 bbH_xseff_hH=bbH_xseff_h
-                 ggH_xseff_hH=ggH_xseff_h
-             
-                 
+         output_file = open(self.output_fname,'w')     
          curr_name = ""
+         
          for line in input_file:
              move_on = False
              template_name = self.template_fname[self.template_fname.find("/")+1:self.template_fname.rfind("_template.C")]
@@ -147,10 +116,6 @@ class Analysis:
              line = line.replace("$HISTFILE", self.histfile)
              line = line.replace("$CATEGORY", self.category)
              if(options.analysis=="mssm") :
-                 line = line.replace("$MSSM_SIGNAL_ggH_xseff_A" , str(ggH_xseff_A))
-                 line = line.replace("$MSSM_SIGNAL_ggH_xseff_hH", str(ggH_xseff_hH))
-                 line = line.replace("$MSSM_SIGNAL_bbH_xseff_A" , str(bbH_xseff_A))
-                 line = line.replace("$MSSM_SIGNAL_bbH_xseff_hH", str(bbH_xseff_hH))
                  line = line.replace("$MA" , str(int(options.mA)))
                  line = line.replace("$TANB", str(int(options.tanb)))
 	     if options.uncertainties and (options.yields or options.shapes):
@@ -298,7 +263,7 @@ category_mapping_classic = {
     "3" : "1jet_medium",
     "4" : "1jet_high_lowhiggs",
     "5" : "1jet_high_mediumhiggs",
-    "6" : "vbf","vbf_loose",
+    "6" : "vbf",#"vbf_loose",
     "7" : "vbf_tight",
     "8" : "nobtag",
     "9" : "btag",
@@ -333,7 +298,7 @@ for chn in channels :
             if chn == "hbb" :
                 histfile = "{CHN}.input_{PER}-0.root".format(CHN=chn, PER=per) ## mass 160 therefore masscat=0
             else :
-                histfile = "htt_{CHN}.input_{PER}.root".format(CHN=chn, PER=per) if options.analysis == "sm" else "htt_{CHN}.inputs-mssm-{PER}-0_{MA}_{TANB}.00.root".format(CHN=chn, PER=per, MA=str(int(options.mA)), TANB=str(int(options.tanb)))
+                histfile = "htt_{CHN}.input_{PER}.root".format(CHN=chn, PER=per) if options.analysis == "sm" else "htt_{CHN}.inputs-mssm-{PER}-0.root".format(CHN=chn, PER=per, MA=str(int(options.mA)), TANB=str(int(options.tanb)))
                 if chn == "mm" :
                 ## there is one speciality for mm, which need special input files
                     histfile.replace(".root", "-svfit.root")
