@@ -121,7 +121,7 @@ HBB_LEP_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string 
   
   TFile* input = new TFile(inputfile.c_str());
 #ifdef MSSM
-  TFile* input2 = new TFile((inputfile+"_$MA_$TANB.0").c_str());
+  TFile* input2 = new TFile((inputfile+"_$MA_$TANB").c_str());
 #endif
   TH1F* bkgBBB  = refill((TH1F*)input->Get(TString::Format("%s/bkgBBB"   , directory)), "bkgBBB"); InitHist(bkgBBB, "", "", kMagenta-10, 1001);;
 #ifdef MSSM

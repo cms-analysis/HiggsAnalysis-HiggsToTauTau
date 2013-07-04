@@ -160,7 +160,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   // open example histogram file
   TFile* input = new TFile(inputfile.c_str());
 #ifdef MSSM
-  TFile* input2 = new TFile((inputfile+"_$MA_$TANB.0").c_str());
+  TFile* input2 = new TFile((inputfile+"_$MA_$TANB").c_str());
 #endif
   TH1F* Fakes  = refill((TH1F*)input->Get(TString::Format("%s/QCD"   , directory)), "QCD"); InitHist(Fakes, "", "", kMagenta-10, 1001);
   TH1F* EWK1   = refill((TH1F*)input->Get(TString::Format("%s/W"     , directory)), "W"  ); InitHist(EWK1 , "", "", kRed    + 2, 1001);

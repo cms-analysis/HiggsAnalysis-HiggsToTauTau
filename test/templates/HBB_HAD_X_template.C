@@ -129,7 +129,7 @@ HBB_HAD_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string 
   
   TFile* input = new TFile(inputfile.c_str());
 #ifdef MSSM
-  TFile* input2 = new TFile((inputfile+"_$MA_$TANB.0").c_str());
+  TFile* input2 = new TFile((inputfile+"_$MA_$TANB").c_str());
 #endif
   TH1F* Bbb  = refill((TH1F*)input->Get(TString::Format("%s/Bbb"   , directory)), "Bbb"); InitHist(Bbb, "", "", kMagenta-10, 1001);
   TH1F* Cbb  = refill((TH1F*)input->Get(TString::Format("%s/Cbb"   , directory)), "Cbb"); InitHist(Cbb, "", "", kRed    + 2, 1001);
