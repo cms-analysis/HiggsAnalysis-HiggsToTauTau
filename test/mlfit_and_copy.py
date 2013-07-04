@@ -47,7 +47,6 @@ if options.analysis == "mssm" :
     system("cp -v %s/out/mlfit.txt ./fitresults/mlfit_mssm.txt" % dir)
     system("cp -v %s/*.txt ./datacards" % dir)   
     ##system("cp -v %s/../common/hbb.input_[78]TeV-[01].root ./root" % dir)
-    #system("cp -v %s/../common/htt_*.inputs-mssm-[78]TeV-0.root_%s_%s.0 ./root" % (dir, options.mA, options.tanb))
     system("cp -v %s/../common/htt_*.inputs-mssm-[78]TeV-0.root ./root" % (dir))
     
     ## for mm override the histograms as used for the limit calculation in favour of something more human readible
