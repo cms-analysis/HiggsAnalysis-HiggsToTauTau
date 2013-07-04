@@ -55,4 +55,14 @@ for channel in channels :
                         MASSCAT=mass_category(mass,cat,'htt_'+channel),
                         PROCESS=process+str(mass)
                         ))
+                    if channel=="mm" :
+                        os.system(r"root -l -b -q {EXE}\(true,{SCALE},\"{PATH}/{CHN}/htt_{CHN}.inputs-mssm-{PER}-{MASSCAT}-msv.root\",\"{PROCESS}\",0\)".format(
+                            EXE=exe,
+                            PATH=source_path,
+                            SCALE=acceptance_correction(process, mass, period),
+                            CHN=channel,
+                            PER=period,
+                            MASSCAT=mass_category(mass,cat,'htt_'+channel),
+                            PROCESS=process+str(mass)
+                            ))
                     
