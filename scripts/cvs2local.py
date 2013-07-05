@@ -21,7 +21,7 @@ cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picke
 cats1.add_option("--sm-categories-ee", dest="ee_sm_categories", default="0 1 2 3 5", type="string",
                  help="List ee of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 4 5", type="string",
-                 help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
+                 help="List mm of event categories. [Default: \"0 1 2 3 4 5\"]")
 cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 4 5", type="string",
                  help="List em of event categories. [Default: \"0 1 2 3 4 5\"]")
 cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3 4 5 6 7", type="string",
@@ -37,15 +37,15 @@ cats1.add_option("--sm-categories-vhbb", dest="vhbb_sm_categories", default="0 1
 parser.add_option_group(cats1)
 cats2 = OptionGroup(parser, "MSSM EVENT CATEGORIES", "Event categories to be used for the MSSM analysis.")
 cats2.add_option("--mssm-categories-ee", dest="ee_mssm_categories", default="8 9", type="string",
-                 help="List mm of event categories. [Default: \"0 1 2 3 6 7\"]")
+                 help="List mm of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="8 9", type="string",
-                 help="List mm of event categories. [Default: \"0 1 2 3 6 7\"]")
+                 help="List mm of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-em", dest="em_mssm_categories", default="8 9", type="string",
-                 help="List em of event categories. [Default: \"0 1 2 3 6 7\"]")
+                 help="List em of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="8 9", type="string",
-                 help="List mt of event categories. [Default: \"0 1 2 3 6 7\"]")
+                 help="List mt of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9", type="string",
-                 help="List et of event categories. [Default: \"0 1 2 3 6 7\"]")
+                 help="List et of event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="8 9", type="string",
                  help="List of tt event categories. [Default: \"8 9\"]")
 cats2.add_option("--mssm-categories-hbb", dest="hbb_mssm_categories", default="0 1 2 3 4 5 6", type="string",
