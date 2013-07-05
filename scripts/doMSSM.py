@@ -254,8 +254,8 @@ if options.update_setup:
                          DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
                      #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'TT_fine_binning' -k '9' --range 200 --rebin".format(
                      #    DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'TT_fine_binning' -k '8' --range 200 --rebin".format(
-                         DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
+                     #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'TT_fine_binning' -k '8' --range 200 --rebin".format(
+                     #    DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
                      os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'W_fine_binning' -k '9' --range 200 --rebin".format(
                          DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
                      os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'W_fine_binning' -k '8' --range 200 --rebin".format(
