@@ -412,14 +412,14 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   //lFile->Close();
   return;
 }
-void addFitNuisance(std::string iFileName="test.root",std::string iChannel="muTau",std::string iBkg="W",std::string iEnergy="8TeV",std::string iName="shift",std::string iCategory="9",double iFirst=150,int iFitModel=1,bool iVarBin=true,bool iRebin=true) { 
+void addFitNuisance(std::string iFileName="test.root",std::string iChannel="muTau",std::string iBkg="W",std::string iEnergy="8TeV",std::string iName="shift",std::string iCategory="9",double iFirst=150,double iLast=1500,int iFitModel=1,bool iVarBin=true,bool iRebin=true) { 
   // Also possible old MSSM categorization (for testing)
-  if(iCategory=="0") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet_low"  ,iRebin,iVarBin,iFitModel,iFirst);
-  if(iCategory=="1") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet_high" ,iRebin,iVarBin,iFitModel,iFirst);
-  if(iCategory=="2") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_boost_low" ,iRebin,iVarBin,iFitModel,iFirst);
-  if(iCategory=="3") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_boost_high",iRebin,iVarBin,iFitModel,iFirst);
-  if(iCategory=="6") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_low"  ,iRebin,iVarBin,iFitModel,iFirst);
-  if(iCategory=="7") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_high" ,iRebin,iVarBin,iFitModel,iFirst);
-  if(iCategory=="8") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtag"    ,iRebin,iVarBin,iFitModel,iFirst);
-  if(iCategory=="9") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag"      ,iRebin,iVarBin,iFitModel,iFirst);
+  if(iCategory=="0") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet_low"  ,iRebin,iVarBin,iFitModel,iFirst,iLast);
+  if(iCategory=="1") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet_high" ,iRebin,iVarBin,iFitModel,iFirst,iLast);
+  if(iCategory=="2") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_boost_low" ,iRebin,iVarBin,iFitModel,iFirst,iLast);
+  if(iCategory=="3") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_boost_high",iRebin,iVarBin,iFitModel,iFirst,iLast);
+  if(iCategory=="6") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_low"  ,iRebin,iVarBin,iFitModel,iFirst,iLast);
+  if(iCategory=="7") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_high" ,iRebin,iVarBin,iFitModel,iFirst,iLast);
+  if(iCategory=="8") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtag"    ,iRebin,iVarBin,iFitModel,iFirst,iLast);
+  if(iCategory=="9") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag"      ,iRebin,iVarBin,iFitModel,iFirst,iLast);
 }

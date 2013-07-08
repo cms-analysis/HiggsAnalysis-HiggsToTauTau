@@ -11,6 +11,7 @@ parser.add_option("-e"  ,"--energy",     dest="energy",     default="8TeV",    t
 parser.add_option("-c"  ,"--channel",    dest="channel",    default="tt",      type="string",   help="channel [Default: tt]")
 parser.add_option("-k"  ,"--categories", dest="categories", default="8 9",     type="string",   help="Categories [Default: 8 9 ]")
 parser.add_option("-r"  ,"--range",      dest="first",      default="200",     type="int",      help="Beginning of fit range [Default: 200]")
+parser.add_option("-l"  ,"--rangelast",  dest="last",      default="1500",     type="int",      help="End of fit range [Default: 1500]")
 parser.add_option("-f"  ,"--fitmodel",   dest="fitmodel",   default="0",       type="int",      help="Fit model 0(exp(m/(a+b*m)) 1(exp(a*m*pow(b)) [Default:0]")
 parser.add_option("-o"  ,"--varbin",     dest="varbin",     default=False,action="store_true",  help="Use variable binned fits    [Default: False]")
 parser.add_option("-m"  ,"--rebin",      dest="rebin",      default=False,action="store_true",  help="Rebin histogram to data_obs [Default: False]")
@@ -52,8 +53,8 @@ os.system(r"cp {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rootlogon.C .
 os.system("cp %s %s.bak"      %  (options.setup+'/'+options.channel+'/'+options.input,options.setup+'/'+options.channel+'/'+options.input))
 for cat in options.categories.split() :
     for bkg in options.background.split() : 
-        os.system(r"root -l -b -q rootlogon.C {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/addFitNuisance.C+\(\"{FILENAME}\"\,\"{CHANNEL}\"\,\"{BKG}\"\,\"{ENERGY}\"\,\"{NAME}\"\,\"{CATEGORY}\"\,{FIRST}\,{FITMODEL}\,{VARBIN}\,{REBIN}\)".format(
-            CMSSW_BASE=os.environ.get("CMSSW_BASE"), FILENAME=options.setup+'/'+options.channel+'/'+options.input,CHANNEL=channelName[options.channel],BKG=bkg,ENERGY=options.energy,NAME=options.name,CATEGORY=cat,FIRST=options.first,FITMODEL=options.fitmodel,VARBIN=str(options.varbin).lower(),REBIN=str(options.rebin).lower()))
+        os.system(r"root -l -b -q rootlogon.C {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/addFitNuisance.C+\(\"{FILENAME}\"\,\"{CHANNEL}\"\,\"{BKG}\"\,\"{ENERGY}\"\,\"{NAME}\"\,\"{CATEGORY}\"\,{FIRST}\,{LAST}\,{FITMODEL}\,{VARBIN}\,{REBIN}\)".format(
+            CMSSW_BASE=os.environ.get("CMSSW_BASE"), FILENAME=options.setup+'/'+options.channel+'/'+options.input,CHANNEL=channelName[options.channel],BKG=bkg,ENERGY=options.energy,NAME=options.name,CATEGORY=cat,FIRST=options.first,LAST=options.last,FITMODEL=options.fitmodel,VARBIN=str(options.varbin).lower(),REBIN=str(options.rebin).lower()))
         os.system("rm %s"      %  (options.setup+'/'+options.channel+'/'+options.input))
         os.system("mv Output.root %s" %  (options.setup+'/'+options.channel+'/'+options.input))
 
