@@ -8,8 +8,8 @@ parser.add_option("-c", "--channels", dest="channels", default="em mt et tt", ty
                   help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"em mt et tt\"]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
                   help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
-parser.add_option("-a", "--analyses", dest="analyses", default="std, bbb",
-                  help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"std, bbb, mvis, inclusive\" [Default: \"std, bbb\"]")
+parser.add_option("-a", "--analyses", dest="analyses", default="no-bbb, bbb",
+                  help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"no-bbb, bbb, mvis, inclusive\" [Default: \"no-bbb, bbb\"]")
 parser.add_option("--label", dest="label", default="", type="string", 
                   help="Possibility to give the setups, aux and LIMITS directory a index (example LIMITS-bbb). [Default: \"\"]")
 parser.add_option("--inputs-ee", dest="inputs_ee", default="DESY-KIT", type="choice", choices=['DESY-KIT'],
@@ -24,19 +24,18 @@ parser.add_option("--inputs-mt", dest="inputs_mt", default="Imperial", type="cho
                   help="Input files for htt_mt analysis. [Default: \"Imperial\"]")
 parser.add_option("--inputs-tt", dest="inputs_tt", default="MIT", type="choice", choices=['CERN', 'MIT'],
                   help="Input files for htt_tt analysis. [Default: \"MIT\"]")
+parser.add_option("--inputs-vhtt", dest="inputs_vhtt", default="VHTT", type="choice", choices=['VHTT'],
+                  help="Input files for vhtt analysis. [Default: \"VHTT\"]")
 parser.add_option("--update-all", dest="update_all", default=False, action="store_true",
                   help="update everything from scratch. If not specified use the following options to specify, which parts of the reload you want to run. [Default: False]")
 parser.add_option("--update-setup", dest="update_setup", default=False, action="store_true",
                   help="update root input files from cvs and rescale all input files by SM Higgs cross section. [Default: False]")
-parser.add_option("--update-analyses", dest="update_analyses", default=False, action="store_true",
-                  help="update bin-by-bin uncertainties in setup directory for the indicated analyses. [Default: False]")
-parser.add_option("--update-aux", dest="update_datacards", default=False, action="store_true",
+parser.add_option("--update-aux", dest="update_aux", default=False, action="store_true",
                   help="update aux directory for the indicated analyses. [Default: False]")
 parser.add_option("--update-LIMITS", dest="update_limits", default=False, action="store_true",
                   help="update LIMITS directory for the indicated analyses. [Default: False]")
 parser.add_option("--drop-list", dest="drop_list", default="",  type="string",
                   help="The full path to the list of uncertainties to be dropped from the datacards due to pruning. If this string is empty no prunig will be applied. [Default: \"\"]")
-
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -66,24 +65,24 @@ os.system("mkdir -p backup")
 
 ## define inputs from cvs; Note: not all analyses are available for all inputs
 directories = {}
-from HiggsAnalysis.HiggsToTauTau.summer13_analyses_cfg import htt_ee, htt_mm, htt_em, htt_et, htt_mt, htt_tt
-directories['ee'] = htt_mm(options.inputs_ee)
-directories['mm'] = htt_mm(options.inputs_mm)
-directories['em'] = htt_em(options.inputs_em)
-directories['et'] = htt_et(options.inputs_et)
-directories['mt'] = htt_mt(options.inputs_mt)
-directories['tt'] = htt_tt(options.inputs_tt)
+from HiggsAnalysis.HiggsToTauTau.summer13_analyses_cfg import htt_ee, htt_mm, htt_em, htt_et, htt_mt, htt_tt, vhtt
+directories['ee'  ] = htt_mm(options.inputs_ee)
+directories['mm'  ] = htt_mm(options.inputs_mm)
+directories['em'  ] = htt_em(options.inputs_em)
+directories['et'  ] = htt_et(options.inputs_et)
+directories['mt'  ] = htt_mt(options.inputs_mt)
+directories['tt'  ] = htt_tt(options.inputs_tt)
+directories['vhtt'] = vhtt(options.inputs_vhtt)
 
 ## postfix pattern for input files
 patterns = {
-    'std'    : '',
+    'no-bbb'   : '',
     'bbb'    : '',
     }
 
 if options.update_all :
     options.update_setup     = True
-    options.update_analyses  = True
-    options.update_datacards = True
+    options.update_aux       = True
     options.update_limits    = True
 
 print "# --------------------------------------------------------------------------------------"
@@ -102,10 +101,10 @@ print "# --inputs-em       :", options.inputs_em
 print "# --inputs-et       :", options.inputs_et
 print "# --inputs-mt       :", options.inputs_mt
 print "# --inputs-tt       :", options.inputs_tt
+print "# --inputs-vhtt     :", options.inputs_vhtt
 print "# --------------------------------------------------------------------------------------"
 print "# --update-setup    :", options.update_setup
-print "# --update-analyses :", options.update_analyses
-print "# --update-aux      :", options.update_datacards
+print "# --update-aux      :", options.update_aux
 print "# --update-LIMITS   :", options.update_limits
 print "# Check option --help in case of doubt about the meaning of one or more of these confi-"
 print "# guration parameters.                           "
@@ -126,14 +125,14 @@ if options.update_setup :
     for chn in channels :
         print "... copy files for channel:", chn
         ## remove legacy
-        for file in glob.glob("{SETUP}/{CHN}/htt_{CHN}*-sm-*.root".format(SETUP=setup, CHN=chn)) :
+        for file in glob.glob("{SETUP}/{CHN}/*inputs-sm-*.root".format(SETUP=setup, CHN=chn)) :
             os.system("rm %s" % file)
         for per in periods :
             if directories[chn][per] == 'None' :
                 continue
             for ana in analyses :
                 pattern = patterns[ana]
-                source="{CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/htt_{CHN}*-sm-{PER}{PATTERN}.root".format(
+                source="{CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/*inputs-sm-{PER}{PATTERN}.root".format(
                     CMSSW_BASE=cmssw_base,
                     DIR=directories[chn][per],
                     CHN=chn,
@@ -146,6 +145,18 @@ if options.update_setup :
                         SETUP=setup,
                         CHN=chn
                         ))
+                if chn == 'vhtt' :
+                    if not os.path.exists("{SETUP}/vhtt/vhtt.inputs-sm-{PER}{PATTERN}.root".format(SETUP=setup, PER=per, PATTERN=pattern)):
+                        os.system("hadd -v 0 {SETUP}/vhtt/vhtt.inputs-sm-{PER}{PATTERN}.root {SETUP}/vhtt/vhtt_*.inputs-sm-{PER}{PATTERN}.root".format(
+                            SETUP=setup,
+                            PER=per,
+                            PATTERN=pattern
+                            ))
+                        os.system("rm {SETUP}/vhtt/vhtt_*.inputs-sm-{PER}{PATTERN}.root".format(
+                            SETUP=setup,
+                            PER=per,
+                            PATTERN=pattern
+                            ))
     ## copy postfit inputs for mm to test directory (this still goes
     ## into the original setup directory as the scripts for postfit
     ## plots will grab it from there)
@@ -155,15 +166,11 @@ if options.update_setup :
     ## scale to SM cross section
     for chn in channels :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
-            os.system("scale2SM.py -i {FILE} -s 'ggH, qqH, VH' {MASSES}".format(
+            os.system("scale2SM.py -i {FILE} -s 'ggH, qqH, VH, WH, ZH' {MASSES}".format(
                 FILE=file,
                 MASSES=masses
                 ))
 
-if options.update_analyses :
-    print "##"
-    print "## update setups directory:"
-    print "##"    
     ## set up directory structure
     dir = "{CMSSW_BASE}/src/setups{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
     if os.path.exists(dir) :
@@ -176,12 +183,17 @@ if options.update_analyses :
         ##
         ## CENTRAL
         ##
-        if ana == 'std' :
-            pass
+        if ana == 'no-bbb' :
+            print "##"
+            print "## update no-bbb directory in setup:"
+            print "##"    
         ##
         ## BIN-BY-BIN
         ##
         if ana == 'bbb' :
+            print "##"
+            print "## update bbb    directory in setup:"
+            print "##"    
             if 'ee' in channels :
                 if '7TeV' in periods :
                     ## setup bbb uncertainties for ee 7TeV 
@@ -266,8 +278,87 @@ if options.update_analyses :
                         ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+            if 'vhtt' in channels :
+                if '7TeV' in periods :
+                    ## setup bbb uncertainties for vhtt
+                    os.system("add_bbb_errors.py 'vhtt:7TeV:00:wz,zz,fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                        DIR=dir,
+                        ANA=ana
+                        ))
+                    os.system("add_bbb_errors.py 'vhtt:7TeV:01:wz,zz,fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                        DIR=dir,
+                        ANA=ana
+                        ))
+                    #os.system("add_bbb_errors.py 'vhtt:7TeV:02:wz,zz,fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    #    DIR=dir,
+                    #    ANA=ana
+                    #    ))
+                    os.system("add_bbb_errors.py 'vhtt:7TeV:03:Zjets' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                        DIR=dir,
+                        ANA=ana
+                        ))
+                    os.system("add_bbb_errors.py 'vhtt:7TeV:04:Zjets' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                        DIR=dir,
+                        ANA=ana
+                        ))
+                    os.system("add_bbb_errors.py 'vhtt:7TeV:05:Zjets' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                        DIR=dir,
+                        ANA=ana
+                        ))
+                    os.system("add_bbb_errors.py 'vhtt:7TeV:06:Zjets' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                        DIR=dir,
+                        ANA=ana
+                        ))
+                    os.system("add_bbb_errors.py 'vhtt:7TeV:07:wz' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                        DIR=dir,
+                        ANA=ana
+                        ))
+                    os.system("add_bbb_errors.py 'vhtt:7TeV:08:wz' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                        DIR=dir,
+                        ANA=ana
+                        ))
+                if '8TeV' in periods :
+                    ## setup bbb uncertainties for vhtt
+                    os.system("add_bbb_errors.py 'vhtt:8TeV:00:wz,zz,fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                        DIR=dir,
+                        ANA=ana
+                        ))
+                    os.system("add_bbb_errors.py 'vhtt:8TeV:01:wz,zz,fakes,charge_fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                        DIR=dir,
+                        ANA=ana
+                        ))
+                    os.system("add_bbb_errors.py 'vhtt:8TeV:02:wz,zz,fakes,charge_fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                        DIR=dir,
+                        ANA=ana
+                        ))
+                    os.system("add_bbb_errors.py 'vhtt:8TeV:03:Zjets' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                        DIR=dir,
+                        ANA=ana
+                        ))
+                    os.system("add_bbb_errors.py 'vhtt:8TeV:04:Zjets' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                        DIR=dir,
+                        ANA=ana
+                        ))
+                    os.system("add_bbb_errors.py 'vhtt:8TeV:05:Zjets' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                        DIR=dir,
+                        ANA=ana
+                        ))
+                    os.system("add_bbb_errors.py 'vhtt:8TeV:06:Zjets' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                        DIR=dir,
+                        ANA=ana
+                        ))
+                    os.system("add_bbb_errors.py 'vhtt:8TeV:07:wz' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                        DIR=dir,
+                        ANA=ana
+                        ))
+                    os.system("add_bbb_errors.py 'vhtt:8TeV:08:wz' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                        DIR=dir,
+                        ANA=ana
+                        ))
+                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                
 
-if options.update_datacards :
+if options.update_aux :
     print "##"
     print "## update aux directory:"
     print "##"    
@@ -374,6 +465,23 @@ if options.update_datacards :
                     DIR=dir,
                     MASSES=masses,
                     ))
+        if 'vhtt' in channels :
+            if '7TeV' in periods :
+                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '7TeV' -a sm -c 'vhtt' --sm-categories-vhtt='0 1 3 4 5 6 7 8' {MASSES}".format(
+                    LABEL=options.label,
+                    CMSSW_BASE=cmssw_base,
+                    ANA=ana,
+                    DIR=dir,
+                    MASSES=masses,
+                    ))
+            if '8TeV' in periods :
+                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'vhtt' --sm-categories-vhtt='0 1 2 3 4 5 6 7 8' {MASSES}".format(
+                    LABEL=options.label,
+                    CMSSW_BASE=cmssw_base,
+                    ANA=ana,
+                    DIR=dir,
+                    MASSES=masses,
+                    ))                                
         if ana == 'bbb' :
             if options.drop_list != '' :
                 for subdir in glob.glob("{DIR}/bbb/sm/*".format(DIR=dir)) :
@@ -488,4 +596,21 @@ if options.update_limits :
                     LABEL=label,
                     MASSES=masses
                     ))
+        if 'vhtt' in channels :
+            if '7TeV' in periods :
+                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '7TeV' -a sm -c 'vhtt' {LABEL} --sm-categories-vhtt='0 1 3 4 5 6 7 8' {MASSES}".format(
+                    INDEX=options.label,                
+                    ANA=ana,
+                    DIR=dir,
+                    LABEL=label,
+                    MASSES=masses
+                    ))
+            if '8TeV' in periods :
+                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'vhtt' {LABEL} --sm-categories-vhtt='0 1 2 3 4 5 6 7 8' {MASSES}".format(
+                    INDEX=options.label,                
+                    ANA=ana,
+                    DIR=dir,
+                    LABEL=label,
+                    MASSES=masses
+                    ))                                
 
