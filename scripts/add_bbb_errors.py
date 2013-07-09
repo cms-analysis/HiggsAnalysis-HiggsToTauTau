@@ -34,91 +34,109 @@ import shutil
 import subprocess
 import sys
 
-def get_channel_name(finalstate, category):
+def get_channel_dirs(finalstate, category):
     ''' Turn 'mt' + 00 -> muTau_0jet_low '''
     fs_map = {
-        'mt' : 'muTau',
-        'et' : 'eleTau',
-        'em' : 'emu',
-        'mm' : 'mumu',
-        'ee' : 'ee',
-        'tt' : 'tauTau',
+        'mt'  : 'muTau',
+        'et'  : 'eleTau',
+        'em'  : 'emu',
+        'mm'  : 'mumu',
+        'ee'  : 'ee',
+        'tt'  : 'tauTau',
+        'vhtt': '',
     }
     cat_map = {
         'ee' : {
-        '00' : '0jet_low',
-        '01' : '0jet_high',
-        '02' : '1jet_low',
-        '03' : '1jet_high',
-        '04' : 'vbf',
-        '08' : 'nobtag',
-        '09' : 'btag',
+        '00' : ['0jet_low' ],
+        '01' : ['0jet_high'],
+        '02' : ['1jet_low' ],
+        '03' : ['1jet_high'],
+        '04' : ['vbf'      ],
+        '08' : ['nobtag'   ],
+        '09' : ['btag'     ],
         },
         'mm' : {
-        '00' : '0jet_low',
-        '01' : '0jet_high',
-        '02' : '1jet_low',
-        '03' : '1jet_high',
-        '04' : 'vbf',
-        '08' : 'nobtag',
-        '09' : 'btag',
+        '00' : ['0jet_low' ],
+        '01' : ['0jet_high'],
+        '02' : ['1jet_low' ],
+        '03' : ['1jet_high'],
+        '04' : ['vbf'      ],
+        '08' : ['nobtag'   ],
+        '09' : ['btag'     ],
         },
         'em' : {
-        '00' : '0jet_low',
-        '01' : '0jet_high',
-        '02' : '1jet_low',
-        '03' : '1jet_high',
-        '04' : 'vbf_loose',
-        '05' : 'vbf_tight',
-        '08' : 'nobtag',
-        '09' : 'btag',
+        '00' : ['0jet_low' ],
+        '01' : ['0jet_high'],
+        '02' : ['1jet_low' ],
+        '03' : ['1jet_high'],
+        '04' : ['vbf_loose'],
+        '05' : ['vbf_tight'],
+        '08' : ['nobtag'   ],
+        '09' : ['btag'     ],
         },
         'et' : {
-        '00' : '0jet_low',
-        '01' : '0jet_medium',
-        '02' : '0jet_high',
-        '03' : '1jet_medium',
-        '04' : '1jet_high_lowhiggs',
-        '05' : '1jet_high_mediumhiggs',
-        '06' : 'vbf_loose',
-        '07' : 'vbf_tight',
-        '08' : 'nobtag',
-        '09' : 'btag',
+        '00' : ['0jet_low'   ],
+        '01' : ['0jet_medium'],
+        '02' : ['0jet_high'  ],
+        '03' : ['1jet_medium'],
+        '04' : ['1jet_high_lowhiggs'],
+        '05' : ['1jet_high_mediumhiggs'],
+        '06' : ['vbf_loose'  ],
+        '07' : ['vbf_tight'  ],
+        '08' : ['nobtag'     ],
+        '09' : ['btag'       ],
         },
         'mt' : {
-        '00' : '0jet_low',
-        '01' : '0jet_medium',
-        '02' : '0jet_high',
-        '03' : '1jet_medium',
-        '04' : '1jet_high_lowhiggs',
-        '05' : '1jet_high_mediumhiggs',
-        '06' : 'vbf_loose',
-        '07' : 'vbf_tight',
-        '08' : 'nobtag',
-        '09' : 'btag',
+        '00' : ['0jet_low'   ],
+        '01' : ['0jet_medium'],
+        '02' : ['0jet_high'  ],
+        '03' : ['1jet_medium'],
+        '04' : ['1jet_high_lowhiggs'],
+        '05' : ['1jet_high_mediumhiggs'],
+        '06' : ['vbf_loose'  ],
+        '07' : ['vbf_tight'  ],
+        '08' : ['nobtag'     ],
+        '09' : ['btag'       ],
         },
         'tt' : {
-        '00' : '1jet_high_mediumhiggs',
-        '01' : '1jet_high_highhiggs',
-        '02' : 'vbf',
-        '08' : 'nobtag',
-        '09' : 'btag',              
+        '00' : ['1jet_high_mediumhiggs'],
+        '01' : ['1jet_high_highhiggs'],
+        '02' : ['vbf'   ],
+        '08' : ['nobtag'],
+        '09' : ['btag'  ],              
         },
+        'vhtt' : {
+        '00' : ['mmt'],
+        '01' : ['emt'],
+        '02' : ['eet'],
+        '03' : ['mmme_zh', 'eeem_zh' ],
+        '04' : ['mmmt_zh', 'eemt_zh' ],
+        '05' : ['mmet_zh', 'eeet_zh' ],
+        '06' : ['mmtt_zh', 'eett_zh' ],
+        '07' : ['mtt_low', 'mtt_high'],
+        '08' : ['ett_low', 'ett_high'],
+        },        
     }
-    return '_'.join((fs_map[finalstate], cat_map[finalstate][category]))
+    if fs_map[finalstate] == '' :
+        return cat_map[finalstate][category]
+    else :
+        combined_names = []
+        for dir in cat_map[finalstate][category] :
+            combined_names.append(fs_map[finalstate]+'_'+dir)
+        return combined_names
 
 
 def get_shape_file(sourcedir, channel, period, ana='sm'):
     # Ex: shape file for mt lives in
     #  setup/mt/htt_mt.inputs-sm-7TeV.root
     if ana=='sm' :
-        return os.path.join(sourcedir, channel,
-                            'htt_' + channel + '.inputs-' +
-                            ana + '-' + period + '.root')
+        if channel == 'vhtt' :
+            filename = 'vhtt.inputs-'+ana+'-'+period+'.root'
+        else :
+            filename = 'htt_'+channel+'.inputs-'+ana+'-'+period+'.root'
+        return os.path.join(sourcedir, channel, filename)
     else : ## for mssm - may have to add mass-category (atm its 0 for all)
-        return os.path.join(sourcedir, channel, 
-                            'htt_' + channel + '.inputs-' +
-                            ana + '-' + period + '-' + '0' + '.root')
+        return os.path.join(sourcedir, channel, 'htt_'+channel+'.inputs-'+ana+'-'+period+'-'+'0'+'.root')
 
 def get_card_config_files(sourcedir, channel, period, category, ana='sm'):
     ''' Get the configuration files (cgs, unc.vals, etc)
@@ -151,62 +169,67 @@ def add_systematics(cat_name, process, systematics, unc_conf_file, unc_val_file)
         unc_val_file.write(
             '%s %s %s 1.00\n' % (cat_name, process, systematic_name))
 
-def create_systematics(channel, category, process, period, shape_file, threshold,
-                      normalize):
-    ''' Create the bin-by-bin systematics in the shape file.
-
-    Returns a tuple with (channel name, list of added systs)
-
+def create_systematics(channel, category, process, period, shape_file, threshold, normalize):
     '''
-
-    channel_name = get_channel_name(channel, category)
-
+    Create the bin-by-bin systematics in the shape file.
+    Returns a list oif tuples of kind [(channel name, list of added systs)]
+    '''
+    ## determine directories pointred to in the datacards (NB: can be more than one, e.g. in vhtt)
+    channel_names = get_channel_dirs(channel, category)
     # Parse process description in case we merge histograms
     process_to_merge_in = []
-    # Default case -> process = target_process
+    ## default case -> process = target_process
     target_process = process
     if '>' in process:
         log.info("Detected multi-error merge: %s", process)
         target_process = process.split('>')[1].strip()
         for x in process.split('>')[0].split('+'):
             process_to_merge_in.append(x.strip())
-
-    root_path = os.path.join('/',channel_name, target_process)
-    if root_path[0] == '/':
-        root_path = root_path[1:]
-
-    command = [
-        'add_stat_shapes.py',
-        shape_file, # input
-        shape_file, # output (modded in place)
-        '--filter',
-        root_path, # the histogram we are bbb-ing
-        '--prefix',
-        # Make the prefix as short as possible, to avoid RooFit
-        # string-to-long bug
-        # This prefix is needed so the systematics names don't overlap
-        # between ET/MT, boost/VBF, etc.
-        'CMS_htt_%s_%s_%s' % (channel, category, period),
-        '--threshold',
-        str(threshold),
-    ]
-    if normalize:
-        command.append('--normalize')
-    if process_to_merge_in:
-        command.append('--merge-errors')
-        command.extend(process_to_merge_in)
-
-    log.debug("Shape command:")
-    log.debug(" ".join(command))
-    # Run the command, get the list of new names (written to stdout)
-    stdout = subprocess.Popen(
-        command, stdout=subprocess.PIPE, stderr=sys.stderr).communicate()[0]
-    added_systematics = []
-    for line in stdout.split('\n'):
-        if line and 'CMS_htt' in line:
-            added_systematics.append(line.strip())
-    return channel_name, added_systematics
-
+    ## set up command line for bbb uncertainty creation in each root directory
+    channel_name_and_systematics = []
+    for channel_name in channel_names :
+        root_path = os.path.join('/',channel_name, target_process)
+        if root_path[0] == '/':
+            root_path = root_path[1:]
+        ## compose uncertainty name
+        if channel == 'vhtt' :
+            uncert_name = 'CMS_vhtt_%s_%s' % (channel_name, period)
+        else :
+            uncert_name = 'CMS_htt_%s_%s_%s' % (channel, channel_name, period)
+        ## main command to add stat shapes
+        command = [
+            'add_stat_shapes.py',
+            shape_file, # input
+            shape_file, # output (modded in place)
+            '--filter',
+            root_path, # the histogram we are bbb-ing
+            '--prefix',
+            # Make the prefix as short as possible, to avoid RooFit
+            # string-to-long bug
+            # This prefix is needed so the systematics names don't overlap
+            # between ET/MT, boost/VBF, etc.
+            uncert_name,
+            '--threshold',
+            str(threshold),
+            ]
+        if normalize:
+            command.append('--normalize')
+        if process_to_merge_in:
+            command.append('--merge-errors')
+            command.extend(process_to_merge_in)
+        ## and execute
+        log.debug("Shape command:")
+        log.debug(" ".join(command))
+        ## run the command, get the list of new names (written to stdout)
+        stdout = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=sys.stderr).communicate()[0]
+        added_systematics = []
+        for line in stdout.split('\n'):
+            ###### add proper regex match here
+            #if line and 'CMS_htt' in line:
+            if line and 'CMS_vhtt' in line:
+                added_systematics.append(line.strip())
+        channel_name_and_systematics.append((channel_name, added_systematics))
+    return channel_name_and_systematics
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -279,17 +302,14 @@ if __name__ == "__main__":
         log.info("Mangling: %s", ' '.join(command))
         # Create the systematics
         shape_file = get_shape_file(args.outputdir, channel, period, ana)
-        nicename, systematics = create_systematics(
-            channel, cat, proc, period, shape_file, args.threshold,
-            args.normalize)
-        log.info("Added systs for %i bins", len(systematics))
-        total_added_systematics += len(systematics)
-        cgs, unc_c, unc_v = get_card_config_files(
-            args.outputdir, channel, period, cat, ana)
+        systematics_info = create_systematics(channel, cat, proc, period, shape_file, args.threshold, args.normalize)
+        for (nicename, systematics) in systematics_info :
+            log.info("Added systs for %i bins", len(systematics))
+            total_added_systematics += len(systematics)
+        cgs, unc_c, unc_v = get_card_config_files(args.outputdir, channel, period, cat, ana)
         log.info("Adding systematics to files")
         with open(unc_c, 'a') as unc_c_file:
             with open(unc_v, 'a') as unc_v_file:
-                add_systematics(nicename, proc, systematics,
-                                unc_c_file, unc_v_file)
-
+                for (nicename, systematics) in systematics_info :
+                    add_systematics(nicename, proc, systematics, unc_c_file, unc_v_file)
     log.info("Added %i new systematics!", total_added_systematics)
