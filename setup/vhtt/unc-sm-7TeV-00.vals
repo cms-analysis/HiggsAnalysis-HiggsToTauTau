@@ -1,36 +1,12 @@
-###########################################################################
-# unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-# Example:
-# emu_vbf,emu_novbf,emu_boost     signal,EWK              lumi            1.045
-
 mmt simulated lumi_7TeV      1.022
-
-# Efficiency uncertainties
 mmt simulated CMS_eff_m 1.02
 mmt simulated CMS_eff_t 1.08
-
-# Scale uncertainties
 mmt simulated CMS_scale_t 1.03
-
-# Efficiency of b-jet veto
 mmt simulated CMS_fake_b_7TeV 1.01
-
-# Background uncertainties - due to the theoretical unc. on the xsection
 mmt zz pdf_qqbar 1.033
 mmt zz QCDscale_VV 1.023
-
 mmt wz pdf_qqbar 1.04
 mmt wz QCDscale_VV 1.04
-
 mmt signal pdf_qqbar 1.034
 mmt signal QCDscale_VH 1.004
-
-# Stat shape uncertainties
-mmt fakes CMS_vhtt_7TeV_mmt_fakeshape_fakes_bin_1 1.0
-mmt fakes CMS_vhtt_7TeV_mmt_fakeshape_fakes_bin_2 1.0
-mmt fakes CMS_vhtt_7TeV_mmt_fakeshape_fakes_bin_3 1.0
-mmt fakes CMS_vhtt_7TeV_mmt_fakeshape_fakes_bin_4 1.0
-mmt fakes CMS_vhtt_7TeV_mmt_fakeshape_fakes_bin_5 1.0
-mmt fakes CMS_vhtt_7TeV_mmt_fakeshape_fakes_bin_6 1.0
-mmt fakes CMS_vhtt_7TeV_mmt_fakeshape_fakes_bin_7 1.0
 mmt fakes CMS_vhtt_mmt_fakes_7TeV 1.28

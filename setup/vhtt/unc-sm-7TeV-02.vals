@@ -1,8 +1,3 @@
-###########################################################################
-# unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-# Example:
-# emu_vbf,emu_novbf,emu_boost     signal,EWK              lumi            1.045
-
 mtt,ett		signal,wz,zz			lumi_7TeV                    1.022
 mtt,ett		signal,wz,zz			pdf_vh                       1.043
 mtt,ett		signal,wz,zz			eff_trigger                  1.035
@@ -16,6 +11,4 @@ mtt,ett		signal,wz,zz			CMS_scale_met                1.037
 mtt,ett		signal,wz,zz			CMS_vhtt_el_veto             1.038
 mtt,ett		signal,wz,zz			CMS_vhtt_mu_veto             1.007
 mtt,ett		fakes				CMS_vhtt_fakes               1.212
-mtt fakes CMS_vhtt_7TeV_mtt_shape_fakes_bin_1 1.0
-ett fakes CMS_vhtt_7TeV_ett_shape_fakes_bin_1 1.0
 
