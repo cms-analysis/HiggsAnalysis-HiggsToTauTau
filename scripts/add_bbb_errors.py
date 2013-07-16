@@ -33,6 +33,7 @@ import os
 import shutil
 import subprocess
 import sys
+import re
 
 def get_channel_dirs(finalstate, category):
     ''' Turn 'mt' + 00 -> muTau_0jet_low '''
@@ -225,8 +226,8 @@ def create_systematics(channel, category, process, period, shape_file, threshold
         added_systematics = []
         for line in stdout.split('\n'):
             ###### add proper regex match here
-            #if line and 'CMS_htt' in line:
-            if line and 'CMS_vhtt' in line:
+            match=re.compile("CMS_v?htt")
+            if line and match.search(line):
                 added_systematics.append(line.strip())
         channel_name_and_systematics.append((channel_name, added_systematics))
     return channel_name_and_systematics
