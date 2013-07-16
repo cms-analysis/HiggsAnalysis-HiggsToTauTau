@@ -16,7 +16,8 @@ parser.add_option("-u", "--uncertainties", dest="uncertainties", default="1", ty
 parser.add_option("--asimov", dest="asimov", action="store_true", default=False, help="Use asimov dataset for postfit-plots. [Default: 'False']")
 parser.add_option("-v", "--verbose", dest="verbose", action="store_true", default=False, help="Run in verbose more. [Default: 'False']")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
-cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
+cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 4", type="string", help="List mm of event categories. [Default: \"0 1 2 3 4\"]")
+cats1.add_option("--sm-categories-ee", dest="ee_sm_categories", default="0 1 2 3 4", type="string", help="List ee of event categories. [Default: \"0 1 2 3 4\"]")
 cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0   2 3 4   6 7", type="string", help="List em of event categories. [Default: \"0   2 3 4   6 7\"]")
 cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3 4 5 6 7", type="string", help="List mt of event categories. [Default: \"0 1 2 3 4 5 6 7\"]")
 cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 4 5 6 7", type="string", help="List et of event categories. [Default: \"0 1 2 3 4 5 6 7\"]")
@@ -234,6 +235,7 @@ for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
 if options.analysis == "sm" :
     categories = {
         "mm"   : options.mm_sm_categories.split(),
+        "ee"   : options.ee_sm_categories.split(),
         "em"   : options.em_sm_categories.split(),
         "mt"   : options.mt_sm_categories.split(),
         "et"   : options.et_sm_categories.split(),
@@ -275,6 +277,13 @@ category_mapping_tautau = {
     "8" : "nobtag",
     "9" : "btag",
     }
+category_mapping_mm = {
+    "0" : "0jet_low"   ,
+    "1" : "0jet_high",
+    "2" : "1jet_low",
+    "3" : "1jet_high",
+    "4" : "vbf",
+    }
 category_mapping_bb = {
     "0" : "had0",
     "1" : "had1",
@@ -285,7 +294,8 @@ category_mapping_bb = {
     "6" : "lep",
     }
 category_mapping = {
-    "mm" : category_mapping_classic,
+    "mm" : category_mapping_mm,
+    "ee" : category_mapping_mm,
     "em" : category_mapping_classic,
     "mt" : category_mapping_classic,
     "et" : category_mapping_classic,
