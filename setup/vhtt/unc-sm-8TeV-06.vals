@@ -1,7 +1,5 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-
-
 mmtt_zh      signal,ZZ,GGToZZ2L2L             lumi_8TeV                            1.044
 mmtt_zh      signal,ZZ,GGToZZ2L2L             CMS_eff_m                            1.04
 mmtt_zh      signal,ZZ,GGToZZ2L2L             CMS_eff_t                            1.12
@@ -17,11 +15,8 @@ mmtt_zh      Zjets                            CMS_zh2l2tau_ZjetBkgMMTT_8TeV     
 mmtt_zh      signal,ZZ,GGToZZ2L2L             tauES                                1.00
 mmtt_zh      GGToZZ2L2L                       CMS_zh2l2tau_GGZZ2L2LBkg             1.44
 
-
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-
-
 eett_zh      signal,ZZ,GGToZZ2L2L             lumi_8TeV                            1.044
 eett_zh      signal,ZZ,GGToZZ2L2L             CMS_eff_e                            1.04
 eett_zh      signal,ZZ,GGToZZ2L2L             CMS_eff_t                            1.12

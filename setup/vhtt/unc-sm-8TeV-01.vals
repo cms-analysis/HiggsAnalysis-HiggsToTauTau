@@ -1,43 +1,14 @@
-###########################################################################
-# unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-# Example:
-# emu_vbf,emu_novbf,emu_boost     signal,EWK              lumi            1.045
-
 emt simulated lumi_8TeV      1.042
-
-# Efficiency uncertainties
 emt simulated CMS_eff_e 1.02
 emt simulated CMS_eff_m 1.01
 emt simulated CMS_eff_t 1.08
-
-# Scale uncertainties
 emt simulated CMS_scale_t 1.03
-
-# Efficiency of b-jet veto
 emt simulated CMS_fake_b_8TeV 1.01
-
-# Background uncertainties - due to the theoretical unc. on the xsection
 emt zz pdf_qqbar 1.033
 emt zz QCDscale_VV 1.023
-
 emt wz pdf_qqbar 1.04
 emt wz QCDscale_VV 1.04
-
 emt signal pdf_qqbar 1.034
 emt signal QCDscale_VH 1.004
-
-#charge flip uncertainty
 emt charge_fakes CMS_vhtt_emt_chargeFlip_8TeV 1.0
-
-# Stat shape uncertainties
-emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_1 1.0
-emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_2 1.0
-emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_3 1.0
-emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_4 1.0
-emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_5 1.0
-emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_6 1.0
-emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_7 1.0
-emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_8 1.0
-emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_9 1.0
-emt fakes CMS_vhtt_8TeV_emt_fakeshape_fakes_bin_10 1.0
 emt fakes CMS_vhtt_emt_fakes_8TeV 1.00
