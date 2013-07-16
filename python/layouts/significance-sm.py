@@ -35,8 +35,4 @@ layout = cms.PSet(
     outputLabel = cms.string("significance"), 
     ## define masspoints for limit plot
     masspoints = cms.vdouble(range(110, 146, 5)),
-    ## mass label for the injected signal print band in different layout for signal injected
-    injectedMass=cms.string("125"),    
-    ## print band in different layout for signal injected
-    injected=cms.bool(True),
 )

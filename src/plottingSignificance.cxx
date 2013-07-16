@@ -7,11 +7,8 @@
 #include "TGraphAsymmErrors.h"
 
 void
-plottingSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* unit3, TGraph* unit5, std::string& xaxis, std::string& yaxis, double min=0., double max=5., bool log=false, std::string PLOT=std::string("LIMIT"), std::string injectedMass=std::string("125"), bool legendOnRight=false)
+plottingSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* unit3, TGraph* unit5, std::string& xaxis, std::string& yaxis, double min=0., double max=5., bool log=false, bool legendOnRight=false)
 {
-  // define PLOT type
-  bool injected = (PLOT == std::string("INJECTED"));
-  
   // set up styles
   canv.cd();
   //canv.SetGridx(1);
@@ -42,8 +39,7 @@ plottingSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   if(outerBand){
     outerBand->SetLineWidth(1.);
     outerBand->SetLineColor(kBlack);
-    if(injected) outerBand->SetFillColor(kAzure-9);
-    else outerBand->SetFillColor(kYellow);
+    outerBand->SetFillColor(kYellow);
     if(FIRST){
       FIRST = false;
       outerBand->Draw("3");
@@ -56,8 +52,7 @@ plottingSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   if(innerBand){
     innerBand->SetLineWidth(1.);
     innerBand->SetLineColor(kBlack);
-    if(injected) innerBand->SetFillColor(kAzure-4);
-    else innerBand->SetFillColor(kGreen);
+    innerBand->SetFillColor(kGreen);
     if(FIRST){
       FIRST = false;
       innerBand->Draw("3");
@@ -121,19 +116,10 @@ plottingSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 1001 );
   leg->SetFillColor (kWhite);
-  if(observed){
-    leg->AddEntry(observed, "observed",  "PL");
-  }
-  if(injected){
-    leg->AddEntry( expected , TString::Format("H(%s GeV) injected", injectedMass.c_str()),  "L" );
-    if(innerBand){ leg->AddEntry( innerBand, TString::Format("#pm 1#sigma H(%s GeV) injected", injectedMass.c_str()),  "F" ); }
-    if(outerBand){ leg->AddEntry( outerBand, TString::Format("#pm 2#sigma H(%s GeV) injected", injectedMass.c_str()),  "F" ); }
-  }
-  else{
-    leg->AddEntry(expected, "expected",  "L");
-    if(innerBand){ leg->AddEntry( innerBand, "#pm 1#sigma expected",  "F" ); }
-    if(outerBand){ leg->AddEntry( outerBand, "#pm 2#sigma expected",  "F" ); }
-  }
+  if(observed){ leg->AddEntry(observed, "observed",  "PL");}
+  leg->AddEntry(expected, "expected",  "L");
+  if(innerBand){ leg->AddEntry( innerBand, "#pm 1#sigma expected",  "F" ); }
+  if(outerBand){ leg->AddEntry( outerBand, "#pm 2#sigma expected",  "F" ); }
   leg->Draw("same");
   //canv.RedrawAxis("g");
   canv.RedrawAxis();

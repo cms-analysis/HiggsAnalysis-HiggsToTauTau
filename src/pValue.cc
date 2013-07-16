@@ -2,7 +2,7 @@
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, std::string& xaxis, std::string& yaxis, double min, double max, bool log, std::string PLOT, std::string injectedMass, bool legendOnRight);
+void plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, std::string& xaxis, std::string& yaxis, double min, double max, bool log, bool legendOnRight);
 
 void
 PlotLimits::plotPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed)
@@ -10,9 +10,7 @@ PlotLimits::plotPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmE
   // set up styles
   SetStyle();
   // do the plotting 
-  std::string PLOT("LIMIT");
-  if(injected_){ PLOT=std::string("INJECTED"); }
-  plottingPValue(canv, innerBand, outerBand, expected, observed, xaxis_, yaxis_, min_, max_, log_, PLOT, injectedMass_, true);
+  plottingPValue(canv, innerBand, outerBand, expected, observed, xaxis_, yaxis_, min_, max_, log_, true);
   // setup the CMS Preliminary
   //CMSPrelim(dataset_.c_str(), "", 0.160, 0.835);
   CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
