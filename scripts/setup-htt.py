@@ -74,12 +74,12 @@ if options.analysis == "mssm" :
 ## configuration for summer13
 directories_sm = {
     'em' : {
-    '0' : ['1jet', 'vbf', 'htt', 'cmb'],
-    '1' : ['1jet', 'vbf', 'htt', 'cmb'],
-    '2' : ['1jet', 'htt', 'cmb'],
-    '3' : ['1jet', 'htt', 'cmb'],
-    '4' : ['vbf' , 'htt', 'cmb'],
-    '5' : ['vbf' , 'htt', 'cmb'],
+    '0' : ['1jet', 'dilepton', 'vbf', 'htt', 'cmb'],
+    '1' : ['1jet', 'dilepton', 'vbf', 'htt', 'cmb'],
+    '2' : ['1jet', 'dilepton', 'htt', 'cmb'],
+    '3' : ['1jet', 'dilepton', 'htt', 'cmb'],
+    '4' : ['vbf' , 'dilepton', 'htt', 'cmb'],
+    '5' : ['vbf' , 'dilepton', 'htt', 'cmb'],
     },
     'et' : {
     '0' : ['1jet', 'vbf', 'htt', 'cmb'],
@@ -92,18 +92,18 @@ directories_sm = {
     '7' : ['vbf' , 'htt', 'cmb'],
     },
     'mm' : {
-    '0' : ['boost', 'vbf', 'htt', 'cmb'],
-    '1' : ['boost', 'vbf', 'htt', 'cmb'],
-    '2' : ['boost', 'htt', 'cmb'],
-    '3' : ['boost', 'htt', 'cmb'],
-    '4' : ['2jet' , 'htt', 'cmb'],
+    '0' : ['0jet', 'dilepton', 'htt', 'cmb'],
+    '1' : ['0jet', 'dilepton', 'htt', 'cmb'],
+    '2' : ['1jet', 'dilepton', 'htt', 'cmb'],
+    '3' : ['1jet', 'dilepton', 'htt', 'cmb'],
+    '4' : ['vbf' , 'dilepton', 'htt', 'cmb'],
     },
     'ee' : {
-    '0' : ['boost', 'vbf', 'htt', 'cmb'],
-    '1' : ['boost', 'vbf', 'htt', 'cmb'],
-    '2' : ['boost', 'htt', 'cmb'],
-    '3' : ['boost', 'htt', 'cmb'],
-    '4' : ['2jet' , 'htt', 'cmb'],
+    '0' : ['0jet', 'dilepton', 'htt', 'cmb'],
+    '1' : ['0jet', 'dilepton', 'htt', 'cmb'],
+    '2' : ['1jet', 'dilepton', 'htt', 'cmb'],
+    '3' : ['1jet', 'dilepton', 'htt', 'cmb'],
+    '4' : ['vbf' , 'dilepton', 'htt', 'cmb'],
     },
     'mt' : {
     '0' : ['1jet', 'vbf', 'htt', 'cmb'],
