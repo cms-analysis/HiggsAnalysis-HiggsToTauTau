@@ -9,10 +9,8 @@
 #include "Math/ProbFunc.h"
 
 void
-plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, std::string& xaxis, std::string& yaxis, double min, double max, bool log=true, std::string PLOT=std::string("LIMIT"), std::string injectedMass=std::string("125"), bool legendOnRight=true)
+plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, std::string& xaxis, std::string& yaxis, double min, double max, bool log=true, bool legendOnRight=true)
 {
-  bool injected = (PLOT == std::string("INJECTED"));
-  
   // set up styles
   canv.cd();
   //canv.SetGridx(1);
@@ -57,8 +55,7 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   if(outerBand){
     outerBand->SetLineWidth(1.);
     outerBand->SetLineColor(kBlack);
-    if(injected) outerBand->SetFillColor(kAzure-9);
-    else outerBand->SetFillColor(kYellow);
+    outerBand->SetFillColor(kYellow);
     if(FIRST){
       FIRST = false;
       outerBand->Draw("3");
@@ -71,8 +68,7 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   if(innerBand){
     innerBand->SetLineWidth(1.);
     innerBand->SetLineColor(kBlack);
-    if(injected) innerBand->SetFillColor(kAzure-4);
-    else innerBand->SetFillColor(kGreen);
+    innerBand->SetFillColor(kGreen);
     if(FIRST){
       FIRST = false;
       innerBand->Draw("3");
@@ -165,18 +161,20 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   sigma1->Draw("same"); 
 
  /// add the proper legend
-  TLegend* leg = new TLegend(legendOnRight ? 0.53 : 0.18, 0.30, legendOnRight ? 0.95 : 0.40, 0.45);
+  TLegend* leg;
+  if(innerBand && outerBand){
+    leg = new TLegend(0.18, 0.16, 0.95, 0.26);
+    leg->SetNColumns(2);
+  }
+  else { leg = new TLegend(legendOnRight ? 0.53 : 0.18, 0.30, legendOnRight ? 0.95 : 0.40, 0.45); }
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 1001 );
   leg->SetFillColor (kWhite);
   //leg->SetHeader("Local p-value");
   leg->AddEntry( observed, "p-value observed",  "PL");
-  if(injected){
-    leg->AddEntry( expected , TString::Format("H(%s GeV) injected", injectedMass.c_str()),  "L" );
-    if(innerBand){ leg->AddEntry( innerBand, TString::Format("#pm 1#sigma H(%s GeV) injected", injectedMass.c_str()),  "F" ); }
-    if(outerBand){ leg->AddEntry( outerBand, TString::Format("#pm 2#sigma H(%s GeV) injected", injectedMass.c_str()),  "F" ); }
-  }
-  else leg->AddEntry( expected, "p-value expected",  "L" );
+  if(innerBand){ leg->AddEntry( innerBand, TString::Format("#pm 1#sigma expected", injectedMass.c_str()),  "F" ); }
+  leg->AddEntry( expected, "p-value expected",  "L" );
+  if(outerBand){ leg->AddEntry( outerBand, TString::Format("#pm 2#sigma expected", injectedMass.c_str()),  "F" ); }
   leg->Draw("same");
   //canv.RedrawAxis("g");
   canv.RedrawAxis();

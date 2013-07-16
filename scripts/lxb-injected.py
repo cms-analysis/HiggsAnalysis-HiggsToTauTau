@@ -62,8 +62,10 @@ os.system("pwd")
 masses = "{MASSES}".strip().rstrip().split()
 
 print "Copying limit folder {PWD}/{PATH}/{DIR} => {TMPDIR}/{USER}/{DIR}_{JOBID}"
-os.system("mkdir -p {TMPDIR}/{USER}")
-os.system("cp -r {PWD}/{PATH}/{DIR} {TMPDIR}/{USER}/{DIR}_{JOBID}")
+for m in masses :
+    os.system("mkdir -p {TMPDIR}/{USER}/{DIR}_{JOBID}/%s"%m)
+    os.system("cp {PWD}/{PATH}/{DIR}/%s/htt_* {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/"%(m,m))
+os.system("cp -r {PWD}/{PATH}/{DIR}/common {TMPDIR}/{USER}/{DIR}_{JOBID}/")
 for m in masses :
     if m :
         os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/blindData.py --seed {RND} --injected-mass {INJECTEDMASS} --inject-signal --X-allow-no-signal {TMPDIR}/{USER}/{DIR}_{JOBID}/%s"%m)
@@ -71,7 +73,7 @@ for m in masses :
         os.system("limit.py {METHOD} {OPTS} {TMPDIR}/{USER}/{DIR}_{JOBID}/%s" % m)
         os.system("cp -v {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/higgsCombine{EXTENSION}.mH%s.root {PWD}/{PATH}/{DIR}/%s/higgsCombine{EXTENSION}.mH%s-{JOBID}-{INJECTEDMASS}.root" % (m, m, m, m))
         if "max-likelihood" in "{METHOD}" :
-            os.system("root -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/mlfit_result.C\(\\\\\\"{TMPDIR}/{USER}/{DIR}_{JOBID}/%s\\\\\\",\\\\\\"nll_min\\\\\\"\)" % (m))
+            os.system("root -b -l -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/mlfit_result.C\(\\\\\\"{TMPDIR}/{USER}/{DIR}_{JOBID}/%s\\\\\\",\\\\\\"nll_min\\\\\\"\)" % (m))
             os.system("cp -v {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/mlfit_result.root {PWD}/{PATH}/{DIR}/%s/higgsCombineMLFIT.mH%s-{JOBID}-{INJECTEDMASS}.root" % (m, m, m))
 os.system("rm -r {TMPDIR}/{USER}/{DIR}_{JOBID}")
 '''
