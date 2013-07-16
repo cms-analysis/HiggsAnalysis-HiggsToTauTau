@@ -178,7 +178,11 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #else
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data", true);
 #endif
+#ifdef MSSM
   InitHist(data, "#bf{m_{#tau#tau} [GeV]}", "#bf{dN/dm_{#tau#tau} [1/GeV]}"); InitData(data);
+#else
+  InitHist(data, "#bf{final discriminator}", "#bf{dN/d(discriminator)}"); InitData(data);
+#endif
 
   TH1F* ref=(TH1F*)ZTT->Clone("ref");
   ref->Add(ZMM  );
@@ -256,11 +260,11 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
 #endif
 
-  ZMM->Add(ZTT);
-  QCD->Add(ZMM);
-  TTJ->Add(QCD);
-  Dibosons->Add(TTJ);
   WJets->Add(Dibosons);
+  QCD->Add(WJets);
+  TTJ->Add(QCD);
+  ZTT->Add(TTJ);
+  ZMM->Add(ZTT);
   if(log){
 #ifdef MSSM
     ggH  ->Add(bbH);
@@ -313,12 +317,12 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
     }
   }
   if(log){
-    WJets->Draw("histsame");
-    //Dibosons->Draw("histsame");
-    TTJ->Draw("histsame");
-    QCD->Draw("histsame");
     ZMM->Draw("histsame");
     ZTT->Draw("histsame");
+    TTJ->Draw("histsame");
+    QCD->Draw("histsame");
+    WJets->Draw("histsame");
+    //Dibosons->Draw("histsame");
     $DRAW_ERROR
 #ifndef DROP_SIGNAL
     ggH->Draw("histsame");
@@ -329,12 +333,12 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #ifndef DROP_SIGNAL
     ggH  ->Draw("histsame");
 #endif
-    WJets->Draw("histsame");
-    //Dibosons->Draw("histsame");
-    TTJ->Draw("histsame");
-    QCD->Draw("histsame");
     ZMM->Draw("histsame");
     ZTT->Draw("histsame");
+    TTJ->Draw("histsame");
+    QCD->Draw("histsame");
+    WJets->Draw("histsame");
+    //Dibosons->Draw("histsame");
     $DRAW_ERROR
   }
   data->Draw("esame");
@@ -415,8 +419,8 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #else
   leg->AddEntry(data , "observed"                       , "LP");
 #endif
-  leg->AddEntry(ZTT  , "Z#rightarrow#tau#tau"        , "F" );
   leg->AddEntry(ZMM  , "Z#rightarrow#mu#mu"          , "F" );
+  leg->AddEntry(ZTT  , "Z#rightarrow#tau#tau"        , "F" );
   leg->AddEntry(TTJ  , "t#bar{t}"                    , "F" );
   leg->AddEntry(QCD  , "QCD"                         , "F" );
   //leg->AddEntry(Dibosons  , "Dibosons"             , "F" );
@@ -470,7 +474,11 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   rat1->SetMinimum(-0.5);
   rat1->GetYaxis()->CenterTitle();
   rat1->GetYaxis()->SetTitle("#bf{Data/MC-1}");
+#ifdef MSSM
   rat1->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}"); 
+#else
+  rat1->GetXaxis()->SetTitle("#bf{final discriminator}");
+#endif
   rat1->Draw();
   zero->SetLineColor(kBlack);
   zero->Draw("same");
@@ -498,7 +506,11 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   rat2->SetMinimum(-0.3);
   rat2->GetYaxis()->SetTitle("#bf{Fit/Prefit-1}");
   rat2->GetYaxis()->CenterTitle();
-  rat2->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}");
+#ifdef MSSM
+  rat2->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}"); 
+#else
+  rat2->GetXaxis()->SetTitle("#bf{final discriminator}");
+#endif
   rat2->GetXaxis()->SetRange(0, 28);
   rat2->Draw();
   zero->SetLineColor(kBlack);
