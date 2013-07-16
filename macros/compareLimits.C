@@ -38,6 +38,7 @@ channel(std::string& label){
 	  label==std::string("et")         ||
 	  label==std::string("mt")         ||
 	  label==std::string("mm")         ||
+	  label==std::string("ee")         ||
 	  label==std::string("ggH")        ||
 	  label==std::string("bbH")        ||
 	  label==std::string("mvis")       ||
@@ -63,6 +64,7 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("mt"        )) title = std::string("#mu#tau_{h}");
   if(channel==std::string("tt"        )) title = std::string("#tau_{h}#tau_{h}");
   if(channel==std::string("mm"        )) title = std::string("#mu#mu");
+  if(channel==std::string("ee"        )) title = std::string("ee");
   if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau+l(l)");
   if(channel==std::string("htt"       )) title = std::string("e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu");
   if(channel==std::string("cmb"       )) title = std::string("Combined(H#rightarrow#tau#tau)");
@@ -107,6 +109,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["et"         ] = kRed;
   colors["mt"         ] = kGreen;
   colors["mm"         ] = kMagenta;
+  colors["ee"         ] = kCyan;
   colors["tt"         ] = kMagenta+3;
   colors["vhtt"       ] = kCyan-6;
   colors["cmb"        ] = kBlack;

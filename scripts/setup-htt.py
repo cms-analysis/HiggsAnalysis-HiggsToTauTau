@@ -14,8 +14,8 @@ parser.add_option("-s", "--setup", dest="setup", default="all", type="choice", h
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode. [Default: False]")
 parser.add_option("--SM4", dest="SM4", default=False, action="store_true", help="Copy datacards for SM4 (for SM only). [Default: False]")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
-cats1.add_option("--sm-categories-ee", dest="ee_sm_categories", default="0 1 2 3 5", type="string", help="List of ee event categories. [Default: \"0 1 2 3 5\"]")
-cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List of mm event categories. [Default: \"0 1 2 3 5\"]")
+cats1.add_option("--sm-categories-ee", dest="ee_sm_categories", default="0 1 2 3 4", type="string", help="List of ee event categories. [Default: \"0 1 2 3 4\"]")
+cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 4", type="string", help="List of mm event categories. [Default: \"0 1 2 3 4\"]")
 cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 4", type="string", help="List of em event categories. [Default: \"0 1 2 3 4\"]")
 cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3 4 5 6 7", type="string", help="List of mt event categories. [Default: \"0 1 2 3 4 5 6 7 \"]")
 cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 4 5 6 7", type="string", help="List of et event categories. [Default: \"0 1 2 3 4 5 6 7 \"]")
@@ -74,12 +74,12 @@ if options.analysis == "mssm" :
 ## configuration for summer13
 directories_sm = {
     'em' : {
-    '0' : ['1jet', 'vbf', 'htt', 'cmb'],
-    '1' : ['1jet', 'vbf', 'htt', 'cmb'],
-    '2' : ['1jet', 'htt', 'cmb'],
-    '3' : ['1jet', 'htt', 'cmb'],
-    '4' : ['vbf' , 'htt', 'cmb'],
-    '5' : ['vbf' , 'htt', 'cmb'],
+    '0' : ['1jet', 'dilepton', 'vbf', 'htt', 'cmb'],
+    '1' : ['1jet', 'dilepton', 'vbf', 'htt', 'cmb'],
+    '2' : ['1jet', 'dilepton', 'htt', 'cmb'],
+    '3' : ['1jet', 'dilepton', 'htt', 'cmb'],
+    '4' : ['vbf' , 'dilepton', 'htt', 'cmb'],
+    '5' : ['vbf' , 'dilepton', 'htt', 'cmb'],
     },
     'et' : {
     '0' : ['1jet', 'vbf', 'htt', 'cmb'],
@@ -90,6 +90,20 @@ directories_sm = {
     '5' : ['1jet', 'htt', 'cmb'],
     '6' : ['vbf' , 'htt', 'cmb'],
     '7' : ['vbf' , 'htt', 'cmb'],
+    },
+    'mm' : {
+    '0' : ['0jet', 'dilepton', 'htt', 'cmb'],
+    '1' : ['0jet', 'dilepton', 'htt', 'cmb'],
+    '2' : ['1jet', 'dilepton', 'htt', 'cmb'],
+    '3' : ['1jet', 'dilepton', 'htt', 'cmb'],
+    '4' : ['vbf' , 'dilepton', 'htt', 'cmb'],
+    },
+    'ee' : {
+    '0' : ['0jet', 'dilepton', 'htt', 'cmb'],
+    '1' : ['0jet', 'dilepton', 'htt', 'cmb'],
+    '2' : ['1jet', 'dilepton', 'htt', 'cmb'],
+    '3' : ['1jet', 'dilepton', 'htt', 'cmb'],
+    '4' : ['vbf' , 'dilepton', 'htt', 'cmb'],
     },
     'mt' : {
     '0' : ['1jet', 'vbf', 'htt', 'cmb'],

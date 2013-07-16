@@ -8,7 +8,8 @@ parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choic
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-c", "--channels", dest="channels", default="em, et, mt, mm", type="string", help="Channels, for which to make the postfit plots. [Default: 'em, et, mt, mm']")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
-cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string", help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
+cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 4", type="string", help="List mm of event categories. [Default: \"0 1 2 3 4\"]")
+cats1.add_option("--sm-categories-ee", dest="ee_sm_categories", default="0 1 2 3 4", type="string", help="List ee of event categories. [Default: \"0 1 2 3 4\"]")
 cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 5", type="string", help="List em of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3 5", type="string", help="List mt of event categories. [Default: \"0 1 2 3 5\"]")
 cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 5", type="string", help="List et of event categories. [Default: \"0 1 2 3 5\"]")
@@ -42,6 +43,7 @@ for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
 if options.analysis == "sm" :
     categories = {
         "mm"   : options.mm_sm_categories.split(),
+        "ee"   : options.ee_sm_categories.split(),
         "em"   : options.em_sm_categories.split(),
         "mt"   : options.mt_sm_categories.split(),
         "et"   : options.et_sm_categories.split(),
@@ -98,11 +100,16 @@ log = {
     ("mm", "1") : ["false", "true"], 
     ("mm", "2") : ["false", "true"],
     ("mm", "3") : ["false", "true"],
-    ("mm", "5") : ["false", "true"],
+    ("mm", "4") : ["false", "true"],
     ("mm", "6") : ["false",],
     ("mm", "7") : ["false",],
     ("mm", "8") : ["false", "true"],
     ("mm", "9") : ["false", "true"],
+    ("ee", "0") : ["false", "true"],
+    ("ee", "1") : ["false", "true"], 
+    ("ee", "2") : ["false", "true"],
+    ("ee", "3") : ["false", "true"],
+    ("ee", "4") : ["false", "true"],
     ("hbb", "0"): ["false", "true"],
     ("hbb", "1"): ["false", "true"],
     ("hbb", "2"): ["false", "true"],
@@ -148,11 +155,16 @@ max = {
     ("mm", "1") :  ["-1.", "-1",],
     ("mm", "2") :  ["-1.", "-1",],
     ("mm", "3") :  ["-1.", "-1",],
-    ("mm", "5") :  ["-1.", "-1",],
+    ("mm", "4") :  ["-1.", "-1",],
     ("mm", "6") :  ["-1.",],
     ("mm", "7") :  ["-1.",],
     ("mm", "8") :  ["-1.", "-1",],
     ("mm", "9") :  ["-1.", "-1",],
+    ("ee", "0") :  ["-1.", "-1",],
+    ("ee", "1") :  ["-1.", "-1",],
+    ("ee", "2") :  ["-1.", "-1",],
+    ("ee", "3") :  ["-1.", "-1",],
+    ("ee", "4") :  ["-1.", "-1",],
     ("hbb","0") :  ["-1.", "-1."],
     ("hbb","1") :  ["-1.", "-1."],
     ("hbb","2") :  ["-1.", "-1."],
@@ -198,11 +210,16 @@ min = {
     ("mm", "1") : ["0.", "1e-2",],
     ("mm", "2") : ["0.", "1e-2",],
     ("mm", "3") : ["0.", "1e-2",],
-    ("mm", "5") : ["0.", "1e-2",],
+    ("mm", "4") : ["0.", "1e-2",],
     ("mm", "6") : ["0.",],
     ("mm", "7") : ["0.",],
     ("mm", "8") : ["0.", "1e-2",],
     ("mm", "9") : ["0.", "1e-2",],
+    ("ee", "0") : ["0.", "1e-2",],
+    ("ee", "1") : ["0.", "1e-2",],
+    ("ee", "2") : ["0.", "1e-2",],
+    ("ee", "3") : ["0.", "1e-2",],
+    ("ee", "4") : ["0.", "1e-2",],
     ("hbb", "0"): ["0.", "1e-2"],
     ("hbb", "1"): ["0.", "1e-2"],
     ("hbb", "2"): ["0.", "1e-2"],
