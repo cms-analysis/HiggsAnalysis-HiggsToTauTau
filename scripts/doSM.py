@@ -165,6 +165,8 @@ if options.update_setup :
     #    )) 
     ## scale to SM cross section
     for chn in channels :
+        if chn in ["mm", "ee"]:
+            continue
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
             os.system("scale2SM.py -i {FILE} -s 'ggH, qqH, VH, WH, ZH' {MASSES}".format(
                 FILE=file,
@@ -197,13 +199,13 @@ if options.update_setup :
             if 'ee' in channels :
                 if '7TeV' in periods :
                     ## setup bbb uncertainties for ee 7TeV 
-                    os.system("add_bbb_errors.py 'ee:7TeV:01,03,04:ZTT,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    os.system("add_bbb_errors.py 'ee:7TeV:01,03,04:ZTT,ZEE,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
                         ANA=ana
                         ))
                 if '8TeV' in periods :
                     ## setup bbb uncertainties for ee 8TeV 
-                    os.system("add_bbb_errors.py 'ee:8TeV:01,03,04:ZTT,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    os.system("add_bbb_errors.py 'ee:8TeV:01,03,04:ZTT,ZEE,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
                         ANA=ana
                         ))
@@ -212,13 +214,13 @@ if options.update_setup :
             if 'mm' in channels :
                 if '7TeV' in periods :
                     ## setup bbb uncertainties for mm 7TeV
-                    os.system("add_bbb_errors.py 'mm:7TeV:01,03,04:ZTT,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    os.system("add_bbb_errors.py 'mm:7TeV:01,03,04:ZTT,ZMM,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
                         ANA=ana
                         ))
                 if '8TeV' in periods :
                     ## setup bbb uncertainties for mm 8TeV
-                    os.system("add_bbb_errors.py 'mm:8TeV:01,03,04:ZTT,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    os.system("add_bbb_errors.py 'mm:8TeV:01,03,04:ZTT,ZMM,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
                         ANA=ana
                         ))
