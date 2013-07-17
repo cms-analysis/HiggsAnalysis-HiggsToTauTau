@@ -410,7 +410,7 @@ if options.update_aux :
                     CMSSW_BASE=cmssw_base,
                     ANA=ana,
                     DIR=dir,
-                    MASSES=masses,
+                    MASSES=' '.join(masses),
                     ))
             if '8TeV' in periods :
                 os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'ee' --sm-categories-ee='0 1 2 3 4' {MASSES}".format(
@@ -418,7 +418,7 @@ if options.update_aux :
                     CMSSW_BASE=cmssw_base,
                     ANA=ana,
                     DIR=dir,
-                    MASSES=masses,
+                    MASSES=' '.join(masses),
                     ))
         if 'mm' in channels :
             if '7TeV' in periods :
@@ -427,7 +427,7 @@ if options.update_aux :
                     CMSSW_BASE=cmssw_base,
                     ANA=ana,
                     DIR=dir,
-                    MASSES=masses,
+                    MASSES=' '.join(masses),
                     ))
             if '8TeV' in periods :
                 os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'mm' --sm-categories-mm='0 1 2 3 4' {MASSES}".format(
@@ -444,7 +444,7 @@ if options.update_aux :
                     CMSSW_BASE=cmssw_base,
                     ANA=ana,
                     DIR=dir,
-                    MASSES=masses,
+                    MASSES=' '.join(masses),
                     ))
             if '8TeV' in periods :
                 os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'em' --sm-categories-em='0 1 2 3 4 5' {MASSES}".format(
@@ -452,7 +452,7 @@ if options.update_aux :
                     CMSSW_BASE=cmssw_base,
                     ANA=ana,
                     DIR=dir,
-                MASSES=masses,
+                MASSES=' '.join(masses),
                     ))            
         if 'et' in channels :
             if '7TeV' in periods :
@@ -461,7 +461,7 @@ if options.update_aux :
                     CMSSW_BASE=cmssw_base,
                     ANA=ana,
                     DIR=dir,
-                    MASSES=masses,
+                    MASSES=' '.join(masses),
                     ))
             if '8TeV' in periods :
                 os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'et' --sm-categories-et='0 1 2 3 4 5 6 7' {MASSES}".format(
@@ -469,7 +469,7 @@ if options.update_aux :
                     CMSSW_BASE=cmssw_base,
                     ANA=ana,
                     DIR=dir,
-                    MASSES=masses,
+                    MASSES=' '.join(masses),
                     ))            
         if 'mt' in channels :
             if '7TeV' in periods :
@@ -478,7 +478,7 @@ if options.update_aux :
                     CMSSW_BASE=cmssw_base,
                     ANA=ana,
                     DIR=dir,
-                    MASSES=masses,
+                    MASSES=' '.join(masses),
                     ))
             if '8TeV' in periods :
                 os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'mt' --sm-categories-mt='0 1 2 3 4 5 6 7' {MASSES}".format(
@@ -486,7 +486,7 @@ if options.update_aux :
                     CMSSW_BASE=cmssw_base,
                     ANA=ana,
                     DIR=dir,
-                    MASSES=masses,
+                    MASSES=' '.join(masses),
                     ))            
         if 'tt' in channels :
             if '8TeV' in periods :
@@ -495,7 +495,7 @@ if options.update_aux :
                     CMSSW_BASE=cmssw_base,
                     ANA=ana,
                     DIR=dir,
-                    MASSES=masses,
+                    MASSES=' '.join(masses),
                     ))
         if 'vhtt' in channels :
             if '7TeV' in periods :
@@ -504,7 +504,7 @@ if options.update_aux :
                     CMSSW_BASE=cmssw_base,
                     ANA=ana,
                     DIR=dir,
-                    MASSES=masses,
+                    MASSES=' '.join(masses),
                     ))
             if '8TeV' in periods :
                 os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'vhtt' --sm-categories-vhtt='0 1 2 3 4 5 6 7 8' {MASSES}".format(
@@ -512,7 +512,7 @@ if options.update_aux :
                     CMSSW_BASE=cmssw_base,
                     ANA=ana,
                     DIR=dir,
-                    MASSES=masses,
+                    MASSES=' '.join(masses),
                     ))                                
         if ana == 'bbb' :
             if options.drop_list != '' :
@@ -541,7 +541,7 @@ if options.update_limits :
                     ANA=ana,
                     DIR=dir,
                     LABEL=label,
-                    MASSES=masses
+                    MASSES=' '.join(masses)
                     ))
             if '8TeV' in periods :
                 os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'ee' {LABEL} --sm-categories-ee='0 1 2 3 4' {MASSES}".format(
@@ -549,7 +549,7 @@ if options.update_limits :
                     ANA=ana,
                     DIR=dir,
                     LABEL=label,
-                    MASSES=masses
+                    MASSES=' '.join(masses)
                     ))
         if 'mm' in channels :
             if '7TeV' in periods :
@@ -558,7 +558,7 @@ if options.update_limits :
                     ANA=ana,
                     DIR=dir,
                     LABEL=label,
-                    MASSES=masses
+                    MASSES=' '.join(masses)
                     ))
             if '8TeV' in periods :
                 os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'mm' {LABEL} --sm-categories-mm='0 1 2 3 4' {MASSES}".format(
@@ -566,7 +566,7 @@ if options.update_limits :
                     ANA=ana,
                     DIR=dir,
                     LABEL=label,
-                    MASSES=masses
+                    MASSES=' '.join(masses)
                     ))
         if 'em' in channels :
             if '7TeV' in periods :
@@ -575,7 +575,7 @@ if options.update_limits :
                     ANA=ana,
                     DIR=dir,
                     LABEL=label,
-                    MASSES=masses
+                    MASSES=' '.join(masses)
                     ))
             if '8TeV' in periods :
                 os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'em' {LABEL} --sm-categories-em='0 1 2 3 4 5' {MASSES}".format(
@@ -583,7 +583,7 @@ if options.update_limits :
                     ANA=ana,
                     DIR=dir,
                     LABEL=label,
-                    MASSES=masses
+                    MASSES=' '.join(masses)
                     ))                
         if 'et' in channels :
             if '7TeV' in periods :
@@ -592,7 +592,7 @@ if options.update_limits :
                     ANA=ana,
                     DIR=dir,
                     LABEL=label,
-                    MASSES=masses
+                    MASSES=' '.join(masses)
                     ))
             if '8TeV' in periods :
                 os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'et' {LABEL} --sm-categories-et='0 1 2 3 4 5 6 7' {MASSES}".format(
@@ -600,7 +600,7 @@ if options.update_limits :
                     ANA=ana,
                     DIR=dir,
                     LABEL=label,
-                    MASSES=masses
+                    MASSES=' '.join(masses)
                     ))
         if 'mt' in channels :
             if '7TeV' in periods :
@@ -609,7 +609,7 @@ if options.update_limits :
                     ANA=ana,
                     DIR=dir,
                     LABEL=label,
-                    MASSES=masses
+                    MASSES=' '.join(masses)
                     ))
             if '8TeV' in periods :
                 os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'mt' {LABEL} --sm-categories-mt='0 1 2 3 4 5 6 7' {MASSES}".format(
@@ -617,7 +617,7 @@ if options.update_limits :
                     ANA=ana,
                     DIR=dir,
                     LABEL=label,
-                    MASSES=masses
+                    MASSES=' '.join(masses)
                     ))                        
         if 'tt' in channels :
             if '8TeV' in periods :
@@ -626,7 +626,7 @@ if options.update_limits :
                     ANA=ana,
                     DIR=dir,
                     LABEL=label,
-                    MASSES=masses
+                    MASSES=' '.join(masses)
                     ))
         if 'vhtt' in channels :
             if '7TeV' in periods :
@@ -635,7 +635,7 @@ if options.update_limits :
                     ANA=ana,
                     DIR=dir,
                     LABEL=label,
-                    MASSES=masses
+                    MASSES=' '.join(masses)
                     ))
             if '8TeV' in periods :
                 os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'vhtt' {LABEL} --sm-categories-vhtt='0 1 2 3 4 5 6 7 8' {MASSES}".format(
@@ -643,6 +643,6 @@ if options.update_limits :
                     ANA=ana,
                     DIR=dir,
                     LABEL=label,
-                    MASSES=masses
+                    MASSES=' '.join(masses)
                     ))                                
 
