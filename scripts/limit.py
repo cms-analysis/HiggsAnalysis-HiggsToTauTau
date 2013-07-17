@@ -407,7 +407,7 @@ for directory in args :
                 if options.fromScratch :
                     os.system("rm batch_collected_%s.root" %collect_file)
                 else :
-                    os.system("mv batch_collected_%s.root old.root" %collect_file)                
+                    os.system("mv batch_collected_%s.root old_%s.root" %(collect_file, collect_file))                
             ## to allow for more files to be combined distinguish by first digit in a first
             ## iteration, than combine the resulting 10 files to the final output file.
             njob = 0
@@ -417,7 +417,8 @@ for directory in args :
             for job in glob.glob(globdir) :
                 njob=njob+1
             for idx in range(10 if njob>10 else njob) :
-                os.system("hadd -f batch_collected_{METHOD}_{IDX}.root higgsCombine{EXT}.mH{MASS}-*{IDX}_*.root".format(
+                ## taking {IDX}* instead of *{IDX} produces uneven amount of toys in each file, but it is an easy trick to prevent an ambiguous pattern
+                os.system("hadd -f batch_collected_{METHOD}_{IDX}.root higgsCombine{EXT}.mH{MASS}-{IDX}*_*.root".format( 
                     METHOD=collect_file,
                     EXT=extension,
                     MASS=mass,
@@ -431,7 +432,7 @@ for directory in args :
             os.system("rm batch_collected_%s_*.root"%collect_file)
             ## combine with previous submissions
             if os.path.exists("old_%s.root"%collect_file) :
-                os.system("mv batch_collected_%s.root new.root"%collect_file)
+                os.system("mv batch_collected_%s.root new_%s.root"%(collect_file, collect_file))
                 os.system("hadd batch_collected_%s.root old_%s.root new_%s.root"%(collect_file, collect_file, collect_file))
                 os.system("rm old_%s.root new_%s.root"%(collect_file, collect_file))
         ## create sub-directory out from scratch
@@ -630,7 +631,7 @@ for directory in args :
                 if options.fromScratch :
                     os.system("rm batch_collected_%s.root" %collect_file)
                 else :
-                    os.system("mv batch_collected_%s.root old.root" %collect_file)                
+                    os.system("mv batch_collected_%s.root old_%s.root" %(collect_file, collect_file))                
             ## to allow for more files to be combined distinguish by first digit in a first
             ## iteration, than combine the resulting 10 files to the final output file.
             njob = 0
@@ -643,7 +644,8 @@ for directory in args :
             for job in glob.glob(globdir) :
                 njob=njob+1
             for idx in range(10 if njob>10 else njob) :
-                os.system("hadd -f batch_collected_{METHOD}_{IDX}.root higgsCombine{EXT}.mH{MASS}-*{IDX}_*.root".format(
+                ## taking {IDX}* instead of *{IDX} produces uneven amount of toys in each file, but it is an easy trick to prevent an ambiguous pattern
+                os.system("hadd -f batch_collected_{METHOD}_{IDX}.root higgsCombine{EXT}.mH{MASS}-{IDX}*_*.root".format(
                     METHOD=collect_file,
                     EXT=extension,
                     MASS=mass,
@@ -657,7 +659,7 @@ for directory in args :
             os.system("rm batch_collected_%s_*.root"%collect_file)
             ## combine with previous submissions
             if os.path.exists("old_%s.root"%collect_file) :
-                os.system("mv batch_collected_%s.root new.root"%collect_file)
+                os.system("mv batch_collected_%s.root new_%s.root"%(collect_file, collect_file))
                 os.system("hadd batch_collected_%s.root old_%s.root new_%s.root"%(collect_file, collect_file, collect_file))
                 os.system("rm old_%s.root new_%s.root"%(collect_file, collect_file))
         ## prepare workspace
@@ -701,7 +703,8 @@ for directory in args :
             for job in glob.glob(globdir) :
                 njob=njob+1
             for idx in range(10 if njob>10 else njob) :
-                os.system("hadd -f batch_collected_limit_{IDX}.root higgsCombine-obs.Asymptotic.mH{MASS}-*{IDX}_*.root".format(
+                ## taking {IDX}* instead of *{IDX} produces uneven amount of toys in each file, but it is an easy trick to prevent an ambiguous pattern
+                os.system("hadd -f batch_collected_limit_{IDX}.root higgsCombine-obs.Asymptotic.mH{MASS}-{IDX}*_*.root".format(
                     MASS=mass,
                     IDX=idx
                     ))
