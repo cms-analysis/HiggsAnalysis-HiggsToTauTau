@@ -139,10 +139,10 @@ if options.update_setup :
                 continue
             for ana in analyses :
                 pattern = patterns[ana]
-                source="{CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/htt_{CHN}.inputs-sm-{PER}{PATTERN}.root".format(
+                source="{CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/{CHN}.inputs-sm-{PER}{PATTERN}.root".format(
                     CMSSW_BASE=cmssw_base,
                     DIR=directories[chn][per],
-                    CHN=chn,
+                    CHN=chn+'_*' if chn == 'vhtt' else 'htt_'+chn,
                     PER=per,
                     PATTERN=pattern
                     )
@@ -152,18 +152,23 @@ if options.update_setup :
                         SETUP=setup,
                         CHN=chn
                         ))
-                if chn == 'vhtt' :
-                    if not os.path.exists("{SETUP}/vhtt/vhtt.inputs-sm-{PER}{PATTERN}.root".format(SETUP=setup, PER=per, PATTERN=pattern)):
-                        os.system("hadd -v 0 {SETUP}/vhtt/vhtt.inputs-sm-{PER}{PATTERN}.root {SETUP}/vhtt/vhtt_*.inputs-sm-{PER}{PATTERN}.root".format(
-                            SETUP=setup,
-                            PER=per,
-                            PATTERN=pattern
-                            ))
-                        os.system("rm {SETUP}/vhtt/vhtt_*.inputs-sm-{PER}{PATTERN}.root".format(
-                            SETUP=setup,
-                            PER=per,
-                            PATTERN=pattern
-                            ))
+    if 'vhtt' in channels :
+        for per in periods :
+            if directories['vhtt'][per] == 'None' :
+                continue
+            for ana in analyses :
+                pattern = patterns[ana]
+                if not os.path.exists("{SETUP}/vhtt/vhtt.inputs-sm-{PER}{PATTERN}.root".format(SETUP=setup, PER=per, PATTERN=pattern)):
+                    os.system("hadd {SETUP}/vhtt/vhtt.inputs-sm-{PER}{PATTERN}.root {SETUP}/vhtt/vhtt_*.inputs-sm-{PER}{PATTERN}.root".format(
+                        SETUP=setup,
+                        PER=per,
+                        PATTERN=pattern
+                        ))
+                    os.system("rm {SETUP}/vhtt/vhtt_*.inputs-sm-{PER}{PATTERN}.root".format(
+                        SETUP=setup,
+                        PER=per,
+                        PATTERN=pattern
+                        ))
     ## scale to SM cross section
     for chn in channels :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
@@ -173,36 +178,38 @@ if options.update_setup :
                     FILE=file,
                     MASSES=' '.join(masses)
                     ))
-    print "##"
-    print "## --->>> adding extra scale for htt_hww contribution in em <<<---"
-    print "##"
-    ## special treatment for channels which include contributions from hww
-    hww_processes = ['ggH_hww', 'qqH_hww', 'VH_hww', 'WH_hww', 'ZH_hww']
-    ## BR ratios: hww/htt as function of the mass
-    hww_over_htt = {
-        # mass     hww    htt
-        '90'  : 0.00209/0.0841,
-        '95'  : 0.00472/0.0841,
-        '100' : 0.01110/0.0836,
-        '105' : 0.02430/0.0825,
-        '110' : 0.04820/0.0802,
-        '115' : 0.08670/0.0765,
-        '120' : 0.14300/0.0710,
-        '125' : 0.21600/0.0637,
-        '130' : 0.30500/0.0548,
-        '135' : 0.40300/0.0452,
-        '140' : 0.50300/0.0354,
-        '145' : 0.60200/0.0261,
-        }
-    ## correct for proper BR everywhere, where any of the above processes occurs
-    for proc in hww_processes :
-        for mass in parseArgs(masses) :
-            os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{INPUTFILE}\",\"{PROCESS}\",0\)".format(
-                CMSSW_BASE=os.environ.get("CMSSW_BASE"),
-                SCALE=hww_over_htt[str(mass)],
-                INPUTFILE=file,
-                PROCESS=proc+str(mass)
-                ))
+    if 'em' in channels : 
+        print "##"
+        print "## --->>> adding extra scale for htt_hww contribution in em <<<---"
+        print "##"
+        ## special treatment for channels which include contributions from hww
+        hww_processes = ['ggH_hww', 'qqH_hww', 'VH_hww', 'WH_hww', 'ZH_hww']
+        ## BR ratios: hww/htt as function of the mass
+        hww_over_htt = {
+            # mass     hww    htt
+            '90'  : 0.00209/0.0841,
+            '95'  : 0.00472/0.0841,
+            '100' : 0.01110/0.0836,
+            '105' : 0.02430/0.0825,
+            '110' : 0.04820/0.0802,
+            '115' : 0.08670/0.0765,
+            '120' : 0.14300/0.0710,
+            '125' : 0.21600/0.0637,
+            '130' : 0.30500/0.0548,
+            '135' : 0.40300/0.0452,
+            '140' : 0.50300/0.0354,
+            '145' : 0.60200/0.0261,
+            }
+        ## correct for proper BR everywhere, where any of the above processes occurs
+        for file in glob.glob("{SETUP}/em/*inputs-sm-*.root".format(SETUP=setup)) :
+            for proc in hww_processes :
+                for mass in parseArgs(masses) :
+                    os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{INPUTFILE}\",\"{PROCESS}\",0\)".format(
+                        CMSSW_BASE=os.environ.get("CMSSW_BASE"),
+                        SCALE=hww_over_htt[str(mass)],
+                        INPUTFILE=file,
+                        PROCESS=proc+str(mass)
+                        ))
     ## set up directory structure
     dir = "{CMSSW_BASE}/src/setups{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
     if os.path.exists(dir) :
