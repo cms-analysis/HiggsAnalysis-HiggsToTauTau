@@ -12,6 +12,8 @@ parser.add_option("-a", "--analyses", dest="analyses", default="no-bbb, bbb",
                   help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"no-bbb, bbb, mvis, inclusive\" [Default: \"no-bbb, bbb\"]")
 parser.add_option("--label", dest="label", default="", type="string", 
                   help="Possibility to give the setups, aux and LIMITS directory a index (example LIMITS-bbb). [Default: \"\"]")
+parser.add_option("--do-not-scales", dest="do_not_scales", default="ee mm vhtt", type="string",
+                  help="List of channels, which the scaling by cross seciton times BR shoul not be applied. The list should be embraced by call-ons and separeted by whitespace or comma. [Default: \"vhtt ee mm\"]")
 parser.add_option("--inputs-ee", dest="inputs_ee", default="DESY-KIT", type="choice", choices=['DESY-KIT'],
                   help="Input files for htt_ee analysis. [Default: \"DESY-KIT\"]")
 parser.add_option("--inputs-mm", dest="inputs_mm", default="DESY-KIT", type="choice", choices=['DESY-KIT'],
@@ -56,6 +58,9 @@ for idx in range(len(periods)) : periods[idx] = periods[idx].rstrip(',')
 ## channels
 channels = options.channels.split()
 for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
+## do_not_scales
+do_not_scales = options.do_not_scales.split()
+for idx in range(len(do_not_scales)) : do_not_scales[idx] = do_not_scales[idx].rstrip(',')
 ## analyses
 analyses = options.analyses.split()
 for idx in range(len(analyses)) : analyses[idx] = analyses[idx].rstrip(',')
@@ -95,6 +100,7 @@ print "# --periods         :", options.periods
 print "# --analyses        :", options.analyses
 print "# --label           :", options.label
 print "# --drop-list       :", options.drop_list
+print "# --do-not-scales   :", options.do_not_scales
 print "# --------------------------------------------------------------------------------------"
 print "# --inputs-ee       :", options.inputs_ee
 print "# --inputs-mm       :", options.inputs_mm
@@ -162,7 +168,7 @@ if options.update_setup :
     for chn in channels :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
             ## vhtt is NOT scaled to 1pb. So nothing needs to be doen here
-            if not chn == 'vhtt' :
+            if not chn in do_not_scales :
                 os.system("scale2SM.py -i {FILE} -s 'ggH, qqH, VH, WH, ZH' {MASSES}".format(
                     FILE=file,
                     MASSES=' '.join(masses)
@@ -307,15 +313,15 @@ if options.update_setup :
             if 'vhtt' in channels :
                 if '7TeV' in periods :
                     ## setup bbb uncertainties for vhtt
-                    os.system("add_bbb_errors.py 'vhtt:7TeV:00:wz,zz,fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    os.system("add_bbb_errors.py 'vhtt:7TeV:00:fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
                         ANA=ana
                         ))
-                    os.system("add_bbb_errors.py 'vhtt:7TeV:01:wz,zz,fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    os.system("add_bbb_errors.py 'vhtt:7TeV:01:fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
                         ANA=ana
                         ))
-                    #os.system("add_bbb_errors.py 'vhtt:7TeV:02:wz,zz,fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    #os.system("add_bbb_errors.py 'vhtt:7TeV:02:fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                     #    DIR=dir,
                     #    ANA=ana
                     #    ))
@@ -345,15 +351,15 @@ if options.update_setup :
                         ))
                 if '8TeV' in periods :
                     ## setup bbb uncertainties for vhtt
-                    os.system("add_bbb_errors.py 'vhtt:8TeV:00:wz,zz,fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    os.system("add_bbb_errors.py 'vhtt:8TeV:00:fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
                         ANA=ana
                         ))
-                    os.system("add_bbb_errors.py 'vhtt:8TeV:01:wz,zz,fakes,charge_fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    os.system("add_bbb_errors.py 'vhtt:8TeV:01:fakes,charge_fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
                         ANA=ana
                         ))
-                    os.system("add_bbb_errors.py 'vhtt:8TeV:02:wz,zz,fakes,charge_fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    os.system("add_bbb_errors.py 'vhtt:8TeV:02:fakes,charge_fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
                         ANA=ana
                         ))
