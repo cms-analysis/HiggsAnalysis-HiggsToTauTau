@@ -46,9 +46,10 @@ if len(args) < 1 :
 
 import os
 import glob 
+from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
 
 ## masses
-masses = args[0]
+masses = args
 ## periods
 periods = options.periods.split()
 for idx in range(len(periods)) : periods[idx] = periods[idx].rstrip(',')
@@ -132,7 +133,7 @@ if options.update_setup :
                 continue
             for ana in analyses :
                 pattern = patterns[ana]
-                source="{CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/*inputs-sm-{PER}{PATTERN}.root".format(
+                source="{CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/htt_{CHN}.inputs-sm-{PER}{PATTERN}.root".format(
                     CMSSW_BASE=cmssw_base,
                     DIR=directories[chn][per],
                     CHN=chn,
@@ -140,7 +141,7 @@ if options.update_setup :
                     PATTERN=pattern
                     )
                 for file in glob.glob(source) :
-                    os.system("cp {SOURCE} {SETUP}/{CHN}/".format(
+                    os.system("cp -v {SOURCE} {SETUP}/{CHN}/".format(
                         SOURCE=file,
                         SETUP=setup,
                         CHN=chn
@@ -157,20 +158,45 @@ if options.update_setup :
                             PER=per,
                             PATTERN=pattern
                             ))
-    ## copy postfit inputs for mm to test directory (this still goes
-    ## into the original setup directory as the scripts for postfit
-    ## plots will grab it from there)
-    #os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/Htt_MuMu_Unblinded/htt_mm*-sm-[78]TeV-postfit-*.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
-    #    CMSSW_BASE=cmssw_base
-    #    )) 
     ## scale to SM cross section
     for chn in channels :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
-            os.system("scale2SM.py -i {FILE} -s 'ggH, qqH, VH, WH, ZH' {MASSES}".format(
-                FILE=file,
-                MASSES=masses
+            ## vhtt is NOT scaled to 1pb. So nothing needs to be doen here
+            if not chn == 'vhtt' :
+                os.system("scale2SM.py -i {FILE} -s 'ggH, qqH, VH, WH, ZH' {MASSES}".format(
+                    FILE=file,
+                    MASSES=' '.join(masses)
+                    ))
+    print "##"
+    print "## --->>> adding extra scale for htt_hww contribution in em <<<---"
+    print "##"
+    ## special treatment for channels which include contributions from hww
+    hww_processes = ['ggH_hww', 'qqH_hww', 'VH_hww', 'WH_hww', 'ZH_hww']
+    ## BR ratios: hww/htt as function of the mass
+    hww_over_htt = {
+        # mass     hww    htt
+        '90'  : 0.00209/0.0841,
+        '95'  : 0.00472/0.0841,
+        '100' : 0.01110/0.0836,
+        '105' : 0.02430/0.0825,
+        '110' : 0.04820/0.0802,
+        '115' : 0.08670/0.0765,
+        '120' : 0.14300/0.0710,
+        '125' : 0.21600/0.0637,
+        '130' : 0.30500/0.0548,
+        '135' : 0.40300/0.0452,
+        '140' : 0.50300/0.0354,
+        '145' : 0.60200/0.0261,
+        }
+    ## correct for proper BR everywhere, where any of the above processes occurs
+    for proc in hww_processes :
+        for mass in parseArgs(masses) :
+            os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{INPUTFILE}\",\"{PROCESS}\",0\)".format(
+                CMSSW_BASE=os.environ.get("CMSSW_BASE"),
+                SCALE=hww_over_htt[str(mass)],
+                INPUTFILE=file,
+                PROCESS=proc+str(mass)
                 ))
-
     ## set up directory structure
     dir = "{CMSSW_BASE}/src/setups{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
     if os.path.exists(dir) :
