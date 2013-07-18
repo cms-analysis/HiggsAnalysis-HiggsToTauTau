@@ -1,5 +1,6 @@
 /*
-INSTRUCTIONS:
+INSTRU
+CTIONS:
 -Execute from this directory:
 HiggsAnalysis/HiggsToTauTau/test
 
@@ -28,16 +29,28 @@ Authors: Jose Benitez, Lorenzo Bianchini
 
 #include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 #include "HiggsAnalysis/HiggsToTauTau/test/templates/sobWeightedCombine.C"
+#include "HiggsAnalysis/HiggsToTauTau/test/templates/sobWeightedCombineMSSM.C"
 
 void sobCombine(TString name, TString* Input,const char* dataset , const char* channel, const char* cat, int weight=1, float muValue=1.0, bool log=false, int mass=125, int tanb=0)
 {
-  sobWeightedCombine(Input,name,weight,muValue);
-  /*                                     |-> mu value from the fit to Data
-                      |     |     |->option to apply or not apply weights
-                      |     |-> name for this plot
-                      |->array of input postfit root files 
-  */
-  sobWeightedPlot(name,dataset,channel,cat,log,mass,tanb);
+  if(tanb==0){
+    sobWeightedCombine(Input,name,weight,muValue);
+    /*                                     |-> mu value from the fit to Data
+			 |     |     |->option to apply or not apply weights
+			 |     |-> name for this plot
+			 |->array of input postfit root files 
+    */
+    sobWeightedPlot(name,dataset,channel,cat,log,mass,tanb);
+  }
+  else{
+    sobWeightedCombineMSSM(Input,name,weight,muValue);
+    /*                                     |-> mu value from the fit to Data
+			 |     |     |->option to apply or not apply weights
+			 |     |-> name for this plot
+			 |->array of input postfit root files 
+    */
+    sobWeightedPlotMSSM(name,dataset,channel,cat,log,mass,tanb);
+  }
 }
 
 void sobWeightedCombineAll(float muValue=1.10, bool log=false, int mass=125, int tanb=0)
@@ -223,22 +236,20 @@ void sobWeightedCombineAll(float muValue=1.10, bool log=false, int mass=125, int
   ALL_MSSM_2cat[1]="emu_nobtag_rescaled_8TeV_";
   ALL_MSSM_2cat[2]="emu_btag_rescaled_7TeV_";
   ALL_MSSM_2cat[3]="emu_btag_rescaled_8TeV_"; 
-  ALL_MSSM_2cat[0]="eleTau_nobtag_rescaled_7TeV_";
-  ALL_MSSM_2cat[1]="eleTau_nobtag_rescaled_8TeV_";
-  ALL_MSSM_2cat[2]="eleTau_btag_rescaled_7TeV_";
-  ALL_MSSM_2cat[3]="eleTau_btag_rescaled_8TeV_";
-  ALL_MSSM_2cat[0]="mumu_nobtag_rescaled_7TeV_";
-  ALL_MSSM_2cat[1]="mumu_nobtag_rescaled_8TeV_";
-  ALL_MSSM_2cat[2]="mumu_btag_rescaled_7TeV_";
-  ALL_MSSM_2cat[3]="mumu_btag_rescaled_8TeV_";
-  ALL_MSSM_2cat[0]="muTau_nobtag_rescaled_7TeV_";
-  ALL_MSSM_2cat[1]="muTau_nobtag_rescaled_8TeV_";
-  ALL_MSSM_2cat[2]="muTau_btag_rescaled_7TeV_";
-  ALL_MSSM_2cat[3]="muTau_btag_rescaled_8TeV_";
-  ALL_MSSM_2cat[0]="tauTau_nobtag_rescaled_7TeV_";
-  ALL_MSSM_2cat[1]="tauTau_nobtag_rescaled_8TeV_";
-  ALL_MSSM_2cat[2]="tauTau_btag_rescaled_7TeV_";
-  ALL_MSSM_2cat[3]="tauTau_btag_rescaled_8TeV_";
+  ALL_MSSM_2cat[4]="eleTau_nobtag_rescaled_7TeV_";
+  ALL_MSSM_2cat[5]="eleTau_nobtag_rescaled_8TeV_";
+  ALL_MSSM_2cat[6]="eleTau_btag_rescaled_7TeV_";
+  ALL_MSSM_2cat[7]="eleTau_btag_rescaled_8TeV_";
+  ALL_MSSM_2cat[8]="muTau_nobtag_rescaled_7TeV_";
+  ALL_MSSM_2cat[9]="muTau_nobtag_rescaled_8TeV_";
+  ALL_MSSM_2cat[10]="muTau_btag_rescaled_7TeV_";
+  ALL_MSSM_2cat[11]="muTau_btag_rescaled_8TeV_";
+  ALL_MSSM_2cat[12]="tauTau_nobtag_rescaled_8TeV_";
+  ALL_MSSM_2cat[13]="tauTau_btag_rescaled_8TeV_";
+  //ALL_MSSM_2cat[14]="mumu_nobtag_rescaled_7TeV_";
+  //ALL_MSSM_2cat[15]="mumu_nobtag_rescaled_8TeV_";
+  //ALL_MSSM_2cat[16]="mumu_btag_rescaled_7TeV_";
+  //ALL_MSSM_2cat[17]="mumu_btag_rescaled_8TeV_";
 
   TString EMu_MSSM_2cat[NMAXINPUT];
   EMu_MSSM_2cat[0]="emu_nobtag_rescaled_7TeV_";
@@ -271,7 +282,7 @@ void sobWeightedCombineAll(float muValue=1.10, bool log=false, int mass=125, int
   TauTau_MSSM_2cat[3]="tauTau_btag_rescaled_8TeV_";
   
 
-  TString dataset="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV";
+  TString dataset="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV";
 
   //  sobCombine("All"  , All  , dataset, "e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}" , ""           , 1, muValue);
   //  sobCombine("Boost", Boost, dataset, "e#mu, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}" , "1 jet"      , 1, muValue);
@@ -294,9 +305,10 @@ void sobWeightedCombineAll(float muValue=1.10, bool log=false, int mass=125, int
 //   sobCombine("MuTau8TeV",MuTau8TeV,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h}",1,muValue);
 //   sobCombine("MuTau0Jet8TeV",MuTau0Jet8TeV,2,0,"#sqrt{s} = 8 TeV ,   L = 19.4 fb^{-1}","#mu-#tau_{h} 0-Jet",1,muValue);
 
-//  sobCombine("All_MSSM_2Cat", All_MSSM_2cat  , dataset, "#scale[1]e#mu_{h}, #scale[1]{e}#tau_{h}, #scale[1]{#mu}#mu_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}" , ""           , 1, muValue);
+  //sobCombine("All_MSSM_2Cat", ALL_MSSM_2cat, dataset, "#scale[1]e#mu_{h}, #scale[1]e#tau_{h}, #scale[1]{#mu}#mu_{h}, #scale[1]{#mu}#tau_{h}, #tau_{h}#tau_{h}" , ""           , 1, muValue, log, mass, tanb);
+  sobCombine("All_MSSM_2Cat", ALL_MSSM_2cat, dataset, "e#mu_{h}, e#tau_{h}, #mu#tau_{h}, #tau_{h}#tau_{h}" , ""           , 1, muValue, log, mass, tanb); 
   //  sobCombine("EMu_MSSM_2Cat", EMu_MSSM_2cat, dataset, "#scale[1]{e}#mu_{h}" , ""      , 1, muValue, log, mass, tanb);
-   sobCombine("ETau_MSSM_2Cat", ETau_MSSM_2cat, dataset, "#scale[1]{e}#tau_{h}" , ""      , 1, muValue, log, mass, tanb);
+  // sobCombine("ETau_MSSM_2Cat", ETau_MSSM_2cat, dataset, "#scale[1]{e}#tau_{h}" , ""      , 1, muValue, log, mass, tanb);
   //  sobCombine("MuMu_MSSM_2Cat", MuMu_MSSM_2cat, dataset, "#scale[1]{#mu}#mu" , ""      , 1, muValue, log, mass, tanb);
   //  sobCombine("MuTau_MSSM_2Cat", MuTau_MSSM_2cat, dataset, "#scale[1]{#mu}#tau_{h}" , ""      , 1, muValue, log, mass, tanb);
   //  sobCombine("TauTau_MSSM_2Cat", TauTau_MSSM_2cat, dataset, "#scale[1]{#tau_{h}}#tau_{h}" , ""      , 1, muValue, log, mass, tanb);
