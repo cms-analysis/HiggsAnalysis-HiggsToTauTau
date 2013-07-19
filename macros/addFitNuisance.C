@@ -327,8 +327,8 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   lB.setVal(lBCentral - lEigVals(1)*lEigVecs(1,1));
   TH1F* lHDown1 = (TH1F*) lFit->createHistogram("Down1",lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
 
-  std::string lNuisance1 =  iBkg+"_"+"CMS_"+iName+"1_" + iChannel + "_" + iEnergy;
-  std::string lNuisance2 =  iBkg+"_"+"CMS_"+iName+"2_" + iChannel + "_" + iEnergy;
+  std::string lNuisance1 =  iBkg+"_"+"CMS_"+iName+"1_" + iChannel + "_" + iEnergy + "_" + iBkg;
+  std::string lNuisance2 =  iBkg+"_"+"CMS_"+iName+"2_" + iChannel + "_" + iEnergy + "_" + iBkg;
   lHUp    = merge(lNuisance1 + "Up"   ,lFirst,lH0,lHUp);
   lHDown  = merge(lNuisance1 + "Down" ,lFirst,lH0,lHDown);
   lHUp1   = merge(lNuisance2 + "Up"   ,lFirst,lH0,lHUp1);
@@ -376,9 +376,9 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   lH0    ->SetLineWidth(1); lH0->SetMarkerStyle(kFullCircle);
   lH     ->SetLineColor(kGreen);
   lHUp   ->SetLineColor(kRed);
-  lHDown ->SetLineColor(kRed);
+  lHDown ->SetLineColor(kRed+1);
   lHUp1  ->SetLineColor(kBlue);
-  lHDown1->SetLineColor(kBlue);
+  lHDown1->SetLineColor(kBlue+1);
   TCanvas *lC0 = new TCanvas("Can","Can",800,600);
   lC0->Divide(1,2); lC0->cd();  lC0->cd(1)->SetPad(0,0.2,1.0,1.0); gPad->SetLeftMargin(0.2) ; 
   lH0->Draw();
