@@ -17,14 +17,14 @@ Authors: Jose Benitez, Lorenzo Bianchini
 #include <iomanip>
 #include <TGraphAsymmErrors.h>
 
-#include "HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
+//#include "HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
 
 using namespace std;
 
 #define SignalScale 1
 #define NMAXINPUT 30
 
-int 
+/*int 
 findFirstBin(TH1F* h,double frac=0.1)
 {
   double max=h->GetMaximum();
@@ -171,6 +171,7 @@ findRebin(TString * Input,Int_t N, Int_t * Rebin)
     }
   }
 }
+*/
 
 // from addfitnuisance.C felix
 //Get Axis from a TH1F
@@ -421,7 +422,7 @@ sobWeightedCombineMSSM(TString *Input, TString outName, int weight=1, float  MuV
  ************************************************
 */
 
-void 
+/*void 
 CMSPrelim(const char* dataset, const char* channel,const char* cat)
 {
   double lowX=0.16;
@@ -515,7 +516,7 @@ findMinY(TH1F* h,int opt=0,float lowx=0.,float highx=0.)
   //cout<<max<<endl;
   return max;
 }
-
+*/
 void 
 sobWeightedPlotMSSM(TString filename,const char* dataset , const char* channel,const char* cat, bool log, int mass, int tanb)
 { 
@@ -570,7 +571,7 @@ sobWeightedPlotMSSM(TString filename,const char* dataset , const char* channel,c
   sig->SetMarkerSize(1.0);
 
   ggH->SetBinContent(0,0);//remove red line on top of y axis in plot
- ggH->SetBinContent(ggH->GetNbinsX()+1,0);
+  ggH->SetBinContent(ggH->GetNbinsX()+1,0);
   ggH->SetBinError(0,0);
   ggH->SetBinError(ggH->GetNbinsX()+1,0);
   ggH->SetName("ggH");
