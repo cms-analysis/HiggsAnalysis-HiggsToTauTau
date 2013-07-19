@@ -172,9 +172,9 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   leg->SetFillColor (kWhite);
   //leg->SetHeader("Local p-value");
   leg->AddEntry( observed, "p-value observed",  "PL");
-  if(innerBand){ leg->AddEntry( innerBand, TString::Format("#pm 1#sigma expected", injectedMass.c_str()),  "F" ); }
+  if(innerBand){ leg->AddEntry( innerBand, "#pm 1#sigma expected",  "F" ); }
   leg->AddEntry( expected, "p-value expected",  "L" );
-  if(outerBand){ leg->AddEntry( outerBand, TString::Format("#pm 2#sigma expected", injectedMass.c_str()),  "F" ); }
+  if(outerBand){ leg->AddEntry( outerBand, "#pm 2#sigma expected",  "F" ); }
   leg->Draw("same");
   //canv.RedrawAxis("g");
   canv.RedrawAxis();
