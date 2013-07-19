@@ -42,7 +42,12 @@ $DEFINE_MSSM
 */
 
 static const bool BLIND_DATA = true; //false;
-float blinding_SM(float mass){ return (100<mass && mass<150); }
+float blinding_SM(float mass){
+  bool blind=false;
+  if((std::string("$CATEGORY").find(std::string("1jet"))!=std::string::npos) && (0.6<mass)){blind=true;}
+  if((std::string("$CATEGORY").find(std::string("vbf"))!=std::string::npos) && (0.5<mass)){blind=true;}
+  return blind;
+}
 float blinding_MSSM(float mass){ return (100<mass); }
 float maximum(TH1F* h, bool LOG=false){
   if(LOG){
@@ -302,10 +307,10 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
   data->SetNdivisions(505);
   data->SetMinimum(min);
-  data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(WJets, log)));
+  data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(ZMM, log)));
   data->Draw("e");
 
-  TH1F* errorBand = (TH1F*)WJets ->Clone();
+  TH1F* errorBand = (TH1F*)ZMM->Clone();
   errorBand  ->SetMarkerSize(0);
   errorBand  ->SetFillColor(1);
   errorBand  ->SetFillStyle(3013);
@@ -460,7 +465,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 
   TH1F* zero = (TH1F*)ref ->Clone("zero"); zero->Clear();
   TH1F* rat1 = (TH1F*)data->Clone("rat"); 
-  rat1->Divide(WJets);
+  rat1->Divide(ZMM);
   for(int ibin=0; ibin<rat1->GetNbinsX(); ++ibin){
     if(rat1->GetBinContent(ibin+1)>0){
       // catch cases of 0 bins, which would lead to 0-alpha*0-1
@@ -492,7 +497,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   canv1->SetGridy();
   canv1->cd();
 
-  TH1F* rat2 = (TH1F*) WJets->Clone("rat2");
+  TH1F* rat2 = (TH1F*) ZMM->Clone("rat2");
   rat2->Divide(ref);
   for(int ibin=0; ibin<rat2->GetNbinsX(); ++ibin){
     if(rat2->GetBinContent(ibin+1)>0){
