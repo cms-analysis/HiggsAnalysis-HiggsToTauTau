@@ -444,7 +444,7 @@ if options.update_aux :
                     CMSSW_BASE=cmssw_base,
                     ANA=ana,
                     DIR=dir,
-                    MASSES=masses,
+                    MASSES=' '.join(masses),
                     ))                        
         if 'em' in channels :
             if '7TeV' in periods :
