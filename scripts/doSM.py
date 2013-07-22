@@ -465,7 +465,7 @@ if options.update_aux :
                     ))            
         if 'et' in channels :
             if '7TeV' in periods :
-                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '7TeV' -a sm -c 'et' --sm-categories-et='0 1 2 3 4 5 6' {MASSES}".format(
+                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '7TeV' -a sm -c 'et' --sm-categories-et='0 1 2 3 5 6' {MASSES}".format(
                     LABEL=options.label,
                     CMSSW_BASE=cmssw_base,
                     ANA=ana,
@@ -473,7 +473,7 @@ if options.update_aux :
                     MASSES=' '.join(masses),
                     ))
             if '8TeV' in periods :
-                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'et' --sm-categories-et='0 1 2 3 4 5 6 7' {MASSES}".format(
+                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'et' --sm-categories-et='0 1 2 3 5 6 7' {MASSES}".format(
                     LABEL=options.label,
                     CMSSW_BASE=cmssw_base,
                     ANA=ana,
@@ -596,7 +596,7 @@ if options.update_limits :
                     ))                
         if 'et' in channels :
             if '7TeV' in periods :
-                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '7TeV' -a sm -c 'et' {LABEL} --sm-categories-et='0 1 2 3 4 5 6' {MASSES}".format(
+                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '7TeV' -a sm -c 'et' {LABEL} --sm-categories-et='0 1 2 3 5 6' {MASSES}".format(
                     INDEX=options.label,                
                     ANA=ana,
                     DIR=dir,
@@ -604,7 +604,7 @@ if options.update_limits :
                     MASSES=' '.join(masses)
                     ))
             if '8TeV' in periods :
-                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'et' {LABEL} --sm-categories-et='0 1 2 3 4 5 6 7' {MASSES}".format(
+                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'et' {LABEL} --sm-categories-et='0 1 2 3 5 6 7' {MASSES}".format(
                     INDEX=options.label,                
                     ANA=ana,
                     DIR=dir,
