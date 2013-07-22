@@ -24,12 +24,12 @@ parser.add_option("--no-fudge-for-mm", dest="no_fudge", default=False, action="s
 parser.add_option("--sm-higgs-as-bkg", dest="sm_higgs_as_bkg", default=False, action="store_true",
                   help="Add the SM Higgs expectation as a background")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
-cats1.add_option("--sm-categories-ee", dest="ee_sm_categories", default="0 1 2 3 5", type="string",
-                 help="List ee of event categories. [Default: \"0 1 2 3 5\"]")
-cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 5", type="string",
-                 help="List mm of event categories. [Default: \"0 1 2 3 5\"]")
-cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 4 5", type="string",
-                 help="List em of event categories. [Default: \"0 1 2 3 4 5\"]")
+cats1.add_option("--sm-categories-ee", dest="ee_sm_categories", default="0 1 2 3 4", type="string",
+                 help="List ee of event categories. [Default: \"0 1 2 3 4\"]")
+cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 4", type="string",
+                 help="List mm of event categories. [Default: \"0 1 2 3 4\"]")
+cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 4", type="string",
+                 help="List em of event categories. [Default: \"0 1 2 3 4\"]")
 cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3 4 5 6 7", type="string",
                  help="List mt of event categories. [Default: \"0 1 2 3 4 5 6 7 \"]")
 cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 4 5 6 7", type="string",
@@ -38,8 +38,8 @@ cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1 2",
                  help="List of tt event categories. [Default: \"0 1 2\"]")
 cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1 2", type="string",
                  help="List of vhtt event categories. [Default: \"0 1 2\"]")
-cats1.add_option("--sm-categories-vhbb", dest="vhbb_sm_categories", default="0 1 2 3 4 5 6 7 8 9", type="string",
-                 help="List of vhbb event categories. [Default: \"0 1 2 3 4 5 6 7 8 9\"]")
+cats1.add_option("--sm-categories-vhbb", dest="vhbb_sm_categories", default="0 1 2 3 4 5 6 7 8", type="string",
+                 help="List of vhbb event categories. [Default: \"0 1 2 3 4 5 6 7 8\"]")
 parser.add_option_group(cats1)
 cats2 = OptionGroup(parser, "MSSM EVENT CATEGORIES", "Event categories to be used for the MSSM analysis.")
 cats2.add_option("--mssm-categories-ee", dest="ee_mssm_categories", default="8 9", type="string",
@@ -141,8 +141,6 @@ if options.analysis == "mssm" :
         "mt"   : "7TeV 8TeV",
         "et"   : "7TeV 8TeV",
         "tt"   :      "8TeV",
-        #"hmm"  : "7TeV"     ,
-        "hbb"  : "7TeV"     ,
         }
 
 print "------------------------------------------------------"
@@ -163,7 +161,6 @@ if options.analysis == "sm" :
         "et"   : options.et_sm_categories.split(),
         "tt"   : options.tt_sm_categories.split(),
         "vhtt" : options.vhtt_sm_categories.split(),
-        "vhbb" : options.vhbb_sm_categories.split(),
         }
 
 ## switch to mssm event categories
@@ -176,8 +173,6 @@ if options.analysis == "mssm" :
         "mt"   : options.mt_mssm_categories.split(),
         "et"   : options.et_mssm_categories.split(),
         "tt"   : options.tt_mssm_categories.split(),
-        #"hmm"  : options.hmm_mssm_categories.split(),
-        "hbb"  : options.hbb_mssm_categories.split(),
         }
 
 ## return closest simulated masspoint to value
@@ -216,8 +211,10 @@ for channel in channels :
                     pass
                 else :
                     if options.analysis == "sm" and "mm" in channel :
-                        mass = closest_simulated_masspoint(mass)
-                        fudge_mm_datacards = float(fudge_mass)-float(mass)!=0
+                        ## this has been removed since there is no problem anymore with morphed templates in SM mm / ee
+                        ##mass = closest_simulated_masspoint(mass)
+                        ##fudge_mm_datacards = float(fudge_mass)-float(mass)!=0
+                        pass
                 ## check validity of mass
                 if (float(mass)< valid_masses[channel][0] or float(mass)> valid_masses[channel][1]) :
                     #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass
