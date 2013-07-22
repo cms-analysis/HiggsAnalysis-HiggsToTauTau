@@ -18,7 +18,7 @@ parser.add_option("-v", "--verbose", dest="verbose", action="store_true", defaul
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 4", type="string", help="List mm of event categories. [Default: \"0 1 2 3 4\"]")
 cats1.add_option("--sm-categories-ee", dest="ee_sm_categories", default="0 1 2 3 4", type="string", help="List ee of event categories. [Default: \"0 1 2 3 4\"]")
-cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0   2 3 4   6 7", type="string", help="List em of event categories. [Default: \"0   2 3 4   6 7\"]")
+cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 4", type="string", help="List em of event categories. [Default: \"0 1 2 3 4\"]")
 cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3 4 5 6 7", type="string", help="List mt of event categories. [Default: \"0 1 2 3 4 5 6 7\"]")
 cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 4 5 6 7", type="string", help="List et of event categories. [Default: \"0 1 2 3 4 5 6 7\"]")
 cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1 2", type="string", help="List of tt event categories. [Default: \"0 1 2\"]")
