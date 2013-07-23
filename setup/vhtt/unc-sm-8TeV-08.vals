@@ -5,12 +5,10 @@ ett		wz                              pdf_qqbar                    1.040
 ett		wz                              QCDscale_VV                  1.040
 ett		zz                              pdf_qqbar                    1.033
 ett		zz                              QCDscale_VV                  1.023
-ett		signal,wz,zz			CMS_trigger_e                1.035
-ett		signal,wz,zz			CMS_eff_e                    1.029
-ett		signal,wz,zz			CMS_eff_m                    1.014
+ett		signal,wz,zz			CMS_trigger_t                1.030
+ett		signal,wz,zz			CMS_eff_e                    1.020
 ett		signal,wz,zz			CMS_eff_t                    1.120
 ett		signal,wz,zz			CMS_scale_e                  1.000
-ett		signal,wz,zz			CMS_scale_m                  1.000
 ett		signal,wz,zz			CMS_scale_t                  1.0
 ett		signal,wz,zz			CMS_scale_met                1.0
 ett		signal,wz,zz			CMS_vhtt_el_veto             1.038
