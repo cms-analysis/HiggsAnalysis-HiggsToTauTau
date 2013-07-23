@@ -26,8 +26,9 @@ desired_categories = None
 if options.categories is not None:
     desired_categories = options.categories.split(',')
 
-if float(masspoint)%1==0 and masspoint.find('.') > -1 :
-    masspoint=masspoint[0:masspoint.find('.')]
+if masspoint>0 :
+    if float(masspoint)%1==0 and masspoint.find('.') > -1 :
+        masspoint=masspoint[0:masspoint.find('.')]
 
 from HiggsAnalysis.HiggsToTauTau.MakerUtilsL import DBuilder
 dmaker = DBuilder(
