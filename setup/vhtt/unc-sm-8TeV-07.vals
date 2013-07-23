@@ -5,11 +5,8 @@ mtt		wz                              pdf_qqbar                    1.040
 mtt		wz                              QCDscale_VV                  1.040
 mtt		zz                              pdf_qqbar                    1.033
 mtt		zz                              QCDscale_VV                  1.023
-mtt		signal,wz,zz			CMS_trigger_m                1.035
-mtt		signal,wz,zz			CMS_eff_e                    1.029
-mtt		signal,wz,zz			CMS_eff_m                    1.014
+mtt		signal,wz,zz			CMS_eff_m                    1.020
 mtt		signal,wz,zz			CMS_eff_t                    1.120
-mtt		signal,wz,zz			CMS_scale_e                  1.000
 mtt		signal,wz,zz			CMS_scale_m                  1.000
 mtt		signal,wz,zz			CMS_scale_t                  1.0
 mtt		signal,wz,zz			CMS_scale_met                1.0
