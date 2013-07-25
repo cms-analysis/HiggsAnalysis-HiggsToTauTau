@@ -20,7 +20,10 @@ asimov_opts.add_option("--injected-scale", dest="injected_scale", default="1", t
                        help="Scale for signal. This is only of relevance if signal should be added to the asimov dataset. The scale factor will than be applied equally to each signal contribution. Default: \"1\"]")
 asimov_opts.add_option("--injected-mass", dest="injected_mass", default="125", type="string",
                        help="The mass of the signal that should be injected. Default: \"125\"]")
-asimov_opts.add_option("--extra-templates", dest="extra_templates", default="", type="string", help="List of extra background or signal templates which should be injected to the asimov dataset. Needs to be comma seperated list. For example to inject SM signal into MSSM datacards. [Default: \"\"]")
+asimov_opts.add_option("--extra-templates", dest="extra_templates", default="", type="string",
+                       help="List of extra background or signal templates which should be injected to the asimov dataset. Needs to be comma seperated list. For example to inject SM signal into MSSM datacards. [Default: \"\"]")
+asimov_opts.add_option("--blacklist", dest="blacklist", default="", type="string",
+                       help="List of signal or background templates that should be ignored when creating the asimov dataset. Needs to be comma seperated list. Use cases are a central template that should be replaced by a template to which a shift has been applied (added to --extra-templates) or to add a set of signal processes that should be ignored when creating the asimov dataset with signal injected. [Default: \"\"]")
 parser.add_option_group(asimov_opts)
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -32,6 +35,10 @@ if len(args) < 1 :
 import glob
 from HiggsAnalysis.HiggsToTauTau.AsimovDatacard import *
 
+## blacklist
+blacklist = options.blacklist.split()
+for idx in range(len(blacklist)) : blacklist[idx] = blacklist[idx].rstrip(',')
+
 def main() :
     print "# --------------------------------------------------------------------------------------"
     print "# Blinding datacards. "
@@ -42,10 +49,12 @@ def main() :
     print "# --inject-signal  :", options.inject_signal
     print "# --injected-scale :", options.injected_scale
     print "# --injected-mass  :", options.injected_mass
+    print "# --extra-templates:", options.extra_templates
+    print "# --blacklist      :", blacklist
     print "# Check option --help in case of doubt about the meaning of one or more of these confi-"
     print "# guration parameters.                           "
     print "# --------------------------------------------------------------------------------------"
-    cardMaker = AsimovDatacard(options, options.update_file, options.seed, options.inject_signal, options.injected_mass, options.injected_scale, options.extra_templates)
+    cardMaker = AsimovDatacard(options, options.update_file, options.seed, options.inject_signal, options.injected_mass, options.injected_scale, options.extra_templates, blacklist)
     ## clean up directory from former trials
     cardMaker.cleanup(args[0], '_asimov')
     cardMaker.make_asimov_datacards(args[0])
