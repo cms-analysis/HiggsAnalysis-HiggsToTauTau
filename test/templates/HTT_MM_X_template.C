@@ -42,7 +42,7 @@ $DEFINE_MSSM
 */
 
 static const bool BLIND_DATA = true; //false;
-static const bool FULLPLOTS = false; //false;
+static const bool FULLPLOTS = false; //true;
 float blinding_SM(float mass){
   bool blind=false;
   if((std::string("$CATEGORY").find(std::string("1jet"))!=std::string::npos) && (0.6<mass)){blind=true;}
