@@ -256,7 +256,7 @@ for chn in channels :
                 LABEL="2011+2012",
                 EXTRA=extra[chn],
                 EXTRA2=cat,
-                MIN=min[chn,cat][0],
-                MAX=max[chn,cat][0],
-                LOG=log[chn,cat][0]
+                MIN=min[chn,cat][1],
+                MAX=max[chn,cat][1],
+                LOG=log[chn,cat][1]
                 ))
