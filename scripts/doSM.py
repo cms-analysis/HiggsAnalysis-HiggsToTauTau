@@ -3,7 +3,7 @@ from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGs",
-                      description="This is a script to reload the MORIOND analysis with main analysis [std, bin-by-bin] and four cross-check analyses [mvis, incl, hcp, 2012d]. ARGs corresponds to the masses, for which to setup the structure.")
+                      description="This is a script to reload the Summer13 analysis for the main analyses [bbb, no-bbb] and potential cross check analyses [mvis, incl]. ARGs corresponds to the masses, for which to setup the structure.")
 parser.add_option("-c", "--channels", dest="channels", default="em mt et tt", type="string",
                   help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"em mt et tt\"]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
@@ -139,7 +139,7 @@ if options.update_setup :
                 continue
             for ana in analyses :
                 pattern = patterns[ana]
-                source="{CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/{CHN}.inputs-sm-{PER}{PATTERN}.root".format(
+                source="{CMSSW_BASE}/src/auxiliaries/shapes/{DIR}/{CHN}.inputs-sm-{PER}{PATTERN}.root".format(
                     CMSSW_BASE=cmssw_base,
                     DIR=directories[chn][per],
                     CHN=chn+'_*' if chn == 'vhtt' else 'htt_'+chn,

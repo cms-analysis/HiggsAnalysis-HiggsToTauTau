@@ -256,7 +256,7 @@ class DBuilder:
             cat_str="shapes * * %(file)s $CHANNEL/%(ws)s$PROCESS $CHANNEL/%(ws)s$PROCESS_$SYSTEMATIC \n" % {'file': self.rootfile, 'ws': wsPrefix}
             for signal in self.signals :
                 ## add extra lines, which contain the corresponding mass, for all signal processes
-                cat_str+="shapes %(signal)s * %(file)s $CHANNEL/%(ws)s$PROCESS$MASS $CHANNEL/%(ws)s$PROCESS$MASS_$SYSTEMATIC \n" % {'signal': signal, 'file': self.rootfile, 'ws': wsPrefix}
+                cat_str+="shapes %(signal)s * %(file)s $CHANNEL/%(ws)s$PROCESS%(mass)s $CHANNEL/%(ws)s$PROCESS%(mass)s_$SYSTEMATIC \n" % {'signal': signal, 'file': self.rootfile, 'ws': wsPrefix, 'mass' : '$MASS' if self.mass_point>0 else ''}
                 if self.sm_higgs_as_bkg:
                     cat_str+= "shapes %(signal)s_SM * %(file)s $CHANNEL/%(ws)s%(signal)s125 $CHANNEL/%(ws)s%(signal)s125_$SYSTEMATIC \n" % {'signal': signal, 'file': self.rootfile, 'ws': wsPrefix}
         else:

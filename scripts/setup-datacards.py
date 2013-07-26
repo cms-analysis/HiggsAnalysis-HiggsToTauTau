@@ -23,6 +23,8 @@ parser.add_option("--no-fudge-for-mm", dest="no_fudge", default=False, action="s
                   help="Do not perform fudging for mm in case of treating horizontally morphed inputs. This options skips a commonly applied shortcut that needs to be done on htt_mm inputs that are not yet provided with horizontally morphed inputs by the analysts. [Default: False]")
 parser.add_option("--sm-higgs-as-bkg", dest="sm_higgs_as_bkg", default=False, action="store_true",
                   help="Add the SM Higgs expectation as a background")
+parser.add_option("--ignore-mass-argument", dest="ignore_mass_argument", default=False, action="store_true",
+                  help="Ignore the mass argument when creating datacards. In this case the process name will not be extended by a specific mass value. This option should be used e.g. when replacing Higgs signal by ZTT")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-ee", dest="ee_sm_categories", default="0 1 2 3 4", type="string",
                  help="List ee of event categories. [Default: \"0 1 2 3 4\"]")
@@ -221,13 +223,14 @@ for channel in channels :
                     continue
                 print "creating datacard for:", options.analysis, period, channel, cat, fudge_mass
                 if options.analysis == "mssm" :
-                    os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{PER}-{MASSCAT}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS}".format(
+                    os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{PER}-{MASSCAT}.root -o {CHN}_{CAT}_{PER}-{LABEL}.txt {MASS}".format(
                         CHN=prefix+channel,
                         ANA=options.analysis,
                         PER=period,
                         MASSCAT=mass_category(mass,cat,prefix+channel),
                         CAT=cat,
-                        MASS=mass
+                        MASS='' if options.ignore_mass_argument else mass,
+                        LABEL='125' if options.ignore_mass_argument else mass
                         ))
                 if options.analysis == "sm" :
                     if options.SM4 :
@@ -237,30 +240,32 @@ for channel in channels :
                             CHN=channel,
                             per=period.lower()
                             ))
-                    os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{per}.root -o {CHN}_{CAT}_{PER}-{MASS}.txt {MASS} {SM_HIGGS_BKG}".format(
+                    os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{per}.root -o {CHN}_{CAT}_{PER}-{LABEL}.txt {MASS} {SM_HIGGS_BKG}".format(
                         CHN=prefix+channel,
                         ANA=options.analysis,
                         per=period,
                         CAT=cat,
                         PER=period,
-                        MASS=mass,
+                        MASS='' if options.ignore_mass_argument else mass,
+                        LABEL='125' if options.ignore_mass_argument else mass,
                         SM_HIGGS_BKG='--sm-higgs-as-bkg' if options.sm_higgs_as_bkg else ''
                         ))
-                    if "mm" in channel and fudge_mm_datacards :
-                        os.system("cp {CHN}_{CAT}_{PER}-{MASS}.txt {CHN}_{CAT}_{PER}-{FUDGE_MASS}.txt".format(
-                            CHN=prefix+channel,
-                            CAT=cat,
-                            PER=period,
-                            MASS=mass,
-                            FUDGE_MASS=fudge_mass
-                            ))
-                        os.system("perl -pi -e 's/\$MASS/{MASS}/g' {CHN}_{CAT}_{PER}-{FUDGE_MASS}.txt".format(
-                            MASS=mass,
-                            CHN=prefix+channel,
-                            CAT=cat,
-                            PER=period,
-                            FUDGE_MASS=fudge_mass
-                            ))
+                    if not options.ignore_mass_argument :
+                        if "mm" in channel and fudge_mm_datacards :
+                            os.system("cp {CHN}_{CAT}_{PER}-{MASS}.txt {CHN}_{CAT}_{PER}-{FUDGE_MASS}.txt".format(
+                                CHN=prefix+channel,
+                                CAT=cat,
+                                PER=period,
+                                MASS=mass,
+                                FUDGE_MASS=fudge_mass
+                                ))
+                            os.system("perl -pi -e 's/\$MASS/{MASS}/g' {CHN}_{CAT}_{PER}-{FUDGE_MASS}.txt".format(
+                                MASS=mass,
+                                CHN=prefix+channel,
+                                CAT=cat,
+                                PER=period,
+                                FUDGE_MASS=fudge_mass
+                                ))
             os.system("mv *.* ../")
             os.chdir("{PWD}/{CHN}".format(CHN=prefix+channel, PWD=base))
             os.system("rm -r {PER}-{CAT}".format(PER=period, CAT=cat.zfill(2)))

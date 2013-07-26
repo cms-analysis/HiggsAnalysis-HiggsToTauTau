@@ -3,7 +3,7 @@ from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options]",
-                      description="Script to setup all datacards and directories. The script assumes that all datacards (but unscaled) are located in '$CMSSW_BASE/src/auxiliaries/datacards/mssm/[htt_ee, htt_em, htt_et, htt_mm, htt_mt, htt_tt, hbb].'")
+                      description="Script to setup all datacards and directories.'")
 ##
 ## GENERAL OPTIONS
 ##
@@ -152,7 +152,6 @@ if options.update_cvs :
             for ana in analyses :
                 pattern = patterns[ana]
                 #source="{CMSSW_BASE}/src/auxiliaries/datacards/mssm/{FULLNAME}/{FULLNAME}*-mssm-{PER}-[01]{PATTERN}.root".format(
-                #source="{CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/{FULLNAME}*-mssm-{PER}-[01]{PATTERN}.root".format(
                 source="{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau-auxiliaries/shapes/{DIR}/{FULLNAME}*-mssm-{PER}-[01]{PATTERN}.root".format(
                     CMSSW_BASE=cmssw_base,
                     CHN=chn,
@@ -170,7 +169,6 @@ if options.update_cvs :
             if chn=="mm" :
                 ## copy postfit inputs for mm to test directory
                 #os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/mssm/htt_mm/htt_mm*-mssm-[78]TeV-[01]-msv.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format( 
-                #os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/htt_mm*-mssm-[78]TeV-[01]-msv.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
                 os.system("cp {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau-auxiliaries/shapes/{DIR}/htt_mm*-mssm-[78]TeV-[01]-msv.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
                     DIR=directories[chn][per],
                     CMSSW_BASE=cmssw_base         
