@@ -152,7 +152,7 @@ if options.update_cvs :
             for ana in analyses :
                 pattern = patterns[ana]
                 #source="{CMSSW_BASE}/src/auxiliaries/datacards/mssm/{FULLNAME}/{FULLNAME}*-mssm-{PER}-[01]{PATTERN}.root".format(
-                source="{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau-auxiliaries/shapes/{DIR}/{FULLNAME}*-mssm-{PER}-[01]{PATTERN}.root".format(
+                source="{CMSSW_BASE}/src/auxiliaries/shapes/{DIR}/{FULLNAME}*-mssm-{PER}-[01]{PATTERN}.root".format(
                     CMSSW_BASE=cmssw_base,
                     CHN=chn,
                     PER=per,
@@ -169,7 +169,7 @@ if options.update_cvs :
             if chn=="mm" :
                 ## copy postfit inputs for mm to test directory
                 #os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/mssm/htt_mm/htt_mm*-mssm-[78]TeV-[01]-msv.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format( 
-                os.system("cp {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau-auxiliaries/shapes/{DIR}/htt_mm*-mssm-[78]TeV-[01]-msv.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
+                os.system("cp {CMSSW_BASE}/src/auxiliaries/shapes/{DIR}/htt_mm*-mssm-[78]TeV-[01]-msv.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
                     DIR=directories[chn][per],
                     CMSSW_BASE=cmssw_base         
                     ))
