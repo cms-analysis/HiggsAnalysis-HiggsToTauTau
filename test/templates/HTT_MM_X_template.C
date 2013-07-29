@@ -160,12 +160,12 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #ifdef MSSM
   TFile* input2 = new TFile((inputfile+"_$MA_$TANB").c_str());
 #endif
-  TH1F* ZTT = refill((TH1F*)input->Get(TString::Format("%s/ZTT"   , directory)), "ZTT"); InitHist(ZTT, "", "", kOrange-4, 1001);
-  TH1F* ZMM    = refill((TH1F*)input->Get(TString::Format("%s/ZMM"     , directory)), "ZMM"); InitHist(ZMM  , "", "", kAzure+2, 1001);
-  TH1F* TTJ  = refill((TH1F*)input->Get(TString::Format("%s/TTJ"   , directory)), "TTJ"); InitHist(TTJ, "", "", kBlue-8, 1001);
-  TH1F* QCD    = refill((TH1F*)input->Get(TString::Format("%s/QCD"     , directory)), "QCD"); InitHist(QCD  , "", "", kMagenta - 10, 1001);
-  TH1F* Dibosons  = refill((TH1F*)input->Get(TString::Format("%s/Dibosons"   , directory)), "Dibosons"); InitHist(Dibosons, "", "", kGreen - 4, 1001);
-  TH1F* WJets    = refill((TH1F*)input->Get(TString::Format("%s/WJets"     , directory)), "WJets"); InitHist(WJets  , "", "", kRed + 2, 1001);
+  TH1F* ZTT      = refill((TH1F*)input->Get(TString::Format("%s/ZTT"     , directory)), "ZTT"     ); InitHist(ZTT     , "", "", kOrange  -  4, 1001);
+  TH1F* ZMM      = refill((TH1F*)input->Get(TString::Format("%s/ZMM"     , directory)), "ZMM"     ); InitHist(ZMM     , "", "", kAzure   +  2, 1001);
+  TH1F* TTJ      = refill((TH1F*)input->Get(TString::Format("%s/TTJ"     , directory)), "TTJ"     ); InitHist(TTJ     , "", "", kBlue    -  8, 1001);
+  TH1F* QCD      = refill((TH1F*)input->Get(TString::Format("%s/QCD"     , directory)), "QCD"     ); InitHist(QCD     , "", "", kMagenta - 10, 1001);
+  TH1F* Dibosons = refill((TH1F*)input->Get(TString::Format("%s/Dibosons", directory)), "Dibosons"); InitHist(Dibosons, "", "", kGreen   -  4, 1001);
+  TH1F* WJets    = refill((TH1F*)input->Get(TString::Format("%s/WJets"   , directory)), "WJets"   ); InitHist(WJets   , "", "", kRed     +  2, 1001);
 #ifdef MSSM
 //   float ggHScale = 1., bbHScale = 1.;
 //   ggHScale = ($MSSM_SIGNAL_ggH_xseff_A + $MSSM_SIGNAL_ggH_xseff_hH);
@@ -191,45 +191,45 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
 
   TH1F* ref=(TH1F*)ZTT->Clone("ref");
-  ref->Add(ZMM  );
+  ref->Add(ZMM);
   ref->Add(TTJ);
-  ref->Add(QCD  );
+  ref->Add(QCD);
   ref->Add(Dibosons);
-  ref->Add(WJets  );
+  ref->Add(WJets);
 
   double unscaled[9];
   unscaled[0] = ZTT->Integral();
-  unscaled[1] = ZMM  ->Integral();
+  unscaled[1] = ZMM->Integral();
   unscaled[2] = TTJ->Integral();
-  unscaled[3] = QCD  ->Integral();
-  unscaled[4] = Dibosons  ->Integral();
-  unscaled[5] = WJets  ->Integral();
+  unscaled[3] = QCD->Integral();
+  unscaled[4] = Dibosons->Integral();
+  unscaled[5] = WJets->Integral();
 #ifdef MSSM
-  unscaled[6] = ggH  ->Integral();
-  unscaled[7] = bbH  ->Integral();
+  unscaled[6] = ggH->Integral();
+  unscaled[7] = bbH->Integral();
   unscaled[8] = 0;
 #else
 #ifndef DROP_SIGNAL
-  unscaled[6] = ggH  ->Integral();
-  unscaled[7] = qqH  ->Integral();
-  unscaled[8] = VH   ->Integral();
+  unscaled[6] = ggH->Integral();
+  unscaled[7] = qqH->Integral();
+  unscaled[8] = VH ->Integral();
 #endif
 #endif
   
   if(scaled){
-    rescale(ZTT, 1); 
-    rescale(ZMM,   2); 
-    rescale(TTJ, 3); 
-    rescale(QCD,   4); 
+    rescale(ZTT,  1); 
+    rescale(ZMM,  2); 
+    rescale(TTJ,  3); 
+    rescale(QCD,  4); 
     rescale(Dibosons, 5); 
-    rescale(WJets,   6);
+    rescale(WJets,    6);
 #ifdef MSSM 
-    rescale(ggH,   7);
-    rescale(bbH,   8);
+    rescale(ggH,  7);
+    rescale(bbH,  8);
 #else
 #ifndef DROP_SIGNAL
-    rescale(ggH,   7);
-    rescale(qqH,   8);
+    rescale(ggH,  7);
+    rescale(qqH,  8);
     rescale(VH,   9);
 #endif
 #endif
@@ -237,32 +237,32 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 
   TH1F* scales[9];
   scales[0] = new TH1F("scales-ZTT", "", 9, 0, 9);
-  scales[0]->SetBinContent(1, unscaled[0]>0 ? (ZTT->Integral()/unscaled[0]-1.) : 0.);
+  scales[0]->SetBinContent(1, unscaled[0]>0 ? (ZTT->Integral()/unscaled[0]-1.)      : 0.);
   scales[1] = new TH1F("scales-ZMM"  , "", 9, 0, 9);
-  scales[1]->SetBinContent(2, unscaled[1]>0 ? (ZMM  ->Integral()/unscaled[1]-1.) : 0.);
+  scales[1]->SetBinContent(2, unscaled[1]>0 ? (ZMM->Integral()/unscaled[1]-1.)      : 0.);
   scales[2] = new TH1F("scales-TTJ", "", 9, 0, 9);
-  scales[2]->SetBinContent(3, unscaled[2]>0 ? (TTJ->Integral()/unscaled[2]-1.) : 0.);
+  scales[2]->SetBinContent(3, unscaled[2]>0 ? (TTJ->Integral()/unscaled[2]-1.)      : 0.);
   scales[3] = new TH1F("scales-QCD"  , "", 9, 0, 9);
-  scales[3]->SetBinContent(4, unscaled[3]>0 ? (QCD  ->Integral()/unscaled[3]-1.) : 0.);
+  scales[3]->SetBinContent(4, unscaled[3]>0 ? (QCD->Integral()/unscaled[3]-1.)      : 0.);
   scales[4] = new TH1F("scales-Dibosons", "", 9, 0, 9);
   scales[4]->SetBinContent(5, unscaled[4]>0 ? (Dibosons->Integral()/unscaled[4]-1.) : 0.);
   scales[5] = new TH1F("scales-WJets"  , "", 9, 0, 9);
-  scales[5]->SetBinContent(6, unscaled[5]>0 ? (WJets  ->Integral()/unscaled[5]-1.) : 0.);
+  scales[5]->SetBinContent(6, unscaled[5]>0 ? (WJets->Integral()/unscaled[5]-1.)    : 0.);
 #ifdef MSSM
   scales[6] = new TH1F("scales-ggH"  , "", 9, 0, 9);
-  scales[6]->SetBinContent(7, unscaled[6]>0 ? (ggH  ->Integral()/unscaled[4]-1.) : 0.);
+  scales[6]->SetBinContent(7, unscaled[6]>0 ? (ggH->Integral()/unscaled[6]-1.)      : 0.);
   scales[7] = new TH1F("scales-bbH"  , "", 9, 0, 9);
-  scales[7]->SetBinContent(8, unscaled[7]>0 ? (bbH  ->Integral()/unscaled[5]-1.) : 0.);
+  scales[7]->SetBinContent(8, unscaled[7]>0 ? (bbH->Integral()/unscaled[7]-1.)      : 0.);
   scales[8] = new TH1F("scales-NONE" , "", 9, 0, 9);
   scales[8]->SetBinContent(9, 0.);
 #else
 #ifndef DROP_SIGNAL
   scales[6] = new TH1F("scales-ggH"  , "", 9, 0, 9);
-  scales[6]->SetBinContent(7, unscaled[6]>0 ? (ggH  ->Integral()/unscaled[4]-1.) : 0.);
+  scales[6]->SetBinContent(7, unscaled[6]>0 ? (ggH->Integral()/unscaled[6]-1.)      : 0.);
   scales[7] = new TH1F("scales-qqH"  , "", 9, 0, 9);
-  scales[7]->SetBinContent(8, unscaled[7]>0 ? (qqH  ->Integral()/unscaled[5]-1.) : 0.);
+  scales[7]->SetBinContent(8, unscaled[7]>0 ? (qqH->Integral()/unscaled[7]-1.)      : 0.);
   scales[8] = new TH1F("scales-VH"   , "", 9, 0, 9);
-  scales[8]->SetBinContent(9, unscaled[8]>0 ? (VH   ->Integral()/unscaled[6]-1.) : 0.);
+  scales[8]->SetBinContent(9, unscaled[8]>0 ? (VH ->Integral()/unscaled[8]-1.)      : 0.);
 #endif
 #endif
 
@@ -312,10 +312,10 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   data->Draw("e");
 
   TH1F* errorBand = (TH1F*)ZMM->Clone();
-  errorBand  ->SetMarkerSize(0);
-  errorBand  ->SetFillColor(1);
-  errorBand  ->SetFillStyle(3013);
-  errorBand  ->SetLineWidth(1);
+  errorBand->SetMarkerSize(0);
+  errorBand->SetFillColor(1);
+  errorBand->SetFillStyle(3013);
+  errorBand->SetLineWidth(1);
   for(int idx=0; idx<errorBand->GetNbinsX(); ++idx){
     if(errorBand->GetBinContent(idx)>0){
       std::cout << "Uncertainties on summed background samples: " << errorBand->GetBinError(idx)/errorBand->GetBinContent(idx) << std::endl;
@@ -429,8 +429,8 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   leg->AddEntry(ZTT  , "Z#rightarrow#tau#tau"        , "F" );
   leg->AddEntry(TTJ  , "t#bar{t}"                    , "F" );
   leg->AddEntry(QCD  , "QCD"                         , "F" );
-  //leg->AddEntry(Dibosons  , "Dibosons"             , "F" );
   leg->AddEntry(WJets, "electroweak"                 , "F" );
+  //leg->AddEntry(Dibosons  , "Dibosons"             , "F" );
   $ERROR_LEGEND
   leg->Draw();
 
@@ -506,8 +506,9 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
       rat2 ->SetBinContent(ibin+1, rat2->GetBinContent(ibin+1)-1.);
     }
   }
-  rat2->SetLineColor(kRed+ 3);
-  rat2->SetFillColor(kRed-10);
+  rat2->SetLineColor(kRed+3);
+  rat2->SetMarkerColor(kRed+3);
+  rat2->SetMarkerSize(1.1);
   rat2->SetMaximum(+0.3);
   rat2->SetMinimum(-0.3);
   rat2->GetYaxis()->SetTitle("#bf{Fit/Prefit-1}");
@@ -517,11 +518,12 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #else
   rat2->GetXaxis()->SetTitle("#bf{final discriminator}");
 #endif
-  rat2->GetXaxis()->SetRange(0, 28);
+  //rat2->GetXaxis()->SetRange(0, 28);
   rat2->Draw();
   zero->SetLineColor(kBlack);
   zero->Draw("same");
   canv1->RedrawAxis();
+
   /*
     Relative shift per sample
   */
@@ -530,18 +532,17 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   canv2->SetGridy();
   canv2->cd();
 
-  InitHist  (scales[0], "", "", kGreen  - 4, 1001);
-  InitHist  (scales[1], "", "", kYellow - 4, 1001);
-  InitHist  (scales[2], "", "", kMagenta-10, 1001);
-  InitHist  (scales[3], "", "", kRed    + 2, 1001);
-  InitHist  (scales[4], "", "", kBlue   - 8, 1001);
-  InitHist  (scales[5], "", "", kOrange - 4, 1001);  
+  InitHist  (scales[0], "", "", kOrange  -  4, 1001);
+  InitHist  (scales[1], "", "", kAzure   +  2, 1001);
+  InitHist  (scales[2], "", "", kBlue    -  8, 1001);
+  InitHist  (scales[3], "", "", kMagenta - 10, 1001);
+  InitHist  (scales[4], "", "", kGreen   -  4, 1001);
+  InitHist  (scales[5], "", "", kRed     +  2, 1001);  
 #ifndef DROP_SIGNAL
   InitSignal(scales[6]);
   InitSignal(scales[7]);
   InitSignal(scales[8]);
 #endif
-  scales[0]->Draw();
   scales[0]->GetXaxis()->SetBinLabel(1, "#bf{ZTT}");
   scales[0]->GetXaxis()->SetBinLabel(2, "#bf{ZMM}"  );
   scales[0]->GetXaxis()->SetBinLabel(3, "#bf{TTJ}");
@@ -557,10 +558,11 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   scales[0]->GetXaxis()->SetBinLabel(8, "#bf{qqH}"  );
   scales[0]->GetXaxis()->SetBinLabel(9, "#bf{VH}"   );
 #endif
-  scales[0]->SetMaximum(+1.5);
-  scales[0]->SetMinimum(-1.5);
+  scales[0]->SetMaximum(+0.5);
+  scales[0]->SetMinimum(-0.5);
   scales[0]->GetYaxis()->CenterTitle();
   scales[0]->GetYaxis()->SetTitle("#bf{Fit/Prefit-1}");
+  scales[0]->Draw();
   scales[1]->Draw("same");
   scales[2]->Draw("same");
   scales[3]->Draw("same");
@@ -571,7 +573,9 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   scales[7]->Draw("same");
   scales[8]->Draw("same");
 #endif
-  zero->Draw("same");
+  TH1F* zero_samples = (TH1F*)scales[0]->Clone("zero_samples"); zero_samples->Clear();
+  zero_samples->SetBinContent(1,0.);
+  zero_samples->Draw("same");
   canv2->RedrawAxis();
 
   /*
