@@ -12,7 +12,7 @@ parser.add_option("-a", "--analyses", dest="analyses", default="no-bbb, bbb",
                   help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"no-bbb, bbb, mvis, inclusive\" [Default: \"no-bbb, bbb\"]")
 parser.add_option("--label", dest="label", default="", type="string", 
                   help="Possibility to give the setups, aux and LIMITS directory a index (example LIMITS-bbb). [Default: \"\"]")
-parser.add_option("--do-not-scales", dest="do_not_scales", default="ee mm vhtt", type="string",
+parser.add_option("--ignore-during-scaling", dest="do_not_scales", default="ee mm vhtt", type="string",
                   help="List of channels, which the scaling by cross seciton times BR shoul not be applied. The list should be embraced by call-ons and separeted by whitespace or comma. [Default: \"vhtt ee mm\"]")
 parser.add_option("--inputs-ee", dest="inputs_ee", default="DESY-KIT", type="choice", choices=['DESY-KIT'],
                   help="Input files for htt_ee analysis. [Default: \"DESY-KIT\"]")
@@ -180,30 +180,35 @@ if options.update_setup :
                     FILE=file,
                     MASSES=' '.join(masses)
                     ))
-    if 'em' in channels : 
+    if 'em' in channels : ## move back to XYZ->em
         print "##"
         print "## --->>> adding extra scale for htt_hww contribution in em <<<---"
         print "##"
         ## special treatment for channels which include contributions from hww
-        hww_processes = ['ggH_hww', 'qqH_hww', 'VH_hww', 'WH_hww', 'ZH_hww']
+        hww_processes = ['ggH_hww', 'qqH_hww', 'VH_hww']
         ## BR ratios: hww/htt as function of the mass
         hww_over_htt = {
-            # mass     hww    htt
-            '90'  : 0.00209/0.0841,
-            '95'  : 0.00472/0.0841,
-            '100' : 0.01110/0.0836,
-            '105' : 0.02430/0.0825,
-            '110' : 0.04820/0.0802,
-            '115' : 0.08670/0.0765,
-            '120' : 0.14300/0.0710,
-            '125' : 0.21600/0.0637,
-            '130' : 0.30500/0.0548,
-            '135' : 0.40300/0.0452,
-            '140' : 0.50300/0.0354,
-            '145' : 0.60200/0.0261,
+            # mass     hww    htt  WW->2l2v
+            '90'  : 0.00209/0.0841*3*0.108,
+            '95'  : 0.00472/0.0841*3*0.108,
+            '100' : 0.01110/0.0836*3*0.108,
+            '105' : 0.02430/0.0825*3*0.108,
+            '110' : 0.04820/0.0802*3*0.108,
+            '115' : 0.08670/0.0765*3*0.108,
+            '120' : 0.14300/0.0710*3*0.108,
+            '125' : 0.21600/0.0637*3*0.108,
+            '130' : 0.30500/0.0548*3*0.108,
+            '135' : 0.40300/0.0452*3*0.108,
+            '140' : 0.50300/0.0354*3*0.108,
+            '145' : 0.60200/0.0261*3*0.108,
             }
-        ## correct for proper BR everywhere, where any of the above processes occurs
+        ## multiply with proper xsec and correct for proper BR everywhere, where any of the above processes occurs
         for file in glob.glob("{SETUP}/em/*inputs-sm-*.root".format(SETUP=setup)) :
+            os.system("scale2SM.py -i {FILE} -s '{PROCS}' {MASSES}".format(
+                FILE=file,
+                PROCS=', '.join(hww_processes),
+                MASSES=' '.join(masses)
+                ))
             for proc in hww_processes :
                 for mass in parseArgs(masses) :
                     os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{INPUTFILE}\",\"{PROCESS}\",0\)".format(
