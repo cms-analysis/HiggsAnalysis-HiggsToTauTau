@@ -150,9 +150,9 @@ class Analysis:
 		             input = TFile("root/"+self.histfile)
                              #print "file: ", input.GetName()
 		             for key in input.GetListOfKeys():
-		               if self.category=="_".join(key.GetName().split("_")[1:]):
-                                   remnant = cand_str.rstrip(process_name)
-			           histname=key.GetName()+"/"+word_arr[0][len(remnant)+2:].strip().rstrip()
+                                 if self.category=="_".join(key.GetName().split("_")[1:]):
+                                     remnant = cand_str.rstrip(process_name)
+                                     histname=key.GetName()+"/"+word_arr[0][len(remnant)+2:].strip().rstrip()
 			     hist = input.Get(histname)
                              ## it can happen that histograms, which are present in SM
                              ## are not present in MSSM; in this case just skip hist
@@ -261,57 +261,93 @@ for key in categories :
 ## fitresults
 fitresults = options.fitresults.format(ANALYSIS=options.analysis)
 ## post-fit plots for all channels in sm and mssm
-category_mapping_classic = {
-    "0" : "0jet_low"   ,
-    "1" : "0jet_medium",
-    "2" : "0jet_high",
-    "3" : "1jet_medium",
-    "4" : "1jet_high_lowhiggs",
-    "5" : "1jet_high_mediumhiggs",
-    "6" : "vbf",#"vbf_loose",
-    "7" : "vbf_tight",
-    "8" : "nobtag",
-    "9" : "btag",
-    }
-category_mapping_tautau = {
+category_mapping_sm = {
+    'mt' : {
+    '0' : '0jet_low'   ,
+    '1' : '0jet_medium',
+    '2' : '0jet_high',
+    '3' : '1jet_medium',
+    '4' : '1jet_high_lowhiggs',
+    '5' : '1jet_high_mediumhiggs',
+    '6' : 'vbf_loose',
+    '7' : 'vbf_tight',
+    },
+    'et' : {
+    '0' : '0jet_low'   ,
+    '1' : '0jet_medium',
+    '2' : '0jet_high',
+    '3' : '1jet_medium',
+    '4' : '1jet_high_lowhiggs',
+    '5' : '1jet_high_mediumhiggs',
+    '6' : 'vbf_loose',
+    '7' : 'vbf_tight',
+    },
+    'em' : {
+    '0' : '0jet_low',
+    '1' : '0jet_high',
+    '2' : '1jet_low',
+    '3' : '1jet_high',
+    '4' : 'vbf_loose',
+    '5' : 'vbf_tight',
+    },
+    'ee' : {
+    '0' : '0jet_low',
+    '1' : '0jet_high',
+    '2' : '1jet_low',
+    '3' : '1jet_high',
+    '4' : 'vbf',
+    },
+    'mm' : {
+    '0' : '0jet_low',
+    '1' : '0jet_high',
+    '2' : '1jet_low',
+    '3' : '1jet_high',
+    '4' : 'vbf',
+    },
+    'tt' : {
     '0' : '1jet_high_mediumhiggs',
     '1' : '1jet_high_highhiggs',
     '2' : 'vbf',
-    "8" : "nobtag",
-    "9" : "btag",
+    },
     }
-category_mapping_mm = {
-    "0" : "0jet_low"   ,
-    "1" : "0jet_high",
-    "2" : "1jet_low",
-    "3" : "1jet_high",
-    "4" : "vbf",
-    "8" : "nobtag",
-    "9" : "btag",
+
+category_mapping_mssm = {
+    'mt' :{
+    '8' : 'nobtag',
+    '9' : 'btag'  ,    
+    },
+    'et' :{
+    '8' : 'nobtag',
+    '9' : 'btag'  ,    
+    },
+    'em' : {
+    '8' : 'nobtag',
+    '9' : 'btag',
+    },    
+    'ee' : {
+    '8' : 'nobtag',
+    '9' : 'btag',
+    },
+    'mm' : {
+    '8' : 'nobtag',
+    '9' : 'btag',
+    },
+    'tt' : {
+    '8' : 'nobtag',
+    '9' : 'btag',
+    },
     }
-category_mapping_bb = {
-    "0" : "had0",
-    "1" : "had1",
-    "2" : "had2",
-    "3" : "had3",
-    "4" : "had4",
-    "5" : "had5",
-    "6" : "lep",
-    }
-category_mapping = {
-    "mm" : category_mapping_mm,
-    "ee" : category_mapping_mm,
-    "em" : category_mapping_classic,
-    "mt" : category_mapping_classic,
-    "et" : category_mapping_classic,
-    "tt" : category_mapping_tautau,
-    "hbb": category_mapping_bb
-    }
+
+if options.analysis == 'sm' :
+    category_mapping = category_mapping_sm
+else :
+    category_mapping = category_mapping_mssm
+
 for chn in channels :
     for per in periods :
         for cat in categories[chn] :
             if chn == "hbb" :
-                histfile = "{CHN}.input_{PER}-0.root".format(CHN=chn, PER=per) ## mass 160 therefore masscat=0
+                histfile = "{CHN}.input_{PER}-0.root".format(CHN=chn, PER=per)
             else :
                 histfile = "htt_{CHN}.input_{PER}.root".format(CHN=chn, PER=per) if options.analysis == "sm" else "htt_{CHN}.inputs-mssm-{PER}-0.root".format(CHN=chn, PER=per, MA=str(int(options.mA)), TANB=str(int(options.tanb)))
                 if chn == "mm" :

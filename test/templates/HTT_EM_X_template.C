@@ -151,21 +151,23 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #ifdef MSSM
   TFile* input2 = new TFile((inputfile+"_$MA_$TANB").c_str());
 #endif
-  TH1F* Fakes  = refill((TH1F*)input->Get(TString::Format("%s/Fakes"   , directory)), "Fakes"); InitHist(Fakes, "", "", kMagenta-10, 1001);
-  TH1F* EWK    = refill((TH1F*)input->Get(TString::Format("%s/EWK"     , directory)), "EWK"  ); InitHist(EWK  , "", "", kRed    + 2, 1001);
-  TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/ttbar"   , directory)), "ttbar"); InitHist(ttbar, "", "", kBlue   - 8, 1001);
-  TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/Ztt"     , directory)), "Ztt"  ); InitHist(Ztt  , "", "", kOrange - 4, 1001);
+  TH1F* Fakes  = refill((TH1F*)input->Get(TString::Format("%s/Fakes"     , directory)), "Fakes"  ); InitHist(Fakes, "", "", kMagenta-10, 1001);
+  TH1F* EWK    = refill((TH1F*)input->Get(TString::Format("%s/EWK"       , directory)), "EWK"    ); InitHist(EWK  , "", "", kRed    + 2, 1001);
+  TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/ttbar"     , directory)), "ttbar"  ); InitHist(ttbar, "", "", kBlue   - 8, 1001);
+  TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/Ztt"       , directory)), "Ztt"    ); InitHist(Ztt  , "", "", kOrange - 4, 1001);
 #ifdef MSSM
 //   float ggHScale = 1., bbHScale = 1.;
 //   ggHScale = ($MSSM_SIGNAL_ggH_xseff_A + $MSSM_SIGNAL_ggH_xseff_hH);
 //   bbHScale = ($MSSM_SIGNAL_bbH_xseff_A + $MSSM_SIGNAL_bbH_xseff_hH);
-  TH1F* ggH  = refill((TH1F*)input2->Get(TString::Format("%s/ggH$MA"  , directory)), "ggH"  ); InitSignal(ggH); ggH->Scale($TANB); //ggH->Scale(ggHScale);
-  TH1F* bbH  = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale($TANB); //bbH->Scale(bbHScale);
+  TH1F* ggH  = refill((TH1F*)input2->Get(TString::Format("%s/ggH$MA"     , directory)), "ggH"    ); InitSignal(ggH    ); ggH->Scale($TANB); //ggH->Scale(ggHScale);
+  TH1F* bbH  = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA"     , directory)), "bbH"    ); InitSignal(bbH    ); bbH->Scale($TANB); //bbH->Scale(bbHScale);
 #else
 #ifndef DROP_SIGNAL
-  TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125"  , directory)), "ggH"  ); InitSignal(ggH); ggH->Scale(SIGNAL_SCALE);
-  TH1F* qqH    = refill((TH1F*)input->Get(TString::Format("%s/qqH125"  , directory)), "qqH"  ); InitSignal(qqH); qqH->Scale(SIGNAL_SCALE);
-  TH1F* VH     = refill((TH1F*)input->Get(TString::Format("%s/VH125"   , directory)), "VH"   ); InitSignal(VH ); VH ->Scale(SIGNAL_SCALE);
+  TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125"    , directory)), "ggH"    ); InitSignal(ggH    ); ggH    ->Scale(SIGNAL_SCALE);
+  TH1F* qqH    = refill((TH1F*)input->Get(TString::Format("%s/qqH125"    , directory)), "qqH"    ); InitSignal(qqH    ); qqH    ->Scale(SIGNAL_SCALE);
+  TH1F* VH     = refill((TH1F*)input->Get(TString::Format("%s/VH125"     , directory)), "VH"     ); InitSignal(VH     ); VH     ->Scale(SIGNAL_SCALE);
+  TH1F* ggH_hww= refill((TH1F*)input->Get(TString::Format("%s/ggH_hww125", directory)), "ggH_hww"); InitSignal(ggH_hww); ggH_hww->Scale(SIGNAL_SCALE); ggH->Add(ggH_hww);
+  TH1F* qqH_hww= refill((TH1F*)input->Get(TString::Format("%s/qqH_hww125", directory)), "qqH_hww"); InitSignal(qqH_hww); qqH_hww->Scale(SIGNAL_SCALE); qqH->Add(qqH_hww);
 #endif
 #endif
 #ifdef ASIMOV
@@ -531,26 +533,26 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
     prepare output
   */
   bool isSevenTeV = std::string(inputfile).find("7TeV")!=std::string::npos;
-  canv ->Print(TString::Format("%s_%sfit_%s_%s.png"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
-  canv ->Print(TString::Format("%s_%sfit_%s_%s.pdf"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
-  canv ->Print(TString::Format("%s_%sfit_%s_%s.eps"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
+  canv ->Print(TString::Format("%s_%sfit_%s_%s.png"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
+  canv ->Print(TString::Format("%s_%sfit_%s_%s.pdf"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
+  canv ->Print(TString::Format("%s_%sfit_%s_%s.eps"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
   if(!log || FULLPLOTS)
   {
-    canv0->Print(TString::Format("%s_datamc_%sfit_%s_%s.png", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
-    canv0->Print(TString::Format("%s_datamc_%sfit_%s_%s.pdf", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
-    canv0->Print(TString::Format("%s_datamc_%sfit_%s_%s.eps", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
+    canv0->Print(TString::Format("%s_datamc_%sfit_%s_%s.png", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
+    canv0->Print(TString::Format("%s_datamc_%sfit_%s_%s.pdf", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN"));
+    canv0->Print(TString::Format("%s_datamc_%sfit_%s_%s.eps", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN"));
   }
   if((!log && scaled) || FULLPLOTS)
   {
-    canv1->Print(TString::Format("%s_prefit_%sfit_%s_%s.png", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
-    canv1->Print(TString::Format("%s_prefit_%sfit_%s_%s.pdf", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
-    canv1->Print(TString::Format("%s_prefit_%sfit_%s_%s.eps", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
-    canv2->Print(TString::Format("%s_sample_%sfit_%s_%s.png", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "")); 
-    canv2->Print(TString::Format("%s_sample_%sfit_%s_%s.pdf", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
-    canv2->Print(TString::Format("%s_sample_%sfit_%s_%s.eps", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""));
+    canv1->Print(TString::Format("%s_prefit_%sfit_%s_%s.png", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
+    canv1->Print(TString::Format("%s_prefit_%sfit_%s_%s.pdf", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN"));
+    canv1->Print(TString::Format("%s_prefit_%sfit_%s_%s.eps", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN"));
+    canv2->Print(TString::Format("%s_sample_%sfit_%s_%s.png", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
+    canv2->Print(TString::Format("%s_sample_%sfit_%s_%s.pdf", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN"));
+    canv2->Print(TString::Format("%s_sample_%sfit_%s_%s.eps", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN"));
   }
 
-  TFile* output = new TFile(TString::Format("%s_%sfit_%s_%s.root", directory, scaled ? "pre" : "post", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : ""), "update");
+  TFile* output = new TFile(TString::Format("%s_%sfit_%s_%s.root", directory, scaled ? "pre" : "post", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN"), "update");
   output->cd(); 
   data ->Write("data_obs");
   Fakes->Write("Fakes"   );
