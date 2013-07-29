@@ -20,7 +20,7 @@ class AsimovDatacard(DatacardAdaptor) :
     not part of the processes indicated in the datacard. If a random seed>=0 is given the asimov dataset is randomized
     according to a poinsson dirstribution.
     """
-    def __init__(self, parser_options, update_file=False, seed='-1', add_signal=True, mass='125', signal_scale='1.', extra_templates='') :
+    def __init__(self, parser_options, update_file=False, seed='-1', add_signal=True, mass='125', signal_scale='1.', extra_templates='', blacklist=[]) :
         ## random seed in case the asimov dataset should be randomized (-1 will indicate that no randomization should be applied) 
         self.seed = seed
         ## should be true if signal should be considered for the asimov dataset
@@ -31,6 +31,10 @@ class AsimovDatacard(DatacardAdaptor) :
         self.signal_scale = signal_scale
         ## in case any other templates should be added to the asimov dataset (e.g. SM signal to MSSM datacards)
         self.extra_templates = extra_templates
+        ## in case any signal/background template should be ignored when creating the asimov dataset (e.g. if a central
+        ## template should be replaced by a shifted template, or if only ggH should be added into the asimov dataset and
+        ## other signal processes should be ignored)
+        self.blacklist = blacklist
         ## write the asomiv dataset with new histogram name into the same file (i.e. update the existing file) or write the
         ## asimov dataset with the same histogram name in a new root file?
         self.update_file = update_file
@@ -107,11 +111,20 @@ class AsimovDatacard(DatacardAdaptor) :
             for bin in card.list_of_bins() :
                 for proc in card.list_of_procs() :
                     path = card.path_to_file(bin, proc)
-                    ## determine background list, add extra contributions to this list if configured such
-                    bkg_list = self.list2string(card, bin, card.list_of_procs('b'))
+                    ## determine background list, add extra contributions to this list if configured such,
+                    ## remove blacklisted background templates if configured such
+                    bkg_procs_reduced = card.list_of_procs('b')
+                    for ignore in self.blacklist :
+                        if ignore in bkg_procs_reduced :
+                            bkg_procs_reduced.remove(ignore)
+                    bkg_list = self.list2string(card, bin, bkg_procs_reduced)
                     bkg_list = bkg_list+','+self.extra_templates.replace(' ','') if self.extra_templates!='' else bkg_list
-                    ## determine signal list
-                    sig_list = self.list2string(card, bin, card.list_of_procs('s')) if self.add_signal else ''
+                    ## determine signal list, remove blacklisted signal templates if configured such
+                    sig_procs_reduced = card.list_of_procs('s')
+                    for ignore in self.blacklist :
+                        if ignore in sig_procs_reduced :
+                            sig_procs_reduced.remove(ignore)
+                    sig_list = self.list2string(card, bin, sig_procs_reduced) if self.add_signal else ''
                     if not path == '' :
                         if not (path, bin) in processed_files_bins :
                             processed_files_bins.append((path, bin))

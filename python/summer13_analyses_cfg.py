@@ -36,6 +36,6 @@ def htt_tt(TYPE='MIT') :
 
 def vhtt(TYPE='VHTT') :
     dict = {}
-    dict['7TeV'] = 'vhtt'
-    dict['8TeV'] = 'vhtt'
+    dict['7TeV'] = 'VHTT'
+    dict['8TeV'] = 'VHTT'
     return dict

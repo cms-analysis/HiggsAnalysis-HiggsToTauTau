@@ -17,6 +17,8 @@ parser.add_option("--scale-rate", dest="scale", default=1.0, type="float",
                   help="Scale the Higgs rate of the injected Higgs. [Default: 1.0]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true",
                   help="Run in verbose mode.")
+parser.add_option("--mssm", dest="mssm", default=False, action="store_true",
+                  help="Inject SM higgs as BKG to MSSM datacards.")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 if not len(args) == 1 :
@@ -56,6 +58,8 @@ class MakeDatacard :
         hist = self.load_hist(file, help)
         new_hist = hist.Clone()
         new_hist_name = hist_name.replace("{MASS}".format(MASS=options.mass), "{MASS}_SCALE{SCALE}".format(MASS=options.mass, SCALE=str(scale)), 1) + uncertainty
+        if options.mssm :
+            new_hist_name = hist_name.replace("{MASS}".format(MASS=options.mass), "_MSSM{LABEL}".format(LABEL=options.label), 1) + uncertainty
         new_hist.Scale(scale)
         ## write modified histogram to file
         #help2 = directory + "/" + hist_name.replace("{MASS}".format(MASS=options.mass), "{MASS}_{SCALE}".format(MASS=options.mass, SCALE=str(scale))) + uncertainty
@@ -84,7 +88,7 @@ def cash_uncerts(dir, backgrounds, categories, signal_processes, datacard="htt_e
     cat = matcher.match(datacard).group('CAT')
     per = matcher.match(datacard).group('PER')
     ## parse uncertainty values file
-    cgs_file = open(options.cash_uncert+"/{CHN}/cgs-sm-{PER}-0{CAT}.conf".format(CHN=chn, PER=per, CAT=cat),'r')
+    cgs_file = open(options.cash_uncert+"/{CHN}/cgs-{ANA}-{PER}-0{CAT}.conf".format(ANA="mssm" if options.mssm else "sm", CHN=chn, PER=per, CAT=cat),'r')
     #signal_processes = []
     for index, line in enumerate(cgs_file) :
         line = line.replace(",", " ")
@@ -112,7 +116,7 @@ def cash_uncerts(dir, backgrounds, categories, signal_processes, datacard="htt_e
         uncert_cat  = {}
         for signal in signal_processes :
             uncert_signal  = {}
-            input = open(options.cash_uncert+"/{CHN}/unc-sm-{PER}-0{CAT}.vals".format(CHN=chn, PER=per, CAT=cat),'r')
+            input = open(options.cash_uncert+"/{CHN}/unc-{ANA}-{PER}-0{CAT}.vals".format(ANA="mssm" if options.mssm else "sm", CHN=chn, PER=per, CAT=cat),'r')
             for index, line in enumerate(input) :
                 if "#" in line :
                     continue
@@ -133,9 +137,9 @@ def cash_uncerts(dir, backgrounds, categories, signal_processes, datacard="htt_e
 ## setup datacard creator
 datacard_creator = MakeDatacard()
 
-directoryList = os.listdir(args[0]+"/sm")
+directoryList = os.listdir(args[0]+"/{ANA}".format(ANA="mssm" if options.mssm else "sm"))
 for dir in directoryList :
-    datacards = os.listdir(args[0]+"/sm/{DIR}".format(DIR=dir))
+    datacards = os.listdir(args[0]+"/{ANA}/{DIR}".format(ANA="mssm" if options.mssm else "sm", DIR=dir))
     for datacard in datacards :
         ## skip first pass of 'bin'
         first_pass_on_bin = True
@@ -158,8 +162,8 @@ for dir in directoryList :
             print "backgrounds", backgrounds
             print "categories", categories
         ## first file parsing
-        input_file = open(args[0]+"/sm/{DIR}/".format(DIR=dir) +input_name,'r')
-        output_file = open(args[0]+"/sm/{DIR}/".format(DIR=dir) +input_name.replace(".txt", "_Higgs.txt"), 'w')       
+        input_file = open(args[0]+"/{ANA}/{DIR}/".format(ANA="mssm" if options.mssm else "sm", DIR=dir) +input_name,'r')
+        output_file = open(args[0]+"/{ANA}/{DIR}/".format(ANA="mssm" if options.mssm else "sm", DIR=dir) +input_name.replace(".txt", "_Higgs.txt"), 'w')
         for index, input_line in enumerate(input_file) :
             words = input_line.split()
             output_line = input_line
@@ -172,11 +176,15 @@ for dir in directoryList :
             if words[0] == "shapes" and add_shapes:
                 for (idx, word) in enumerate(words):
                     if word.find(".root")>-1 :
-                        full_rootfile=args[0]+"/sm/{DIR}/".format(DIR=dir)+word
+                        full_rootfile=args[0]+"/{ANA}/{DIR}/".format(ANA="mssm" if options.mssm else "sm", DIR=dir)+word
                         rootfile=word.replace("../common/", "")
-                for signal in signal_processes :                   
-                    output_line = output_line +"""shapes {SIGNAL}_SM{LABEL} * {ROOTFILE} $CHANNEL/{SIGNAL}{MASS}_SCALE{SCALE} $CHANNEL/{SIGNAL}{MASS}_SCALE{SCALE}_$SYSTEMATIC 
-""".format(SIGNAL=signal, LABEL=options.label, ROOTFILE=rootfile, MASS=options.mass, SCALE=options.scale)
+                for signal in signal_processes :
+                    if not options.mssm :
+                        output_line = output_line +"""shapes {SIGNAL}_SM{LABEL} * {ROOTFILE} $CHANNEL/{SIGNAL}{MASS}_SCALE{SCALE} $CHANNEL/{SIGNAL}{MASS}_SCALE{SCALE}_$SYSTEMATIC 
+                        """.format(SIGNAL=signal, LABEL=options.label, ROOTFILE=rootfile, MASS=options.mass, SCALE=options.scale)
+                    if options.mssm :
+                        output_line = output_line +"""shapes {SIGNAL}_MSSM{LABEL} * {ROOTFILE} $CHANNEL/{SIGNAL}_MSSM{LABEL} $CHANNEL/{SIGNAL}_MSSM{LABEL}_$SYSTEMATIC 
+                        """.format(SIGNAL=signal, LABEL=options.label, ROOTFILE=rootfile, MASS=options.mass)
                 add_shapes= False               
             ## determine the list of all single channels (in standardized format, multiple occurences possible)
             if words[0] == "bin" :
@@ -199,15 +207,33 @@ for dir in directoryList :
                  output_line = output_line.replace("\n", "")
                  for category in categories :
                      for signal in signal_processes :
-                         output_line = output_line + "\t \t {SIGNAL}_SM{LABEL}".format(SIGNAL=signal, LABEL=options.label)
+                         output_line = output_line + "\t \t {SIGNAL}_{ANA}{LABEL}".format(SIGNAL=signal, ANA='MSSM' if options.mssm else 'SM', LABEL=options.label)                  
                  output_line = output_line + '\n'               
             if words[0] == "rate" :
                 output_line = output_line.replace("\n", "")
                 for category in categories :
-                     for signal in signal_processes :
-                         rate=datacard_creator.rate_from_hist(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass))*options.scale
-                         datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass), options.scale, "")
-                         output_line = output_line + '\t \t' + str(rate)
+                    if options.mssm : # scale is xs*br for mA(800) and tanb=30 for little h
+                        for signal in signal_processes :
+                            if "bbH" in signal :
+                                if "7TeV" in datacard :
+                                    rate=datacard_creator.rate_from_hist(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass))*0.0101049
+                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass), 0.0101049, "")
+                                if "8TeV" in datacard :
+                                    rate=datacard_creator.rate_from_hist(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass))*0.0132304
+                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass), 0.0132304, "")
+                            if "ggH" in signal :
+                                if "7TeV" in datacard :
+                                    rate=datacard_creator.rate_from_hist(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass))*0.741782
+                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass), 0.741782, "")
+                                if "8TeV" in datacard :
+                                    rate=datacard_creator.rate_from_hist(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass))*0.949702
+                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass), 0.949702, "")  
+                            output_line = output_line + '\t \t' + str(rate)
+                    else :
+                        for signal in signal_processes :
+                            rate=datacard_creator.rate_from_hist(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass))*options.scale
+                            datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass), options.scale, "")
+                            output_line = output_line + '\t \t' + str(rate)
                 output_line = output_line.replace("\n", "")
                 output_line = output_line + "\n"
             if words[1]=="lnN" or words[1]=="shape" or words[1]=="gmN" :
@@ -218,22 +244,57 @@ for dir in directoryList :
                         if words[0] in cashed_uncerts[category][signal].keys() :
                             value = cashed_uncerts[category][signal][words[0]]
                         output_line = output_line + "\t {VALUE}".format(VALUE=value)
-                output_line = output_line + "\n"
+                output_line = output_line + "\n"       
             ## add new scaled uncertainty histograms
-            if words[1]=="shape" and str(options.mass) in words[0]:
+            if words[1]=="shape" and words[0] in cashed_uncerts[category][signal].keys() : #and str(options.mass) in words[0]:
                 for category in categories :
-                    for signal in signal_processes : 
-                        if words[0] in cashed_uncerts[category][signal].keys() :
+                    for signal in signal_processes :
+                        #if words[0] in cashed_uncerts[category][signal].keys() :
+                        if options.mssm:
+                            if "bbH" in signal :
+                                if "7TeV" in datacard :
+                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], 0.0101049, "Up")
+                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], 0.0101049, "Down")
+                                if "8TeV" in datacard :
+                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], 0.0132304, "Up")
+                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], 0.0132304, "Down")
+                            if "ggH" in signal :
+                                if "7TeV" in datacard :
+                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], 0.741782, "Up")
+                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], 0.741782, "Down")
+                                if "8TeV" in datacard :
+                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], 0.949702, "Up")
+                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], 0.949702, "Down")
+                        else :
                             datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], options.scale, "Up")
-                            datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], options.scale, "Down") 
+                            datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], options.scale, "Down")
             if options.verbose :
                 print output_line   
             output_file.write(output_line)
-
+        
+        ## for mssm case add 10% uncertainty on xs*br for h to bkg
+        if options.mssm :
+            output_line = "h_mA_tanb_uncertainties lnN"
+            for category in categories :
+                for background in backgrounds :
+                    value = '-'
+                    output_line = output_line + "\t {VALUE}".format(VALUE=value)
+                for signal in signal_processes :
+                    value = '-'
+                    output_line = output_line + "\t {VALUE}".format(VALUE=value)
+                for signal in signal_processes :                       
+                    value = "1.1"
+                    output_line = output_line + "\t {VALUE}".format(VALUE=value)
+            output_line = output_line + "\n"    
+            output_file.write(output_line)
         
         ##close files
         input_file.close()
         output_file.close()
-        os.system("rm -r {INPUT}".format(INPUT=args[0]+"/sm/{DIR}/".format(DIR=dir) +input_name))
-        os.system("mv {OUTPUT} {NEW}".format(OUTPUT=args[0]+"/sm/{DIR}/".format(DIR=dir) +input_name.replace(".txt", "_Higgs.txt"), NEW=args[0]+"/sm/{DIR}/".format(DIR=dir) +input_name))
+        if options.mssm :
+            os.system("rm -r {INPUT}".format(INPUT=args[0]+"/mssm/{DIR}/".format(DIR=dir) +input_name))
+            os.system("mv {OUTPUT} {NEW}".format(OUTPUT=args[0]+"/mssm/{DIR}/".format(DIR=dir) +input_name.replace(".txt", "_Higgs.txt"), NEW=args[0]+"/mssm/{DIR}/".format(DIR=dir) +input_name))
+        else :
+            os.system("rm -r {INPUT}".format(INPUT=args[0]+"/sm/{DIR}/".format(DIR=dir) +input_name))
+            os.system("mv {OUTPUT} {NEW}".format(OUTPUT=args[0]+"/sm/{DIR}/".format(DIR=dir) +input_name.replace(".txt", "_Higgs.txt"), NEW=args[0]+"/sm/{DIR}/".format(DIR=dir) +input_name))
     print dir, " done"

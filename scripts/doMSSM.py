@@ -3,7 +3,7 @@ from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options]",
-                      description="Script to setup all datacards and directories. The script assumes that all datacards (but unscaled) are located in '$CMSSW_BASE/src/auxiliaries/datacards/mssm/[htt_ee, htt_em, htt_et, htt_mm, htt_mt, htt_tt, hbb].'")
+                      description="Script to setup all datacards and directories.'")
 ##
 ## GENERAL OPTIONS
 ##
@@ -152,7 +152,7 @@ if options.update_cvs :
             for ana in analyses :
                 pattern = patterns[ana]
                 #source="{CMSSW_BASE}/src/auxiliaries/datacards/mssm/{FULLNAME}/{FULLNAME}*-mssm-{PER}-[01]{PATTERN}.root".format(
-                source="{CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/{FULLNAME}*-mssm-{PER}-[01]{PATTERN}.root".format(
+                source="{CMSSW_BASE}/src/auxiliaries/shapes/{DIR}/{FULLNAME}*-mssm-{PER}-[01]{PATTERN}.root".format(
                     CMSSW_BASE=cmssw_base,
                     CHN=chn,
                     PER=per,
@@ -169,7 +169,7 @@ if options.update_cvs :
             if chn=="mm" :
                 ## copy postfit inputs for mm to test directory
                 #os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/mssm/htt_mm/htt_mm*-mssm-[78]TeV-[01]-msv.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format( 
-                os.system("cp {CMSSW_BASE}/src/auxiliaries/datacards/collected/{DIR}/htt_mm*-mssm-[78]TeV-[01]-msv.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
+                os.system("cp {CMSSW_BASE}/src/auxiliaries/shapes/{DIR}/htt_mm*-mssm-[78]TeV-[01]-msv.root {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/mm/".format(
                     DIR=directories[chn][per],
                     CMSSW_BASE=cmssw_base         
                     ))
@@ -287,7 +287,7 @@ if options.update_setup:
             print "INFO: Adding bin-by-bin uncertainties"
             if 'ee' in channels :
                 ## setup bbb uncertainties for ee 
-                os.system("add_bbb_errors.py 'ee:7TeV,8TeV:08,09:WJets,QCD,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
+                os.system("add_bbb_errors.py 'ee:7TeV,8TeV:08,09:WJets,QCD,TTJ,ZTT,ZEE,Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
                     DIR=dir,
                     ANA=ana
                     ))
@@ -295,7 +295,7 @@ if options.update_setup:
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
             if 'mm' in channels :
                 ## setup bbb uncertainties for mm 
-                os.system("add_bbb_errors.py 'mm:7TeV,8TeV:08,09:WJets,QCD,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
+                os.system("add_bbb_errors.py 'mm:7TeV,8TeV:08,09:WJets,QCD,TTJ,ZTT,ZMM,Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
                     DIR=dir,
                     ANA=ana
                     ))
@@ -303,7 +303,7 @@ if options.update_setup:
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
             if 'em' in channels :
                 ## setup bbb uncertainties for em 
-                os.system("add_bbb_errors.py 'em:7TeV,8TeV:08,09:Fakes,EWK,ttbar' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
+                os.system("add_bbb_errors.py 'em:7TeV,8TeV:08,09:Fakes,EWK,ttbar,Ztt' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
                     DIR=dir,
                 ANA=ana
                 ))
@@ -311,7 +311,13 @@ if options.update_setup:
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
             if 'et' in channels :
                 ## setup bbb uncertainties for et
-                os.system("add_bbb_errors.py 'et:7TeV,8TeV:08,09:TT,QCD,W' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
+                os.system("add_bbb_errors.py 'et:7TeV,8TeV:08:TT,QCD,W,ZTT,ZL,ZJ,VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
+                    DIR=dir,
+                    ANA=ana
+                    ))
+                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                os.system("add_bbb_errors.py 'et:7TeV,8TeV:09:TT,QCD,W,ZTT,ZLL,VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
                     DIR=dir,
                     ANA=ana
                     ))
@@ -319,19 +325,31 @@ if options.update_setup:
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
             if 'mt' in channels :
                 ## setup bbb uncertainties for mt
-                os.system("add_bbb_errors.py 'mt:7TeV,8TeV:08,09:TT,QCD,W' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
+                os.system("add_bbb_errors.py 'mt:7TeV,8TeV:08:TT,QCD,W,ZTT,ZL,ZJ,VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
+                    DIR=dir,
+                    ANA=ana
+                    ))
+                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                os.system("add_bbb_errors.py 'mt:7TeV,8TeV:09:TT,QCD,W,ZTT,ZLL,VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
                     DIR=dir,
                     ANA=ana
                     ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
             if 'tt' in channels :
-                ## setup bbb uncertainties for tt 
-                os.system("add_bbb_errors.py 'tt:8TeV:08,09:QCD' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
+                ## setup bbb uncertainties for tt
+                os.system("add_bbb_errors.py 'tt:8TeV:08:QCD,ZTT,TT,W,VV,ZL,ZJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
                     DIR=dir,
                     ANA=ana
                     ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana)) # ZL not working here
+                os.system("add_bbb_errors.py 'tt:8TeV:09:QCD,ZTT,TT,W,VV,ZJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
+                    DIR=dir,
+                    ANA=ana
+                    ))
+                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana)) 
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
         ##     if 'hbb' in channels:
 ##                 ## setup bbb uncertainties for hbb (???)
@@ -383,6 +401,12 @@ if options.update_datacards :
                     os.system("python HiggsAnalysis/HiggsToTauTau/scripts/prune-uncerts-htt.py --mass 160 --fit-results='pruning_results/cmb/160/out/mlfit.txt' --threshold=0.3 --whitelist='_bin_' pruning_results/cmb/160")
                 ## commenting out of pruned uncertainties
                 for chn in channels :
+                    print "python HiggsAnalysis/CombinedLimit/scripts/commentUncerts.py --drop-list='{DROP_LIST}' MSSM_aux{INDEX}/{ANA}/mssm/{FULLNAME}".format(
+                        DROP_LIST = 'uncertainty-pruning-drop.txt' if options.drop_list == "" else options.drop_list,
+                        INDEX='' if options.index == '' else '_'+options.index,                
+                        ANA=ana,
+                        FULLNAME=fullname[chn]
+                        )
                     os.system("python HiggsAnalysis/CombinedLimit/scripts/commentUncerts.py --drop-list='{DROP_LIST}' MSSM_aux{INDEX}/{ANA}/mssm/{FULLNAME}".format(
                         DROP_LIST = 'uncertainty-pruning-drop.txt' if options.drop_list == "" else options.drop_list,
                         INDEX='' if options.index == '' else '_'+options.index,                
