@@ -67,6 +67,7 @@ class Analysis:
          self.histfile       = histfile 
          self.category       = category
          self.analysis       = analysis
+         self.scale_output   = {}
 
     def high_stat_category(self, cat) :
         """
@@ -142,6 +143,7 @@ class Analysis:
                          print_me  = '''std::cout << "scaling by %(value)f %(name)s" << std::endl;''' % {"value":self.process_weight[curr_name],"name":curr_name}
                          out_line  = print_me+"hin->Scale(%f); \n" % self.process_weight[curr_name]
                          output_file.write(out_line)
+                         self.scale_output[curr_name]=[self.process_weight[curr_name]]
                          if options.verbose :
                              print out_line
                          if options.uncertainties:
@@ -157,6 +159,7 @@ class Analysis:
                              if not hist :
                                  continue
                              #print histname, self.histfile
+                             self.scale_output[curr_name].append(math.sqrt(self.process_uncertainties[curr_name]))
                              for bin in range(1,hist.GetNbinsX()+1):
 		               if not process_name+str(bin) in uncertainties_set:
 			         uncertainties_set+=[process_name+str(bin)]
@@ -334,4 +337,5 @@ for chn in channels :
                                  "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per)
                                  )
             plots.run()
-
+            scale_file=open("scales_{CHN}_{CAT}_{PER}.py".format(CHN=chn, CAT=cat, PER=per),'w')
+            scale_file.write("scales="+str(plots.scale_output))
