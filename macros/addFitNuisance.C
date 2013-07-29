@@ -6,9 +6,11 @@
 #include "TFitResult.h"
 #include "TFitResultPtr.h"
 #include "TH1F.h"
+#include "TMath.h"
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "RooBinning.h"                                                                                                                                                               
+#include "RooPlot.h"                                                                                                                                                               
 #include "RooRealVar.h"   
 #include "RooDataHist.h"   
 #include "RooDataSet.h"    
@@ -296,11 +298,15 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   if(iFitModel == 1) {lA.setVal(0.3); lB.setVal(0.5);}
   if(iFitModel == 2) lFit = new RooGenericPdf("genPdf","a*exp(b*m)",RooArgList(lM,lA,lB));
   if(iFitModel == 3) lFit = new RooGenericPdf("genPdf","a/pow(m,b)",RooArgList(lM,lA,lB));
+  if(iFitModel == 4) lFit = new RooGenericPdf("genPdf","a*pow(m,b)",RooArgList(lM,lA,lB));
+  if(iFitModel == 5) lFit = new RooGenericPdf("genPdf","a*exp(pow(m,b))",RooArgList(lM,lA,lB));
   RooFitResult  *lRFit = 0;
   double lFirst = iFirst;
   double lLast  = iLast;
   //lRFit = lFit->chi2FitTo(*pH0,RooFit::Save(kTRUE),RooFit::Range(lFirst,lLast));
   lRFit = lFit->fitTo(*pH0,RooFit::Save(kTRUE),RooFit::Range(lFirst,lLast),RooFit::Strategy(0)); 
+
+
   TMatrixDSym lCovMatrix   = lRFit->covarianceMatrix(); 
   TMatrixD  lEigVecs(2,2);    lEigVecs = TMatrixDSymEigen(lCovMatrix).GetEigenVectors();
   TVectorD  lEigVals(2);      lEigVals = TMatrixDSymEigen(lCovMatrix).GetEigenValues();
@@ -410,6 +416,23 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   lC0->Update();
   lC0->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+".png").c_str());
   //lFile->Close();
+
+  lM.setRange(lFirst,2000); 
+  TCanvas* c1 = new TCanvas("c1","c1",600,600);
+  RooPlot* mframe = lM.frame(RooFit::Name("mframe"),RooFit::Title("Tail fit in fit range"));
+  pH0->plotOn(mframe, RooFit::Name("data"), RooFit::MarkerColor(kBlack));
+  lFit->plotOn(mframe, RooFit::Name("model"), RooFit::DrawOption("L"), RooFit::Range(lFirst,2000));
+  lFit->plotOn(mframe, RooFit::Components(*lFit), RooFit::LineColor(kRed), RooFit::Range(lFirst,2000)); 
+  mframe->Draw();
+  Double_t chi2 = mframe->chiSquare();
+  Double_t ndoff = mframe->GetNbinsX();
+  std::cout << "==========================================================================================================" << std::endl;
+  std::cout << "Goodness of fit: " << chi2/ndoff << " with statistics in fit range: " << lH0->Integral(lH0->FindBin(lFirst),lH0->FindBin(2000)) << std::endl;
+  std::cout << "==========================================================================================================" << std::endl;
+  
+  c1->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Fine.png").c_str());
+
+
   return;
 }
 void addFitNuisance(std::string iFileName="test.root",std::string iChannel="muTau",std::string iBkg="W",std::string iEnergy="8TeV",std::string iName="shift",std::string iCategory="9",double iFirst=150,double iLast=1500,int iFitModel=1,bool iVarBin=true,bool iRebin=true) { 
