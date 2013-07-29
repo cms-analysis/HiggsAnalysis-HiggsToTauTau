@@ -52,23 +52,28 @@ class RescaleSamples:
         xs = 0
         if production_channel == "VH" :
             production_channel = "WH+ZH"
+        if production_channel == "VH_hww" :
+            production_channel = "WH+ZH"            
         if production_channel == "VH+" :
             production_channel = "WH+ZH_ttH"
         if production_channel == "SM" :
             production_channel = "ggH"
+        if production_channel == "ggH_hww" :
+            production_channel = "ggH"
         if production_channel == "VBF" :
+            production_channel = "qqH"
+        if production_channel == "qqH_hww" :
             production_channel = "qqH"
         if production_channel == 'bbH' :
             ## not yet available
-            return xs            
+            return xs
         if production_channel.find('+')>-1 :
             sub_channels = production_channel.split('+')
             for sub_channel in sub_channels :
                 xs += float(os.popen("xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(
                     CHANNEL=sub_channel, MA=mass, ECMS=ecms)).read().split()[2])
         else :
-            #print "xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(
-            #    CHANNEL=production_channel, MA=mass, ECMS=ecms)
+            #print "xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(CHANNEL=production_channel, MA=mass, ECMS=ecms)
             xs += float(os.popen("xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(
                 CHANNEL=production_channel, MA=mass, ECMS=ecms)).read().split()[2])
         return xs
