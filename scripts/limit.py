@@ -471,9 +471,13 @@ for directory in args :
             os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f latex mlfit.root > mlfit.tex")
             os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a -f html mlfit.root > mlfit.html")
         ## add a version with only problematic values (the signal pull is not part of of the listing)
-        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --stol 0.99 --vtol2 2.0 --stol2 0.99 -f text mlfit.root > mlfit_largest-pulls.txt")
+        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --stol 0.99 --vtol2 2.0 --stol2 0.99 -f text  mlfit.root > mlfit_largest-pulls.txt")
         os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --stol 0.99 --vtol2 2.0 --stol2 0.99 -f latex mlfit.root > mlfit_largest-pulls.tex")
-        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --stol 0.99 --vtol2 2.0 --stol2 0.99 -f html mlfit.root > mlfit_largest-pulls.html")
+        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --stol 0.99 --vtol2 2.0 --stol2 0.99 -f html  mlfit.root > mlfit_largest-pulls.html")
+
+        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 99. --stol 0.50 --vtol2 99. --stol2 0.90 -f text  mlfit.root > mlfit_largest-constraints.txt")
+        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 99. --stol 0.50 --vtol2 99. --stol2 0.90 -f latex mlfit.root > mlfit_largest-constraints.tex")
+        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 99. --stol 0.50 --vtol2 99. --stol2 0.90 -f html  mlfit.root > mlfit_largest-constraints.html")
         os.chdir(subdirectory)
             
     ##
