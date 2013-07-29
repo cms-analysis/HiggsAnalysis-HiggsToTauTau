@@ -283,6 +283,8 @@ category_mapping_mm = {
     "2" : "1jet_low",
     "3" : "1jet_high",
     "4" : "vbf",
+    "8" : "nobtag",
+    "9" : "btag",
     }
 category_mapping_bb = {
     "0" : "had0",
