@@ -75,7 +75,7 @@ class Analysis:
         """
         if "0jet" in cat :
             return True
-        if "boost" in cat :
+        if "1jet" in cat :
             return True 
         if "nobtag" in cat :
             return True
@@ -170,7 +170,8 @@ class Analysis:
                                    if options.verbose :
                                        print out_line
 				 elif options.verbose:
-			            print "WARNING: There is a zero yield uncertainty. Maybe you are missing uncertainties in the datacards which are in the fitresult in",self.analysis,self.category,". Please check."
+			            print "WARNING: There is a zero yield uncertainty. Maybe you are missing uncertainties in the datacards which are in the fitresult in",
+                                    self.analysis,self.category,". Please check."
 	     if options.shapes:
                for process_name in self.process_shape_weight.keys():
                  if self.signal_process(process_name) :
