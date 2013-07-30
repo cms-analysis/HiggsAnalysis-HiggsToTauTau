@@ -294,8 +294,20 @@ if options.update_setup:
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
             if 'mm' in channels :
-                ## setup bbb uncertainties for mm 
-                os.system("add_bbb_errors.py 'mm:7TeV,8TeV:08,09:WJets,QCD,TTJ,ZTT,ZMM,Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
+                ## setup bbb uncertainties for mm  too low stats for WJets and QCD in 7TeV btag
+                os.system("add_bbb_errors.py 'mm:7TeV:08:WJets,QCD,TTJ,ZTT,ZMM,Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
+                    DIR=dir,
+                    ANA=ana
+                    ))
+                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                os.system("add_bbb_errors.py 'mm:7TeV:09:TTJ,ZTT,ZMM,Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
+                    DIR=dir,
+                    ANA=ana
+                    ))
+                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                os.system("add_bbb_errors.py 'mm:8TeV:08,09:WJets,QCD,TTJ,ZTT,ZMM,Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
                     DIR=dir,
                     ANA=ana
                     ))
@@ -317,7 +329,7 @@ if options.update_setup:
                     ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                os.system("add_bbb_errors.py 'et:7TeV,8TeV:09:TT,QCD,W,ZTT,ZLL,VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
+                os.system("add_bbb_errors.py 'et:7TeV,8TeV:09:TT,QCD,W,ZTT,ZL,ZJ,VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
                     DIR=dir,
                     ANA=ana
                     ))
@@ -331,7 +343,7 @@ if options.update_setup:
                     ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                os.system("add_bbb_errors.py 'mt:7TeV,8TeV:09:TT,QCD,W,ZTT,ZLL,VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
+                os.system("add_bbb_errors.py 'mt:7TeV,8TeV:09:TT,QCD,W,ZTT,ZL,ZJ,VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10 --mssm".format(
                     DIR=dir,
                     ANA=ana
                     ))
