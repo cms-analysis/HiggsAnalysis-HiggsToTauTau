@@ -94,11 +94,23 @@ Standard Model Checklist:
  - submit.py (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null") --pvalue-frequentist LIMITS/*
  - plot --pvalue-frequentist HiggsAnalysis/HiggsToTauTau/python/layouts/pvalue-sm.py  LIMITS
 
-(9) Limit calculation (with signal injected)
+(9a) Limit calculation (with signal injected)
 --------------------------------------
  - submit.py (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null") --injected --toys 1000 LIMITS/*
  - submit.py (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null") --injected --collect-injected-toys LIMITS/*
- - plot --injected HiggsAnalysis/HiggsToTauTau/python/layouts/limit-sm.py 
+ - plot --injected HiggsAnalysis/HiggsToTauTau/python/layouts/limit-sm.py LIMITS
+
+(9b) Frequentist significance calculation (with bands and signal injected)
+--------------------------------------
+ - submit.py (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null") --injected --injected-method "--significance-frequentist" --bunch-masses 1 --toys 1000 LIMITS/*
+ - submit.py (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null") --injected --injected-method "--significance-frequentist" --collect-injected-toys LIMITS/*
+ - plot --injected-sig HiggsAnalysis/HiggsToTauTau/python/layouts/limit-sm.py LIMITS
+ 
+(9c) Frequentist p-value caclulation (with bands and signal injected)
+--------------------------------------
+ - submit.py (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null") --injected --injected-method "--pvalue-frequentist" --bunch-masses 1 --toys 1000 LIMITS/*
+ - submit.py (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null") --injected --injected-method "--pvalue-frequentist" --collect-injected-toys LIMITS/*
+ - plot --injected-pval HiggsAnalysis/HiggsToTauTau/python/layouts/limit-sm.py LIMITS
 
 (10) Multidimensional fits (125GeV)
 --------------------------------------
@@ -132,6 +144,11 @@ cV-cF
  - plot --likelihood-scan HiggsAnalysis/HiggsToTauTau/python/layouts/likelihood-scan.py LIMITS
  - ATTENTION: The layout script has to be adjusted for only plotting 125GeV
 
+(14) Mass estimate (NOT WORKING PROPERLY)
+------------------------------------
+ - submit.py (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null") --injected --injected-method "--max-likelihood" --bunch-masses 1 --toys 1000 LIMITS/*
+ - submit.py (--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null") --injected --injected-method "--max-likelihood" --collect-injected-toys LIMITS/*
+ - plot --mass-estimate HiggsAnalysis/HiggsToTauTau/python/layouts/limit-sm.py LIMITS
 
 ---------------------------------------------------------------------------------------------------
 MSSM Checklist:
@@ -254,4 +271,4 @@ GENERAL NOTES:
  - layout scripts may have to be adjusted
  - name of directories could change
  - for SM points 0-4 (except blinding, but additional adding bin-by-bin uncertainties) could be done with doSM.py 
- - dor MSSM points 0-3 (except blinding, but additional adding bin-by-bin uncertainties) could be done with doMSSM.py
+ - for MSSM points 0-3 (except blinding, but additional adding bin-by-bin uncertainties) could be done with doMSSM.py
