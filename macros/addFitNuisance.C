@@ -317,20 +317,29 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   lEigVals(0) = sqrt(lEigVals(0));
   lEigVals(1) = sqrt(lEigVals(1));
   cout << "===> " << lEigVals(0) << " -- " << lEigVals(1) << endl;
-  
+    
+  lM.setRange(lFirst,2000);
+  lA.removeRange();
+  lB.removeRange();
+
+ // cout << "Values for central hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
   TH1F* lH     = (TH1F*) lFit->createHistogram("fit" ,lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
   lA.setVal(lACentral + lEigVals(0)*lEigVecs(0,0));
   lB.setVal(lBCentral + lEigVals(0)*lEigVecs(1,0));
+ // cout << "Values for shift 1 up hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
   TH1F* lHUp   = (TH1F*) lFit->createHistogram("Up"  ,lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
   lA.setVal(lACentral - lEigVals(0)*lEigVecs(0,0));
   lB.setVal(lBCentral - lEigVals(0)*lEigVecs(1,0));
+ // cout << "Values for shift 1 down hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
   TH1F* lHDown = (TH1F*) lFit->createHistogram("Down",lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
 
   lA.setVal(lACentral + lEigVals(1)*lEigVecs(0,1));
   lB.setVal(lBCentral + lEigVals(1)*lEigVecs(1,1));
+ // cout << "Values for shift 2 up hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
   TH1F* lHUp1   = (TH1F*) lFit->createHistogram("Up1",lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
   lA.setVal(lACentral - lEigVals(1)*lEigVecs(0,1));
   lB.setVal(lBCentral - lEigVals(1)*lEigVecs(1,1));
+ // cout << "Values for shift 2 down hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
   TH1F* lHDown1 = (TH1F*) lFit->createHistogram("Down1",lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
 
   std::string lNuisance1 =  iBkg+"_"+"CMS_"+iName+"1_" + iChannel + "_" + iEnergy + "_" + iBkg;
@@ -395,14 +404,34 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   lHDown1->Draw("hist sames");
   gPad->SetLogy();
   
+/*  TCanvas *lC1 = new TCanvas("Can1","Can1",800,600);
+  lHUp->Draw();
+  //gPad->SetLogy();
+  lC1->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift1Up.png").c_str());
+  
+  TCanvas *lC2 = new TCanvas("Can2","Can2",800,600);
+  lHDown->Draw();
+ // gPad->SetLogy();
+  lC2->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift1Down.png").c_str());
+  
+  TCanvas *lC3 = new TCanvas("Can3","Can3",800,600);
+  lHUp1->Draw();
+ // gPad->SetLogy();
+  lC3->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift2Up.png").c_str());
+  
+  TCanvas *lC4 = new TCanvas("Can4","Can4",800,600);
+  lHDown1->Draw();
+ // gPad->SetLogy();
+  lC4->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift2Down.png").c_str());
+  */
   TLegend* leg1;
   /// setup the CMS Preliminary
   leg1 = new TLegend(0.7, 0.80, 1, 1); 
   leg1->SetBorderSize( 0 );
   leg1->SetFillStyle ( 1001 );
   leg1->SetFillColor (kWhite);
-  leg1->AddEntry( lH0 , "orignal",  "PL" );
-  leg1->AddEntry( lH , "cental fit",  "L" );
+  leg1->AddEntry( lH0 , "original",  "PL" );
+  leg1->AddEntry( lH , "central fit",  "L" );
   leg1->AddEntry( lHUp , "shift1 up",  "L" );
   leg1->AddEntry( lHDown , "shift1 down",  "L" );
   leg1->AddEntry( lHUp1 , "shift2 up",  "L" );
