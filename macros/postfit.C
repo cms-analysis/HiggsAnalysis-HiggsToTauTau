@@ -124,7 +124,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   data->SetNdivisions(505);
   data->SetMinimum(min);
   if(Zmm){
-    data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(EWK, log)));
+    data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(Zmm, log)));
   }
   else{
     data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(Ztt, log)));
