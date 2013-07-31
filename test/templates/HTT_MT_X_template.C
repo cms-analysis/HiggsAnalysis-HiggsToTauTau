@@ -596,7 +596,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
     canv2->Print(TString::Format("%s_sample_%sfit_%s_%s.eps", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN"));
   }
 
-  TFile* output = new TFile(TString::Format("%s_%sfit_%s_%s.root", directory, scaled ? "pre" : "post", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN"), "update");
+  TFile* output = new TFile(TString::Format("%s_%sfit_%s_%s.root", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN"), "update");
   output->cd();
   data ->Write("data_obs");
   Fakes->Write("Fakes"   );
