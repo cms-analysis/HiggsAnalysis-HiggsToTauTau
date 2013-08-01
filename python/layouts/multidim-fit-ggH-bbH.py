@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string(" Preliminary, Combination, L = 17 fb^{-1}"),
+    dataset = cms.string(" Preliminary, Combination, L = 19.8 fb^{-1}"),
     ## x-axis title
     xaxis = cms.string("gg#rightarrow#phi#timesBR [pb]"),
     ## x-axis title
@@ -42,8 +42,8 @@ layout = cms.PSet(
    ,600
    ,700
    ,800
-  #,900
-  #,1000
+  ,900
+  ,1000
     ),
     #masspoints = cms.vdouble(140),
     ## is this mssm?
