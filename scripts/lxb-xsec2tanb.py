@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python
 from optparse import OptionParser, OptionGroup
 
@@ -9,7 +10,7 @@ parser.add_option("--lxq", dest="lxq", default=False, action="store_true",
                   help="Specify this option when running on lxq instead of lxb. [Default: False]")
 parser.add_option("--condor", dest="condor", default=False, action="store_true",
                   help="Specify this option when running on condor instead of lxb. [Default: False]")
-parser.add_option("--new", dest="new", default=False, action="store_true",
+parser.add_option("--old", dest="old", default=False, action="store_true",
                   help="Switch between tanb_grid.py and tanb_grid_new.py. If validated this could be deleted [Default: False]")
 
 ## check number of arguments; in case print usage
@@ -46,7 +47,7 @@ eval `scram runtime -sh`
 echo "Running submit.py:"
 echo "in directory {directory}"
 
-$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/submit.py --tanb+ --setup {NEW} {directory} 
+$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/submit.py --tanb+ --setup {OLD} {directory} 
 '''
 
 lxq_fragment = '''
@@ -96,7 +97,7 @@ def submit(name, key, masses) :
                 script.write(script_template.format(
                     working_dir = os.getcwd(),
                     directory = dir,
-                    NEW = "--new" if options.new else "" 
+                    OLD = "--old" if options.old else "" 
                     ))
             os.system('chmod a+x %s' % script_file_name)
             if options.condor :
