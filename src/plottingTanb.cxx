@@ -10,7 +10,7 @@
 #include "TGraphAsymmErrors.h"
 
 void
-plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* lowerLEP, TGraph* upperLEP, std::map<double, TGraphAsymmErrors*> higgsBands, std::string& xaxis, std::string& yaxis, double min=0., double max=60., bool log=false)
+plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* lowerLEP, TGraph* upperLEP, std::map<double, TGraphAsymmErrors*> higgsBands, std::string& xaxis, std::string& yaxis, TGraph* injected=0, double min=0., double max=60., bool log=false)
 {
   // set up styles
   canv.cd();
@@ -82,6 +82,13 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
   if(observed){
     observed->Draw("Lsame");
   }
+
+  if(injected){
+    injected->SetLineColor(kRed+2);
+    injected->SetLineWidth(3);
+    injected->SetLineStyle(1);
+    injected->Draw("Lsame");
+  }
   
   int idx=0;
   int coloredBands[] = {kRed, kRed-7, kRed-9}; 
@@ -124,6 +131,9 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
   if(observed){ 
     observed->SetFillColor(obs->GetNumber()); 
     leg->AddEntry(observed, "Observed", "FL");
+  }
+  if(injected){
+    leg->AddEntry(injected, "Injected", "L");
   }
   leg->AddEntry(expected, "Expected", "L");
   leg->AddEntry(innerBand, "#pm 1#sigma Expected","F");

@@ -230,6 +230,16 @@ MSSM Checklist:
  - plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/mssm_tanb_layout.py LIMITS
  - Higgs band plotting: Set higgs125_bands to "true" in mssm_tanb_layout.py
 
+
+(6a) Adding median expected limit of signal injection to tanb-mA plot
+--------------------------------------
+ - run limits with signal injected
+ - rename the folder (e.g. cmb) into injected
+ - plot the tanb-mA limit for injected and for standard (as done in 6)
+ - the limits_mA-tanb.root folder should now include the standard directory (e.g. cmb) and a directory named injected
+ - root -l
+ - .x HiggsToTauTau/macros/plotTanb.C+("limits_mA-tanb.root", "<the directory you have plotted (e.g. cmb)>", true)
+
 (7) Xsec limit calculation ggH/bbH while bbH/ggH is profiled
 --------------------------------------
  - submit.py (--lxq --queue="-l h_cpu=1:00:00 -j y -o /dev/null") --asymptotic --physics-model="ggH/bbH" LIMITS/*
