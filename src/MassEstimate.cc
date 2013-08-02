@@ -9,41 +9,10 @@ PlotLimits::plotMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraph
 {
   // set up styles
   SetStyle();
-
-  // find minimum of nll
-  float minexp = 9999.;
-  for(int idx=0; idx<expected->GetN(); ++idx){
-    if(minexp==9999 || expected->GetY()[idx]<minexp){
-      minexp = expected->GetY()[idx];
-    }
-  }
-  float minobs = 9999.;
-  for(int idx=0; idx<observed->GetN(); ++idx){
-    if(minobs==9999 || observed->GetY()[idx]<minobs){
-      minobs = observed->GetY()[idx];
-    }
-  }
-  // fill modified
-  TGraph* modifiedexp = new TGraph();
-  for(int idx=0; idx<expected->GetN(); ++idx){
-    modifiedexp->SetPoint(idx, expected->GetX()[idx], expected->GetY()[idx]-minexp);
-  }
-  TGraph* modifiedobs= new TGraph();
-  for(int idx=0; idx<observed->GetN(); ++idx){
-    modifiedobs->SetPoint(idx, observed->GetX()[idx], observed->GetY()[idx]-minobs);
-  }
-  TGraphAsymmErrors* modifiedinner = (TGraphAsymmErrors*) innerBand->Clone();
-  for(int idx=0; idx<innerBand->GetN(); ++idx){
-    modifiedinner->SetPoint(idx, innerBand->GetX()[idx], innerBand->GetY()[idx]-minexp);
-  }
-  TGraphAsymmErrors* modifiedouter = (TGraphAsymmErrors*) outerBand->Clone();
-  for(int idx=0; idx<outerBand->GetN(); ++idx){
-    modifiedouter->SetPoint(idx, outerBand->GetX()[idx], outerBand->GetY()[idx]-minexp);
-  }
   // set proper maximum
-  float max = max_<0 ? maximum(modifiedexp) : max_;
+  float max = max_<0 ? maximum(expected) : max_;
   // do the plotting
-  plottingMassEstimate(canv, modifiedinner, modifiedouter, modifiedexp, modifiedobs, xaxis_, yaxis_, max, log_);    
+  plottingMassEstimate(canv, innerBand, outerBand, expected, observed, xaxis_, yaxis_, max, log_);    
   // add the CMS Preliminary stamp
   CMSPrelim(dataset_.c_str(), "", 0.160, 0.835);
   //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
@@ -58,8 +27,8 @@ PlotLimits::plotMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraph
   if(txt_){
     TString path;
     path = TString::Format("%s_%s", output_.c_str(), label_.c_str());
-    print(path, modifiedobs, modifiedobs, "txt"); 
-    print(path, modifiedobs, modifiedobs, "tex"); 
+    print(path, expected, observed, "txt"); 
+    print(path, expected, observed, "tex"); 
   }
   if(root_){
     TFile* output = new TFile("likelihood-mass-scan.root", "update");
@@ -67,7 +36,10 @@ PlotLimits::plotMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraph
 	output->mkdir(output_.c_str());
 	output->cd(output_.c_str());
     }
-    modifiedobs->Write("mass_scan");
+    if(observed ){observed ->Write("observed" );}
+    if(expected ){expected ->Write("expected" );}
+    if(innerBand){innerBand->Write("innerBand");}
+    if(outerBand){outerBand->Write("outerBand");}
     output->Close();
   }
   return;
