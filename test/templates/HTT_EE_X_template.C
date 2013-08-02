@@ -28,25 +28,18 @@ $DEFINE_MSSM
 
    \brief   macro template to create pre-/postfit plots of the inputs to the limit calculation
 
-   This is a macro template to create pre-/postfit plots of the inputs tp the limit calculation.
-   This macro is picked up from the produce_macros.py script in the HiggsAnalysis/HiggsToTauTau/postfit
-   directory. The key words in the replace(...) function are replaced by proper values that have
-   been calculated from the uncertainties as picked up from the datacards in the postfit/datacards 
-   directory of the package and the pulls of the fit as picked up from the maximum likelihood fit 
-   results file in the postfit/fitresults directory of the package.
-
-   
-   In the headline of the main macro the keywords HTT_EE_X, $HISTFILE and $CATEGORY will be 
-   replaced by proper names according to the inputfile and event category, for which the polts 
-   are supposed to be made.
+   This is a macro template to create pre-/postfit plots of the inputs to the limit calculation.
+   This macro is picked up from the produce_macros.py script in the HiggsAnalysis/HiggsToTauTau/test
+   directory. The key words are replaced by proper values.
 */
 
 static const bool BLIND_DATA = true; //false;
 static const bool FULLPLOTS = false; //true;
 float blinding_SM(float mass){
   bool blind=false;
+  // blinding based on final discriminator values
   if((std::string("$CATEGORY").find(std::string("1jet"))!=std::string::npos) && (0.6<mass)){blind=true;}
-  if((std::string("$CATEGORY").find(std::string("vbf"))!=std::string::npos) && (0.5<mass)){blind=true;}
+  if((std::string("$CATEGORY").find(std::string("vbf" ))!=std::string::npos) && (0.5<mass)){blind=true;}
   return blind;
 }
 float blinding_MSSM(float mass){ return (100<mass); }
@@ -81,8 +74,8 @@ TH1F* refill(TH1F* hin, const char* sample, bool data=false)
       hout->SetBinContent(i+1, BLIND_DATA && blinding_MSSM(hin->GetBinCenter(i+1)) ? 0. : hin->GetBinContent(i+1)/hin->GetBinWidth(i+1));
       hout->SetBinError  (i+1, BLIND_DATA && blinding_MSSM(hin->GetBinCenter(i+1)) ? 0. : hin->GetBinError(i+1)/hin->GetBinWidth(i+1));
 #else
-      hout->SetBinContent(i+1, BLIND_DATA && blinding_SM(hin->GetBinCenter(i+1)) ? 0. : hin->GetBinContent(i+1)/hin->GetBinWidth(i+1));
-      hout->SetBinError  (i+1, BLIND_DATA && blinding_SM(hin->GetBinCenter(i+1)) ? 0. : hin->GetBinError(i+1)/hin->GetBinWidth(i+1));
+      hout->SetBinContent(i+1, BLIND_DATA && blinding_SM  (hin->GetBinCenter(i+1)) ? 0. : hin->GetBinContent(i+1)/hin->GetBinWidth(i+1));
+      hout->SetBinError  (i+1, BLIND_DATA && blinding_SM  (hin->GetBinCenter(i+1)) ? 0. : hin->GetBinError(i+1)/hin->GetBinWidth(i+1));
 #endif
     }
     else{
@@ -141,42 +134,36 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 
   // determine category tag
   const char* category_extra = "";
-  if(std::string(directory) == std::string("ee_0jet_low"  )){ category_extra = "0 jet, low p_{T}";  }
-  if(std::string(directory) == std::string("ee_0jet_high" )){ category_extra = "0 jet, high p_{T}"; }
-  if(std::string(directory) == std::string("ee_1jet_low"  )){ category_extra = "1 jet, low p_{T}";  }
-  if(std::string(directory) == std::string("ee_1jet_high" )){ category_extra = "1 jet, high p_{T}"; }
-  if(std::string(directory) == std::string("ee_vbf"       )){ category_extra = "2 jet (VBF)";       }
-  if(std::string(directory) == std::string("ee_nobtag"    )){ category_extra = "No B-Tag";          }
-  if(std::string(directory) == std::string("ee_btag"      )){ category_extra = "B-Tag";             }
+  if(std::string(directory) == std::string("ee_0jet_low"  )){ category_extra = "0 jet, p_{T}(lep1) low";  }
+  if(std::string(directory) == std::string("ee_0jet_high" )){ category_extra = "0 jet, p_{T}(lep1) high"; }
+  if(std::string(directory) == std::string("ee_1jet_low"  )){ category_extra = "1 jet, p_{T}(lep1) low";  }
+  if(std::string(directory) == std::string("ee_1jet_high" )){ category_extra = "1 jet, p_{T}(lep1) high"; }
+  if(std::string(directory) == std::string("ee_vbf"       )){ category_extra = "2 jet (VBF)";             }
+  if(std::string(directory) == std::string("ee_nobtag"    )){ category_extra = "No B-Tag";                }
+  if(std::string(directory) == std::string("ee_btag"      )){ category_extra = "B-Tag";                   }
 
   const char* dataset;
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV";}
   if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 19.8 fb^{-1} at 8 TeV";}
-#ifdef MSSM
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 19.8 fb^{-1} at 8 TeV";}
-#endif
  
   TFile* input = new TFile(inputfile.c_str());
 #ifdef MSSM
   TFile* input2 = new TFile((inputfile+"_$MA_$TANB").c_str());
 #endif
-  TH1F* ZTT = refill((TH1F*)input->Get(TString::Format("%s/ZTT"   , directory)), "ZTT"); InitHist(ZTT, "", "", kOrange-4, 1001);
-  TH1F* ZEE    = refill((TH1F*)input->Get(TString::Format("%s/ZEE"     , directory)), "ZEE"); InitHist(ZEE  , "", "", kAzure+2, 1001);
-  TH1F* TTJ  = refill((TH1F*)input->Get(TString::Format("%s/TTJ"   , directory)), "TTJ"); InitHist(TTJ, "", "", kBlue-8, 1001);
-  TH1F* QCD    = refill((TH1F*)input->Get(TString::Format("%s/QCD"     , directory)), "QCD"); InitHist(QCD  , "", "", kMagenta - 10, 1001);
-  TH1F* Dibosons  = refill((TH1F*)input->Get(TString::Format("%s/Dibosons"   , directory)), "Dibosons"); InitHist(Dibosons, "", "", kGreen - 4, 1001);
-  TH1F* WJets    = refill((TH1F*)input->Get(TString::Format("%s/WJets"     , directory)), "WJets"); InitHist(WJets  , "", "", kRed + 2, 1001);
+  TH1F* ZTT     = refill((TH1F*)input ->Get(TString::Format("%s/ZTT"     , directory)), "ZTT"     ); InitHist(ZTT     , "", "", kOrange  -  4, 1001);
+  TH1F* ZEE     = refill((TH1F*)input ->Get(TString::Format("%s/ZEE"     , directory)), "ZEE"     ); InitHist(ZEE     , "", "", kAzure   +  2, 1001);
+  TH1F* TTJ     = refill((TH1F*)input ->Get(TString::Format("%s/TTJ"     , directory)), "TTJ"     ); InitHist(TTJ     , "", "", kBlue    -  8, 1001);
+  TH1F* QCD     = refill((TH1F*)input ->Get(TString::Format("%s/QCD"     , directory)), "QCD"     ); InitHist(QCD     , "", "", kMagenta - 10, 1001);
+  TH1F* Dibosons= refill((TH1F*)input ->Get(TString::Format("%s/Dibosons", directory)), "Dibosons"); InitHist(Dibosons, "", "", kGreen   -  4, 1001);
+  TH1F* WJets   = refill((TH1F*)input ->Get(TString::Format("%s/WJets"   , directory)), "WJets"   ); InitHist(WJets   , "", "", kRed     +  2, 1001);
 #ifdef MSSM
-//   float ggHScale = 1., bbHScale = 1.;
-//   ggHScale = ($MSSM_SIGNAL_ggH_xseff_A + $MSSM_SIGNAL_ggH_xseff_hH);
-//   bbHScale = ($MSSM_SIGNAL_bbH_xseff_A + $MSSM_SIGNAL_bbH_xseff_hH);
-  TH1F* ggH    = refill((TH1F*)input2->Get(TString::Format("%s/ggH$MA"  , directory)), "ggH"  ); InitSignal(ggH); ggH->Scale($TANB); //ggH->Scale(ggHScale);
-  TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA"  , directory)), "bbH"  ); InitSignal(bbH); bbH->Scale($TANB); //bbH->Scale(bbHScale);
+  TH1F* ggH     = refill((TH1F*)input2->Get(TString::Format("%s/ggH$MA"  , directory)), "ggH"     ); InitSignal(ggH); ggH->Scale($TANB);
+  TH1F* bbH     = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA"  , directory)), "bbH"     ); InitSignal(bbH); bbH->Scale($TANB);
 #else
 #ifndef DROP_SIGNAL
-  TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125"  , directory)), "ggH"  ); InitSignal(ggH); ggH->Scale(SIGNAL_SCALE);
-  TH1F* qqH    = refill((TH1F*)input->Get(TString::Format("%s/qqH125"  , directory)), "qqH"  ); InitSignal(qqH); qqH->Scale(SIGNAL_SCALE);
-  TH1F* VH     = refill((TH1F*)input->Get(TString::Format("%s/VH125"   , directory)), "VH"   ); InitSignal(VH ); VH ->Scale(SIGNAL_SCALE);
+  TH1F* ggH     = refill((TH1F*)input ->Get(TString::Format("%s/ggH125"  , directory)), "ggH"     ); InitSignal(ggH); ggH->Scale(SIGNAL_SCALE);
+  TH1F* qqH     = refill((TH1F*)input ->Get(TString::Format("%s/qqH125"  , directory)), "qqH"     ); InitSignal(qqH); qqH->Scale(SIGNAL_SCALE);
+  TH1F* VH      = refill((TH1F*)input ->Get(TString::Format("%s/VH125"   , directory)), "VH"      ); InitSignal(VH ); VH ->Scale(SIGNAL_SCALE);
 #endif
 #endif
 #ifdef ASIMOV
@@ -185,84 +172,84 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data", true);
 #endif
 #ifdef MSSM
-  InitHist(data, "#bf{m_{#tau#tau} [GeV]}", "#bf{dN/dm_{#tau#tau} [1/GeV]}"); InitData(data);
+  InitHist(data, "#bf{m_{#tau#tau} [GeV]}" , "#bf{dN/dm_{#tau#tau} [1/GeV]}"); InitData(data);
 #else
-  InitHist(data, "#bf{final discriminator}", "#bf{dN/d(discriminator)}"); InitData(data);
+  InitHist(data, "#bf{final discriminator}", "#bf{dN/d(discriminator)}"     ); InitData(data);
 #endif
 
   TH1F* ref=(TH1F*)ZTT->Clone("ref");
-  ref->Add(ZEE  );
+  ref->Add(ZEE);
   ref->Add(TTJ);
-  ref->Add(QCD  );
+  ref->Add(QCD);
   ref->Add(Dibosons);
-  ref->Add(WJets  );
+  ref->Add(WJets);
 
   double unscaled[9];
   unscaled[0] = ZTT->Integral();
-  unscaled[1] = ZEE  ->Integral();
+  unscaled[1] = ZEE->Integral();
   unscaled[2] = TTJ->Integral();
-  unscaled[3] = QCD  ->Integral();
-  unscaled[4] = Dibosons  ->Integral();
-  unscaled[5] = WJets  ->Integral();
+  unscaled[3] = QCD->Integral();
+  unscaled[4] = Dibosons->Integral();
+  unscaled[5] = WJets->Integral();
 #ifdef MSSM
-  unscaled[6] = ggH  ->Integral();
-  unscaled[7] = bbH  ->Integral();
+  unscaled[6] = ggH->Integral();
+  unscaled[7] = bbH->Integral();
   unscaled[8] = 0;
 #else
 #ifndef DROP_SIGNAL
-  unscaled[6] = ggH  ->Integral();
-  unscaled[7] = qqH  ->Integral();
-  unscaled[8] = VH   ->Integral();
+  unscaled[6] = ggH->Integral();
+  unscaled[7] = qqH->Integral();
+  unscaled[8] = VH ->Integral();
 #endif
 #endif
   
   if(scaled){
     rescale(ZTT, 1); 
-    rescale(ZEE,   2); 
+    rescale(ZEE, 2); 
     rescale(TTJ, 3); 
-    rescale(QCD,   4); 
+    rescale(QCD, 4); 
     rescale(Dibosons, 5); 
-    rescale(WJets,   6);
+    rescale(WJets,    6);
 #ifdef MSSM 
-    rescale(ggH,   7);
-    rescale(bbH,   8);
+    rescale(ggH, 7);
+    rescale(bbH, 8);
 #else
 #ifndef DROP_SIGNAL
-    rescale(ggH,   7);
-    rescale(qqH,   8);
-    rescale(VH,   9);
+    rescale(ggH, 7);
+    rescale(qqH, 8);
+    rescale(VH,  9);
 #endif
 #endif
   }
 
   TH1F* scales[9];
   scales[0] = new TH1F("scales-ZTT", "", 9, 0, 9);
-  scales[0]->SetBinContent(1, unscaled[0]>0 ? (ZTT->Integral()/unscaled[0]-1.) : 0.);
+  scales[0]->SetBinContent(1, unscaled[0]>0 ? (ZTT->Integral()/unscaled[0]-1.)      : 0.);
   scales[1] = new TH1F("scales-ZEE"  , "", 9, 0, 9);
-  scales[1]->SetBinContent(2, unscaled[1]>0 ? (ZEE  ->Integral()/unscaled[1]-1.) : 0.);
+  scales[1]->SetBinContent(2, unscaled[1]>0 ? (ZEE->Integral()/unscaled[1]-1.)      : 0.);
   scales[2] = new TH1F("scales-TTJ", "", 9, 0, 9);
-  scales[2]->SetBinContent(3, unscaled[2]>0 ? (TTJ->Integral()/unscaled[2]-1.) : 0.);
+  scales[2]->SetBinContent(3, unscaled[2]>0 ? (TTJ->Integral()/unscaled[2]-1.)      : 0.);
   scales[3] = new TH1F("scales-QCD"  , "", 9, 0, 9);
-  scales[3]->SetBinContent(4, unscaled[3]>0 ? (QCD  ->Integral()/unscaled[3]-1.) : 0.);
+  scales[3]->SetBinContent(4, unscaled[3]>0 ? (QCD->Integral()/unscaled[3]-1.)      : 0.);
   scales[4] = new TH1F("scales-Dibosons", "", 9, 0, 9);
   scales[4]->SetBinContent(5, unscaled[4]>0 ? (Dibosons->Integral()/unscaled[4]-1.) : 0.);
   scales[5] = new TH1F("scales-WJets"  , "", 9, 0, 9);
-  scales[5]->SetBinContent(6, unscaled[5]>0 ? (WJets  ->Integral()/unscaled[5]-1.) : 0.);
+  scales[5]->SetBinContent(6, unscaled[5]>0 ? (WJets->Integral()/unscaled[5]-1.)    : 0.);
 #ifdef MSSM
   scales[6] = new TH1F("scales-ggH"  , "", 9, 0, 9);
-  scales[6]->SetBinContent(7, unscaled[6]>0 ? (ggH  ->Integral()/unscaled[4]-1.) : 0.);
+  scales[6]->SetBinContent(7, unscaled[6]>0 ? (ggH->Integral()/unscaled[6]-1.)      : 0.);
   scales[7] = new TH1F("scales-bbH"  , "", 9, 0, 9);
-  scales[7]->SetBinContent(8, unscaled[7]>0 ? (bbH  ->Integral()/unscaled[5]-1.) : 0.);
+  scales[7]->SetBinContent(8, unscaled[7]>0 ? (bbH->Integral()/unscaled[7]-1.)      : 0.);
   scales[8] = new TH1F("scales-NONE" , "", 9, 0, 9);
   scales[8]->SetBinContent(9, 0.);
 #else
 #ifndef DROP_SIGNAL
   scales[6] = new TH1F("scales-ggH"  , "", 9, 0, 9);
-  scales[6]->SetBinContent(7, unscaled[6]>0 ? (ggH  ->Integral()/unscaled[4]-1.) : 0.);
+  scales[6]->SetBinContent(7, unscaled[6]>0 ? (ggH->Integral()/unscaled[4]-1.)      : 0.);
   scales[7] = new TH1F("scales-qqH"  , "", 9, 0, 9);
-  scales[7]->SetBinContent(8, unscaled[7]>0 ? (qqH  ->Integral()/unscaled[5]-1.) : 0.);
+  scales[7]->SetBinContent(8, unscaled[7]>0 ? (qqH->Integral()/unscaled[5]-1.)      : 0.);
   scales[8] = new TH1F("scales-VH"   , "", 9, 0, 9);
-  scales[8]->SetBinContent(9, unscaled[8]>0 ? (VH   ->Integral()/unscaled[6]-1.) : 0.);
+  scales[8]->SetBinContent(9, unscaled[8]>0 ? (VH ->Integral()/unscaled[6]-1.)      : 0.);
 #endif
 #endif
 
@@ -308,7 +295,11 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
   data->SetNdivisions(505);
   data->SetMinimum(min);
-  data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(ZEE, log)));
+#ifndef DROP_SIGNAL
+  data->SetMaximum(max>0 ? max : std::max(std::max(maximum(data, log), maximum(Ztt, log)), maximum(ggH, log)));
+#else
+  data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(Ztt, log)));
+#endif
   data->Draw("e");
 
   TH1F* errorBand = (TH1F*)ZEE ->Clone();
@@ -352,7 +343,7 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 
   //CMSPrelim(dataset, "#tau_{#mu}#tau_{#mu}", 0.17, 0.835);
   CMSPrelim(dataset, "", 0.16, 0.835);  
-  TPaveText* chan     = new TPaveText(0.20, 0.74+0.061, 0.32, 0.74+0.161, "NDC");
+  TPaveText* chan     = new TPaveText(0.20, 0.76+0.061, 0.32, 0.76+0.161, "NDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
   chan->SetTextAlign(   12 );
@@ -362,11 +353,11 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   chan->AddText("ee");
   chan->Draw();
 
-  TPaveText* cat      = new TPaveText(0.20, 0.68+0.061, 0.32, 0.68+0.161, "NDC");
+  TPaveText* cat      = new TPaveText(0.20, 0.71+0.061, 0.32, 0.71+0.161, "NDC");
   cat->SetBorderSize(   0 );
   cat->SetFillStyle(    0 );
   cat->SetTextAlign(   12 );
-  cat->SetTextSize ( 0.05 );
+  cat->SetTextSize ( 0.03 );
   cat->SetTextColor(    1 );
   cat->SetTextFont (   62 );
   cat->AddText(category_extra);
@@ -421,40 +412,18 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
 #endif
 #ifdef ASIMOV
-  leg->AddEntry(data , "sum(bkg) + SM125 GeV signal"    , "LP");
+  leg->AddEntry(data , "sum(bkg) + H(125)"           , "LP");
 #else
-  leg->AddEntry(data , "observed"                       , "LP");
+  leg->AddEntry(data , "observed"                    , "LP");
 #endif
-  leg->AddEntry(ZEE  , "Z#rightarrowee"          , "F" );
+  leg->AddEntry(ZEE  , "Z#rightarrowee"              , "F" );
   leg->AddEntry(ZTT  , "Z#rightarrow#tau#tau"        , "F" );
   leg->AddEntry(TTJ  , "t#bar{t}"                    , "F" );
   leg->AddEntry(QCD  , "QCD"                         , "F" );
-  //leg->AddEntry(Dibosons  , "Dibosons"             , "F" );
   leg->AddEntry(WJets, "electroweak"                 , "F" );
+  //leg->AddEntry(Dibosons  , "Dibosons"             , "F" );
   $ERROR_LEGEND
   leg->Draw();
-
-//#ifdef MSSM
-//  TPaveText* mssm  = new TPaveText(0.69, 0.85, 0.90, 0.90, "NDC");
-//  mssm->SetBorderSize(   0 );
-//  mssm->SetFillStyle(    0 );
-//  mssm->SetTextAlign(   12 );
-//  mssm->SetTextSize ( 0.03 );
-//  mssm->SetTextColor(    1 );
-//  mssm->SetTextFont (   62 );
-//  mssm->AddText("(m_{A}=120, tan#beta=10)");
-//  mssm->Draw();
-//#else
-//  TPaveText* mssm  = new TPaveText(0.83, 0.85, 0.95, 0.90, "NDC");
-//  mssm->SetBorderSize(   0 );
-//  mssm->SetFillStyle(    0 );
-//  mssm->SetTextAlign(   12 );
-//  mssm->SetTextSize ( 0.03 );
-//  mssm->SetTextColor(    1 );
-//  mssm->SetTextFont (   62 );
-//  mssm->AddText("m_{H}=125");
-//  mssm->Draw();
-//#endif
 
   /*
     Ratio Data over MC
@@ -465,7 +434,7 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   canv0->cd();
 
   TH1F* zero = (TH1F*)ref ->Clone("zero"); zero->Clear();
-  TH1F* rat1 = (TH1F*)data->Clone("rat"); 
+  TH1F* rat1 = (TH1F*)data->Clone("rat1"); 
   rat1->Divide(ZEE);
   for(int ibin=0; ibin<rat1->GetNbinsX(); ++ibin){
     if(rat1->GetBinContent(ibin+1)>0){
@@ -506,22 +475,29 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
       rat2 ->SetBinContent(ibin+1, rat2->GetBinContent(ibin+1)-1.);
     }
   }
+#if defined MSSM
+  if(!log){ rat2->GetXaxis()->SetRange(0, rat2->FindBin(350)); } else{ rat2->GetXaxis()->SetRange(0, rat2->FindBin(1000)); };
+#else
+  rat2->GetXaxis()->SetRange(0, rat2->FindBin(350));
+#endif
+  rat2->SetNdivisions(505);
   rat2->SetLineColor(kRed+ 3);
-  rat2->SetFillColor(kRed-10);
+  rat2->SetMarkerColor(kRed+3);
+  rat2->SetMarkerSize(1.1);
   rat2->SetMaximum(+0.3);
   rat2->SetMinimum(-0.3);
-  rat2->GetYaxis()->SetTitle("#bf{Fit/Prefit-1}");
+  rat2->GetYaxis()->SetTitle("#bf{Postfit/Prefit-1}");
   rat2->GetYaxis()->CenterTitle();
-#ifdef MSSM
+#ifdefined MSSM
   rat2->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}"); 
 #else
   rat2->GetXaxis()->SetTitle("#bf{final discriminator}");
 #endif
-  rat2->GetXaxis()->SetRange(0, 28);
   rat2->Draw();
   zero->SetLineColor(kBlack);
   zero->Draw("same");
   canv1->RedrawAxis();
+
   /*
     Relative shift per sample
   */
@@ -530,12 +506,12 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   canv2->SetGridy();
   canv2->cd();
 
-  InitHist  (scales[0], "", "", kGreen  - 4, 1001);
-  InitHist  (scales[1], "", "", kYellow - 4, 1001);
-  InitHist  (scales[2], "", "", kMagenta-10, 1001);
-  InitHist  (scales[3], "", "", kRed    + 2, 1001);
-  InitHist  (scales[4], "", "", kBlue   - 8, 1001);
-  InitHist  (scales[5], "", "", kOrange - 4, 1001);  
+  InitHist  (scales[0], "", "", kOrange  -  4, 1001);
+  InitHist  (scales[1], "", "", kAzure   +  2, 1001);
+  InitHist  (scales[2], "", "", kBlue    -  8, 1001);
+  InitHist  (scales[3], "", "", kMagenta - 10, 1001);
+  InitHist  (scales[4], "", "", kGreen   -  4, 1001);
+  InitHist  (scales[5], "", "", kRed     +  2, 1001);  
 #ifndef DROP_SIGNAL
   InitSignal(scales[6]);
   InitSignal(scales[7]);
@@ -557,10 +533,10 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   scales[0]->GetXaxis()->SetBinLabel(8, "#bf{qqH}"  );
   scales[0]->GetXaxis()->SetBinLabel(9, "#bf{VH}"   );
 #endif
-  scales[0]->SetMaximum(+1.5);
-  scales[0]->SetMinimum(-1.5);
+  scales[0]->SetMaximum(+0.5);
+  scales[0]->SetMinimum(-0.5);
   scales[0]->GetYaxis()->CenterTitle();
-  scales[0]->GetYaxis()->SetTitle("#bf{Fit/Prefit-1}");
+  scales[0]->GetYaxis()->SetTitle("#bf{Postfit/Prefit-1}");
   scales[1]->Draw("same");
   scales[2]->Draw("same");
   scales[3]->Draw("same");
@@ -571,16 +547,18 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   scales[7]->Draw("same");
   scales[8]->Draw("same");
 #endif
-  zero->Draw("same");
+  TH1F* zero_samples = (TH1F*)scales[0]->Clone("zero_samples"); zero_samples->Clear();
+  zero_samples->SetBinContent(1,0.);
+  zero_samples->Draw("same");
   canv2->RedrawAxis();
 
   /*
     prepare output
   */
  bool isSevenTeV = std::string(inputfile).find("7TeV")!=std::string::npos;
-  canv ->Print(TString::Format("%s_%sfit_%s_%s.png"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
-  canv ->Print(TString::Format("%s_%sfit_%s_%s.pdf"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
-  canv ->Print(TString::Format("%s_%sfit_%s_%s.eps"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
+  canv   ->Print(TString::Format("%s_%sfit_%s_%s.png"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
+  canv   ->Print(TString::Format("%s_%sfit_%s_%s.pdf"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
+  canv   ->Print(TString::Format("%s_%sfit_%s_%s.eps"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
   if(!log || FULLPLOTS)
   {
     canv0->Print(TString::Format("%s_datamc_%sfit_%s_%s.png", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
@@ -600,20 +578,20 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TFile* output = new TFile(TString::Format("%s_%sfit_%s_%s.root", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN"), "update");
   output->cd();
   data ->Write("data_obs");
-  ZTT->Write("Ztt"   );
-  ZEE->Write("Zee"     );
-  TTJ->Write("ttbar"   );
-  QCD->Write("Fakes"     );
-  Dibosons->Write("Dibosons"   );
-  WJets->Write("EWK"     );
+  ZTT->Write("Ztt"  );
+  ZEE->Write("Zee"  );
+  TTJ->Write("ttbar");
+  QCD->Write("Fakes");
+  Dibosons->Write("Dibosons");
+  WJets->Write("EWK");
 #ifdef MSSM
-  ggH  ->Write("ggH"     );
-  bbH  ->Write("bbH"     );
+  ggH  ->Write("ggH");
+  bbH  ->Write("bbH");
 #else
 #ifndef DROP_SIGNAL
-  ggH  ->Write("ggH"     );
-  qqH  ->Write("qqH"     );
-  VH   ->Write("VH"      );
+  ggH  ->Write("ggH");
+  qqH  ->Write("qqH");
+  VH   ->Write("VH" );
 #endif
 #endif
   if(errorBand){

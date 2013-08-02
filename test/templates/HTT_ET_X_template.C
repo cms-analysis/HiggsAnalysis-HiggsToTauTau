@@ -30,17 +30,9 @@ $DEFINE_MSSM
 
    \brief   macro template to create pre-/postfit plots of the inputs to the limit calculation
 
-   This is a macro template to create pre-/postfit plots of the inputs tp the limit calculation.
-   This macro is picked up from the produce_macros.py script in the HiggsAnalysis/HiggsToTauTau/postfit
-   directory. The key words in the replace(...) function are replaced by proper values that have
-   been calculated from the uncertainties as picked up from the datacards in the postfit/datacards 
-   directory of the package and the pulls of the fit as picked up from the maximum likelihood fit 
-   results file in the postfit/fitresults directory of the package.
-
-   
-   In the headline of the main macro the keywords HTT_ET_X, $HISTFILE and $CATEGORY will be 
-   replaced by proper names according to the inputfile and event category, for which the polts 
-   are supposed to be made.
+   This is a macro template to create pre-/postfit plots of the inputs to the limit calculation.
+   This macro is picked up from the produce_macros.py script in the HiggsAnalysis/HiggsToTauTau/test
+   directory. The key words are replaced by proper values.
 */
 
 static const bool BLIND_DATA = true; //false;
@@ -79,8 +71,8 @@ TH1F* refill(TH1F* hin, const char* sample, bool data=false)
       hout->SetBinContent(i+1, BLIND_DATA && blinding_MSSM(hin->GetBinCenter(i+1)) ? 0. : hin->GetBinContent(i+1)/hin->GetBinWidth(i+1));
       hout->SetBinError  (i+1, BLIND_DATA && blinding_MSSM(hin->GetBinCenter(i+1)) ? 0. : hin->GetBinError(i+1)/hin->GetBinWidth(i+1));
 #else
-      hout->SetBinContent(i+1, BLIND_DATA && blinding_SM(hin->GetBinCenter(i+1)) ? 0. : hin->GetBinContent(i+1)/hin->GetBinWidth(i+1));
-      hout->SetBinError  (i+1, BLIND_DATA && blinding_SM(hin->GetBinCenter(i+1)) ? 0. : hin->GetBinError(i+1)/hin->GetBinWidth(i+1));
+      hout->SetBinContent(i+1, BLIND_DATA && blinding_SM  (hin->GetBinCenter(i+1)) ? 0. : hin->GetBinContent(i+1)/hin->GetBinWidth(i+1));
+      hout->SetBinError  (i+1, BLIND_DATA && blinding_SM  (hin->GetBinCenter(i+1)) ? 0. : hin->GetBinError(i+1)/hin->GetBinWidth(i+1));
 #endif
     }
     else{
@@ -102,18 +94,18 @@ void rescale(TH1F* hin, unsigned int idx)
   $ZTT
   case  2: // TT
   $TT
-  case  3: // W  [EWK1]
+  case  3: // W   [EWK1]
   $W
 #if defined EXTRA_SAMPLES
-  case  4: // ZJ [EWK2]
+  case  4: // ZJ  [EWK2]
   $ZJ
-  case  5: // ZL [EWK3]
+  case  5: // ZL  [EWK ]
   $ZL 
 #else
-  case  4: // ZLL [EWK2]
+  case  4: // ZLL [EWK ]
   $ZLL
 #endif
-  case  6: // VV [EWK ]
+  case  6: // VV  [EWK0]
   $VV
   case  7: // QCD
   $QCD
@@ -144,21 +136,22 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
 
   // determine category tag
-  const char* category_extra = "";
-  if(std::string(directory) == std::string("eleTau_0jet_low"  )){ category_extra = "0 jet, low p_{T}";  }
-  if(std::string(directory) == std::string("eleTau_0jet_high" )){ category_extra = "0 jet, high p_{T}"; }
-  if(std::string(directory) == std::string("eleTau_1jet_low"  )){ category_extra = "1 jet, low p_{T}";  }
-  if(std::string(directory) == std::string("eleTau_1jet_high" )){ category_extra = "1 jet, high p_{T}"; }
-  if(std::string(directory) == std::string("eleTau_vbf"       )){ category_extra = "2 jet (VBF)";       }
-  if(std::string(directory) == std::string("eleTau_nobtag"    )){ category_extra = "No B-Tag";          }
-  if(std::string(directory) == std::string("eleTau_btag"      )){ category_extra = "B-Tag";             }
+  const char* category_extra = ""; const char* category_extra2 = "";
+  if(std::string(directory) == std::string("eleTau_0jet_low"             )){ category_extra = "0 jet, p_{T}(#tau) low";          }
+  if(std::string(directory) == std::string("eleTau_0jet_medium"          )){ category_extra = "0 jet, p_{T}(#tau) medium";       }
+  if(std::string(directory) == std::string("eleTau_0jet_high"            )){ category_extra = "0 jet, p_{T}(#tau) high";         }
+  if(std::string(directory) == std::string("eleTau_1jet_medium"          )){ category_extra = "1 jet, p_{T}(#tau) medium";       }
+  if(std::string(directory) == std::string("eleTau_1jet_high_lowhiggs"   )){ category_extra = "1 jet,";                          }
+  if(std::string(directory) == std::string("eleTau_1jet_high_lowhiggs"   )){ category_extra2= "p_{T}(#tau) high, p_{T}(H) low";  }
+  if(std::string(directory) == std::string("eleTau_1jet_high_mediumhiggs")){ category_extra = "1 jet,";                          }
+  if(std::string(directory) == std::string("eleTau_1jet_high_mediumhiggs")){ category_extra2= "p_{T}(#tau) high, p_{T}(H) med."; }
+  if(std::string(directory) == std::string("eleTau_vbf_loose"            )){ category_extra = "2 jet (VBF), loose";              }
+  if(std::string(directory) == std::string("eleTau_nobtag"               )){ category_extra = "No B-Tag";                        }
+  if(std::string(directory) == std::string("eleTau_btag"                 )){ category_extra = "B-Tag";                           }
 
   const char* dataset;
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV";}
   if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 19.8 fb^{-1} at 8 TeV";}
-#ifdef MSSM
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 19.8 fb^{-1} at 8 TeV";}
-#endif
   
   TFile* input = new TFile(inputfile.c_str());
 #ifdef MSSM
@@ -176,11 +169,8 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/TT"      , directory)), "TT" ); InitHist(ttbar, "", "", kBlue   - 8, 1001);
   TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/ZTT"     , directory)), "ZTT"); InitHist(Ztt  , "", "", kOrange - 4, 1001);
 #ifdef MSSM
-  // float ggHScale = 1., bbHScale = 1.;
-//   ggHScale = ($MSSM_SIGNAL_ggH_xseff_A + $MSSM_SIGNAL_ggH_xseff_hH);
-//   bbHScale = ($MSSM_SIGNAL_bbH_xseff_A + $MSSM_SIGNAL_bbH_xseff_hH);
-  TH1F* ggH    = refill((TH1F*)input2->Get(TString::Format("%s/ggH$MA"  , directory)), "ggH"); InitSignal(ggH); ggH->Scale($TANB); //ggH->Scale(ggHScale)
-  TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA"  , directory)), "bbH"); InitSignal(bbH); bbH->Scale($TANB); //bbH->Scale(bbHScale)
+  TH1F* ggH    = refill((TH1F*)input2->Get(TString::Format("%s/ggH$MA" , directory)), "ggH"); InitSignal(ggH); ggH->Scale($TANB);
+  TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA" , directory)), "bbH"); InitSignal(bbH); bbH->Scale($TANB);
 #else
 #ifndef DROP_SIGNAL
   TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125"  , directory)), "ggH"); InitSignal(ggH); ggH->Scale(SIGNAL_SCALE);
@@ -331,7 +321,11 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
   data->SetNdivisions(505);
   data->SetMinimum(min);
+#ifndef DROP_SIGNAL
+  data->SetMaximum(max>0 ? max : std::max(std::max(maximum(data, log), maximum(Ztt, log)), maximum(ggH, log)));
+#else
   data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(Ztt, log)));
+#endif
   data->Draw("e");
 
   TH1F* errorBand = (TH1F*)Ztt ->Clone();
@@ -372,7 +366,7 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 
   //CMSPrelim(dataset, "#tau_{e}#tau_{h}", 0.17, 0.835);
   CMSPrelim(dataset, "", 0.16, 0.835);  
-  TPaveText* chan     = new TPaveText(0.20, 0.74+0.061, 0.32, 0.74+0.161, "NDC");
+  TPaveText* chan     = new TPaveText(0.20, 0.76+0.061, 0.32, 0.76+0.161, "NDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
   chan->SetTextAlign(   12 );
@@ -382,15 +376,25 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   chan->AddText("e#tau_{h}");
   chan->Draw();
 
-  TPaveText* cat      = new TPaveText(0.20, 0.68+0.061, 0.32, 0.68+0.161, "NDC");
+  TPaveText* cat      = new TPaveText(0.20, 0.71+0.061, 0.32, 0.71+0.161, "NDC");
   cat->SetBorderSize(   0 );
   cat->SetFillStyle(    0 );
   cat->SetTextAlign(   12 );
-  cat->SetTextSize ( 0.05 );
+  cat->SetTextSize ( 0.03 );
   cat->SetTextColor(    1 );
   cat->SetTextFont (   62 );
   cat->AddText(category_extra);
   cat->Draw();
+
+  TPaveText* cat2      = new TPaveText(0.20, 0.66+0.061, 0.32, 0.66+0.161, "NDC");
+  cat2->SetBorderSize(   0 );
+  cat2->SetFillStyle(    0 );
+  cat2->SetTextAlign(   12 );
+  cat2->SetTextSize ( 0.03 );
+  cat2->SetTextColor(    1 );
+  cat2->SetTextFont (   62 );
+  cat2->AddText(category_extra2);
+  cat2->Draw();
   
 #ifdef MSSM
   TPaveText* massA      = new TPaveText(0.75, 0.48+0.061, 0.85, 0.48+0.161, "NDC");
@@ -441,7 +445,7 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
 #endif
 #ifdef ASIMOV
-  leg->AddEntry(data , "sum(bkg) + SM125 GeV signal"    , "LP");
+  leg->AddEntry(data , "sum(bkg) + H(125)"              , "LP");
 #else
   leg->AddEntry(data , "observed"                       , "LP");
 #endif
@@ -453,28 +457,6 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   $ERROR_LEGEND
   leg->Draw();
 
-//#ifdef MSSM
-//  TPaveText* mssm  = new TPaveText(0.69, 0.85, 0.90, 0.90, "NDC");
-//  mssm->SetBorderSize(   0 );
-//  mssm->SetFillStyle(    0 );
-//  mssm->SetTextAlign(   12 );
-//  mssm->SetTextSize ( 0.03 );
-//  mssm->SetTextColor(    1 );
-//  mssm->SetTextFont (   62 );
-//  mssm->AddText("(m_{A}=120, tan#beta=10)");
-//  mssm->Draw();
-//#else
-//  TPaveText* mssm  = new TPaveText(0.83, 0.85, 0.95, 0.90, "NDC");
-//  mssm->SetBorderSize(   0 );
-//  mssm->SetFillStyle(    0 );
-//  mssm->SetTextAlign(   12 );
-//  mssm->SetTextSize ( 0.03 );
-//  mssm->SetTextColor(    1 );
-//  mssm->SetTextFont (   62 );
-//  mssm->AddText("m_{H}=125");
-//  mssm->Draw();
-//#endif
-
   /*
     Ratio Data over MC
   */
@@ -484,7 +466,7 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   canv0->cd();
 
   TH1F* zero = (TH1F*)ref->Clone("zero"); zero->Clear();
-  TH1F* rat1 = (TH1F*)data->Clone("rat"); 
+  TH1F* rat1 = (TH1F*)data->Clone("rat1"); 
   rat1->Divide(Ztt);
   for(int ibin=0; ibin<rat1->GetNbinsX(); ++ibin){
     if(rat1->GetBinContent(ibin+1)>0){
@@ -521,11 +503,18 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
       rat2 ->SetBinContent(ibin+1, rat2->GetBinContent(ibin+1)-1.);
     }
   }
+#if defined MSSM
+  if(!log){ rat2->GetXaxis()->SetRange(0, rat2->FindBin(350)); } else{ rat2->GetXaxis()->SetRange(0, rat2->FindBin(1000)); };
+#else
+  rat2->GetXaxis()->SetRange(0, rat2->FindBin(350));
+#endif
+  rat2->SetNdivisions(505);
   rat2->SetLineColor(kRed+ 3);
-  rat2->SetFillColor(kRed-10);
+  rat2->SetMarkerColor(kRed+3);
+  rat2->SetMarkerSize(1.1);
   rat2->SetMaximum(+0.3);
   rat2->SetMinimum(-0.3);
-  rat2->GetYaxis()->SetTitle("#bf{Fit/Prefit-1}");
+  rat2->GetYaxis()->SetTitle("#bf{Postfit/Prefit-1}");
   rat2->GetYaxis()->CenterTitle();
   rat2->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}");
   rat2->Draw();
@@ -564,10 +553,10 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   scales[0]->GetXaxis()->SetBinLabel(6, "#bf{qqH}"  );
   scales[0]->GetXaxis()->SetBinLabel(7, "#bf{VH}"   );
 #endif
-  scales[0]->SetMaximum(+1.0);
-  scales[0]->SetMinimum(-1.0);
+  scales[0]->SetMaximum(+0.5);
+  scales[0]->SetMinimum(-0.5);
   scales[0]->GetYaxis()->CenterTitle();
-  scales[0]->GetYaxis()->SetTitle("#bf{Fit/Prefit-1}");
+  scales[0]->GetYaxis()->SetTitle("#bf{Postfit/Prefit-1}");
   scales[1]->Draw("same");
   scales[2]->Draw("same");
   scales[3]->Draw("same");
@@ -576,16 +565,18 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   scales[5]->Draw("same");
   scales[6]->Draw("same");
 #endif
-  zero->Draw("same");
+  TH1F* zero_samples = (TH1F*)scales[0]->Clone("zero_samples"); zero_samples->Clear();
+  zero_samples->SetBinContent(1,0.);
+  zero_samples->Draw("same"); 
   canv2->RedrawAxis();
 
   /*
     prepare output
   */
   bool isSevenTeV = std::string(inputfile).find("7TeV")!=std::string::npos;
-  canv ->Print(TString::Format("%s_%sfit_%s_%s.png"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
-  canv ->Print(TString::Format("%s_%sfit_%s_%s.pdf"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
-  canv ->Print(TString::Format("%s_%sfit_%s_%s.eps"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
+  canv   ->Print(TString::Format("%s_%sfit_%s_%s.png"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
+  canv   ->Print(TString::Format("%s_%sfit_%s_%s.pdf"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
+  canv   ->Print(TString::Format("%s_%sfit_%s_%s.eps"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
   if(!log || FULLPLOTS)
   {
     canv0->Print(TString::Format("%s_datamc_%sfit_%s_%s.png", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
