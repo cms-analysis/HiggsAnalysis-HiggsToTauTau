@@ -114,6 +114,12 @@ directories_sm = {
     '5' : ['1jet', 'htt', 'cmb'],
     '6' : ['vbf' , 'htt', 'cmb'],
     '7' : ['vbf' , 'htt', 'cmb'],
+    '10': ['1jet', 'vbf', 'htt', 'cmb', 'mt_soft'],
+    '11': ['1jet', 'vbf', 'htt', 'cmb', 'mt_soft'],
+    '12': ['1jet', 'vbf', 'htt', 'cmb', 'mt_soft'],
+    '13': ['1jet', 'htt', 'cmb', 'mt_soft'],
+    '15': ['1jet', 'htt', 'cmb', 'mt_soft'],
+    '16': ['vbf' , 'htt', 'cmb', 'mt_soft'],
     },
     'tt' : {
     '0' : ['1jet', 'htt', 'cmb'],

@@ -14,6 +14,8 @@ parser.add_option("--label", dest="label", default="", type="string",
                   help="Possibility to give the setups, aux and LIMITS directory a index (example LIMITS-bbb). [Default: \"\"]")
 parser.add_option("--ignore-during-scaling", dest="do_not_scales", default="ee mm vhtt", type="string",
                   help="List of channels, which the scaling by cross seciton times BR shoul not be applied. The list should be embraced by call-ons and separeted by whitespace or comma. [Default: \"vhtt ee mm\"]")
+parser.add_option("--add-mutau-soft", dest="add_mutau_soft", default=False, action="store_true",
+                  help="Specify this option to add the soft muon pt analysis. [Default: False]")
 parser.add_option("--inputs-ee", dest="inputs_ee", default="DESY-KIT", type="choice", choices=['DESY-KIT'],
                   help="Input files for htt_ee analysis. [Default: \"DESY-KIT\"]")
 parser.add_option("--inputs-mm", dest="inputs_mm", default="DESY-KIT", type="choice", choices=['DESY-KIT'],
@@ -101,6 +103,7 @@ print "# --analyses        :", options.analyses
 print "# --label           :", options.label
 print "# --drop-list       :", options.drop_list
 print "# --do-not-scales   :", options.do_not_scales
+print "# --add-mutau-soft  :", options.add_mutau_soft
 print "# --------------------------------------------------------------------------------------"
 print "# --inputs-ee       :", options.inputs_ee
 print "# --inputs-mm       :", options.inputs_mm
@@ -309,9 +312,10 @@ if options.update_setup :
                         ))
                 if '8TeV' in periods :
                     ## setup bbb uncertainties for mt 8TeV
-                    os.system("add_bbb_errors.py 'mt:8TeV:01,02,04,05,06,07:ZL,ZJ,QCD>W'  --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
+                    os.system("add_bbb_errors.py 'mt:8TeV:01,02,04,05,06,07{SOFT}:ZL,ZJ,QCD>W'  --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
-                        ANA=ana
+                        ANA=ana,
+                        SOFT=',10,11,12,13,15,16' if options.add_mutau_soft else ''                        
                         ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                
@@ -495,12 +499,13 @@ if options.update_aux :
                     MASSES=' '.join(masses),
                     ))
             if '8TeV' in periods :
-                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'mt' --sm-categories-mt='0 1 2 3 4 5 6 7' {MASSES}".format(
+                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'mt' --sm-categories-mt='0 1 2 3 4 5 6 7{SOFT}' {MASSES}".format(
                     LABEL=options.label,
                     CMSSW_BASE=cmssw_base,
                     ANA=ana,
                     DIR=dir,
                     MASSES=' '.join(masses),
+                    SOFT=' 10 11 12 13 15 16' if options.add_mutau_soft else ''
                     ))            
         if 'tt' in channels :
             if '8TeV' in periods :
@@ -626,12 +631,13 @@ if options.update_limits :
                     MASSES=' '.join(masses)
                     ))
             if '8TeV' in periods :
-                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'mt' {LABEL} --sm-categories-mt='0 1 2 3 4 5 6 7' {MASSES}".format(
+                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'mt' {LABEL} --sm-categories-mt='0 1 2 3 4 5 6 7{SOFT}' {MASSES}".format(
                     INDEX=options.label,                
                     ANA=ana,
                     DIR=dir,
                     LABEL=label,
-                    MASSES=' '.join(masses)
+                    MASSES=' '.join(masses),
+                    SOFT=' 10 11 12 13 15 16' if options.add_mutau_soft else ''
                     ))                        
         if 'tt' in channels :
             if '8TeV' in periods :
