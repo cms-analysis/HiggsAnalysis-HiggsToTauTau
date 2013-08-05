@@ -71,10 +71,10 @@ for m in masses :
         os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/blindData.py --seed {RND} --injected-mass {INJECTEDMASS} --inject-signal --X-allow-no-signal {TMPDIR}/{USER}/{DIR}_{JOBID}/%s"%m)
         print "limit.py {METHOD} {OPTS} {TMPDIR}/{USER}/{DIR}_{JOBID}/%s" % m
         os.system("limit.py {METHOD} {OPTS} {TMPDIR}/{USER}/{DIR}_{JOBID}/%s" % m)
-        os.system("cp -v {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/higgsCombine{EXTENSION}.mH%s.root {PWD}/{PATH}/{DIR}/%s/higgsCombine{EXTENSION}.mH%s-{JOBID}-{INJECTEDMASS}.root" % (m, m, m, m))
+        os.system("cp -v {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/higgsCombine{EXTENSION}.mH%s.root {PWD}/{PATH}/{DIR}/%s/higgsCombine{EXTENSION}.mH%s-{OUTPUTLABEL}.root" % (m, m, m, m))
         if "max-likelihood" in "{METHOD}" :
             os.system("root -b -l -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/mlfit_result.C\(\\\\\\"{TMPDIR}/{USER}/{DIR}_{JOBID}/%s\\\\\\",\\\\\\"nll_min\\\\\\"\)" % (m))
-            os.system("cp -v {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/mlfit_result.root {PWD}/{PATH}/{DIR}/%s/higgsCombineMLFIT.mH%s-{JOBID}-{INJECTEDMASS}.root" % (m, m, m))
+            os.system("cp -v {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/mlfit_result.root {PWD}/{PATH}/{DIR}/%s/higgsCombineMLFIT.mH%s-{OUTPUTLABEL}.root" % (m, m, m))
 os.system("rm -r {TMPDIR}/{USER}/{DIR}_{JOBID}")
 '''
 
@@ -159,7 +159,7 @@ with open(submit_name, 'w') as submit_script:
                     PATH = input[:input.rfind('/')],
                     DIR = input[input.rfind('/')+1:],
                     JOBID = "%s_%s_%s" % (idx, mass_grp_idx, options.injected_mass),
-                    INJID = "%s_%s"    % (idx, options.injected_mass),
+                    OUTPUTLABEL = "%s-%s" % (idx, options.injected_mass),
                     RND = rnd,
                     TMPDIR=tmpdir,
                     ))

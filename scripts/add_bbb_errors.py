@@ -98,6 +98,12 @@ def get_channel_dirs(finalstate, category):
         '07' : ['vbf_tight'  ],
         '08' : ['nobtag'     ],
         '09' : ['btag'       ],
+        '10' : ['soft_0jet_low'   ],
+        '11' : ['soft_0jet_medium'],
+        '12' : ['soft_0jet_high'  ],
+        '13' : ['soft_1jet_medium'],
+        '15' : ['soft_1jet_high'  ],
+        '16' : ['soft_vbf'   ],
         },
         'tt' : {
         '00' : ['1jet_high_mediumhiggs'],

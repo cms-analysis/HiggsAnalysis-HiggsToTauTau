@@ -429,7 +429,7 @@ if options.optInject :
         ## prepare options
         opts = options.opt
         if options.injected_method == "--max-likelihood" :
-            folder_extension = "-mle"
+            folder_extension = "-mlfit"
         elif options.injected_method == "--asymptotic" :
             folder_extension = "-limit"
         elif options.injected_method == "--significance-frequentist" :
@@ -454,6 +454,11 @@ if options.optInject :
         ## directories and masses per directory
         print "Collecting results"
         struct = directories(args)
+        ## subtract global minimum of NLL as function of all available masses for MLFIT outputs for mass likelihood estimate
+        ## before collecting all toys
+        if options.injected_method == "--max-likelihood" :
+            for dir in struct[0] :
+                os.system("massDeltaNLL.py --histname higgsCombineMLFIT*.root DIR".format(DIR=dir))
         lxb_submit(struct[0], struct[1], "{METHOD} --collect-injected-toys".format(METHOD=options.injected_method), "{USER}".format(USER=options.opt))
 ##
 ## CLs
