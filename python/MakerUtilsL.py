@@ -172,9 +172,6 @@ class DBuilder:
            #print "samples_groups for this unc.:",samples_groups
            rel_samples = []
            for item in samples_groups:
-               for comp in self.signals :
-                   if comp.find(item)>-1:
-                       item = comp
                if item in self.groups.keys():
                    #print item
                    for sample in self.groups[item].samples:
