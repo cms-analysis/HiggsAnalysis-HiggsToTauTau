@@ -544,7 +544,7 @@ if options.update_limits :
     print "## update LIMITS directory:"
     print "##"
     ## setup directory structure
-    dir = "{CMSSW_BASE}/src/LIMITS{INDEX}".format(CMSSW_BASE=cmssw_base, INDEX='' if options.label == '' else '_'+options.label)
+    dir = "{CMSSW_BASE}/src/LIMITS{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
     if os.path.exists(dir) :
         if os.path.exists(dir.replace('src/', 'src/backup/')):
             os.system("rm -r "+dir.replace('src/', 'src/backup/'))
