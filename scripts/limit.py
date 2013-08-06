@@ -412,13 +412,15 @@ for directory in args :
             ## iteration, than combine the resulting 10 files to the final output file.
             njob = 0
             extension = 'MLFIT'
-            globdir = "higgsCombine{EXT}.mH{MASS}-*_*.root".format(EXT=extension, MASS=mass)
+            globdir = "higgsCombine{EXT}.mH{MASS}-*-*.root".format(EXT=extension, MASS=mass)
             #print glob.glob(globdir)
             for job in glob.glob(globdir) :
                 njob=njob+1
+            print njob
+            print glob.glob(globdir)
             for idx in range(10 if njob>10 else njob) :
                 ## taking {IDX}* instead of *{IDX} produces uneven amount of toys in each file, but it is an easy trick to prevent an ambiguous pattern
-                os.system("hadd -f batch_collected_{METHOD}_{IDX}.root higgsCombine{EXT}.mH{MASS}-{IDX}*_*.root".format( 
+                os.system("hadd -f batch_collected_{METHOD}_{IDX}.root higgsCombine{EXT}.mH{MASS}-{IDX}*-*.root".format( 
                     METHOD=collect_file,
                     EXT=extension,
                     MASS=mass,
@@ -643,13 +645,13 @@ for directory in args :
                 extension = 'SIG-obs.ProfileLikelihood'
             if options.optPValue :
                 extension = 'PVAL-obs.ProfileLikelihood'
-            globdir = "higgsCombine{EXT}.mH{MASS}-*_*.root".format(EXT=extension, MASS=mass)
+            globdir = "higgsCombine{EXT}.mH{MASS}-*-*.root".format(EXT=extension, MASS=mass)
             #print glob.glob(globdir)
             for job in glob.glob(globdir) :
                 njob=njob+1
             for idx in range(10 if njob>10 else njob) :
                 ## taking {IDX}* instead of *{IDX} produces uneven amount of toys in each file, but it is an easy trick to prevent an ambiguous pattern
-                os.system("hadd -f batch_collected_{METHOD}_{IDX}.root higgsCombine{EXT}.mH{MASS}-{IDX}*_*.root".format(
+                os.system("hadd -f batch_collected_{METHOD}_{IDX}.root higgsCombine{EXT}.mH{MASS}-{IDX}*-*.root".format(
                     METHOD=collect_file,
                     EXT=extension,
                     MASS=mass,
@@ -702,13 +704,13 @@ for directory in args :
             ## to allow for more files to be combined distinguish by first digit in a first
             ## iteration, than combine the resulting 10 files to the final output file.
             njob = 0
-            globdir = "higgsCombine-obs.Asymptotic.mH{MASS}-*_*.root".format(MASS=mass)
+            globdir = "higgsCombine-obs.Asymptotic.mH{MASS}-*-*.root".format(MASS=mass)
             #print glob.glob(globdir)
             for job in glob.glob(globdir) :
                 njob=njob+1
             for idx in range(10 if njob>10 else njob) :
                 ## taking {IDX}* instead of *{IDX} produces uneven amount of toys in each file, but it is an easy trick to prevent an ambiguous pattern
-                os.system("hadd -f batch_collected_limit_{IDX}.root higgsCombine-obs.Asymptotic.mH{MASS}-{IDX}*_*.root".format(
+                os.system("hadd -f batch_collected_limit_{IDX}.root higgsCombine-obs.Asymptotic.mH{MASS}-{IDX}*-*.root".format(
                     MASS=mass,
                     IDX=idx
                     ))
