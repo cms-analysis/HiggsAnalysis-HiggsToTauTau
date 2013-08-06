@@ -8,6 +8,8 @@ parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...", descrip
 ## MAIN OPTIONS
 ##
 agroup = OptionGroup(parser, "MAIN OPTIONS", "These are the command line options that list all available processes that can be executed via this script. Each process is run with a default configuration that has been recently used for analysis. Depending on the process the execution of the script will result in the submission of a pre-defined set of batch jobs via lxb (lxq) or in a submission of a pre-defined set of jobs via crab. The options that will lead submission to lxb (lxq) are: --max-likelihood, --likelihood-scan, --multidim-fit, --asymptotic, --tanb+. The options that will lead to crab submission are: --significance, --CLs, --bayesian, --tanb. The latter requires the proper setup of a glite and a crab environment. Note that this is the case even if the submission would only take place via lxb (lxq), as the grid environment is used internally by crab. All options are explained in the following. All command line options in this section are exclusive. For the options --likelihood-scan, --asymptotic, --tanb+ it is possible to force interactive running. If run in batch mode the jobs will be split per mass.")
+agroup.add_option("--goodness-of-fit", dest="optGoodnessOfFit", default=False, action="store_true",
+                  help="Determine the goodness of fit equivalent to a chisquared. For the vexpected goodness of fit this is a toys based procedure. The fit will be applied to the SM with single signal modifier. When submitting to lxb (lxq) you can configure the queue to which the jobs will be submitted as described in section BATCH OPTIONS of this parameter description. [Default: False]")
 agroup.add_option("--max-likelihood", dest="optMLFit", default=False, action="store_true",
                   help="Perform a maximum likelihood fit scan to determine the signal strength from the datacards in the directory/ies corresponding to ARGs. This fit will be applied to the SM with single signal modifier. The pre-configuration corresponds to --stable, --rMin -5, --rMax 5. This pre-configuration will be applied irrespective of the mass, for which the process should be executed. The process will be executed via lxb (lxq), split by each single mass point that is part of ARGs or as a single interactive job when using the option --interactive. When submitting to lxb (lxq) you can configure the queue to which the jobs will be submitted as described in section BATCH OPTIONS of this parameter description. [Default: False]")
 
@@ -145,6 +147,7 @@ if len(args) < 1 :
 
 import re
 import os
+import random
 
 from HiggsAnalysis.HiggsToTauTau.utils import contained
 from HiggsAnalysis.HiggsToTauTau.utils import is_number
@@ -233,6 +236,23 @@ def lxb_submit(dirs, masses, cmd='--asymptotic', opts='') :
             ## store
             os.system("mv {JOBNAME}_submit.sh {JOBNAME}".format(JOBNAME=jobname))
 
+##
+## GOODNESS OF FIT
+##
+if options.optGoodnessOfFit :
+    if options.interactive :
+        for dir in args :
+            mass = get_mass(dir)
+            if mass == 'common' :
+                continue
+            if options.printOnly :
+                print "limit.py --goodness-of-fit --expectedOnly --toys {TOYS} --seed {SEED} {USER} {DIR}".format(TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt, DIR=dir, )
+            else :
+                os.system("limit.py --goodness-of-fit --expectedOnly --toys {TOYS} --seed {SEED} {USER} {DIR}".format(TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt, DIR=dir, ))
+    else :
+        ## directories and mases per directory
+        struct = directories(args)
+        lxb_submit(struct[0], struct[1], "--goodness-off-fit", "--expectedOnly --toys {TOYS} --seed {SEED} {USER}".format(TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt))    
 ##
 ## MAX-LIKELIHOOD
 ##
@@ -440,7 +460,7 @@ if options.optInject :
             opts+=" --observedOnly"
         if not options.nuisances == "" :
             opts+=" --no-prefit --external-pulls \"{PATH}\" --signal-plus-background {SPLUSB}".format(PATH=options.nuisances, SPLUSB=options.signal_plus_BG)
-        method = options.injected_method#"--asymptotic"
+        method = options.injected_method
         ## do the submit
         for path in paths :
             jobname = "injected-"+path[path.rstrip('/').rfind('/')+1:]+folder_extension
@@ -458,7 +478,8 @@ if options.optInject :
         ## before collecting all toys
         if options.injected_method == "--max-likelihood" :
             for dir in struct[0] :
-                os.system("massDeltaNLL.py --histname higgsCombineMLFIT*.root DIR".format(DIR=dir))
+                print "subtracting global minimum from NLL for dir:", dir
+                os.system("massDeltaNLL.py --histname higgsCombineMLFIT*.root {DIR}".format(DIR=dir))
         lxb_submit(struct[0], struct[1], "{METHOD} --collect-injected-toys".format(METHOD=options.injected_method), "{USER}".format(USER=options.opt))
 ##
 ## CLs

@@ -5,6 +5,8 @@ from optparse import OptionParser, OptionGroup
 parser = OptionParser(usage="usage: %prog [options] ARG", description="This is a script to transform the NLL for the calculation of the signal strength modified mu into a delta NLL for the estimate of the mass of the new particle. This has to be done across all available masses in the directory pointed to by ARG. As function of the mass the minimal absolute NLL is determined and substracted from the other minimal NLLs.")
 parser.add_option("--histname", dest="histname", default="higgsCombineMLFIT*.root", type="string",
                   help="You can configure the name of the histogram files that you are looking for via this option. [Default: \"higgsCombineMLFIT*.root\"]")
+parser.add_option("--verbose", dest="verbose", default=False, action="store_true",
+                  help="Run in verbose mode. [Default: False]")
 (options, args) = parser.parse_args()
 if len(args) < 1 :
     parser.print_usage()
@@ -26,7 +28,7 @@ def trunc(front, list) :
         newlist.append(elem[len(front):].replace('/', ' ').strip().rstrip())
     return newlist
 
-def minimalNLL(main, histname) :
+def minimalNLL(main, histname, verbose) :
     """
     Determine the minimal NLL across all masses in main. 
     """
@@ -36,9 +38,11 @@ def minimalNLL(main, histname) :
     for dir in dirs :
         if len(glob.glob(dir+'/'+histname))>max :
             files = trunc(dir, glob.glob(dir+'/'+histname))
-    ## for each go through all directories in dirs, read the nll value from the output files into a buffer, from the buffer
-    ## determine the global minimum as function of the mass. Then go through all directories in dirs again, create a new
-    ## output file with the orignal nll value minus the global minimum as function of the mass.  
+    print "# Files to process:", len(files), "(this can take a few minutes...)"
+    print "# --------------------------------------------------------------------------------------"
+    ## for each file go through all directories in dirs, read the nll value from the output files into a buffer, from the
+    ## buffer determine the global minimum as function of the mass. Then go through all directories in dirs again, create
+    ## a new output file with the original nll value minus the global minimum as function of the mass.  
     for file in files :
         nlls = {}
         ## determine mHXXX label
@@ -75,7 +79,6 @@ def minimalNLL(main, histname) :
             tree = TTree('limit', 'limit')
             tree.Branch('limit', buffer, 'limit/F')
             buffer.limit = float(nll)
-            print nll, tree.limit
             tree.Fill()
             tree.Write()
             root.Close()
@@ -83,8 +86,17 @@ def minimalNLL(main, histname) :
     ## directory that served as reference for files are also removed, as they will destroy the band otherwise. (In principle
     ## this is not needed any more after the dir with the largest number of files gives the reference for files).
     for dir in dirs :
+        mass = 'mH'+dir[len(main):].replace('/', ' ').strip().rstrip()
         for file in files :
-            os.system('rm {DIR}/{FILE}'.format(DIR=dir, FILE=file))
-            os.system('cp {DIR}/{FILE}_modified {DIR}/{FILE}'.format(DIR=dir, FILE=file))
+            os.system('rm {DIR}/{FILE}'.format(DIR=dir, FILE=file.replace(refmass, mass)))
+            os.system('mv {DIR}/{FILE}_modified {DIR}/{FILE}'.format(DIR=dir, FILE=file.replace(refmass, mass)))
             
-minimalNLL(args[0], options.histname)
+print "# --------------------------------------------------------------------------------------"
+print "# Subtracting global minimum from NLL. "
+print "# --------------------------------------------------------------------------------------"
+print "# You are using the following configuration: "
+print "# --histname          :", options.histname
+print "# Check option --help in case of doubt about the meaning of one or more of these confi-"
+print "# guration parameters.                           "
+print "# --------------------------------------------------------------------------------------"
+minimalNLL(args[0], options.histname, options.verbose)
