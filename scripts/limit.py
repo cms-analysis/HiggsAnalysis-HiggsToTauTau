@@ -8,6 +8,8 @@ parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...", descrip
 ## MAIN OPTIONS
 ##
 agroup = OptionGroup(parser, "MAIN OPTIONS", "These are the command line options for the common use of limits.py. These options can be considered as the main switches of limit.py. They comprise several options to determine fits to the signal strength, multi-dimensional fits in 2d-planes, for user defined models, asymptotic limits, toy based significance calculations and toy based limit calculations like bayesian and full CLs limits. All toy based calculations have to be prepared and submitted to some batch system or to the grid. Use the script submit.py with corresponding command line options as descripbed for each individual calculation method, to which this applies below. All command line options in this section are exclusive.")
+agroup.add_option("--goodness-of-fit", dest="optGoodnessOfFit", default=False, action="store_true",
+                  help="Perform a test of the goodness of fit (equivalernt to a chisquared fit but suited for an arbitary abount of channels and for the use with nuisance parameters). The expected goodness of fit test is toy based. [Default: False]")
 agroup.add_option("--max-likelihood", dest="optMLFit", default=False, action="store_true",
                   help="Perform a maximum likelihood fit from the datacards in the directory/ies. corresponding to ARGs The results of this fit are used for htt postfit plots. [Default: False]")
 agroup.add_option("--likelihood-scan", dest="optNLLScan", default=False, action="store_true",
@@ -61,6 +63,8 @@ bgroup.add_option("--expectedOnly", dest="expectedOnly", default=False, action="
                   help="Calculate the expected limit only. This option applies to limit and significance calculations only. [Default: False]")
 bgroup.add_option("--observedOnly", dest="observedOnly", default=False, action="store_true",
                   help="Calculate the observed limit only. This option applies to limit and significance calculations only. [Default: False]")
+bgroup.add_option("--seed", dest="seed", default="-1", type="string",
+                  help="Choose a random seed if required. At the moment this is only explicitely needed for option --goodness-of-fit. [Default: '-1']")
 bgroup.add_option("--userOpt", dest="userOpt", default="", type="string",
                   help="With this option you can specify any kind of user option that is not covered by limit.py and that you would like to be passed on to the combine tool. [Defaul: \"\"]")
 bgroup.add_option("--working-dir", dest="workingdir", default=".",
@@ -391,6 +395,30 @@ for directory in args :
             os.system("rm -r crab*")
             os.chdir(subdirectory)
     ##
+    ## GOODNESS OF FIT
+    ##
+    if options.optGoodnessOfFit :
+        ## determine mass value from directory name
+        mass  = get_mass(directory)
+        ## prepare workspace
+        create_card_workspace(mass)
+        if options.optCollect :
+            pass
+        ## if it does not exist already, create link to executable
+        if not os.path.exists("combine") :
+            os.system("cp -s $(which combine) .")
+        if not options.observedOnly :
+            print "combine -M GoodnessOfFit -m {mass} --algo saturated -t {toys} -s {seed} {user} {wdir}/tmp.root".format(
+                mass=mass, user=options.userOpt, toys=options.toys, seed=options.seed, wdir=options.workingdir)
+            os.system("combine -M GoodnessOfFit -m {mass} --algo saturated -t {toys} -s {seed} {user} {wdir}/tmp.root".format(
+                mass=mass, user=options.userOpt, toys=options.toys, seed=options.seed, wdir=options.workingdir))
+        ## run observed limit
+        if not options.expectedOnly :
+            print "combine -M GoodnessOfFit -m {mass} --algo saturated {user} {wdir}/tmp.root".format(
+                mass=mass, user=options.userOpt, wdir=options.workingdir)
+            os.system("combine -M GoodnessOfFit -m {mass} --algo saturated {user} {wdir}/tmp.root".format(
+                mass=mass, user=options.userOpt, wdir=options.workingdir))
+    ##
     ## MAX-LIKELIHOOD
     ##
     if options.optMLFit :
@@ -416,8 +444,6 @@ for directory in args :
             #print glob.glob(globdir)
             for job in glob.glob(globdir) :
                 njob=njob+1
-            print njob
-            print glob.glob(globdir)
             for idx in range(10 if njob>10 else njob) :
                 ## taking {IDX}* instead of *{IDX} produces uneven amount of toys in each file, but it is an easy trick to prevent an ambiguous pattern
                 os.system("hadd -f batch_collected_{METHOD}_{IDX}.root higgsCombine{EXT}.mH{MASS}-{IDX}*-*.root".format( 
