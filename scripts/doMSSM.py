@@ -264,7 +264,7 @@ if options.update_setup:
                         DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'ttbar_fine_binning' -k '9' --range 200 --rangelast 2000 ".format(
                         DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'ttbar_fine_binning' -k '8' --range 200 --rangelast 2000 ".format(
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'ttbar_fine_binning' -k '8' --range 150 ".format(
                         DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
                 if options.channels.find("et") > -1:
                      os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'QCD_fine_binning' -k '9' --range 120 ".format(

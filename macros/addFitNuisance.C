@@ -290,7 +290,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
 
   //Define the fit function
   RooRealVar lM("m","m" ,0,5000);   //lM.setBinning(lBinning);
-  RooRealVar lA("a","a" ,50,  0.1,100);
+  RooRealVar lA("a","a" ,50,  0.1,200);
   RooRealVar lB("b","b" ,0.0 , -10.5,10.5); //lB.setConstant(kTRUE);
   RooDataHist *pH0  =  new RooDataHist("Data","Data" ,RooArgList(lM),lH0);
   RooGenericPdf *lFit  = 0; lFit = new RooGenericPdf("genPdf","exp(-m/(a+b*m))",RooArgList(lM,lA,lB));
