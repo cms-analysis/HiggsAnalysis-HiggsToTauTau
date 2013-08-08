@@ -34,15 +34,22 @@ def minimalNLL(main, histname, verbose) :
     """
     dirs = glob.glob(main+'/[0-9]*/')
     ## create list of file references from the directory with the largest number of apropriate files
-    max=0; files=[]
+    max=0; files=[]; refdir = ''
+    print "# Determine number of files per directory:"
     for dir in dirs :
+        print "# ", dir, "\t:", len(glob.glob(dir+'/'+histname))
         if len(glob.glob(dir+'/'+histname))>max :
+            refdir = dir
+            max   = len(glob.glob(dir+'/'+histname))
             files = trunc(dir, glob.glob(dir+'/'+histname))
+    print "# --------------------------------------------------------------------------------------"            
     print "# Files to process:", len(files), "(this can take a few minutes...)"
     print "# --------------------------------------------------------------------------------------"
     ## for each file go through all directories in dirs, read the nll value from the output files into a buffer, from the
     ## buffer determine the global minimum as function of the mass. Then go through all directories in dirs again, create
-    ## a new output file with the original nll value minus the global minimum as function of the mass.  
+    ## a new output file with the original nll value minus the global minimum as function of the mass.
+    dropped_files = 0
+    dropped_files_dict = dict((k, 0) for k in dirs)
     for file in files :
         nlls = {}
         ## determine mHXXX label
@@ -51,17 +58,26 @@ def minimalNLL(main, histname, verbose) :
         ## loop all trees in all output files and determine nll for each given mass value 
         for dir in dirs :
             mass = 'mH'+dir[len(main):].replace('/', ' ').strip().rstrip()
-            root = TFile(dir+file.replace(refmass, mass))
-            if root :
-                tree = root.FindObjectAny('limit')
-                if tree :
-                    for event in tree :
-                        nlls[dir] = event.limit
-                root.Close()
+            if os.path.exists(dir+file.replace(refmass, mass)):
+                root = TFile(dir+file.replace(refmass, mass))
+                if root :
+                    tree = root.FindObjectAny('limit')
+                    if tree :
+                        for event in tree :
+                            nlls[dir] = event.limit
+                    root.Close()
         ## issue a warning if one directory is missing in the dictionary.
+        missing_file = False
         for dir in dirs :
+            mass = 'mH'+dir[len(main):].replace('/', ' ').strip().rstrip()
             if not dir in nlls.keys() :
-                print "Warning: file:", file, "was not found in directory:", dir
+                if verbose :
+                    print "Warning: file:", file.replace(refmass, mass), "was not found in directory:", dir, "(dropped from collection of toys)"
+                dropped_files_dict[dir] += 1
+                missing_file = True
+        if missing_file :
+            max -= 1
+            dropped_files += 1
         ## determine minimal value and subtract it from all values, make sure that this happens by reference and not by value
         globnll = min(nlls.values())
         for idx in range(len(nlls)) :
@@ -69,7 +85,7 @@ def minimalNLL(main, histname, verbose) :
         ## write modified nlls back to file
         gROOT.ProcessLine(
             "struct buffer_t {\
-            Float_t limit;\
+            Double_t limit;\
             };"
             );
         for (dir,nll) in nlls.iteritems() :
@@ -77,7 +93,7 @@ def minimalNLL(main, histname, verbose) :
             mass = 'mH'+dir[len(main):].replace('/', ' ').strip().rstrip()
             root = TFile(dir+file.replace(refmass, mass)+'_modified', 'RECREATE')
             tree = TTree('limit', 'limit')
-            tree.Branch('limit', buffer, 'limit/F')
+            tree.Branch('limit', buffer, 'limit/D')
             buffer.limit = float(nll)
             tree.Fill()
             tree.Write()
@@ -86,11 +102,13 @@ def minimalNLL(main, histname, verbose) :
     ## directory that served as reference for files are also removed, as they will destroy the band otherwise. (In principle
     ## this is not needed any more after the dir with the largest number of files gives the reference for files).
     for dir in dirs :
-        mass = 'mH'+dir[len(main):].replace('/', ' ').strip().rstrip()
-        for file in files :
-            os.system('rm {DIR}/{FILE}'.format(DIR=dir, FILE=file.replace(refmass, mass)))
-            os.system('mv {DIR}/{FILE}_modified {DIR}/{FILE}'.format(DIR=dir, FILE=file.replace(refmass, mass)))
-            
+        for file in glob.glob(dir+'/'+histname) :
+            if os.path.exists(file) :
+                os.system('rm {FILE}'.format(FILE=file))
+            if os.path.exists(file+'_modified') :
+                os.system('mv {FILE}_modified {FILE}'.format(FILE=file))
+    return (max, dropped_files, dirs, dropped_files_dict)
+
 print "# --------------------------------------------------------------------------------------"
 print "# Subtracting global minimum from NLL. "
 print "# --------------------------------------------------------------------------------------"
@@ -99,4 +117,13 @@ print "# --histname          :", options.histname
 print "# Check option --help in case of doubt about the meaning of one or more of these confi-"
 print "# guration parameters.                           "
 print "# --------------------------------------------------------------------------------------"
-minimalNLL(args[0], options.histname, options.verbose)
+
+processed_files = minimalNLL(args[0], options.histname, options.verbose)
+
+print "# number of processed toys:", processed_files[0]
+print "# number of dropped   toys:", processed_files[1], '(N/A in at least on mass directory)'
+print "# --------------------------------------------------------------------------------------"
+print "# Break up in directories (including double counts):                                    "
+for dir in processed_files[2] :
+    print "# ", dir, "\t:", processed_files[3][dir]
+print "# --------------------------------------------------------------------------------------"
