@@ -7,12 +7,22 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
 void
 PlotLimits::plotMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed)
 {
+  float minobs = 9999.;
+  for(int idx=0; idx<observed->GetN(); ++idx){
+    if(minobs==9999 || observed->GetY()[idx]<minobs){
+      minobs = observed->GetY()[idx];
+    }
+  } 
+  TGraph* modifiedobs= new TGraph();
+  for(int idx=0; idx<observed->GetN(); ++idx){
+    modifiedobs->SetPoint(idx, observed->GetX()[idx], observed->GetY()[idx]-minobs);
+  } 
   // set up styles
   SetStyle();
   // set proper maximum
   float max = max_<0 ? maximum(expected) : max_;
   // do the plotting
-  plottingMassEstimate(canv, innerBand, outerBand, expected, observed, xaxis_, yaxis_, max, log_);    
+  plottingMassEstimate(canv, innerBand, outerBand, expected, modifiedobs, xaxis_, yaxis_, max, log_);    
   // add the CMS Preliminary stamp
   CMSPrelim(dataset_.c_str(), "", 0.160, 0.835);
   //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
