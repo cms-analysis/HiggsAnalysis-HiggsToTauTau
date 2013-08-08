@@ -52,7 +52,7 @@ script_template = '''
 
 import os
 
-print "Running limit.py with signal injected:"
+print "Running limit.py (with signal injected):"
 print "with options {OPTS}"
 print "for directory {PATH}/{DIR}"
 print "for random seed {RND}"
