@@ -109,12 +109,12 @@ patterns = {
     #'2012d'      : '-2012d',
     #'hcp'        : '-hcp',
     }
-#if options.fit_tails:
-#    patterns = {
-#        'std'        : '-fb',
-#        'bin-by-bin' : '-fb',
-#        'pruned'     : '-fb',
-#    }
+if options.fit_tails:
+    patterns = {
+        'std'        : '-fb',
+        'bin-by-bin' : '-fb',
+        'pruned'     : '-fb',
+    }
 
 
 ## full channel name  for input files
@@ -168,7 +168,7 @@ if options.update_cvs :
                     FULLNAME=fullname[chn]
                     )
                 for file in glob.glob(source) :
-                    os.system("cp {SOURCE} {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/".format(
+                    os.system("cp {SOURCE} {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup/{CHN}/{FULLNAME}.inputs-mssm-{PER}-0.root".format(
                         SOURCE=file,
                         CMSSW_BASE=cmssw_base,
                         CHN=chn,
