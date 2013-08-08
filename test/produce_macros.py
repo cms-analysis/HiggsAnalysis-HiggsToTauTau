@@ -79,6 +79,8 @@ class Analysis:
             return True 
         if "nobtag" in cat :
             return True
+        if "btag" in cat:
+            return True
         return False
 
     def signal_process(self, process) :
