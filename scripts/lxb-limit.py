@@ -25,6 +25,8 @@ if len(args) < 1 :
 import os
 import sys
 import glob
+import random
+import string
 
 import logging
 log = logging.getLogger("lxb-limit")
@@ -50,11 +52,19 @@ eval `scram runtime -sh`
 
 echo "Running limit.py:"
 echo "with options {options}"
-echo "in directory {directory}"
+echo "in directory {dirhead}{tail}"
+
+echo "Copy {dirhead}{tail} --> {tmphead}/{tail}"
+mkdir -p {tmphead}
+cp -r {dirhead}{tail} {tmphead}/{tail}
+cp -r {dirhead}common {tmphead}
 
 echo "Running"
-$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} {directory}
+$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} {tmphead}/{tail}
 
+echo "Copy {tmphead}/{tail} --> {dirhead}{tail} (root output files only)"
+cp {tmphead}/{tail}/*.root {dirhead}{tail}
+rm -r {tmphead}
 '''
 
 lxq_fragment = '''#!/bin/bash
@@ -72,10 +82,6 @@ requirements = HasAFS_OSG && TARGET.FilesystemDomain =!= UNDEFINED && TARGET.UWC
 
 '''
 
-#if not glob.glob(dirglob):
-#    print "No limit directories found in glob %s" % glob
-#    sys.exit(1)
-
 if options.lxq :
     script_template = script_template.replace('#!/bin/bash', lxq_fragment)
 
@@ -89,7 +95,6 @@ with open(submit_name, 'w') as submit_script:
     if not os.path.exists(name):
         os.system("mkdir -p %s" % name)
     for i, dir in enumerate(args):
-    #for i, dir in enumerate(glob.glob(dirglob)):
         ## don't submit jobs on old LSF output
         if 'LSFJOB' in dir:
             continue
@@ -97,12 +102,18 @@ with open(submit_name, 'w') as submit_script:
             continue
         log.info("Generating submission script for %s", dir)
         script_file_name = '%s/%s_%i.sh' % (name, name, i)
+        ## create random directory in tmp. This allows to do more than one submission in parallel
+        tmp_head = '/tmp/'+''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))
+        dir_head = dir.rstrip('/')[:dir.rstrip('/').rfind('/')+1]
+        dir_tail = dir.rstrip('/')[dir.rstrip('/').rfind('/')+1:]
         with open(script_file_name, 'w') as script:
             script.write(
                 script_template.format(
                 working_dir=os.getcwd(),
                 options=option_str,
-                directory=dir
+                dirhead=dir_head,
+                tmphead=tmp_head,
+                tail=dir_tail
                 ))
         os.system('chmod a+x %s' % script_file_name)
         if options.condor :
