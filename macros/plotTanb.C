@@ -14,7 +14,7 @@
 #include "HiggsAnalysis/HiggsToTauTau/src/plottingTanb.cxx"
 
 void
-plotTanb(const char* filename, const char* channel, double min_=0., double max_=50., bool log_=false, std::string dataset_="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 12.1 fb^{-1} at 8 TeV", std::string xaxis_="m_{A} [GeV]", std::string yaxis_="#bf{tan#beta}")
+plotTanb(const char* filename, const char* channel, bool draw_injected_=false, double min_=0., double max_=60., bool log_=false, std::string dataset_="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV", std::string xaxis_="m_{A} [GeV]", std::string yaxis_="#bf{tan#beta}")
 {
   TFile* file = TFile::Open(filename);
   // retrieve TGraphs from file
@@ -26,6 +26,11 @@ plotTanb(const char* filename, const char* channel, double min_=0., double max_=
   TGraphAsymmErrors* outerBand = (TGraphAsymmErrors*)file->Get(std::string(channel).append("/outerBand").c_str());
   TGraphAsymmErrors* plain = (TGraphAsymmErrors*)file->Get(std::string(channel).append("/plain").c_str());
 
+  // this is new for injected plot 
+  TGraph* injected = 0;
+  std::cout<< "hello"<<std::endl;
+  if(draw_injected_) {injected = (TGraph*)file->Get("injected/observed");}
+
   // this functionality is not yet supported
   std::map<double, TGraphAsymmErrors*> higgsBands;
 
@@ -34,7 +39,8 @@ plotTanb(const char* filename, const char* channel, double min_=0., double max_=
   // do the plotting 
   TCanvas canv = TCanvas("canv", "Limits", 600, 600);
   // do the plotting 
-  plottingTanb(canv, plain, innerBand, outerBand, expected, observed, lowerLEP, upperLEP, higgsBands, xaxis_, yaxis_, min_, max_, log_);
+  plottingTanb(canv, plain, innerBand, outerBand, expected, observed, lowerLEP, upperLEP, higgsBands, xaxis_, yaxis_, injected, min_, max_, log_);
+  std::cout<< "hello2"<<std::endl;
   /// setup the CMS Preliminary
   CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
   // write results to files

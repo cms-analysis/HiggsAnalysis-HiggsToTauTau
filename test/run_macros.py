@@ -58,8 +58,8 @@ if options.analysis == "mssm" :
         "mt"   : options.mt_mssm_categories.split(),
         "et"   : options.et_mssm_categories.split(),
         "tt"   : options.tt_mssm_categories.split(),
-        "hmm"  : options.hmm_mssm_categories.split(),
-        "hbb"  : options.hbb_mssm_categories.split(),
+#        "hmm"  : options.hmm_mssm_categories.split(),
+#        "hbb"  : options.hbb_mssm_categories.split(),
         }
 for key in categories :
     for idx in range(len(categories[key])) : categories[key][idx] = categories[key][idx].rstrip(',')

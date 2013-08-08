@@ -82,16 +82,8 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   bool MSSM = std::string(analysis) == std::string("MSSM");
   // determine label
   if (std::string(dataset) == std::string("2011"     )){ dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV"; }
-  if (std::string(dataset) == std::string("2012"     )){ 
-    //if (std::string(extra) == std::string("#mu#mu") ) dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 18.7 fb^{-1} at 8 TeV"; 
-    //else 
-    dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 19.8 fb^{-1} at 8 TeV";
-  }
-  if (std::string(dataset) == std::string("2011+2012")){ 
-    //if (std::string(extra) == std::string("#mu#mu") ) dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 18.7 fb^{-1} at 8 TeV"; 
-    //else 
-    dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV";
-  }
+  if (std::string(dataset) == std::string("2012"     )){ dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 19.8 fb^{-1} at 8 TeV"; }
+  if (std::string(dataset) == std::string("2011+2012")){ dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV"; }
   // determine category tag
   const char* category_extra = "";
   if(std::string(extra2) == std::string("0jet_low"  )){ category_extra = "0 jet, low p_{T}";  }
@@ -132,7 +124,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   data->SetNdivisions(505);
   data->SetMinimum(min);
   if(Zmm){
-    data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(EWK, log)));
+    data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(Zmm, log)));
   }
   else{
     data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(Ztt, log)));
@@ -226,7 +218,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     massA->SetTextSize ( 0.03 );
     massA->SetTextColor(    1 );
     massA->SetTextFont (   62 );
-    massA->AddText("m_{A}=$MAGeV");
+    massA->AddText("m_{A}=$MA GeV");
     massA->Draw();
     
     TPaveText* tanb      = new TPaveText(0.75, 0.44+0.061, 0.85, 0.44+0.161, "NDC");
@@ -246,7 +238,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     scen->SetTextSize ( 0.03 );
     scen->SetTextColor(    1 );
     scen->SetTextFont (   62 );
-    scen->AddText("mhmax");
+    scen->AddText("m^{h}_{max}");
     scen->Draw();
   }
   

@@ -8,6 +8,8 @@ parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...", descrip
 ## MAIN OPTIONS
 ##
 agroup = OptionGroup(parser, "MAIN OPTIONS", "These are the command line options that list all available processes that can be executed via this script. Each process is run with a default configuration that has been recently used for analysis. Depending on the process the execution of the script will result in the submission of a pre-defined set of batch jobs via lxb (lxq) or in a submission of a pre-defined set of jobs via crab. The options that will lead submission to lxb (lxq) are: --max-likelihood, --likelihood-scan, --multidim-fit, --asymptotic, --tanb+. The options that will lead to crab submission are: --significance, --CLs, --bayesian, --tanb. The latter requires the proper setup of a glite and a crab environment. Note that this is the case even if the submission would only take place via lxb (lxq), as the grid environment is used internally by crab. All options are explained in the following. All command line options in this section are exclusive. For the options --likelihood-scan, --asymptotic, --tanb+ it is possible to force interactive running. If run in batch mode the jobs will be split per mass.")
+agroup.add_option("--goodness-of-fit", dest="optGoodnessOfFit", default=False, action="store_true",
+                  help="Determine the goodness of fit equivalent to a chisquared. For the vexpected goodness of fit this is a toys based procedure. The fit will be applied to the SM with single signal modifier. When submitting to lxb (lxq) you can configure the queue to which the jobs will be submitted as described in section BATCH OPTIONS of this parameter description. [Default: False]")
 agroup.add_option("--max-likelihood", dest="optMLFit", default=False, action="store_true",
                   help="Perform a maximum likelihood fit scan to determine the signal strength from the datacards in the directory/ies corresponding to ARGs. This fit will be applied to the SM with single signal modifier. The pre-configuration corresponds to --stable, --rMin -5, --rMax 5. This pre-configuration will be applied irrespective of the mass, for which the process should be executed. The process will be executed via lxb (lxq), split by each single mass point that is part of ARGs or as a single interactive job when using the option --interactive. When submitting to lxb (lxq) you can configure the queue to which the jobs will be submitted as described in section BATCH OPTIONS of this parameter description. [Default: False]")
 
@@ -121,7 +123,7 @@ parser.add_option_group(ggroup)
 hgroup = OptionGroup(parser, "TANB+ OPTIONS", "These are the command line options that can be used to configure the submission of tanb+. This option is special in the way that it needs modifications of the directory structure before the limits can be run. Via the script submit.py this setup can only be run interactively using the commend option --setup. Once the directory structure has been set up the limit calculation can be run interactively or in batrch mode.")
 hgroup.add_option("--setup", dest="setup", default=False, action="store_true",
                   help="Use the script to setup the directory structure for direct mA-tanb limits interactively. If false the the script will assume that this has already been done and execute the limit calculation either in batch mode or interactive. [Default: False]")
-hgroup.add_option("--new", dest="new", default=False, action="store_true",
+hgroup.add_option("--old", dest="old", default=False, action="store_true",
                   help="Switch between tanb_grid.py and tanb_grid_new.py. If validated this could be deleted [Default: False]")
 parser.add_option_group(hgroup)
 
@@ -145,6 +147,7 @@ if len(args) < 1 :
 
 import re
 import os
+import random
 
 from HiggsAnalysis.HiggsToTauTau.utils import contained
 from HiggsAnalysis.HiggsToTauTau.utils import is_number
@@ -233,6 +236,23 @@ def lxb_submit(dirs, masses, cmd='--asymptotic', opts='') :
             ## store
             os.system("mv {JOBNAME}_submit.sh {JOBNAME}".format(JOBNAME=jobname))
 
+##
+## GOODNESS OF FIT
+##
+if options.optGoodnessOfFit :
+    if options.interactive :
+        for dir in args :
+            mass = get_mass(dir)
+            if mass == 'common' :
+                continue
+            if options.printOnly :
+                print "limit.py --goodness-of-fit --expectedOnly --toys {TOYS} --seed {SEED} {USER} {DIR}".format(TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt, DIR=dir, )
+            else :
+                os.system("limit.py --goodness-of-fit --expectedOnly --toys {TOYS} --seed {SEED} {USER} {DIR}".format(TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt, DIR=dir, ))
+    else :
+        ## directories and mases per directory
+        struct = directories(args)
+        lxb_submit(struct[0], struct[1], "--goodness-off-fit", "--expectedOnly --toys {TOYS} --seed {SEED} {USER}".format(TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt))    
 ##
 ## MAX-LIKELIHOOD
 ##
@@ -429,7 +449,7 @@ if options.optInject :
         ## prepare options
         opts = options.opt
         if options.injected_method == "--max-likelihood" :
-            folder_extension = "-mle"
+            folder_extension = "-mlfit"
         elif options.injected_method == "--asymptotic" :
             folder_extension = "-limit"
         elif options.injected_method == "--significance-frequentist" :
@@ -440,7 +460,7 @@ if options.optInject :
             opts+=" --observedOnly"
         if not options.nuisances == "" :
             opts+=" --no-prefit --external-pulls \"{PATH}\" --signal-plus-background {SPLUSB}".format(PATH=options.nuisances, SPLUSB=options.signal_plus_BG)
-        method = options.injected_method#"--asymptotic"
+        method = options.injected_method
         ## do the submit
         for path in paths :
             jobname = "injected-"+path[path.rstrip('/').rfind('/')+1:]+folder_extension
@@ -454,6 +474,12 @@ if options.optInject :
         ## directories and masses per directory
         print "Collecting results"
         struct = directories(args)
+        ## subtract global minimum of NLL as function of all available masses for MLFIT outputs for mass likelihood estimate
+        ## before collecting all toys
+        if options.injected_method == "--max-likelihood" :
+            for dir in struct[0] :
+                print "subtracting global minimum from NLL for dir:", dir
+                os.system("massDeltaNLL.py --histname higgsCombineMLFIT*.root {DIR}".format(DIR=dir))
         lxb_submit(struct[0], struct[1], "{METHOD} --collect-injected-toys".format(METHOD=options.injected_method), "{USER}".format(USER=options.opt))
 ##
 ## CLs
@@ -514,7 +540,7 @@ if options.optTanb or options.optTanbPlus :
             cmd = "submit-slave.py --bin combine --method tanb"
         elif options.optTanbPlus :
             if options.setup :
-                cmd = "submit-slave.py --bin combine --method tanb {NEW}".format(NEW="--new" if options.new else "")
+                cmd = "submit-slave.py --bin combine --method tanb {OLD}".format(OLD="--old" if options.old else "")
         if not cmd == "" :
             grid= []
             sub = "--interactive" if options.optTanbPlus else "--toysH 100 -t 200 -j 100 --random --server --priority"
@@ -572,9 +598,9 @@ if options.optTanb or options.optTanbPlus :
                     if mass == 'common' :
                         continue
                     if options.printOnly :
-                        print "limit.py --tanb+ {OPTS} {DIR} {NEW}".format(OPTS=options.opt, DIR=dir,  NEW="--new" if options.new else "")
+                        print "limit.py --tanb+ {OPTS} {DIR} {OLD}".format(OPTS=options.opt, DIR=dir, OLD="--old" if options.old else "")
                     else :
-                        os.system("limit.py --tanb+ {OPTS} {DIR} {NEW}".format(OPTS=options.opt, DIR=dir, NEW="--new" if options.new else ""))
+                        os.system("limit.py --tanb+ {OPTS} {DIR} {OLD}".format(OPTS=options.opt, DIR=dir, OLD="--old" if options.old else ""))
             else :
                 dirs = []
                 for dir in args :

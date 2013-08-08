@@ -5,7 +5,7 @@ parser = OptionParser(usage="usage: %prog [options]",
                       description="Script to combine 2011+2012 and high and low pt event categories. This script requires that the script run_macros.py has been executed beforehand and produced resultrs w/o issues.")
 ## direct options
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
-parser.add_option("-t", "--type", dest="type", default="rescaled", type="string", help="Type of plots, unscaled or rescaled. [Default: \"rescaled\"]")
+parser.add_option("-t", "--type", dest="type", default="postfit", type="string", help="Type of plots, prefit or postfit. [Default: \"postfit\"]")
 parser.add_option("--mA", dest="mA", default="160", type="float", help="Mass of pseudoscalar mA only needed for mssm. [Default: '160']")
 parser.add_option("--tanb", dest="tanb", default="20", type="float", help="Tanb only needed for mssm. [Default: '20']")
 ## check number of arguments; in case print usage
@@ -17,7 +17,7 @@ channels   = [
     "emu",
     "eleTau",
     "muTau",
-    #"mumu",
+    "mumu",
     ]
 
 categories_sm = [
@@ -34,13 +34,13 @@ categories_mssm = [
     #"0jet_low",
     #"0jet_high",
     #"0jet",
-    "1jet_low",
-    "1jet_high",
+    #"1jet_low",
+    #"1jet_high",
     #"1jet",
-    "btag_low",
-    "btag_high",
-    #"nobtag",
-    #"btag",
+    #"btag_low",
+    #"btag_high",
+    "nobtag",
+    "btag",
     ] 
 
 extra = {
@@ -208,15 +208,15 @@ for chn in channels :
         ## list that {CAT}_low and {CAT}_high are run beforehand
         if cat == "0jet" : ## or cat == "1jet" : ## in 1jet low and high pt have a different binning
             #print "hadd {CHN}_{CAT}_{TYPE}_7+8TeV.root {CHN}_{CAT}_low_{TYPE}_7+8TeV.root {CHN}_{CAT}_high_{TYPE}_7+8TeV.root".format(CHN=chn, CAT=cat, TYPE=type)
-            os.system("hadd -f {CHN}_{CAT}_{TYPE}_7+8TeV.root {CHN}_{CAT}_low_{TYPE}_7+8TeV.root {CHN}_{CAT}_high_{TYPE}_7+8TeV.root".format(CHN=chn, CAT=cat, TYPE=type))
+            os.system("hadd -f {CHN}_{CAT}_{TYPE}_7+8TeV_LIN.root {CHN}_{CAT}_low_{TYPE}_7+8TeV_LIN.root {CHN}_{CAT}_high_{TYPE}_7+8TeV_LIN.root".format(CHN=chn, CAT=cat, TYPE=type))
         else :
             #print "hadd {CHN}_{CAT}_{TYPE}_7+8TeV.root {CHN}_{CAT}_{TYPE}_7TeV_{LOG}.root {CHN}_{CAT}_{TYPE}_8TeV_{LOG}.root".format(
-            #    CHN=chn, CAT=cat, TYPE=type, LOG="LOG" if log[(chn, cat)] else "")
-            os.system("hadd -f {CHN}_{CAT}_{TYPE}_7+8TeV.root {CHN}_{CAT}_{TYPE}_7TeV_.root {CHN}_{CAT}_{TYPE}_8TeV_.root".format(
-                CHN=chn, CAT=cat, TYPE=type))#, LOG="LOG" if log[(chn, cat)]==True else ""))
+            #    CHN=chn, CAT=cat, TYPE=type, LOG="LOG" if log[(chn, cat)] else "LIN")
+            os.system("hadd -f {CHN}_{CAT}_{TYPE}_7+8TeV_LIN.root {CHN}_{CAT}_{TYPE}_7TeV_LIN.root {CHN}_{CAT}_{TYPE}_8TeV_LIN.root".format(
+                CHN=chn, CAT=cat, TYPE=type))#, LOG="LOG" if log[(chn, cat)]==True else "LIN"))
             if options.analysis == "mssm" :
                 os.system("hadd -f {CHN}_{CAT}_{TYPE}_7+8TeV_LOG.root {CHN}_{CAT}_{TYPE}_7TeV_LOG.root {CHN}_{CAT}_{TYPE}_8TeV_LOG.root".format(
-                    CHN=chn, CAT=cat, TYPE=type))#, LOG="LOG" if log[(chn, cat)]==True else ""))
+                    CHN=chn, CAT=cat, TYPE=type))#, LOG="LOG" if log[(chn, cat)]==True else "LIN"))
 
 ##print in the right Signal label for MSSM
 postfit_base = open("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit.C".format(CMSSW_BASE=os.environ['CMSSW_BASE']),'r')
@@ -233,7 +233,7 @@ postfit_use.close()
 for chn in channels :
     for cat in categories :
         print chn, cat
-        os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7+8TeV.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
+        os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7+8TeV_LIN.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
             CMSSW_BASE=os.environ['CMSSW_BASE'],
             CHN=chn,
             CAT=cat,
