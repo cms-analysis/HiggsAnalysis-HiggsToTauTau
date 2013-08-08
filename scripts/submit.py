@@ -199,7 +199,7 @@ def directories(args) :
         masses[dir] = list(buffer)
     return (dirs, masses)
 
-def lxb_submit(dirs, masses, cmd='--asymptotic', opts='') :
+def lxb_submit(dirs, masses, cmd='--asymptotic', opts='', cycle='') :
     '''
     do a lxb submission for jobs that can be executed via limit.py.
     dirs corresponds to a list of input directories, masses to a
@@ -210,7 +210,7 @@ def lxb_submit(dirs, masses, cmd='--asymptotic', opts='') :
     for dir in dirs:
         ana = dir[:dir.rfind('/')]
         limit = dir[len(ana)+1:]
-        jobname = ana[ana.rfind('/')+1:]+'-'+limit
+        jobname = ana[ana.rfind('/')+1:]+'-'+limit+cycle
         ## add compliance with lxq or condor
         sys = ''
         if options.lxq :
@@ -246,13 +246,18 @@ if options.optGoodnessOfFit :
             if mass == 'common' :
                 continue
             if options.printOnly :
-                print "limit.py --goodness-of-fit --expectedOnly --toys {TOYS} --seed {SEED} {USER} {DIR}".format(TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt, DIR=dir, )
+                print "limit.py --goodness-of-fit --expectedOnly --toys {TOYS} --seed {SEED} {USER} {DIR}".format(
+                    TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt, DIR=dir, )
             else :
-                os.system("limit.py --goodness-of-fit --expectedOnly --toys {TOYS} --seed {SEED} {USER} {DIR}".format(TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt, DIR=dir, ))
+                os.system("limit.py --goodness-of-fit --expectedOnly --toys {TOYS} --seed {SEED} {USER} {DIR}".format(
+                    TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt, DIR=dir, ))
     else :
         ## directories and mases per directory
         struct = directories(args)
-        lxb_submit(struct[0], struct[1], "--goodness-off-fit", "--expectedOnly --toys {TOYS} --seed {SEED} {USER}".format(TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt))    
+        cycle = options.cycles
+        while cycle>0 :
+            lxb_submit(struct[0], struct[1], "--goodness-of-fit", "--expectedOnly --toys {TOYS} --seed {SEED} {USER}".format(TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt), "-{CYCLE}".format(CYCLE=cycle-1))
+            cycle = cycle-1
 ##
 ## MAX-LIKELIHOOD
 ##
