@@ -358,6 +358,12 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   lHDown1 = merge(lNuisance2 + "Down" ,lFirst,lH0,lHDown1);
   lH      = merge(lH0->GetName()      ,lFirst,lH0,lH);
 
+  double I1=lHUp->Integral(lHUp->FindBin(lFirst), lHUp->FindBin(2000));  
+  double I2=lHDown->Integral(lHDown->FindBin(lFirst), lHDown->FindBin(2000));  
+  double I3=lHUp1->Integral(lHUp1->FindBin(lFirst), lHUp1->FindBin(2000));  
+  double I4=lHDown1->Integral(lHDown1->FindBin(lFirst), lHDown1->FindBin(2000)); 
+  
+
   //If verbosity is set make plot showing the shift up/down/central functions prior to rebinning
   if(iVerbose)
   {
@@ -405,6 +411,17 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
     lC0Fine->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Finebin.png").c_str());
 
   }
+  
+  //Check if the shift up/down histograms are integrable. If not terminate the script here.
+  if(I1 != I1 || I2 != I2 || I3 != I3 || I4 != I4)
+  {
+      std::cerr << "===============================================================================" << std::endl;
+      std::cerr << "Tail fit has succeeded, but 1 or more of the shift up/down histograms is not integrable." << std::endl;
+      std::cerr << "Script will terminate here without altering datacard. Turn on --verbose option to see the problem histogram." << std::endl; 
+      std::cerr << "===============================================================================" << std::endl;
+      return 1;
+  }
+
     
   //Rebin the histograms   
   const int lNBins = lData->GetNbinsX();
