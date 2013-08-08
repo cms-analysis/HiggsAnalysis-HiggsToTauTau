@@ -453,7 +453,7 @@ void addNuisanceWithToys(std::string iFileName,std::string iChannel,std::string 
   lM.setRange(lFirst,lLast);
   RooRealVar lA("a","a" ,50,  0.1,200);
   RooRealVar lB("b","b" ,0.0 , -10.5,10.5);
-  RooRealVar lA1("a1","a1" ,50,  0.1,1000);
+  RooRealVar lA1("a1","a1" ,50,  0.1, 200);
   RooRealVar lB1("b1","b1" ,0.0 , -10.5,10.5);
 
   RooDataHist *pH0  =  new RooDataHist("Data","Data" ,RooArgList(lM),lH0);
@@ -470,7 +470,7 @@ void addNuisanceWithToys(std::string iFileName,std::string iChannel,std::string 
   if(iFitModel == 1) lFit = new RooGenericPdf("genPdf","exp(-a*pow(m,b))",RooArgList(lM,lA,lB));
   if(iFitModel == 1) {lA.setVal(0.3); lB.setVal(0.5);}
   if(iFitModel == 2) lFit = new RooGenericPdf("genPdf","a*exp(b*m)",RooArgList(lM,lA,lB));
-  if(iFitModel == 2) {lA.setVal(0.01); lA.setRange(0,10); }
+  //if(iFitModel == 2) {lA.setVal(0.01); lA.setRange(0,10); }
   if(iFitModel == 3) lFit = new RooGenericPdf("genPdf","a/pow(m,b)",RooArgList(lM,lA,lB));
  
   // Generate the alternative model
@@ -479,7 +479,7 @@ void addNuisanceWithToys(std::string iFileName,std::string iChannel,std::string 
   if(iFitModel1 == 1) lFit1 = new RooGenericPdf("genPdf","exp(-a1*pow(m,b1))",RooArgList(lM,lA1,lB1));
   if(iFitModel1 == 1) {lA1.setVal(0.3); lB1.setVal(0.5);}
   if(iFitModel1 == 2) lFit1 = new RooGenericPdf("genPdf","a1*exp(b1*m)",RooArgList(lM,lA1,lB1));
-  if(iFitModel1 == 2) {lA1.setVal(0.01); lA1.setRange(0,10); }
+  //if(iFitModel1 == 2) {lA1.setVal(0.01); lA1.setRange(0,10); }
   if(iFitModel1 == 3) lFit1 = new RooGenericPdf("genPdf","a1/pow(m,b1)",RooArgList(lM,lA1,lB1));
   
   //=============================================================================================================================================
@@ -539,8 +539,10 @@ void addNuisanceWithToys(std::string iFileName,std::string iChannel,std::string 
  
  RooGenericPdf *lFitFinal  = 0; lFitFinal = new RooGenericPdf("genPdf","exp(-m/(a+b*m))",RooArgList(lM,lA,lB));
   if(iFitModel == 1) lFitFinal = new RooGenericPdf("genPdf","exp(-a*pow(m,b))",RooArgList(lM,lA,lB));
-  if(iFitModel == 2) lFitFinal = new RooGenericPdf("genPdf","a*exp(b*m)",RooArgList(lM,lA,lB));
-  if(iFitModel == 3) lFitFinal = new RooGenericPdf("genPdf","a/pow(m,b)",RooArgList(lM,lA,lB));
+  //if(iFitModel == 2) lFitFinal = new RooGenericPdf("genPdf","a*exp(b*m)",RooArgList(lM,lA,lB));
+  if(iFitModel == 2) lFitFinal = new RooGenericPdf("genPdf","exp(b*m)",RooArgList(lM,lB));
+  if(iFitModel == 3) lFitFinal = new RooGenericPdf("genPdf","1/pow(m,b)",RooArgList(lM,lB));
+  if(iFitModel == 4) lFitFinal = new RooGenericPdf("genPdf","exp(a+b*m)",RooArgList(lA,lM,lB));
 
 
 
@@ -556,8 +558,9 @@ void addNuisanceWithToys(std::string iFileName,std::string iChannel,std::string 
 
   RooGenericPdf *lFit1Final  = 0; lFit1Final = new RooGenericPdf("genPdf","exp(-m/(a1+b1*m))",RooArgList(lM,lA1,lB1));
   if(iFitModel1 == 1) lFit1Final = new RooGenericPdf("genPdf","exp(-a1*pow(m,b1))",RooArgList(lM,lA1,lB1));
-  if(iFitModel1 == 2) lFit1Final = new RooGenericPdf("genPdf","a1*exp(b1*m)",RooArgList(lM,lA1,lB1));
-  if(iFitModel1 == 3) lFit1Final = new RooGenericPdf("genPdf","a1/pow(m,b1)",RooArgList(lM,lA1,lB1));
+  if(iFitModel1 == 2) lFit1Final = new RooGenericPdf("genPdf","exp(b1*m)",RooArgList(lM,lB1));
+  if(iFitModel1 == 3) lFit1Final = new RooGenericPdf("genPdf","1/pow(m,b1)",RooArgList(lM,lB1));
+  if(iFitModel1 == 4) lFit1Final = new RooGenericPdf("genPdf","exp(a1+b1*m)",RooArgList(lM,lA1,lB1));
 
  // lA1.removeRange();
  // lB1.removeRange();
@@ -605,9 +608,9 @@ void addNuisanceWithToys(std::string iFileName,std::string iChannel,std::string 
   //=============================================================================================================================================
   // Generate and fit toys
   //============================================================================================================================================= 
-    
-  lToy->generateAndFit(iNToys,lNB0+lNSig0,kTRUE);
- 
+   
+    lToy->generateAndFit(iNToys,lNB0+lNSig0,kTRUE);
+
   std::cout << "===================================================================================================================================================" <<std::endl;
   std::cout << "FIT PARAMETERS AFTER ROOMCSTUDY: lA: " << lA.getVal() << " lB: " << lB.getVal() << " lA1: " << lA1.getVal() << " lB1: " << lB1.getVal() << std::endl;  
   std::cout << "===================================================================================================================================================" <<std::endl;
@@ -628,13 +631,13 @@ void addNuisanceWithToys(std::string iFileName,std::string iChannel,std::string 
   lFrame1->Draw() ;
   lC00->SaveAs(("sig_pulls_toyfits_"+iBkg+"_" + iDir + "_" + iEnergy+".png").c_str());
 
-  RooPlot* lFrame2 = lToy->plotParam(lA1);
+/*  RooPlot* lFrame2 = lToy->plotParam(lA1);
   lFrame2->SetTitle("distribution of values of parameter 1 (a) after toy fit");
   lFrame2->SetXTitle("Parameter 1 (a)");
   TCanvas* lC01 = new TCanvas("valA","valA",600,600) ;
   lFrame2->Draw() ;
   lC01->SaveAs(("valA_toyfits_"+iBkg+"_" + iDir + "_" + iEnergy+".png").c_str());
-
+*/
   RooPlot* lFrame3 = lToy->plotParam(lB1);
   lFrame3->SetTitle("distribution of values of parameter 2 (b) after toy fit");
   lFrame3->SetXTitle("Parameter 2 (b)");
