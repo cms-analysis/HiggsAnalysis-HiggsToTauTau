@@ -439,8 +439,6 @@ for directory in args :
     if options.optMLFit :
         ## determine mass value from directory name
         mass  = get_mass(directory)
-        ## prepare workspace
-        create_card_workspace(mass)
         if options.optCollect :
             ## NOTE the toys are only used for the band when run with these options.
             ## the expected is taken from the actual calculation to prevent miss-
@@ -482,51 +480,52 @@ for directory in args :
                     os.system("mv batch_collected_%s.root new_%s.root"%(collect_file, collect_file))
                     os.system("hadd batch_collected_%s.root old_%s.root new_%s.root"%(collect_file, collect_file, collect_file))
                     os.system("rm old_%s.root new_%s.root"%(collect_file, collect_file))
-        ## create sub-directory out from scratch
-        if os.path.exists("out") :
-            os.system("rm -r out")
-        os.system("mkdir out")
-        ## if it does not exist already, create link to executable
-        if not os.path.exists("combine") :
-            os.system("cp -s $(which combine) .")
-        ## prepare fit option
-        minuitopt = ""
-        if options.minuit :
-            minuitopt = "--minimizerAlgo minuit"
-        stableopt = ""
-        if options.stable :
-            stableopt = "--robustFit=1 --preFitValue=0.1 --X-rtd FITTER_NEW_CROSSING_ALGO --minimizerAlgoForMinos=Minuit2 --minimizerToleranceForMinos=0.01 --X-rtd FITTER_NEVER_GIVE_UP --X-rtd FITTER_BOUND --minimizerAlgo=Minuit2 --minimizerStrategy=1 --minimizerTolerance=0.0001 --cminFallbackAlgo \"Minuit,0.001\" "
-            stableopt+= "--rMin {MIN} --rMax {MAX} ".format(MIN=options.rMin, MAX=options.rMax)
-        redirect = ""
-        if options.hide_fitresult :
-            redirect = '> /tmp/'+''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))
-        ## run maximum likelihood fit
-        print "combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} {wdir}/tmp.root --out=out".format(
-            mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt, wdir=options.workingdir)
-        os.system("combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} {wdir}/tmp.root --out=out {redir}".format(
-            mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt, wdir=options.workingdir, redir=redirect))
-        ## change to sub-directory out and prepare formated output
-        os.chdir(os.path.join(subdirectory, "out"))
-        print "formating output..."
-        if options.hide_fitresult :
-            ## this is only done in txt mode. Other modes will currently not be supported with this option
-            os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a --stol 0.99 --stol 0.99 --vtol 99. --vtol2 99. -f text mlfit.root > mlfit.txt")
-            os.system("head -n-1 mlfit.txt > mlfit.txt_blind")
-            os.system("rm mlfit.txt")
-        else:
-            os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a --stol 0.99 --stol 0.99 --vtol 99. --vtol2 99. -f text mlfit.root  > mlfit.txt" )
-            os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a --stol 0.99 --stol 0.99 --vtol 99. --vtol2 99. -f latex mlfit.root > mlfit.tex" )
-            os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a --stol 0.99 --stol 0.99 --vtol 99. --vtol2 99. -f html mlfit.root  > mlfit.html")
-        ## add a version with only problematic values (the signal pull is not part of the listing)
-        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --stol 0.99 --vtol2 2.0 --stol2 0.99 -f text  mlfit.root > mlfit_largest-pulls.txt")
-        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --stol 0.99 --vtol2 2.0 --stol2 0.99 -f latex mlfit.root > mlfit_largest-pulls.tex")
-        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --stol 0.99 --vtol2 2.0 --stol2 0.99 -f html  mlfit.root > mlfit_largest-pulls.html")
-
-        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 99. --stol 0.50 --vtol2 99. --stol2 0.90 -f text  mlfit.root > mlfit_largest-constraints.txt")
-        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 99. --stol 0.50 --vtol2 99. --stol2 0.90 -f latex mlfit.root > mlfit_largest-constraints.tex")
-        os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 99. --stol 0.50 --vtol2 99. --stol2 0.90 -f html  mlfit.root > mlfit_largest-constraints.html")
-        os.chdir(subdirectory)
-            
+        else : 
+            ## prepare workspace
+            create_card_workspace(mass)
+            ## create sub-directory out from scratch
+            if os.path.exists("out") :
+                os.system("rm -r out")
+            os.system("mkdir out")
+            ## if it does not exist already, create link to executable
+            if not os.path.exists("combine") :
+                os.system("cp -s $(which combine) .")
+            ## prepare fit option
+            minuitopt = ""
+            if options.minuit :
+                minuitopt = "--minimizerAlgo minuit"
+            stableopt = ""
+            if options.stable :
+                stableopt = "--robustFit=1 --preFitValue=0.1 --X-rtd FITTER_NEW_CROSSING_ALGO --minimizerAlgoForMinos=Minuit2 --minimizerToleranceForMinos=0.01 --X-rtd FITTER_NEVER_GIVE_UP --X-rtd FITTER_BOUND --minimizerAlgo=Minuit2 --minimizerStrategy=1 --minimizerTolerance=0.0001 --cminFallbackAlgo \"Minuit,0.001\" "
+                stableopt+= "--rMin {MIN} --rMax {MAX} ".format(MIN=options.rMin, MAX=options.rMax)
+            redirect = ""
+            if options.hide_fitresult :
+                redirect = '> /tmp/'+''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))
+            ## run maximum likelihood fit
+            print "combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} {wdir}/tmp.root --out=out".format(
+                mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt, wdir=options.workingdir)
+            os.system("combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} {wdir}/tmp.root --out=out {redir}".format(
+                mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt, wdir=options.workingdir, redir=redirect))
+            ## change to sub-directory out and prepare formated output
+            os.chdir(os.path.join(subdirectory, "out"))
+            print "formating output..."
+            if options.hide_fitresult :
+                ## this is only done in txt mode. Other modes will currently not be supported with this option
+                os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a --stol 0.99 --stol 0.99 --vtol 99. --vtol2 99. -f text mlfit.root > mlfit.txt")
+                os.system("head -n-1 mlfit.txt > mlfit.txt_blind")
+                os.system("rm mlfit.txt")
+            else:
+                os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a --stol 0.99 --stol 0.99 --vtol 99. --vtol2 99. -f text mlfit.root  > mlfit.txt" )
+                os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a --stol 0.99 --stol 0.99 --vtol 99. --vtol2 99. -f latex mlfit.root > mlfit.tex" )
+                os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A -a --stol 0.99 --stol 0.99 --vtol 99. --vtol2 99. -f html mlfit.root  > mlfit.html")
+                ## add a version with only problematic values (the signal pull is not part of the listing)
+                os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --stol 0.99 --vtol2 2.0 --stol2 0.99 -f text  mlfit.root > mlfit_largest-pulls.txt")
+                os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --stol 0.99 --vtol2 2.0 --stol2 0.99 -f latex mlfit.root > mlfit_largest-pulls.tex")
+                os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --stol 0.99 --vtol2 2.0 --stol2 0.99 -f html  mlfit.root > mlfit_largest-pulls.html")    
+                os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 99. --stol 0.50 --vtol2 99. --stol2 0.90 -f text  mlfit.root > mlfit_largest-constraints.txt")
+                os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 99. --stol 0.50 --vtol2 99. --stol2 0.90 -f latex mlfit.root > mlfit_largest-constraints.tex")
+                os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 99. --stol 0.50 --vtol2 99. --stol2 0.90 -f html  mlfit.root > mlfit_largest-constraints.html")
+        os.chdir(subdirectory)    
     ##
     ## LIKELIHOOD-SCAN
     ##
