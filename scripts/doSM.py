@@ -12,6 +12,8 @@ parser.add_option("--label", dest="label", default="", type="string",
                   help="Possibility to give the setups, aux and LIMITS directory a index (example LIMITS-bbb). [Default: \"\"]")
 parser.add_option("--ignore-during-scaling", dest="do_not_scales", default="ee mm vhtt", type="string",
                   help="List of channels, which the scaling by cross seciton times BR shoul not be applied. The list should be embraced by call-ons and separeted by whitespace or comma. [Default: \"vhtt ee mm\"]")
+parser.add_option("--add-mutau-soft", dest="add_mutau_soft", default=False, action="store_true",
+                  help="Specify this option to add the soft muon pt analysis. [Default: False]")
 parser.add_option("--update-all", dest="update_all", default=False, action="store_true",
                   help="update everything from scratch. If not specified use the following options to specify, which parts of the reload you want to run. [Default: False]")
 parser.add_option("--update-setup", dest="update_setup", default=False, action="store_true",
@@ -22,7 +24,7 @@ parser.add_option("--update-LIMITS", dest="update_limits", default=False, action
                   help="update LIMITS directory for the indicated analyses. [Default: False]")
 parser.add_option("--drop-list", dest="drop_list", default="",  type="string",
                   help="The full path to the list of uncertainties to be dropped from the datacards due to pruning. If this string is empty no prunig will be applied. [Default: \"\"]")
-parser.add_option("-c", "--config", dest="config", default="{CMSSW}/src/HiggsAnalysis/HiggsToTauTau/limits.config".format(CMSSW=os.getenv('CMSSW_BASE'))
+parser.add_option("-c", "--config", dest="config", default="{CMSSW}/src/HiggsAnalysis/HiggsToTauTau/limits.config".format(CMSSW=os.getenv('CMSSW_BASE')),
                   help="Configuration file to be used for the setup [Default: \"\"]")
 
 ## check number of arguments; in case print usage
@@ -53,7 +55,7 @@ config=configuration('sm', options.config)
 ## define inputs from cvs; Note: not all analyses are available for all inputs
 directories = {}
 from HiggsAnalysis.HiggsToTauTau.summer13_analyses_cfg import htt_ee, htt_mm, htt_em, htt_et, htt_mt, htt_tt, vhtt
-for chn in channels:
+for chn in config.channels:
     if chn != 'vhtt':
         directories[chn] = locals()['htt_'+chn](config.inputs[chn])
     else:
@@ -153,7 +155,7 @@ if options.update_setup :
                     FILE=file,
                     MASSES=' '.join(masses)
                     ))
-    if 'em' in channels : ## move back to XYZ->em
+    if 'em' in config.channels : ## move back to XYZ->em
         print "##"
         print "## --->>> adding extra scale for htt_hww contribution in em <<<---"
         print "##"
@@ -213,51 +215,22 @@ if options.update_setup :
             print "##"
             print "## update bbb    directory in setup:"
             print "##"    
-            if 'ee' in config.channels :
-                if '7TeV' in config.periods :
-                    ## setup bbb uncertainties for ee 7TeV 
-                    os.system("add_bbb_errors.py 'ee:7TeV:01,03,04:ZTT,ZEE,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                if '8TeV' in config.periods :
-                    ## setup bbb uncertainties for ee 8TeV 
-                    os.system("add_bbb_errors.py 'ee:8TeV:01,03,04:ZTT,ZEE,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
+            for chn in config.channels:
+                for per in config.periods:
+                    if chn not in ['et', 'mt', 'vhtt']:
+                        if len(config.bbbcat[chn][per])>0: #make sure there are categories for this period (maybe unnecessary)
+                            os.system("add_bbb_errors.py '{CHN}:{PER}:{CAT}:{PROC}' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold {THR}".format(
+                                DIR=dir,
+                                ANA=ana,
+                                CHN=chn,
+                                PER=per,
+                                PROC=config.bbbproc[chn],
+                                CAT=config.bbbcat[chn][per],
+                                THR=config.bbbthreshold
+                                ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                            
-            if 'mm' in config.channels :
-                if '7TeV' in config.periods :
-                    ## setup bbb uncertainties for mm 7TeV
-                    os.system("add_bbb_errors.py 'mm:7TeV:01,03,04:ZTT,ZMM,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                if '8TeV' in config.periods :
-                    ## setup bbb uncertainties for mm 8TeV
-                    os.system("add_bbb_errors.py 'mm:8TeV:01,03,04:ZTT,ZMM,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                    
-            if 'em' in config.channels :
-                if '7TeV' in config.periods :
-                    ## setup bbb uncertainties for em 7TeV
-                    os.system("add_bbb_errors.py 'em:7TeV:01,03,04:Fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                if '8TeV' in config.periods :
-                    ## setup bbb uncertainties for em 8TeV
-                    os.system("add_bbb_errors.py 'em:8TeV:01,03,04,05:Fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                
+
             if 'et' in config.channels :
                 if '7TeV' in config.periods :
                     ## setup bbb uncertainties for et 7TeV
@@ -289,15 +262,6 @@ if options.update_setup :
                         ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                
-            if 'tt' in config.channels :
-                if '8TeV' in config.periods :
-                    ## setup bbb uncertainties for tt
-                    os.system("add_bbb_errors.py 'tt:8TeV:00,01,02:ZTT,QCD' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.01".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
             if 'vhtt' in config.channels :
                 if '7TeV' in config.periods :
                     ## setup bbb uncertainties for vhtt
@@ -393,16 +357,17 @@ if options.update_aux :
         print "setup datacards for:", ana
         for chn in config.channels:
             for per in config.periods:
-                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c {CHN} --sm-categories-{CHN}='{CATS}' {MASSES}".format(
-                    LABEL=options.label,
-                    CMSSW_BASE=cmssw_base,
-                    ANA=ana,
-                    DIR=dir,
-                    CATS=' '.join(config.categories[chn][per]),
-                    CHN=chn,
-                    PER=per,
-                    MASSES=' '.join(masses)
-                    ))
+                if len(config.categories[chn][per])>0: #make sure there are categories for this period (maybe unnecessary)
+                    os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c {CHN} --sm-categories-{CHN}='{CATS}' {MASSES}".format(
+                        LABEL=options.label,
+                        CMSSW_BASE=cmssw_base,
+                        ANA=ana,
+                        DIR=dir,
+                        CATS=' '.join(config.categories[chn][per]),
+                        CHN=chn,
+                        PER=per,
+                        MASSES=' '.join(masses)
+                        ))
         if ana == 'bbb' :
             if options.drop_list != '' :
                 for subdir in glob.glob("{DIR}/bbb/sm/*".format(DIR=dir)) :
@@ -423,15 +388,17 @@ if options.update_limits :
     for ana in analyses :
         print "setup limits structure for:", ana
         label = '' #if ana == 'std' else '-l '+ana
+
         for chn in config.channels:
             for per in config.periods:
-                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {LABEL} --sm-categories-ee='{CAT}' {MASSES}".format(
-                    INDEX=options.label,                
-                    ANA=ana,
-                    DIR=dir,
-                    LABEL=label,
-                    CATS=' '.join(config.categories[chn][per]),
-                    CHN=chn,
-                    PER=per,
-                    MASSES=' '.join(masses)
-                    ))
+                if len(config.categories[chn][per])>0: #make sure there are categories for this period (maybe unnecessary)
+                    os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {LABEL} --sm-categories-{CHN}='{CATS}' {MASSES}".format(
+                        INDEX=options.label,                
+                        ANA=ana,
+                        DIR=dir,
+                        LABEL=label,
+                        CATS=' '.join(config.categories[chn][per]),
+                        CHN=chn,
+                        PER=per,
+                        MASSES=' '.join(masses)
+                        ))
