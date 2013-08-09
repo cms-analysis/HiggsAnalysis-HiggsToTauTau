@@ -1,4 +1,6 @@
 from optparse import OptionParser, OptionGroup
+from HiggsAnalysis.HiggsToTauTau.LimitsConfig import configuration
+import os
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options]",
@@ -6,63 +8,15 @@ parser = OptionParser(usage="usage: %prog [options]",
 ## direct options
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
-parser.add_option("-c", "--channels", dest="channels", default="em, et, mt, mm", type="string", help="Channels, for which to make the postfit plots. [Default: 'em, et, mt, mm']")
-cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
-cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 4", type="string", help="List mm of event categories. [Default: \"0 1 2 3 4\"]")
-cats1.add_option("--sm-categories-ee", dest="ee_sm_categories", default="0 1 2 3 4", type="string", help="List ee of event categories. [Default: \"0 1 2 3 4\"]")
-cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3 4", type="string", help="List em of event categories. [Default: \"0 1 2 3 4\"]")
-cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3 5 6 7", type="string", help="List mt of event categories. [Default: \"0 1 2 3 5 6 7\"]")
-cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 5 6 7", type="string", help="List et of event categories. [Default: \"0 1 2 3 5 6 7\"]")
-cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1 2", type="string", help="List of tt event categories. [Default: \"0 1 2\"]")
-cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1 2 3 4 5 6 7 8", type="string", help="List of tt event categories. [Default: \"0 1 2 3 4 5 6 7 8\"]")
-parser.add_option_group(cats1)
-cats2 = OptionGroup(parser, "MSSM EVENT CATEGORIES", "Event categories to be used for the MSSM analysis.")
-cats2.add_option("--mssm-categories-mm", dest="mm_mssm_categories", default="8 9", type="string", help="List mm of event categories. [Default: \"8 9\"]")
-cats2.add_option("--mssm-categories-em", dest="em_mssm_categories", default="8 9", type="string", help="List em of event categories. [Default: \"8 9\"]")
-cats2.add_option("--mssm-categories-mt", dest="mt_mssm_categories", default="8 9", type="string", help="List mt of event categories. [Default: \"8 9\"]")
-cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9", type="string", help="List et of event categories. [Default: \"8 9\"]")
-cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="8 9", type="string", help="List of tt event categories. [Default: \"8 9\"]")
-#cats2.add_option("--mssm-categories-hmm", dest="hmm_mssm_categories", default="0 1", type="string", help="List of hmm event categories. [Default: \"0 1\"]")
-#cats2.add_option("--mssm-categories-hbb", dest="hbb_mssm_categories", default="0 1 2 3 4 5 6", type="string", help="List of hbb event categories. [Default: \"0 1 2 3 4 5 6\"]")
-parser.add_option_group(cats2)
+parser.add_option("-c", "--config", dest="config", default="{CMSSW}/src/HiggsAnalysis/HiggsToTauTau/limits.config".format(CMSSW=os.getenv('CMSSW_BASE')), type="string", help="Configuration to be used. [Default: '']")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 if len(args) > 0 :
     parser.print_usage()
     exit(1)
 
-import os
-
-## run periods
-periods = options.periods.split()
-for idx in range(len(periods)) : periods[idx] = periods[idx].rstrip(',')
-## channels 
-channels = options.channels.split()
-for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
-## switch to sm event categories
-if options.analysis == "sm" :
-    categories = {
-        "mm"   : options.mm_sm_categories.split(),
-        "ee"   : options.ee_sm_categories.split(),
-        "em"   : options.em_sm_categories.split(),
-        "mt"   : options.mt_sm_categories.split(),
-        "et"   : options.et_sm_categories.split(),
-        "tt"   : options.tt_sm_categories.split(),
-        "vhtt" : options.vhtt_sm_categories.split(),
-        }
-## switch to mssm event categories
-if options.analysis == "mssm" :
-    categories = {
-        "mm"   : options.mm_mssm_categories.split(),
-        "em"   : options.em_mssm_categories.split(),
-        "mt"   : options.mt_mssm_categories.split(),
-        "et"   : options.et_mssm_categories.split(),
-        "tt"   : options.tt_mssm_categories.split(),
-#        "hmm"  : options.hmm_mssm_categories.split(),
-#        "hbb"  : options.hbb_mssm_categories.split(),
-        }
-for key in categories :
-    for idx in range(len(categories[key])) : categories[key][idx] = categories[key][idx].rstrip(',')
+#import configuration 
+config=configuration(options.analysis, options.config)
 
 log = {
     ("em", "0") : ["false",],
@@ -79,6 +33,7 @@ log = {
     ("mt", "1") : ["false",],
     ("mt", "2") : ["false",],
     ("mt", "3") : ["false",],
+    ("mt", "4") : ["false",],
     ("mt", "5") : ["false",],
     ("mt", "6") : ["false",],
     ("mt", "7") : ["false",],
@@ -95,6 +50,7 @@ log = {
     ("et", "9") : ["false", "true"],
     ("tt", "0") : ["false",],
     ("tt", "1") : ["false",],
+    ("tt", "2") : ["false",],
     ("tt", "8") : ["false", "true"],
     ("tt", "9") : ["false", "true"],
     ("mm", "0") : ["false", "true"],
@@ -128,6 +84,7 @@ max = {
     ("mt", "1") :  ["-1."],
     ("mt", "2") :  ["-1."],
     ("mt", "3") :  ["-1."],
+    ("mt", "4") :  ["-1."],
     ("mt", "5") :  ["-1."],
     ("mt", "6") :  ["-1."],
     ("mt", "7") :  ["-1."],
@@ -144,6 +101,7 @@ max = {
     ("et", "9") :  ["-1.", "-1"],
     ("tt", "0") :  ["-1."],
     ("tt", "1") :  ["-1."],
+    ("tt", "2") :  ["-1."],
     ("tt", "8") :  ["-1.", "-1"],
     ("tt", "9") :  ["-1.", "-1"],
     ("mm", "0") :  ["-1.", "-1"],
@@ -177,6 +135,7 @@ min = {
     ("mt", "1") : ["0."], 
     ("mt", "2") : ["0."],
     ("mt", "3") : ["0."],
+    ("mt", "4") : ["0."],
     ("mt", "5") : ["0."],
     ("mt", "6") : ["0."],
     ("mt", "7") : ["0."],
@@ -193,6 +152,7 @@ min = {
     ("et", "9") : ["0.", "1e-2"],
     ("tt", "0") : ["0."],
     ("tt", "1") : ["0."],
+    ("tt", "2") : ["0."],
     ("tt", "8") : ["0.", "1e-2"],
     ("tt", "9") : ["0.", "1e-2"],
     ("mm", "0") : ["0.", "1e-2"],
@@ -211,9 +171,9 @@ min = {
     ("ee", "4") : ["0.", "1e-2"],
     }
 
-for chn in channels :
-    for per in periods :
-        for cat in categories[chn] :
+for chn in config.channels :
+    for per in config.periods :
+        for cat in config.categories[chn][per] :
             for sca in ["true", "false"] :
                 for i in range(len(log[chn,cat])) :
                     if chn == "hbb" :

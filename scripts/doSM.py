@@ -1,35 +1,17 @@
 #!/usr/bin/env python
 from optparse import OptionParser, OptionGroup
+from HiggsAnalysis.HiggsToTauTau.LimitsConfig import configuration
+import os
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGs",
                       description="This is a script to reload the Summer13 analysis for the main analyses [bbb, no-bbb] and potential cross check analyses [mvis, incl]. ARGs corresponds to the masses, for which to setup the structure.")
-parser.add_option("-c", "--channels", dest="channels", default="em mt et tt", type="string",
-                  help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"em mt et tt\"]")
-parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
-                  help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analyses", dest="analyses", default="no-bbb, bbb",
                   help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"no-bbb, bbb, mvis, inclusive\" [Default: \"no-bbb, bbb\"]")
 parser.add_option("--label", dest="label", default="", type="string", 
                   help="Possibility to give the setups, aux and LIMITS directory a index (example LIMITS-bbb). [Default: \"\"]")
 parser.add_option("--ignore-during-scaling", dest="do_not_scales", default="ee mm vhtt", type="string",
                   help="List of channels, which the scaling by cross seciton times BR shoul not be applied. The list should be embraced by call-ons and separeted by whitespace or comma. [Default: \"vhtt ee mm\"]")
-parser.add_option("--add-mutau-soft", dest="add_mutau_soft", default=False, action="store_true",
-                  help="Specify this option to add the soft muon pt analysis. [Default: False]")
-parser.add_option("--inputs-ee", dest="inputs_ee", default="DESY-KIT", type="choice", choices=['DESY-KIT'],
-                  help="Input files for htt_ee analysis. [Default: \"DESY-KIT\"]")
-parser.add_option("--inputs-mm", dest="inputs_mm", default="DESY-KIT", type="choice", choices=['DESY-KIT'],
-                  help="Input files for htt_mm analysis. [Default: \"DESY-KIT\"]")
-parser.add_option("--inputs-em", dest="inputs_em", default="MIT", type="choice", choices=['MIT', 'Imperial'],
-                  help="Input files for htt_em analysis. [Default: \"MIT\"]")
-parser.add_option("--inputs-et", dest="inputs_et", default="Imperial", type="choice", choices=['Wisconsin', 'Imperial', 'LLR', 'CERN', 'MIT'],
-                  help="Input files for htt_et analysis. [Default: \"Imperial\"]")
-parser.add_option("--inputs-mt", dest="inputs_mt", default="Imperial", type="choice", choices=['Wisconsin', 'Imperial', 'LLR', 'CERN', 'MIT'],
-                  help="Input files for htt_mt analysis. [Default: \"Imperial\"]")
-parser.add_option("--inputs-tt", dest="inputs_tt", default="MIT", type="choice", choices=['CERN', 'MIT'],
-                  help="Input files for htt_tt analysis. [Default: \"MIT\"]")
-parser.add_option("--inputs-vhtt", dest="inputs_vhtt", default="VHTT", type="choice", choices=['VHTT'],
-                  help="Input files for vhtt analysis. [Default: \"VHTT\"]")
 parser.add_option("--update-all", dest="update_all", default=False, action="store_true",
                   help="update everything from scratch. If not specified use the following options to specify, which parts of the reload you want to run. [Default: False]")
 parser.add_option("--update-setup", dest="update_setup", default=False, action="store_true",
@@ -40,6 +22,8 @@ parser.add_option("--update-LIMITS", dest="update_limits", default=False, action
                   help="update LIMITS directory for the indicated analyses. [Default: False]")
 parser.add_option("--drop-list", dest="drop_list", default="",  type="string",
                   help="The full path to the list of uncertainties to be dropped from the datacards due to pruning. If this string is empty no prunig will be applied. [Default: \"\"]")
+parser.add_option("-c", "--config", dest="config", default="{CMSSW}/src/HiggsAnalysis/HiggsToTauTau/limits.config".format(CMSSW=os.getenv('CMSSW_BASE'))
+                  help="Configuration file to be used for the setup [Default: \"\"]")
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -48,18 +32,11 @@ if len(args) < 1 :
     args.append("110-145:5")
     #exit(1)
 
-import os
 import glob 
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
 
 ## masses
 masses = args
-## periods
-periods = options.periods.split()
-for idx in range(len(periods)) : periods[idx] = periods[idx].rstrip(',')
-## channels
-channels = options.channels.split()
-for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
 ## do_not_scales
 do_not_scales = options.do_not_scales.split()
 for idx in range(len(do_not_scales)) : do_not_scales[idx] = do_not_scales[idx].rstrip(',')
@@ -70,17 +47,17 @@ for idx in range(len(analyses)) : analyses[idx] = analyses[idx].rstrip(',')
 cmssw_base=os.environ['CMSSW_BASE']
 ## setup a backup directory
 os.system("mkdir -p backup")
+## configuration
+config=configuration('sm', options.config)
 
 ## define inputs from cvs; Note: not all analyses are available for all inputs
 directories = {}
 from HiggsAnalysis.HiggsToTauTau.summer13_analyses_cfg import htt_ee, htt_mm, htt_em, htt_et, htt_mt, htt_tt, vhtt
-directories['ee'  ] = htt_mm(options.inputs_ee)
-directories['mm'  ] = htt_mm(options.inputs_mm)
-directories['em'  ] = htt_em(options.inputs_em)
-directories['et'  ] = htt_et(options.inputs_et)
-directories['mt'  ] = htt_mt(options.inputs_mt)
-directories['tt'  ] = htt_tt(options.inputs_tt)
-directories['vhtt'] = vhtt(options.inputs_vhtt)
+for chn in channels:
+    if chn != 'vhtt':
+        directories[chn] = locals()['htt_'+chn](config.inputs[chn])
+    else:
+        directories[chn] = locals()[chn](config.inputs[chn])
 
 ## postfix pattern for input files
 patterns = {
@@ -97,21 +74,16 @@ print "# -----------------------------------------------------------------------
 print "# doSM.py "
 print "# --------------------------------------------------------------------------------------"
 print "# You are using the following configuration: "
-print "# --channels        :", options.channels
-print "# --periods         :", options.periods
+print "# --channels        :", config.channels
+print "# --periods         :", config.periods
 print "# --analyses        :", options.analyses
 print "# --label           :", options.label
 print "# --drop-list       :", options.drop_list
 print "# --do-not-scales   :", options.do_not_scales
 print "# --add-mutau-soft  :", options.add_mutau_soft
 print "# --------------------------------------------------------------------------------------"
-print "# --inputs-ee       :", options.inputs_ee
-print "# --inputs-mm       :", options.inputs_mm
-print "# --inputs-em       :", options.inputs_em
-print "# --inputs-et       :", options.inputs_et
-print "# --inputs-mt       :", options.inputs_mt
-print "# --inputs-tt       :", options.inputs_tt
-print "# --inputs-vhtt     :", options.inputs_vhtt
+for chn in config.channels:
+    print "# --inputs-"+chn+"       :", config.inputs[chn]
 print "# --------------------------------------------------------------------------------------"
 print "# --update-setup    :", options.update_setup
 print "# --update-aux      :", options.update_aux
@@ -132,12 +104,12 @@ if options.update_setup :
         os.system("rm -r {CMSSW_BASE}/src/.setup{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label))
     os.system("cp -r {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup {CMSSW_BASE}/src/.setup{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label))
 
-    for chn in channels :
+    for chn in config.channels :
         print "... copy files for channel:", chn
         ## remove legacy
         for file in glob.glob("{SETUP}/{CHN}/*inputs-sm-*.root".format(SETUP=setup, CHN=chn)) :
             os.system("rm %s" % file)
-        for per in periods :
+        for per in config.periods :
             if directories[chn][per] == 'None' :
                 continue
             for ana in analyses :
@@ -155,8 +127,8 @@ if options.update_setup :
                         SETUP=setup,
                         CHN=chn
                         ))
-    if 'vhtt' in channels :
-        for per in periods :
+    if 'vhtt' in config.channels :
+        for per in config.periods :
             if directories['vhtt'][per] == 'None' :
                 continue
             for ana in analyses :
@@ -173,9 +145,7 @@ if options.update_setup :
                         PATTERN=pattern
                         ))
     ## scale to SM cross section
-    for chn in channels :
-        if chn in ["mm", "ee"]:
-            continue
+    for chn in config.channels :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
             ## vhtt is NOT scaled to 1pb. So nothing needs to be doen here
             if not chn in do_not_scales :
@@ -243,14 +213,14 @@ if options.update_setup :
             print "##"
             print "## update bbb    directory in setup:"
             print "##"    
-            if 'ee' in channels :
-                if '7TeV' in periods :
+            if 'ee' in config.channels :
+                if '7TeV' in config.periods :
                     ## setup bbb uncertainties for ee 7TeV 
                     os.system("add_bbb_errors.py 'ee:7TeV:01,03,04:ZTT,ZEE,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
                         ANA=ana
                         ))
-                if '8TeV' in periods :
+                if '8TeV' in config.periods :
                     ## setup bbb uncertainties for ee 8TeV 
                     os.system("add_bbb_errors.py 'ee:8TeV:01,03,04:ZTT,ZEE,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
@@ -258,14 +228,14 @@ if options.update_setup :
                         ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                            
-            if 'mm' in channels :
-                if '7TeV' in periods :
+            if 'mm' in config.channels :
+                if '7TeV' in config.periods :
                     ## setup bbb uncertainties for mm 7TeV
                     os.system("add_bbb_errors.py 'mm:7TeV:01,03,04:ZTT,ZMM,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
                         ANA=ana
                         ))
-                if '8TeV' in periods :
+                if '8TeV' in config.periods :
                     ## setup bbb uncertainties for mm 8TeV
                     os.system("add_bbb_errors.py 'mm:8TeV:01,03,04:ZTT,ZMM,TTJ' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
@@ -273,14 +243,14 @@ if options.update_setup :
                         ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                    
-            if 'em' in channels :
-                if '7TeV' in periods :
+            if 'em' in config.channels :
+                if '7TeV' in config.periods :
                     ## setup bbb uncertainties for em 7TeV
                     os.system("add_bbb_errors.py 'em:7TeV:01,03,04:Fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
                         ANA=ana
                         ))
-                if '8TeV' in periods :
+                if '8TeV' in config.periods :
                     ## setup bbb uncertainties for em 8TeV
                     os.system("add_bbb_errors.py 'em:8TeV:01,03,04,05:Fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
@@ -288,14 +258,14 @@ if options.update_setup :
                         ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                
-            if 'et' in channels :
-                if '7TeV' in periods :
+            if 'et' in config.channels :
+                if '7TeV' in config.periods :
                     ## setup bbb uncertainties for et 7TeV
                     os.system("add_bbb_errors.py 'et:7TeV:01,02,04,05,06:ZL,ZLL,QCD>W' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
                         ANA=ana
                         ))
-                if '8TeV' in periods :
+                if '8TeV' in config.periods :
                     ## setup bbb uncertainties for et 8TeV
                     os.system("add_bbb_errors.py 'et:8TeV:01,02,04,05,06,07:ZL,ZJ,QCD>W'  --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
@@ -303,14 +273,14 @@ if options.update_setup :
                         ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-            if 'mt' in channels :
-                if '7TeV' in periods :
+            if 'mt' in config.channels :
+                if '7TeV' in config.periods :
                     ## setup bbb uncertainties for mt 7TeV
                     os.system("add_bbb_errors.py 'mt:7TeV:01,02,04,05,06:ZL,ZLL,QCD>W' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
                         ANA=ana
                         ))
-                if '8TeV' in periods :
+                if '8TeV' in config.periods :
                     ## setup bbb uncertainties for mt 8TeV
                     os.system("add_bbb_errors.py 'mt:8TeV:01,02,04,05,06,07{SOFT}:ZL,ZJ,QCD>W'  --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
@@ -319,8 +289,8 @@ if options.update_setup :
                         ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                
-            if 'tt' in channels :
-                if '8TeV' in periods :
+            if 'tt' in config.channels :
+                if '8TeV' in config.periods :
                     ## setup bbb uncertainties for tt
                     os.system("add_bbb_errors.py 'tt:8TeV:00,01,02:ZTT,QCD' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.01".format(
                         DIR=dir,
@@ -328,8 +298,8 @@ if options.update_setup :
                         ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-            if 'vhtt' in channels :
-                if '7TeV' in periods :
+            if 'vhtt' in config.channels :
+                if '7TeV' in config.periods :
                     ## setup bbb uncertainties for vhtt
                     os.system("add_bbb_errors.py 'vhtt:7TeV:00:fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
@@ -367,7 +337,7 @@ if options.update_setup :
                         DIR=dir,
                         ANA=ana
                         ))
-                if '8TeV' in periods :
+                if '8TeV' in config.periods :
                     ## setup bbb uncertainties for vhtt
                     os.system("add_bbb_errors.py 'vhtt:8TeV:00:fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
                         DIR=dir,
@@ -421,118 +391,18 @@ if options.update_aux :
     os.system("mkdir -p {DIR}".format(DIR=dir))    
     for ana in analyses :
         print "setup datacards for:", ana
-        if 'ee' in channels :
-            if '7TeV' in periods :
-                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '7TeV' -a sm -c 'ee' --sm-categories-ee='0 1 2 3 4' {MASSES}".format(
+        for chn in config.channels:
+            for per in config.periods:
+                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c {CHN} --sm-categories-{CHN}='{CATS}' {MASSES}".format(
                     LABEL=options.label,
                     CMSSW_BASE=cmssw_base,
                     ANA=ana,
                     DIR=dir,
-                    MASSES=' '.join(masses),
+                    CATS=' '.join(config.categories[chn][per]),
+                    CHN=chn,
+                    PER=per,
+                    MASSES=' '.join(masses)
                     ))
-            if '8TeV' in periods :
-                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'ee' --sm-categories-ee='0 1 2 3 4' {MASSES}".format(
-                    LABEL=options.label,
-                    CMSSW_BASE=cmssw_base,
-                    ANA=ana,
-                    DIR=dir,
-                    MASSES=' '.join(masses),
-                    ))
-        if 'mm' in channels :
-            if '7TeV' in periods :
-                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '7TeV' -a sm -c 'mm' --sm-categories-mm='0 1 2 3 4' {MASSES}".format(
-                    LABEL=options.label,
-                    CMSSW_BASE=cmssw_base,
-                    ANA=ana,
-                    DIR=dir,
-                    MASSES=' '.join(masses),
-                    ))
-            if '8TeV' in periods :
-                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'mm' --sm-categories-mm='0 1 2 3 4' {MASSES}".format(
-                    LABEL=options.label,
-                    CMSSW_BASE=cmssw_base,
-                    ANA=ana,
-                    DIR=dir,
-                    MASSES=' '.join(masses),
-                    ))                        
-        if 'em' in channels :
-            if '7TeV' in periods :
-                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '7TeV' -a sm -c 'em' --sm-categories-em='0 1 2 3 4' {MASSES}".format(
-                    LABEL=options.label,
-                    CMSSW_BASE=cmssw_base,
-                    ANA=ana,
-                    DIR=dir,
-                    MASSES=' '.join(masses),
-                    ))
-            if '8TeV' in periods :
-                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'em' --sm-categories-em='0 1 2 3 4 5' {MASSES}".format(
-                    LABEL=options.label,
-                    CMSSW_BASE=cmssw_base,
-                    ANA=ana,
-                    DIR=dir,
-                MASSES=' '.join(masses),
-                    ))            
-        if 'et' in channels :
-            if '7TeV' in periods :
-                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '7TeV' -a sm -c 'et' --sm-categories-et='0 1 2 3 5 6' {MASSES}".format(
-                    LABEL=options.label,
-                    CMSSW_BASE=cmssw_base,
-                    ANA=ana,
-                    DIR=dir,
-                    MASSES=' '.join(masses),
-                    ))
-            if '8TeV' in periods :
-                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'et' --sm-categories-et='0 1 2 3 5 6 7' {MASSES}".format(
-                    LABEL=options.label,
-                    CMSSW_BASE=cmssw_base,
-                    ANA=ana,
-                    DIR=dir,
-                    MASSES=' '.join(masses),
-                    ))            
-        if 'mt' in channels :
-            if '7TeV' in periods :
-                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '7TeV' -a sm -c 'mt' --sm-categories-mt='0 1 2 3 4 5 6' {MASSES}".format(
-                    LABEL=options.label,
-                    CMSSW_BASE=cmssw_base,
-                    ANA=ana,
-                    DIR=dir,
-                    MASSES=' '.join(masses),
-                    ))
-            if '8TeV' in periods :
-                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'mt' --sm-categories-mt='0 1 2 3 4 5 6 7{SOFT}' {MASSES}".format(
-                    LABEL=options.label,
-                    CMSSW_BASE=cmssw_base,
-                    ANA=ana,
-                    DIR=dir,
-                    MASSES=' '.join(masses),
-                    SOFT=' 10 11 12 13 15 16' if options.add_mutau_soft else ''
-                    ))            
-        if 'tt' in channels :
-            if '8TeV' in periods :
-                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'tt' --sm-categories-mt='0 1 2' {MASSES}".format(
-                    LABEL=options.label,
-                    CMSSW_BASE=cmssw_base,
-                    ANA=ana,
-                    DIR=dir,
-                    MASSES=' '.join(masses),
-                    ))
-        if 'vhtt' in channels :
-            if '7TeV' in periods :
-                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '7TeV' -a sm -c 'vhtt' --sm-categories-vhtt='0 1 3 4 5 6 7 8' {MASSES}".format(
-                    LABEL=options.label,
-                    CMSSW_BASE=cmssw_base,
-                    ANA=ana,
-                    DIR=dir,
-                    MASSES=' '.join(masses),
-                    ))
-            if '8TeV' in periods :
-                os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'vhtt' --sm-categories-vhtt='0 1 2 3 4 5 6 7 8' {MASSES}".format(
-                    LABEL=options.label,
-                    CMSSW_BASE=cmssw_base,
-                    ANA=ana,
-                    DIR=dir,
-                    MASSES=' '.join(masses),
-                    ))                                
         if ana == 'bbb' :
             if options.drop_list != '' :
                 for subdir in glob.glob("{DIR}/bbb/sm/*".format(DIR=dir)) :
@@ -553,116 +423,15 @@ if options.update_limits :
     for ana in analyses :
         print "setup limits structure for:", ana
         label = '' #if ana == 'std' else '-l '+ana
-        if 'ee' in channels :
-            if '7TeV' in periods :
-                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '7TeV' -a sm -c 'ee' {LABEL} --sm-categories-ee='0 1 2 3 4' {MASSES}".format(
+        for chn in config.channels:
+            for per in config.periods:
+                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {LABEL} --sm-categories-ee='{CAT}' {MASSES}".format(
                     INDEX=options.label,                
                     ANA=ana,
                     DIR=dir,
                     LABEL=label,
+                    CATS=' '.join(config.categories[chn][per]),
+                    CHN=chn,
+                    PER=per,
                     MASSES=' '.join(masses)
                     ))
-            if '8TeV' in periods :
-                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'ee' {LABEL} --sm-categories-ee='0 1 2 3 4' {MASSES}".format(
-                    INDEX=options.label,                
-                    ANA=ana,
-                    DIR=dir,
-                    LABEL=label,
-                    MASSES=' '.join(masses)
-                    ))
-        if 'mm' in channels :
-            if '7TeV' in periods :
-                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '7TeV' -a sm -c 'mm' {LABEL} --sm-categories-mm='0 1 2 3 4' {MASSES}".format(
-                    INDEX=options.label,                
-                    ANA=ana,
-                    DIR=dir,
-                    LABEL=label,
-                    MASSES=' '.join(masses)
-                    ))
-            if '8TeV' in periods :
-                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'mm' {LABEL} --sm-categories-mm='0 1 2 3 4' {MASSES}".format(
-                    INDEX=options.label,                
-                    ANA=ana,
-                    DIR=dir,
-                    LABEL=label,
-                    MASSES=' '.join(masses)
-                    ))
-        if 'em' in channels :
-            if '7TeV' in periods :
-                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '7TeV' -a sm -c 'em' {LABEL} --sm-categories-em='0 1 2 3 4' {MASSES}".format(
-                    INDEX=options.label,                
-                    ANA=ana,
-                    DIR=dir,
-                    LABEL=label,
-                    MASSES=' '.join(masses)
-                    ))
-            if '8TeV' in periods :
-                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'em' {LABEL} --sm-categories-em='0 1 2 3 4 5' {MASSES}".format(
-                    INDEX=options.label,                
-                    ANA=ana,
-                    DIR=dir,
-                    LABEL=label,
-                    MASSES=' '.join(masses)
-                    ))                
-        if 'et' in channels :
-            if '7TeV' in periods :
-                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '7TeV' -a sm -c 'et' {LABEL} --sm-categories-et='0 1 2 3 5 6' {MASSES}".format(
-                    INDEX=options.label,                
-                    ANA=ana,
-                    DIR=dir,
-                    LABEL=label,
-                    MASSES=' '.join(masses)
-                    ))
-            if '8TeV' in periods :
-                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'et' {LABEL} --sm-categories-et='0 1 2 3 5 6 7' {MASSES}".format(
-                    INDEX=options.label,                
-                    ANA=ana,
-                    DIR=dir,
-                    LABEL=label,
-                    MASSES=' '.join(masses)
-                    ))
-        if 'mt' in channels :
-            if '7TeV' in periods :
-                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '7TeV' -a sm -c 'mt' {LABEL} --sm-categories-mt='0 1 2 3 4 5 6' {MASSES}".format(
-                    INDEX=options.label,                
-                    ANA=ana,
-                    DIR=dir,
-                    LABEL=label,
-                    MASSES=' '.join(masses)
-                    ))
-            if '8TeV' in periods :
-                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'mt' {LABEL} --sm-categories-mt='0 1 2 3 4 5 6 7{SOFT}' {MASSES}".format(
-                    INDEX=options.label,                
-                    ANA=ana,
-                    DIR=dir,
-                    LABEL=label,
-                    MASSES=' '.join(masses),
-                    SOFT=' 10 11 12 13 15 16' if options.add_mutau_soft else ''
-                    ))                        
-        if 'tt' in channels :
-            if '8TeV' in periods :
-                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'tt' {LABEL} --sm-categories-tt='0 1 2' {MASSES}".format(
-                    INDEX=options.label,                
-                    ANA=ana,
-                    DIR=dir,
-                    LABEL=label,
-                    MASSES=' '.join(masses)
-                    ))
-        if 'vhtt' in channels :
-            if '7TeV' in periods :
-                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '7TeV' -a sm -c 'vhtt' {LABEL} --sm-categories-vhtt='0 1 3 4 5 6 7 8' {MASSES}".format(
-                    INDEX=options.label,                
-                    ANA=ana,
-                    DIR=dir,
-                    LABEL=label,
-                    MASSES=' '.join(masses)
-                    ))
-            if '8TeV' in periods :
-                os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '8TeV' -a sm -c 'vhtt' {LABEL} --sm-categories-vhtt='0 1 2 3 4 5 6 7 8' {MASSES}".format(
-                    INDEX=options.label,                
-                    ANA=ana,
-                    DIR=dir,
-                    LABEL=label,
-                    MASSES=' '.join(masses)
-                    ))                                
-
