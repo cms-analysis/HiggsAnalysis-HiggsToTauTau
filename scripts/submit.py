@@ -480,12 +480,18 @@ if options.optInject :
         print "Collecting results"
         struct = directories(args)
         ## subtract global minimum of NLL as function of all available masses for MLFIT outputs for mass likelihood estimate
-        ## before collecting all toys
+        ## before collecting all toys; for all other options follow the standard procedures defined in limit.py
         if options.injected_method == "--max-likelihood" :
+            ## first collect all toys that have been run
             for dir in struct[0] :
                 print "subtracting global minimum from NLL for dir:", dir
                 os.system("massDeltaNLL.py --histname higgsCombineMLFIT*.root {DIR}".format(DIR=dir))
-        lxb_submit(struct[0], struct[1], "{METHOD} --collect-injected-toys".format(METHOD=options.injected_method), "{USER}".format(USER=options.opt))
+                for mass in struct[1][dir] :
+                    os.system("limit.py --max-likelihood --collect-injected-toys {DIR}/{MASS}".format(DIR=dir, MASS=mass))
+            ## finally obtain the result on data 
+            lxb_submit(struct[0], struct[1], "--max-likelihood", "{USER}".format(USER=options.opt))
+        else :
+            lxb_submit(struct[0], struct[1], "{METHOD} --collect-injected-toys".format(METHOD=options.injected_method), "{USER}".format(USER=options.opt))
 ##
 ## CLs
 ##
