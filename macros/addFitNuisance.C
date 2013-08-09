@@ -350,8 +350,8 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   if(iVerbose) cout << "Values for shift 2 down hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
   TH1F* lHDown1 = (TH1F*) lFit->createHistogram("Down1",lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
 
-  std::string lNuisance1 =  iBkg+"_"+"CMS_"+iName+"1_" + iChannel + "_" + iEnergy + "_" + iBkg;
-  std::string lNuisance2 =  iBkg+"_"+"CMS_"+iName+"2_" + iChannel + "_" + iEnergy + "_" + iBkg;
+  std::string lNuisance1 =  iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy + "_" + iBkg;
+  std::string lNuisance2 =  iBkg+"_"+"CMS_"+iName+"2_" + iDir + "_" + iEnergy + "_" + iBkg;
   lHUp    = merge(lNuisance1 + "Up"   ,lFirst,lH0,lHUp);
   lHDown  = merge(lNuisance1 + "Down" ,lFirst,lH0,lHDown);
   lHUp1   = merge(lNuisance2 + "Up"   ,lFirst,lH0,lHUp1);
