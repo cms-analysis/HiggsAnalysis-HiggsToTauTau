@@ -279,10 +279,10 @@ void addVarBinNuisance(std::string iFileName,std::string iChannel,std::string iB
   //lFile->Close();
   return;
 }
-void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std::string iEnergy,std::string iName,std::string iDir,bool iRebin=true,bool iVarBin=false,int iFitModel=1,double iFirst=150,double iLast=1500) { 
+int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std::string iEnergy,std::string iName,std::string iDir,bool iVerbose=false,bool iVarBin=false,int iFitModel=1,double iFirst=150,double iLast=1500,bool iTestMode=false) { 
   std::cout << "======> " << iDir << "/" << iBkg << " -- " << iFileName << std::endl;  
-  if(iVarBin) addVarBinNuisance(iFileName,iChannel,iBkg,iEnergy,iName,iDir,iRebin,iFitModel,iFirst,iLast);
-  if(iVarBin) return;
+  if(iVarBin) addVarBinNuisance(iFileName,iChannel,iBkg,iEnergy,iName,iDir,true,iFitModel,iFirst,iLast);
+  if(iVarBin) return 1;
 
   TFile *lFile = new TFile(iFileName.c_str());
   TH1F  *lH0   = (TH1F*) lFile->Get((iDir+"/"+iBkg).c_str());
@@ -290,7 +290,7 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
 
   //Define the fit function
   RooRealVar lM("m","m" ,0,5000);   //lM.setBinning(lBinning);
-  RooRealVar lA("a","a" ,50,  0.1,100);
+  RooRealVar lA("a","a" ,50,  0.1,200);
   RooRealVar lB("b","b" ,0.0 , -10.5,10.5); //lB.setConstant(kTRUE);
   RooDataHist *pH0  =  new RooDataHist("Data","Data" ,RooArgList(lM),lH0);
   RooGenericPdf *lFit  = 0; lFit = new RooGenericPdf("genPdf","exp(-m/(a+b*m))",RooArgList(lM,lA,lB));
@@ -305,32 +305,49 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   double lLast  = iLast;
   //lRFit = lFit->chi2FitTo(*pH0,RooFit::Save(kTRUE),RooFit::Range(lFirst,lLast));
   lRFit = lFit->fitTo(*pH0,RooFit::Save(kTRUE),RooFit::Range(lFirst,lLast),RooFit::Strategy(0)); 
-
+  
+  //std::cout << lRFit->status() << " " <<  lRFit->covQual() << std::endl;
+  if(!(lRFit->status()==0 && lRFit->covQual()==3))
+  {
+      std::cerr << "===============================================================================" << std::endl;
+      std::cerr << "Tail fit has not succeeded. Datacard and uncertainty files will not be altered." << std::endl;
+      std::cerr << "===============================================================================" << std::endl;
+      return 1;
+  }
 
   TMatrixDSym lCovMatrix   = lRFit->covarianceMatrix(); 
   TMatrixD  lEigVecs(2,2);    lEigVecs = TMatrixDSymEigen(lCovMatrix).GetEigenVectors();
   TVectorD  lEigVals(2);      lEigVals = TMatrixDSymEigen(lCovMatrix).GetEigenValues();
-  cout << " Ve---> " << lEigVecs(0,0) << " -- " << lEigVecs(1,0) << " -- " << lEigVecs(0,1) << " -- " << lEigVecs(1,1) << endl;
-  cout << " Co---> " << lCovMatrix(0,0) << " -- " << lCovMatrix(1,0) << " -- " << lCovMatrix(0,1) << " -- " << lCovMatrix(1,1) << endl;
+  cout << " Eigenvectors ---> " << lEigVecs(0,0) << " -- " << lEigVecs(1,0) << " -- " << lEigVecs(0,1) << " -- " << lEigVecs(1,1) << endl;
+  cout << " Covariance matrix ---> " << lCovMatrix(0,0) << " -- " << lCovMatrix(1,0) << " -- " << lCovMatrix(0,1) << " -- " << lCovMatrix(1,1) << endl;
   double lACentral = lA.getVal();
   double lBCentral = lB.getVal();
   lEigVals(0) = sqrt(lEigVals(0));
   lEigVals(1) = sqrt(lEigVals(1));
-  cout << "===> " << lEigVals(0) << " -- " << lEigVals(1) << endl;
-  
+  cout << "Eigenvalues ===> " << lEigVals(0) << " -- " << lEigVals(1) << endl;
+    
+  lM.setRange(lFirst,2000);
+  lA.removeRange();
+  lB.removeRange();
+
+  if(iVerbose) cout << "Values for central hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
   TH1F* lH     = (TH1F*) lFit->createHistogram("fit" ,lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
   lA.setVal(lACentral + lEigVals(0)*lEigVecs(0,0));
   lB.setVal(lBCentral + lEigVals(0)*lEigVecs(1,0));
+  if(iVerbose) cout << "Values for shift 1 up hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
   TH1F* lHUp   = (TH1F*) lFit->createHistogram("Up"  ,lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
   lA.setVal(lACentral - lEigVals(0)*lEigVecs(0,0));
   lB.setVal(lBCentral - lEigVals(0)*lEigVecs(1,0));
+  if(iVerbose) cout << "Values for shift 1 down hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
   TH1F* lHDown = (TH1F*) lFit->createHistogram("Down",lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
 
   lA.setVal(lACentral + lEigVals(1)*lEigVecs(0,1));
   lB.setVal(lBCentral + lEigVals(1)*lEigVecs(1,1));
+  if(iVerbose) cout << "Values for shift 2 up hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
   TH1F* lHUp1   = (TH1F*) lFit->createHistogram("Up1",lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
   lA.setVal(lACentral - lEigVals(1)*lEigVecs(0,1));
   lB.setVal(lBCentral - lEigVals(1)*lEigVecs(1,1));
+  if(iVerbose) cout << "Values for shift 2 down hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
   TH1F* lHDown1 = (TH1F*) lFit->createHistogram("Down1",lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
 
   std::string lNuisance1 =  iBkg+"_"+"CMS_"+iName+"1_" + iChannel + "_" + iEnergy + "_" + iBkg;
@@ -341,17 +358,81 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   lHDown1 = merge(lNuisance2 + "Down" ,lFirst,lH0,lHDown1);
   lH      = merge(lH0->GetName()      ,lFirst,lH0,lH);
 
-  if(iRebin) { 
-    const int lNBins = lData->GetNbinsX();
-    double *lAxis    = getAxis(lData);
-    lH0     = rebin(lH0    ,lNBins,lAxis);
-    lH      = rebin(lH     ,lNBins,lAxis);
-    lHUp    = rebin(lHUp   ,lNBins,lAxis);
-    lHDown  = rebin(lHDown ,lNBins,lAxis);
-    lHUp1   = rebin(lHUp1  ,lNBins,lAxis);
-    lHDown1 = rebin(lHDown1,lNBins,lAxis);
+  double I1=lHUp->Integral(lHUp->FindBin(lFirst), lHUp->FindBin(2000));  
+  double I2=lHDown->Integral(lHDown->FindBin(lFirst), lHDown->FindBin(2000));  
+  double I3=lHUp1->Integral(lHUp1->FindBin(lFirst), lHUp1->FindBin(2000));  
+  double I4=lHDown1->Integral(lHDown1->FindBin(lFirst), lHDown1->FindBin(2000)); 
+  
+
+  //If verbosity is set make plot showing the shift up/down/central functions prior to rebinning
+  if(iVerbose)
+  {
+    lH0->SetStats(0);
+    lH->SetStats(0);
+    lHUp->SetStats(0);
+    lHDown->SetStats(0);
+    lHUp1->SetStats(0);
+    lHDown1->SetStats(0);
+    lH0    ->SetLineWidth(1); lH0->SetMarkerStyle(kFullCircle);
+    lH     ->SetLineColor(kGreen);
+    lHUp   ->SetLineColor(kRed);
+    lHDown ->SetLineColor(kRed+1);
+    lHUp1  ->SetLineColor(kBlue);
+    lHDown1->SetLineColor(kBlue+1);
+
+    TCanvas *lC0Fine = new TCanvas("CanFine","CanFine",800,600);
+    lC0Fine->Divide(1,2); lC0Fine->cd();  lC0Fine->cd(1)->SetPad(0,0.2,1.0,1.0); gPad->SetLeftMargin(0.2) ; 
+    lH0->Draw();
+    lH     ->Draw("hist sames");
+    lHUp   ->Draw("hist sames");
+    lHDown ->Draw("hist sames");
+    lHUp1  ->Draw("hist sames");
+    lHDown1->Draw("hist sames");
+    gPad->SetLogy();
+  
+    TLegend* leg2;
+    /// setup the CMS Preliminary
+    leg2 = new TLegend(0.7, 0.80, 1, 1); 
+    leg2->SetBorderSize( 0 );
+    leg2->SetFillStyle ( 1001 );
+    leg2->SetFillColor (kWhite);
+    leg2->AddEntry( lH0 , "original",  "PL" );
+    leg2->AddEntry( lH , "central fit",  "L" );
+    leg2->AddEntry( lHUp , "shift1 up",  "L" );
+    leg2->AddEntry( lHDown , "shift1 down",  "L" );
+    leg2->AddEntry( lHUp1 , "shift2 up",  "L" );
+    leg2->AddEntry( lHDown1 , "shift2 down",  "L" );
+    leg2->Draw("same");
+  
+    lC0Fine->cd(2)->SetPad(0,0,1.0,0.2); gPad->SetLeftMargin(0.2) ;
+    drawDifference(lH0,lH,lHUp,lHDown,lHUp1,lHDown1);
+    lH0->SetStats(0);
+    lC0Fine->Update();
+    lC0Fine->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Finebin.png").c_str());
+
+  }
+  
+  //Check if the shift up/down histograms are integrable. If not terminate the script here.
+  if(I1 != I1 || I2 != I2 || I3 != I3 || I4 != I4)
+  {
+      std::cerr << "===============================================================================" << std::endl;
+      std::cerr << "Tail fit has succeeded, but 1 or more of the shift up/down histograms is not integrable." << std::endl;
+      std::cerr << "Script will terminate here without altering datacard. Turn on --verbose option to see the problem histogram." << std::endl; 
+      std::cerr << "===============================================================================" << std::endl;
+      return 1;
   }
 
+    
+  //Rebin the histograms   
+  const int lNBins = lData->GetNbinsX();
+  double *lAxis    = getAxis(lData);
+  lH0     = rebin(lH0    ,lNBins,lAxis);
+  lH      = rebin(lH     ,lNBins,lAxis);
+  lHUp    = rebin(lHUp   ,lNBins,lAxis);
+  lHDown  = rebin(lHDown ,lNBins,lAxis);
+  lHUp1   = rebin(lHUp1  ,lNBins,lAxis);
+  lHDown1 = rebin(lHDown1,lNBins,lAxis);
+  
   // we dont need this bin errors since we do not use them (fit tails replaces bin-by-bin error!), therefore i set all errors to 0, this also saves us from modifying the add_bbb_error.py script in which I otherwise would have to include a option for adding bbb only in specific ranges
   int lMergeBin = lH->GetXaxis()->FindBin(iFirst);
   for(int i0 = lMergeBin; i0 < lH->GetNbinsX()+1; i0++){
@@ -361,7 +442,8 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
     lHUp1->SetBinError  (i0,0);
     lHDown1->SetBinError  (i0,0);
   }
-
+    
+  //Save the rebinned templates to the datacard root file
 
   TFile *lOutFile =new TFile("Output.root","RECREATE");
   cloneFile(lOutFile,lFile,iDir+"/"+iBkg);
@@ -372,7 +454,8 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   lHUp1  ->Write(); 
   lHDown1->Write(); 
 
-  // Debug Plots
+  // Make the plot showing shift up/down/central templates, rebinned as in datacard
+
   lH0->SetStats(0);
   lH->SetStats(0);
   lHUp->SetStats(0);
@@ -385,6 +468,7 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   lHDown ->SetLineColor(kRed+1);
   lHUp1  ->SetLineColor(kBlue);
   lHDown1->SetLineColor(kBlue+1);
+
   TCanvas *lC0 = new TCanvas("Can","Can",800,600);
   lC0->Divide(1,2); lC0->cd();  lC0->cd(1)->SetPad(0,0.2,1.0,1.0); gPad->SetLeftMargin(0.2) ; 
   lH0->Draw();
@@ -401,48 +485,84 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
   leg1->SetBorderSize( 0 );
   leg1->SetFillStyle ( 1001 );
   leg1->SetFillColor (kWhite);
-  leg1->AddEntry( lH0 , "orignal",  "PL" );
-  leg1->AddEntry( lH , "cental fit",  "L" );
+  leg1->AddEntry( lH0 , "original",  "PL" );
+  leg1->AddEntry( lH , "central fit",  "L" );
   leg1->AddEntry( lHUp , "shift1 up",  "L" );
   leg1->AddEntry( lHDown , "shift1 down",  "L" );
   leg1->AddEntry( lHUp1 , "shift2 up",  "L" );
   leg1->AddEntry( lHDown1 , "shift2 down",  "L" );
   leg1->Draw("same");
-
-
+  
   lC0->cd(2)->SetPad(0,0,1.0,0.2); gPad->SetLeftMargin(0.2) ;
   drawDifference(lH0,lH,lHUp,lHDown,lHUp1,lHDown1);
   lH0->SetStats(0);
   lC0->Update();
-  lC0->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+".png").c_str());
-  //lFile->Close();
+  lC0->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Rebin.png").c_str());
+
+  //Make additional output plots of shift up and down histos if verbosity is set  
+
+  if(iVerbose)
+  {
+ 
+    TCanvas *lC1 = new TCanvas("Can1","Can1",800,600);
+    lHUp->Draw();
+    //gPad->SetLogy();
+    lC1->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift1Up.png").c_str());
+      
+    TCanvas *lC2 = new TCanvas("Can2","Can2",800,600);
+    lHDown->Draw();
+    // gPad->SetLogy();
+    lC2->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift1Down.png").c_str());
+      
+    TCanvas *lC3 = new TCanvas("Can3","Can3",800,600);
+    lHUp1->Draw();
+    // gPad->SetLogy();
+    lC3->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift2Up.png").c_str());
+      
+    TCanvas *lC4 = new TCanvas("Can4","Can4",800,600);
+    lHDown1->Draw();
+    // gPad->SetLogy();
+    lC4->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift2Down.png").c_str());
+ }
+  
+
+  lA.setVal(lACentral);  
+  lB.setVal(lBCentral);  
 
   lM.setRange(lFirst,2000); 
   TCanvas* c1 = new TCanvas("c1","c1",600,600);
   RooPlot* mframe = lM.frame(RooFit::Name("mframe"),RooFit::Title("Tail fit in fit range"));
   pH0->plotOn(mframe, RooFit::Name("data"), RooFit::MarkerColor(kBlack));
   lFit->plotOn(mframe, RooFit::Name("model"), RooFit::DrawOption("L"), RooFit::Range(lFirst,2000));
-  lFit->plotOn(mframe, RooFit::Components(*lFit), RooFit::LineColor(kRed), RooFit::Range(lFirst,2000)); 
+  lFit->plotOn(mframe, RooFit::Components(*lFit), RooFit::LineColor(kRed), RooFit::Range(lFirst,2000));
+  mframe->GetYaxis()->SetRangeUser(0,lH0->GetBinContent(lH0->FindBin(lFirst)));
   mframe->Draw();
   Double_t chi2 = mframe->chiSquare();
   Double_t ndoff = mframe->GetNbinsX();
   std::cout << "==========================================================================================================" << std::endl;
   std::cout << "Goodness of fit: " << chi2/ndoff << " with statistics in fit range: " << lH0->Integral(lH0->FindBin(lFirst),lH0->FindBin(2000)) << std::endl;
   std::cout << "==========================================================================================================" << std::endl;
-  
-  c1->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Fine.png").c_str());
+ 
+ //If verbosity is set also output the fit function just in the tail fit range, no log scale 
+ if(iVerbose) c1->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Function.png").c_str());
 
+ if(iTestMode)
+ {
+     std::cout << "Running in test mode. Script will exit now without altering datacard or uncertainty files." << std::endl;
+     return 1;
+ }
 
-  return;
+  return 0;
 }
-void addFitNuisance(std::string iFileName="test.root",std::string iChannel="muTau",std::string iBkg="W",std::string iEnergy="8TeV",std::string iName="shift",std::string iCategory="9",double iFirst=150,double iLast=1500,int iFitModel=1,bool iVarBin=true,bool iRebin=true) { 
+
+int addFitNuisance(std::string iFileName="test.root",std::string iChannel="muTau",std::string iBkg="W",std::string iEnergy="8TeV",std::string iName="shift",std::string iCategory="9",double iFirst=150,double iLast=1500,int iFitModel=1,bool iVerbose=true,bool iVarBin=false,bool iTestMode=false) { 
   // Also possible old MSSM categorization (for testing)
-  if(iCategory=="0") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet_low"  ,iRebin,iVarBin,iFitModel,iFirst,iLast);
-  if(iCategory=="1") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet_high" ,iRebin,iVarBin,iFitModel,iFirst,iLast);
-  if(iCategory=="2") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_boost_low" ,iRebin,iVarBin,iFitModel,iFirst,iLast);
-  if(iCategory=="3") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_boost_high",iRebin,iVarBin,iFitModel,iFirst,iLast);
-  if(iCategory=="6") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_low"  ,iRebin,iVarBin,iFitModel,iFirst,iLast);
-  if(iCategory=="7") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_high" ,iRebin,iVarBin,iFitModel,iFirst,iLast);
-  if(iCategory=="8") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtag"    ,iRebin,iVarBin,iFitModel,iFirst,iLast);
-  if(iCategory=="9") addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag"      ,iRebin,iVarBin,iFitModel,iFirst,iLast);
+  if(iCategory=="0") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet_low"  ,iVerbose,iVarBin,iFitModel,iFirst,iLast,iTestMode);
+  if(iCategory=="1") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet_high" ,iVerbose,iVarBin,iFitModel,iFirst,iLast,iTestMode);
+  if(iCategory=="2") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_boost_low" ,iVerbose,iVarBin,iFitModel,iFirst,iLast,iTestMode);
+  if(iCategory=="3") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_boost_high",iVerbose,iVarBin,iFitModel,iFirst,iLast,iTestMode);
+  if(iCategory=="6") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_low"  ,iVerbose,iVarBin,iFitModel,iFirst,iLast,iTestMode);
+  if(iCategory=="7") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_high" ,iVerbose,iVarBin,iFitModel,iFirst,iLast,iTestMode);
+  if(iCategory=="8") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtag"    ,iVerbose,iVarBin,iFitModel,iFirst,iLast,iTestMode);
+  if(iCategory=="9") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag"      ,iVerbose,iVarBin,iFitModel,iFirst,iLast,iTestMode);
 }

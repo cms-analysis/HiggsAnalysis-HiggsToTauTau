@@ -14,9 +14,9 @@ parser.add_option("-r"  ,"--range",      dest="first",      default="200",     t
 parser.add_option("-l"  ,"--rangelast",  dest="last",      default="1500",     type="int",      help="End of fit range [Default: 1500]")
 parser.add_option("-f"  ,"--fitmodel",   dest="fitmodel",   default="0",       type="int",      help="Fit model 0(exp(m/(a+b*m)) 1(exp(a*m*pow(b)) [Default:0]")
 parser.add_option("-o"  ,"--varbin",     dest="varbin",     default=False,action="store_true",  help="Use variable binned fits    [Default: False]")
-parser.add_option("-m"  ,"--rebin",      dest="rebin",      default=False,action="store_true",  help="Rebin histogram to data_obs [Default: False]")
 parser.add_option("-s"  ,"--setup",      dest="setup",      default="HiggsAnalysis/HiggsToTauTau/setup",    type="string",  help="Setup Directory : HiggsAnalysis/HiggsToTauTau/setup")
-parser.add_option("-v"  ,"--verbose",    dest="verbose",    default=False, action="store_true", help="increase verbosity. [Default: False]")
+parser.add_option("-v"  ,"--verbose",    dest="verbose",    default=False, action="store_true", help="increase verbosity and make extra plots. [Default: False]")
+parser.add_option("-t"  ,"--testmode",    dest="testmode",    default=False, action="store_true", help="run in test mode-performs fit and makes plots but doesn't alter datacard or uncertainty files [Default: False]")
 
 # check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -26,6 +26,7 @@ parser.add_option("-v"  ,"--verbose",    dest="verbose",    default=False, actio
 
 import os
 import re
+import sys as system
 
 print " You are running with configuration: "
 print "-------------------------------------"
@@ -53,8 +54,10 @@ os.system(r"cp {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rootlogon.C .
 os.system("cp %s %s.bak"      %  (options.setup+'/'+options.channel+'/'+options.input,options.setup+'/'+options.channel+'/'+options.input))
 for cat in options.categories.split() :
     for bkg in options.background.split() : 
-        os.system(r"root -l -b -q rootlogon.C {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/addFitNuisance.C+\(\"{FILENAME}\"\,\"{CHANNEL}\"\,\"{BKG}\"\,\"{ENERGY}\"\,\"{NAME}\"\,\"{CATEGORY}\"\,{FIRST}\,{LAST}\,{FITMODEL}\,{VARBIN}\,{REBIN}\)".format(
-            CMSSW_BASE=os.environ.get("CMSSW_BASE"), FILENAME=options.setup+'/'+options.channel+'/'+options.input,CHANNEL=channelName[options.channel],BKG=bkg,ENERGY=options.energy,NAME=options.name,CATEGORY=cat,FIRST=options.first,LAST=options.last,FITMODEL=options.fitmodel,VARBIN=str(options.varbin).lower(),REBIN=str(options.rebin).lower()))
+        status = os.system(r"root -l -b -q rootlogon.C {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/addFitNuisance.C+\(\"{FILENAME}\"\,\"{CHANNEL}\"\,\"{BKG}\"\,\"{ENERGY}\"\,\"{NAME}\"\,\"{CATEGORY}\"\,{FIRST}\,{LAST}\,{FITMODEL}\,{VERBOSE}\,{VARBIN}\,{TESTMODE}\)".format(
+            CMSSW_BASE=os.environ.get("CMSSW_BASE"), FILENAME=options.setup+'/'+options.channel+'/'+options.input,CHANNEL=channelName[options.channel],BKG=bkg,ENERGY=options.energy,NAME=options.name,CATEGORY=cat,FIRST=options.first,LAST=options.last,FITMODEL=options.fitmodel,VARBIN=str(options.varbin).lower(),VERBOSE=str(options.verbose).lower(),TESTMODE=str(options.testmode).lower()))
+        if int(status) > 0:
+            system.exit(1)
         os.system("rm %s"      %  (options.setup+'/'+options.channel+'/'+options.input))
         os.system("mv Output.root %s" %  (options.setup+'/'+options.channel+'/'+options.input))
 
