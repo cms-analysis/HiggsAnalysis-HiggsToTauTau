@@ -23,7 +23,14 @@ static const double MARKER_SIZE = 1.3;  // 0.7
 
 bool
 channel(std::string& label){
-  return (label==std::string("cmb")        ||
+  return (label==std::string("std")        ||
+	  label==std::string("pruneds0p3")     ||
+	  label==std::string("pruneds0p2")     ||
+	  label==std::string("pruneds05p1")     ||
+	  label==std::string("bin-by-bin-BBs0") ||
+	  label==std::string("bin-by-bin-BBs05") ||
+	  label==std::string("bbb")        ||
+	  label==std::string("cmb")        ||
 	  label==std::string("cmb+")       ||
 	  label==std::string("htt")        ||
 	  label==std::string("vhtt")       ||
@@ -59,6 +66,13 @@ channel(std::string& label){
 
 std::string legendEntry(const std::string& channel){
   std::string title;
+  if(channel==std::string("std"       )) title = std::string("no bbb");
+  if(channel==std::string("pruneds05p1"   )) title = std::string("bbb stat>0.05 pruned<0.1");
+  if(channel==std::string("pruneds0p2"    )) title = std::string("bbb stat>0 pruned<0.2");
+  if(channel==std::string("pruneds0p3"    )) title = std::string("bbb stat>0 pruned<0.3");
+  if(channel==std::string("bin-by-bin-BBs0"       )) title = std::string("merged bbb stat>0");
+  if(channel==std::string("bin-by-bin-BBs05"      )) title = std::string("merged bbb stat>0.05");
+  if(channel==std::string("bbb"       )) title = std::string("full bbb");
   if(channel==std::string("em"        )) title = std::string("e#mu");
   if(channel==std::string("et"        )) title = std::string("e#tau_{h}");
   if(channel==std::string("mt"        )) title = std::string("#mu#tau_{h}");
@@ -99,6 +113,13 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   SetStyle();
 
   std::map<std::string, unsigned int> colors;
+  colors["std"        ] = kMagenta;
+  colors["pruneds0p3"     ] = kGreen;
+  colors["pruneds0p2"     ] = kOrange;
+  colors["pruneds05p1"     ] = kRed;
+  colors["bin-by-bin-BBs0"        ] = kBlue;
+  colors["bin-by-bin-BBs05"        ] = kCyan;
+  colors["bbb"        ] = kBlack;
   colors["0jet"       ] = kBlue;
   colors["2jet"       ] = kMagenta;
   colors["vbf"        ] = kRed;
@@ -190,7 +211,10 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       
       // format x-axis
       std::string x_title;
-      if(std::string(type).find("mssm")!=std::string::npos){
+      if(std::string(type) == std::string("mssm-tanb")){
+	x_title = std::string("m_{A} [GeV]");
+      }
+      else if(std::string(type) == std::string("mssm-xsec")){
 	x_title = std::string("m_{#phi} [GeV]");
       }
       else{
@@ -246,7 +270,10 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       
       // format x-axis
       std::string x_title;
-      if(std::string(type).find("mssm")!=std::string::npos){
+      if(std::string(type) == std::string("mssm-tanb")){
+	x_title = std::string("m_{A} [GeV]");
+      }
+      else if(std::string(type) == std::string("mssm-xsec")){
 	x_title = std::string("m_{#phi} [GeV]");
       }
       else{
