@@ -377,6 +377,7 @@ int main(int argc, char* argv[])
     //plot.plotSignalStrength(*canv, innerBand, central, directory);
     plot.plot1DScan(*canv, directory);
   }
+  // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--likelihood-scan-mass") ){
     // Likelihood
     TGraph* observed  = new TGraph(); //not needed for plot1DScan
@@ -386,6 +387,7 @@ int main(int argc, char* argv[])
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plotMassScan(*canv, observed);
   }
+  // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--mass-estimate") ){
     // Likelihood
     TGraph* observed  = new TGraph(); //not needed for plot1DScan
