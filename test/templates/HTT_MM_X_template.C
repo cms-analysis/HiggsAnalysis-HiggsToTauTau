@@ -296,9 +296,9 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   data->SetNdivisions(505);
   data->SetMinimum(min);
 #ifndef DROP_SIGNAL
-  data->SetMaximum(max>0 ? max : std::max(std::max(maximum(data, log), maximum(Ztt, log)), maximum(ggH, log)));
+  data->SetMaximum(max>0 ? max : std::max(std::max(maximum(data, log), maximum(ZTT, log)), maximum(ggH, log)));
 #else
-  data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(Ztt, log)));
+  data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(ZTT, log)));
 #endif
   data->Draw("e");
 
@@ -488,7 +488,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   rat2->SetMinimum(-0.3);
   rat2->GetYaxis()->SetTitle("#bf{Postfit/Prefit-1}");
   rat2->GetYaxis()->CenterTitle();
-#ifdefined MSSM
+#if defined MSSM
   rat2->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}"); 
 #else
   rat2->GetXaxis()->SetTitle("#bf{final discriminator}");
