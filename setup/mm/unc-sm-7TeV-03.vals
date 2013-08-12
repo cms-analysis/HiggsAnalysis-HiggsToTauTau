@@ -1,7 +1,7 @@
 mumu_1jet_high		  	qqH,ggH,VH,Dibosons,WJets		lumi_7TeV				1.022
 mumu_1jet_high			qqH,ggH,VH,ZTT,TTJ,WJets,Dibosons 	CMS_eff_m 				1.04
 mumu_1jet_high			qqH,ggH,VH,TTJ,Dibosons			CMS_scale_j_7TeV			0.5
-mumu_1jet_high			qqH,ggH,VH,TTJ,Dibosons   		CMS_htt_scale_met_7TeV			0.5
+mumu_1jet_high			qqH,ggH,VH,TTJ,Dibosons   		CMS_htt_scale_met_7TeV			1.035
 mumu_1jet_high			qqH,ggH,VH,ZMM,TTJ,WJets,Dibosons 	CMS_eff_b_7TeV 				0.98
 mumu_1jet_high			qqH,ggH,VH,ZMM,TTJ,WJets,Dibosons 	CMS_fake_b_7TeV				0.98
 mumu_1jet_high			ggH					pdf_gg    				1.08
@@ -16,5 +16,5 @@ mumu_1jet_high			TTJ					CMS_htt_ttbarNorm_7TeV			1.08
 mumu_1jet_high			Dibosons				CMS_htt_mm_DiBosonNorm_7TeV		1.30
 #mumu_1jet_high			ZTT					CMS_htt_mm_zttShape_1jet_high_7TeV	1.0
 mumu_1jet_high			ZTT					CMS_htt_mm_zttLnN_1jet_high_7TeV	1.05
-mumu_1jet_high			ZMM					CMS_htt_mm_zmmShape_1jet_7TeV		0.5
+mumu_1jet_high			ZMM					CMS_htt_mm_zmmShape_1jet_high_7TeV	0.5
 mumu_1jet_high			WJets					CMS_htt_mm_WJetsNorm_03_7TeV		1.20
