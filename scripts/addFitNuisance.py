@@ -11,12 +11,13 @@ parser.add_option("-e"  ,"--energy",     dest="energy",     default="8TeV",    t
 parser.add_option("-c"  ,"--channel",    dest="channel",    default="tt",      type="string",   help="channel [Default: tt]")
 parser.add_option("-k"  ,"--categories", dest="categories", default="8 9",     type="string",   help="Categories [Default: 8 9 ]")
 parser.add_option("-r"  ,"--range",      dest="first",      default="200",     type="int",      help="Beginning of fit range [Default: 200]")
-parser.add_option("-l"  ,"--rangelast",  dest="last",      default="1500",     type="int",      help="End of fit range [Default: 1500]")
+parser.add_option("-l"  ,"--rangelast",  dest="last",       default="1500",    type="int",      help="End of fit range [Default: 1500]")
 parser.add_option("-f"  ,"--fitmodel",   dest="fitmodel",   default="0",       type="int",      help="Fit model 0(exp(m/(a+b*m)) 1(exp(a*m*pow(b)) [Default:0]")
 parser.add_option("-o"  ,"--varbin",     dest="varbin",     default=False,action="store_true",  help="Use variable binned fits    [Default: False]")
 parser.add_option("-s"  ,"--setup",      dest="setup",      default="HiggsAnalysis/HiggsToTauTau/setup",    type="string",  help="Setup Directory : HiggsAnalysis/HiggsToTauTau/setup")
 parser.add_option("-v"  ,"--verbose",    dest="verbose",    default=False, action="store_true", help="increase verbosity and make extra plots. [Default: False]")
-parser.add_option("-t"  ,"--testmode",    dest="testmode",    default=False, action="store_true", help="run in test mode-performs fit and makes plots but doesn't alter datacard or uncertainty files [Default: False]")
+parser.add_option("-u"  ,"--no-uncerts", dest="no_uncerts", default=False, action="store_true", help="do not write uncertainties on fit parameters to file (used when providing central fits for shape uncertainties to prevent double counting of fit uncertainties). Should be False for the fit of the central value. [Default: False]")
+parser.add_option("-t"  ,"--testmode",    dest="testmode",  default=False, action="store_true", help="run in test mode-performs fit and makes plots but doesn't alter datacard or uncertainty files. [Default: False]")
 
 # check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -70,53 +71,54 @@ for cat in options.categories.split() :
     if cat == ' ' :
         continue
 ## add Nuisance to the vals
-    datacard=options.setup+'/'+options.channel+'/unc-mssm-'+options.energy+'-0'+cat+'.vals'
-    print "datacard: ",datacard
-    old = open(datacard, 'r')
-    new = open("%s-tmp.txt" % datacard[0:datacard.rfind('.txt')], 'w')
-    for line in old :
-        words = line.split()
-        new.write(line )
-        if len(words) < 2 :
-            continue
-        if '#' in words[0] :
-            continue
-        #if ('_scale_t_' or '_scale_e_') in words[2] :
-        if  words[2].find('_scale_t_')>-1 or words[2].find('_scale_e_')>-1 :
-            new_words    = words 
-            new_words[1] = options.background.replace(' ',',').replace("_fine_binning", "")
-            new_words[2] = 'CMS_'+options.name+'1_' + channelName[options.channel] + '_' + categoryName[cat] + '_' + options.energy + "_" + options.background
-            new_line1     = '                      '.join(new_words)
-            new_words[2] = 'CMS_'+options.name+'2_' + channelName[options.channel] + '_' + categoryName[cat] + '_' + options.energy + "_" + options.background
-            new_line2     = '                      '.join(new_words)
-            new.write(new_line1+'\n')
-            new.write(new_line2+'\n')
-    old.close()
-    new.close()
-    os.system("mv %s-tmp.txt %s" % (datacard[0:datacard.rfind('.txt')], datacard))           
+    if not options.no_uncerts : 
+        datacard=options.setup+'/'+options.channel+'/unc-mssm-'+options.energy+'-0'+cat+'.vals'
+        print "datacard: ",datacard
+        old = open(datacard, 'r')
+        new = open("%s-tmp.txt" % datacard[0:datacard.rfind('.txt')], 'w')
+        for line in old :
+            words = line.split()
+            new.write(line )
+            if len(words) < 2 :
+                continue
+            if '#' in words[0] :
+                continue
+            #if ('_scale_t_' or '_scale_e_') in words[2] :
+            if  words[2].find('_scale_t_')>-1 or words[2].find('_scale_e_')>-1 :
+                new_words    = words 
+                new_words[1] = options.background.replace(' ',',').replace("_fine_binning", "")
+                new_words[2] = 'CMS_'+options.name+'1_' + channelName[options.channel] + '_' + categoryName[cat] + '_' + options.energy + "_" + options.background
+                new_line1     = '                      '.join(new_words)
+                new_words[2] = 'CMS_'+options.name+'2_' + channelName[options.channel] + '_' + categoryName[cat] + '_' + options.energy + "_" + options.background
+                new_line2     = '                      '.join(new_words)
+                new.write(new_line1+'\n')
+                new.write(new_line2+'\n')
+        old.close()
+        new.close()
+        os.system("mv %s-tmp.txt %s" % (datacard[0:datacard.rfind('.txt')], datacard))           
 
 ## add Nuisance to the conf
-    datacard=options.setup+'/'+options.channel+'/unc-mssm-'+options.energy+'-0'+cat+'.conf'
-    print "datacard: ",datacard
-    old = open(datacard, 'r')
-    new = open("%s-tmp.txt" % datacard[0:datacard.rfind('.txt')], 'w')
-    for line in old :
-        new.write(line )
-        words = line.split()
-        if len(words) < 2 :
-            continue
-        if '#' in words[0] :
-            continue
-        #if  ('_scale_t_' or '_scale_e_') in words[0] :
-        if  words[0].find('_scale_t_')>-1 or words[0].find('_scale_e_')>-1 :
-            new_words    = words 
-            new_words[0] = 'CMS_'+options.name+'1_' + channelName[options.channel] + '_' + categoryName[cat] + '_' + options.energy + '_' + options.background
-            new_line1     = '                      '.join(new_words)
-            new_words[0] = 'CMS_'+options.name+'2_' + channelName[options.channel] + '_' + categoryName[cat] + '_' + options.energy + '_' + options.background
-            new_line2     = '                      '.join(new_words)
-            new.write(new_line1+'\n')
-            new.write(new_line2+'\n')
-    new.close()
-    old.close()
-    os.system("mv %s-tmp.txt %s" % (datacard[0:datacard.rfind('.txt')], datacard))           
+        datacard=options.setup+'/'+options.channel+'/unc-mssm-'+options.energy+'-0'+cat+'.conf'
+        print "datacard: ",datacard
+        old = open(datacard, 'r')
+        new = open("%s-tmp.txt" % datacard[0:datacard.rfind('.txt')], 'w')
+        for line in old :
+            new.write(line )
+            words = line.split()
+            if len(words) < 2 :
+                continue
+            if '#' in words[0] :
+                continue
+            #if  ('_scale_t_' or '_scale_e_') in words[0] :
+            if  words[0].find('_scale_t_')>-1 or words[0].find('_scale_e_')>-1 :
+                new_words    = words 
+                new_words[0] = 'CMS_'+options.name+'1_' + channelName[options.channel] + '_' + categoryName[cat] + '_' + options.energy + '_' + options.background
+                new_line1     = '                      '.join(new_words)
+                new_words[0] = 'CMS_'+options.name+'2_' + channelName[options.channel] + '_' + categoryName[cat] + '_' + options.energy + '_' + options.background
+                new_line2     = '                      '.join(new_words)
+                new.write(new_line1+'\n')
+                new.write(new_line2+'\n')
+        new.close()
+        old.close()
+        os.system("mv %s-tmp.txt %s" % (datacard[0:datacard.rfind('.txt')], datacard))           
 
