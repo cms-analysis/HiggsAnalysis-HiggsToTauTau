@@ -90,7 +90,7 @@ TH1F * merge(std::string iName,double iMergePoint,TH1F *iH,TH1F *iFunc) {
   TH1F *lH = (TH1F*) iH->Clone(iName.c_str());
   lH->SetFillStyle(0);
   int lMergeBin = iH->GetXaxis()->FindBin(iMergePoint);
-  double lVal  = iH->GetBinContent(lMergeBin);
+  //double lVal  = iH->GetBinContent(lMergeBin);
   //iFunc->Scale(lVal/iFunc->GetBinContent(lMergeBin));
   iFunc->Scale( (iH->Integral(lMergeBin, iH->GetXaxis()->FindBin(1500))) / (iFunc->Integral(lMergeBin, iFunc->GetXaxis()->FindBin(1500)) )); // felix - last fit bin = 1500; this approach seems to work much better
   for(int i0 = 0;         i0 < lMergeBin;         i0++) lH->SetBinContent(i0,iH->GetBinContent(i0));
@@ -279,7 +279,7 @@ void addVarBinNuisance(std::string iFileName,std::string iChannel,std::string iB
   //lFile->Close();
   return;
 }
-int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std::string iEnergy,std::string iName,std::string iDir,bool iVerbose=false,bool iVarBin=false,int iFitModel=1,double iFirst=150,double iLast=1500,bool iTestMode=false) { 
+int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std::string iEnergy,std::string iName,std::string iDir,bool iVerbose=false,bool iVarBin=false,int iFitModel=1,double iFirst=150,double iLast=1500,bool addUncerts=true,bool iTestMode=false) { 
   std::cout << "======> " << iDir << "/" << iBkg << " -- " << iFileName << std::endl;  
   if(iVarBin) addVarBinNuisance(iFileName,iChannel,iBkg,iEnergy,iName,iDir,true,iFitModel,iFirst,iLast);
   if(iVarBin) return 1;
@@ -350,7 +350,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
       std::cout << "Infinite point found in central histogram at mass of " << mcentral << ". Truncating the histogram before that point, setting all bins after to zero." << std::endl;
       std::cout << "===============================================================================" << std::endl;
   }
-  TH1F* lH, *lHtemp;
+  TH1F* lH=0, *lHtemp=0;
   if(!flagcentral) lH = (TH1F*) lFit->createHistogram("fit" ,lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
   else lHtemp=(TH1F*) lFit->createHistogram("fit" ,lM,RooFit::Binning(lH0->FindBin(mcentral),lH0->GetXaxis()->GetXmin(),lH0->GetBinLowEdge(lH0->FindBin(mcentral))));
   
@@ -371,7 +371,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
       std::cout << "Infinite point found in shift 1 up histogram at mass of " << mshift1up << ". Truncating the histogram before that point, setting all bins after to zero." << std::endl;
       std::cout << "===============================================================================" << std::endl;
   }
-  TH1F* lHUp, *lHUptemp;
+  TH1F* lHUp=0, *lHUptemp=0;
   if(!flag1up) lHUp= (TH1F*) lFit->createHistogram("Up"  ,lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
   else lHUptemp=(TH1F*) lFit->createHistogram("Up" ,lM,RooFit::Binning((lH0->FindBin(mshift1up))-1,lH0->GetXaxis()->GetXmin(),lH0->GetBinLowEdge(lH0->FindBin(mshift1up))));
 
@@ -391,7 +391,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
       std::cout << "Infinite point found in shift 1 down histogram at mass of " << mshift1down << ". Truncating the histogram before that point, setting all bins after to zero." << std::endl;
       std::cout << "===============================================================================" << std::endl;
   }
-  TH1F* lHDown, *lHDowntemp;
+  TH1F* lHDown=0, *lHDowntemp=0;
   if(!flag1down) lHDown = (TH1F*) lFit->createHistogram("Down",lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
   else lHDowntemp=(TH1F*) lFit->createHistogram("Down" ,lM,RooFit::Binning(lH0->FindBin(mshift1down),lH0->GetXaxis()->GetXmin(),lH0->GetBinLowEdge(lH0->FindBin(mshift1down))));
 
@@ -411,7 +411,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
       std::cout << "Infinite point found in shift 2 up histogram at mass of " << mshift2up << ". Truncating the histogram before that point, setting all bins after to zero." << std::endl;
       std::cout << "===============================================================================" << std::endl;
   }
-  TH1F* lHUp1, *lHUp1temp;
+  TH1F* lHUp1=0, *lHUp1temp=0;
   if(!flag2up) lHUp1   = (TH1F*) lFit->createHistogram("Up1",lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
   else lHUp1temp=(TH1F*) lFit->createHistogram("Up1" ,lM,RooFit::Binning(lH0->FindBin(mshift2up),lH0->GetXaxis()->GetXmin(),lH0->GetBinLowEdge(lH0->FindBin(mshift2up))));
   
@@ -431,7 +431,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
       std::cout << "Infinite point found in shift 2 down histogram at mass of " << mshift2down << ". Truncating the histogram before that point, setting all bins after to zero." << std::endl;
       std::cout << "===============================================================================" << std::endl;
   }
-  TH1F* lHDown1, *lHDown1temp;
+  TH1F* lHDown1=0, *lHDown1temp=0;
   if(!flag2down) lHDown1= (TH1F*) lFit->createHistogram("Down1",lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
   else lHDown1temp=(TH1F*) lFit->createHistogram("Down1" ,lM,RooFit::Binning(lH0->FindBin(mshift2down),lH0->GetXaxis()->GetXmin(),lH0->GetBinLowEdge(lH0->FindBin(mshift2down))));
  
@@ -439,7 +439,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   if(flagcentral)
   {
       TH1F* base0 = new TH1F("base0", "base0", lH0->GetNbinsX(), lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax() );
-      for(unsigned i=0; i<lHtemp->GetNbinsX(); i++)
+      for(int i=0; i<lHtemp->GetNbinsX(); i++)
       {
           base0->Fill(lHtemp->GetBinCenter(i),lHtemp->GetBinContent(i));
       }
@@ -449,7 +449,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   if(flag1up)
   {
       TH1F* base1 = new TH1F("base1", "base1", lH0->GetNbinsX(), lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax() );
-      for(unsigned i=0; i<lHUptemp->GetNbinsX(); i++)
+      for(int i=0; i<lHUptemp->GetNbinsX(); i++)
       {
           base1->Fill(lHUptemp->GetBinCenter(i),lHUptemp->GetBinContent(i));
       }
@@ -459,7 +459,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   if(flag1down)
   {
       TH1F* base2 = new TH1F("base2", "base2", lH0->GetNbinsX(), lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax() );
-      for(unsigned i=0; i<lHDowntemp->GetNbinsX(); i++)
+      for(int i=0; i<lHDowntemp->GetNbinsX(); i++)
       {
           base2->Fill(lHDowntemp->GetBinCenter(i),lHDowntemp->GetBinContent(i));
       }
@@ -469,7 +469,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   if(flag2up)
   {
       TH1F* base3 = new TH1F("base3", "base3", lH0->GetNbinsX(), lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax() );
-      for(unsigned i=0; i<lHUp1temp->GetNbinsX(); i++)
+      for(int i=0; i<lHUp1temp->GetNbinsX(); i++)
       {
           base3->Fill(lHUp1temp->GetBinCenter(i),lHUp1temp->GetBinContent(i));
       }
@@ -479,7 +479,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   if(flag2down)
   {
       TH1F* base4 = new TH1F("base4", "base4", lH0->GetNbinsX(), lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax() );
-      for(unsigned i=0; i<lHDown1temp->GetNbinsX(); i++)
+      for(int i=0; i<lHDown1temp->GetNbinsX(); i++)
       {
           base4->Fill(lHDown1temp->GetBinCenter(i),lHDown1temp->GetBinContent(i));
       }
@@ -586,11 +586,13 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   TFile *lOutFile =new TFile("Output.root","RECREATE");
   cloneFile(lOutFile,lFile,iDir+"/"+iBkg);
   lOutFile->cd(iDir.c_str());
-  lH     ->Write();
-  lHUp   ->Write(); 
-  lHDown ->Write(); 
-  lHUp1  ->Write(); 
-  lHDown1->Write(); 
+  lH->Write();
+  if(addUncerts){
+    lHUp   ->Write(); 
+    lHDown ->Write(); 
+    lHUp1  ->Write(); 
+    lHDown1->Write(); 
+  }
 
   // Make the plot showing shift up/down/central templates, rebinned as in datacard
 
@@ -693,14 +695,15 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   return 0;
 }
 
-int addFitNuisance(std::string iFileName="test.root",std::string iChannel="muTau",std::string iBkg="W",std::string iEnergy="8TeV",std::string iName="shift",std::string iCategory="9",double iFirst=150,double iLast=1500,int iFitModel=1,bool iVerbose=true,bool iVarBin=false,bool iTestMode=false) { 
+int addFitNuisance(std::string iFileName="test.root",std::string iChannel="muTau",std::string iBkg="W",std::string iEnergy="8TeV",std::string iName="shift",std::string iCategory="9",double iFirst=150,double iLast=1500,int iFitModel=1,bool iVerbose=true,bool iVarBin=false,bool addUncerts=true,bool iTestMode=false) { 
   // Also possible old MSSM categorization (for testing)
-  if(iCategory=="0") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet_low"  ,iVerbose,iVarBin,iFitModel,iFirst,iLast,iTestMode);
-  if(iCategory=="1") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet_high" ,iVerbose,iVarBin,iFitModel,iFirst,iLast,iTestMode);
-  if(iCategory=="2") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_boost_low" ,iVerbose,iVarBin,iFitModel,iFirst,iLast,iTestMode);
-  if(iCategory=="3") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_boost_high",iVerbose,iVarBin,iFitModel,iFirst,iLast,iTestMode);
-  if(iCategory=="6") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_low"  ,iVerbose,iVarBin,iFitModel,iFirst,iLast,iTestMode);
-  if(iCategory=="7") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_high" ,iVerbose,iVarBin,iFitModel,iFirst,iLast,iTestMode);
-  if(iCategory=="8") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtag"    ,iVerbose,iVarBin,iFitModel,iFirst,iLast,iTestMode);
-  if(iCategory=="9") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag"      ,iVerbose,iVarBin,iFitModel,iFirst,iLast,iTestMode);
+  if(iCategory=="0") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet_low"  ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory=="1") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet_high" ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory=="2") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_boost_low" ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory=="3") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_boost_high",iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory=="6") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_low"  ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory=="7") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_high" ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory=="8") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtag"    ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory=="9") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag"      ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  return 0;
 }
