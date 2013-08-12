@@ -17,5 +17,5 @@ mumu_0jet_high			Dibosons			CMS_htt_mm_DiBosonNorm_8TeV		1.30
 #mumu_0jet_high                 ZTT                             CMS_htt_mm_zttShape_0jet_high_8TeV	1.0
 mumu_0jet_high			ZTT				CMS_htt_mm_zttLnN_0jet_high_8TeV	1.10
 mumu_0jet_high			ZMM				CMS_htt_mm_zmmShape_0jet_high_8TeV	0.5
-mumu_0jet_high			QCD				CMS_htt_mm_QCDNorm_01_8TeV		1.08
-mumu_0jet_high                  WJets                           CMS_htt_mm_WJetsNorm_01_8TeV    	1.17
+mumu_0jet_high			QCD				CMS_htt_mm_QCDNorm_0jet_high_8TeV	1.08
+mumu_0jet_high                  WJets                           CMS_htt_mm_WJetsNorm_0jet_high_8TeV    	1.17

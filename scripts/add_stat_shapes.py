@@ -89,7 +89,8 @@ def walk_and_copy(inputdir, outputdir, pattern, mergers, threshold, prefix, norm
                         err_down.SetBinContent(ibin, val - error if val > error else 0.)
                         if normalize:
                             err_up.Scale(th1.Integral()/err_up.Integral())
-                            err_down.Scale(th1.Integral()/err_down.Integral())
+                            if err_down.Integral() > 0. :
+                                err_down.Scale(th1.Integral()/err_down.Integral())
                         if val < error:
                             log.warning("%s_%s_bin_%iDown, is negative, pegged to zero", prefix, histo, ibin)
                         outputdir.cd()
