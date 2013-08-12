@@ -27,6 +27,7 @@ eleTau_btag	 	VV	          	CMS_htt_DiBosonNorm_8TeV 		1.15
 eleTau_btag		W	          	CMS_htt_WNorm_etau_btag_8TeV 		1.30
 eleTau_btag		ZTT	          	CMS_htt_extrap_ztt_etau_btag_8TeV	1.03
 eleTau_btag         	QCD	          	CMS_htt_QCDSyst_etau_btag_8TeV		1.20
+eleTau_btag         	QCD	          	CMS_htt_QCDShape_etau_btag_8TeV		1.00
 eleTau_btag         	ZL	          	CMS_htt_ZLeptonFakeTau_etau_8TeV	1.20
 eleTau_btag         	ZJ	          	CMS_htt_ZJetFakeTau_etau_btag_8TeV	1.20
 #eleTau_btag		ZL			CMS_htt_ZEEShape_etau_8TeV		1.00    
