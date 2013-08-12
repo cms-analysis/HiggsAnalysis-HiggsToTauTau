@@ -400,8 +400,6 @@ for directory in args :
     if options.optGoodnessOfFit :
         ## determine mass value from directory name
         mass  = get_mass(directory)
-        ## prepare workspace
-        create_card_workspace(mass)
         if options.optCollect :
             if os.path.exists("batch_collected_goodness_of_fit.root") :
                 if options.fromScratch :
@@ -416,23 +414,26 @@ for directory in args :
                 os.system("mv batch_collected_goodness_of_fit.root new_goodness_of_fit.root")
                 os.system("hadd batch_collected_goodness_of_fit.root old_goodness_of_fit.root new_goodness_of_fit.root")
                 os.system("rm old_goodness_of_fit.root new_goodness_of_fit.root")
-        ## if it does not exist already, create link to executable
-        if not os.path.exists("combine") :
-            os.system("cp -s $(which combine) .")
-        ## in this special case toys are only run if expectedOnly is specified. The expected use case is that observed is run
-        ## togther with the collection of individual toys. In this case no extra configurations should be needed to prevent
-        ## limit.py from runnign a large number of toys again.
-        if options.expectedOnly :
-            print "combine -M GoodnessOfFit -m {mass} --algo saturated -t {toys} -s {seed} {user} {wdir}/tmp.root".format(
-                mass=mass, user=options.userOpt, toys=options.toys, seed=options.seed, wdir=options.workingdir)
-            os.system("combine -M GoodnessOfFit -m {mass} --algo saturated -t {toys} -s {seed} {user} {wdir}/tmp.root".format(
-                mass=mass, user=options.userOpt, toys=options.toys, seed=options.seed, wdir=options.workingdir))
-        ## run observed limit in any case if expectedOnly is not specified
-        else: 
-            print "combine -M GoodnessOfFit -m {mass} --algo saturated {user} {wdir}/tmp.root".format(
-                mass=mass, user=options.userOpt, wdir=options.workingdir)
-            os.system("combine -M GoodnessOfFit -m {mass} --algo saturated {user} {wdir}/tmp.root".format(
-                mass=mass, user=options.userOpt, wdir=options.workingdir))
+        else :
+            ## prepare workspace
+            create_card_workspace(mass)
+            ## if it does not exist already, create link to executable
+            if not os.path.exists("combine") :
+                os.system("cp -s $(which combine) .")
+            ## in this special case toys are only run if expectedOnly is specified. The expected use case is that observed is run
+            ## togther with the collection of individual toys. In this case no extra configurations should be needed to prevent
+            ## limit.py from runnign a large number of toys again.
+            if options.expectedOnly :
+                print "combine -M GoodnessOfFit -m {mass} --algo saturated -t {toys} -s {seed} {user} {wdir}/tmp.root".format(
+                    mass=mass, user=options.userOpt, toys=options.toys, seed=options.seed, wdir=options.workingdir)
+                os.system("combine -M GoodnessOfFit -m {mass} --algo saturated -t {toys} -s {seed} {user} {wdir}/tmp.root".format(
+                    mass=mass, user=options.userOpt, toys=options.toys, seed=options.seed, wdir=options.workingdir))
+            ## run observed limit in any case if expectedOnly is not specified
+            else: 
+                print "combine -M GoodnessOfFit -m {mass} --algo saturated {user} {wdir}/tmp.root".format(
+                    mass=mass, user=options.userOpt, wdir=options.workingdir)
+                os.system("combine -M GoodnessOfFit -m {mass} --algo saturated {user} {wdir}/tmp.root".format(
+                    mass=mass, user=options.userOpt, wdir=options.workingdir))
     ##
     ## MAX-LIKELIHOOD
     ##
