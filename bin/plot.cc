@@ -73,6 +73,8 @@ int main(int argc, char* argv[])
   types.push_back(std::string("--significance-frequentist"));
   // show frequentist p-values w/o bands
   types.push_back(std::string("--pvalue-frequentist"));
+  // show goodnes of fit estimate
+  types.push_back(std::string("--goodness-of-fit"));
   // show signal strength as function of mH/mA as determined from a 1d maxlikelihood fit 
   types.push_back(std::string("--max-likelihood"));
   // show signal strength as function of mH/mA as determined from a 2d maxlikelihood fit 
@@ -366,12 +368,15 @@ int main(int argc, char* argv[])
     plot.plotLimit(*canv, inner, 0, central, 0);
   }
   // -----------------------------------------------------------------------------------------------------------------------
-  if( std::string(argv[1]) == std::string("--likelihood-scan") ){
-    // best fit
-    //TGraph* central  = new TGraph(); //not needed for plot1DScan
-    // +/- 1 sigma to bestfit
-    //TGraphAsymmErrors* innerBand  = new TGraphAsymmErrors(); //not needed for plot1DScan
+  if( std::string(argv[1]) == std::string("--goodness-of-fit") ){
     // make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Goodness of fit", 600, 600);
+    plot.plotGoodnessOfFit(*canv, directory);
+  }
+  // -----------------------------------------------------------------------------------------------------------------------
+  if( std::string(argv[1]) == std::string("--likelihood-scan") ){
+     // make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     //plot.plotSignalStrength(*canv, innerBand, central, directory);

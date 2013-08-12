@@ -246,18 +246,27 @@ if options.optGoodnessOfFit :
             if mass == 'common' :
                 continue
             if options.printOnly :
-                print "limit.py --goodness-of-fit --expectedOnly --toys {TOYS} --seed {SEED} {USER} {DIR}".format(
-                    TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt, DIR=dir, )
+                if options.calculate_injected :
+                    print "limit.py --goodness-of-fit --collect-injected-toys {USER} {DIR}".format(USER=options.opt, DIR=dir, )
+                else :
+                    print "limit.py --goodness-of-fit --expectedOnly --toys {TOYS} --seed {SEED} {USER} {DIR}".format(
+                        TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt, DIR=dir, )
             else :
-                os.system("limit.py --goodness-of-fit --expectedOnly --toys {TOYS} --seed {SEED} {USER} {DIR}".format(
-                    TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt, DIR=dir, ))
+                if options.calculate_injected :
+                    os.system("limit.py --goodness-of-fit --collect-injected-toys {USER} {DIR}".format(USER=options.opt, DIR=dir, ))
+                else:
+                    os.system("limit.py --goodness-of-fit --expectedOnly --toys {TOYS} --seed {SEED} {USER} {DIR}".format(
+                        TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt, DIR=dir, ))
     else :
         ## directories and mases per directory
         struct = directories(args)
-        cycle = options.cycles
-        while cycle>0 :
-            lxb_submit(struct[0], struct[1], "--goodness-of-fit", "--expectedOnly --toys {TOYS} --seed {SEED} {USER}".format(TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt), "-{CYCLE}".format(CYCLE=cycle-1))
-            cycle = cycle-1
+        if options.calculate_injected :
+            lxb_submit(struct[0], struct[1], "--goodness-of-fit", "--collect-injected-toys {USER}".format(USER=options.opt))
+        else: 
+            cycle = options.cycles
+            while cycle>0 :
+                lxb_submit(struct[0], struct[1], "--goodness-of-fit", "--expectedOnly --toys {TOYS} --seed {SEED} {USER}".format(TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt), "-{CYCLE}".format(CYCLE=cycle-1))
+                cycle = cycle-1
 ##
 ## MAX-LIKELIHOOD
 ##
