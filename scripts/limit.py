@@ -408,9 +408,9 @@ for directory in args :
                     os.system("rm batch_collected_goodness_of_fit.root")
                 else :
                     os.system("mv batch_collected_goodness_of_fit.root old_goodness_of_fit.root")                
-            os.system("hadd -f batch_collected_goodnaes_of_fit.root higgsCombineTest.GoodnessOfFit.mH{MASS}.[0-9]*.root".format(MASS=mass))
+            os.system("hadd -f batch_collected_goodness_of_fit.root higgsCombineTest.GoodnessOfFit.mH{MASS}.[0-9]*.root".format(MASS=mass))
             ## clean up the files that have been combined
-            os.system("rm %s" % globdir)
+            os.system("rm higgsCombineTest.GoodnessOfFit.mH{MASS}.[0-9]*.root".format(MASS=mass))
             ## combine with previous submissions
             if os.path.exists("old_goodness_of_fit.root") :
                 os.system("mv batch_collected_goodness_of_fit.root new_goodness_of_fit.root")
