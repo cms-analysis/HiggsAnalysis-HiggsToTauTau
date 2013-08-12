@@ -1,9 +1,7 @@
 mumu_1jet_high		  	signal,Dibosons,WJets           lumi_8TeV				1.042
 mumu_1jet_high			signal,ZTT,TTJ,WJets,Dibosons 	CMS_eff_m				1.04
-# mumu_1jet_high			signal,ZMM,TTJ,WJets,Dibosons	CMS_scale_j_8TeV			1.045
-mumu_1jet_high			signal,TTJ,Dibosons	CMS_scale_j_8TeV			0.5
-# mumu_1jet_high			signal,ZMM,TTJ,WJets,Dibosons   CMS_htt_scale_met_8TeV			1.035
-mumu_1jet_high			signal,TTJ,Dibosons   CMS_htt_scale_met_8TeV			0.5
+mumu_1jet_high			signal,TTJ,Dibosons		CMS_scale_j_8TeV			0.5
+mumu_1jet_high			signal,TTJ,Dibosons   		CMS_htt_scale_met_8TeV			0.5
 mumu_1jet_high			signal,ZMM,TTJ,WJets,Dibosons 	CMS_eff_b_8TeV				0.98
 mumu_1jet_high			signal,ZMM,TTJ,WJets,Dibosons 	CMS_fake_b_8TeV				0.98
 mumu_1jet_high			ggH				pdf_gg					1.08
@@ -16,15 +14,8 @@ mumu_1jet_high			signal				UEPS					1.04
 mumu_1jet_high			ZTT				CMS_htt_zttNorm_8TeV			1.03
 mumu_1jet_high			TTJ				CMS_htt_ttbarNorm_8TeV			1.10
 mumu_1jet_high			Dibosons			CMS_htt_mm_DiBosonNorm_8TeV		1.30
-# mumu_1jet_high			ZTT				CMS_htt_mm_zttLikelihood_8TeV		1.04
-#mumu_1jet_high				ZTT					CMS_htt_mm_zttShape_1jet_high_8TeV	1.0
-mumu_1jet_high				ZTT					CMS_htt_mm_zttLnN_1jet_high_8TeV	1.05
-# mumu_1jet_high			ZMM				CMS_htt_mm_zmmNorm_8TeV			1.07
-mumu_1jet_high			ZMM				CMS_htt_mm_zmmShape_1jet_8TeV			0.5
+#mumu_1jet_high			ZTT				CMS_htt_mm_zttShape_1jet_high_8TeV	1.0
+mumu_1jet_high			ZTT				CMS_htt_mm_zttLnN_1jet_high_8TeV	1.05
+mumu_1jet_high			ZMM				CMS_htt_mm_zmmShape_1jet_8TeV		0.5
 mumu_1jet_high			QCD				CMS_htt_mm_QCDNorm_03_8TeV		1.09
-# mumu_1jet_high			ZTT				CMS_htt_ztt_extrap_1jet_8TeV		1.04
-# mumu_1jet_high			ZMM				CMS_htt_mm_zmm_extrap_1jet_8TeV	1.03
-mumu_1jet_high                 VH                              CMS_htt_mm_VH_MCStat_03_8TeV            1.06
-mumu_1jet_high                 qqH                             CMS_htt_mm_qqH_MCStat_03_8TeV           1.04
-mumu_1jet_high                 ggH                             CMS_htt_mm_ggH_MCStat_03_8TeV           1.04
-mumu_1jet_high                 WJets                           CMS_htt_mm_WJetsNorm_03_8TeV            1.22
+mumu_1jet_high                  WJets                           CMS_htt_mm_WJetsNorm_03_8TeV            1.22
