@@ -22,7 +22,7 @@ PlotLimits::plotGoodnessOfFit(TCanvas& canv, const char* directory)
     TTree* limit = (TTree*) file_->Get("limit"); if(!limit){ std::cout << "--> TTree is corrupt: skipping masspoint." << std::endl; continue; }
     double chi2;
     int digits_obs = pow(10, int(log10(limit->GetMaximum("limit"))));
-    double lower_obs = std::max(0., (int(limit->GetMaximum("limit")/digits_obs)-1)*digits_obs);
+    double lower_obs = std::max(0., double((int(limit->GetMaximum("limit")/digits_obs)-1)*digits_obs));
     double upper_obs = (int(limit->GetMaximum("limit")/digits_obs)+1)*digits_obs;
 
     TGraph* obs = new TGraph();
@@ -40,7 +40,7 @@ PlotLimits::plotGoodnessOfFit(TCanvas& canv, const char* directory)
     file_ = TFile::Open(fullpath); if(!file_){ std::cout << "--> TFile is corrupt: skipping masspoint." << std::endl; continue; }
     limit = (TTree*) file_->Get("limit"); if(!limit){ std::cout << "--> TTree is corrupt: skipping masspoint." << std::endl; continue; }
     int digits_exp = pow(10, int(log10(limit->GetMaximum("limit"))));
-    double lower_exp = std::max(0., (int(limit->GetMaximum("limit")/digits_exp)-1.5)*digits_exp);
+    double lower_exp = std::max(0., double((int(limit->GetMaximum("limit")/digits_exp)-1.5)*digits_exp));
     double upper_exp = (int(limit->GetMaximum("limit")/digits_exp)+1.5)*digits_exp;
 
     TH1F* exp = new TH1F("exp", "", 100, std::min(lower_exp, lower_obs), std::max(upper_exp, upper_obs));
