@@ -1,4 +1,4 @@
-oger#!/usr/bin/env python
+#!/usr/bin/env python
 from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
