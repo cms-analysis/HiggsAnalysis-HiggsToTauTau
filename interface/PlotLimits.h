@@ -103,7 +103,10 @@ class PlotLimits {
   void plotPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0);
   /// plot likelihood mass scan on canvas, print out png, pdf, txt, root formats if desired
   void plotMassScan(TCanvas& canv, TGraph* nll);
+  ///
   void plotMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0);
+  ///
+  void plotGoodnessOfFit(TCanvas& canv, const char* directory="");
   /// plot 2d-scans for several masses on canvases, print out png, pdf, txt, root formats if desired  
   void plot2DScan(TCanvas& canv, const char* directory="");
   /// plot 1d-scans for several masses on canvases, print out png, pdf, root formats if desired  
