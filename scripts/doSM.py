@@ -97,25 +97,25 @@ print "# -----------------------------------------------------------------------
 print "# doSM.py "
 print "# --------------------------------------------------------------------------------------"
 print "# You are using the following configuration: "
-print "# --channels        :", options.channels
-print "# --periods         :", options.periods
-print "# --analyses        :", options.analyses
-print "# --label           :", options.label
-print "# --drop-list       :", options.drop_list
-print "# --do-not-scales   :", options.do_not_scales
-print "# --add-mutau-soft  :", options.add_mutau_soft
+print "# --channels                :", options.channels
+print "# --periods                 :", options.periods
+print "# --analyses                :", options.analyses
+print "# --label                   :", options.label
+print "# --drop-list               :", options.drop_list
+print "# --ignore-during-scaling   :", options.do_not_scales
+print "# --add-mutau-soft          :", options.add_mutau_soft
 print "# --------------------------------------------------------------------------------------"
-print "# --inputs-ee       :", options.inputs_ee
-print "# --inputs-mm       :", options.inputs_mm
-print "# --inputs-em       :", options.inputs_em
-print "# --inputs-et       :", options.inputs_et
-print "# --inputs-mt       :", options.inputs_mt
-print "# --inputs-tt       :", options.inputs_tt
-print "# --inputs-vhtt     :", options.inputs_vhtt
+print "# --inputs-ee               :", options.inputs_ee
+print "# --inputs-mm               :", options.inputs_mm
+print "# --inputs-em               :", options.inputs_em
+print "# --inputs-et               :", options.inputs_et
+print "# --inputs-mt               :", options.inputs_mt
+print "# --inputs-tt               :", options.inputs_tt
+print "# --inputs-vhtt             :", options.inputs_vhtt
 print "# --------------------------------------------------------------------------------------"
-print "# --update-setup    :", options.update_setup
-print "# --update-aux      :", options.update_aux
-print "# --update-LIMITS   :", options.update_limits
+print "# --update-setup            :", options.update_setup
+print "# --update-aux              :", options.update_aux
+print "# --update-LIMITS           :", options.update_limits
 print "# Check option --help in case of doubt about the meaning of one or more of these confi-"
 print "# guration parameters.                           "
 print "# --------------------------------------------------------------------------------------"
@@ -172,10 +172,12 @@ if options.update_setup :
                         PER=per,
                         PATTERN=pattern
                         ))
-    ## scale to SM cross section
+    ## apply horizontal morphing for processes, which have not been simulated for 7TeV: ggH_hww145, qqH_hww145
+    for file in glob.glob("{SETUP}/em/htt_em.inputs-sm-7TeV*.root".format(SETUP=setup)) :
+        os.system("horizontal-morphing.py --categories 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose' --samples '{SIGNAL}' --uncerts 'QCDscale_ggH1in,CMS_scale_e_7TeV' --masses '140,150' --step-size 5 -v {INPUT}".format(INPUT=file, SIGNAL='ggH_hww{MASS}'))
+        os.system("horizontal-morphing.py --categories 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose' --samples '{SIGNAL}' --uncerts 'CMS_scale_e_7TeV' --masses '140,150' --step-size 5 -v {INPUT}".format(INPUT=file, SIGNAL='qqH_hww{MASS}'))
+    ## scale to SM cross section (main processes and all channels tbu those listed in do_not_scales)
     for chn in channels :
-        if chn in ["mm", "ee"]:
-            continue
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
             ## vhtt is NOT scaled to 1pb. So nothing needs to be doen here
             if not chn in do_not_scales :
@@ -183,12 +185,12 @@ if options.update_setup :
                     FILE=file,
                     MASSES=' '.join(masses)
                     ))
-    if 'em' in channels : ## move back to XYZ->em
+    if 'em' in channels :
         print "##"
         print "## --->>> adding extra scale for htt_hww contribution in em <<<---"
         print "##"
         ## special treatment for channels which include contributions from hww
-        hww_processes = ['ggH_hww', 'qqH_hww', 'VH_hww']
+        hww_processes = ['ggH_hww', 'qqH_hww']
         ## BR ratios: hww/htt as function of the mass
         hww_over_htt = {
             # mass     hww    htt  WW->2l2v

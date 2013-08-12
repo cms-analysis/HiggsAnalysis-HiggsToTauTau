@@ -261,7 +261,10 @@ if options.optGoodnessOfFit :
         ## directories and mases per directory
         struct = directories(args)
         if options.calculate_injected :
-            lxb_submit(struct[0], struct[1], "--goodness-of-fit", "--collect-injected-toys {USER}".format(USER=options.opt))
+            for dir in struct[0] :
+                for mass in struct[1][dir] :
+                    os.system("limit.py --goodness-of-fit --collect-injected-toys {DIR}/{MASS}".format(DIR=dir, MASS=mass))
+            lxb_submit(struct[0], struct[1], "--goodness-of-fit", "--observedOnly {USER}".format(USER=options.opt))
         else: 
             cycle = options.cycles
             while cycle>0 :
