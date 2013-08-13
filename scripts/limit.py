@@ -100,6 +100,8 @@ parser.add_option_group(dgroup)
 fgroup = OptionGroup(parser, "MAX-LIKELIHOOD OPTIONS", "these are the command line options for the use of limit.py with the option --max-likelihood. Running limit.py --max-likelihood ARGs will result in an extra directory 'out' in the directory/ies corresponding to ARGs, that contains the output of the fit in roofit, html, txt and tex format. The signal strength for the background and signal plus background model and the pulls of all nuisance parameters are available in html, txt and tex format. This fit does not separate between individual components of the signal like ggH or qqH. The outputs are used for the postfit plotting in the HiggsTotauTau package.")
 fgroup.add_option("--stable", dest="stable", default=False, action="store_true",
                   help="Run maximum likelihood fit with a pre-defined set of options that lead to more stable results. This option requires further input via the common options --rMin and --rMax to define the boundaries of the fit. [Default: False]")
+fgroup.add_option("--stable-old", dest="stable_old", default=False, action="store_true",
+                  help="Run maximum likelihood fit with a pre-defined set of options that lead to more stable results. This option requires further input via the common options --rMin and --rMax to define the boundaries of the fit (old version). [Default: False]")
 fgroup.add_option("--minuit", dest="minuit", default=False, action="store_true",
                   help="Switch from minuit2 to minuit for the fit that is performed before the asymptotic limits are calculated. [Default: False]")
 fgroup.add_option("--qtilde", dest="qtilde", default=False, action="store_true",
@@ -496,6 +498,8 @@ for directory in args :
             if options.minuit :
                 minuitopt = "--minimizerAlgo minuit"
             stableopt = ""
+            if options.stable_old:
+                stableopt = "--robustFit=1 --stepSize=0.5  --minimizerStrategy=0 --minimizerTolerance=0.1 --preFitValue=0.1  --X-rtd FITTER_DYN_STEP  --cminFallbackAlgo=\"Minuit,0:0.001\" --keepFailures "
             if options.stable :
                 stableopt = "--robustFit=1 --preFitValue=1. --X-rtd FITTER_NEW_CROSSING_ALGO --minimizerAlgoForMinos=Minuit2 --minimizerToleranceForMinos=0.01 --X-rtd FITTER_NEVER_GIVE_UP --X-rtd FITTER_BOUND --minimizerAlgo=Minuit2 --minimizerStrategy=0 --minimizerTolerance=0.0001 --cminFallbackAlgo \"Minuit,0:0.001\" --keepFailures "
                 stableopt+= "--rMin {MIN} --rMax {MAX} ".format(MIN=options.rMin, MAX=options.rMax)
