@@ -55,6 +55,7 @@ categoryName = {
 
 print " channel : ",  channelName[options.channel]
 ## add shift Nuisance (ignore the VBF Option right now)
+os.system(r"root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/compileAddFitNuisance.C".format(CMSSW_BASE=os.environ.get("CMSSW_BASE")))
 os.system(r"cp {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rootlogon.C .".format(CMSSW_BASE=os.environ.get("CMSSW_BASE")))
 
 os.system("cp %s %s.bak"      %  (options.setup+'/'+options.channel+'/'+options.input,options.setup+'/'+options.channel+'/'+options.input))
