@@ -8,12 +8,16 @@ parser.add_option("-c", "--channels", dest="channels", default="em mt et tt", ty
                   help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"em mt et tt\"]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
                   help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
-parser.add_option("-a", "--analyses", dest="analyses", default="no-bbb, bbb",
-                  help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"no-bbb, bbb, mvis, inclusive\" [Default: \"no-bbb, bbb\"]")
+parser.add_option("-a", "--analyses", dest="analyses", default="no-bbb, bbb, bbb:hww-bg",
+                  help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"no-bbb, bbb, bbb:hww-bg, mvis, inclusive\" [Default: \"no-bbb, bbb, bbb:hww-bg\"]")
 parser.add_option("--label", dest="label", default="", type="string", 
                   help="Possibility to give the setups, aux and LIMITS directory a index (example LIMITS-bbb). [Default: \"\"]")
 parser.add_option("--ignore-during-scaling", dest="do_not_scales", default="ee mm vhtt", type="string",
                   help="List of channels, which the scaling by cross seciton times BR shoul not be applied. The list should be embraced by call-ons and separeted by whitespace or comma. [Default: \"vhtt ee mm\"]")
+parser.add_option("--hww-mass", dest="hww_mass", default='', type="string",
+                  help="specify this option if you want to fix the hww contributions for the channels em and vhtt to a given mass. This configuration applies to hww as part of the signal. When an empty string is given the mass will be scanned. For analysis hhw-bg, where hww signal contributions are defined as background in any case mH=125 GeV willbe chosenindependent from this configuration. [Default: '']")
+parser.add_option("--hww-scale", dest="hww_scale", default='1.', type="string",
+                  help="specify the scale factor for the hww contribution here. The scale factor should be relative to the SM expectation. [Default: 1.]")
 parser.add_option("--add-mutau-soft", dest="add_mutau_soft", default=False, action="store_true",
                   help="Specify this option to add the soft muon pt analysis. [Default: False]")
 parser.add_option("--inputs-ee", dest="inputs_ee", default="DESY-KIT", type="choice", choices=['DESY-KIT'],
@@ -84,7 +88,7 @@ directories['vhtt'] = vhtt(options.inputs_vhtt)
 
 ## postfix pattern for input files
 patterns = {
-    'no-bbb'   : '',
+    'no-bbb' : '',
     'bbb'    : '',
     }
 
@@ -103,6 +107,8 @@ print "# --analyses                :", options.analyses
 print "# --label                   :", options.label
 print "# --drop-list               :", options.drop_list
 print "# --ignore-during-scaling   :", options.do_not_scales
+print "# --hww-mass                :", options.hww_mass
+print "# --hww-scale               :", options.hww_scale
 print "# --add-mutau-soft          :", options.add_mutau_soft
 print "# --------------------------------------------------------------------------------------"
 print "# --inputs-ee               :", options.inputs_ee
@@ -141,7 +147,9 @@ if options.update_setup :
             if directories[chn][per] == 'None' :
                 continue
             for ana in analyses :
-                pattern = patterns[ana]
+                pattern = ''
+                if ana in patterns.keys() :
+                    pattern = patterns[ana]
                 source="{CMSSW_BASE}/src/auxiliaries/shapes/{DIR}/{CHN}.inputs-sm-{PER}{PATTERN}.root".format(
                     CMSSW_BASE=cmssw_base,
                     DIR=directories[chn][per],
@@ -218,7 +226,7 @@ if options.update_setup :
                 for mass in parseArgs(masses) :
                     os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{INPUTFILE}\",\"{PROCESS}\",0\)".format(
                         CMSSW_BASE=os.environ.get("CMSSW_BASE"),
-                        SCALE=hww_over_htt[str(mass)],
+                        SCALE=hww_over_htt[str(mass)]*float(options.hww_scale),
                         INPUTFILE=file,
                         PROCESS=proc+str(mass)
                         ))
@@ -230,6 +238,8 @@ if options.update_setup :
         os.system("mv {DIR} {CMSSW_BASE}/src/backup/".format(DIR=dir, CMSSW_BASE=cmssw_base))
     os.system("mkdir -p {DIR}".format(DIR=dir))
     for ana in analyses :
+        if 'hww-bg' in ana :
+            continue
         os.system("cp -r {SETUP} {DIR}/{ANA}".format(SETUP=setup, DIR=dir, ANA=ana))
         ##
         ## CENTRAL
@@ -417,7 +427,35 @@ if options.update_setup :
                         ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                
-
+    for ana in analyses :
+        if 'hww-bg' in ana :
+            os.system("cp -r {DIR}/{SOURCE} {DIR}/{TARGET}".format(DIR=dir, SOURCE=ana[:ana.find(':')], TARGET=ana[ana.find(':')+1:]))
+            os.system("modify_cgs.py --setup {DIR}/{TARGET} --channels em   --periods 7TeV --categories 00 01 02 03 04    --add-to-background ggH_hww qqH_hww".format(
+                DIR=dir, TARGET=ana[ana.find(':')+1:]))
+            os.system("modify_cgs.py --setup {DIR}/{TARGET} --channels em   --periods 8TeV --categories 00 01 02 03 04 05 --add-to-background ggH_hww qqH_hww".format(
+                DIR=dir, TARGET=ana[ana.find(':')+1:]))
+            os.system("modify_cgs.py --setup {DIR}/{TARGET} --channels vhtt --periods 7TeV --categories 00 01       --add-to-background WH_hww".format(
+                DIR=dir, TARGET=ana[ana.find(':')+1:]))
+            os.system("modify_cgs.py --setup {DIR}/{TARGET} --channels vhtt --periods 7TeV --categories 03 04 05 06 --add-to-background ZH_hww".format(
+                DIR=dir, TARGET=ana[ana.find(':')+1:]))
+            os.system("modify_cgs.py --setup {DIR}/{TARGET} --channels vhtt --periods 8TeV --categories 00 01 02    --add-to-background WH_hww".format(
+                DIR=dir, TARGET=ana[ana.find(':')+1:]))
+            os.system("modify_cgs.py --setup {DIR}/{TARGET} --channels vhtt --periods 8TeV --categories 03 04 05 06 --add-to-background ZH_hww".format(
+                DIR=dir, TARGET=ana[ana.find(':')+1:]))
+            
+            for file in glob.glob("{DIR}/{TARGET}/em/cgs-sm-*.conf".format(  DIR=dir, TARGET=ana[ana.find(':')+1:])) :
+                os.system("perl -pi -e 's/ggH_hww/ggH_hww{MASS}/g' {FILE}".format(MASS='125', FILE=file))
+                os.system("perl -pi -e 's/qqH_hww/qqH_hww{MASS}/g' {FILE}".format(MASS='125', FILE=file))
+            for file in glob.glob("{DIR}/{TARGET}/em/unc-sm-*.vals".format(  DIR=dir, TARGET=ana[ana.find(':')+1:])) :
+                os.system("perl -pi -e 's/ggH_hww/ggH_hww{MASS}/g' {FILE}".format(MASS='125', FILE=file))
+                os.system("perl -pi -e 's/qqH_hww/qqH_hww{MASS}/g' {FILE}".format(MASS='125', FILE=file))
+            for file in glob.glob("{DIR}/{TARGET}/vhtt/cgs-sm-*.conf".format(DIR=dir, TARGET=ana[ana.find(':')+1:])) :
+                os.system("perl -pi -e 's/WH_hww/WH_hww{MASS}/g'   {FILE}".format(MASS='125', FILE=file))
+                os.system("perl -pi -e 's/ZH_hww/ZH_hww{MASS}/g'   {FILE}".format(MASS='125', FILE=file))
+            for file in glob.glob("{DIR}/{TARGET}/vhtt/unc-sm-*.vals".format(DIR=dir, TARGET=ana[ana.find(':')+1:])) :
+                os.system("perl -pi -e 's/WH_hww/WH_hww{MASS}/g'   {FILE}".format(MASS='125', FILE=file))
+                os.system("perl -pi -e 's/ZH_hww/ZH_hww{MASS}/g'   {FILE}".format(MASS='125', FILE=file))
+    
 if options.update_aux :
     print "##"
     print "## update aux directory:"
@@ -430,6 +468,9 @@ if options.update_aux :
         os.system("mv {DIR} {CMSSW_BASE}/src/backup/".format(DIR=dir, CMSSW_BASE=cmssw_base))
     os.system("mkdir -p {DIR}".format(DIR=dir))    
     for ana in analyses :
+        prune = 'bbb' in ana : 
+        if ':' in ana :
+            ana = ana[ana.find(':')+1:]
         print "setup datacards for:", ana
         if 'ee' in channels :
             #if '7TeV' in periods :
@@ -543,11 +584,21 @@ if options.update_aux :
                     DIR=dir,
                     MASSES=' '.join(masses),
                     ))                                
-        if ana == 'bbb' :
+        if prune :
             if options.drop_list != '' :
-                for subdir in glob.glob("{DIR}/bbb/sm/*".format(DIR=dir)) :
+                for subdir in glob.glob("{DIR}/{ANA}/sm/*".format(DIR=dir, ANA=ana)) :
                     print '...comment bbb uncertainties for', subdir
                     os.system("commentUncerts.py --drop-list={DROP} {SUB}".format(DROP=options.drop_list, SUB=subdir))
+        ## fix hww mass to a given mass if configured such; do not apply this to hww-bg, where this has been done already at
+        ## an earlier level
+        if not ana == 'hww-bg' :
+            if not options.hww_mass == '' :
+                for file in glob.glob("{DIR}/{ANA}/sm/htt_em/htt_em_*.txt".format(DIR=dir, ANA=ana)) :
+                    os.system("perl -pi -e 's/ggH_hww/ggH_hww{MASS}/g' {FILE}".format(MASS=options.hww_mass, FILE=file))
+                    os.system("perl -pi -e 's/qqH_hww/qqH_hww{MASS}/g' {FILE}".format(MASS=options.hww_mass, FILE=file))
+                for file in glob.glob("{DIR}/{ANA}/sm/vhtt/vhtt_*.txt".format(DIR=dir, ANA=ana)) :
+                    os.system("perl -pi -e 's/WH_hww/WH_hww{MASS}/g' {FILE}".format(MASS=options.hww_mass, FILE=file))
+                    os.system("perl -pi -e 's/ZH_hww/ZH_hww{MASS}/g' {FILE}".format(MASS=options.hww_mass, FILE=file))
 
 if options.update_limits :
     print "##"
@@ -561,6 +612,8 @@ if options.update_limits :
         os.system("mv {DIR} {CMSSW_BASE}/src/backup/".format(DIR=dir, CMSSW_BASE=cmssw_base))
     os.system("mkdir -p {DIR}".format(DIR=dir))    
     for ana in analyses :
+        if ':' in ana :
+            ana = ana[ana.find(':')+1:]
         print "setup limits structure for:", ana
         label = '' #if ana == 'std' else '-l '+ana
         if 'ee' in channels :
@@ -675,4 +728,3 @@ if options.update_limits :
                     LABEL=label,
                     MASSES=' '.join(masses)
                     ))                                
-

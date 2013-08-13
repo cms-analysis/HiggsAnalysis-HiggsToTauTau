@@ -26,17 +26,18 @@ class UncertAdaptor(object) :
         file_new = open(cgs_path+"_tmp", 'w')
         for line in file_old :
             if "signals" in line :
-                if line[0] == '#' :
-                    line = line.strip('#')
+                if signal_procs :
+                    if line[0] == '#' :
+                        line = line.strip('#')
             if self.cgs_signal_group in line :
-                if line[0] == '#':
-                    ## uncomment and remove remnants of what had been commented, in case
-                    ## they exist; furthermore we need to get rid of the leading ',' for
-                    ## the first element.
-                    line = line[1:line.rfind(self.cgs_signal_group)+len(self.cgs_signal_group)+1]
-                ## setup string of signal processes
                 signalstr = ''
                 if signal_procs :
+                    if line[0] == '#':
+                        ## uncomment and remove remnants of what had been commented, in case
+                        ## they exist; furthermore we need to get rid of the leading ',' for
+                        ## the first element.
+                        line = line[1:line.rfind(self.cgs_signal_group)+len(self.cgs_signal_group)+1]
+                    ## setup string of signal processes
                     for signal in signal_procs :
                         if not signal in line :
                             signalstr+= ","+signal
