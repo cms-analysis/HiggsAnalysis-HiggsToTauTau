@@ -3,20 +3,20 @@ mumu_btag	  	signal,Dibosons			lumi_8TeV				1.042
 mumu_btag		signal,ZTT,TTJ,Dibosons 	CMS_eff_m				1.06
 mumu_btag		ggH				CMS_scale_j_8TeV			0.98
 mumu_btag               bbH			        CMS_scale_j_8TeV                        1.01
-mumu_btag               ZMM,Dibosons         		CMS_scale_j_8TeV                        0.95
+mumu_btag               Dibosons         		CMS_scale_j_8TeV                        0.95
 mumu_btag               TTJ			        CMS_scale_j_8TeV                        0.92
 mumu_btag		bbH			 	CMS_eff_b_8TeV				1.05
 mumu_btag               ggH			        CMS_eff_b_8TeV                          1.01
-mumu_btag               ZMM,Dibosons         		CMS_eff_b_8TeV                          1.03
+mumu_btag               Dibosons         		CMS_eff_b_8TeV                          1.03
 mumu_btag               TTJ			        CMS_eff_b_8TeV                          1.02
-mumu_btag		ZMM,Dibosons 			CMS_fake_b_8TeV				1.05
+mumu_btag		Dibosons 			CMS_fake_b_8TeV				1.05
 mumu_btag               ggH		                CMS_fake_b_8TeV                         1.06
-mumu_btag		ZTT				CMS_htt_zttNorm_8TeV			1.04
+mumu_btag		ZTT				CMS_htt_zttNorm_8TeV			1.05
 mumu_btag		TTJ				CMS_htt_ttbarNorm_8TeV			1.10
 mumu_btag		Dibosons			CMS_htt_mm_DiBosonNorm_8TeV		1.30
 mumu_btag		ZMM				CMS_htt_mm_zmmNorm_8TeV			1.05
 mumu_btag		QCD				CMS_htt_mm_QCDNorm_btag_8TeV		1.25
 mumu_btag		ZTT				CMS_htt_mm_ztt_extrap_btag_8TeV		1.05
-mumu_btag		ZMM				CMS_htt_mm_zmm_extrap_btag_8TeV		1.03
+mumu_btag		ZMM				CMS_htt_mm_zmm_extrap_btag_8TeV		1.05
 
 
