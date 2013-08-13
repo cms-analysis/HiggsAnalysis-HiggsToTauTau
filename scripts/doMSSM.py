@@ -7,8 +7,8 @@ parser = OptionParser(usage="usage: %prog [options]",
 ##
 ## GENERAL OPTIONS
 ##
-parser.add_option("-c", "--channels", dest="channels", default="ee mm em mt et tt hbb", type="string",
-                  help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hbb. [Default: \"ee mm em et mt tt hbb\"]")
+parser.add_option("-c", "--channels", dest="channels", default="mm em mt et tt", type="string",
+                  help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hbb. [Default: \"mm em et mt tt\"]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
                   help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analyses", dest="analyses", default="std, pruned",
@@ -212,90 +212,94 @@ if options.update_setup:
     os.system("mkdir -p {DIR}".format(DIR=dir))
     for ana in analyses :
         os.system("cp -r {SETUP} {DIR}/{ANA}".format(SETUP=setup, DIR=dir, ANA=ana))
-       
         #### NEW TO BE TESTED!!
         if options.fit_tails:     
             print "INFO: Fitting of the background tails"
             if "7TeV" in periods :
                 if options.channels.find("em") > -1:
-                    #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'Fakes_fine_binning' -k '9' --range 150 ".format( 
-                    #    DIR=dir, ANA=ana, PER="7TeV", CATEGORIES="8 9"))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'Fakes_fine_binning' -k '8' --range 150 --rangelast 2000 ".format( 
-                        DIR=dir, ANA=ana, PER="7TeV", CATEGORIES="8 9"))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'EWK_fine_binning' -k '9' --range 200 --rangelast 2000 ".format(
-                        DIR=dir, ANA=ana, PER="7TeV", CATEGORIES="8 9"))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'EWK_fine_binning' -k '8' --range 200 --rangelast 2000 ".format(
-                        DIR=dir, ANA=ana, PER="7TeV", CATEGORIES="8 9"))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'ttbar_fine_binning' -k '9' --range 200 --rangelast 2000 ".format(
-                        DIR=dir, ANA=ana, PER="7TeV", CATEGORIES="8 9"))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'ttbar_fine_binning' -k '8' --range 150 ".format(
-                        DIR=dir, ANA=ana, PER="7TeV", CATEGORIES="8 9"))
+                    #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-7TeV-0.root -c em -e 7TeV -b 'Fakes_fine_binning' -k '9' --range 150 ".format( 
+                    #    DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-7TeV-0.root -c em -e 7TeV -b 'Fakes_fine_binning' -k '8' --range 150 --rangelast 2000 ".format( 
+                        DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-7TeV-0.root -c em -e 7TeV -b 'EWK_fine_binning' -k '9' --range 200 --rangelast 2000 ".format(
+                        DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-7TeV-0.root -c em -e 7TeV -b 'EWK_fine_binning' -k '8' --range 200 --rangelast 2000 ".format(
+                        DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-7TeV-0.root -c em -e 7TeV -b 'ttbar_fine_binning' -k '9' --range 200 --rangelast 2000 ".format(
+                        DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-7TeV-0.root -c em -e 7TeV -b 'ttbar_fine_binning' -k '8' --range 150 ".format(
+                        DIR=dir, ANA=ana))
                 if options.channels.find("et") > -1:
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'QCD_fine_binning' -k '9' --range 100 ".format(
-                         DIR=dir, ANA=ana, PER="7TeV", CATEGORIES="8 9"))
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'QCD_fine_binning' -k '8' --range 200 ".format(
-                         DIR=dir, ANA=ana, PER="7TeV", CATEGORIES="8 9"))
-                     #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'TT_fine_binning' -k '9' --range 200 ".format(
-                     #    DIR=dir, ANA=ana, PER="7TeV", CATEGORIES="8 9"))
-                     #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'TT_fine_binning' -k '8' --range 200 ".format(
-                     #    DIR=dir, ANA=ana, PER="7TeV", CATEGORIES="8 9"))
-                     #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'W_fine_binning' -k '9' --range 120 ".format(
-                     #    DIR=dir, ANA=ana, PER="7TeV", CATEGORIES="8 9"))
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'W_fine_binning' -k '8' --range 200 ".format(
-                         DIR=dir, ANA=ana, PER="7TeV", CATEGORIES="8 9")) 
+                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-7TeV-0.root -c et -e 7TeV -b 'QCD_fine_binning' -k '9' --range 100 ".format(
+                         DIR=dir, ANA=ana))
+                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-7TeV-0.root -c et -e 7TeV -b 'QCD_fine_binning' -k '8' --range 200 ".format(
+                         DIR=dir, ANA=ana))
+                     #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-7TeV-0.root -c et -e 7TeV -b 'TT_fine_binning' -k '9' --range 200 ".format(
+                     #    DIR=dir, ANA=ana))
+                     #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-7TeV-0.root -c et -e 7TeV -b 'TT_fine_binning' -k '8' --range 200 ".format(
+                     #    DIR=dir, ANA=ana))
+                     #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-7TeV-0.root -c et -e 7TeV -b 'W_fine_binning' -k '9' --range 120 ".format(
+                     #    DIR=dir, ANA=ana))
+                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-7TeV-0.root -c et -e 7TeV -b 'W_fine_binning' -k '8' --range 200 ".format(
+                         DIR=dir, ANA=ana)) 
                 if options.channels.find("mt") > -1:
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'QCD_fine_binning' -k '9' --range 120 --rangelast 2000".format(
-                        DIR=dir, ANA=ana, PER="7TeV", CATEGORIES="8 9"))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'QCD_fine_binning' -k '8' --range 150 ".format(
-                        DIR=dir, ANA=ana, PER="7TeV", CATEGORIES="8 9"))
-                    #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'W_fine_binning' -k '9' --range 200 ".format(
-                    #    DIR=dir, ANA=ana, PER="7TeV", CATEGORIES="8 9"))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'W_fine_binning' -k '8' --range 200 ".format(
-                        DIR=dir, ANA=ana, PER="7TeV", CATEGORIES="8 9"))
-                    #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'TT_fine_binning' -k '9' --range 200 ".format(
-                    #    DIR=dir, ANA=ana, PER="7TeV", CATEGORIES="8 9"))
-                    #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'TT_fine_binning' -k '8' --range 200 ".format(
-                    #    DIR=dir, ANA=ana, PER="7TeV", CATEGORIES="8 9"))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'QCD_fine_binning' -k '9' --range 120 --rangelast 2000".format(
+                        DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'QCD_fine_binning' -k '8' --range 150 ".format(
+                        DIR=dir, ANA=ana))
+                    #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'W_fine_binning' -k '9' --range 200 ".format(
+                    #    DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'W_fine_binning' -k '8' --range 200 ".format(
+                        DIR=dir, ANA=ana))
+                    #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'TT_fine_binning' -k '9' --range 200 ".format(
+                    #    DIR=dir, ANA=ana))
+                    #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'TT_fine_binning' -k '8' --range 200 ".format(
+                    #    DIR=dir, ANA=ana))
             if "8TeV" in periods :
                 if options.channels.find("em") > -1:
-                    #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'Fakes_fine_binning' -k '9' --range 200 --rangelast 2000 ".format( 
-                    #    DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'Fakes_fine_binning' -k '8' --range 200 --rangelast 2000 ".format( 
-                        DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'EWK_fine_binning' -k '9' --range 200 --rangelast 2000 ".format(
-                        DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'EWK_fine_binning' -k '8' --range 200 --rangelast 2000 ".format(
-                        DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'ttbar_fine_binning' -k '9' --range 200 --rangelast 2000 ".format(
-                        DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-{PER}-0.root -c em -e {PER} -b 'ttbar_fine_binning' -k '8' --range 150 ".format(
-                        DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
+                    #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-8TeV-0.root -c em -e 8TeV -b 'Fakes_fine_binning' -k '9' --range 200 --rangelast 2000 ".format( 
+                    #    DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-8TeV-0.root -c em -e 8TeV -b 'Fakes_fine_binning' -k '8' --range 200 --rangelast 2000 ".format( 
+                        DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-8TeV-0.root -c em -e 8TeV -b 'EWK_fine_binning' -k '9' --range 200 --rangelast 2000 ".format(
+                        DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-8TeV-0.root -c em -e 8TeV -b 'EWK_fine_binning' -k '8' --range 200 --rangelast 2000 ".format(
+                        DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-8TeV-0.root -c em -e 8TeV -b 'ttbar_fine_binning' -k '9' --range 200 --rangelast 2000 ".format(
+                        DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-8TeV-0.root -c em -e 8TeV -b 'ttbar_fine_binning' -k '8' --range 150 ".format(
+                        DIR=dir, ANA=ana))
                 if options.channels.find("et") > -1:
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'QCD_fine_binning' -k '9' --range 120 ".format(
-                         DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'QCD_fine_binning' -k '8' --range 120 ".format(
-                         DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'TT_fine_binning' -k '9' --range 150 ".format(
-                         DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'TT_fine_binning' -k '8' --range 120 ".format(
-                         DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'W_fine_binning' -k '9' --range 150 ".format(
-                         DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-{PER}-0.root -c et -e {PER} -b 'W_fine_binning' -k '8' --range 200 ".format(
-                         DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9")) 
+                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_fine_binning' -k '9' --range 120 ".format(
+                         DIR=dir, ANA=ana))
+                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_fine_binning' -k '8' --range 120 ".format(
+                         DIR=dir, ANA=ana))
+                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'TT_fine_binning' -k '9' --range 150 ".format(
+                         DIR=dir, ANA=ana))
+                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'TT_fine_binning' -k '8' --range 120 ".format(
+                         DIR=dir, ANA=ana))
+                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_fine_binning' -k '9' --range 150 ".format(
+                         DIR=dir, ANA=ana))
+                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_fine_binning' -k '8' --range 200 ".format(
+                         DIR=dir, ANA=ana)) 
                 if options.channels.find("mt") > -1:
-                    #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'QCD_fine_binning' -k '9' --range 100 --rangelast 800 ".format(
-                    #    DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'QCD_fine_binning' -k '8' --range 200 ".format(
-                        DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'W_fine_binning' -k '9' --range 150 ".format(
-                        DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))           
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'W_fine_binning' -k '8' --range 150 ".format(
-                        DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))           
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'TT_fine_binning' -k '9' --range 200 ".format(
-                        DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))           
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-{PER}-0.root -c mt -e {PER} -b 'TT_fine_binning' -k '8' --range 200 ".format(
-                        DIR=dir, ANA=ana, PER="8TeV", CATEGORIES="8 9"))           
+                    #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'QCD_fine_binning' -k '9' --range 100 --rangelast 800 ".format(
+                    #    DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'QCD_fine_binning' -k '8' --range 200 ".format(
+                        DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_fine_binning' -k '9' --range 150 ".format(
+                        DIR=dir, ANA=ana))           
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_fine_binning' -k '8' --range 150 ".format(
+                        DIR=dir, ANA=ana))           
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'TT_fine_binning' -k '9' --range 200 ".format(
+                        DIR=dir, ANA=ana))           
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'TT_fine_binning' -k '8' --range 200 ".format(
+                        DIR=dir, ANA=ana))           
+                    ## tail fit for QCD shape uncertainties
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'QCD_CMS_htt_QCDShape_mutau_btag_8TeVDown_fine_binning' -k '9' --range 200 --no-uncerts".format(
+                        DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'QCD_CMS_htt_QCDShape_mutau_btag_8TeVUp_fine_binning'   -k '9' --range 200 --no-uncerts".format(
+                        DIR=dir, ANA=ana))
                 if options.channels.find("tt") > -1:
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_tt.inputs-mssm-8TeV-0.root -c tt -e 8TeV -b 'QCD_fine_binning' -k '9' --range 200 ".format(
                         DIR=dir, ANA=ana))
