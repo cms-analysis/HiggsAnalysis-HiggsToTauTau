@@ -55,6 +55,14 @@ Standard Model Checklist:
    - the tex file should be used to dump the pulls into the AN. 
    - the txt file will be used for the postfit plots. 
 
+(5a) Check goodness of fit
+--------------------------------------
+ - the expected goodness-of fit is toy based with Asimov datasets. The example is given for 100 toys
+   submitted in 10 cycles of 10 toys each.
+ - submit.py --goodness-of-fit --toys 10 --cycles 10 LIMITS/125
+ - submit.py --goodness-of-fit --collect-injected-toys LIMITS/125
+ - plot goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py LIMITS
+
 (6) Postfit plots
 --------------------------------------
  - cd HiggsAnalysis/HiggsToTauTau/test/
