@@ -18,6 +18,8 @@ parser.add_option("--hww-mass", dest="hww_mass", default='', type="string",
                   help="specify this option if you want to fix the hww contributions for the channels em and vhtt to a given mass. This configuration applies to hww as part of the signal. When an empty string is given the mass will be scanned. For analysis hhw-bg, where hww signal contributions are defined as background in any case mH=125 GeV willbe chosenindependent from this configuration. [Default: '']")
 parser.add_option("--hww-scale", dest="hww_scale", default='1.', type="string",
                   help="specify the scale factor for the hww contribution here. The scale factor should be relative to the SM expectation. [Default: 1.]")
+parser.add_option("--add-0jet-signal", dest="add_0jet_signal", default=False, action="store_true",
+                  help="Specify this option to add the signal in the 0jet event categories of the main channels. [Default: False]")
 parser.add_option("--add-mutau-soft", dest="add_mutau_soft", default=False, action="store_true",
                   help="Specify this option to add the soft muon pt analysis. [Default: False]")
 parser.add_option("--inputs-ee", dest="inputs_ee", default="DESY-KIT", type="choice", choices=['DESY-KIT'],
@@ -107,8 +109,9 @@ print "# --analyses                :", options.analyses
 print "# --label                   :", options.label
 print "# --drop-list               :", options.drop_list
 print "# --ignore-during-scaling   :", options.do_not_scales
-print "# --hww-mass                :", options.hww_mass
+print "# --hww-mass                :", 'free' if options.hww_mass == '' else options.hww_mass
 print "# --hww-scale               :", options.hww_scale
+print "# --add-0jet-signal         :", options.add_0jet_signal
 print "# --add-mutau-soft          :", options.add_mutau_soft
 print "# --------------------------------------------------------------------------------------"
 print "# --inputs-ee               :", options.inputs_ee
@@ -125,6 +128,16 @@ print "# --update-LIMITS           :", options.update_limits
 print "# Check option --help in case of doubt about the meaning of one or more of these confi-"
 print "# guration parameters.                           "
 print "# --------------------------------------------------------------------------------------"
+
+## add 0jet signal to the main channels
+def add_zero_jet(path) :
+    """
+    Add signal to the 0jet event categories
+    """
+    os.system("modify_cgs.py --setup {PATH} --channels mt --periods 7TeV 8TeV --categories 00 01 02 --add-to-signal ggH qqH VH".format(PATH=path))
+    os.system("modify_cgs.py --setup {PATH} --channels mt --periods      8TeV --categories 10 11 12 --add-to-signal ggH qqH VH".format(PATH=path))
+    os.system("modify_cgs.py --setup {PATH} --channels et --periods 7TeV 8TeV --categories 00 01 02 --add-to-signal ggH qqH VH".format(PATH=path))
+    os.system("modify_cgs.py --setup {PATH} --channels em --periods 7TeV 8TeV --categories 00 01    --add-to-signal ggH qqH VH".format(PATH=path))    
 
 ## setup main directory 
 setup="{CMSSW_BASE}/src/.setup{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
@@ -247,14 +260,18 @@ if options.update_setup :
         if ana == 'no-bbb' :
             print "##"
             print "## update no-bbb directory in setup:"
-            print "##"    
+            print "##"
+            if options.add_0jet_signal :
+                add_zero_jet(dir+'/'+ana)
         ##
         ## BIN-BY-BIN
         ##
         if ana == 'bbb' :
             print "##"
             print "## update bbb    directory in setup:"
-            print "##"    
+            print "##"
+            if options.add_0jet_signal :
+                add_zero_jet(dir+'/'+ana)
             if 'ee' in channels :
                 #if '7TeV' in periods :
                 #    ## setup bbb uncertainties for ee 7TeV 
@@ -468,7 +485,7 @@ if options.update_aux :
         os.system("mv {DIR} {CMSSW_BASE}/src/backup/".format(DIR=dir, CMSSW_BASE=cmssw_base))
     os.system("mkdir -p {DIR}".format(DIR=dir))    
     for ana in analyses :
-        prune = 'bbb' in ana : 
+        prune = 'bbb' in ana 
         if ':' in ana :
             ana = ana[ana.find(':')+1:]
         print "setup datacards for:", ana
