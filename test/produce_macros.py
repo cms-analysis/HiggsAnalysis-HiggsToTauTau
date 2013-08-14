@@ -14,7 +14,7 @@ parser.add_option("--mA", dest="mA", default="160", type="float", help="Mass of 
 parser.add_option("--tanb", dest="tanb", default="20", type="float", help="Tanb only needed for mssm. [Default: '20']")
 parser.add_option("-u", "--uncertainties", dest="uncertainties", default="1", type="int", help="Set uncertainties of backgrounds. [Default: '1']")
 parser.add_option("--asimov", dest="asimov", action="store_true", default=False, help="Use asimov dataset for postfit-plots. [Default: 'False']")
-parser.add_option("-v", "--verbose", dest="verbose", action="store_true", default=False, help="Run in verbose more. [Default: 'False']")
+parser.add_option("--add-0jet-signal", dest="add_zero_jet", action="store_true", default=False, help="Add signal in the 0-jet event category of the mt, et, em channels [Default: False]")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-mm", dest="mm_sm_categories", default="0 1 2 3 4", type="string", help="List mm of event categories. [Default: \"0 1 2 3 4\"]")
 cats1.add_option("--sm-categories-ee", dest="ee_sm_categories", default="0 1 2 3 4", type="string", help="List ee of event categories. [Default: \"0 1 2 3 4\"]")
@@ -32,6 +32,7 @@ cats2.add_option("--mssm-categories-et", dest="et_mssm_categories", default="8 9
 cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="8 9", type="string", help="List of tt event categories. [Default: \"8 9\"]")
 #cats2.add_option("--mssm-categories-hmm", dest="hmm_mssm_categories", default="0 1", type="string", help="List of hmm event categories. [Default: \"0 1\"]")
 cats2.add_option("--mssm-categories-hbb", dest="hbb_mssm_categories", default="0 1 2 3 4 5 6", type="string", help="List of hbb event categories. [Default: \"0 1 2 3 4 5 6\"]")
+parser.add_option("-v", "--verbose", dest="verbose", action="store_true", default=False, help="Run in verbose more. [Default: 'False']")
 parser.add_option_group(cats2)
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -97,6 +98,13 @@ class Analysis:
         if "bbH" in process :
             return True
         return False
+
+    def drop_signal(self, category) :
+        if options.add_zero_jet :
+            return False
+        if '0jet' in category :
+            return True
+        return False
         
     def run(self):
          """
@@ -114,7 +122,7 @@ class Analysis:
              line = line.replace("$CMSSW_BASE", os.environ['CMSSW_BASE'])
              line = line.replace("$DEFINE_ASIMOV", "#define ASIMOV" if options.asimov else "")
              line = line.replace("$DEFINE_MSSM", "#define MSSM" if self.analysis == "mssm" else "")
-             line = line.replace("$DEFINE_DROP_SIGNAL", "#define DROP_SIGNAL" if '0jet' in self.category else "")
+             line = line.replace("$DEFINE_DROP_SIGNAL", "#define DROP_SIGNAL" if self.drop_signal(self.category) else "")
              line = line.replace("$DEFINE_EXTRA_SAMPLES", "#define EXTRA_SAMPLES" if self.high_stat_category(self.category) else "")
              line = line.replace(template_name, output_name)
              line = line.replace("$HISTFILE", self.histfile)
