@@ -154,11 +154,11 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TH1F* ZMM      = refill((TH1F*)input ->Get(TString::Format("%s/ZMM"     , directory)), "ZMM"     ); InitHist(ZMM     , "", "", kAzure   +  2, 1001);
   TH1F* TTJ      = refill((TH1F*)input ->Get(TString::Format("%s/TTJ"     , directory)), "TTJ"     ); InitHist(TTJ     , "", "", kBlue    -  8, 1001);
   TH1F* QCD      = refill((TH1F*)input ->Get(TString::Format("%s/QCD"     , directory)), "QCD"     ); InitHist(QCD     , "", "", kMagenta - 10, 1001);
-  TH1F* Dibosons = refill((TH1F*)input ->Get(TString::Format("%s/Dibosons", directory)), "Dibosons"); InitHist(Dibosons, "", "", kGreen   -  4, 1001);
+  TH1F* Dibosons = refill((TH1F*)input ->Get(TString::Format("%s/Dibosons", directory)), "Dibosons"); InitHist(Dibosons, "", "", kRed     +  2, 1001);
   TH1F* WJets    = 0;
-  if(!std::string("mumu_nobtag") == std::string(directory)){
+  if(!(std::string("mumu_nobtag") == std::string(directory))){
     // template has been removed from nobtag categories
-    WJets = refill((TH1F*)input ->Get(TString::Format("%s/WJets"   , directory)), "WJets"   ); InitHist(WJets   , "", "", kRed     +  2, 1001);
+    WJets = refill((TH1F*)input ->Get(TString::Format("%s/WJets"   , directory)), "WJets"   ); InitHist(WJets   , "", "", kGreen -4 , 1001);
   }
 #ifdef MSSM
   TH1F* ggH      = refill((TH1F*)input2->Get(TString::Format("%s/ggH$MA"  , directory)), "ggH"     ); InitSignal(ggH); ggH->Scale($TANB);
@@ -195,6 +195,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   unscaled[2] = TTJ->Integral();
   unscaled[3] = QCD->Integral();
   unscaled[4] = Dibosons->Integral();
+  unscaled[5] = 0;
   if(WJets){
     unscaled[5] = WJets->Integral();
   }
@@ -242,12 +243,9 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   scales[3]->SetBinContent(4, unscaled[3]>0 ? (QCD->Integral()/unscaled[3]-1.)      : 0.);
   scales[4] = new TH1F("scales-Dibosons", "", 9, 0, 9);
   scales[4]->SetBinContent(5, unscaled[4]>0 ? (Dibosons->Integral()/unscaled[4]-1.) : 0.);
-  scales[5] = new TH1F("scales-WJets"  , "", 9, 0, 9);
+  scales[5] = new TH1F("scales-WJets"  , "", 9, 0, 9); scales[5]->SetBinContent(6, 0.);
   if(WJets){ 
     scales[5]->SetBinContent(6, unscaled[5]>0 ? (WJets->Integral()/unscaled[5]-1.)  : 0.);
-  }
-  else{
-    scales[5]->SetBinContent(6, 0.);
   }
 #ifdef MSSM
   scales[6] = new TH1F("scales-ggH"  , "", 9, 0, 9);
@@ -268,9 +266,9 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
 
   if(WJets){
-    Diboson->Add(Wjets)
-      }
-  QCD->Add(Diboson);
+    Dibosons->Add(WJets);
+  }
+  QCD->Add(Dibosons);
   TTJ->Add(QCD);
   ZTT->Add(TTJ);
   ZMM->Add(ZTT);
@@ -334,7 +332,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
     ZTT->Draw("histsame");
     TTJ->Draw("histsame");
     QCD->Draw("histsame");
-    Diboson->Draw("histsame");
+    Dibosons->Draw("histsame");
     $DRAW_ERROR
 #ifndef DROP_SIGNAL
     ggH->Draw("histsame");
@@ -426,16 +424,15 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
 #endif
 #ifdef ASIMOV
-  leg->AddEntry(data   , "sum(bkg) + H(125)"           , "LP");
+  leg->AddEntry(data    , "sum(bkg) + H(125)"           , "LP");
 #else
-  leg->AddEntry(data   , "observed"                    , "LP");
+  leg->AddEntry(data    , "observed"                    , "LP");
 #endif
-  leg->AddEntry(ZMM    , "Z#rightarrow#mu#mu"          , "F" );
-  leg->AddEntry(ZTT    , "Z#rightarrow#tau#tau"        , "F" );
-  leg->AddEntry(TTJ    , "t#bar{t}"                    , "F" );
-  leg->AddEntry(QCD    , "QCD"                         , "F" );
-  leg->AddEntry(Diboson, "electroweak"                 , "F" );
-  //leg->AddEntry(Dibosons  , "Dibosons"             , "F" );
+  leg->AddEntry(ZMM     , "Z#rightarrow#mu#mu"          , "F" );
+  leg->AddEntry(ZTT     , "Z#rightarrow#tau#tau"        , "F" );
+  leg->AddEntry(TTJ     , "t#bar{t}"                    , "F" );
+  leg->AddEntry(QCD     , "QCD"                         , "F" );
+  leg->AddEntry(Dibosons, "electroweak"                 , "F" );
   $ERROR_LEGEND
   leg->Draw();
 
@@ -524,8 +521,8 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   InitHist  (scales[1], "", "", kAzure   +  2, 1001);
   InitHist  (scales[2], "", "", kBlue    -  8, 1001);
   InitHist  (scales[3], "", "", kMagenta - 10, 1001);
-  InitHist  (scales[4], "", "", kGreen   -  4, 1001);
-  InitHist  (scales[5], "", "", kRed     +  2, 1001);  
+  InitHist  (scales[4], "", "", kRed     +  2, 1001);
+  InitHist  (scales[5], "", "", kGreen   -  4, 1001);  
 #ifndef DROP_SIGNAL
   InitSignal(scales[6]);
   InitSignal(scales[7]);
