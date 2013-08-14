@@ -47,7 +47,7 @@ void copyDir(TDirectory *source,std::string iSkipHist,bool iFirst=true) {
       std::string iSkipHist2 = iSkipHist;
       std::string fine_binning = "_fine_binning";
       iSkipHist2.replace(iSkipHist2.find(fine_binning), fine_binning.length(),"");
-      if(pFullName.find(iSkipHist) != std::string::npos || pFullName.find(iSkipHist2) != std::string::npos) {
+      if(pFullName == iSkipHist || pFullName == iSkipHist2) {
 	continue;
       }
       adir->cd();
@@ -551,7 +551,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   }
   
   //Check if the shift up/down histograms are integrable. If not terminate the script here.
-  if(I1 != I1 || I2 != I2 || I3 != I3 || I4 != I4)
+  if(addUncerts && (I1 != I1 || I2 != I2 || I3 != I3 || I4 != I4))
   {
       std::cerr << "===============================================================================" << std::endl;
       std::cerr << "Tail fit has succeeded, but 1 or more of the shift up/down histograms is not integrable." << std::endl;
