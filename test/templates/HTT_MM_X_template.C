@@ -155,7 +155,11 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TH1F* TTJ      = refill((TH1F*)input ->Get(TString::Format("%s/TTJ"     , directory)), "TTJ"     ); InitHist(TTJ     , "", "", kBlue    -  8, 1001);
   TH1F* QCD      = refill((TH1F*)input ->Get(TString::Format("%s/QCD"     , directory)), "QCD"     ); InitHist(QCD     , "", "", kMagenta - 10, 1001);
   TH1F* Dibosons = refill((TH1F*)input ->Get(TString::Format("%s/Dibosons", directory)), "Dibosons"); InitHist(Dibosons, "", "", kGreen   -  4, 1001);
-  TH1F* WJets    = refill((TH1F*)input ->Get(TString::Format("%s/WJets"   , directory)), "WJets"   ); InitHist(WJets   , "", "", kRed     +  2, 1001);
+  TH1F* WJets    = 0;
+  if(!std::string("mumu_nobtag") == std::string(directory)){
+    // template has been removed from nobtag categories
+    WJets = refill((TH1F*)input ->Get(TString::Format("%s/WJets"   , directory)), "WJets"   ); InitHist(WJets   , "", "", kRed     +  2, 1001);
+  }
 #ifdef MSSM
   TH1F* ggH      = refill((TH1F*)input2->Get(TString::Format("%s/ggH$MA"  , directory)), "ggH"     ); InitSignal(ggH); ggH->Scale($TANB);
   TH1F* bbH      = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA"  , directory)), "bbH"     ); InitSignal(bbH); bbH->Scale($TANB);
@@ -182,15 +186,18 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   ref->Add(TTJ);
   ref->Add(QCD);
   ref->Add(Dibosons);
-  ref->Add(WJets);
-
+  if(WJets){
+    ref->Add(WJets);
+  }
   double unscaled[9];
   unscaled[0] = ZTT->Integral();
   unscaled[1] = ZMM->Integral();
   unscaled[2] = TTJ->Integral();
   unscaled[3] = QCD->Integral();
   unscaled[4] = Dibosons->Integral();
-  unscaled[5] = WJets->Integral();
+  if(WJets){
+    unscaled[5] = WJets->Integral();
+  }
 #ifdef MSSM
   unscaled[6] = ggH->Integral();
   unscaled[7] = bbH->Integral();
@@ -209,7 +216,9 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
     rescale(TTJ,  3); 
     rescale(QCD,  4); 
     rescale(Dibosons, 5); 
-    rescale(WJets,    6);
+    if(WJets){
+      rescale(WJets,  6);
+    }
 #ifdef MSSM 
     rescale(ggH,  7);
     rescale(bbH,  8);
@@ -234,7 +243,12 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   scales[4] = new TH1F("scales-Dibosons", "", 9, 0, 9);
   scales[4]->SetBinContent(5, unscaled[4]>0 ? (Dibosons->Integral()/unscaled[4]-1.) : 0.);
   scales[5] = new TH1F("scales-WJets"  , "", 9, 0, 9);
-  scales[5]->SetBinContent(6, unscaled[5]>0 ? (WJets->Integral()/unscaled[5]-1.)    : 0.);
+  if(WJets){ 
+    scales[5]->SetBinContent(6, unscaled[5]>0 ? (WJets->Integral()/unscaled[5]-1.)  : 0.);
+  }
+  else{
+    scales[5]->SetBinContent(6, 0.);
+  }
 #ifdef MSSM
   scales[6] = new TH1F("scales-ggH"  , "", 9, 0, 9);
   scales[6]->SetBinContent(7, unscaled[6]>0 ? (ggH->Integral()/unscaled[6]-1.)      : 0.);
@@ -253,8 +267,10 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
 #endif
 
-  WJets->Add(Dibosons);
-  QCD->Add(WJets);
+  if(WJets){
+    Diboson->Add(Wjets)
+      }
+  QCD->Add(Diboson);
   TTJ->Add(QCD);
   ZTT->Add(TTJ);
   ZMM->Add(ZTT);
@@ -270,11 +286,11 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   }
   else{
 #ifdef MSSM
-    bbH  ->Add(WJets);
+    bbH  ->Add(ZMM);
     ggH  ->Add(bbH);
 #else
 #ifndef DROP_SIGNAL
-    VH   ->Add(WJets);
+    VH   ->Add(ZMM);
     qqH  ->Add(VH );
     ggH  ->Add(qqH);
 #endif
@@ -296,9 +312,9 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   data->SetNdivisions(505);
   data->SetMinimum(min);
 #ifndef DROP_SIGNAL
-  data->SetMaximum(max>0 ? max : std::max(std::max(maximum(data, log), maximum(ZTT, log)), maximum(ggH, log)));
+  data->SetMaximum(max>0 ? max : std::max(std::max(maximum(data, log), maximum(ZMM, log)), maximum(ggH, log)));
 #else
-  data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(ZTT, log)));
+  data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(ZMM, log)));
 #endif
   data->Draw("e");
 
@@ -318,8 +334,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
     ZTT->Draw("histsame");
     TTJ->Draw("histsame");
     QCD->Draw("histsame");
-    WJets->Draw("histsame");
-    //Dibosons->Draw("histsame");
+    Diboson->Draw("histsame");
     $DRAW_ERROR
 #ifndef DROP_SIGNAL
     ggH->Draw("histsame");
@@ -334,8 +349,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
     ZTT->Draw("histsame");
     TTJ->Draw("histsame");
     QCD->Draw("histsame");
-    WJets->Draw("histsame");
-    //Dibosons->Draw("histsame");
+    Dibosons->Draw("histsame");
     $DRAW_ERROR
   }
   data->Draw("esame");
@@ -412,15 +426,15 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
 #endif
 #ifdef ASIMOV
-  leg->AddEntry(data , "sum(bkg) + H(125)"           , "LP");
+  leg->AddEntry(data   , "sum(bkg) + H(125)"           , "LP");
 #else
-  leg->AddEntry(data , "observed"                    , "LP");
+  leg->AddEntry(data   , "observed"                    , "LP");
 #endif
-  leg->AddEntry(ZMM  , "Z#rightarrow#mu#mu"          , "F" );
-  leg->AddEntry(ZTT  , "Z#rightarrow#tau#tau"        , "F" );
-  leg->AddEntry(TTJ  , "t#bar{t}"                    , "F" );
-  leg->AddEntry(QCD  , "QCD"                         , "F" );
-  leg->AddEntry(WJets, "electroweak"                 , "F" );
+  leg->AddEntry(ZMM    , "Z#rightarrow#mu#mu"          , "F" );
+  leg->AddEntry(ZTT    , "Z#rightarrow#tau#tau"        , "F" );
+  leg->AddEntry(TTJ    , "t#bar{t}"                    , "F" );
+  leg->AddEntry(QCD    , "QCD"                         , "F" );
+  leg->AddEntry(Diboson, "electroweak"                 , "F" );
   //leg->AddEntry(Dibosons  , "Dibosons"             , "F" );
   $ERROR_LEGEND
   leg->Draw();
@@ -582,8 +596,10 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   ZMM->Write("Zmm"  );
   TTJ->Write("ttbar");
   QCD->Write("Fakes");
-  Dibosons->Write("Dibosons");
-  WJets->Write("EWK");
+  Dibosons->Write("EWK");
+  if(WJets){
+    WJets->Write("WJets");
+  }
 #ifdef MSSM
   ggH  ->Write("ggH");
   bbH  ->Write("bbH");
