@@ -51,16 +51,18 @@ class UncertAdaptor(object) :
                         line=line.replace(signal, '')
                         line = re.sub(self.whitespace, '', line)
             if self.cgs_background_group in line:
+                backgrounds = line[line.rfind(self.cgs_background_group)+len(self.cgs_background_group)+1:].split(',')
+                backgrounds = [bck.strip() for bck in backgrounds]
+                line = line[:line.rfind(self.cgs_background_group)+len(self.cgs_background_group)+1]
                 ## remove procs that might have been moved to signal from the background group
-                if signal_procs :
-                    for signal in signal_procs :
-                        line=line.replace(signal, '')
-                        line = re.sub(self.whitespace, '', line)
                 backgroundstr=''
+                for background in backgrounds :
+                    if background in signal_procs :
+                        backgrounds.remove(background)
                 if background_procs :
                     for background in background_procs :
-                        if not background in line :
-                            backgroundstr+=","+background
-                line=line.rstrip('\n')+backgroundstr+'\n'                        
+                        if not background in backgrounds :
+                            backgrounds.append(background)
+                line=line+','.join(backgrounds)+'\n'
             file_new.write(line)
         os.system("mv -v %s_tmp %s"%(cgs_path, cgs_path))
