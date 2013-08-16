@@ -7,7 +7,7 @@ parser = OptionParser(usage="usage: %prog [options]",
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
 parser.add_option("-t", "--type", dest="type", default="postfit", type="string", help="Type of plots, prefit or postfit. [Default: \"postfit\"]")
 parser.add_option("--mA", dest="mA", default="160", type="float", help="Mass of pseudoscalar mA only needed for mssm. [Default: '160']")
-parser.add_option("--tanb", dest="tanb", default="20", type="float", help="Tanb only needed for mssm. [Default: '20']")
+parser.add_option("--tanb", dest="tanb", default="8", type="float", help="Tanb only needed for mssm. [Default: '8']")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 
