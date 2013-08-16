@@ -28,6 +28,7 @@ if len(args) < 1 :
     exit(1)
 
 import os
+import glob
 import random
 import string
 from HiggsAnalysis.HiggsToTauTau.HttPruner import HttPruner
