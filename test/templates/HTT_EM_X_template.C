@@ -40,13 +40,13 @@ float blinding_SM(float mass){ return (100<mass && mass<150); }
 float blinding_MSSM(float mass){ return (100<mass); }
 float maximum(TH1F* h, bool LOG=false){
   if(LOG){
-    if(h->GetMaximum()>1000){ return 1000.*TMath::Nint(500*h->GetMaximum()/1000.); }
-    if(h->GetMaximum()>  10){ return   10.*TMath::Nint( 50*h->GetMaximum()/  10.); }
+    if(h->GetMaximum()>1000){ return 1000.*TMath::Nint(30*h->GetMaximum()/1000.); }
+    if(h->GetMaximum()>  10){ return   10.*TMath::Nint(30*h->GetMaximum()/  10.); }
     return 50*h->GetMaximum(); 
   }
   else{
-    if(h->GetMaximum()>  12){ return 10.*TMath::Nint((1.3*h->GetMaximum()/10.)); }
-    if(h->GetMaximum()> 1.2){ return TMath::Nint((1.6*h->GetMaximum())); }
+    if(h->GetMaximum()>  12){ return 10.*TMath::Nint((1.35*h->GetMaximum()/10.)); }
+    if(h->GetMaximum()> 1.2){ return TMath::Nint((1.65*h->GetMaximum())); }
     return 1.6*h->GetMaximum(); 
   }
 }
@@ -264,9 +264,9 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   canv->cd();
   if(log){ canv->SetLogy(1); }
 #if defined MSSM
-  if(!log){ data->GetXaxis()->SetRange(0, data->FindBin(350)); } else{ data->GetXaxis()->SetRange(0, data->FindBin(1000)); };
+  if(!log){ data->GetXaxis()->SetRange(0, data->FindBin(345)); } else{ data->GetXaxis()->SetRange(0, data->FindBin(695)); };
 #else
-  data->GetXaxis()->SetRange(0, data->FindBin(350));
+  data->GetXaxis()->SetRange(0, data->FindBin(345));
 #endif
   data->SetNdivisions(505);
   data->SetMinimum(min);
@@ -334,39 +334,19 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   cat->Draw();
 
 #ifdef MSSM
-  TPaveText* massA      = new TPaveText(0.75, 0.48+0.061, 0.85, 0.48+0.161, "NDC");
+  TPaveText* massA      = new TPaveText(0.55, 0.50+0.061, 0.95, 0.50+0.161, "NDC");
   massA->SetBorderSize(   0 );
   massA->SetFillStyle(    0 );
   massA->SetTextAlign(   12 );
   massA->SetTextSize ( 0.03 );
   massA->SetTextColor(    1 );
   massA->SetTextFont (   62 );
-  massA->AddText("m_{A}=$MAGeV");
+  massA->AddText("m^{h}_{max} (m_{A}=$MA GeV, tan#beta=$TANB)");
   massA->Draw();
-
-  TPaveText* tanb      = new TPaveText(0.75, 0.44+0.061, 0.85, 0.44+0.161, "NDC");
-  tanb->SetBorderSize(   0 );
-  tanb->SetFillStyle(    0 );
-  tanb->SetTextAlign(   12 );
-  tanb->SetTextSize ( 0.03 );
-  tanb->SetTextColor(    1 );
-  tanb->SetTextFont (   62 );
-  tanb->AddText("tan#beta=$TANB");
-  tanb->Draw();
- 
-  TPaveText* scen      = new TPaveText(0.75, 0.40+0.061, 0.85, 0.40+0.161, "NDC");
-  scen->SetBorderSize(   0 );
-  scen->SetFillStyle(    0 );
-  scen->SetTextAlign(   12 );
-  scen->SetTextSize ( 0.03 );
-  scen->SetTextColor(    1 );
-  scen->SetTextFont (   62 );
-  scen->AddText("mhmax");
-  scen->Draw();
 #endif
 
 #ifdef MSSM  
-  TLegend* leg = new TLegend(0.45, 0.65, 0.95, 0.90);
+  TLegend* leg = new TLegend(0.55, 0.65, 0.95, 0.90);
   SetLegendStyle(leg);
   leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau" , "L" );
 #else
