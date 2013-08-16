@@ -146,6 +146,10 @@ if options.update_setup :
                         PER=per,
                         PATTERN=pattern
                         ))
+    ## apply horizontal morphing for processes, which have not been simulated for 7TeV: ggH_hww145, qqH_hww145
+    for file in glob.glob("{SETUP}/em/htt_em.inputs-sm-7TeV*.root".format(SETUP=setup)) :
+        os.system("horizontal-morphing.py --categories 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose' --samples '{SIGNAL}' --uncerts 'QCDscale_ggH1in,CMS_scale_e_7TeV' --masses '140,150' --step-size 5 -v {INPUT}".format(INPUT=file, SIGNAL='ggH_hww{MASS}'))
+        os.system("horizontal-morphing.py --categories 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose' --samples '{SIGNAL}' --uncerts 'CMS_scale_e_7TeV' --masses '140,150' --step-size 5 -v {INPUT}".format(INPUT=file, SIGNAL='qqH_hww{MASS}'))
     ## scale to SM cross section
     for chn in config.channels :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
@@ -160,7 +164,7 @@ if options.update_setup :
         print "## --->>> adding extra scale for htt_hww contribution in em <<<---"
         print "##"
         ## special treatment for channels which include contributions from hww
-        hww_processes = ['ggH_hww', 'qqH_hww', 'VH_hww']
+        hww_processes = ['ggH_hww', 'qqH_hww']
         ## BR ratios: hww/htt as function of the mass
         hww_over_htt = {
             # mass     hww    htt  WW->2l2v
@@ -217,130 +221,19 @@ if options.update_setup :
             print "##"    
             for chn in config.channels:
                 for per in config.periods:
-                    if chn not in ['et', 'mt', 'vhtt']:
-                        if len(config.bbbcat[chn][per])>0: #make sure there are categories for this period (maybe unnecessary)
-                            os.system("add_bbb_errors.py '{CHN}:{PER}:{CAT}:{PROC}' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold {THR}".format(
-                                DIR=dir,
-                                ANA=ana,
-                                CHN=chn,
-                                PER=per,
-                                PROC=config.bbbproc[chn],
-                                CAT=config.bbbcat[chn][per],
-                                THR=config.bbbthreshold
-                                ))
+                    for idx in range(len(config.bbbcat[chn][per])):
+                        os.system("add_bbb_errors.py '{CHN}:{PER}:{CAT}{SOFT}:{PROC}' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold {THR}".format(
+                            DIR=dir,
+                            ANA=ana,
+                            CHN=chn,
+                            PER=per,
+                            CAT=config.bbbcat[chn][per][idx],
+                            PROC=config.bbbproc[chn][idx],
+                            SOFT=',10,11,12,13,15,16' if options.add_mutau_soft and chn=='mt' else '',
+                            THR=config.bbbthreshold
+                            ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                            
-
-            if 'et' in config.channels :
-                if '7TeV' in config.periods :
-                    ## setup bbb uncertainties for et 7TeV
-                    os.system("add_bbb_errors.py 'et:7TeV:01,02,04,05,06:ZL,ZLL,QCD>W' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                if '8TeV' in config.periods :
-                    ## setup bbb uncertainties for et 8TeV
-                    os.system("add_bbb_errors.py 'et:8TeV:01,02,04,05,06,07:ZL,ZJ,QCD>W'  --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-            if 'mt' in config.channels :
-                if '7TeV' in config.periods :
-                    ## setup bbb uncertainties for mt 7TeV
-                    os.system("add_bbb_errors.py 'mt:7TeV:01,02,04,05,06:ZL,ZLL,QCD>W' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                if '8TeV' in config.periods :
-                    ## setup bbb uncertainties for mt 8TeV
-                    os.system("add_bbb_errors.py 'mt:8TeV:01,02,04,05,06,07{SOFT}:ZL,ZJ,QCD>W'  --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana,
-                        SOFT=',10,11,12,13,15,16' if options.add_mutau_soft else ''                        
-                        ))
-                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                
-            if 'vhtt' in config.channels :
-                if '7TeV' in config.periods :
-                    ## setup bbb uncertainties for vhtt
-                    os.system("add_bbb_errors.py 'vhtt:7TeV:00:fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                    os.system("add_bbb_errors.py 'vhtt:7TeV:01:fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                    #os.system("add_bbb_errors.py 'vhtt:7TeV:02:fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                    #    DIR=dir,
-                    #    ANA=ana
-                    #    ))
-                    os.system("add_bbb_errors.py 'vhtt:7TeV:03:Zjets' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                    os.system("add_bbb_errors.py 'vhtt:7TeV:04:Zjets' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                    os.system("add_bbb_errors.py 'vhtt:7TeV:05:Zjets' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                    os.system("add_bbb_errors.py 'vhtt:7TeV:06:Zjets' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                    os.system("add_bbb_errors.py 'vhtt:7TeV:07:wz' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                    os.system("add_bbb_errors.py 'vhtt:7TeV:08:wz' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                if '8TeV' in config.periods :
-                    ## setup bbb uncertainties for vhtt
-                    os.system("add_bbb_errors.py 'vhtt:8TeV:00:fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                    os.system("add_bbb_errors.py 'vhtt:8TeV:01:fakes,charge_fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                    os.system("add_bbb_errors.py 'vhtt:8TeV:02:fakes,charge_fakes' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                    os.system("add_bbb_errors.py 'vhtt:8TeV:03:Zjets' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                    os.system("add_bbb_errors.py 'vhtt:8TeV:04:Zjets' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                    os.system("add_bbb_errors.py 'vhtt:8TeV:05:Zjets' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                    os.system("add_bbb_errors.py 'vhtt:8TeV:06:Zjets' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                    os.system("add_bbb_errors.py 'vhtt:8TeV:07:wz' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                    os.system("add_bbb_errors.py 'vhtt:8TeV:08:wz' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.10".format(
-                        DIR=dir,
-                        ANA=ana
-                        ))
-                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                
 
 if options.update_aux :
     print "##"
