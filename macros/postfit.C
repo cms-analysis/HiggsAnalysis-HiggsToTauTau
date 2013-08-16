@@ -29,16 +29,12 @@ static const float SIGNAL_SCALE = 1.;
 
 float maximum(TH1F* h, bool LOG=false){
   if(LOG){
-    if(h->GetMaximum()>1000){ return 1000.*TMath::Nint(500*h->GetMaximum()/1000.); }
-    if(h->GetMaximum()>  10){ return   10.*TMath::Nint( 50*h->GetMaximum()/  10.); }
-    return 50*h->GetMaximum(); 
+    return 5.*h->GetMaximum();
   }
   else{
-    //std::cout << "WHERE IS MY MAX? -- " << h->GetName() << " -- " << h->GetMaximum() << std::endl;
-    if(h->GetMaximum()>  12){ return 10.*TMath::Nint((1.3*h->GetMaximum()/10.)); }
-    if(h->GetMaximum()> 1.2){ return TMath::Nint((1.6*h->GetMaximum())); }
+    if(h->GetMaximum()>  12){ return 10.*TMath::Nint((1.35*h->GetMaximum()/10.)); }
+    if(h->GetMaximum()> 1.2){ return TMath::Nint((1.65*h->GetMaximum())); }
     return 1.6*h->GetMaximum(); 
-
   }
 }
 
@@ -83,7 +79,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   // determine label
   if (std::string(dataset) == std::string("2011"     )){ dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV"; }
   if (std::string(dataset) == std::string("2012"     )){ dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 19.8 fb^{-1} at 8 TeV"; }
-  if (std::string(dataset) == std::string("2011+2012")){ dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV"; }
+  if (std::string(dataset) == std::string("2011+2012")){ dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV"; }
   // determine category tag
   const char* category_extra = "";
   if(std::string(extra2) == std::string("0jet_low"  )){ category_extra = "0 jet, low p_{T}";  }
@@ -118,9 +114,8 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   TCanvas *canv = MakeCanvas("canv", "histograms", 600, 600);
   if(log) canv->SetLogy(1);
   // reduce the axis range if necessary for linea plots and SM
-  if(MSSM && !log){ data->GetXaxis()->SetRange(0, data->FindBin(350)); } else{ data->GetXaxis()->SetRange(0, data->FindBin(490)); };
-  if(!MSSM){ data->GetXaxis()->SetRange(0, data->FindBin(350)); }
-
+  if(MSSM && !log){ data->GetXaxis()->SetRange(0, data->FindBin(345)); } else{ data->GetXaxis()->SetRange(0, data->FindBin(695)); };
+  if(!MSSM){ data->GetXaxis()->SetRange(0, data->FindBin(345)); }
   data->SetNdivisions(505);
   data->SetMinimum(min);
   if(Zmm){
@@ -133,11 +128,11 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
 
   if(log){
     if(Zmm){
-      EWK  ->Draw("same");
-      ttbar->Draw("same");
-      Fakes->Draw("same");
       Zmm  ->Draw("same");
       Ztt  ->Draw("same");
+      ttbar->Draw("same");
+      Fakes->Draw("same");
+      EWK  ->Draw("same");
     }
     else if(Zee){
       EWK  ->Draw("same");
@@ -160,11 +155,11 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   else{
     if(ggH) ggH  ->Draw("histsame");
     if(Zmm){
-      EWK->Draw("same");
-      Fakes->Draw("same");
-      ttbar->Draw("same");
       Zmm->Draw("same");
       Ztt->Draw("same");
+      ttbar->Draw("same");
+      Fakes->Draw("same");
+      EWK->Draw("same");
     }   
     else if(Zee){
       EWK->Draw("same");
@@ -211,40 +206,19 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   cat->Draw();
 
   if(MSSM){
-    TPaveText* massA      = new TPaveText(0.75, 0.48+0.061, 0.85, 0.48+0.161, "NDC");
+    float lower_bound = EWK1 ? 0.45 : 0.50;
+    TPaveText* massA      = new TPaveText(0.55, lower_bound+0.061, 0.95, lower_bound+0.161, "NDC");
     massA->SetBorderSize(   0 );
     massA->SetFillStyle(    0 );
     massA->SetTextAlign(   12 );
     massA->SetTextSize ( 0.03 );
     massA->SetTextColor(    1 );
     massA->SetTextFont (   62 );
-    massA->AddText("m_{A}=$MA GeV");
+    massA->AddText("m^{h}_{max} (m_{A}=$MA GeV, tan#beta=$TANB)");
     massA->Draw();
-    
-    TPaveText* tanb      = new TPaveText(0.75, 0.44+0.061, 0.85, 0.44+0.161, "NDC");
-    tanb->SetBorderSize(   0 );
-    tanb->SetFillStyle(    0 );
-    tanb->SetTextAlign(   12 );
-    tanb->SetTextSize ( 0.03 );
-    tanb->SetTextColor(    1 );
-    tanb->SetTextFont (   62 );
-    tanb->AddText("tan#beta=$TANB");
-    tanb->Draw();
-    
-    TPaveText* scen      = new TPaveText(0.75, 0.40+0.061, 0.85, 0.40+0.161, "NDC");
-    scen->SetBorderSize(   0 );
-    scen->SetFillStyle(    0 );
-    scen->SetTextAlign(   12 );
-    scen->SetTextSize ( 0.03 );
-    scen->SetTextColor(    1 );
-    scen->SetTextFont (   62 );
-    scen->AddText("m^{h}_{max}");
-    scen->Draw();
-  }
-  
-  
+  }    
   float lower_bound = EWK1 ? 0.60 : 0.65;
-  TLegend* leg = new TLegend(MSSM ? 0.45 : 0.50, lower_bound, 0.93, 0.90);
+  TLegend* leg = new TLegend(MSSM ? 0.55 : 0.50, lower_bound, 0.93, 0.90);
   SetLegendStyle(leg);
   if(MSSM){
     leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau", "L" );
@@ -340,7 +314,12 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   canv0->cd(); 
   TH1F* zero = (TH1F*)Ztt->Clone("zero"); zero->Clear();
   TH1F* rat1 = (TH1F*)data->Clone("rat"); 
-  rat1->Divide(Ztt);
+  if(Zmm){
+    rat1->Divide(Zmm);
+  }
+  else{
+    rat1->Divide(Ztt);
+  }
   for(int ibin=0; ibin<rat1->GetNbinsX(); ++ibin){
     if(rat1->GetBinContent(ibin+1)>0){
       // catch cases of 0 bins, which would lead to 0-alpha*0-1

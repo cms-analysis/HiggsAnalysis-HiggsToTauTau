@@ -8,13 +8,12 @@ parser.add_option("--rMax", dest="rMax", default="5.", type="string", help="Maxi
 parser.add_option("-s", "--skip", dest="skip", default=False, action="store_true", help="Skip the limit calculation in case it has been done already. [Default: False]")
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="string", help="Type of analysis (sm or mssm). Lower case is required. [Default: \"sm\"]")
 parser.add_option("--mA", dest="mA", default="160", type="string", help="Mass of pseudoscalar mA only needed for mssm. [Default: '160']")
-parser.add_option("--tanb", dest="tanb", default="20", type="string", help="Tanb only needed for mssm. [Default: '20']")
+parser.add_option("--tanb", dest="tanb", default="8", type="string", help="Tanb only needed for mssm. [Default: '8']")
 (options, args) = parser.parse_args()
 
 if len(args) < 1 :
     parser.print_usage()
     exit(1)
-
 
 import os
 import sys
@@ -47,8 +46,7 @@ if options.analysis == "mssm" :
     system("cp -v %s/out/mlfit.txt ./fitresults/mlfit_mssm.txt" % dir)
     system("cp -v %s/*.txt ./datacards" % dir)   
     ##system("cp -v %s/../common/hbb.input_[78]TeV-[01].root ./root" % dir)
-    system("cp -v %s/../common/htt_*.inputs-mssm-[78]TeV-0.root ./root" % (dir))
-    
+    system("cp -v %s/../common/htt_*.inputs-mssm-[78]TeV-0.root ./root" % (dir))    
     ## for mm override the histograms as used for the limit calculation in favour of something more human readible
     os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-mssm-8TeV-0-msv.root ./root/htt_mm.inputs-mssm-8TeV-0.root")
     os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-mssm-7TeV-0-msv.root ./root/htt_mm.inputs-mssm-7TeV-0.root")

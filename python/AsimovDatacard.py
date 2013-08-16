@@ -10,15 +10,15 @@ class AsimovDatacard(DatacardAdaptor) :
     Description:
 
     This class should take all datacards in a given directory and replace all data_obs histograms / entries by the asimov
-    dataset. There are tow options in introducing the new data_obs: either the it is saved in the the same root input file
-    with name data_obs_asimov, or it is saved with the same name in a different root input file, which is indicated by an
-    additional postfix _asimov. All datacardss in the given directory are modified accordingly. The class works for shape
-    analyses and counting experiments. Depending on the configuration all signal processes as given by the datacards can be
-    added to the asimov dataset, multiplied by a scale factor, which is commonly applied to all signal processes. If
-    configured such a parameter can be given to indicate the mass of the signal that should be added to the background
-    processes. In addition extra templates can be added into the data_obs, which are present in the root input file, but
-    not part of the processes indicated in the datacard. If a random seed>=0 is given the asimov dataset is randomized
-    according to a poinsson dirstribution.
+    dataset. There are two ways to introduce the new data_obs: either it is saved in the the same root input file with name
+    data_obs_asimov, or it is saved with the same name in a different root input file, which is indicated by an additional
+    postfix _asimov. All datacardss in the given directory are modified accordingly. The class works for shape analyses and
+    counting experiments. Depending on the configuration all signal processes as given by the datacards can be added to the
+    asimov dataset, multiplied by a scale factor, which is commonly applied to all signal processes. If configured such, a
+    parameter can be given to indicate the mass of the signal that should be added to the background processes. In addition
+    extra templates can be added into the data_obs, which are present in the root input file, but not part of the processes
+    indicated in the datacard. If a random seed>=0 is given the asimov dataset is randomized according to a Poisson
+    distribution.
     """
     def __init__(self, parser_options, update_file=False, seed='-1', add_signal=True, mass='125', signal_scale='1.', extra_templates='', blacklist=[]) :
         ## random seed in case the asimov dataset should be randomized (-1 will indicate that no randomization should be applied) 
@@ -102,7 +102,7 @@ class AsimovDatacard(DatacardAdaptor) :
         processed_files = []
         ## processed files and bins
         processed_files_bins = []
-        ## parse all datacards, determine signal, background and  
+        ## parse all datacards, determine signal and background
         for name in os.listdir(dir) :
             if not name.endswith('.txt') :
                 continue
@@ -144,7 +144,7 @@ class AsimovDatacard(DatacardAdaptor) :
                             index += 1
             file.close()
         ## combine all individual files into a single file for each used input rootfile. This is only necessary if the
-        ## data_obs histogrtqams have been written in separate files.
+        ## data_obs histograms have been written in separate files.
         if not self.update_file :
             for file in processed_files :
                 os.system('hadd {TARGET} {SOURCE}'.format(
@@ -155,7 +155,7 @@ class AsimovDatacard(DatacardAdaptor) :
                     SOURCE=dir+'/'+file.replace('.root', '_*.root')
                     ))
 
-    def make_asimov_datacards(self, dir) :
+    def make_asimov_datacards(self, dir, adapt_datacards_only=False) :
         """
         For all datacards given in directory dir determine the paths to all root input files. Run the root macro
         blindData.C for all bins/channels and processes for which the datacards do require shapes. According to
@@ -164,8 +164,9 @@ class AsimovDatacard(DatacardAdaptor) :
         input files, indicatd by the postfix _asimov. All datacards are then adapted accordingly. If configured such
         the data_obs histograms / entries are randomized according to a Poisson distribution.
         """
-        print "...creating asimov datasets."
-        self.asimov_shapes(dir)
+        if not adapt_datacards_only :
+            print "...creating asimov datasets."
+            self.asimov_shapes(dir)
         print "...redirecting input files in datacards."
         for name in os.listdir(dir) :
             if not name.endswith('.txt') :
@@ -181,7 +182,7 @@ class AsimovDatacard(DatacardAdaptor) :
             else:
                 ## filename gets label _asimov, histogram name remains as is
                 self.adapt_shapes_lines(path, card, 'data_obs', '', '_asimov')
-        print "... adjusting observation to modified shapes."
+        print "...adjusting observation to modified shapes."
         for name in os.listdir(dir) :
             if not name.endswith('.txt') :
                 continue

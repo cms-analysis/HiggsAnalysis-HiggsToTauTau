@@ -11,7 +11,7 @@ parser.add_option("-c", "--channels", dest="channels", default="em, et, mt, mm",
 parser.add_option("-y", "--yields", dest="yields", default="1", type="int", help="Shift yield uncertainties. [Default: '1']")
 parser.add_option("-s", "--shapes", dest="shapes", default="1", type="int", help="Shift shape uncertainties. [Default: '1']")
 parser.add_option("--mA", dest="mA", default="160", type="float", help="Mass of pseudoscalar mA only needed for mssm. [Default: '160']")
-parser.add_option("--tanb", dest="tanb", default="20", type="float", help="Tanb only needed for mssm. [Default: '20']")
+parser.add_option("--tanb", dest="tanb", default="8", type="float", help="Tanb only needed for mssm. [Default: '8']")
 parser.add_option("-u", "--uncertainties", dest="uncertainties", default="1", type="int", help="Set uncertainties of backgrounds. [Default: '1']")
 parser.add_option("--asimov", dest="asimov", action="store_true", default=False, help="Use asimov dataset for postfit-plots. [Default: 'False']")
 parser.add_option("--add-0jet-signal", dest="add_zero_jet", action="store_true", default=False, help="Add signal in the 0-jet event category of the mt, et, em channels [Default: False]")
@@ -70,6 +70,15 @@ class Analysis:
          self.analysis       = analysis
          self.scale_output   = {}
 
+    def drop_wjets_from_templates(self, output_name, cat) :
+        """
+        Indicate the event categories and channels in which to drop $Wjets from the templates. 
+        """
+        if 'htt_mm' in output_name :
+            if cat == 'btag' :
+                return True
+        return False
+
     def high_stat_category(self, cat) :
         """
         This function defines the categories in which ZLL is split into ZL and ZJ in the et and mt channels.
@@ -127,6 +136,8 @@ class Analysis:
              line = line.replace(template_name, output_name)
              line = line.replace("$HISTFILE", self.histfile)
              line = line.replace("$CATEGORY", self.category)
+             if self.drop_wjets_from_templates(output_name, self.category) :
+                 line = line.replace("$WJets", "break;")
              if(options.analysis=="mssm") :
                  line = line.replace("$MA" , str(int(options.mA)))
                  line = line.replace("$TANB", str(int(options.tanb)))

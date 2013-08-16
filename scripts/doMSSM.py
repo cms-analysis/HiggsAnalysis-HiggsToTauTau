@@ -314,7 +314,7 @@ if options.update_setup:
             print "INFO: Adding bin-by-bin uncertainties"
             if 'ee' in channels :
                 ## setup bbb uncertainties for ee 
-                os.system("add_bbb_errors.py 'ee:7TeV,8TeV:08,09:WJets,QCD,TTJ,ZTT,ZEE,Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
+                os.system("add_bbb_errors.py 'ee:7TeV,8TeV:08,09:QCD,TTJ,ZTT,ZEE,WJets>Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
                     DIR=dir,
                     ANA=ana
                     ))
@@ -322,7 +322,7 @@ if options.update_setup:
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
             if 'mm' in channels :
                 ## setup bbb uncertainties for mm  
-                os.system("add_bbb_errors.py 'mm:7TeV:08:WJets,QCD,TTJ,ZTT,ZMM,Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
+                os.system("add_bbb_errors.py 'mm:7TeV:08:QCD,TTJ,ZTT,ZMM,WJets>Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
                     DIR=dir,
                     ANA=ana
                     ))
@@ -334,7 +334,7 @@ if options.update_setup:
                     ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                os.system("add_bbb_errors.py 'mm:8TeV:08,09:WJets,QCD,TTJ,ZTT,ZMM,Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
+                os.system("add_bbb_errors.py 'mm:8TeV:08,09:QCD,TTJ,ZTT,ZMM,WJets>Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
                     DIR=dir,
                     ANA=ana
                     ))
@@ -350,7 +350,7 @@ if options.update_setup:
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
             if 'et' in channels :
                 ## setup bbb uncertainties for et
-                os.system("add_bbb_errors.py 'et:7TeV,8TeV:08,09:TT,QCD,W,ZTT,ZL,ZJ,VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
+                os.system("add_bbb_errors.py 'et:7TeV,8TeV:08,09:TT,QCD,ZTT,W+ZL+ZJ>VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
                     DIR=dir,
                     ANA=ana
                     ))
@@ -358,7 +358,7 @@ if options.update_setup:
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
             if 'mt' in channels :
                 ## setup bbb uncertainties for mt
-                os.system("add_bbb_errors.py 'mt:7TeV,8TeV:08,09:TT,QCD,W,ZTT,ZL,ZJ,VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
+                os.system("add_bbb_errors.py 'mt:7TeV,8TeV:08,09:TT,QCD,ZTT,W+ZL+ZJ>VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
                     DIR=dir,
                     ANA=ana
                     ))
@@ -366,7 +366,7 @@ if options.update_setup:
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
             if 'tt' in channels :
                 ## setup bbb uncertainties for tt 
-                os.system("add_bbb_errors.py 'tt:8TeV:08,09:ZTT,TT,W,VV,ZL,ZJ,QCD' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
+                os.system("add_bbb_errors.py 'tt:8TeV:08,09:ZTT,TT,QCD,W+ZL+ZJ>VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
                     DIR=dir,
                     ANA=ana
                     ))
