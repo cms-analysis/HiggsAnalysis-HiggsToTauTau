@@ -59,11 +59,13 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   signal_ = cfg.existsAs<std::string>("signal") ? cfg.getParameter<std::string>("signal") : std::string();
   // specifics to plot scan-2d
   model_ = cfg.existsAs<std::string>("model") ? cfg.getParameter<std::string>("model") : std::string();
-  temp_ = cfg.existsAs<bool>("temp") ? cfg.getParameter<bool>("temp") : false;
+  temp_  = cfg.existsAs<bool>("temp") ? cfg.getParameter<bool>("temp") : false;
+  smooth_= cfg.existsAs<bool>("smooth") ? cfg.getParameter<bool>("smooth") : false;
   // specifics to plot signal strength
   bestfit_ = cfg.existsAs<bool>("bestfit") ? cfg.getParameter<bool>("bestfit") : false;
   // specifics to plot xsec limits
   injectedMass_ = cfg.existsAs<std::string>("injectedMass") ? cfg.getParameter<std::string>("injectedMass") : std::string();
+  extra_    = cfg.existsAs<std::string>("extra") ? cfg.getParameter<std::string>("extra") : std::string();
   injected_ = cfg.existsAs<bool>("injected") ? cfg.getParameter<bool>("injected") : false;
   BG_Higgs_ = cfg.existsAs<bool>("higgsBG") ? cfg.getParameter<bool>("higgsBG") : false;
   // specifics to plot MSSM mA-tanb limits
