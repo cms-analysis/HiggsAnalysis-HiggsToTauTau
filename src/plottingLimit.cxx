@@ -3,15 +3,17 @@
 #include "TString.h"
 #include "TCanvas.h"
 #include "TLegend.h"
+#include "TPaveText.h"
 #include "TGraphAsymmErrors.h"
 
 void
-plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* unit, std::string& xaxis, std::string& yaxis, double min=0., double max=5., bool log=false, std::string PLOT=std::string("LIMIT"), std::string injectedMass=std::string("125"), bool legendOnRight=false)
+plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* unit, std::string& xaxis, std::string& yaxis, double min=0., double max=5., bool log=false, std::string PLOT=std::string("LIMIT"), std::string injectedMass=std::string("125"), bool legendOnRight=false, std::string extra_label=std::string(""))
 {
   // define PLOT type
   bool injected = (PLOT == std::string("INJECTED"));
   bool bestfit  = (PLOT == std::string("BESTFIT" ));
   bool BG_Higgs = (PLOT == std::string("BG_HIGGS"));
+  bool mssm_log = (PLOT == std::string("MSSM-LOG"));
 
   // set up styles
   canv.cd();
@@ -20,9 +22,16 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   if(log){ 
     canv.SetLogy(1); 
   }
-
+  // for logx the label for x axis values below 100 needs to be slightly shifted to prevent 
+  // the label from being printed into the canvas
+  int shift_label = 1.;
+  if(mssm_log){
+    if(observed){ observed->GetX()[0] = observed->GetX()[0]+0.01; }
+    if(expected->GetX()[0]<100.){ shift_label = -1.; }
+    canv.SetLogx(1); 
+  }
   // draw a frame to define the range
-  TH1F* hr=canv.DrawFrame(expected->GetX()[0]-.01, min, expected->GetX()[expected->GetN()-1]+.01, max);
+  TH1F* hr=canv.DrawFrame(expected->GetX()[0]-shift_label*.01, min, expected->GetX()[expected->GetN()-1]+.01, max);
   // format x axis
   hr->SetXTitle(xaxis.c_str());
   hr->GetXaxis()->SetLabelFont(62);
@@ -39,7 +48,12 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   hr->GetYaxis()->SetTitleOffset(1.30);
   hr->GetYaxis()->SetLabelSize(0.045);
   hr->SetNdivisions(505, "X");
-
+  if(mssm_log){
+    hr->SetNdivisions(50005, "X");
+    hr->GetXaxis()->SetMoreLogLabels();
+    hr->GetXaxis()->SetNoExponent();
+    hr->GetXaxis()->SetLabelSize(0.040);
+  }
   if(outerBand){
     outerBand->SetLineWidth(1.);
     outerBand->SetLineColor(kBlack);
@@ -97,6 +111,18 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
     observed->Draw("PLsame");
   }
 
+  TPaveText* extra;
+  if(!extra_label.empty()){
+    extra = new TPaveText(legendOnRight ? 0.5 : 0.18, 0.60, legendOnRight ? 0.90 : 0.605, 0.70, "NDC");
+    extra->SetBorderSize(   0 );
+    extra->SetFillStyle (   0 );
+    extra->SetTextAlign (  12 );
+    extra->SetTextSize  (0.04 );
+    extra->SetTextColor (   1 );
+    extra->SetTextFont  (  62 );
+    extra->AddText(extra_label.c_str());
+    extra->Draw();
+  }
   // add proper legend
   TLegend* leg = new TLegend(legendOnRight ? 0.5 : 0.18, 0.70, legendOnRight ? 0.90 : 0.605, 0.90);
   leg->SetBorderSize( 0 );
