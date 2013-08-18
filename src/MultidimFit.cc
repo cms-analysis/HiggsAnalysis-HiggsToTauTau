@@ -203,6 +203,12 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
 	scan2D->Fill(x, y, fabs(nll));
       }
     }
+    // first argument determines order of smoothing. Algorithms k5a (default), k5b, k3a can be chosen by second argument. 
+    // fro more info have a look at http://root.cern.ch/root/html/TH2.html#TH2:Smooth
+    if(smooth_){
+      std::cout << "apply smoothing before plotting." << std::endl;
+      scan2D->Smooth();
+    }
     // determine bestfit graph
     float bestFit=-1.; 
     float buffer=0., bestX=-999., bestY=-999.;
