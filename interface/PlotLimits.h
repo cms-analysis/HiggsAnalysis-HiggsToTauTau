@@ -200,6 +200,8 @@ class PlotLimits {
   bool BG_Higgs_;
   /// mass label for the injected Higgs boson
   std::string injectedMass_;
+  /// potential extra label meant to be located below the legend (at the moment only used for limit plotting in mssm case)
+  std::string extra_;
   /// indicate whether the +/- 2 sigma should be shown or not (used for option tanb)
   bool outerband_;
   /// print constraint on mA-tanb plane from Higgs boson at 125 GeV? (used for option tanb)
@@ -210,6 +212,8 @@ class PlotLimits {
   std::string model_;
   /// indicate whether to make a temperatiure plot or not (used for option scan-2d)
   bool temp_;
+  /// indicate whether to apply smoothing before plotting the 2d-scan
+  bool smooth_;
   /// minimum for plotting as function of mass (used for option scan-2d)
   std::map<double,double> xmins_, ymins_;
   /// maximum for plotting as function of mass (used for option scan-2d)

@@ -4,6 +4,8 @@ layout = cms.PSet(
     ## dataset
     dataset = cms.string("CMS Preliminary, H #rightarrow #tau #tau, 19.8 fb^{-1} at 8 TeV"),	
     #dataset = cms.string("CMS Preliminary, H #rightarrow #tau #tau, 4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV"),
+    ## extra labels (below legend)
+    extra = cms.string("gg#rightarrow#phi bb profiled"),	
     ## x-axis title
     xaxis = cms.string("m_{#phi} [GeV]"),
     ## x-axis title
@@ -51,6 +53,5 @@ layout = cms.PSet(
     ## is this mssm?
     mssm = cms.bool(True),
     ## plot expected only
-    expectedOnly = cms.bool(True),
-
+    expectedOnly = cms.bool(False),
 )

@@ -13,7 +13,7 @@
 #include "HiggsAnalysis/HiggsToTauTau/src/plottingLimit.cxx"
 
 void
-plotAsymptotic(const char* filename, const char* channel, std::string TYPE="LIMIT", double min_=0., double max_=-1., bool log_=false, std::string injectedMass_="125", std::string dataset_="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV", std::string xaxis_="m_{H} [GeV]", std::string yaxis_="95% CL limit on #sigma/#sigma_{SM}", bool mssm_=false)
+plotAsymptotic(const char* filename, const char* channel, std::string TYPE="LIMIT", double min_=0., double max_=-1., bool log_=false, std::string injectedMass_="125", std::string dataset_="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV", std::string xaxis_="m_{H} [GeV]", std::string yaxis_="95% CL limit on #sigma/#sigma_{SM}", std::string extra="", bool mssm_=false)
 {
   /*
     TYPE can be: LIMIT, INJECTED, BG_HIGGS
@@ -38,7 +38,7 @@ plotAsymptotic(const char* filename, const char* channel, std::string TYPE="LIMI
   float max = maximum(expected, max_);
   // do the plotting 
   TCanvas canv = TCanvas("canv", "Limits", 600, 600);
-  plottingLimit(canv, innerBand, outerBand, expected, observed, unit, xaxis_, yaxis_, min_, max, log_, TYPE, injectedMass_, mssm_);
+  plottingLimit(canv, innerBand, outerBand, expected, observed, unit, xaxis_, yaxis_, min_, max, log_, TYPE, injectedMass_, mssm_, extra);
   // setup CMS Preliminary
   CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
   // write results to files
