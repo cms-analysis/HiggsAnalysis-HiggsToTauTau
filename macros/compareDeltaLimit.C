@@ -108,16 +108,16 @@ channel(std::string& label){
 	  label==std::string("HIG-12-043") ||
 	  label==std::string("HIG-12-050") ||
 	  label==std::string("mm-thomas"   ) ||
-	  label==std::string("em-valentina") ||
-	  label==std::string("em-andrew"   ) ||
-	  label==std::string("tt-riccardo" ) ||
-	  label==std::string("tt-aram"     ) ||
-	  label==std::string("et-josh"     ) ||
+	  label==std::string("em-MIT") ||
+	  label==std::string("em-IMPERIAL"   ) ||
+	  label==std::string("tt-CERN" ) ||
+	  label==std::string("tt-MIT"     ) ||
+	  label==std::string("et-WISCONSIN"     ) ||
 	  label==std::string("et-jose"     ) ||
-	  label==std::string("et-andrew"   ) ||
-	  label==std::string("mt-josh"     ) || 
+	  label==std::string("et-IMPERIAL"   ) ||
+	  label==std::string("mt-WISCONSIN"     ) || 
 	  label==std::string("mt-jose"     ) || 
-	  label==std::string("mt-andrew"   ) || 
+	  label==std::string("mt-IMPERIAL"   ) || 
 	  label==std::string("mt-matthew"  ) ||
 	  label==std::string("mt-aruna"    ) ||
 	  label==std::string("et-vbf-josh"     ) ||
@@ -230,16 +230,16 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("HIG-12-043")) title = std::string("HIG-12-043 (17 fb^{-1})");
   if(channel==std::string("HIG-12-050")) title = std::string("HIG-12-050 (17 fb^{-1})"); 
   if(channel==std::string("mm-thomas"   )) title = std::string("mm thomas");
-  if(channel==std::string("em-valentina")) title = std::string("em valentina");
-  if(channel==std::string("em-andrew"   )) title = std::string("em andrew");
-  if(channel==std::string("tt-riccardo ")) title = std::string("tt riccardo");
-  if(channel==std::string("tt-aram"     )) title = std::string("tt aram");
-  if(channel==std::string("et-josh"     )) title = std::string("et josh");
+  if(channel==std::string("em-MIT")) title = std::string("em MIT");
+  if(channel==std::string("em-IMPERIAL"   )) title = std::string("em IMPERIAL");
+  if(channel==std::string("tt-CERN ")) title = std::string("tt CERN");
+  if(channel==std::string("tt-MIT"     )) title = std::string("tt MIT");
+  if(channel==std::string("et-WISCONSIN"     )) title = std::string("et WISCONSIN");
   if(channel==std::string("et-jose"     )) title = std::string("et jose");
-  if(channel==std::string("et-andrew"   )) title = std::string("et andrew");
-  if(channel==std::string("mt-josh"     )) title = std::string("mt josh");
+  if(channel==std::string("et-IMPERIAL"   )) title = std::string("et IMPERIAL");
+  if(channel==std::string("mt-WISCONSIN"     )) title = std::string("mt WISCONSIN");
   if(channel==std::string("mt-jose"     )) title = std::string("mt jose");
-  if(channel==std::string("mt-andrew"   )) title = std::string("mt andrew");
+  if(channel==std::string("mt-IMPERIAL"   )) title = std::string("mt IMPERIAL");
   if(channel==std::string("mt-matthew"  )) title = std::string("mt matthew");
   if(channel==std::string("mt-aruna"    )) title = std::string("mt aruna");
   if(channel==std::string("et-vbf-josh"     )) title = std::string("et vbf josh");
@@ -257,7 +257,7 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void compareDeltaLimit(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., const char* label=" Preliminary, H#rightarrow#tau#tau, L=19.4 fb^{-1}", bool legendOnRight=true, bool legendOnTop=true)
+void compareDeltaLimit(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., const char* label=" Preliminary, H#rightarrow#tau#tau, 4.9 fb^{-1} at 7TeV, 19.8 fb^{-1} at 8TeV")
 {
   SetStyle();
 
@@ -352,16 +352,16 @@ void compareDeltaLimit(const char* filename, const char* channelstr, bool expect
   colors["HIG-12-043" ] = kBlack;
   colors["HIG-12-050" ] = kBlack;
   colors["mm-thomas"   ] = kRed;
-  colors["tt-riccardo" ] = kRed;
-  colors["tt-aram"     ] = kBlue;
-  colors["em-valentina"] = kRed;
-  colors["em-andrew"   ] = kBlue;
-  colors["et-josh"     ] = kRed;
+  colors["tt-CERN" ] = kRed;
+  colors["tt-MIT"     ] = kBlue;
+  colors["em-MIT"] = kBlue;
+  colors["em-IMPERIAL"   ] = kRed;
+  colors["et-WISCONSIN"     ] = kRed;
   colors["et-jose"     ] = kBlue;
-  colors["et-andrew"   ] = kOrange;
-  colors["mt-josh"     ] = kViolet;
+  colors["et-IMPERIAL"   ] = kBlue;
+  colors["mt-WISCONSIN"     ] = kRed;
   colors["mt-jose"     ] = kRed;
-  colors["mt-andrew"   ] = kBlue;
+  colors["mt-IMPERIAL"   ] = kBlue;
   colors["mt-matthew"  ] = kOrange;
   colors["mt-aruna"    ] = kGreen+2;
   colors["et-vbf-josh"     ] = kRed;
@@ -443,8 +443,8 @@ void compareDeltaLimit(const char* filename, const char* channelstr, bool expect
     for(int l=0; l<k; l++){
       hobs[0]->GetPoint(l, x1, y1);
       hobs[1]->GetPoint(l, x2, y2);
-      result->SetPoint(l, x1, TMath::Abs(y1-y2));
-      std::cout<< l << " " <<  x1 <<" " <<TMath::Abs(y1-y2) << std::endl;
+      result->SetPoint(l, x1, TMath::Abs(y1-y2)*2/(y1*y2));
+      //std::cout<< l << " " <<  x1 <<" " <<TMath::Abs(y1-y2)*2/(y1*y2)<< std::endl;
       }
     }
   if(expected){
@@ -452,76 +452,65 @@ void compareDeltaLimit(const char* filename, const char* channelstr, bool expect
     for(int l=0; l<k; l++){
       hexp[0]->GetPoint(l, x1, y1);
       hexp[1]->GetPoint(l, x2, y2);
-      result->SetPoint(l, x1, TMath::Abs(y1-y2));
+      result->SetPoint(l, x1, TMath::Abs(y1-y2)*2/(y1*y2));
+      //std::cout<< l << " " <<  x1 <<" " <<TMath::Abs(y1-y2)*2/(y1*y2)<< std::endl;
       }
     }
   // format x-axis
   std::string x_title;
-  if(std::string(type).find("mssm")!=std::string::npos){
+  if(std::string(type).find("mssm-tanb")!=std::string::npos){
+    x_title = std::string("m_{A} [GeV]");
+  }
+  else if (std::string(type).find("mssm-tanb")!=std::string::npos){
     x_title = std::string("m_{#phi} [GeV]");
   }
-  else{
+ else {
     x_title = std::string("m_{H} [GeV]");
-  }
+  } 
   result->GetXaxis()->SetTitle(x_title.c_str());
   result->GetXaxis()->SetLabelFont(62);
   result->GetXaxis()->SetTitleFont(62);
   result->GetXaxis()->SetTitleColor(1);
   result->GetXaxis()->SetTitleOffset(1.05);  
-  std::string y_title = std::string("Delta(95% CL limit on #sigma/#sigma_{SM})");   
+  std::string y_title = std::string("#Delta_{relative}(95% CL limit on tan#beta)");   
   result->GetYaxis()->SetTitle(y_title.c_str());
   result->GetYaxis()->SetLabelFont(62);
-  result->GetYaxis()->SetTitleOffset(1.05);
-  result->GetYaxis()->SetLabelSize(0.03);
+  result->GetYaxis()->SetTitleOffset(1.5);
+  result->GetYaxis()->SetTitleSize(0.045); 
+  result->GetYaxis()->SetLabelSize(0.03); 
   if(expected) result->GetXaxis()->SetLimits(hexp[0]->GetX()[0]-.1, hexp[0]->GetX()[hexp[0]->GetN()-1]+.1);
   if(observed) result->GetXaxis()->SetLimits(hobs[0]->GetX()[0]-.1, hobs[0]->GetX()[hobs[0]->GetN()-1]+.1);
   result->SetLineStyle(11.);
   result->SetLineWidth( 3.); 
-  result->SetLineColor(kRed);
+  if(expected) result->SetLineColor(kRed);
+  if(observed) result->SetLineColor(kBlue);
   result->SetMarkerStyle(20);
   result->SetMarkerSize(MARKER_SIZE);
-  result->SetMarkerColor(kRed);
+  if(expected) result->SetMarkerColor(kRed);
+  if(observed) result->SetMarkerColor(kBlue);
   result->Draw("APL");
 
 
   canv1->RedrawAxis();
+  TLegend* leg1;
   if(observed || expected){
-    TLegend* leg1;
     if(expected && observed){
       /// setup the CMS Preliminary
-       if(std::string(type) == std::string("mssm-tanb")){
-	  CMSPrelim(label, "", 0.15, 0.835);
-	  leg1 = new TLegend(0.60, hobs.size()<5 ? 0.20-0.06*hobs.size() : 0.4, 0.93, 0.20);
-       }
-       else{
-	  CMSPrelim(label, "", 0.15, 0.835);
-	  leg1 = new TLegend(0.20, hobs.size()<5 ? 0.90-0.08*hobs.size() : 0.6, 0.63, 0.90);
-       }
+      CMSPrelim(label, "", 0.15, 0.835);
+      leg1 = new TLegend(0.27, 0.75, 0.9, 0.9);
     }
     else if(observed){
       /// setup the CMS Preliminary
-      if(std::string(type) == std::string("mssm-tanb")){
-	CMSPrelim(label, "", 0.15, 0.835);
-	leg1 = new TLegend(legendOnRight?0.60:0.20, hobs.size()<5 ? (legendOnTop?0.90:0.20)-0.06*hobs.size() : (legendOnTop?0.6:0.4), legendOnRight?0.94:0.45, (legendOnTop?0.90:0.20));
-	   }
-      else{
-	CMSPrelim(label, "", 0.15, 0.835);
-	leg1 = new TLegend(legendOnRight ? 0.50 : 0.20, hobs.size()<5 ? 0.90-0.08*hobs.size() : 0.6, legendOnRight ? 0.94 : 0.80, 0.90);
-      }
+      CMSPrelim(label, "", 0.15, 0.835);
+      leg1 = new TLegend(0.27, 0.75, 0.9, 0.9);
     }
     else if(expected){
       /// setup the CMS Preliminary
-      if(std::string(type) == std::string("mssm-tanb")){
-	CMSPrelim(label, "", 0.15, 0.835);
-	leg1 = new TLegend(legendOnRight?0.60:0.20, hexp.size()<5 ? (legendOnTop?0.90:0.20)-0.06*hexp.size() : (legendOnTop?0.6:0.4), legendOnRight?0.94:0.45, (legendOnTop?0.90:0.20));
-	   }
-      else{
-	CMSPrelim(label, "", 0.15, 0.835);
-	leg1 = new TLegend(legendOnRight ? 0.50 : 0.20, hexp.size()<5 ? 0.90-0.08*hexp.size() : 0.6, legendOnRight ? 0.94 : 0.80, 0.90);
-      }
+      CMSPrelim(label, "", 0.15, 0.835);
+      leg1 = new TLegend(0.27, 0.75, 0.9, 0.9);
     }
     
-    //leg1->SetTextSize(0.02);
+    leg1->SetTextSize(0.035);
     leg1->SetBorderSize( 0 );
     leg1->SetFillStyle ( 1001 );
     //leg1->SetFillColor ( 0 );
@@ -530,7 +519,7 @@ void compareDeltaLimit(const char* filename, const char* channelstr, bool expect
     else if(expected) leg1->SetHeader( "#bf{Expected Limit}" );
     else if(observed) leg1->SetHeader( "#bf{Observed Limit}" );
     // skip one of the two split options
-    TString help = TString::Format("| %s  -  %s |" , channels[0].c_str(), channels[1].c_str());
+    TString help = TString::Format("#frac{2|%s - %s|}{%s + %s}" , channels[0].c_str(), channels[1].c_str(), channels[0].c_str(), channels[1].c_str());
     leg1->AddEntry( result , help,  "PL" );    
     leg1->Draw("same");
   }
