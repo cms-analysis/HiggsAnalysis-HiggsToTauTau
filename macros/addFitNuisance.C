@@ -47,7 +47,7 @@ void copyDir(TDirectory *source,std::string iSkipHist,bool iFirst=true) {
       std::string iSkipHist2 = iSkipHist;
       std::string fine_binning = "_fine_binning";
       iSkipHist2.replace(iSkipHist2.find(fine_binning), fine_binning.length(),"");
-      if(pFullName.find(iSkipHist) != std::string::npos || pFullName.find(iSkipHist2) != std::string::npos) {
+      if(pFullName == iSkipHist || pFullName == iSkipHist2) {
 	continue;
       }
       adir->cd();
@@ -86,7 +86,7 @@ TH1F* rebin(TH1F* iH,int iNBins,double *iAxis) {
 }
 //Merge Histogram with function histogram
 TH1F * merge(std::string iName,double iMergePoint,TH1F *iH,TH1F *iFunc) {
-  cout << "====> Name " << iName << " -- " << iFunc << " -- " << iH << endl;
+  cout << "====> Merging " << iName << endl;
   TH1F *lH = (TH1F*) iH->Clone(iName.c_str());
   lH->SetFillStyle(0);
   int lMergeBin = iH->GetXaxis()->FindBin(iMergePoint);
@@ -279,7 +279,12 @@ void addVarBinNuisance(std::string iFileName,std::string iChannel,std::string iB
   //lFile->Close();
   return;
 }
-int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std::string iEnergy,std::string iName,std::string iDir,bool iVerbose=false,bool iVarBin=false,int iFitModel=1,double iFirst=150,double iLast=1500,bool addUncerts=true,bool iTestMode=false) { 
+int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std::string iEnergy,std::string iName,std::string iDir,bool iVerbose=false,bool iVarBin=false,int iFitModel=1,double iFirst=150,double iLast=1500,bool addUncerts=true,bool iTestMode=false) {
+  if (!iVerbose) {
+    RooMsgService::instance().setStreamStatus(0,false);
+    RooMsgService::instance().setStreamStatus(1,false);
+    RooMsgService::instance().setSilentMode(true);
+  }
   std::cout << "======> " << iDir << "/" << iBkg << " -- " << iFileName << std::endl;  
   if(iVarBin) addVarBinNuisance(iFileName,iChannel,iBkg,iEnergy,iName,iDir,true,iFitModel,iFirst,iLast);
   if(iVarBin) return 1;
@@ -551,7 +556,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   }
   
   //Check if the shift up/down histograms are integrable. If not terminate the script here.
-  if(I1 != I1 || I2 != I2 || I3 != I3 || I4 != I4)
+  if(addUncerts && (I1 != I1 || I2 != I2 || I3 != I3 || I4 != I4))
   {
       std::cerr << "===============================================================================" << std::endl;
       std::cerr << "Tail fit has succeeded, but 1 or more of the shift up/down histograms is not integrable." << std::endl;

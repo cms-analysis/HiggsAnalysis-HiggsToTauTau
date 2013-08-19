@@ -63,7 +63,7 @@ os.system(r"cp {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rootlogon.C .
 os.system("cp %s %s.bak"      %  (options.setup+'/'+options.channel+'/'+options.input,options.setup+'/'+options.channel+'/'+options.input))
 for cat in options.categories.split() :
     for bkg in options.background.split() : 
-        status = os.system(r"root -l -b -q rootlogon.C {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/addFitNuisance.C+\(\"{FILENAME}\"\,\"{CHANNEL}\"\,\"{BKG}\"\,\"{ENERGY}\"\,\"{NAME}\"\,\"{CATEGORY}\"\,{FIRST}\,{LAST}\,{FITMODEL}\,{VERBOSE}\,{VARBIN}\,{UNCERTS}\,{TESTMODE}\)".format(
+        status = os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/addFitNuisance.C+\(\"{FILENAME}\"\,\"{CHANNEL}\"\,\"{BKG}\"\,\"{ENERGY}\"\,\"{NAME}\"\,\"{CATEGORY}\"\,{FIRST}\,{LAST}\,{FITMODEL}\,{VERBOSE}\,{VARBIN}\,{UNCERTS}\,{TESTMODE}\)".format(
             CMSSW_BASE=os.environ.get("CMSSW_BASE"), FILENAME=options.setup+'/'+options.channel+'/'+options.input,CHANNEL=channelName[options.channel],BKG=bkg,ENERGY=options.energy,NAME=options.name,CATEGORY=cat,FIRST=options.first,LAST=options.last,FITMODEL=options.fitmodel,VARBIN=str(options.varbin).lower(),VERBOSE=str(options.verbose).lower(),UNCERTS=str(not options.no_uncerts).lower(),TESTMODE=str(options.testmode).lower()))
         if int(status) > 0:
             system.exit(1)
