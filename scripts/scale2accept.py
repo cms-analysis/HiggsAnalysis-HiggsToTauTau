@@ -41,7 +41,6 @@ for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
 
 for channel in channels :
     for period in periods :
-        print period
         for cat in ['0'] :
             for mass in parseArgs(args) :
                 for process in ['ggH', 'bbH'] :

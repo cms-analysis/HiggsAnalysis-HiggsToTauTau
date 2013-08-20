@@ -12,6 +12,9 @@ parser.add_option("-a", "--analyses", dest="analyses", default="no-bbb, bbb, bbb
                   help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"no-bbb, bbb, bbb:hww-bg, mvis, inclusive\" [Default: \"no-bbb, bbb, bbb:hww-bg\"]")
 parser.add_option("--label", dest="label", default="", type="string", 
                   help="Possibility to give the setups, aux and LIMITS directory a index (example LIMITS-bbb). [Default: \"\"]")
+parser.add_option("--blind-datacards", dest="blind_datacards", default=False, action="store_true",
+                  help="Option to blind datacards. Also needs to be turned on to inject SM to datacards. [Default: False]")
+parser.add_option("--extra-templates", dest="extra_templates", default="", type="string", help="List of extra background or signal templates which should be injected to the asimov dataset. Needs to be comma seperated list. Here used to inject SM signal into MSSM datacards. [Default: \"\"]")
 parser.add_option("--ignore-during-scaling", dest="do_not_scales", default="ee mm vhtt", type="string",
                   help="List of channels, which the scaling by cross seciton times BR shoul not be applied. The list should be embraced by call-ons and separeted by whitespace or comma. [Default: \"vhtt ee mm\"]")
 parser.add_option("--hww-mass", dest="hww_mass", default='', type="string",
@@ -113,6 +116,8 @@ print "# --hww-mass                :", 'free' if options.hww_mass == '' else opt
 print "# --hww-scale               :", options.hww_scale
 print "# --add-0jet-signal         :", options.add_0jet_signal
 print "# --add-mutau-soft          :", options.add_mutau_soft
+print "# --blind-datacards         :", options.blind_datacards
+print "# --extra-templates         :", options.extra_templates
 print "# --------------------------------------------------------------------------------------"
 print "# --inputs-ee               :", options.inputs_ee
 print "# --inputs-mm               :", options.inputs_mm
@@ -616,6 +621,15 @@ if options.update_aux :
                 for file in glob.glob("{DIR}/{ANA}/sm/vhtt/vhtt_*.txt".format(DIR=dir, ANA=ana)) :
                     os.system("perl -pi -e 's/WH_hww/WH_hww{MASS}/g' {FILE}".format(MASS=options.hww_mass, FILE=file))
                     os.system("perl -pi -e 's/ZH_hww/ZH_hww{MASS}/g' {FILE}".format(MASS=options.hww_mass, FILE=file))
+        ## blind datacards 
+        if options.blind_datacards : 
+            for chn in channels :
+                os.system("blindData.py --update-file --extra-templates '{EXTRA_TEMPLATES}' {DIR}/{ANA}/sm/{CHN}".format(
+                    EXTRA_TEMPLATES = options.extra_templates,
+                    DIR=dir,
+                    ANA=ana,
+                    CHN=chn if chn == 'vhtt' else 'htt_'+chn
+                    ))
 
 if options.update_limits :
     print "##"
