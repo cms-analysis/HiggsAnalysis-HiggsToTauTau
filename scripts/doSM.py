@@ -33,8 +33,8 @@ parser.add_option("--update-LIMITS", dest="update_limits", default=False, action
                   help="update LIMITS directory for the indicated analyses. [Default: False]")
 parser.add_option("--drop-list", dest="drop_list", default="",  type="string",
                   help="The full path to the list of uncertainties to be dropped from the datacards due to pruning. If this string is empty no prunig will be applied. [Default: \"\"]")
-parser.add_option("-c", "--config", dest="config", default="{CMSSW}/src/HiggsAnalysis/HiggsToTauTau/limits.config".format(CMSSW=os.getenv('CMSSW_BASE')),
-                  help="Configuration file to be used for the setup [Default: \"\"]")
+parser.add_option("-c", "--config", dest="config", default="",
+                  help="Additional configuration file to be used for the setup [Default: \"\"]")
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
