@@ -117,9 +117,10 @@ void drawDifference(TH1* iH0,TH1 *iH1,TH1 *iHH=0,TH1 *iHL=0,TH1 *iHH1=0,TH1 *iHL
   lXHDiff1->SetLineWidth(2); lXHDiff1->SetLineColor(kRed);
   lXHDiff2->SetLineWidth(2); lXHDiff2->SetLineColor(kRed);
 
+  lXHDiff1->SetTitle(0);  
   lXHDiff1->GetYaxis()->SetTitle("Ratio");
   lXHDiff1->GetYaxis()->SetRangeUser(0.2,1.8);
-  lXHDiff1->GetYaxis()->SetTitleOffset(0.4);
+  lXHDiff1->GetYaxis()->SetTitleOffset(0.3);
   lXHDiff1->GetYaxis()->SetTitleSize(0.2);
   lXHDiff1->GetYaxis()->SetLabelSize(0.11);
   for(int i0 = 0; i0 < lHDiff->GetNbinsX()+1; i0++) {
@@ -133,7 +134,7 @@ void drawDifference(TH1* iH0,TH1 *iH1,TH1 *iHH=0,TH1 *iHL=0,TH1 *iHH1=0,TH1 *iHL
     lXHDiff2->SetBinContent(i0, 1.0);
     while(iH1->GetBinCenter(i1) < lXCenter) {i1++;}
     if(iH1->GetBinContent(i0) > 0) lHDiff->SetBinContent(i0,lXVal      /(iH1->GetBinContent(i0)));
-    if(iH1->GetBinContent(i0) > 0) lHDiff->SetBinError  (i0,sqrt(lXVal)/(iH1->GetBinContent(i0)));
+    if(iH1->GetBinContent(i0) > 0) lHDiff->SetBinError(i0,iH0->GetBinError(i0) /(iH1->GetBinContent(i0)) );
     if(iH1->GetBinContent(i0) > 0) lHDiffL->SetBinContent(i0,lXValL/(iH1->GetBinContent(i0)));
     if(iH1->GetBinContent(i0) > 0) lHDiffH->SetBinContent(i0,lXValH/(iH1->GetBinContent(i0)));
     if(iH1->GetBinContent(i0) > 0) lHDiffL1->SetBinContent(i0,lXValL1/(iH1->GetBinContent(i0)));
@@ -522,9 +523,22 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
     lHDown ->SetLineColor(kRed+1);
     lHUp1  ->SetLineColor(kBlue);
     lHDown1->SetLineColor(kBlue+1);
+    lH0->SetTitle(0);
+    lH0->GetXaxis()->SetTitle("m_{#tau#tau} [GeV]");
+    lH0->GetXaxis()->SetTitleSize(0.05);
+    lH0->GetYaxis()->SetTitle("dN/dm_{#tau#tau} [1/GeV]");
+    lH0->GetYaxis()->SetTitleSize(0.05);
+    lH0->GetYaxis()->SetTitleOffset(1.2);
+    lH0->GetYaxis()->SetLabelSize(0.0275);
 
     TCanvas *lC0Fine = new TCanvas("CanFine","CanFine",800,600);
     lC0Fine->Divide(1,2); lC0Fine->cd();  lC0Fine->cd(1)->SetPad(0,0.2,1.0,1.0); gPad->SetLeftMargin(0.2) ; 
+    lH0    ->Scale(1.0,"width");
+    lH     ->Scale(1.0,"width");
+    lHUp   ->Scale(1.0,"width");
+    lHDown ->Scale(1.0,"width");
+    lHUp1  ->Scale(1.0,"width");
+    lHDown1->Scale(1.0,"width");
     lH0->Draw();
     lH     ->Draw("hist sames");
     lHUp   ->Draw("hist sames");
@@ -535,7 +549,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   
     TLegend* leg2;
     /// setup the CMS Preliminary
-    leg2 = new TLegend(0.7, 0.80, 1, 1); 
+    leg2 = new TLegend(0.6, 0.65, 0.9, 0.89); 
     leg2->SetBorderSize( 0 );
     leg2->SetFillStyle ( 1001 );
     leg2->SetFillColor (kWhite);
@@ -613,9 +627,22 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   lHDown ->SetLineColor(kRed+1);
   lHUp1  ->SetLineColor(kBlue);
   lHDown1->SetLineColor(kBlue+1);
+  lH0->SetTitle(0);
+  lH0->GetXaxis()->SetTitle("m_{#tau#tau} [GeV]");
+  lH0->GetXaxis()->SetTitleSize(0.05);
+  lH0->GetYaxis()->SetTitle("dN/dm_{#tau#tau} [1/GeV]");
+  lH0->GetYaxis()->SetTitleSize(0.05);
+  lH0->GetYaxis()->SetTitleOffset(1.2);
+  lH0->GetYaxis()->SetLabelSize(0.0275);
 
   TCanvas *lC0 = new TCanvas("Can","Can",800,600);
   lC0->Divide(1,2); lC0->cd();  lC0->cd(1)->SetPad(0,0.2,1.0,1.0); gPad->SetLeftMargin(0.2) ; 
+  lH0    ->Scale(1.0,"width");
+  lH     ->Scale(1.0,"width");
+  lHUp   ->Scale(1.0,"width");
+  lHDown ->Scale(1.0,"width");
+  lHUp1  ->Scale(1.0,"width");
+  lHDown1->Scale(1.0,"width");
   lH0->Draw();
   lH     ->Draw("hist sames");
   lHUp   ->Draw("hist sames");
@@ -626,7 +653,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   
   TLegend* leg1;
   /// setup the CMS Preliminary
-  leg1 = new TLegend(0.7, 0.80, 1, 1); 
+  leg1 = new TLegend(0.6, 0.65, 0.9, 0.89); 
   leg1->SetBorderSize( 0 );
   leg1->SetFillStyle ( 1001 );
   leg1->SetFillColor (kWhite);
