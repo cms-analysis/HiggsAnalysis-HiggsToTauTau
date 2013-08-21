@@ -85,8 +85,8 @@ print "# -----------------------------------------------------------------------
 print "# doSM.py "
 print "# --------------------------------------------------------------------------------------"
 print "# You are using the following configuration: "
-print "# --channels                :", config.channels
-print "# --periods                 :", config.periods
+print "# --channels                :", ' '.join(config.channels)
+print "# --periods                 :", ' '.join(config.periods)
 print "# --analyses                :", options.analyses
 print "# --label                   :", options.label
 print "# --drop-list               :", options.drop_list
@@ -99,7 +99,7 @@ print "# --blind-datacards         :", options.blind_datacards
 print "# --extra-templates         :", options.extra_templates
 print "# --------------------------------------------------------------------------------------"
 for chn in config.channels:
-    print "# --inputs-"+chn+"       :", config.inputs[chn]
+    print "# --inputs-"+chn+"               :", config.inputs[chn]
 print "# --------------------------------------------------------------------------------------"
 print "# --update-setup            :", options.update_setup
 print "# --update-aux              :", options.update_aux
