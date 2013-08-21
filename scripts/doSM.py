@@ -250,7 +250,7 @@ if options.update_aux :
         print "setup datacards for:", ana
         for chn in config.channels:
             for per in config.periods:
-                if len(config.categories[chn][per])>0: #make sure there are categories for this period (maybe unnecessary)
+                if config.categories[chn][per]:
                     os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c {CHN} --sm-categories-{CHN}='{CATS}' {MASSES}".format(
                         LABEL=options.label,
                         CMSSW_BASE=cmssw_base,
@@ -284,7 +284,7 @@ if options.update_limits :
 
         for chn in config.channels:
             for per in config.periods:
-                if len(config.categories[chn][per])>0: #make sure there are categories for this period (maybe unnecessary)
+                if config.categories[chn][per]:
                     os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {LABEL} --sm-categories-{CHN}='{CATS}' {MASSES}".format(
                         INDEX=options.label,                
                         ANA=ana,
