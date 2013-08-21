@@ -221,7 +221,7 @@ def lxb_submit(dirs, masses, cmd='--asymptotic', opts='', cycle='') :
             cmd_ext = ''
         ana = dir[:dir.rfind('/')]
         limit = dir[len(ana)+1:]
-        jobname = ana[ana.rfind('/')+1:]+'-'+limit+'-'+cmd_ext+cycle
+        jobname = dir.replace('/', '-')+cmd_ext+cycle
         ## add compliance with lxq or condor
         sys = ''
         if options.lxq :
