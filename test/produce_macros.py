@@ -17,7 +17,7 @@ parser.add_option("-u", "--uncertainties", dest="uncertainties", default="1", ty
 parser.add_option("--asimov", dest="asimov", action="store_true", default=False, help="Use asimov dataset for postfit-plots. [Default: 'False']")
 parser.add_option("--add-0jet-signal", dest="add_zero_jet", action="store_true", default=False, help="Add signal in the 0-jet event category of the mt, et, em channels [Default: False]")
 parser.add_option("-v", "--verbose", dest="verbose", action="store_true", default=False, help="Run in verbose more. [Default: 'False']")
-parser.add_option("-c", "--config", dest="config", default="{CMSSW}/src/HiggsAnalysis/HiggsToTauTau/limits.config".format(CMSSW=os.getenv('CMSSW_BASE')), help="Configuration file for the channels. [Default: '']")
+parser.add_option("-c", "--config", dest="config", default="", help="Additional configuration file for the channels, periods and categories. [Default: '']")
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
