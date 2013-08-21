@@ -7,7 +7,7 @@ class configuration:
         self.config.read(["{CMSSW}/src/HiggsAnalysis/HiggsToTauTau/limits.config".format(CMSSW=os.getenv('CMSSW_BASE')), config])
         #read values from config
         self.periods=self.config.get(mode, 'periods').split()
-        self.channels=self.config.get(mode, 'channel').split()
+        self.channels=self.config.get(mode, 'channels').split()
         self.categories={}
         self.categoryname={}
         self.inputs={}
