@@ -197,11 +197,15 @@ if options.update_setup :
                             ))
     ## scale by acceptance correction. This needs to be done for all available masses independent
     ## from args to guarantee that the tanb_grid templates are properly scaled.
-    os.system("scale2accept.py -i {SETUP} -c '{CHN}' -p '{PER}' 90 100-200:20 130 250-500:50 600-1000:100".format(
-        SETUP=setup,
-        CHN=options.channels,
-        PER=options.periods,
-        ))
+    for chn in channels :
+        for per in periods :
+            if directories[chn][per] == 'None' :
+                continue
+            os.system("scale2accept.py -i {SETUP} -c '{CHN}' -p '{PER}' 90 100-200:20 130 250-500:50 600-1000:100".format(
+                SETUP=setup,
+                CHN=chn,
+                PER=per,
+                ))
     ## setup directory structure
     dir = "{CMSSW_BASE}/src/setups{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
     if os.path.exists(dir) :
@@ -305,7 +309,10 @@ if options.update_setup :
                         DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_tt.inputs-mssm-8TeV-0.root -c tt -e 8TeV -b 'QCD_fine_binning' -k '8' --range 200 ".format(
                         DIR=dir, ANA=ana))
+                ## cleanup
                 os.system("rm rootlogon.C")
+                os.system("mkdir -p tail-fitting")
+                os.system("cp *_Rebin.png tail-fitting")
         if ana == 'no-bbb' :
             print "##"
             print "## update no-bbb directory in setup:"
