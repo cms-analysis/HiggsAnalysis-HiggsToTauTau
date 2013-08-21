@@ -90,6 +90,9 @@ requirements = HasAFS_OSG && TARGET.FilesystemDomain =!= UNDEFINED && TARGET.UWC
 if options.lxq :
     script_template = script_template.replace('#!/bin/bash', lxq_fragment)
 
+## create a random stamp fro multiply submission
+stamp=''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))
+## main submission script
 submit_name = '%s_submit.sh' % name
 with open(submit_name, 'w') as submit_script:
     if options.condor:
@@ -108,7 +111,7 @@ with open(submit_name, 'w') as submit_script:
         log.info("Generating submission script for %s", dir)
         script_file_name = '%s/%s_%i.sh' % (name, name, i)
         ## create random directory in tmp. This allows to do more than one submission in parallel
-        tmp_head = '/tmp/'+''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))
+        tmp_head = '/tmp/'+stamp
         dir_head = dir.rstrip('/')[:dir.rstrip('/').rfind('/')+1]
         dir_tail = dir.rstrip('/')[dir.rstrip('/').rfind('/')+1:]
         with open(script_file_name, 'w') as script:
