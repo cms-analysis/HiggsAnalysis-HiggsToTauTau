@@ -723,6 +723,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
  
  //If verbosity is set also output the fit function just in the tail fit range, no log scale 
  if(iVerbose) c1->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Function.png").c_str());
+ if(iVerbose) c1->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Function.pdf").c_str());
 
  if(iTestMode)
  {
