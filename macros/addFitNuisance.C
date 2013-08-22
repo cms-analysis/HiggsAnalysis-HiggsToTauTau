@@ -566,6 +566,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
     lH0->SetStats(0);
     lC0Fine->Update();
     lC0Fine->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Finebin.png").c_str());
+    lC0Fine->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Finebin.pdf").c_str());
 
   }
   
@@ -670,6 +671,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   lH0->SetStats(0);
   lC0->Update();
   lC0->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Rebin.png").c_str());
+  lC0->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Rebin.pdf").c_str());
 
   //Make additional output plots of shift up and down histos if verbosity is set  
 
@@ -680,21 +682,25 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
     lHUp->Draw();
     //gPad->SetLogy();
     lC1->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift1Up.png").c_str());
+    lC1->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift1Up.pdf").c_str());
       
     TCanvas *lC2 = new TCanvas("Can2","Can2",800,600);
     lHDown->Draw();
     // gPad->SetLogy();
     lC2->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift1Down.png").c_str());
+    lC2->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift1Down.pdf").c_str());
       
     TCanvas *lC3 = new TCanvas("Can3","Can3",800,600);
     lHUp1->Draw();
     // gPad->SetLogy();
     lC3->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift2Up.png").c_str());
+    lC3->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift2Up.pdf").c_str());
       
     TCanvas *lC4 = new TCanvas("Can4","Can4",800,600);
     lHDown1->Draw();
     // gPad->SetLogy();
     lC4->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift2Down.png").c_str());
+    lC4->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift2Down.pdf").c_str());
  }
   
 
