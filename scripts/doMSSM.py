@@ -138,7 +138,7 @@ if options.update_setup :
         tailfit = ''
         if options.fit_tails :
             if chn != 'mm' :
-                tailfit = '-fb'
+                tailfit = '' #'-fb'
         for per in periods :
             if directories[chn][per] == 'None' :
                 continue
@@ -312,7 +312,7 @@ if options.update_setup :
                 ## cleanup
                 os.system("rm rootlogon.C")
                 os.system("mkdir -p tail-fitting")
-                os.system("cp *_Rebin.png tail-fitting")
+                os.system("mv *_Rebin.png tail-fitting")
         if ana == 'no-bbb' :
             print "##"
             print "## update no-bbb directory in setup:"
@@ -323,6 +323,7 @@ if options.update_setup :
             print "##"
             if 'ee' in channels :
                 ## setup bbb uncertainties for ee 
+                #os.system("add_bbb_errors.py 'ee:7TeV,8TeV:08,09:QCD,TTJ,ZTT,ZEE,WJets,Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
                 os.system("add_bbb_errors.py 'ee:7TeV,8TeV:08,09:QCD,TTJ,ZTT,ZEE,WJets>Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
                     DIR=dir,
                     ANA=ana
@@ -331,6 +332,7 @@ if options.update_setup :
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
             if 'mm' in channels :
                 ## setup bbb uncertainties for mm  
+                #os.system("add_bbb_errors.py 'mm:7TeV:08:QCD,TTJ,ZTT,ZMM,WJets,Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
                 os.system("add_bbb_errors.py 'mm:7TeV:08:QCD,TTJ,ZTT,ZMM,WJets>Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
                     DIR=dir,
                     ANA=ana
@@ -343,6 +345,7 @@ if options.update_setup :
                     ))
                 os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                #os.system("add_bbb_errors.py 'mm:8TeV:08,09:QCD,TTJ,ZTT,ZMM,WJets,Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
                 os.system("add_bbb_errors.py 'mm:8TeV:08,09:QCD,TTJ,ZTT,ZMM,WJets>Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
                     DIR=dir,
                     ANA=ana
@@ -359,6 +362,7 @@ if options.update_setup :
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
             if 'et' in channels :
                 ## setup bbb uncertainties for et
+                #os.system("add_bbb_errors.py 'et:7TeV,8TeV:08,09:TT,QCD,ZTT,W,ZL,ZJ,VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
                 os.system("add_bbb_errors.py 'et:7TeV,8TeV:08,09:TT,QCD,ZTT,W+ZL+ZJ>VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
                     DIR=dir,
                     ANA=ana
@@ -367,6 +371,7 @@ if options.update_setup :
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
             if 'mt' in channels :
                 ## setup bbb uncertainties for mt
+                #os.system("add_bbb_errors.py 'mt:7TeV,8TeV:08,09:TT,QCD,ZTT,W,ZL,ZJ,VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
                 os.system("add_bbb_errors.py 'mt:7TeV,8TeV:08,09:TT,QCD,ZTT,W+ZL+ZJ>VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
                     DIR=dir,
                     ANA=ana
@@ -375,6 +380,7 @@ if options.update_setup :
                 os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
             if 'tt' in channels :
                 ## setup bbb uncertainties for tt 
+                #os.system("add_bbb_errors.py 'tt:8TeV:08,09:ZTT,TT,QCD,W,ZL,ZJ,VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
                 os.system("add_bbb_errors.py 'tt:8TeV:08,09:ZTT,TT,QCD,W+ZL+ZJ>VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
                     DIR=dir,
                     ANA=ana
@@ -430,12 +436,11 @@ if options.update_limits :
     os.system("mkdir -p {DIR}".format(DIR=dir))    
     for ana in analyses :
         print "setup limits structure for:", ana
-        os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a mssm -c '{CHN}' {LABEL} {MASSES}".format(
+        os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a mssm -c '{CHN}' {MASSES}".format(
             INDEX=options.label,                
             ANA=ana,
             DIR=dir,
             PER=options.periods,
             CHN=options.channels,
-            LABEL=options.label,
             MASSES=' '.join(masses),
             ))
