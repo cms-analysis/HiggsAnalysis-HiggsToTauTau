@@ -56,9 +56,10 @@ class UncertAdaptor(object) :
                 line = line[:line.rfind(self.cgs_background_group)+len(self.cgs_background_group)+1]
                 ## remove procs that might have been moved to signal from the background group
                 backgroundstr=''
-                for background in backgrounds :
-                    if background in signal_procs :
-                        backgrounds.remove(background)
+                if signal_procs:
+                    for background in backgrounds :
+                        if background in signal_procs :
+                            backgrounds.remove(background)
                 if background_procs :
                     for background in background_procs :
                         if not background in backgrounds :
