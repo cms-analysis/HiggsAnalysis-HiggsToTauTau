@@ -48,8 +48,8 @@ if options.analysis == "mssm" :
     ##system("cp -v %s/../common/hbb.input_[78]TeV-[01].root ./root" % dir)
     system("cp -v %s/../common/htt_*.inputs-mssm-[78]TeV-0.root ./root" % (dir))    
     ## for mm override the histograms as used for the limit calculation in favour of something more human readible
-    os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-mssm-8TeV-0-msv.root ./root/htt_mm.inputs-mssm-8TeV-0.root")
-    os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-mssm-7TeV-0-msv.root ./root/htt_mm.inputs-mssm-7TeV-0.root")
+    os.system("cp -v setups{LABEL}/mm/htt_mm.inputs-mssm-8TeV-0-msv.root ./root/htt_mm.inputs-mssm-8TeV-0.root".format(LABEL=dir.split('/')[0][6:])
+    os.system("cp -v setups{LABEL}/mm/htt_mm.inputs-mssm-7TeV-0-msv.root ./root/htt_mm.inputs-mssm-7TeV-0.root".format(LABEL=dir.split('/')[0][6:])
     
     optcards = ""  
     for datacard in os.listdir("datacards"):
