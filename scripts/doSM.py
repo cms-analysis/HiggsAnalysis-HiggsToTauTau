@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from optparse import OptionParser, OptionGroup
 from HiggsAnalysis.HiggsToTauTau.LimitsConfig import configuration
+from HiggsAnalysis.HiggsToTauTau.UncertAdaptor import UncertAdaptor
 import os
 
 ## set up the option parser
@@ -113,10 +114,19 @@ def add_zero_jet(path) :
     """
     Add signal to the 0jet event categories
     """
-    os.system("modify_cgs.py --setup {PATH} --channels mt --periods 7TeV 8TeV --categories 00 01 02 --add-to-signal ggH qqH VH".format(PATH=path))
-    os.system("modify_cgs.py --setup {PATH} --channels mt --periods      8TeV --categories 10 11 12 --add-to-signal ggH qqH VH".format(PATH=path))
-    os.system("modify_cgs.py --setup {PATH} --channels et --periods 7TeV 8TeV --categories 00 01 02 --add-to-signal ggH qqH VH".format(PATH=path))
-    os.system("modify_cgs.py --setup {PATH} --channels em --periods 7TeV 8TeV --categories 00 01    --add-to-signal ggH qqH VH".format(PATH=path))    
+    cgs_adaptor = UncertAdaptor()
+    for channel in config.channels:
+        for period in config.periods:
+            for category in config.categories[channel][period]:
+                if '0jet' in config.categoryname[channel][int(category)]:
+                    filename="{PATH}/{CHANNEL}/cgs-sm-{PERIOD}-0{CATEGORY}.conf".format(PATH=path, CHANNEL=channel, PERIOD=period, CATEGORY=category)
+                    print 'processing file:', filename
+                    cgs_adaptor.cgs_processes(filename,['ggH','qqH','VH'])
+            if options.add_mutau_soft and channel == 'mt' and period == '8TeV':
+                for category in 10, 11, 12:
+                    filename="{PATH}/{CHANNEL}/cgs-sm-{PERIOD}-{CATEGORY}.conf".format(PATH=path, CHANNEL=channel, PERIOD=period, CATEGORY=category)
+                    print 'processing file:', filename
+                    cgs_adaptor.cgs_processes(filename,['ggH','qqH','VH'])
 
 ## setup main directory 
 setup="{CMSSW_BASE}/src/.setup{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
@@ -269,19 +279,20 @@ if options.update_setup :
     for ana in analyses :
         if 'hww-bg' in ana :
             os.system("cp -r {DIR}/{SOURCE} {DIR}/{TARGET}".format(DIR=dir, SOURCE=ana[:ana.find(':')], TARGET=ana[ana.find(':')+1:]))
-            os.system("modify_cgs.py --setup {DIR}/{TARGET} --channels em   --periods 7TeV --categories 00 01 02 03 04    --add-to-background ggH_hww qqH_hww".format(
-                DIR=dir, TARGET=ana[ana.find(':')+1:]))
-            os.system("modify_cgs.py --setup {DIR}/{TARGET} --channels em   --periods 8TeV --categories 00 01 02 03 04 05 --add-to-background ggH_hww qqH_hww".format(
-                DIR=dir, TARGET=ana[ana.find(':')+1:]))
-            os.system("modify_cgs.py --setup {DIR}/{TARGET} --channels vhtt --periods 7TeV --categories 00 01       --add-to-background WH_hww".format(
-                DIR=dir, TARGET=ana[ana.find(':')+1:]))
-            os.system("modify_cgs.py --setup {DIR}/{TARGET} --channels vhtt --periods 7TeV --categories 03 04 05 06 --add-to-background ZH_hww".format(
-                DIR=dir, TARGET=ana[ana.find(':')+1:]))
-            os.system("modify_cgs.py --setup {DIR}/{TARGET} --channels vhtt --periods 8TeV --categories 00 01 02    --add-to-background WH_hww".format(
-                DIR=dir, TARGET=ana[ana.find(':')+1:]))
-            os.system("modify_cgs.py --setup {DIR}/{TARGET} --channels vhtt --periods 8TeV --categories 03 04 05 06 --add-to-background ZH_hww".format(
-                DIR=dir, TARGET=ana[ana.find(':')+1:]))
-            
+            cgs_adaptor = UncertAdaptor()
+            if 'em' in config.channels:
+                for period in config.periods:
+                    for category in config.categories[channel][period]:
+                        filename="{DIR}/{TARGET}/em/cgs-sm-{PERIOD}-0{CATEGORY}.conf".format(DIR=dir, TARGET=ana[ana.find(':')+1:], PERIOD=period, CATEGORY=category)
+                        print 'processing file:', filename
+                        cgs_adaptor.cgs_processes(filename,None,['ggH_hww','qqH_hww'])
+            if 'vhtt' in config.channels:
+                for period in config.periods:
+                    for category in ['0','1','2','3','4','5','6']:
+                        if period == '7TeV' and category == '2': continue
+                        filename="{DIR}/{TARGET}/vhtt/cgs-sm-{PERIOD}-0{CATEGORY}.conf".format(DIR=dir, TARGET=ana[ana.find(':')+1:], PERIOD=period, CATEGORY=category)
+                        print 'processing file:', filename
+                        cgs_adaptor.cgs_processes(filename,None,['WH_hww' if int(cat) < 3 else 'ZH_hww'])
             for file in glob.glob("{DIR}/{TARGET}/em/cgs-sm-*.conf".format(  DIR=dir, TARGET=ana[ana.find(':')+1:])) :
                 os.system("perl -pi -e 's/ggH_hww/ggH_hww{MASS}/g' {FILE}".format(MASS='125', FILE=file))
                 os.system("perl -pi -e 's/qqH_hww/qqH_hww{MASS}/g' {FILE}".format(MASS='125', FILE=file))
