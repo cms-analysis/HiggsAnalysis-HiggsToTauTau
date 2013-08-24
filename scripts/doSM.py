@@ -2,6 +2,9 @@
 from optparse import OptionParser, OptionGroup
 from HiggsAnalysis.HiggsToTauTau.LimitsConfig import configuration
 from HiggsAnalysis.HiggsToTauTau.UncertAdaptor import UncertAdaptor
+from HiggsAnalysis.HiggsToTauTau.horizontal_morphing import Morph
+from HiggsAnalysis.HiggsToTauTau.AsimovDatacard import *
+from HiggsAnalysis.HiggsToTauTau.scale2SM import RescaleSamples
 import os
 
 ## set up the option parser
@@ -184,17 +187,16 @@ if options.update_setup :
                         ))
     ## apply horizontal morphing for processes, which have not been simulated for 7TeV: ggH_hww145, qqH_hww145
     for file in glob.glob("{SETUP}/em/htt_em.inputs-sm-7TeV*.root".format(SETUP=setup)) :
-        os.system("horizontal-morphing.py --categories 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose' --samples '{SIGNAL}' --uncerts 'QCDscale_ggH1in,CMS_scale_e_7TeV' --masses '140,150' --step-size 5 -v {INPUT}".format(INPUT=file, SIGNAL='ggH_hww{MASS}'))
-        os.system("horizontal-morphing.py --categories 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose' --samples '{SIGNAL}' --uncerts 'CMS_scale_e_7TeV' --masses '140,150' --step-size 5 -v {INPUT}".format(INPUT=file, SIGNAL='qqH_hww{MASS}'))
+        template_morphing = Morph(file, 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose', 'ggH_hww{MASS}', 'QCDscale_ggH1in,CMS_scale_e_7TeV', '140,150', 5, True,'') 
+        template_morphing.run()
+        template_morphing = Morph(file, 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose', 'ggH_hww{MASS}', 'CMS_scale_e_7TeV', '140,150', 5, True,'') 
     ## scale to SM cross section (main processes and all channels tbu those listed in do_not_scales)
     for chn in config.channels :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
             ## vhtt is NOT scaled to 1pb. So nothing needs to be doen here
             if not chn in do_not_scales :
-                os.system("scale2SM.py -i {FILE} -s 'ggH, qqH, VH, WH, ZH' {MASSES}".format(
-                    FILE=file,
-                    MASSES=' '.join(masses)
-                    ))
+                process = RescaleSamples(file, 'ggH, qqH, VH, WH, ZH', masses)
+                process.rescale()
     if 'em' in config.channels :
         print "##"
         print "## --->>> adding extra scale for htt_hww contribution in em <<<---"
@@ -219,11 +221,8 @@ if options.update_setup :
             }
         ## multiply with proper xsec and correct for proper BR everywhere, where any of the above processes occurs
         for file in glob.glob("{SETUP}/em/*inputs-sm-*.root".format(SETUP=setup)) :
-            os.system("scale2SM.py -i {FILE} -s '{PROCS}' {MASSES}".format(
-                FILE=file,
-                PROCS=', '.join(hww_processes),
-                MASSES=' '.join(masses)
-                ))
+            process = RescaleSamples(file, hww_processes, masses)
+            process.rescale()
             for proc in hww_processes :
                 for mass in parseArgs(masses) :
                     os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{INPUTFILE}\",\"{PROCESS}\",0\)".format(
@@ -353,12 +352,10 @@ if options.update_aux :
         ## blind datacards 
         if options.blind_datacards : 
             for chn in channels :
-                os.system("blindData.py --update-file --extra-templates '{EXTRA_TEMPLATES}' {DIR}/{ANA}/sm/{CHN}".format(
-                    EXTRA_TEMPLATES = options.extra_templates,
-                    DIR=dir,
-                    ANA=ana,
-                    CHN=chn if chn == 'vhtt' else 'htt_'+chn
-                    ))
+                cardMaker = AsimovDatacard('', True, -1, False, '125', '1.0',options.extra_templates)
+                    for dir in '{DIR}/{ANA}/sm/{CHN}'.format(DIR=dir, ANA=ana, CHN=chn if chn == 'vhtt' else 'htt_'+chn
+                        cardMaker.cleanup(dir, '_asimov')
+                        cardMaker.make_asimov_datacards(dir, False)
 
 if options.update_limits :
     print "##"
