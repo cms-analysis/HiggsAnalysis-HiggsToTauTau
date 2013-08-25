@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 from optparse import OptionParser, OptionGroup
 from HiggsAnalysis.HiggsToTauTau.LimitsConfig import configuration
+from HiggsAnalysis.HiggsToTauTau.UncertAdaptor import UncertAdaptor
+from HiggsAnalysis.HiggsToTauTau.horizontal_morphing import Morph
+from HiggsAnalysis.HiggsToTauTau.AsimovDatacard import *
+from HiggsAnalysis.HiggsToTauTau.scale2SM import RescaleSamples
+from HiggsAnalysis.HiggsToTauTau.utils import parseArgs 
 import os
 
 ## set up the option parser
@@ -81,6 +86,9 @@ if options.update_all :
     options.update_aux       = True
     options.update_limits    = True
 
+masspoints = parseArgs(args)
+masspoints = [str(points) for points in masspoints]
+
 print "# --------------------------------------------------------------------------------------"
 print "# doSM.py "
 print "# --------------------------------------------------------------------------------------"
@@ -113,10 +121,19 @@ def add_zero_jet(path) :
     """
     Add signal to the 0jet event categories
     """
-    os.system("modify_cgs.py --setup {PATH} --channels mt --periods 7TeV 8TeV --categories 00 01 02 --add-to-signal ggH qqH VH".format(PATH=path))
-    os.system("modify_cgs.py --setup {PATH} --channels mt --periods      8TeV --categories 10 11 12 --add-to-signal ggH qqH VH".format(PATH=path))
-    os.system("modify_cgs.py --setup {PATH} --channels et --periods 7TeV 8TeV --categories 00 01 02 --add-to-signal ggH qqH VH".format(PATH=path))
-    os.system("modify_cgs.py --setup {PATH} --channels em --periods 7TeV 8TeV --categories 00 01    --add-to-signal ggH qqH VH".format(PATH=path))    
+    cgs_adaptor = UncertAdaptor()
+    for channel in config.channels:
+        for period in config.periods:
+            for category in config.categories[channel][period]:
+                if '0jet' in config.categoryname[channel][int(category)]:
+                    filename="{PATH}/{CHANNEL}/cgs-sm-{PERIOD}-0{CATEGORY}.conf".format(PATH=path, CHANNEL=channel, PERIOD=period, CATEGORY=category)
+                    print 'processing file:', filename
+                    cgs_adaptor.cgs_processes(filename,['ggH','qqH','VH'])
+            if options.add_mutau_soft and channel == 'mt' and period == '8TeV':
+                for category in 10, 11, 12:
+                    filename="{PATH}/{CHANNEL}/cgs-sm-{PERIOD}-{CATEGORY}.conf".format(PATH=path, CHANNEL=channel, PERIOD=period, CATEGORY=category)
+                    print 'processing file:', filename
+                    cgs_adaptor.cgs_processes(filename,['ggH','qqH','VH'])
 
 ## setup main directory 
 setup="{CMSSW_BASE}/src/.setup{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
@@ -174,17 +191,17 @@ if options.update_setup :
                         ))
     ## apply horizontal morphing for processes, which have not been simulated for 7TeV: ggH_hww145, qqH_hww145
     for file in glob.glob("{SETUP}/em/htt_em.inputs-sm-7TeV*.root".format(SETUP=setup)) :
-        os.system("horizontal-morphing.py --categories 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose' --samples '{SIGNAL}' --uncerts 'QCDscale_ggH1in,CMS_scale_e_7TeV' --masses '140,150' --step-size 5 -v {INPUT}".format(INPUT=file, SIGNAL='ggH_hww{MASS}'))
-        os.system("horizontal-morphing.py --categories 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose' --samples '{SIGNAL}' --uncerts 'CMS_scale_e_7TeV' --masses '140,150' --step-size 5 -v {INPUT}".format(INPUT=file, SIGNAL='qqH_hww{MASS}'))
+        template_morphing = Morph(file, 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose', 'ggH_hww{MASS}', 'QCDscale_ggH1in,CMS_scale_e_7TeV', '140,150', 5, True,'') 
+        template_morphing.run()
+        template_morphing = Morph(file, 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose', 'qqH_hww{MASS}', 'CMS_scale_e_7TeV', '140,150', 5, True,'') 
+        template_morphing.run()
     ## scale to SM cross section (main processes and all channels tbu those listed in do_not_scales)
     for chn in config.channels :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
             ## vhtt is NOT scaled to 1pb. So nothing needs to be doen here
             if not chn in do_not_scales :
-                os.system("scale2SM.py -i {FILE} -s 'ggH, qqH, VH, WH, ZH' {MASSES}".format(
-                    FILE=file,
-                    MASSES=' '.join(masses)
-                    ))
+                process = RescaleSamples(file, ['ggH', 'qqH', 'VH', 'WH', 'ZH'], masspoints)
+                process.rescale()
     if 'em' in config.channels :
         print "##"
         print "## --->>> adding extra scale for htt_hww contribution in em <<<---"
@@ -209,18 +226,15 @@ if options.update_setup :
             }
         ## multiply with proper xsec and correct for proper BR everywhere, where any of the above processes occurs
         for file in glob.glob("{SETUP}/em/*inputs-sm-*.root".format(SETUP=setup)) :
-            os.system("scale2SM.py -i {FILE} -s '{PROCS}' {MASSES}".format(
-                FILE=file,
-                PROCS=', '.join(hww_processes),
-                MASSES=' '.join(masses)
-                ))
+            process = RescaleSamples(file, hww_processes, masspoints)
+            process.rescale()
             for proc in hww_processes :
-                for mass in parseArgs(masses) :
+                for mass in masspoints :
                     os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{INPUTFILE}\",\"{PROCESS}\",0\)".format(
                         CMSSW_BASE=os.environ.get("CMSSW_BASE"),
                         SCALE=hww_over_htt[str(mass)]*float(options.hww_scale),
                         INPUTFILE=file,
-                        PROCESS=proc+str(mass)
+                        PROCESS=proc+mass
                         ))
     ## set up directory structure
     dir = "{CMSSW_BASE}/src/setups{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
@@ -269,19 +283,20 @@ if options.update_setup :
     for ana in analyses :
         if 'hww-bg' in ana :
             os.system("cp -r {DIR}/{SOURCE} {DIR}/{TARGET}".format(DIR=dir, SOURCE=ana[:ana.find(':')], TARGET=ana[ana.find(':')+1:]))
-            os.system("modify_cgs.py --setup {DIR}/{TARGET} --channels em   --periods 7TeV --categories 00 01 02 03 04    --add-to-background ggH_hww qqH_hww".format(
-                DIR=dir, TARGET=ana[ana.find(':')+1:]))
-            os.system("modify_cgs.py --setup {DIR}/{TARGET} --channels em   --periods 8TeV --categories 00 01 02 03 04 05 --add-to-background ggH_hww qqH_hww".format(
-                DIR=dir, TARGET=ana[ana.find(':')+1:]))
-            os.system("modify_cgs.py --setup {DIR}/{TARGET} --channels vhtt --periods 7TeV --categories 00 01       --add-to-background WH_hww".format(
-                DIR=dir, TARGET=ana[ana.find(':')+1:]))
-            os.system("modify_cgs.py --setup {DIR}/{TARGET} --channels vhtt --periods 7TeV --categories 03 04 05 06 --add-to-background ZH_hww".format(
-                DIR=dir, TARGET=ana[ana.find(':')+1:]))
-            os.system("modify_cgs.py --setup {DIR}/{TARGET} --channels vhtt --periods 8TeV --categories 00 01 02    --add-to-background WH_hww".format(
-                DIR=dir, TARGET=ana[ana.find(':')+1:]))
-            os.system("modify_cgs.py --setup {DIR}/{TARGET} --channels vhtt --periods 8TeV --categories 03 04 05 06 --add-to-background ZH_hww".format(
-                DIR=dir, TARGET=ana[ana.find(':')+1:]))
-            
+            cgs_adaptor = UncertAdaptor()
+            if 'em' in config.channels:
+                for period in config.periods:
+                    for category in config.categories['em'][period]:
+                        filename="{DIR}/{TARGET}/em/cgs-sm-{PERIOD}-0{CATEGORY}.conf".format(DIR=dir, TARGET=ana[ana.find(':')+1:], PERIOD=period, CATEGORY=category)
+                        print 'processing file:', filename
+                        cgs_adaptor.cgs_processes(filename,None,['ggH_hww','qqH_hww'])
+            if 'vhtt' in config.channels:
+                for period in config.periods:
+                    for category in ['0','1','2','3','4','5','6']:
+                        if period == '7TeV' and category == '2': continue
+                        filename="{DIR}/{TARGET}/vhtt/cgs-sm-{PERIOD}-0{CATEGORY}.conf".format(DIR=dir, TARGET=ana[ana.find(':')+1:], PERIOD=period, CATEGORY=category)
+                        print 'processing file:', filename
+                        cgs_adaptor.cgs_processes(filename,None,['WH_hww' if int(cat) < 3 else 'ZH_hww'])
             for file in glob.glob("{DIR}/{TARGET}/em/cgs-sm-*.conf".format(  DIR=dir, TARGET=ana[ana.find(':')+1:])) :
                 os.system("perl -pi -e 's/ggH_hww/ggH_hww{MASS}/g' {FILE}".format(MASS='125', FILE=file))
                 os.system("perl -pi -e 's/qqH_hww/qqH_hww{MASS}/g' {FILE}".format(MASS='125', FILE=file))
@@ -342,12 +357,10 @@ if options.update_aux :
         ## blind datacards 
         if options.blind_datacards : 
             for chn in channels :
-                os.system("blindData.py --update-file --extra-templates '{EXTRA_TEMPLATES}' {DIR}/{ANA}/sm/{CHN}".format(
-                    EXTRA_TEMPLATES = options.extra_templates,
-                    DIR=dir,
-                    ANA=ana,
-                    CHN=chn if chn == 'vhtt' else 'htt_'+chn
-                    ))
+                cardMaker = AsimovDatacard('', True, -1, False, '125', '1.0',options.extra_templates)
+                for dir in '{DIR}/{ANA}/sm/{CHN}'.format(DIR=dir, ANA=ana, CHN=chn if chn == 'vhtt' else 'htt_'+chn):
+                    cardMaker.cleanup(dir, '_asimov')
+                    cardMaker.make_asimov_datacards(dir, False)
 
 if options.update_limits :
     print "##"
