@@ -189,13 +189,14 @@ if options.update_setup :
     for file in glob.glob("{SETUP}/em/htt_em.inputs-sm-7TeV*.root".format(SETUP=setup)) :
         template_morphing = Morph(file, 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose', 'ggH_hww{MASS}', 'QCDscale_ggH1in,CMS_scale_e_7TeV', '140,150', 5, True,'') 
         template_morphing.run()
-        template_morphing = Morph(file, 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose', 'ggH_hww{MASS}', 'CMS_scale_e_7TeV', '140,150', 5, True,'') 
+        template_morphing = Morph(file, 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose', 'qqH_hww{MASS}', 'CMS_scale_e_7TeV', '140,150', 5, True,'') 
+        template_morphing.run()
     ## scale to SM cross section (main processes and all channels tbu those listed in do_not_scales)
     for chn in config.channels :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
             ## vhtt is NOT scaled to 1pb. So nothing needs to be doen here
             if not chn in do_not_scales :
-                process = RescaleSamples(file, 'ggH, qqH, VH, WH, ZH', masses)
+                process = RescaleSamples(file, ['ggH', 'qqH', 'VH', 'WH', 'ZH'], masses)
                 process.rescale()
     if 'em' in config.channels :
         print "##"
@@ -281,7 +282,7 @@ if options.update_setup :
             cgs_adaptor = UncertAdaptor()
             if 'em' in config.channels:
                 for period in config.periods:
-                    for category in config.categories[channel][period]:
+                    for category in config.categories['em'][period]:
                         filename="{DIR}/{TARGET}/em/cgs-sm-{PERIOD}-0{CATEGORY}.conf".format(DIR=dir, TARGET=ana[ana.find(':')+1:], PERIOD=period, CATEGORY=category)
                         print 'processing file:', filename
                         cgs_adaptor.cgs_processes(filename,None,['ggH_hww','qqH_hww'])
@@ -353,9 +354,9 @@ if options.update_aux :
         if options.blind_datacards : 
             for chn in channels :
                 cardMaker = AsimovDatacard('', True, -1, False, '125', '1.0',options.extra_templates)
-                    for dir in '{DIR}/{ANA}/sm/{CHN}'.format(DIR=dir, ANA=ana, CHN=chn if chn == 'vhtt' else 'htt_'+chn
-                        cardMaker.cleanup(dir, '_asimov')
-                        cardMaker.make_asimov_datacards(dir, False)
+                for dir in '{DIR}/{ANA}/sm/{CHN}'.format(DIR=dir, ANA=ana, CHN=chn if chn == 'vhtt' else 'htt_'+chn):
+                    cardMaker.cleanup(dir, '_asimov')
+                    cardMaker.make_asimov_datacards(dir, False)
 
 if options.update_limits :
     print "##"

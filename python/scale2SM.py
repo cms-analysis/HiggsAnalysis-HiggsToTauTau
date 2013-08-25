@@ -9,10 +9,10 @@ class RescaleSamples:
         self.masses = masspoints
         ## list of signal channels to be scaled
         self.production_channels = production_channels
-        if '/' in filename :
-            filename = filename[filename.rfind('/')+1:]
+        if '/' in input_file :
+            input_file = input_file[input_file.rfind('/')+1:]
         matcher = re.compile('v?htt_?\w*.inputs-\w*-(?P<PERIOD>[0-9]*\w*)(-?_?\w*)*.root')
-        ecms_str = matcher.match(filename).group('PERIOD')
+        ecms_str = matcher.match(input_file).group('PERIOD')
         ecms_str = ecms_str[:ecms_str.find('TeV')]
         self.ecms = float(ecms_str)
         
@@ -45,7 +45,7 @@ class RescaleSamples:
                 xs += float(os.popen("xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(
                     CHANNEL=sub_channel, MA=mass, ECMS=self.ecms)).read().split()[2])
         else :
-            #print "xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(CHANNEL=production_channel, MA=mass, ECMS=ecms)
+#            print "xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(CHANNEL=production_channel, MA=mass, ECMS=self.ecms)
             xs += float(os.popen("xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(
                 CHANNEL=production_channel, MA=mass, ECMS=self.ecms)).read().split()[2])
         return xs
