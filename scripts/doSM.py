@@ -5,6 +5,7 @@ from HiggsAnalysis.HiggsToTauTau.UncertAdaptor import UncertAdaptor
 from HiggsAnalysis.HiggsToTauTau.horizontal_morphing import Morph
 from HiggsAnalysis.HiggsToTauTau.AsimovDatacard import *
 from HiggsAnalysis.HiggsToTauTau.scale2SM import RescaleSamples
+from HiggsAnalysis.HiggsToTauTau.utils import parseArgs 
 import os
 
 ## set up the option parser
@@ -84,6 +85,9 @@ if options.update_all :
     options.update_setup     = True
     options.update_aux       = True
     options.update_limits    = True
+
+masspoints = parseArgs(args)
+masspoints = [str(points) for points in masspoints]
 
 print "# --------------------------------------------------------------------------------------"
 print "# doSM.py "
@@ -196,7 +200,7 @@ if options.update_setup :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
             ## vhtt is NOT scaled to 1pb. So nothing needs to be doen here
             if not chn in do_not_scales :
-                process = RescaleSamples(file, ['ggH', 'qqH', 'VH', 'WH', 'ZH'], masses)
+                process = RescaleSamples(file, ['ggH', 'qqH', 'VH', 'WH', 'ZH'], masspoints)
                 process.rescale()
     if 'em' in config.channels :
         print "##"
@@ -222,15 +226,15 @@ if options.update_setup :
             }
         ## multiply with proper xsec and correct for proper BR everywhere, where any of the above processes occurs
         for file in glob.glob("{SETUP}/em/*inputs-sm-*.root".format(SETUP=setup)) :
-            process = RescaleSamples(file, hww_processes, masses)
+            process = RescaleSamples(file, hww_processes, masspoints)
             process.rescale()
             for proc in hww_processes :
-                for mass in parseArgs(masses) :
+                for mass in masspoints :
                     os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{INPUTFILE}\",\"{PROCESS}\",0\)".format(
                         CMSSW_BASE=os.environ.get("CMSSW_BASE"),
                         SCALE=hww_over_htt[str(mass)]*float(options.hww_scale),
                         INPUTFILE=file,
-                        PROCESS=proc+str(mass)
+                        PROCESS=proc+mass
                         ))
     ## set up directory structure
     dir = "{CMSSW_BASE}/src/setups{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
