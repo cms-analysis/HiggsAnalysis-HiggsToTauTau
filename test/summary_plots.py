@@ -207,15 +207,15 @@ for chn in channels :
         ## combine high and low pt categories, make sure in your 
         ## list that {CAT}_low and {CAT}_high are run beforehand
         if cat == "0jet" : ## or cat == "1jet" : ## in 1jet low and high pt have a different binning
-            #print "hadd {CHN}_{CAT}_{TYPE}_7+8TeV.root {CHN}_{CAT}_low_{TYPE}_7+8TeV.root {CHN}_{CAT}_high_{TYPE}_7+8TeV.root".format(CHN=chn, CAT=cat, TYPE=type)
-            os.system("hadd -f {CHN}_{CAT}_{TYPE}_7+8TeV_LIN.root {CHN}_{CAT}_low_{TYPE}_7+8TeV_LIN.root {CHN}_{CAT}_high_{TYPE}_7+8TeV_LIN.root".format(CHN=chn, CAT=cat, TYPE=type))
+            #print "hadd {CHN}_{CAT}_{TYPE}_7TeV_8TeV.root {CHN}_{CAT}_low_{TYPE}_7TeV_8TeV.root {CHN}_{CAT}_high_{TYPE}_7TeV_8TeV.root".format(CHN=chn, CAT=cat, TYPE=type)
+            os.system("hadd -f {CHN}_{CAT}_{TYPE}_7TeV_8TeV_LIN.root {CHN}_{CAT}_low_{TYPE}_7TeV_8TeV_LIN.root {CHN}_{CAT}_high_{TYPE}_7TeV_8TeV_LIN.root".format(CHN=chn, CAT=cat, TYPE=type))
         else :
-            #print "hadd {CHN}_{CAT}_{TYPE}_7+8TeV.root {CHN}_{CAT}_{TYPE}_7TeV_{LOG}.root {CHN}_{CAT}_{TYPE}_8TeV_{LOG}.root".format(
+            #print "hadd {CHN}_{CAT}_{TYPE}_7TeV_8TeV.root {CHN}_{CAT}_{TYPE}_7TeV_{LOG}.root {CHN}_{CAT}_{TYPE}_8TeV_{LOG}.root".format(
             #    CHN=chn, CAT=cat, TYPE=type, LOG="LOG" if log[(chn, cat)] else "LIN")
-            os.system("hadd -f {CHN}_{CAT}_{TYPE}_7+8TeV_LIN.root {CHN}_{CAT}_{TYPE}_7TeV_LIN.root {CHN}_{CAT}_{TYPE}_8TeV_LIN.root".format(
+            os.system("hadd -f {CHN}_{CAT}_{TYPE}_7TeV_8TeV_LIN.root {CHN}_{CAT}_{TYPE}_7TeV_LIN.root {CHN}_{CAT}_{TYPE}_8TeV_LIN.root".format(
                 CHN=chn, CAT=cat, TYPE=type))#, LOG="LOG" if log[(chn, cat)]==True else "LIN"))
             if options.analysis == "mssm" :
-                os.system("hadd -f {CHN}_{CAT}_{TYPE}_7+8TeV_LOG.root {CHN}_{CAT}_{TYPE}_7TeV_LOG.root {CHN}_{CAT}_{TYPE}_8TeV_LOG.root".format(
+                os.system("hadd -f {CHN}_{CAT}_{TYPE}_7TeV_8TeV_LOG.root {CHN}_{CAT}_{TYPE}_7TeV_LOG.root {CHN}_{CAT}_{TYPE}_8TeV_LOG.root".format(
                     CHN=chn, CAT=cat, TYPE=type))#, LOG="LOG" if log[(chn, cat)]==True else "LIN"))
 
 ##print in the right Signal label for MSSM
@@ -233,7 +233,7 @@ postfit_use.close()
 for chn in channels :
     for cat in categories :
         print chn, cat
-        os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7+8TeV_LIN.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
+        os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7TeV_8TeV_LIN.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
             CMSSW_BASE=os.environ['CMSSW_BASE'],
             CHN=chn,
             CAT=cat,
@@ -247,7 +247,7 @@ for chn in channels :
             LOG=log[chn,cat][0]
             ))
         if options.analysis == "mssm" :
-            os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7+8TeV_LOG.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
+            os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7TeV_8TeV_LOG.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
                 CMSSW_BASE=os.environ['CMSSW_BASE'],
                 CHN=chn,
                 CAT=cat,
