@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from optparse import OptionParser, OptionGroup
 
-parser = OptionParser(usage="usage: %prog [options] input_path",
-                      description="This is a script to build up the necessary enviroment for post-fit plots - including the max-likelihood calculation. ARG corresponds to the mass directory where to fin the datacards for the max-likelihood fit.")
+parser = OptionParser(usage="usage: %prog [options] ARG",
+                      description="This is a script to build up the necessary enviroment for postfit plots - including the max-likelihood calculation. ARG corresponds to the mass directory where to find the datacards that will be used or that have been used for the max-likelihood fit.")
 parser.add_option("--rMin", dest="rMin", default="-5.", type="string", help="Minimum value of signal strenth. [Default: -5.]")
 parser.add_option("--rMax", dest="rMax", default="5.", type="string", help="Maximum value of signal strenth. [Default: 5.]")
 parser.add_option("-s", "--skip", dest="skip", default=False, action="store_true", help="Skip the limit calculation in case it has been done already. [Default: False]")
@@ -48,8 +48,10 @@ if options.analysis == "mssm" :
     ##system("cp -v %s/../common/hbb.input_[78]TeV-[01].root ./root" % dir)
     system("cp -v %s/../common/htt_*.inputs-mssm-[78]TeV-0.root ./root" % (dir))    
     ## for mm override the histograms as used for the limit calculation in favour of something more human readible
-    os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-mssm-8TeV-0-msv.root ./root/htt_mm.inputs-mssm-8TeV-0.root")
-    os.system("cp -v $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/setup/mm/htt_mm.inputs-mssm-7TeV-0-msv.root ./root/htt_mm.inputs-mssm-7TeV-0.root")
+    ## note these files MUST be located in the same directory structure as the input files which are used for the
+    ## max-likelihood calculation. 
+    os.system("cp -v %s/../common/htt_mm.inputs-mssm-8TeV-0-msv.root ./root/htt_mm.inputs-mssm-8TeV-0.root" % (dir))
+    os.system("cp -v %s/../common/htt_mm.inputs-mssm-7TeV-0-msv.root ./root/htt_mm.inputs-mssm-7TeV-0.root" % (dir))
     
     optcards = ""  
     for datacard in os.listdir("datacards"):
