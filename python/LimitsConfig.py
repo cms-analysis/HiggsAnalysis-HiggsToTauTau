@@ -17,15 +17,14 @@ class configuration:
                 self.categories[channel][period]=self.get_categories(channel, period, mode)
             self.categoryname[channel]=self.get_category_names(channel, mode)
             self.inputs[channel]=self.config.get('inputs', channel)
-        if mode == 'sm':
-            self.bbbcat={}
-            self.bbbproc={}
-            self.bbbthreshold=self.config.get('bbb-'+mode,'threshold')
-            for channel in self.channels:
-                self.bbbcat[channel]={}
-                for period in self.periods:
-                    self.bbbcat[channel][period]=self.get_bbb_categories(channel, period, mode)
-                self.bbbproc[channel]=self.get_bbb_processes(channel, mode)
+        self.bbbcat={}
+        self.bbbproc={}
+        self.bbbthreshold=self.config.get('bbb-'+mode,'threshold')
+        for channel in self.channels:
+            self.bbbcat[channel]={}
+            for period in self.periods:
+                self.bbbcat[channel][period]=self.get_bbb_categories(channel, period, mode)
+            self.bbbproc[channel]=self.get_bbb_processes(channel, mode)
 
     def get_categories(self, channel, period, mode):
         categories=self.config.get(mode, channel+'_categories_'+period)
