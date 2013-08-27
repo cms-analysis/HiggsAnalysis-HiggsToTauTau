@@ -288,7 +288,7 @@ if options.update_setup :
                 ## cleanup
                 os.system("rm rootlogon.C")
                 os.system("mkdir -p tail-fitting")
-                os.system("mv *_Rebin.png tail-fitting")
+                os.system("mv *_Rebin.* tail-fitting")
         if ana == 'no-bbb' :
             print "##"
             print "## update no-bbb directory in setup:"
