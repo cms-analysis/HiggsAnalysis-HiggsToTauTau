@@ -10,7 +10,7 @@ ee_btag		TTJ				CMS_htt_ttbarNorm_8TeV			1.10
 ee_btag		Dibosons			CMS_htt_ee_DiBosonNorm_8TeV		1.30
 ee_btag		ZEE				CMS_htt_ee_ZEENorm_8TeV			1.06
 ee_btag		QCD				CMS_htt_ee_QCDNorm_09_8TeV		2.00
-ee_btag		ZTT				CMS_htt_ztt_extrap_ee_btag_8TeV		1.05
+ee_btag		ZTT				CMS_htt_ztt_extrap_btag_8TeV		1.05
 ee_btag		ZEE				CMS_htt_ee_ZEE_extrap_btag_8TeV		1.04
 ee_btag		ZTT				CMS_htt_ee_zttLikelihood_8TeV		1.03
 ee_btag		bbH				CMS_htt_ee_bbH_MCStat_09_8TeV		1.70
