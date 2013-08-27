@@ -332,7 +332,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   cat->SetBorderSize(   0 );
   cat->SetFillStyle(    0 );
   cat->SetTextAlign(   12 );
-  cat->SetTextSize ( 0.03 );
+  cat->SetTextSize ( 0.05 );
   cat->SetTextColor(    1 );
   cat->SetTextFont (   62 );
   cat->AddText(category_extra);
@@ -342,7 +342,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   cat2->SetBorderSize(   0 );
   cat2->SetFillStyle(    0 );
   cat2->SetTextAlign(   12 );
-  cat2->SetTextSize ( 0.03 );
+  cat2->SetTextSize ( 0.05 );
   cat2->SetTextColor(    1 );
   cat2->SetTextFont (   62 );
   cat2->AddText(category_extra2);
