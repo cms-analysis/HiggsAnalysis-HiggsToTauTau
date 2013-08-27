@@ -30,3 +30,4 @@ muTau_1jet_high_lowhiggs	W				CMS_htt_WNorm_mutau_1jet_high_lowhiggs_7TeV		1.10
 muTau_1jet_high_lowhiggs      	QCD				CMS_htt_QCDSyst_mutau_1jet_high_lowhiggs_7TeV		1.10
 muTau_1jet_high_lowhiggs	ZJ				CMS_htt_ZJetFakeTau_mutau_1jet_high_lowhiggs_7TeV	1.20
 muTau_1jet_high_lowhiggs	ZL				CMS_htt_ZLeptonFakeTau_mutau_7TeV			1.30
+muTau_1jet_high_lowhiggs	ZL				CMS_htt_ZLScale_mutau_7TeV      	        	1.00

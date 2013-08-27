@@ -35,4 +35,4 @@ eleTau_vbf_tight		ZL				CMS_htt_ZLeptonFakeTau_etau_low_8TeV		1.06
 eleTau_vbf_tight		ZL				CMS_htt_ZLeptonFakeTau_etau_medium_8TeV		1.08
 eleTau_vbf_tight		ZL				CMS_htt_ZLeptonFakeTau_etau_high_8TeV		1.06
 eleTau_vbf_tight		ZJ				CMS_htt_ZJetFakeTau_etau_vbf_tight_8TeV		1.20
-
+eleTau_vbf_tight        	ZL				CMS_htt_ZLScale_etau_8TeV	                1.00
