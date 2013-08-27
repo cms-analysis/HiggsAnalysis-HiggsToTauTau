@@ -347,6 +347,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
     
   //CENTRAL HISTOGRAM   
   if(iVerbose) cout << "Values for central hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
+  lM.setRange(0,2000);
   
   double mcentral=(-1 * lA.getVal() / lB.getVal() );
   if(iFitModel==0 && lFirst < mcentral && mcentral < 2000)
@@ -355,6 +356,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
       std::cout << "===============================================================================" << std::endl;
       std::cout << "Infinite point found in central histogram at mass of " << mcentral << ". Truncating the histogram before that point, setting all bins after to zero." << std::endl;
       std::cout << "===============================================================================" << std::endl;
+      lM.setRange(0,lH0->GetBinLowEdge(lH0->FindBin(mcentral)));
   }
   TH1F* lH=0, *lHtemp=0;
   if(!flagcentral) lH = (TH1F*) lFit->createHistogram("fit" ,lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
@@ -366,16 +368,17 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   lB.setVal(lBCentral + lEigVals(0)*lEigVecs(1,0));
   
   if(iVerbose) cout << "Values for shift 1 up hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
+  lM.setRange(0,2000);
   
   double mshift1up=(-1 * lA.getVal() / lB.getVal() );
   
   if(iFitModel == 0 && lFirst < mshift1up && mshift1up < 2000)
   {
       flag1up=true;
-      lM.setRange(lFirst,695);
       std::cout << "===============================================================================" << std::endl;
       std::cout << "Infinite point found in shift 1 up histogram at mass of " << mshift1up << ". Truncating the histogram before that point, setting all bins after to zero." << std::endl;
       std::cout << "===============================================================================" << std::endl;
+      lM.setRange(0,lH0->GetBinLowEdge(lH0->FindBin(mshift1up)));
   }
   TH1F* lHUp=0, *lHUptemp=0;
   if(!flag1up) lHUp= (TH1F*) lFit->createHistogram("Up"  ,lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
@@ -387,6 +390,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   //SHIFT1DOWN HISTOGRAM   
   
   if(iVerbose) cout << "Values for shift 1 down hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
+  lM.setRange(0,2000);
   
   double mshift1down=(-1 * lA.getVal() / lB.getVal() );
   
@@ -396,6 +400,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
       std::cout << "===============================================================================" << std::endl;
       std::cout << "Infinite point found in shift 1 down histogram at mass of " << mshift1down << ". Truncating the histogram before that point, setting all bins after to zero." << std::endl;
       std::cout << "===============================================================================" << std::endl;
+      lM.setRange(0,lH0->GetBinLowEdge(lH0->FindBin(mshift1down)));
   }
   TH1F* lHDown=0, *lHDowntemp=0;
   if(!flag1down) lHDown = (TH1F*) lFit->createHistogram("Down",lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
@@ -407,6 +412,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   //SHIFT2UP HISTOGRAM   
   
   if(iVerbose) cout << "Values for shift 2 up hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
+  lM.setRange(0,2000);
   
   double mshift2up=(-1 * lA.getVal() / lB.getVal() );
   
@@ -416,6 +422,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
       std::cout << "===============================================================================" << std::endl;
       std::cout << "Infinite point found in shift 2 up histogram at mass of " << mshift2up << ". Truncating the histogram before that point, setting all bins after to zero." << std::endl;
       std::cout << "===============================================================================" << std::endl;
+      lM.setRange(0,lH0->GetBinLowEdge(lH0->FindBin(mshift2up)));
   }
   TH1F* lHUp1=0, *lHUp1temp=0;
   if(!flag2up) lHUp1   = (TH1F*) lFit->createHistogram("Up1",lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
@@ -427,6 +434,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   //SHIFT2DOWN HISTOGRAM   
   
   if(iVerbose) cout << "Values for shift 2 down hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
+  lM.setRange(0,2000);
   
   double mshift2down=(-1 * lA.getVal() / lB.getVal() );
   
@@ -436,6 +444,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
       std::cout << "===============================================================================" << std::endl;
       std::cout << "Infinite point found in shift 2 down histogram at mass of " << mshift2down << ". Truncating the histogram before that point, setting all bins after to zero." << std::endl;
       std::cout << "===============================================================================" << std::endl;
+      lM.setRange(0,lH0->GetBinLowEdge(lH0->FindBin(mshift2down)));
   }
   TH1F* lHDown1=0, *lHDown1temp=0;
   if(!flag2down) lHDown1= (TH1F*) lFit->createHistogram("Down1",lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
@@ -445,7 +454,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   if(flagcentral)
   {
       TH1F* base0 = new TH1F("base0", "base0", lH0->GetNbinsX(), lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax() );
-      for(int i=0; i<lHtemp->GetNbinsX(); i++)
+      for(int i=1; i<=lHtemp->GetNbinsX(); i++)
       {
           base0->Fill(lHtemp->GetBinCenter(i),lHtemp->GetBinContent(i));
       }
@@ -455,7 +464,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   if(flag1up)
   {
       TH1F* base1 = new TH1F("base1", "base1", lH0->GetNbinsX(), lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax() );
-      for(int i=0; i<lHUptemp->GetNbinsX(); i++)
+      for(int i=1; i<=lHUptemp->GetNbinsX(); i++)
       {
           base1->Fill(lHUptemp->GetBinCenter(i),lHUptemp->GetBinContent(i));
       }
@@ -465,7 +474,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   if(flag1down)
   {
       TH1F* base2 = new TH1F("base2", "base2", lH0->GetNbinsX(), lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax() );
-      for(int i=0; i<lHDowntemp->GetNbinsX(); i++)
+      for(int i=1; i<=lHDowntemp->GetNbinsX(); i++)
       {
           base2->Fill(lHDowntemp->GetBinCenter(i),lHDowntemp->GetBinContent(i));
       }
@@ -475,7 +484,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   if(flag2up)
   {
       TH1F* base3 = new TH1F("base3", "base3", lH0->GetNbinsX(), lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax() );
-      for(int i=0; i<lHUp1temp->GetNbinsX(); i++)
+      for(int i=1; i<=lHUp1temp->GetNbinsX(); i++)
       {
           base3->Fill(lHUp1temp->GetBinCenter(i),lHUp1temp->GetBinContent(i));
       }
@@ -485,7 +494,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   if(flag2down)
   {
       TH1F* base4 = new TH1F("base4", "base4", lH0->GetNbinsX(), lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax() );
-      for(int i=0; i<lHDown1temp->GetNbinsX(); i++)
+      for(int i=1; i<=lHDown1temp->GetNbinsX(); i++)
       {
           base4->Fill(lHDown1temp->GetBinCenter(i),lHDown1temp->GetBinContent(i));
       }
