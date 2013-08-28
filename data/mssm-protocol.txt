@@ -44,9 +44,9 @@ plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fi
 
 (4) launch/collect/plot mA-tanb
 ## lauch final setup of datacards
-lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*
+lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/*
 ## lauch limit calculation
-submit.py --tanb+  LIMITS-yymmdd-mssm/bbb[-asimov]/*
+submit.py --tanb+  -q '-q 1nd' LIMITS-yymmdd-mssm/bbb[-asimov]/*/*
 ## plotting
 plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/mssm_tanb_layout.py LIMITS-yymmdd-mssm/bbb[-asimov] [expectedOnly=1]
 
