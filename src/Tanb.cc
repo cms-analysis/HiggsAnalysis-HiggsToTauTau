@@ -72,10 +72,10 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
 
   // create plots for additional comparisons
   std::map<std::string, TGraph*> comparisons; TGraph* comp=0;
-  if(arXiv_1211_6956_){ comp = new TGraph(), arXiv_1211_6956(comp); comparisons[std::string("ATLAS H#rightarrow#tau#tau (4.8/fb)")] = comp;}
-  if(arXiv_1204_2760_){ comp = new TGraph(); arXiv_1204_2760(comp); comparisons[std::string("ATLAS H^{+} (4.6/fb)")               ] = comp;}
-  if(arXiv_1302_2892_){ comp = new TGraph(); arXiv_1302_2892(comp); comparisons[std::string("CMS bbH#rightarrow 4b (4.8/fb)")    ] = comp;}
-  if(arXiv_1205_5736_){ comp = new TGraph(); arXiv_1205_5736(comp); comparisons[std::string("CMS H^{+} (2/fb)")                 ] = comp;}
+  if(arXiv_1211_6956_){ comp = new TGraph(), arXiv_1211_6956(comp); comp->SetName("arXiv_1211_6956"); comparisons[std::string("ATLAS H#rightarrow#tau#tau (4.8/fb)")] = comp;}
+  if(arXiv_1204_2760_){ comp = new TGraph(); arXiv_1204_2760(comp); comp->SetName("arXiv_1204_2760"); comparisons[std::string("ATLAS H^{+} (4.6/fb)")               ] = comp;}
+  if(arXiv_1302_2892_){ comp = new TGraph(); arXiv_1302_2892(comp); comp->SetName("arXiv_1302_2892"); comparisons[std::string("CMS bbH#rightarrow 4b (4.8/fb)")     ] = comp;}
+  if(arXiv_1205_5736_){ comp = new TGraph(); arXiv_1205_5736(comp); comp->SetName("arXiv_1205_5736"); comparisons[std::string("CMS H^{+} (2/fb)")                   ] = comp;}
 
   // setup contratins from Higgs mass
   std::map<double, TGraphAsymmErrors*> higgsBands;
@@ -120,6 +120,9 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
     lowerLEP->Write("lowerLEP");
     if(plain){
       plain->Write("plain");
+    }
+    for(std::map<std::string, TGraph*>::const_iterator comp=comparisons.begin(); comp!=comparisons.end(); ++comp){
+      comp->second->Write();
     }
     output->Close();
   }
