@@ -530,7 +530,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   if(iVerbose)
   {
     lH0->SetStats(0);
-  
+    lH->SetStats(0);
     lHUp->SetStats(0);
     lHDown->SetStats(0);
     lHUp1->SetStats(0);
