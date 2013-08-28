@@ -161,6 +161,14 @@ class PlotLimits {
   void upperLEPLimits(TGraph* graph);
   /// fill the LEP exclusion plot (low tanb free space)
   void lowerLEPLimits(TGraph* graph); 
+  /// fill ATLAS(htt)
+  void arXiv_1211_6956(TGraph* graph);
+  /// fill ATLAS(H+)
+  void arXiv_1204_2760(TGraph* graph);
+  /// fill CMS(Hbb->bbbb)
+  void arXiv_1302_2892(TGraph* graph);
+  /// fill CMS(H+)
+  void arXiv_1205_5736(TGraph* graph);
 
  private:
   /// output name (will be used to derived directory name in root files)
@@ -206,6 +214,15 @@ class PlotLimits {
   bool outerband_;
   /// print constraint on mA-tanb plane from Higgs boson at 125 GeV? (used for option tanb)
   bool higgs125_;
+  /// add ATLAS(htt) in MSSM mA-tanb plot
+  bool arXiv_1211_6956_;
+  /// add ATLAS(H+) in MSSM mA-tanb plot
+  bool arXiv_1204_2760_;
+  /// add CMS(bbH->bbbb) in MSSM mA-tanb plot
+  bool arXiv_1302_2892_;
+  /// add CMS(H+) in MSSM mA-tanb plot
+  bool arXiv_1205_5736_;
+
   /// indicate signal component for signal strength plot from 2d-scan or fit (used for option max-likelihood)
   std::string signal_;
   /// indicate physics model (used for option scan-2d)
@@ -241,6 +258,15 @@ class PlotLimits {
 #include "HiggsAnalysis/HiggsToTauTau/interface/HIG-12-050.h"
 /// official limits from HIG-13-004 (including vhtt)
 #include "HiggsAnalysis/HiggsToTauTau/interface/HIG-13-004.h"
+
+/// official limits from ATLAS(htt)
+#include "HiggsAnalysis/HiggsToTauTau/interface/arXiv-1211-6956.h"
+/// official limits from ATLAS(H+)
+#include "HiggsAnalysis/HiggsToTauTau/interface/arXiv-1204-2760.h"
+/// official limits from CMS(bbH->bbbb)
+#include "HiggsAnalysis/HiggsToTauTau/interface/arXiv-1302-2892.h"
+/// official limits from CMS(H+)
+#include "HiggsAnalysis/HiggsToTauTau/interface/arXiv-1205-5736.h"
 
 inline void
 PlotLimits::upperLEPLimits(TGraph* graph)

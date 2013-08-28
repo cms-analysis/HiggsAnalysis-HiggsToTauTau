@@ -69,6 +69,10 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   injected_ = cfg.existsAs<bool>("injected") ? cfg.getParameter<bool>("injected") : false;
   BG_Higgs_ = cfg.existsAs<bool>("higgsBG") ? cfg.getParameter<bool>("higgsBG") : false;
   // specifics to plot MSSM mA-tanb limits
+  arXiv_1211_6956_ =cfg.existsAs<bool>("arXiv_1211_6956" ) ? cfg.getParameter<bool>("arXiv_1211_6956" ) : false;
+  arXiv_1204_2760_ =cfg.existsAs<bool>("arXiv_1204_2760" ) ? cfg.getParameter<bool>("arXiv_1204_2760" ) : false;
+  arXiv_1302_2892_ =cfg.existsAs<bool>("arXiv_1302_2892" ) ? cfg.getParameter<bool>("arXiv_1302_2892" ) : false;
+  arXiv_1205_5736_ =cfg.existsAs<bool>("arXiv_1205_5736" ) ? cfg.getParameter<bool>("arXiv_1205_5736" ) : false;
   higgs125_ =cfg.existsAs<bool>("higgs125" ) ? cfg.getParameter<bool>("higgs125" ) : false;
   outerband_=cfg.existsAs<bool>("outerband") ? cfg.getParameter<bool>("outerband") : false;
 }
