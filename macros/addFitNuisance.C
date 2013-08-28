@@ -107,15 +107,23 @@ void drawDifference(TH1* iH0,TH1 *iH1,TH1 *iHH=0,TH1 *iHL=0,TH1 *iHH1=0,TH1 *iHL
   TH1F *lHDiffH1 = (TH1F*) iH0->Clone("DiffH1");
   TH1F *lHDiffL1 = (TH1F*) iH0->Clone("DiffL1"); 
   lHDiff  ->SetFillColor(kViolet); lHDiff->SetFillStyle(1001); lHDiff->SetLineWidth(1);
-  lHDiffL ->SetLineWidth(1); lHDiffL ->SetLineColor(iHL ->GetLineColor());
-  lHDiffH ->SetLineWidth(1); lHDiffH ->SetLineColor(iHH ->GetLineColor());
-  lHDiffL1->SetLineWidth(1); lHDiffL1->SetLineColor(iHL1->GetLineColor());
-  lHDiffH1->SetLineWidth(1); lHDiffH1->SetLineColor(iHH1->GetLineColor());
+  lHDiffL ->SetLineColor(iHL ->GetLineColor());
+  lHDiffL ->SetLineStyle(iHL ->GetLineStyle());
+  lHDiffL ->SetLineWidth(iHL ->GetLineWidth());
+  lHDiffH ->SetLineColor(iHH ->GetLineColor());
+  lHDiffH ->SetLineStyle(iHH ->GetLineStyle());
+  lHDiffH ->SetLineWidth(iHH ->GetLineWidth());
+  lHDiffL1->SetLineColor(iHL1->GetLineColor());
+  lHDiffL1->SetLineStyle(iHL1->GetLineStyle());
+  lHDiffL1->SetLineWidth(iHL1->GetLineWidth());
+  lHDiffH1->SetLineColor(iHH1->GetLineColor());
+  lHDiffH1->SetLineStyle(iHH1->GetLineStyle());
+  lHDiffH1->SetLineWidth(iHH1->GetLineWidth());
   TH1F *lXHDiff1 = new TH1F((lName+"XDiff1").c_str(),(lName+"XDiff1").c_str(),iH0->GetNbinsX(),iH0->GetXaxis()->GetXmin(),iH0->GetXaxis()->GetXmax());
   TH1F *lXHDiff2 = new TH1F((lName+"XDiff2").c_str(),(lName+"XDiff2").c_str(),iH0->GetNbinsX(),iH0->GetXaxis()->GetXmin(),iH0->GetXaxis()->GetXmax());
   int i1 = 0;
-  lXHDiff1->SetLineWidth(2); lXHDiff1->SetLineColor(kRed);
-  lXHDiff2->SetLineWidth(2); lXHDiff2->SetLineColor(kRed);
+  lXHDiff1->SetLineWidth(1); lXHDiff1->SetLineColor(kGreen+2);
+  lXHDiff2->SetLineWidth(1); lXHDiff2->SetLineColor(kGreen+2);
 
   lXHDiff1->SetTitle(0);  
   lXHDiff1->GetYaxis()->SetTitle("Ratio");
@@ -123,6 +131,7 @@ void drawDifference(TH1* iH0,TH1 *iH1,TH1 *iHH=0,TH1 *iHL=0,TH1 *iHH1=0,TH1 *iHL
   lXHDiff1->GetYaxis()->SetTitleOffset(0.3);
   lXHDiff1->GetYaxis()->SetTitleSize(0.2);
   lXHDiff1->GetYaxis()->SetLabelSize(0.11);
+  lXHDiff1->GetXaxis()->SetLabelSize(0);
   for(int i0 = 0; i0 < lHDiff->GetNbinsX()+1; i0++) {
     double lXCenter = lHDiff->GetBinCenter(i0);
     double lXVal     = iH0   ->GetBinContent(i0);
@@ -521,17 +530,23 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   if(iVerbose)
   {
     lH0->SetStats(0);
-    lH->SetStats(0);
+  
     lHUp->SetStats(0);
     lHDown->SetStats(0);
     lHUp1->SetStats(0);
     lHDown1->SetStats(0);
     lH0    ->SetLineWidth(1); lH0->SetMarkerStyle(kFullCircle);
-    lH     ->SetLineColor(kGreen);
+    lH     ->SetLineColor(kGreen+2);
     lHUp   ->SetLineColor(kRed);
-    lHDown ->SetLineColor(kRed+1);
+    lHUp   ->SetLineStyle(9);
+    lHDown ->SetLineColor(kRed+2);
+    lHDown ->SetLineStyle(3);
+    lHDown ->SetLineWidth(2);
     lHUp1  ->SetLineColor(kBlue);
-    lHDown1->SetLineColor(kBlue+1);
+    lHUp1  ->SetLineStyle(9);
+    lHDown1->SetLineColor(kBlue+2);
+    lHDown1->SetLineStyle(3);
+    lHDown1->SetLineWidth(2);
     lH0->SetTitle(0);
     lH0->GetXaxis()->SetTitle("m_{#tau#tau} [GeV]");
     lH0->GetXaxis()->SetTitleSize(0.05);
@@ -632,11 +647,17 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   lHUp1->SetStats(0);
   lHDown1->SetStats(0);
   lH0    ->SetLineWidth(1); lH0->SetMarkerStyle(kFullCircle);
-  lH     ->SetLineColor(kGreen);
+  lH     ->SetLineColor(kGreen+2);
   lHUp   ->SetLineColor(kRed);
-  lHDown ->SetLineColor(kRed+1);
+  lHUp   ->SetLineStyle(9);
+  lHDown ->SetLineColor(kRed+2);
+  lHDown ->SetLineStyle(3);
+  lHDown ->SetLineWidth(2);
   lHUp1  ->SetLineColor(kBlue);
-  lHDown1->SetLineColor(kBlue+1);
+  lHUp1  ->SetLineStyle(9);
+  lHDown1->SetLineColor(kBlue+2);
+  lHDown1->SetLineStyle(3);
+  lHDown1->SetLineWidth(2);
   lH0->SetTitle(0);
   lH0->GetXaxis()->SetTitle("m_{#tau#tau} [GeV]");
   lH0->GetXaxis()->SetTitleSize(0.05);
