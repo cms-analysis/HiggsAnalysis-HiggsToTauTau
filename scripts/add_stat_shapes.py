@@ -86,11 +86,11 @@ def walk_and_copy(inputdir, outputdir, pattern, mergers, threshold, prefix, norm
                         # Print to stdout, so we can capture the uncertainties
                         print "%s_%s_bin_%i" % (prefix, histo, ibin)
                         err_up.SetBinContent(ibin, val + error)
-                        err_down.SetBinContent(ibin, val - error if val > error else 0.)
+                        ## if not val > error bin the down entry to a small value >0 to prevent problems in combine 
+                        err_down.SetBinContent(ibin, val - error if val > error else 0.01)
                         if normalize:
                             err_up.Scale(th1.Integral()/err_up.Integral())
-                            if err_down.Integral() > 0. :
-                                err_down.Scale(th1.Integral()/err_down.Integral())
+                            err_down.Scale(th1.Integral()/err_down.Integral())
                         if val < error:
                             log.warning("%s_%s_bin_%iDown, is negative, pegged to zero", prefix, histo, ibin)
                         outputdir.cd()
