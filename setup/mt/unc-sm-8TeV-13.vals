@@ -33,4 +33,4 @@ muTau_soft_1jet_medium		W				CMS_htt_WNorm_mutau_soft_1jet_medium_8TeV	1.10
 muTau_soft_1jet_medium         	QCD				CMS_htt_QCDSyst_mutau_soft_1jet_medium_8TeV	1.10
 muTau_soft_1jet_medium		ZJ				CMS_htt_ZJetFakeTau_mutau_soft_1jet_medium_8TeV 1.20
 muTau_soft_1jet_medium		ZL				CMS_htt_ZLeptonFakeTau_mutau_soft_8TeV	  	1.30
-muTau_soft_1jet_medium		background,signal		CMS_L1etm_mutau_soft_1jet_medium_8TeV		1.00
+muTau_soft_1jet_medium		signal,ZTT,ZL,ZJ,TT,VV,W	CMS_L1etm_mutau_soft_1jet_medium_8TeV		1.00
