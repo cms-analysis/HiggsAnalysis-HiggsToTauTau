@@ -2,7 +2,7 @@
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* lowerLEP, TGraph* upperLEP, std::map<double, TGraphAsymmErrors*> higgsBands, std::string& xaxis, std::string& yaxis, TGraph* injected=0, double min=0., double max=50., bool log=false);
+void plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* lowerLEP, TGraph* upperLEP, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, TGraph* injected=0, double min=0., double max=50., bool log=false);
 
 TGraphAsymmErrors*  
 PlotLimits::higgsConstraint(const char* directory, double mass, double deltaM)
@@ -53,9 +53,14 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
 	plain->SetPoint(ipoint+1, observed->GetX()[ipoint], observed->GetY()[ipoint]); 
 	plain->SetPointEYlow (ipoint+1, 0);
  	plain->SetPointEYhigh(ipoint+1, 100);
+	//std::cout << ipoint << " " << observed->GetN() << " " << observed->GetX()[ipoint] << std::endl;
 	++ipoint;
+
       }
     }
+    plain->SetPoint(observed->GetN(), observed->GetX()[observed->GetN()-1], 100.);
+    plain->SetPointEYlow (observed->GetN(), 0);
+    plain->SetPointEYhigh(observed->GetN(), 100); 
   }
 
   // create LEP exclusion plot
@@ -64,6 +69,13 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
 
   TGraph* lowerLEP = new TGraph();
   lowerLEPLimits(lowerLEP);
+
+  // create plots for additional comparisons
+  std::map<std::string, TGraph*> comparisons; TGraph* comp=0;
+  if(arXiv_1211_6956_){ comp = new TGraph(), arXiv_1211_6956(comp); comparisons[std::string("ATLAS H#rightarrow#tau#tau (4.8/fb)")] = comp;}
+  if(arXiv_1204_2760_){ comp = new TGraph(); arXiv_1204_2760(comp); comparisons[std::string("ATLAS H^{+} (4.6/fb)")               ] = comp;}
+  if(arXiv_1302_2892_){ comp = new TGraph(); arXiv_1302_2892(comp); comparisons[std::string("CMS bbH#rightarrow 4b (4.8/fb)")    ] = comp;}
+  if(arXiv_1205_5736_){ comp = new TGraph(); arXiv_1205_5736(comp); comparisons[std::string("CMS H^{+} (2/fb)")                 ] = comp;}
 
   // setup contratins from Higgs mass
   std::map<double, TGraphAsymmErrors*> higgsBands;
@@ -76,7 +88,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   // this one is not supported here (see in macros/plotTanb.C to use this option - requires some manual work)
   TGraph* injected=0;
   // do the plotting 
-  plottingTanb(canv, plain, innerBand, outerBand, expected, observed, lowerLEP, upperLEP, higgsBands, xaxis_, yaxis_, injected, min_, max_, log_);
+  plottingTanb(canv, plain, innerBand, outerBand, expected, observed, lowerLEP, upperLEP, higgsBands, comparisons, xaxis_, yaxis_, injected, min_, max_, log_);
   /// setup the CMS Preliminary
   CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
   // write results to files

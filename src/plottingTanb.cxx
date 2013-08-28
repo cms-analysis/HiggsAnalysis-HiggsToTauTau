@@ -10,7 +10,7 @@
 #include "TGraphAsymmErrors.h"
 
 void
-plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* lowerLEP, TGraph* upperLEP, std::map<double, TGraphAsymmErrors*> higgsBands, std::string& xaxis, std::string& yaxis, TGraph* injected=0, double min=0., double max=60., bool log=false)
+plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* lowerLEP, TGraph* upperLEP, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, TGraph* injected=0, double min=0., double max=60., bool log=false)
 {
   // set up styles
   canv.cd();
@@ -98,6 +98,12 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
     band->second->SetFillColor(coloredBands[idx]);
     band->second->Draw("3same");
   }
+  idx=0;
+  int coloredComps[] = {kRed, kBlue, kGreen+4, kOrange+8}; 
+  for(std::map<std::string,TGraph*>::const_iterator comp = comparisons.begin(); comp!=comparisons.end(); ++comp, ++idx){
+    comp->second->SetLineColor(coloredComps[idx]);
+    comp->second->Draw("same");
+  }
 
   TPaveText * theory1 = new TPaveText(0.5, 0.24, 0.9, 0.30, "NDC");
   theory1->SetBorderSize(   0 );
@@ -120,10 +126,10 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
   theory2->Draw();
 
   /// add the proper legend
-  TLegend* leg = new TLegend(0.18, !higgsBands.empty() ? 0.52 : 0.60, !higgsBands.empty() ? 0.63: 0.50, 0.90);
+  TLegend* leg = new TLegend(0.18, (!higgsBands.empty() || !comparisons.empty()) ? 0.52 : 0.60, (!higgsBands.empty() || !comparisons.empty()) ? 0.63: 0.50, 0.90);
   leg->SetBorderSize(  1 );
   leg->SetFillStyle (1001);
-  leg->SetTextSize  (0.04);
+  leg->SetTextSize  (0.03);
   leg->SetTextFont  ( 62 ); 
   leg->SetFillColor (kWhite);
   leg->SetLineColor (kBlack);
@@ -144,6 +150,9 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
     leg->AddEntry(band->second, TString::Format("mh=125GeV #pm %.0fGeV", band->first), "F");
   }
   leg->AddEntry(upperLEP, "LEP", "F");
+  for(std::map<std::string,TGraph*>::const_iterator comp = comparisons.begin(); comp!=comparisons.end(); ++comp){
+    leg->AddEntry(comp->second, (comp->first).c_str(), "L");
+  }
   leg->Draw("same");
   //canv.RedrawAxis("g");
   canv.RedrawAxis();

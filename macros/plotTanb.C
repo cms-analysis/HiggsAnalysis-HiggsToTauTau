@@ -33,14 +33,15 @@ plotTanb(const char* filename, const char* channel, bool draw_injected_=false, d
 
   // this functionality is not yet supported
   std::map<double, TGraphAsymmErrors*> higgsBands;
+  // this functionality is not yet supported
+  std::map<std::string, TGraph*> comparisons;
 
   // set up styles
   SetStyle();
   // do the plotting 
   TCanvas canv = TCanvas("canv", "Limits", 600, 600);
   // do the plotting 
-  plottingTanb(canv, plain, innerBand, outerBand, expected, observed, lowerLEP, upperLEP, higgsBands, xaxis_, yaxis_, injected, min_, max_, log_);
-  std::cout<< "hello2"<<std::endl;
+  plottingTanb(canv, plain, innerBand, outerBand, expected, observed, lowerLEP, upperLEP, higgsBands, comparisons, xaxis_, yaxis_, injected, min_, max_, log_);
   /// setup the CMS Preliminary
   CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
   // write results to files
