@@ -27,7 +27,7 @@ layout = cms.PSet(
     ## define verbosity level
     verbosity = cms.uint32(0),
     ## define output label
-    outputLabel = cms.string("bbH"), 
+    outputLabel = cms.string("limit"), 
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
     90.
