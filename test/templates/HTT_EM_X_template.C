@@ -1,5 +1,5 @@
-
 #include <iostream>
+#include <algorithm>
 
 #include <TH1F.h>
 #include <TFile.h>
@@ -34,8 +34,8 @@ $DEFINE_MSSM
    directory. The key words are replaced by proper values.
 */
 
-static const bool BLIND_DATA = true; //false;
-static const bool FULLPLOTS = false; //true;
+static const bool BLIND_DATA = false; //false;
+static const bool FULLPLOTS = true; //true;
 float blinding_SM(float mass){ return (100<mass && mass<150); }
 float blinding_MSSM(float mass){ return (100<mass); }
 float maximum(TH1F* h, bool LOG=false){
@@ -50,7 +50,6 @@ float maximum(TH1F* h, bool LOG=false){
     return 1.6*h->GetMaximum(); 
   }
 }
-
 
 TH1F* refill(TH1F* hin, const char* sample, bool data=false)
 /*
@@ -80,7 +79,6 @@ TH1F* refill(TH1F* hin, const char* sample, bool data=false)
   }
   return hout;
 }
-
 
 void rescale(TH1F* hin, unsigned int idx)
 /*
@@ -277,7 +275,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
   data->Draw("e");
 
-  TH1F* errorBand = (TH1F*)Ztt ->Clone();
+  TH1F* errorBand = (TH1F*)Ztt ->Clone("errorBand");
   errorBand  ->SetMarkerSize(0);
   errorBand  ->SetFillColor(1);
   errorBand  ->SetFillStyle(3013);
@@ -381,27 +379,65 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   canv0->SetGridy();
   canv0->cd();
 
+  TH1F* model = (TH1F*)Ztt ->Clone("model");
+  TH1F* test1 = (TH1F*)data->Clone("test1"); 
+  for(int ibin=0; ibin<test1->GetNbinsX(); ++ibin){
+    model->SetBinContent(ibin+1, model->GetBinContent(ibin+1)*model->GetBinWidth(ibin+1));
+    model->SetBinError  (ibin+1, model->GetBinError  (ibin+1)*model->GetBinWidth(ibin+1));
+    test1->SetBinContent(ibin+1, test1->GetBinContent(ibin+1)*test1->GetBinWidth(ibin+1));
+    test1->SetBinError  (ibin+1, test1->GetBinError  (ibin+1)*test1->GetBinWidth(ibin+1));
+  }
+  double chi2prob = test1->Chi2Test      (model,"PUW");        std::cout << "chi2prob:" << chi2prob << std::endl;
+  double chi2ndof = test1->Chi2Test      (model,"CHI2/NDFUW"); std::cout << "chi2ndf :" << chi2ndof << std::endl;
+  double ksprob   = test1->KolmogorovTest(model);              std::cout << "ksprob  :" << ksprob   << std::endl;
+  double ksprobpe = test1->KolmogorovTest(model,"DX");         std::cout << "ksprobpe:" << ksprobpe << std::endl;  
+
+  std::vector<double> edges;
   TH1F* zero = (TH1F*)ref ->Clone("zero"); zero->Clear();
   TH1F* rat1 = (TH1F*)data->Clone("rat1"); 
-  rat1->Divide(Ztt);
+  for(int ibin=0; ibin<rat1->GetNbinsX(); ++ibin){
+    rat1->SetBinContent(ibin+1, Ztt->GetBinContent(ibin+1)>0 ? data->GetBinContent(ibin+1)/Ztt->GetBinContent(ibin+1) : 0);
+    rat1->SetBinError  (ibin+1, Ztt->GetBinContent(ibin+1)>0 ? data->GetBinError  (ibin+1)/Ztt->GetBinContent(ibin+1) : 0);
+    zero->SetBinContent(ibin+1, 0.);
+    zero->SetBinError  (ibin+1, Ztt->GetBinContent(ibin+1)>0 ? Ztt ->GetBinError  (ibin+1)/Ztt->GetBinContent(ibin+1) : 0);
+  }
   for(int ibin=0; ibin<rat1->GetNbinsX(); ++ibin){
     if(rat1->GetBinContent(ibin+1)>0){
+      edges.push_back(TMath::Abs(rat1->GetBinContent(ibin+1)-1.)+TMath::Abs(rat1->GetBinError(ibin+1)));
       // catch cases of 0 bins, which would lead to 0-alpha*0-1
       rat1->SetBinContent(ibin+1, rat1->GetBinContent(ibin+1)-1.);
     }
-    zero->SetBinContent(ibin+1, 0.);
   }
+  float range = 0.1;
+  std::sort(edges.begin(), edges.end());
+  if (edges[edges.size()-2]>0.1) { range = 0.2; }
+  if (edges[edges.size()-2]>0.2) { range = 0.5; }
+  if (edges[edges.size()-2]>0.5) { range = 1.0; }
+  if (edges[edges.size()-2]>1.0) { range = 1.5; }
+  if (edges[edges.size()-2]>1.5) { range = 2.0; }
   rat1->SetLineColor(kBlack);
   rat1->SetFillColor(kGray );
-  rat1->SetMaximum(+0.5);
-  rat1->SetMinimum(-0.5);
+  rat1->SetMaximum(+range);
+  rat1->SetMinimum(-range);
   rat1->GetYaxis()->CenterTitle();
   rat1->GetYaxis()->SetTitle("#bf{Data/MC-1}");
   rat1->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}");
   rat1->Draw();
+  zero->SetFillStyle(  3013);
+  zero->SetFillColor(kBlack);
   zero->SetLineColor(kBlack);
-  zero->Draw("same");
+  zero->Draw("e2histsame");
   canv0->RedrawAxis();
+
+  TPaveText* stat1 = new TPaveText(0.20, 0.76+0.061, 0.32, 0.76+0.161, "NDC");
+  stat1->SetBorderSize(   0 );
+  stat1->SetFillStyle(    0 );
+  stat1->SetTextAlign(   12 );
+  stat1->SetTextSize ( 0.05 );
+  stat1->SetTextColor(    1 );
+  stat1->SetTextFont (   62 );
+  stat1->AddText(TString::Format("#chi^{2}/ndf=%.3f,  P(#chi^{2})=%.3f,  P(KS)=%.3f", chi2ndof, chi2prob, ksprob));
+  stat1->Draw();
 
   /*
     Ratio After fit over Prefit
@@ -411,31 +447,45 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   canv1->SetGridy();
   canv1->cd();
 
+  edges.clear();
   TH1F* rat2 = (TH1F*) Ztt->Clone("rat2");
-  rat2->Divide(ref);
+  for(int ibin=0; ibin<rat2->GetNbinsX(); ++ibin){
+    rat2->SetBinContent(ibin+1, ref->GetBinContent(ibin+1)>0 ? Ztt->GetBinContent(ibin+1)/ref->GetBinContent(ibin+1) : 0);
+    rat2->SetBinError  (ibin+1, ref->GetBinContent(ibin+1)>0 ? Ztt->GetBinError  (ibin+1)/ref->GetBinContent(ibin+1) : 0);
+  }
   for(int ibin=0; ibin<rat2->GetNbinsX(); ++ibin){
     if(rat2->GetBinContent(ibin+1)>0){
+      edges.push_back(TMath::Abs(rat2->GetBinContent(ibin+1)-1.)+TMath::Abs(rat2->GetBinError(ibin+1)));
       // catch cases of 0 bins, which would lead to 0-alpha*0-1
       rat2 ->SetBinContent(ibin+1, rat2->GetBinContent(ibin+1)-1.);
     }
   }
+  range = 0.1;
+  std::sort(edges.begin(), edges.end());
+  if (edges[edges.size()-2]>0.1) { range = 0.2; }
+  if (edges[edges.size()-2]>0.2) { range = 0.5; }
+  if (edges[edges.size()-2]>0.5) { range = 1.0; }
+  if (edges[edges.size()-2]>1.0) { range = 1.5; }
+  if (edges[edges.size()-2]>1.5) { range = 2.0; }
 #if defined MSSM
-  if(!log){ rat2->GetXaxis()->SetRange(0, rat2->FindBin(350)); } else{ rat2->GetXaxis()->SetRange(0, rat2->FindBin(1000)); };
+  if(!log){ rat2->GetXaxis()->SetRange(0, rat2->FindBin(345)); } else{ rat2->GetXaxis()->SetRange(0, rat2->FindBin(695)); };
 #else
-  rat2->GetXaxis()->SetRange(0, rat2->FindBin(350));
+  rat2->GetXaxis()->SetRange(0, rat2->FindBin(345));
 #endif
   rat2->SetNdivisions(505);
   rat2->SetLineColor(kRed+ 3);
   rat2->SetMarkerColor(kRed+3);
   rat2->SetMarkerSize(1.1);
-  rat2->SetMaximum(+0.3);
-  rat2->SetMinimum(-0.3);
+  rat2->SetMaximum(+range);
+  rat2->SetMinimum(-range);
   rat2->GetYaxis()->SetTitle("#bf{Postfit/Prefit-1}");
   rat2->GetYaxis()->CenterTitle();
   rat2->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}");
   rat2->Draw();
+  zero->SetFillStyle(  3013);
+  zero->SetFillColor(kBlack);
   zero->SetLineColor(kBlack);
-  zero->Draw("same");
+  zero->Draw("e2histsame");
   canv1->RedrawAxis();
 
   /*
