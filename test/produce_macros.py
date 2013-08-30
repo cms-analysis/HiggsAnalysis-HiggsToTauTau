@@ -249,20 +249,20 @@ for chn in config.channels :
             if chn == "hbb" :
                 process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties = parse_dcard("datacards/{CHN}_{CAT}_{PER}.txt".format(CHN=chn, CAT=cat, PER=per), fitresults, "ANYBIN")
                 if cat=="6" :
-                    plots = Analysis(options.analysis, histfile, config.categoryname[chn][int(cat)],
+                    plots = Analysis(options.analysis, histfile, config.categoryname[chn][config.categories[chn][per].index(cat)],
                                  process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
                                  "templates/{CHN}_LEP_X_template.C".format(CHN=chn.upper()),
                                  "{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per)
                                  )
                 else :
-                    plots = Analysis(options.analysis, histfile, config.categoryname[chn][int(cat)],
+                    plots = Analysis(options.analysis, histfile, config.categoryname[chn][config.categories[chn][per].index(cat)],
                                  process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
                                  "templates/{CHN}_HAD_X_template.C".format(CHN=chn.upper()),
                                  "{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per)
                                  )
             else :
                 process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties = parse_dcard("datacards/htt_{CHN}_{CAT}_{PER}.txt".format(CHN=chn, CAT=cat, PER=per), fitresults, "ANYBIN")
-                plots = Analysis(options.analysis, histfile, config.categoryname[chn][int(cat)],
+                plots = Analysis(options.analysis, histfile, config.categoryname[chn][config.categories[chn][per].index(cat)],
                                  process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
                                  "templates/HTT_{CHN}_X_template.C".format(CHN=chn.upper()),
                                  "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per)

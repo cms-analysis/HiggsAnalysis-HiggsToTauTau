@@ -18,8 +18,8 @@ parser.add_option("--label", dest="label", default="", type="string",
 parser.add_option("--blind-datacards", dest="blind_datacards", default=False, action="store_true",
                   help="Option to blind datacards. Also needs to be turned on to inject SM to datacards. [Default: False]")
 parser.add_option("--extra-templates", dest="extra_templates", default="", type="string", help="List of extra background or signal templates which should be injected to the asimov dataset. Needs to be comma seperated list. Here used to inject SM signal into MSSM datacards. [Default: \"\"]")
-parser.add_option("--ignore-during-scaling", dest="do_not_scales", default="ee mm vhtt", type="string",
-                  help="List of channels, which the scaling by cross seciton times BR shoul not be applied. The list should be embraced by call-ons and separeted by whitespace or comma. [Default: \"vhtt ee mm\"]")
+parser.add_option("--ignore-during-scaling", dest="do_not_scales", default="mm vhtt", type="string",
+                  help="List of channels, which the scaling by cross seciton times BR shoul not be applied. The list should be embraced by call-ons and separeted by whitespace or comma. [Default: \"vhtt mm\"]")
 parser.add_option("--hww-mass", dest="hww_mass", default='', type="string",
                   help="specify this option if you want to fix the hww contributions for the channels em and vhtt to a given mass. This configuration applies to hww as part of the signal. When an empty string is given the mass will be scanned. For analysis hhw-bg, where hww signal contributions are defined as background in any case mH=125 GeV willbe chosenindependent from this configuration. [Default: '']")
 parser.add_option("--hww-scale", dest="hww_scale", default='1.', type="string",
@@ -278,8 +278,8 @@ if options.update_setup :
                             SOFT=',10,11,12,13,15,16' if options.add_mutau_soft and chn=='mt' else '',
                             THR=config.bbbthreshold
                             ))
-                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                            
+                        os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                        os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                            
     for ana in analyses :
         if 'hww-bg' in ana :
             os.system("cp -r {DIR}/{SOURCE} {DIR}/{TARGET}".format(DIR=dir, SOURCE=ana[:ana.find(':')], TARGET=ana[ana.find(':')+1:]))
@@ -329,9 +329,9 @@ if options.update_aux :
         for chn in config.channels:
             for per in config.periods:
                 if config.categories[chn][per]:
-                    os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c {CHN} --sm-categories-{CHN}='{CATS}' {MASSES}".format(
-                        LABEL=options.label,
+                    os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' --sm-categories-{CHN}='{CATS}' {MASSES}".format(
                         CMSSW_BASE=cmssw_base,
+                        LABEL=options.label,
                         ANA=ana,
                         DIR=dir,
                         CATS=' '.join(config.categories[chn][per]),

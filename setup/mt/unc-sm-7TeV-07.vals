@@ -29,3 +29,4 @@ muTau_vbf_tight		ZTT				CMS_htt_extrap_ztt_mutau_vbf_tight_7TeV		1.10
 muTau_vbf_tight		ZLL				CMS_htt_extrap_ztt_mutau_vbf_tight_7TeV		1.07
 muTau_vbf_tight		QCD				CMS_htt_QCDSyst_mutau_vbf_tight_7TeV		1.22
 muTau_vbf_tight		ZL,ZJ				CMS_htt_ZLeptonFakeTau_mutau_7TeV		1.30
+muTau_vbf_tight		ZL				CMS_htt_ZLScale_mutau_7TeV      		1.00

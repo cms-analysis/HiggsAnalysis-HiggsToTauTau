@@ -1,35 +1,21 @@
 #!/usr/bin/env python
 from optparse import OptionParser, OptionGroup
+from HiggsAnalysis.HiggsToTauTau.LimitsConfig import configuration
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options]",
                       description="Script to setup all datacards and directories.'")
-##
-## GENERAL OPTIONS
-##
-parser.add_option("-c", "--channels", dest="channels", default="mm em mt et tt", type="string",
-                  help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt. [Default: \"mm em et mt tt\"]")
-parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
-                  help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analyses", dest="analyses", default="bbb, no-bbb",
                   help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"bbb, no-bbb\" [Default: \"bbb, no-bbb\"]")
 parser.add_option("--label", dest="label", default="", type="string", 
                   help="Possibility to give the setups, aux and LIMITS directory a index (example LIMITS-bbb). [Default: \"\"]")
 parser.add_option("--tail-fitting", dest="fit_tails", default=False, action="store_true",
                   help="Fitting of the MSSM m(tautau) tails for predefined backgrounds [Default: False]")
+parser.add_option("--merge-bbb", dest="merge_bbb", default=False, action="store_true",
+                  help="Merge bin-by-bin uncertainties according to Barlow-Beeston approach. [Default: False]")
 parser.add_option("--blind-datacards", dest="blind_datacards", default=False, action="store_true",
                   help="Option to blind datacards. Also needs to be turned on to inject SM to datacards. [Default: False]")
 parser.add_option("--extra-templates", dest="extra_templates", default="", type="string", help="List of extra background or signal templates which should be injected to the asimov dataset. Needs to be comma seperated list. Here used to inject SM signal into MSSM datacards. [Default: \"\"]")
-parser.add_option("--inputs-mm", dest="inputs_mm", default="KIT", type="choice", choices=['KIT'],
-                  help="Input files for htt_mm analysis. [Default: \"KIT\"]")
-parser.add_option("--inputs-em", dest="inputs_em", default="MIT", type="choice", choices=['MIT', 'Imperial'],
-                  help="Input files for htt_em analysis. [Default: \"MIT\"]")
-parser.add_option("--inputs-et", dest="inputs_et", default="Imperial", type="choice", choices=['Wisconsin', 'Imperial', 'CERN'],
-                  help="Input files for htt_et analysis. [Default: \"Imperial\"]")
-parser.add_option("--inputs-mt", dest="inputs_mt", default="Imperial", type="choice", choices=['Wisconsin', 'Imperial', 'LLR', 'CERN', 'MIT'],
-                  help="Input files for htt_mt analysis. [Default: \"Imperial\"]")
-parser.add_option("--inputs-tt", dest="inputs_tt", default="MIT", type="choice", choices=['CERN', 'MIT'],
-                  help="Input files for htt_tt analysis. [Default: \"MIT\"]")
 parser.add_option("--update-all", dest="update_all", default=False, action="store_true",
                   help="update everything from scratch. If not specified use the following options to specify, which parts of the reload you want to run. [Default: False]")
 parser.add_option("--update-setup", dest="update_setup", default=False, action="store_true",
@@ -40,7 +26,8 @@ parser.add_option("--update-LIMITS", dest="update_limits", default=False, action
                   help="update LIMITS directory for the indicated analyses. [Default: False]")
 parser.add_option("--drop-list", dest="drop_list", default="",  type="string",
                   help="The full path to the result file of the pruning if it exists already for pruning of bin-by-bin uncertainties. If empty the pruning will be performed including a mlfit within this script. ATTENTION: this can take a few hours depending on the number of additional bin-by-bin uncertainties. [Default: \"\"]")
-
+parser.add_option("-c", "--config", dest="config", default="",
+                  help="Additional configuration file to be used for the setup [Default: \"\"]")
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -56,12 +43,6 @@ from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
 ## masses
 masses = args
 for idx in range(len(masses)) : masses[idx] = masses[idx].rstrip(',')
-## periods
-periods = options.periods.split()
-for idx in range(len(periods)) : periods[idx] = periods[idx].rstrip(',')
-## channels
-channels = options.channels.split()
-for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
 ## analyses
 analyses = options.analyses.split()
 for idx in range(len(analyses)) : analyses[idx] = analyses[idx].rstrip(',')
@@ -69,15 +50,14 @@ for idx in range(len(analyses)) : analyses[idx] = analyses[idx].rstrip(',')
 cmssw_base=os.environ['CMSSW_BASE']
 ## setup a backup directory
 os.system("mkdir -p backup")
+## configuration
+config=configuration('mssm', options.config)
 
-##define inputs from cvs; Note: not all analyses are available for all inputs
+##define inputs from git; Note: not all analyses are available for all inputs
 directories = {}
 from HiggsAnalysis.HiggsToTauTau.summer13_analyses_cfg import htt_mm, htt_em, htt_et, htt_mt, htt_tt, htt_tt
-directories['mm'] = htt_mm(options.inputs_mm)
-directories['em'] = htt_em(options.inputs_em)
-directories['et'] = htt_et(options.inputs_et)
-directories['mt'] = htt_mt(options.inputs_mt)
-directories['tt'] = htt_tt(options.inputs_tt)
+for chn in config.channels :
+    directories[chn] = locals()['htt_'+chn](config.inputs[chn])
 
 ## postfix pattern for input files
 patterns = {
@@ -94,8 +74,8 @@ print "# -----------------------------------------------------------------------
 print "# doMSSM.py "
 print "# --------------------------------------------------------------------------------------"
 print "# You are using the following configuration: "
-print "# --channels                :", options.channels
-print "# --periods                 :", options.periods
+print "# --channels                :", ' '.join(config.channels)
+print "# --periods                 :", ' '.join(config.periods)
 print "# --analyses                :", options.analyses
 print "# --label                   :", options.label
 print "# --drop-list               :", options.drop_list
@@ -103,11 +83,8 @@ print "# --tail-fitting            :", options.fit_tails
 print "# --blind-datacards         :", options.blind_datacards
 print "# --extra-templates         :", options.extra_templates
 print "# --------------------------------------------------------------------------------------"
-print "# --inputs-mm               :", options.inputs_mm
-print "# --inputs-em               :", options.inputs_em
-print "# --inputs-et               :", options.inputs_et
-print "# --inputs-mt               :", options.inputs_mt
-print "# --inputs-tt               :", options.inputs_tt
+for chn in config.channels:
+    print "# --inputs-"+chn+"               :", config.inputs[chn]
 print "# --------------------------------------------------------------------------------------"
 print "# --update-setup            :", options.update_setup
 print "# --update-aux              :", options.update_aux
@@ -118,7 +95,6 @@ print "# -----------------------------------------------------------------------
 
 ## setup main directory
 setup="{CMSSW_BASE}/src/.setup{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
-#setup=cmssw_base+"/src/HiggsAnalysis/HiggsToTauTau/setup"
 
 if options.update_setup :
     print "##"
@@ -129,7 +105,7 @@ if options.update_setup :
         os.system("rm -r {CMSSW_BASE}/src/.setup{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label))
     os.system("cp -r {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup {CMSSW_BASE}/src/.setup{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label))
 
-    for chn in channels :
+    for chn in config.channels :
         print "... copy files for channel:", chn
         ## remove legacy
         for file in glob.glob("{SETUP}/{CHN}/*inputs-mssm-*.root".format(SETUP=setup, CHN=chn)) :
@@ -139,7 +115,7 @@ if options.update_setup :
         if options.fit_tails :
             if chn != 'mm' :
                 tailfit = '' #'-fb'
-        for per in periods :
+        for per in config.periods :
             if directories[chn][per] == 'None' :
                 continue
             for ana in analyses :
@@ -197,8 +173,8 @@ if options.update_setup :
                             ))
     ## scale by acceptance correction. This needs to be done for all available masses independent
     ## from args to guarantee that the tanb_grid templates are properly scaled.
-    for chn in channels :
-        for per in periods :
+    for chn in config.channels :
+        for per in config.periods :
             if directories[chn][per] == 'None' :
                 continue
             os.system("scale2accept.py -i {SETUP} -c '{CHN}' -p '{PER}' 90 100-200:20 130 250-500:50 600-1000:100".format(
@@ -216,8 +192,8 @@ if options.update_setup :
     for ana in analyses :
         os.system("cp -r {SETUP} {DIR}/{ANA}".format(SETUP=setup, DIR=dir, ANA=ana))
         if options.fit_tails:     
-            if '7TeV' in periods :
-                if 'em' in channels :
+            if '7TeV' in config.periods :
+                if 'em' in config.channels :
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-7TeV-0.root -c em -e 7TeV -b 'Fakes_fine_binning' -k '8' --range 150 --rangelast 2000 ".format( 
                         DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-7TeV-0.root -c em -e 7TeV -b 'EWK_fine_binning' -k '9' --range 200 --rangelast 2000 ".format(
@@ -226,9 +202,9 @@ if options.update_setup :
                         DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-7TeV-0.root -c em -e 7TeV -b 'ttbar_fine_binning' -k '9' --range 200 --rangelast 2000 ".format(
                         DIR=dir, ANA=ana))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-7TeV-0.root -c em -e 7TeV -b 'ttbar_fine_binning' -k '8' --range 150 ".format(
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-7TeV-0.root -c em -e 7TeV -b 'ttbar_fine_binning' -k '8' --range 200 ".format(
                         DIR=dir, ANA=ana))
-                if 'et' in channels :
+                if 'et' in config.channels :
                      os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-7TeV-0.root -c et -e 7TeV -b 'QCD_fine_binning' -k '8' --range 200 ".format(
                          DIR=dir, ANA=ana))
                      os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-7TeV-0.root -c et -e 7TeV -b 'W_fine_binning' -k '8' --range 200 ".format(
@@ -238,7 +214,7 @@ if options.update_setup :
                          DIR=dir, ANA=ana))
                      os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-7TeV-0.root -c et -e 7TeV -b 'QCD_CMS_htt_QCDShape_etau_nobtag_7TeVUp_fine_binning'   -k '8' --range 200 --no-uncerts".format(
                          DIR=dir, ANA=ana))
-                if 'mt' in channels :
+                if 'mt' in config.channels :
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'QCD_fine_binning' -k '9' --range 120 --rangelast 2000".format(
                         DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'QCD_fine_binning' -k '8' --range 150 ".format(
@@ -254,8 +230,8 @@ if options.update_setup :
                         DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'QCD_CMS_htt_QCDShape_mutau_btag_7TeVUp_fine_binning'   -k '9' --range 120 --rangelast 2000 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-            if "8TeV" in periods :
-                if 'em' in channels :
+            if "8TeV" in config.periods :
+                if 'em' in config.channels :
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-8TeV-0.root -c em -e 8TeV -b 'Fakes_fine_binning' -k '8' --range 200 --rangelast 2000 ".format( 
                         DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-8TeV-0.root -c em -e 8TeV -b 'EWK_fine_binning' -k '9' --range 200 --rangelast 2000 ".format(
@@ -264,9 +240,9 @@ if options.update_setup :
                         DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-8TeV-0.root -c em -e 8TeV -b 'ttbar_fine_binning' -k '9' --range 200 --rangelast 2000 ".format(
                         DIR=dir, ANA=ana))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-8TeV-0.root -c em -e 8TeV -b 'ttbar_fine_binning' -k '8' --range 150 ".format(
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-8TeV-0.root -c em -e 8TeV -b 'ttbar_fine_binning' -k '8' --range 200 ".format(
                         DIR=dir, ANA=ana))
-                if 'et' in channels :
+                if 'et' in config.channels :
                      os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_fine_binning' -k '9' --range 120 ".format(
                          DIR=dir, ANA=ana))
                      os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_fine_binning' -k '8' --range 120 ".format(
@@ -288,7 +264,7 @@ if options.update_setup :
                          DIR=dir, ANA=ana))
                      os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_CMS_htt_QCDShape_etau_btag_8TeVUp_fine_binning'   -k '9' --range 120 --no-uncerts".format(
                          DIR=dir, ANA=ana))
-                if 'mt' in channels : 
+                if 'mt' in config.channels : 
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'QCD_fine_binning' -k '8' --range 200 ".format(
                         DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_fine_binning' -k '9' --range 150 ".format(
@@ -304,7 +280,7 @@ if options.update_setup :
                         DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'QCD_CMS_htt_QCDShape_mutau_nobtag_8TeVUp_fine_binning'   -k '8' --range 200 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-                if options.channels.find("tt") > -1:
+                if 'tt' in config.channels :
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_tt.inputs-mssm-8TeV-0.root -c tt -e 8TeV -b 'QCD_fine_binning' -k '9' --range 200 ".format(
                         DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_tt.inputs-mssm-8TeV-0.root -c tt -e 8TeV -b 'QCD_fine_binning' -k '8' --range 200 ".format(
@@ -312,7 +288,7 @@ if options.update_setup :
                 ## cleanup
                 os.system("rm rootlogon.C")
                 os.system("mkdir -p tail-fitting")
-                os.system("mv *_Rebin.png tail-fitting")
+                os.system("mv *_Rebin.* tail-fitting")
         if ana == 'no-bbb' :
             print "##"
             print "## update no-bbb directory in setup:"
@@ -321,73 +297,20 @@ if options.update_setup :
             print "##"
             print "## update bbb    directory in setup:"
             print "##"
-            if 'ee' in channels :
-                ## setup bbb uncertainties for ee 
-                #os.system("add_bbb_errors.py 'ee:7TeV,8TeV:08,09:QCD,TTJ,ZTT,ZEE,WJets,Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
-                os.system("add_bbb_errors.py 'ee:7TeV,8TeV:08,09:QCD,TTJ,ZTT,ZEE,WJets>Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
-                    DIR=dir,
-                    ANA=ana
-                    ))
-                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-            if 'mm' in channels :
-                ## setup bbb uncertainties for mm  
-                #os.system("add_bbb_errors.py 'mm:7TeV:08:QCD,TTJ,ZTT,ZMM,WJets,Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
-                os.system("add_bbb_errors.py 'mm:7TeV:08:QCD,TTJ,ZTT,ZMM,WJets>Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
-                    DIR=dir,
-                    ANA=ana
-                    ))
-                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                os.system("add_bbb_errors.py 'mm:7TeV:09:QCD,TTJ,ZTT,ZMM,Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
-                    DIR=dir,
-                    ANA=ana
-                    ))
-                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                #os.system("add_bbb_errors.py 'mm:8TeV:08,09:QCD,TTJ,ZTT,ZMM,WJets,Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
-                os.system("add_bbb_errors.py 'mm:8TeV:08,09:QCD,TTJ,ZTT,ZMM,WJets>Dibosons' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
-                    DIR=dir,
-                    ANA=ana
-                    ))
-                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-            if 'em' in channels :
-                ## setup bbb uncertainties for em 
-                os.system("add_bbb_errors.py 'em:7TeV,8TeV:08,09:Fakes,EWK,ttbar,Ztt' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
-                    DIR=dir,
-                ANA=ana
-                ))
-                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-            if 'et' in channels :
-                ## setup bbb uncertainties for et
-                #os.system("add_bbb_errors.py 'et:7TeV,8TeV:08,09:TT,QCD,ZTT,W,ZL,ZJ,VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
-                os.system("add_bbb_errors.py 'et:7TeV,8TeV:08,09:TT,QCD,ZTT,W+ZL+ZJ>VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
-                    DIR=dir,
-                    ANA=ana
-                    ))
-                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-            if 'mt' in channels :
-                ## setup bbb uncertainties for mt
-                #os.system("add_bbb_errors.py 'mt:7TeV,8TeV:08,09:TT,QCD,ZTT,W,ZL,ZJ,VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
-                os.system("add_bbb_errors.py 'mt:7TeV,8TeV:08,09:TT,QCD,ZTT,W+ZL+ZJ>VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
-                    DIR=dir,
-                    ANA=ana
-                    ))
-                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-            if 'tt' in channels :
-                ## setup bbb uncertainties for tt 
-                #os.system("add_bbb_errors.py 'tt:8TeV:08,09:ZTT,TT,QCD,W,ZL,ZJ,VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
-                os.system("add_bbb_errors.py 'tt:8TeV:08,09:ZTT,TT,QCD,W+ZL+ZJ>VV' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold 0.05 --mssm".format(
-                    DIR=dir,
-                    ANA=ana
-                    ))
-                os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana)) 
-
+            for chn in config.channels :
+                for per in config.periods :
+                    for idx in range(len(config.bbbcat[chn][per])) :
+                        os.system("add_bbb_errors.py '{CHN}:{PER}:{CAT}:{PROC}' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold {THR} --mssm".format(
+                            CHN=chn,
+                            PER=per,
+                            CAT=config.bbbcat[chn][per][idx],
+                            PROC=config.bbbproc[chn][idx],
+                            DIR=dir,
+                            ANA=ana,
+                            THR=config.bbbthreshold
+                            ))
+                        os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+                        os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
 if options.update_aux :
     print "##"
     print "## update aux directory:"
@@ -399,30 +322,34 @@ if options.update_aux :
         os.system("mv {DIR} {CMSSW_BASE}/src/backup/".format(DIR=dir, CMSSW_BASE=cmssw_base))
     os.system("mkdir -p {DIR}".format(DIR=dir))    
     for ana in analyses :
-        os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a mssm -c '{CHN}' {MASSES}".format(
-            CMSSW_BASE=cmssw_base,
-            LABEL=options.label,
-            ANA=ana,
-            DIR=dir,
-            PER=options.periods,
-            CHN=options.channels,
-            MASSES=' '.join(masses),
-            ))
+        for chn in config.channels:
+            for per in config.periods:
+                if config.categories[chn][per]:
+                    os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a mssm -c '{CHN}' --mssm-categories-{CHN}='{CATS}' {MASSES}".format(
+                    CMSSW_BASE=cmssw_base,
+                    LABEL=options.label,
+                    ANA=ana,
+                    DIR=dir,
+                    PER=per,
+                    CHN=chn,
+                    CATS=' '.join(config.categories[chn][per]),
+                    MASSES=' '.join(masses),
+                    ))
         if ana == "bbb" :
             if options.drop_list != '' :
                 for subdir in glob.glob("{DIR}/{ANA}/mssm/*".format(DIR=dir, ANA=ana)) :
                     print '...comment bbb uncertainties for', subdir
                     os.system("commentUncerts.py --drop-list={DROP} {SUB}".format(DROP=options.drop_list, SUB=subdir))            
         ## blind datacards 
-        if options.blind_datacards : 
-            for chn in channels :
-                os.system("blindData.py --update-file --extra-templates '{EXTRA_TEMPLATES}' {DIR}/{ANA}/mssm/{CHN}".format(
+        if options.blind_datacards :
+            os.system("cp -r {DIR}/{ANA} {DIR}/{ANA}-asimov".format(DIR=dir,ANA=ana))
+            for chn in config.channels :
+                os.system("blindData.py --update-file --extra-templates '{EXTRA_TEMPLATES}' {DIR}/{ANA}-asimov/mssm/{CHN}".format(
                     EXTRA_TEMPLATES = options.extra_templates,
                     DIR=dir,
                     ANA=ana,
                     CHN='htt_'+chn
                     ))
-
 if options.update_limits :
     print "##"
     print "## update LIMITS directory:"
@@ -436,11 +363,19 @@ if options.update_limits :
     os.system("mkdir -p {DIR}".format(DIR=dir))    
     for ana in analyses :
         print "setup limits structure for:", ana
-        os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a mssm -c '{CHN}' {MASSES}".format(
-            INDEX=options.label,                
-            ANA=ana,
-            DIR=dir,
-            PER=options.periods,
-            CHN=options.channels,
-            MASSES=' '.join(masses),
-            ))
+        for chn in config.channels:
+            for per in config.periods:
+                if config.categories[chn][per]:
+                    os.system("setup-htt.py -i aux{INDEX}/{ANA}{ASIMOV} -o {DIR}/{ANA}{ASIMOV} -p '{PER}' -a mssm -c '{CHN}' {MASSES}".format(
+                        INDEX=options.label,                
+                        ANA=ana,
+                        ASIMOV='-asimov' if options.blind_datacards else '',
+                        DIR=dir,
+                        PER=per,
+                        CHN=chn,
+                        MASSES=' '.join(masses),
+                        ))
+        ## add inputs files with 1D msvfit histograms in LIMIT directory structure
+        if 'mm' in config.channels :
+            for subdir in glob.glob("{DIR}/{ANA}/*".format(DIR=dir, ANA=ana)) :
+                os.system("cp -v {SETUP}/mm/*-msv.root {DIR}/common".format(SETUP=setup, DIR=subdir))

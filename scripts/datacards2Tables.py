@@ -6,20 +6,21 @@ parser = OptionParser(usage="usage: %prog [options]",
                       description="Script create tables for the AN and PAS from the datacards.")
 parser.add_option("-i", "--input", dest="input", default="datacards", type="string", help="Path to the complete set of datacards. [Default: datacards]")
 parser.add_option("-p", "--period", dest="period", default="7TeV 8TeV", type="choice", help="Data taking period. [Default: \"7TeV, 8TeV\"]", choices=["7TeV", "8TeV", "7TeV 8TeV"])
-parser.add_option("-m", "--mass", dest="mass", default="125", type="string", help="Mass for signal sample to be included in the table. [Default: 125]")
+parser.add_option("-m", "--mass", dest="mass", default="125", type="string", help="Mass for signal sample to be included in the table. For MSSM, format should be \"mA:tanb\". [Default: 125]")
 parser.add_option("-a", "--analysis", dest="analysis", type="string", default="sm", help="analysis type. [Default: \"sm\"]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="increase verbosity. [Default: False]")
-parser.add_option("--channels", dest="channels", default="mt, et, em, mm", type="string", help="Channels to produce the tables for. [Default: \"mt, et, em, mm\"]")
+parser.add_option("--channels", dest="channels", default="mt, et, em, mm, tt", type="string", help="Channels to produce the tables for. [Default: \"mt, et, em, mm, tt\"]")
 parser.add_option("--categories", dest="categories", default="0, 1, 2, 3, 5", type="string", help="Categories to produce the tables for. [Default: \"0, 1, 2, 3, 5\"]")
 cats1 = OptionGroup(parser, "LUMI PER CHANNEL", "Luminosities per channel.")
 cats1.add_option("--lumi-7TeV-mm", dest="lumi_7TeV_mm", default= 4.9, type="float", help="Luminosity used for mm channel. [Default:  4.9]")
 cats1.add_option("--lumi-7TeV-em", dest="lumi_7TeV_em", default= 4.9, type="float", help="Luminosity used for em channel. [Default:  4.9]")
 cats1.add_option("--lumi-7TeV-mt", dest="lumi_7TeV_mt", default= 4.9, type="float", help="Luminosity used for mt channel. [Default:  4.9]")
 cats1.add_option("--lumi-7TeV-et", dest="lumi_7TeV_et", default= 4.9, type="float", help="Luminosity used for et channel. [Default:  4.9]")
-cats1.add_option("--lumi-8TeV-mm", dest="lumi_8TeV_mm", default=19.4, type="float", help="Luminosity used for mm channel. [Default: 19.4]")
-cats1.add_option("--lumi-8TeV-em", dest="lumi_8TeV_em", default=19.4, type="float", help="Luminosity used for em channel. [Default: 19.4]")
-cats1.add_option("--lumi-8TeV-mt", dest="lumi_8TeV_mt", default=19.4, type="float", help="Luminosity used for mt channel. [Default: 19.4]")
-cats1.add_option("--lumi-8TeV-et", dest="lumi_8TeV_et", default=19.4, type="float", help="Luminosity used for et channel. [Default: 19.4]")
+cats1.add_option("--lumi-8TeV-mm", dest="lumi_8TeV_mm", default=19.8, type="float", help="Luminosity used for mm channel. [Default: 19.8]")
+cats1.add_option("--lumi-8TeV-em", dest="lumi_8TeV_em", default=19.8, type="float", help="Luminosity used for em channel. [Default: 19.8]")
+cats1.add_option("--lumi-8TeV-mt", dest="lumi_8TeV_mt", default=19.8, type="float", help="Luminosity used for mt channel. [Default: 19.8]")
+cats1.add_option("--lumi-8TeV-et", dest="lumi_8TeV_et", default=19.8, type="float", help="Luminosity used for et channel. [Default: 19.8]")
+cats1.add_option("--lumi-8TeV-tt", dest="lumi_8TeV_tt", default=18.4, type="float", help="Luminosity used for tt channel. [Default: 18.4]")
 parser.add_option_group(cats1)
 
 ## check number of arguments; in case print usage
@@ -32,6 +33,7 @@ import os
 import sys
 import math
 from HiggsAnalysis.HiggsToTauTau.utils import contained
+from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools
 
 
 def cross_section(process, mass, ecms) :
@@ -51,12 +53,21 @@ def cross_section(process, mass, ecms) :
             xs += float(os.popen("xsec-sm {CHANNEL} {MA} {ECMS} | grep value".format(
                 CHANNEL=process, MA=mass, ECMS=ecms)).read().split()[2])
     else :
-        if "BR" in  process :
-            xs = float(os.popen("feyn-higgs-mssm br mssm {CHANNEL} {MA} {TB} model=mhmax-{ECMS}TeV | grep value".format(
-                CHANNEL=process[process.find(':')+1:], MA=mass[:mass.find(':')], TB=mass[mass.find(':')+1:], ECMS='%0.f' % ecms)).read().split()[2])/1000.
+        period = ''
+        if ecms == 7.0 :
+            period = '7TeV'
         else :
-            xs = float(os.popen("feyn-higgs-mssm xs mssm {CHANNEL} {MA} {TB} model=mhmax-{ECMS}TeV | grep value".format(
-                CHANNEL=process[:process.find('H')]+'A', MA=mass[:mass.find(':')], TB=mass[mass.find(':')+1:], ECMS='%0.f' % ecms)).read().split()[2])/1000.
+            period = '8TeV'
+        mssm_xsec_tools_path = os.environ.get('CMSSW_BASE')+'/src/auxiliaries/models/out.mhmax-mu+200-'+period+'-tanbHigh-nnlo.root'
+        scan = mssm_xsec_tools(mssm_xsec_tools_path)
+        xsquery = scan.query(float(mass[:mass.find(':')]), float(mass[mass.find(':')+1:]))
+        if "BR" in  process :
+            xs = xsquery['higgses']['A']['BR']
+        else :
+            if "bbA" in process :
+                xs = xsquery['higgses']['A']['xsec']['santander']
+            elif "ggA" in process :
+                xs = xsquery['higgses']['A']['xsec']['ggF']
     return xs
 
 def digit(x) :
@@ -118,7 +129,7 @@ def extractor(path, period):
     if period == "8TeV" :
         lumi = {
             ## in /pb
-            "tt" : 1000*options.lumi_8TeV_mm,
+            "tt" : 1000*options.lumi_8TeV_tt,
             "mm" : 1000*options.lumi_8TeV_mm,
             "em" : 1000*options.lumi_8TeV_em,
             "mt" : 1000*options.lumi_8TeV_mt,
@@ -285,18 +296,29 @@ def extractor(path, period):
     
     ## sum up total signal rate
     rate_sig_summed = 0
-    for i in range(0, len(rate_sig)):
-        rate_sig[i] = float(rate_sig[i])
-        rate_sig_summed += rate_sig[i]
+    if options.analysis == "mssm" :
+        for i in range(0, len(rate_sig)) :
+            rate_sig[i] = float(rate_sig[i])
+        rate_sig_summed = xsec["ggH"]*BR*rate_sig[0] + xsec["bbH"]*BR*rate_sig[1]
+    else : 
+        for i in range(0, len(rate_sig)):
+            rate_sig[i] = float(rate_sig[i])
+            rate_sig_summed += rate_sig[i]
     ## sum up uncertainty of total signal rate
     uncert_sig_split = []
     uncert_sig_summed = 0
-    for i in range(0, len(rate_sig)):
-        ## the newest is that we can have categories w/o signal
-        #if len(uncert_sig) == 0 :
-        #    break
-        uncert_sig_split.append(math.sqrt(uncert_sig[2+i])*rate_sig[i])
-        uncert_sig_summed+=uncert_sig_split[i]*uncert_sig_split[i]
+    if options.analysis == "mssm" :
+        uncert_sig_split.append(math.sqrt(xsec["ggH"]*BR*xsec["ggH"]*BR*uncert_sig[2])*rate_sig[0])
+        uncert_sig_split.append(math.sqrt(xsec["bbH"]*BR*xsec["bbH"]*BR*uncert_sig[3])*rate_sig[1])
+        uncert_sig_summed+=uncert_sig_split[0]*uncert_sig_split[0]
+        uncert_sig_summed+=uncert_sig_split[1]*uncert_sig_split[1]
+    else :
+        for i in range(0, len(rate_sig)):
+            ## the newest is that we can have categories w/o signal
+            #if len(uncert_sig) == 0 :
+            #    break
+            uncert_sig_split.append(math.sqrt(uncert_sig[2+i])*rate_sig[i])
+            uncert_sig_summed+=uncert_sig_split[i]*uncert_sig_split[i]
     uncert_sig_summed = math.sqrt(uncert_sig_summed)
     
     ## sum up total background rate
@@ -556,12 +578,16 @@ def make_tables(channel, categories, category_labels):
         samples[cat] = dict([(rec[0],(rec[1],rec[2])) for rec in records])
         if 'ZJ' in samples[cat] and 'ZL' in samples[cat] and not 'ZLL' in samples[cat]:
             samples[cat]['ZLL'] = (samples[cat]['ZL'][0]+samples[cat]['ZJ'][0], math.sqrt(samples[cat]['ZL'][1]*samples[cat]['ZL'][1]+samples[cat]['ZJ'][1]*samples[cat]['ZJ'][1]))
+        if 'Dibosons' in samples[cat] and 'WJets' in samples[cat] and not 'EWK' in samples[cat]:
+            samples[cat]['EWK'] = (samples[cat]['Dibosons'][0]+samples[cat]['WJets'][0], math.sqrt(samples[cat]['Dibosons'][1]*samples[cat]['Dibosons'][1]+samples[cat]['WJets'][1]*samples[cat]['WJets'][1]))
+        elif 'Dibosons' in samples[cat] and not 'WJets' in samples[cat] and not 'EWK' in samples[cat]:
+            samples[cat]['EWK'] = (samples[cat]['Dibosons'][0], samples[cat]['Dibosons'][1])
     ## order in which the samples should be shown in the table
     sample_order = {
         "tt" : ["ZTT", "QCD", "W", "ZJ", "TT", "VV", "Total", "Signal"],
         "mt" : ["ZTT", "QCD", "W", "ZLL", "TT", "VV", "Total", "Signal"],
         "et" : ["ZTT", "QCD", "W", "ZLL", "TT", "VV", "Total", "Signal"],
-        "mm" : ["ZTT", "QCD", "WJets", "ZMM", "TTJ", "Dibosons", "Total", "Signal"],
+        "mm" : ["ZTT", "ZMM", "QCD", "TTJ", "EWK", "Total", "Signal"],
         "em" : ["Ztt", "Fakes", "ttbar", "EWK","Total", "Signal"],
         }
     ## labels of the samples that should appear in the table
@@ -673,55 +699,72 @@ periods = options.period.split()
 for idx in range(len(periods)) : periods[idx] = periods[idx].rstrip(',')
 ## extended dictionary of subsets to be contracted (used for merging of table yields)
 if len(periods) == 1 and contained('7TeV', periods) :
-    subsets_extended = {
-        "0jet"  : ["low_7TeV", "high_7TeV"],
-        "boost" : ["low_7TeV", "high_7TeV"],
-        "vbf"   : ["7TeV"],
-       #"btag"  : ["7TeV"],
-       #"nobtag": ["7TeV"],
-        }
+    if options.analysis == "mssm" :
+        subsets_extended = {
+            "btag"  : ["7TeV"],
+            "nobtag": ["7TeV"],
+            }
+    else :
+        subsets_extended = {
+            "0jet"  : ["low_7TeV", "high_7TeV"],
+            "boost" : ["low_7TeV", "high_7TeV"],
+            "vbf"   : ["7TeV"],
+            }
 if len(periods) == 1 and contained('8TeV', periods) :
-    subsets_extended = {
-        "0jet"     : ["low_8TeV", "high_8TeV"],
-        "boost"    : ["low_8TeV", "high_8TeV"],
-       #"boost" : ["8TeV"], ##for tt
-        "vbf"   : ["8TeV"],
-       #"btag"  : ["8TeV"],
-       #"nobtag": ["8TeV"],
-        }
+    if options.analysis == "mssm" :
+        subsets_extended = {
+            "btag"  : ["8TeV"],
+            "nobtag": ["8TeV"],
+            }
+    else :
+        subsets_extended = {
+            "0jet"  : ["low_8TeV", "high_8TeV"],
+            "boost" : ["low_8TeV", "high_8TeV"],
+            "vbf"   : ["8TeV"],
+            }
 if contained('7TeV', periods) and contained('8TeV', periods) :
-    subsets_extended = {
-        "0jet"  : ["low_7TeV", "low_8TeV", "high_7TeV", "high_8TeV"],
-        "boost" : ["low_7TeV", "low_8TeV", "high_7TeV", "high_8TeV"],
-        "vbf"   : ["7TeV", "8TeV"],
-       #"btag"  : ["7TeV", "8TeV"],
-       #"nobtag": ["7TeV", "8TeV"],
+    if options.analysis == "mssm" :
+        subsets_extended = {
+            "btag"  : ["7TeV", "8TeV"],
+            "nobtag": ["7TeV", "8TeV"],
+            }
+    else :
+        subsets_extended = {
+            "0jet"  : ["low_7TeV", "low_8TeV", "high_7TeV", "high_8TeV"],
+            "boost" : ["low_7TeV", "low_8TeV", "high_7TeV", "high_8TeV"],
+            "vbf"   : ["7TeV", "8TeV"],
+            }
+## compact dictionary of subsets to be contraced (used fro mergin of efficiencies) and categories to be shown in the table(s)
+if options.analysis == "mssm" :
+    subsets_compact  = {
+        'btag'     : [],
+        'nobtag'   : [],
         }
-## compact dictionary of subsets to be contraced (used fro mergin of efficiencies)
-subsets_compact  = {
-    '0jet'     : ['low', 'high'],
-    'boost'    : ['low', 'high'],
-   #'boost'    : [], ##for tt
-    'vbf'      : [],
-   #'btag'     : [],
-   #'nobtag'   : [],
-    }
-## categories to be shown in the table(s)
-categories_in_table = [
-    '0jet',
-    'boost',
-    'vbf',
-   #'btag',
-   #'nobtag',
-    ]
-## category labels for categories to be shown in table(s)
-category_labels_in_table = {
-    '0jet'     : "\emph{0-Jet}",
-    'boost'    : "\emph{1-Jet}",
-    'vbf'      : "\emph{VBF}",
-   #'btag'     : "\emph{B-Tag}",
-   #'nobtag'   : "\emph{No B-Tag}",
-    }
+    categories_in_table = [
+        'btag',
+        'nobtag',
+        ]
+    category_labels_in_table = {
+        'btag'     : "\emph{B-Tag}",
+        'nobtag'   : "\emph{No B-Tag}",
+        }
+else :
+    subsets_compact  = {
+        '0jet'     : ['low', 'high'],
+        'boost'    : ['low', 'high'],
+        #'boost'    : [], ##for tt
+        'vbf'      : [],
+        }
+    categories_in_table = [
+        '0jet',
+        'boost',
+        'vbf',
+        ]
+    category_labels_in_table = {
+        '0jet'     : "\emph{0-Jet}",
+        'boost'    : "\emph{1-Jet}",
+        'vbf'      : "\emph{VBF}",
+        }
 
 os.system("rm -f *.tmp")
 for chn in channels :

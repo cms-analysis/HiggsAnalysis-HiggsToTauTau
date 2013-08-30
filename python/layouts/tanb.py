@@ -10,7 +10,7 @@ layout = cms.PSet(
     ## min for plotting
     min = cms.double(0.),
     ## max for plotting
-    max = cms.double(50.),
+    max = cms.double(60.),
     ## min for plotting
     log = cms.int32(0),
     ## print to png
@@ -44,16 +44,23 @@ layout = cms.PSet(
    ,600.
    ,700.
    ,800.
-   #,900.
-   #,1000.
+   ,900.
+   ,1000.
      ),
     ## is this mssm?
     mssm = cms.bool(True),
     ## print the 2-sigma band
     outerband = cms.bool(True),
     ## plot expected only
-    #expectedOnly = cms.bool(True),
+    expectedOnly = cms.bool(False),
     ## print constraints from mH=125GeV
     higgs125 = cms.bool(False),
-
+    ## add arXiv-1211-6956 (ATLAS) to plot
+    arXiv_1211_6956 = cms.bool(False),
+    ## add arXiv-1204-2760 (ATLAS) to plot
+    arXiv_1204_2760 = cms.bool(False),
+    ## add arXiv-1302-2892
+    arXiv_1302_2892 = cms.bool(False),
+    ## add arXiv-1205-5736
+    arXiv_1205_5736 = cms.bool(False),
 )
