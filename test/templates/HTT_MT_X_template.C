@@ -37,6 +37,8 @@ $DEFINE_MSSM
 
 static const bool BLIND_DATA = false; //false;
 static const bool FULLPLOTS = true; //true;
+static const bool CONVERVATIVE_CHI2 = true;
+
 float blinding_SM(float mass){ return (100<mass && mass<150); }
 float blinding_MSSM(float mass){ return (100<mass); }
 float maximum(TH1F* h, bool LOG=false){
@@ -443,7 +445,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TH1F* test1 = (TH1F*)data->Clone("test1"); 
   for(int ibin=0; ibin<test1->GetNbinsX(); ++ibin){
     model->SetBinContent(ibin+1, model->GetBinContent(ibin+1)*model->GetBinWidth(ibin+1));
-    model->SetBinError  (ibin+1, model->GetBinError  (ibin+1)*model->GetBinWidth(ibin+1));
+    model->SetBinError  (ibin+1, CONVERVATIVE_CHI2 ? 0. : model->GetBinError  (ibin+1)*model->GetBinWidth(ibin+1));
     test1->SetBinContent(ibin+1, test1->GetBinContent(ibin+1)*test1->GetBinWidth(ibin+1));
     test1->SetBinError  (ibin+1, test1->GetBinError  (ibin+1)*test1->GetBinWidth(ibin+1));
   }
