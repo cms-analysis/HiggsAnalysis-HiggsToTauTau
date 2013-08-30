@@ -7,6 +7,7 @@ parser.add_option("--rMin", dest="rMin", default="-5.", type="string", help="Min
 parser.add_option("--rMax", dest="rMax", default="5.", type="string", help="Maximum value of signal strenth. [Default: 5.]")
 parser.add_option("-s", "--skip", dest="skip", default=False, action="store_true", help="Skip the limit calculation in case it has been done already. [Default: False]")
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="string", help="Type of analysis (sm or mssm). Lower case is required. [Default: \"sm\"]")
+parser.add_option("--mm-discriminator", dest="mm_discriminator", default=False, action="store_true", help="Show the actual mm discriminator instead of the more intuitive msvfit plot. [Default: False]")
 parser.add_option("--mA", dest="mA", default="160", type="string", help="Mass of pseudoscalar mA only needed for mssm. [Default: '160']")
 parser.add_option("--tanb", dest="tanb", default="8", type="string", help="Tanb only needed for mssm. [Default: '8']")
 (options, args) = parser.parse_args()
@@ -50,8 +51,9 @@ if options.analysis == "mssm" :
     ## for mm override the histograms as used for the limit calculation in favour of something more human readible
     ## note these files MUST be located in the same directory structure as the input files which are used for the
     ## max-likelihood calculation. 
-    os.system("cp -v %s/../common/htt_mm.inputs-mssm-8TeV-0-msv.root ./root/htt_mm.inputs-mssm-8TeV-0.root" % (dir))
-    os.system("cp -v %s/../common/htt_mm.inputs-mssm-7TeV-0-msv.root ./root/htt_mm.inputs-mssm-7TeV-0.root" % (dir))
+    if not options.mm_discriminator :
+        os.system("cp -v %s/../common/htt_mm.inputs-mssm-8TeV-0-msv.root ./root/htt_mm.inputs-mssm-8TeV-0.root" % (dir))
+        os.system("cp -v %s/../common/htt_mm.inputs-mssm-7TeV-0-msv.root ./root/htt_mm.inputs-mssm-7TeV-0.root" % (dir))
     
     optcards = ""  
     for datacard in os.listdir("datacards"):
