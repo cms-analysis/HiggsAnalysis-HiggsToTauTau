@@ -354,6 +354,10 @@ if options.update_aux :
                 for file in glob.glob("{DIR}/{ANA}/sm/vhtt/vhtt_*.txt".format(DIR=dir, ANA=ana)) :
                     os.system("perl -pi -e 's/WH_hww/WH_hww{MASS}/g' {FILE}".format(MASS=options.hww_mass, FILE=file))
                     os.system("perl -pi -e 's/ZH_hww/ZH_hww{MASS}/g' {FILE}".format(MASS=options.hww_mass, FILE=file))
+        ## fix the problem in the datacards, that the massindex is already contained in the process name
+        if not options.hww_mass == '' :
+            file = "{DIR}/{ANA}/sm/htt_{em,vhtt}/{htt_em,vhtt}_*.txt".format(DIR=dir, ANA=ana)
+            os.system("sed -i -e '/_hww125/ s/$PROCESS$MASS/$PROCESS/g' {FILE}".format(MASS=options.hww_mass, FILE=file))
         ## blind datacards 
         if options.blind_datacards : 
             for chn in channels :
