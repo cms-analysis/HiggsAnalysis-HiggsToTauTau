@@ -44,7 +44,7 @@ submit.py --goodness-of-fit --toys 100 --cycles 10 LIMITS-yymmdd-mssm/bbb-mlfit/
 ## collect
 submit.py --goodness-of-fit --collect-injected-toys LIMITS-yymmdd-mssm/bbb-mlfit/*/[160,350]
 ## plotting
-plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit masspoints='160 350'
+plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py masspoints='160 350'
 
 
 (4) launch/collect/plot mA-tanb
