@@ -13,9 +13,13 @@ parser.add_option("--tail-fitting", dest="fit_tails", default=False, action="sto
                   help="Fitting of the MSSM m(tautau) tails for predefined backgrounds [Default: False]")
 parser.add_option("--merge-bbb", dest="merge_bbb", default=False, action="store_true",
                   help="Merge bin-by-bin uncertainties according to Barlow-Beeston approach. [Default: False]")
+parser.add_option("--fine-scan", dest="fine_scan", default=False, action="store_true",
+                  help="Create a grid of pivotals with distance of 10 Gev in the range from 90 Gev to 250 GeV to allow for a finer scan of the low mass region. [Default: False]")
 parser.add_option("--blind-datacards", dest="blind_datacards", default=False, action="store_true",
                   help="Option to blind datacards. Also needs to be turned on to inject SM to datacards. [Default: False]")
 parser.add_option("--extra-templates", dest="extra_templates", default="", type="string", help="List of extra background or signal templates which should be injected to the asimov dataset. Needs to be comma seperated list. Here used to inject SM signal into MSSM datacards. [Default: \"\"]")
+parser.add_option("--reload", dest="reload", default=False, action="store_true",
+                  help="reload all root input files from the github in a setup directory. [Default: False]")
 parser.add_option("--update-all", dest="update_all", default=False, action="store_true",
                   help="update everything from scratch. If not specified use the following options to specify, which parts of the reload you want to run. [Default: False]")
 parser.add_option("--update-setup", dest="update_setup", default=False, action="store_true",
@@ -66,9 +70,10 @@ patterns = {
     }
 
 if options.update_all :
-    options.update_setup    = True
-    options.update_aux= True
-    options.update_limits   = True
+    options.reload        = True
+    options.update_setup  = True
+    options.update_aux    = True
+    options.update_limits = True
 
 print "# --------------------------------------------------------------------------------------"
 print "# doMSSM.py "
@@ -80,12 +85,15 @@ print "# --analyses                :", options.analyses
 print "# --label                   :", options.label
 print "# --drop-list               :", options.drop_list
 print "# --tail-fitting            :", options.fit_tails
+print "# --merge-bbb               :", options.merge_bbb
+print "# --fine-scan               :", options.fine_scan
 print "# --blind-datacards         :", options.blind_datacards
 print "# --extra-templates         :", options.extra_templates
 print "# --------------------------------------------------------------------------------------"
 for chn in config.channels:
     print "# --inputs-"+chn+"               :", config.inputs[chn]
 print "# --------------------------------------------------------------------------------------"
+print "# --reload                  :", options.reload
 print "# --update-setup            :", options.update_setup
 print "# --update-aux              :", options.update_aux
 print "# --update-LIMITS           :", options.update_limits
@@ -96,7 +104,7 @@ print "# -----------------------------------------------------------------------
 ## setup main directory
 setup="{CMSSW_BASE}/src/.setup{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
 
-if options.update_setup :
+if options.reload :
     print "##"
     print "## update input files from cvs:"
     print "##"
@@ -171,6 +179,7 @@ if options.update_setup :
                             CHN=chn,
                             FILE=output,
                             ))
+if options.update_setup :
     ## scale by acceptance correction. This needs to be done for all available masses independent
     ## from args to guarantee that the tanb_grid templates are properly scaled.
     for chn in config.channels :
@@ -182,6 +191,15 @@ if options.update_setup :
                 CHN=chn,
                 PER=per,
                 ))
+    ## apply horizontal template morphing for finer step sizes for limit calculation
+    if options.fine_scan :
+        os.system("horizontal-morphing.py --categories='emu_btag,emu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_e_7TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v .setup-130831-mssm-low/em/htt_em.inputs-mssm-7TeV-0.root")
+        os.system("horizontal-morphing.py --categories='emu_btag,emu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_e_8TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v .setup-130831-mssm-low/em/htt_em.inputs-mssm-8TeV-0.root")
+        os.system("horizontal-morphing.py --categories='eleTau_btag,eleTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_etau_7TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v .setup-130831-mssm-low/et/htt_et.inputs-mssm-7TeV-0.root")
+        os.system("horizontal-morphing.py --categories='eleTau_btag,eleTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_etau_8TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v .setup-130831-mssm-low/et/htt_et.inputs-mssm-8TeV-0.root")
+        os.system("horizontal-morphing.py --categories='muTau_btag,muTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_mutau_7TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v .setup-130831-mssm-low/mt/htt_mt.inputs-mssm-7TeV-0.root")
+        os.system("horizontal-morphing.py --categories='muTau_btag,muTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_mutau_8TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v .setup-130831-mssm-low/mt/htt_mt.inputs-mssm-8TeV-0.root")
+        os.system("horizontal-morphing.py --categories='tauTau_btag,tauTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_tautau_8TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v .setup-130831-mssm-low/tt/htt_tt.inputs-mssm-8TeV-0.root")
     ## setup directory structure
     dir = "{CMSSW_BASE}/src/setups{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
     if os.path.exists(dir) :
