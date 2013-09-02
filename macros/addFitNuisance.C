@@ -306,9 +306,13 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   //Define the fit function
   RooRealVar lM("m","m" ,0,5000);   //lM.setBinning(lBinning);
   RooRealVar lA("a","a" ,50,  0.1,200);
-  RooRealVar lB("b","b" ,0.0 , -10.5,10.5); //lB.setConstant(kTRUE);
+  RooRealVar lB("b","b" ,0.0 , -10500,10500); //lB.setConstant(kTRUE);
   RooDataHist *pH0  =  new RooDataHist("Data","Data" ,RooArgList(lM),lH0);
-  RooGenericPdf *lFit  = 0; lFit = new RooGenericPdf("genPdf","exp(-m/(a+b*m))",RooArgList(lM,lA,lB));
+  TString iStr = TString::Format("%.0f",iFirst);
+  //std::cout << iStr << std::endl;
+  TString fn = "exp(-(m-"+iStr+")/(a+0.001*b*(m-"+iStr+")))";
+  //std::cout << fn << std::endl;
+  RooGenericPdf *lFit  = 0; lFit = new RooGenericPdf("genPdf",fn,RooArgList(lM,lA,lB));
   if(iFitModel == 1) lFit = new RooGenericPdf("genPdf","exp(-a*pow(m,b))",RooArgList(lM,lA,lB));
   if(iFitModel == 1) {lA.setVal(0.3); lB.setVal(0.5);}
   if(iFitModel == 2) lFit = new RooGenericPdf("genPdf","a*exp(b*m)",RooArgList(lM,lA,lB));
@@ -355,7 +359,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   bool flag2down=false; 
     
   //CENTRAL HISTOGRAM   
-  if(iVerbose) cout << "Values for central hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
+  cout << "Values for central hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
   lM.setRange(0,2000);
   
   double mcentral=(-1 * lA.getVal() / lB.getVal() );
