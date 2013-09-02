@@ -419,7 +419,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #ifdef HWW_BG
     leg->AddEntry(ggH  , "H(125 GeV)#rightarrow#tau#tau" , "L" );
 #else
-    leg->AddEntry(ggH  , "#splitline{H(125 GeV)#rightarrow#tau#tau}{H(125 GeV)#rightarrow#WW}" , "L" );
+    leg->AddEntry(ggH  , "#splitline{H(125 GeV)#rightarrow#tau#tau}{H(125 GeV)#rightarrowWW}" , "L" );
     leg->AddEntry((TObject*)0, "", "");
 #endif
   }
