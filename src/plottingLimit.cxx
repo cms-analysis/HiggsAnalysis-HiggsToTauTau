@@ -129,8 +129,8 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   leg->SetFillStyle( 1001 );
   leg->SetFillColor(kWhite);
   if(observed){
-    leg->AddEntry(observed, "observed",  "PL");
-    //leg->AddEntry(observed, "Asimov BG+H(125)",  "PL");
+    //leg->AddEntry(observed, "observed",  "PL");
+    leg->AddEntry(observed, "Asimov w/ H(125)",  "PL");
   }
   if(injected){
     leg->AddEntry( expected , TString::Format("H(%s GeV) injected", injectedMass.c_str()),  "L" );

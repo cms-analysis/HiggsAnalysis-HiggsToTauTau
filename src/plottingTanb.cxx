@@ -18,6 +18,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
   //canv.SetGridy(1);
   if(log){ 
     canv.SetLogy(1); 
+    canv.SetLogx(1); 
   }
 
   // setup the CMS colors
@@ -137,6 +138,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
   if(observed){ 
     observed->SetFillColor(obs->GetNumber()); 
     leg->AddEntry(observed, "Observed", "FL");
+    //leg->AddEntry(observed, "Asimov w/ H(125)", "FL");
   }
   if(injected){
     leg->AddEntry(injected, "Injected", "L");

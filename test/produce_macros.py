@@ -11,6 +11,7 @@ parser.add_option("-f", "--fitresults", dest="fitresults", default="fitresults/m
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
 parser.add_option("-y", "--yields", dest="yields", default="1", type="int", help="Shift yield uncertainties. [Default: '1']")
 parser.add_option("-s", "--shapes", dest="shapes", default="1", type="int", help="Shift shape uncertainties. [Default: '1']")
+parser.add_option("--shapes-mm-special", dest="shapes_mm_special", default="0", type="int", help="Shift shape uncertainties in the mm channel. This option is needed to make an estimate on the additional stat. uncertainties in the mm channel when using the msv distribution instead of the actual 2-d discriminator folded to 1 dimonesion, which goes into hte limit calculation in the MSSM analysis. This option automatically switches the option --shapes to 0, as this option is not applicable in this case. [Default: '0']")
 parser.add_option("--mA", dest="mA", default="160", type="float", help="Mass of pseudoscalar mA only needed for mssm. [Default: '160']")
 parser.add_option("--tanb", dest="tanb", default="8", type="float", help="Tanb only needed for mssm. [Default: '8']")
 parser.add_option("-u", "--uncertainties", dest="uncertainties", default="1", type="int", help="Set uncertainties of backgrounds. [Default: '1']")
@@ -24,6 +25,11 @@ parser.add_option("-c", "--config", dest="config", default="", help="Additional 
 if len(args) > 0 :
     parser.print_usage()
     exit(1)
+
+## switch option.shapes off inany case when option.shapes_mm_special is active,
+## as in this case option shapes is not applicable
+if options.shapes_mm_special :
+    options.shapes = 0
 
 ## use parse_dcard to get a dictionary mapping
 ## sample name strings to fit weights
@@ -167,16 +173,25 @@ class Analysis:
                              self.scale_output[curr_name].append(math.sqrt(self.process_uncertainties[curr_name]))
                              for bin in range(1,hist.GetNbinsX()+1):
 		               if not process_name+str(bin) in uncertainties_set:
-			         uncertainties_set+=[process_name+str(bin)]
-		                 uncertainty = math.sqrt(self.process_uncertainties[curr_name])
-				 if uncertainty>0:
-		                   out_line  = "hin->SetBinError(%(bin)i,hin->GetBinContent(%(bin)i)*%(uncertainty)f); \n" % {"bin":bin, "uncertainty":uncertainty}
-                                   output_file.write(out_line)
+                                   uncertainties_set+=[process_name+str(bin)]
+                                   uncertainty = math.sqrt(self.process_uncertainties[curr_name])
+                                   if uncertainty>0:
+                                       ## in the case of options.shape_mm_special add the statistical uncertainty of each template
+                                       ## to the normalization uncertainties from the fit in quadrature. Shape altering uncertainties
+                                       ## from the fit are switched off, as they to not apply on the msv histograms, for which they
+                                       ## have not been derived. 
+                                       if options.shapes_mm_special :
+                                           print "Adding stat. uncerainties from MC temapltes in mode --shapes-mm-special"
+                                           uncertainty_norm = hist.GetBinError(bin) if hist.GetBinError(bin)>0 else 1.
+                                           uncertainty=math.sqrt(uncertainty*hist.GetBinContent(bin)*uncertainty*hist.GetBinContent(bin)
+                                                                 +hist.GetBinError(bin)*hist.GetBinError(bin))/uncertainty_norm
+                                       out_line  = "hin->SetBinError(%(bin)i,hin->GetBinContent(%(bin)i)*%(uncertainty)f); \n" % {"bin":bin, "uncertainty":uncertainty}
+                                       output_file.write(out_line)
                                    if options.verbose :
                                        print out_line
-				 elif options.verbose:
-			            print "WARNING: There is a zero yield uncertainty. Maybe you are missing uncertainties in the datacards which are in the fitresult in",
-                                    self.analysis,self.category,". Please check."
+                                   elif options.verbose:
+                                       print "WARNING: There is a zero yield uncertainty. Maybe you are missing uncertainties in the datacards which are in the fitresult in",
+                                       self.analysis,self.category,". Please check."
 	     if options.shapes:
                for process_name in self.process_shape_weight.keys():
                  if self.signal_process(process_name) :

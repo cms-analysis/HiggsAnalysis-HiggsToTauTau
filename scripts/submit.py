@@ -208,15 +208,14 @@ def lxb_submit(dirs, masses, cmd='--asymptotic', opts='', cycle='') :
     on to limit.py.
     '''
     for dir in dirs:
-        
         if 'asymptotic' in cmd :
-            cmd_ext = 'limit'
+            cmd_ext = '-limit'
         elif 'max-likelihood' in cmd :
-            cmd_ext = 'mlfit'
+            cmd_ext = '-mlfit'
         elif 'pvalue' in cmd :
-            cmd_ext = 'pval'
+            cmd_ext = '-pval'
         elif 'significance' in cmd :
-            cmd_ext = 'sig'
+            cmd_ext = '-sig'
         else :
             cmd_ext = ''
         ana = dir[:dir.rfind('/')]
