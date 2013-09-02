@@ -172,6 +172,14 @@ if options.update_setup :
                         SETUP=setup,
                         CHN=chn
                         ))
+                if chn == 'mt' and options.add_mutau_soft:
+                    os.system("cp -v {CMSSW_BASE}/src/auxiliaries/shapes/{DIR}/htt_mt.inputs-sm-8TeV-soft.root {SETUP}/mt/".format(
+                        CMSSW_BASE=cmssw_base,
+                        DIR=directories[chn][per],
+                        SOURCE=file,
+                        SETUP=setup
+                        ))
+                    
     if 'vhtt' in config.channels :
         for per in config.periods :
             if directories['vhtt'][per] == 'None' :
@@ -189,6 +197,11 @@ if options.update_setup :
                         PER=per,
                         PATTERN=pattern
                         ))
+    if 'mt' in config.channels and options.add_mutau_soft:
+        for ana in analyses:
+            os.system("hadd {SETUP}/mt/htt_mt.inputs-sm-8TeV-bak.root {SETUP}/mt/htt_mt.inputs-sm-8TeV.root {SETUP}/mt/htt_mt.inputs-sm-8TeV-soft.root".format(SETUP=setup))
+            os.system("mv {SETUP}/mt/htt_mt.inputs-sm-8TeV-bak.root {SETUP}/mt/htt_mt.inputs-sm-8TeV.root".format(SETUP=setup))
+            os.system("rm {SETUP}/mt/htt_mt.inputs-sm-8TeV-soft.root".format(SETUP=setup))
     ## apply horizontal morphing for processes, which have not been simulated for 7TeV: ggH_hww145, qqH_hww145
     for file in glob.glob("{SETUP}/em/htt_em.inputs-sm-7TeV*.root".format(SETUP=setup)) :
         template_morphing = Morph(file, 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose', 'ggH_hww{MASS}', 'QCDscale_ggH1in,CMS_scale_e_7TeV', '140,150', 5, True,'') 
@@ -275,7 +288,7 @@ if options.update_setup :
                             PER=per,
                             CAT=config.bbbcat[chn][per][idx],
                             PROC=config.bbbproc[chn][idx],
-                            SOFT=',10,11,12,13,15,16' if options.add_mutau_soft and chn=='mt' else '',
+                            SOFT=',10,11,12,13,15,16' if options.add_mutau_soft and chn=='mt' and per=='8TeV' else '',
                             THR=config.bbbthreshold
                             ))
                         os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
@@ -329,12 +342,13 @@ if options.update_aux :
         for chn in config.channels:
             for per in config.periods:
                 if config.categories[chn][per]:
-                    os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' --sm-categories-{CHN}='{CATS}' {MASSES}".format(
+                    os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' --sm-categories-{CHN}='{CATS}{SOFT}' {MASSES}".format(
                         CMSSW_BASE=cmssw_base,
                         LABEL=options.label,
                         ANA=ana,
                         DIR=dir,
                         CATS=' '.join(config.categories[chn][per]),
+                        SOFT=' 10 11 12 13 15 16' if options.add_mutau_soft and chn=='mt' and per=='8TeV'else '',
                         CHN=chn,
                         PER=per,
                         MASSES=' '.join(masses)
@@ -385,12 +399,13 @@ if options.update_limits :
         for chn in config.channels:
             for per in config.periods:
                 if config.categories[chn][per]:
-                    os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {LABEL} --sm-categories-{CHN}='{CATS}' {MASSES}".format(
+                    os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {LABEL} --sm-categories-{CHN}='{CATS}{SOFT}' {MASSES}".format(
                         INDEX=options.label,                
                         ANA=ana,
                         DIR=dir,
                         LABEL=label,
                         CATS=' '.join(config.categories[chn][per]),
+                        SOFT=' 10 11 12 13 15 16' if options.add_mutau_soft and chn=='mt' and per=='8TeV' else '',
                         CHN=chn,
                         PER=per,
                         MASSES=' '.join(masses)
