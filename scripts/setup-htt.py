@@ -141,28 +141,28 @@ directories_sm = {
 
 directories_mssm = {
     'ee' : {
-    '8'  : ['nobtag'],
-    '9'  : ['btag'  ],
+    '8'  : ['nobtag', 'nobtag-ee'],
+    '9'  : ['btag'  , 'btag-ee'  ],
     },
     'mm' : {
-    '8'  : ['nobtag'],
-    '9'  : ['btag'  ],
+    '8'  : ['nobtag', 'nobtag-mm'],
+    '9'  : ['btag'  , 'btag-mm'  ],
     },
     'em' : {
-    '8'  : ['nobtag'],
-    '9'  : ['btag'  ],
+    '8'  : ['nobtag', 'nobtag-em'],
+    '9'  : ['btag'  , 'btag-em'  ],
     },    
     'et' : {
-    '8'  : ['nobtag'],
-    '9'  : ['btag'  ],
+    '8'  : ['nobtag', 'nobtag-et'],
+    '9'  : ['btag'  , 'btag-et'  ],
     },
     'mt' : {
-    '8'  : ['nobtag'],
-    '9'  : ['btag'  ],
+    '8'  : ['nobtag', 'nobtag-mt'],
+    '9'  : ['btag'  , 'btag-mt'  ],
     },
     'tt' : {
-    '8'  : ['nobtag'],
-    '9'  : ['btag'  ],
+    '8'  : ['nobtag', 'nobtag-tt'],
+    '9'  : ['btag'  , 'btag-tt'  ],
     },
 }
 
