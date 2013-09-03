@@ -127,11 +127,13 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
 
   // determine category tag
-  const char* category_extra = ""; const char* category_extra2 = "";
-  if(std::string(directory) == std::string("tauTau_1jet_high_mediumhiggs")){ category_extra = "1 jet,";                          }
-  if(std::string(directory) == std::string("tauTau_1jet_high_mediumhiggs")){ category_extra2= "p_{T}(lep1) high, p_{T}(H) med."; }
-  if(std::string(directory) == std::string("tauTau_1jet_high_highhiggs"  )){ category_extra = "1 jet,";                          }
-  if(std::string(directory) == std::string("tauTau_1jet_high_highhiggs"  )){ category_extra2= "p_{T}(lep1) high, p_{T}(H) high"; }
+  const char* category = ""; const char* category_extra = ""; const char* category_extra2 = "";
+  if(std::string(directory) == std::string("tauTau_1jet_high_mediumhiggs")){ category = "#tau_{h}#tau_{h}, 1 jet";                          }    
+  if(std::string(directory) == std::string("tauTau_1jet_high_mediumhiggs")){ category_extra= "p_{T}(lep1) high"; }
+  if(std::string(directory) == std::string("tauTau_1jet_high_mediumhiggs")){ category_extra2= "p_{T}(H) med."; }
+  if(std::string(directory) == std::string("tauTau_1jet_high_highhiggs")){ category = "#tau_{h}#tau_{h}, 1 jet";                          }    
+  if(std::string(directory) == std::string("tauTau_1jet_high_highhiggs")){ category_extra= "p_{T}(lep1) high"; }
+  if(std::string(directory) == std::string("tauTau_1jet_high_highhiggs")){ category_extra2= "p_{T}(H) high"; }
   if(std::string(directory) == std::string("tauTau_vbf"                  )){ category_extra = "2 jet (VBF)";                     }
   if(std::string(directory) == std::string("tauTau_nobtag"               )){ category_extra = "No B-Tag";                        }
   if(std::string(directory) == std::string("tauTau_btag"                 )){ category_extra = "B-Tag";                           }
@@ -320,16 +322,18 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 
   //CMSPrelim(dataset, "#tau_{h}#tau_{h}", 0.17, 0.835);
   CMSPrelim(dataset, "", 0.18, 0.835);  
-  TPaveText* chan     = new TPaveText(0.20, 0.76+0.061, 0.32, 0.76+0.161, "NDC");
+  TPaveText* chan     = new TPaveText(0.20, (category_extra2 && category_extra2[0]=='\0') ? 0.65+0.061 : 0.65+0.061, 0.32, 0.75+0.161, "tlbrNDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
   chan->SetTextAlign(   12 );
   chan->SetTextSize ( 0.05 );
   chan->SetTextColor(    1 );
   chan->SetTextFont (   62 );
-  chan->AddText("#tau_{h}#tau_{h}");
+  chan->AddText(category);
+  chan->AddText(category_extra);
+  chan->AddText(category_extra2);
   chan->Draw();
-
+/*
   TPaveText* cat      = new TPaveText(0.20, 0.71+0.061, 0.32, 0.71+0.161, "NDC");
   cat->SetBorderSize(   0 );
   cat->SetFillStyle(    0 );
@@ -349,7 +353,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   cat2->SetTextFont (   62 );
   cat2->AddText(category_extra2);
   cat2->Draw();
-  
+*/  
 #ifdef MSSM
   TPaveText* massA      = new TPaveText(0.55, 0.50+0.061, 0.95, 0.50+0.161, "NDC");
   massA->SetBorderSize(   0 );

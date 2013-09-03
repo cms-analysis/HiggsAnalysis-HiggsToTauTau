@@ -131,15 +131,23 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
 
   // determine category tag
-  const char* category_extra = "";
-  if(std::string(directory) == std::string("emu_0jet_low"  )){ category_extra = "0 jet, p_{T}(lep1) low";   }
-  if(std::string(directory) == std::string("emu_0jet_high" )){ category_extra = "0 jet, p_{T}(lep1) high";  }
-  if(std::string(directory) == std::string("emu_1jet_low"  )){ category_extra = "1 jet, p_{T}(lep1) low";   }
-  if(std::string(directory) == std::string("emu_1jet_high" )){ category_extra = "1 jet, p_{T}(lep1) high";  }
-  if(std::string(directory) == std::string("emu_vbf_loose" )){ category_extra = "2 jet (VBF), loose";       }
-  if(std::string(directory) == std::string("emu_vbf_tight" )){ category_extra = "2 jet (VBF), tight";       }
-  if(std::string(directory) == std::string("emu_nobtag"    )){ category_extra = "No B-Tag";                 }
-  if(std::string(directory) == std::string("emu_btag"      )){ category_extra = "B-Tag";                    }
+  const char* category = ""; const char* category_extra = ""; const char* category_extra2 = "";
+  if(std::string(directory) == std::string("emu_0jet_low"             )){ category = "e#mu, 0 jet";          }    
+  if(std::string(directory) == std::string("emu_0jet_low"             )){ category_extra = "p_{T}(lep1) low";          }    
+  if(std::string(directory) == std::string("emu_0jet_high"            )){ category = "e#mu, 0 jet";          }    
+  if(std::string(directory) == std::string("emu_0jet_high"            )){ category_extra = "p_{T}(lep1) high";         }    
+  if(std::string(directory) == std::string("emu_1jet_low"          )){ category = "e#mu, 1 jet";          }    
+  if(std::string(directory) == std::string("emu_1jet_low"          )){ category_extra = "p_{T}(lep1) low";       }    
+  if(std::string(directory) == std::string("emu_1jet_high"          )){ category = "e#mu, 1 jet";          }    
+  if(std::string(directory) == std::string("emu_1jet_high"          )){ category_extra = "p_{T}(lep1) high";       }    
+  if(std::string(directory) == std::string("emu_vbf_loose"            )){ category = "e#mu, 2 jet";          }    
+  if(std::string(directory) == std::string("emu_vbf_loose"            )){ category_extra = "VBF, loose";              }    
+  if(std::string(directory) == std::string("emu_vbf_tight"            )){ category = "e#mu, 2 jet";          }    
+  if(std::string(directory) == std::string("emu_vbf_tight"            )){ category_extra = "VBF, tight";              }    
+  if(std::string(directory) == std::string("emu_nobtag"               )){ category = "e#mu";          }    
+  if(std::string(directory) == std::string("emu_nobtag"               )){ category_extra = "No B-Tag";                        }    
+  if(std::string(directory) == std::string("emu_btag"                 )){ category = "e#mu";          }    
+  if(std::string(directory) == std::string("emu_btag"                 )){ category_extra = "B-Tag";                           }
 
   const char* dataset;
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV";}
@@ -335,12 +343,12 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   errorBand  ->SetFillColor(1);
   errorBand  ->SetFillStyle(3013);
   errorBand  ->SetLineWidth(1);
-  for(int idx=0; idx<errorBand->GetNbinsX(); ++idx){
-    if(errorBand->GetBinContent(idx)>0){
-      std::cout << "Uncertainties on summed background samples: " << errorBand->GetBinError(idx)/errorBand->GetBinContent(idx) << std::endl;
-      break;
-    }
-  }
+//  for(int idx=0; idx<errorBand->GetNbinsX(); ++idx){
+//    if(errorBand->GetBinContent(idx)>0){
+//      std::cout << "Uncertainties on summed background samples: " << errorBand->GetBinError(idx)/errorBand->GetBinContent(idx) << std::endl;
+//      break;
+//    }
+//  }
   if(log){
 #ifdef HWW_BG
     ggH_hww->Draw("histsame");
@@ -370,19 +378,21 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   data->Draw("esame");
   canv->RedrawAxis();
 
-  //CMSPrelim(dataset, "#tau_{e}#tau_{#mu}", 0.17, 0.835);  
-  CMSPrelim(dataset, "", 0.16, 0.835);  
-  TPaveText* chan     = new TPaveText(0.20, 0.76+0.061, 0.32, 0.76+0.161, "NDC");
+  //CMSPrelim(dataset, "#tau_{e}#tau_{#mu}", 0.17, 0.835);
+  CMSPrelim(dataset, "", 0.16, 0.835);
+  TPaveText* chan     = new TPaveText(0.20, (category_extra2 && category_extra2[0]=='\0') ? 0.65+0.061 : 0.65+0.061, 0.32, 0.75+0.161, "tlbrNDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
   chan->SetTextAlign(   12 );
   chan->SetTextSize ( 0.05 );
   chan->SetTextColor(    1 );
   chan->SetTextFont (   62 );
-  chan->AddText("e#mu");
+  chan->AddText(category);
+  chan->AddText(category_extra);
+  chan->AddText(category_extra2);
   chan->Draw();
 
-  TPaveText* cat      = new TPaveText(0.20, 0.71+0.061, 0.32, 0.71+0.161, "NDC");
+/*  TPaveText* cat      = new TPaveText(0.20, 0.71+0.061, 0.32, 0.71+0.161, "NDC");
   cat->SetBorderSize(   0 );
   cat->SetFillStyle(    0 );
   cat->SetTextAlign(   12 );
@@ -403,7 +413,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   massA->AddText("m^{h}_{max} (m_{A}=$MA GeV, tan#beta=$TANB)");
   massA->Draw();
 #endif
-
+*/
 #ifdef MSSM  
   TLegend* leg = new TLegend(0.55, 0.65, 0.95, 0.90);
   SetLegendStyle(leg);
