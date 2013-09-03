@@ -271,7 +271,7 @@ if options.update_setup :
                          DIR=dir, ANA=ana))
                      os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_fine_binning' -k '9' --range 150 ".format(
                          DIR=dir, ANA=ana))
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_fine_binning' -k '8' --range 300 ".format(
+                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_fine_binning' -k '8' --range 350".format(
                          DIR=dir, ANA=ana)) 
                     ## tail fit for QCD shape uncertainties
                      os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_CMS_htt_QCDShape_etau_nobtag_8TeVDown_fine_binning' -k '8' --range 120 --no-uncerts".format(
@@ -287,7 +287,7 @@ if options.update_setup :
                         DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_fine_binning' -k '9' --range 150 ".format(
                         DIR=dir, ANA=ana))           
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_fine_binning' -k '8' --range 300 ".format(
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_fine_binning' -k '8' --range 350".format(
                         DIR=dir, ANA=ana))           
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'TT_fine_binning' -k '9' --range 200 ".format(
                         DIR=dir, ANA=ana))           
