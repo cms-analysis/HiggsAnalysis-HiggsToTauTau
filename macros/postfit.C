@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 
 #include <TH1F.h>
 #include <TFile.h>
@@ -27,6 +28,9 @@ static const float SIGNAL_SCALE = 1.;
    This is a macro to create di-tau masses for all classic htt channels combined
 */
 
+static const bool CONSERVATIVE_CHI2 = true;
+static const float UPPER_EDGE = 695; // 695; 1495;
+
 float maximum(TH1F* h, bool LOG=false){
   if(LOG){
     return 5.*h->GetMaximum();
@@ -46,12 +50,12 @@ TH1F* refill(TH1F* hin, const char* sample)
   if(hin==0){
     std::cout << "hist not found: " << sample << " -- this may happen for samples of type signal." << std::endl;
     bool skip = false;
-    if(std::string(sample).find("ggH")==std::string::npos){ skip == true ; }
-    if(skip || std::string(sample).find("Zmm")==std::string::npos){ skip == true; }
-    if(skip || std::string(sample).find("Zee")==std::string::npos){ skip == true; }
-    if(skip || std::string(sample).find("Fakes/QCD")==std::string::npos){ skip == true; }
+    if(std::string(sample).find("ggH")==std::string::npos       ){ skip == true; }
+    if(std::string(sample).find("Zmm")==std::string::npos       ){ skip == true; }
+    if(std::string(sample).find("Zee")==std::string::npos       ){ skip == true; }
+    if(std::string(sample).find("Fakes/QCD")==std::string::npos ){ skip == true; }
     if(skip){
-      std::cout << "hist is not of type signal, Fakes/QCD, Zmm in mumu, Zee in ee, close here" << std::endl;
+      std::cout << "hist is not of type signal, Fakes/QCD or Zmm in mumu, Zee in ee, close here" << std::endl;
       exit(1);
     }
     else{
@@ -114,7 +118,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   TCanvas *canv = MakeCanvas("canv", "histograms", 600, 600);
   if(log) canv->SetLogy(1);
   // reduce the axis range if necessary for linea plots and SM
-  if(MSSM && !log){ data->GetXaxis()->SetRange(0, data->FindBin(345)); } else{ data->GetXaxis()->SetRange(0, data->FindBin(695)); };
+  if(MSSM && !log){ data->GetXaxis()->SetRange(0, data->FindBin(345)); } else{ data->GetXaxis()->SetRange(0, data->FindBin(UPPER_EDGE)); };
   if(!MSSM){ data->GetXaxis()->SetRange(0, data->FindBin(345)); }
   data->SetNdivisions(505);
   data->SetMinimum(min);
@@ -274,58 +278,12 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   leg->Draw();
 
   /*
-  TPaveText* ext0     = new TPaveText(0.50, lower_bound-0.08, 0.70, lower_bound-0.03, "NDC");
-  ext0->SetBorderSize(   0 );
-  ext0->SetFillStyle(    0 );
-  ext0->SetTextAlign(   12 );
-  ext0->SetTextSize ( 0.035 );
-  ext0->SetTextColor(    1 );
-  ext0->SetTextFont (   42 );
-  ext0->AddText("CMS Preliminary");
-  ext0->Draw();
-
-  TPaveText* ext1     = new TPaveText(0.50, lower_bound-0.13, 0.70, lower_bound-0.08, "NDC");
-  ext1->SetBorderSize(   0 );
-  ext1->SetFillStyle(    0 );
-  ext1->SetTextAlign(   12 );
-  ext1->SetTextSize ( 0.035 );
-  ext1->SetTextColor(    1 );
-  ext1->SetTextFont (   42 );
-  ext1->AddText("#sqrt{s} = 7 TeV, L = 4.9 fb^{-1}");
-  ext1->Draw();
-
-  TPaveText* ext2     = new TPaveText(0.50, lower_bound-0.18, 0.70, lower_bound-0.13, "NDC");
-  ext2->SetBorderSize(   0 );
-  ext2->SetFillStyle(    0 );
-  ext2->SetTextAlign(   12 );
-  ext2->SetTextSize ( 0.035 );
-  ext2->SetTextColor(    1 );
-  ext2->SetTextFont (   42 );
-  ext2->AddText("#sqrt{s} = 8 TeV, L = 19.4 fb^{-1}");
-  ext2->Draw();
-  
-  TPaveText* ext3     = new TPaveText(0.50, lower_bound-0.23, 0.70, lower_bound-0.18, "NDC");
-  ext3->SetBorderSize(   0 );
-  ext3->SetFillStyle(    0 );
-  ext3->SetTextAlign(   12 );
-  ext3->SetTextSize ( 0.035 );
-  ext3->SetTextColor(    1 );
-  ext3->SetTextFont (   42 );
-  ext3->AddText("H#rightarrow#tau#tau");
-  ext3->Draw();
-  */
-
-  /*
     prepare output
   */
   std::string newName = std::string(inputfile).substr(0, std::string(inputfile).find(".root"));
-  //canv->Print(TString::Format("%s%s.png", newName.c_str(), log ? "_LOG" : "")); 
-  //canv->Print(TString::Format("%s%s.pdf", newName.c_str(), log ? "_LOG" : "")); 
-  //canv->Print(TString::Format("%s%s.eps", newName.c_str(), log ? "_LOG" : "")); 
   canv->Print(TString::Format("%s.png", newName.c_str())); 
   canv->Print(TString::Format("%s.pdf", newName.c_str())); 
   canv->Print(TString::Format("%s.eps", newName.c_str())); 
-
 
   /*
     Ratio Data over MC
@@ -334,31 +292,62 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   canv0->SetGridx();
   canv0->SetGridy();
   canv0->cd(); 
-  TH1F* zero;
-  TH1F* rat1 = (TH1F*)data->Clone("rat"); 
-  if(std::string(extra) == std::string("#mu#mu")){
-    zero = (TH1F*)Zmm->Clone("zero"); zero->Clear();
-    rat1->Divide(Zmm);
-  }
-  else if(std::string(extra) == std::string("ee")){
-    zero = (TH1F*)Zee->Clone("zero"); zero->Clear();
-    rat1->Divide(Zee);
+  TH1F* model;
+  if(CONSERVATIVE_CHI2){
+    if(std::string(extra) == std::string("#mu#mu")){
+      model = (TH1F*)Zmm ->Clone("model");
+    }
+    else if(std::string(extra) == std::string("ee")){
+      model = (TH1F*)Zee ->Clone("model");
+    }
+    else{  
+      model = (TH1F*)Ztt ->Clone("model");
+    }
   }
   else{
-    zero = (TH1F*)Ztt->Clone("zero"); zero->Clear();
-    rat1->Divide(Ztt);
+    model = (TH1F*)errorBand->Clone("model");
+  }
+  TH1F* test1 = (TH1F*)data->Clone("test1"); 
+  for(int ibin=0; ibin<test1->GetNbinsX(); ++ibin){
+    //the small value in case of 0 entries in the model is added to prevent the chis2 test from failing
+    model->SetBinContent(ibin+1, model->GetBinContent(ibin+1)>0 ? model->GetBinContent(ibin+1)*model->GetBinWidth(ibin+1) : 0.01);
+    model->SetBinError  (ibin+1, CONSERVATIVE_CHI2 ? 0. : model->GetBinError  (ibin+1)*model->GetBinWidth(ibin+1));
+    test1->SetBinContent(ibin+1, test1->GetBinContent(ibin+1)*test1->GetBinWidth(ibin+1));
+    test1->SetBinError  (ibin+1, test1->GetBinError  (ibin+1)*test1->GetBinWidth(ibin+1));
+  }
+  double chi2prob = test1->Chi2Test      (model,"PUW");        std::cout << "chi2prob:" << chi2prob << std::endl;
+  double chi2ndof = test1->Chi2Test      (model,"CHI2/NDFUW"); std::cout << "chi2ndf :" << chi2ndof << std::endl;
+  double ksprob   = test1->KolmogorovTest(model);              std::cout << "ksprob  :" << ksprob   << std::endl;
+  double ksprobpe = test1->KolmogorovTest(model,"DX");         std::cout << "ksprobpe:" << ksprobpe << std::endl;  
+
+  std::vector<double> edges;
+  TH1F* zero = (TH1F*)Ztt->Clone("zero"); zero->Clear();
+  TH1F* rat1 = (TH1F*)data->Clone("rat"); 
+  for(int ibin=0; ibin<rat1->GetNbinsX(); ++ibin){
+    rat1->SetBinContent(ibin+1, errorBand->GetBinContent(ibin+1)>0 ? data->GetBinContent(ibin+1)/errorBand->GetBinContent(ibin+1) : 0);
+    rat1->SetBinError  (ibin+1, errorBand->GetBinContent(ibin+1)>0 ? data->GetBinError  (ibin+1)/errorBand->GetBinContent(ibin+1) : 0);
+    zero->SetBinContent(ibin+1, 0.);
+    zero->SetBinError  (ibin+1, errorBand->GetBinContent(ibin+1)>0 ? errorBand ->GetBinError  (ibin+1)/errorBand->GetBinContent(ibin+1) : 0);
   }
   for(int ibin=0; ibin<rat1->GetNbinsX(); ++ibin){
     if(rat1->GetBinContent(ibin+1)>0){
+      edges.push_back(TMath::Abs(rat1->GetBinContent(ibin+1)-1.)+TMath::Abs(rat1->GetBinError(ibin+1)));
       // catch cases of 0 bins, which would lead to 0-alpha*0-1
       rat1->SetBinContent(ibin+1, rat1->GetBinContent(ibin+1)-1.);
     }
     zero->SetBinContent(ibin+1, 0.);
   }
+  float range = 0.1;
+  std::sort(edges.begin(), edges.end());
+  if (edges[edges.size()-2]>0.1) { range = 0.2; }
+  if (edges[edges.size()-2]>0.2) { range = 0.5; }
+  if (edges[edges.size()-2]>0.5) { range = 1.0; }
+  if (edges[edges.size()-2]>1.0) { range = 1.5; }
+  if (edges[edges.size()-2]>1.5) { range = 2.0; }
   rat1->SetLineColor(kBlack);
   rat1->SetFillColor(kGray );
-  rat1->SetMaximum(+0.5);
-  rat1->SetMinimum(-0.5);
+  rat1->SetMaximum(+range);
+  rat1->SetMinimum(-range);
   rat1->GetYaxis()->CenterTitle();
   rat1->GetYaxis()->SetTitle("#bf{Data/MC-1}");
   if((std::string(extra) == std::string("#mu#mu") || std::string(extra) == std::string("ee")) && !MSSM){
@@ -368,9 +357,22 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     rat1->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}");
   }
   rat1->Draw();
+  zero->SetFillStyle(  3013);
+  zero->SetFillColor(kBlack);
   zero->SetLineColor(kBlack);
-  zero->Draw("same");
+  zero->SetMarkerSize(0.1);
+  zero->Draw("e2histsame");
   canv0->RedrawAxis();
+
+  TPaveText* stat1 = new TPaveText(0.20, 0.76+0.061, 0.32, 0.76+0.161, "NDC");
+  stat1->SetBorderSize(   0 );
+  stat1->SetFillStyle(    0 );
+  stat1->SetTextAlign(   12 );
+  stat1->SetTextSize ( 0.05 );
+  stat1->SetTextColor(    1 );
+  stat1->SetTextFont (   62 );
+  stat1->AddText(TString::Format("#chi^{2}/ndf=%.3f,  P(#chi^{2})=%.3f,  P(KS)=%.3f", chi2ndof, chi2prob, ksprob));
+  stat1->Draw();
 
   /*
     prepare output

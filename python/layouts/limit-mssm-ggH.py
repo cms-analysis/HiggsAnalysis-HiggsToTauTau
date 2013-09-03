@@ -13,7 +13,7 @@ layout = cms.PSet(
     ## min for plotting
     min = cms.double(0.01),
     ## max for plotting
-    max = cms.double(200.),
+    max = cms.double(200.), ## 200. 100000.
     ## min for plotting
     log = cms.int32(1),
     ## print to png
@@ -27,17 +27,25 @@ layout = cms.PSet(
     ## define verbosity level
     verbosity = cms.uint32(0),
     ## define output label
-    outputLabel = cms.string("limit"), 
+    outputLabel = cms.string("ggH-limit"), 
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
     90.
    ,100.
+   #,110.
    ,120.
-   ,130.
+   #,130.
    ,140.
+   #,150.
    ,160.
+   #,170.
    ,180.
+   #,190.
    ,200.
+   #,210.
+   #,220.
+   #,230.
+   #,240.
    ,250.
    ,300.
    ,350.

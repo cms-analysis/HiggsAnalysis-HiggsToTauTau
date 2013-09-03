@@ -37,6 +37,7 @@ $DEFINE_MSSM
 static const bool BLIND_DATA = false; //false;
 static const bool FULLPLOTS = true; //true;
 static const bool CONVERVATIVE_CHI2 = true;
+static const float UPPER_EDGE = 695; // 695; 1495;
 
 float blinding_SM(float mass){
   bool blind=false;
@@ -311,7 +312,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   canv->cd();
   if(log){ canv->SetLogy(1); }
 #if defined MSSM
-  if(!log){ data->GetXaxis()->SetRange(0, data->FindBin(345)); } else{ data->GetXaxis()->SetRange(0, data->FindBin(695)); };
+  if(!log){ data->GetXaxis()->SetRange(0, data->FindBin(345)); } else{ data->GetXaxis()->SetRange(0, data->FindBin(UPPER_EDGE)); };
 #else
   data->GetXaxis()->SetRange(0, data->FindBin(345));
 #endif
@@ -437,7 +438,8 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TH1F* model = (TH1F*)ZMM ->Clone("model");
   TH1F* test1 = (TH1F*)data->Clone("test1"); 
   for(int ibin=0; ibin<test1->GetNbinsX(); ++ibin){
-    model->SetBinContent(ibin+1, model->GetBinContent(ibin+1)*model->GetBinWidth(ibin+1));
+    //the small value in case of 0 entries in the model is added to prevent the chis2 test from failing
+    model->SetBinContent(ibin+1, model->GetBinContent(ibin+1)>0 ? model->GetBinContent(ibin+1)*model->GetBinWidth(ibin+1) : 0.01);
     model->SetBinError  (ibin+1, CONVERVATIVE_CHI2 ? 0. : model->GetBinError  (ibin+1)*model->GetBinWidth(ibin+1));
     test1->SetBinContent(ibin+1, test1->GetBinContent(ibin+1)*test1->GetBinWidth(ibin+1));
     test1->SetBinError  (ibin+1, test1->GetBinError  (ibin+1)*test1->GetBinWidth(ibin+1));
@@ -485,6 +487,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   zero->SetFillStyle(  3013);
   zero->SetFillColor(kBlack);
   zero->SetLineColor(kBlack);
+  zero->SetMarkerSize(0.1);
   zero->Draw("e2histsame");
   canv0->RedrawAxis();
 
@@ -527,7 +530,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   if (edges[edges.size()-2]>1.0) { range = 1.5; }
   if (edges[edges.size()-2]>1.5) { range = 2.0; }
 #if defined MSSM
-  if(!log){ rat2->GetXaxis()->SetRange(0, rat2->FindBin(345)); } else{ rat2->GetXaxis()->SetRange(0, rat2->FindBin(695)); };
+  if(!log){ rat2->GetXaxis()->SetRange(0, rat2->FindBin(345)); } else{ rat2->GetXaxis()->SetRange(0, rat2->FindBin(UPPER_EDGE)); };
 #else
   rat2->GetXaxis()->SetRange(0, rat2->FindBin(345));
 #endif
