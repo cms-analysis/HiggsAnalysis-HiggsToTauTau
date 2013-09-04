@@ -35,8 +35,8 @@ $DEFINE_MSSM
 
 static const bool BLIND_DATA = false; //false;
 static const bool FULLPLOTS = true; //true;
-static const bool CONSERVATIVE_CHI2 = true;
-static const float UPPER_EDGE = 695; // 695; 1495;
+static const bool CONSERVATIVE_CHI2 = false;
+static const float UPPER_EDGE = 1495; // 695; 1495;
 
 float blinding_SM(float mass){ return (100<mass && mass<150); }
 float blinding_MSSM(float mass){ return (100<mass); }
