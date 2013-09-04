@@ -443,8 +443,8 @@ void compareDeltaLimit(const char* filename, const char* channelstr, bool expect
     for(int l=0; l<k; l++){
       hobs[0]->GetPoint(l, x1, y1);
       hobs[1]->GetPoint(l, x2, y2);
-      result->SetPoint(l, x1, TMath::Abs(y1-y2)*2/(y1*y2));
-      //std::cout<< l << " " <<  x1 <<" " <<TMath::Abs(y1-y2)*2/(y1*y2)<< std::endl;
+      result->SetPoint(l, x1, TMath::Abs(y1-y2)*2/(y1+y2));
+      //std::cout<< l << " " <<  x1 <<" " <<TMath::Abs(y1-y2)*2/(y1+y2)<< std::endl;
       }
     }
   if(expected){
@@ -452,8 +452,8 @@ void compareDeltaLimit(const char* filename, const char* channelstr, bool expect
     for(int l=0; l<k; l++){
       hexp[0]->GetPoint(l, x1, y1);
       hexp[1]->GetPoint(l, x2, y2);
-      result->SetPoint(l, x1, TMath::Abs(y1-y2)*2/(y1*y2));
-      //std::cout<< l << " " <<  x1 <<" " <<TMath::Abs(y1-y2)*2/(y1*y2)<< std::endl;
+      result->SetPoint(l, x1, TMath::Abs(y1-y2)*2/(y1+y2));
+      //std::cout<< l << " " <<  x1 <<" " <<TMath::Abs(y1-y2)*2/(y1+y2)<< std::endl;
       }
     }
   // format x-axis
