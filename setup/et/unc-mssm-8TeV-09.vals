@@ -1,7 +1,7 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 eleTau_btag		signal            	lumi_8TeV            			1.042
-eleTau_btag		signal,ZTT,ZL,ZJ,TT,VV  	CMS_eff_e 				1.02
+eleTau_btag		signal,ZTT,ZL,ZJ,TT,VV  CMS_eff_e 				1.02
 eleTau_btag		signal,ZTT,VV  		CMS_eff_t_etau_8TeV			1.08
 eleTau_btag		signal,ZTT		CMS_scale_t_etau_8TeV          		1.00
 eleTau_btag      	ggH		  	CMS_scale_j_8TeV 			1.03	
@@ -20,7 +20,7 @@ eleTau_btag		ggH        		CMS_fake_b_8TeV                 	1.03
 eleTau_btag		TT,VV        		CMS_fake_b_8TeV                 	1.01
 eleTau_btag		ZL        		CMS_fake_b_8TeV                 	1.02
 eleTau_btag		ZJ        		CMS_fake_b_8TeV                 	1.09
-eleTau_btag		ZTT,ZL,ZJ        		CMS_htt_zttNorm_8TeV 			1.03
+eleTau_btag		ZTT,ZL,ZJ        	CMS_htt_zttNorm_8TeV 			1.03
 eleTau_btag		TT     		  	CMS_htt_ttbarNorm_8TeV 			1.10
 eleTau_btag		TT     		  	CMS_htt_ttbar_emb_8TeV 			1.14
 eleTau_btag	 	VV	          	CMS_htt_DiBosonNorm_8TeV 		1.15
@@ -31,3 +31,4 @@ eleTau_btag         	QCD	          	CMS_htt_QCDShape_etau_btag_8TeV		1.00
 eleTau_btag         	ZL	          	CMS_htt_ZLeptonFakeTau_etau_8TeV	1.20
 eleTau_btag         	ZJ	          	CMS_htt_ZJetFakeTau_etau_btag_8TeV	1.20
 eleTau_btag		ZL			CMS_htt_ZLScale_etau_8TeV		1.00
+#[tail]eleTau_btag	W			tailShape				1.00
