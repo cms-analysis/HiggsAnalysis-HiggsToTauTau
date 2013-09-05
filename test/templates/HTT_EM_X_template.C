@@ -675,6 +675,9 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   ggH  ->Write("ggH"     );
   bbH  ->Write("bbH"     );
 #else
+#ifdef HWW_BG
+  ggH_hww  ->Write("ggH_hww"     );
+#endif
 #ifndef DROP_SIGNAL
   ggH  ->Write("ggH"     );
   qqH  ->Write("qqH"     );

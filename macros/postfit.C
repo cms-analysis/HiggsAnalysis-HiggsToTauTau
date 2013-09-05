@@ -19,7 +19,6 @@
 #include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
 
 static const float SIGNAL_SCALE = 1.;
-
 /**
    \class   postfit postfit.C "HiggsAnalysis/HiggsToTauTau/macros/postfit.C"
 
@@ -28,6 +27,7 @@ static const float SIGNAL_SCALE = 1.;
    This is a macro to create di-tau masses for all classic htt channels combined
 */
 
+static const bool HWWBG = $HWWBG;
 static const bool CONSERVATIVE_CHI2 = false;
 static const float UPPER_EDGE = 1495; // 695; 1495;
 
@@ -110,6 +110,10 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   if(std::string(extra) == std::string("e#tau_{h}")){
     EWK1 = refill((TH1F*)input->Get("EWK1"),  "EWK1");
   }
+  TH1F* ggH_hww = 0;
+  if(std::string(extra) == std::string("e#mu") and HWWBG){
+    ggH_hww= refill((TH1F*)input->Get("ggH_hww" ), "ggH_hww"  ); 
+  }
   TH1F* errorBand = (TH1F*)input->Get("errorBand");
 
   /* 
@@ -163,6 +167,26 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       ttbar->Draw("same");
       EWK  ->Draw("same");
       EWK1 ->Draw("same");
+      Fakes->Draw("same");
+    } 
+  }
+  else if(std::string(extra) == std::string("e#mu") && HWWBG){
+    data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(ggH_hww, log)));
+    data->Draw("e");
+    if(log){
+      ggH_hww -> Draw("same");
+      Ztt  ->Draw("same");
+      ttbar->Draw("same");
+      EWK  ->Draw("same");
+      Fakes->Draw("same");
+      if(ggH) ggH  ->Draw("histsame");
+    }
+    else{
+      if(ggH) ggH  ->Draw("histsame");
+      ggH_hww -> Draw("same");
+      Ztt  ->Draw("same");
+      ttbar->Draw("same");
+      EWK  ->Draw("same");
       Fakes->Draw("same");
     } 
   }
@@ -266,6 +290,13 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
     leg->AddEntry(Fakes, "QCD"                 , "F" );
   }
+  else if(std::string(extra) == std::string("e#mu") && HWWBG){
+    leg->AddEntry(ggH_hww  , "H(125 GeV)#rightarrowWW" , "F" );
+    leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
+    leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
+    leg->AddEntry(EWK  , "electroweak"                  , "F" );
+    leg->AddEntry(Fakes, "QCD"                 , "F" );
+  }
   else{
     leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
     leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
@@ -299,6 +330,9 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     }
     else if(std::string(extra) == std::string("ee")){
       model = (TH1F*)Zee ->Clone("model");
+    }
+    else if(std::string(extra) == std::string("e#mu") && HWWBG){
+      model = (TH1F*)ggH_hww ->Clone("model");
     }
     else{  
       model = (TH1F*)Ztt ->Clone("model");
