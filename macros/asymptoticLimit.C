@@ -185,7 +185,7 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
 	tree->Fill();
       }
   }
-  if( verbosity>0 ){
+  //if( verbosity>0 ){
     std::string monitor = std::string("SCAN-")+limitType(itype);
     TCanvas* canv = new TCanvas(monitor.c_str(), monitor.c_str(), 600, 600);
     TH1F* frame = canv->DrawFrame(graph->GetX()[0]-0.1, 0., graph->GetX()[graph->GetN()-1]+0.1, 10.);
@@ -203,7 +203,7 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
     canv->Print(monitor.append(".png").c_str(), "png");
     delete frame; delete canv; delete spline;
     if(filled) delete fnc;
-  }
+    //}
   return;
 }
 
