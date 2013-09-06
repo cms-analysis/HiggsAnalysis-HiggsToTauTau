@@ -182,9 +182,9 @@ class Analysis:
                                        ## have not been derived. 
                                        if options.shapes_mm_special :
                                            print "Adding stat. uncerainties from MC temapltes in mode --shapes-mm-special"
-                                           uncertainty_norm = hist.GetBinError(bin) if hist.GetBinError(bin)>0 else 1.
-                                           uncertainty=math.sqrt(uncertainty*hist.GetBinContent(bin)*uncertainty*hist.GetBinContent(bin)
-                                                                 +hist.GetBinError(bin)*hist.GetBinError(bin))/uncertainty_norm
+                                           uncertainty_norm = hist.GetBinContent(bin) if hist.GetBinContent(bin)>0 else 1.
+                                           uncertainty=math.sqrt(uncertainty*hist.GetBinContent(bin)*uncertainty*hist.GetBinContent(bin)+
+                                                                 hist.GetBinError(bin)*hist.GetBinError(bin))/uncertainty_norm
                                        out_line  = "hin->SetBinError(%(bin)i,hin->GetBinContent(%(bin)i)*%(uncertainty)f); \n" % {"bin":bin, "uncertainty":uncertainty}
                                        output_file.write(out_line)
                                    if options.verbose :

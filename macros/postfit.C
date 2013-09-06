@@ -28,8 +28,8 @@ static const float SIGNAL_SCALE = 1.;
    This is a macro to create di-tau masses for all classic htt channels combined
 */
 
-static const bool CONSERVATIVE_CHI2 = true;
-static const float UPPER_EDGE = 695; // 695; 1495;
+static const bool CONSERVATIVE_CHI2 = false;
+static const float UPPER_EDGE = 1495; // 695; 1495;
 
 float maximum(TH1F* h, bool LOG=false){
   if(LOG){

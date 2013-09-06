@@ -5,12 +5,14 @@ from HiggsAnalysis.HiggsToTauTau.LimitsConfig import configuration
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options]",
                       description="Script to setup all datacards and directories.'")
-parser.add_option("-a", "--analyses", dest="analyses", default="bbb, no-bbb",
-                  help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"bbb, no-bbb\" [Default: \"bbb, no-bbb\"]")
+parser.add_option("-a", "--analyses", dest="analyses", default="bbb, plain",
+                  help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"bbb, plain, tail-bbb\" [Default: \"bbb, plain\"]")
 parser.add_option("--label", dest="label", default="", type="string", 
                   help="Possibility to give the setups, aux and LIMITS directory a index (example LIMITS-bbb). [Default: \"\"]")
 parser.add_option("--tail-fitting", dest="fit_tails", default=False, action="store_true",
                   help="Fitting of the MSSM m(tautau) tails for predefined backgrounds [Default: False]")
+parser.add_option("--fine-binning", dest="fine_binning", default=False, action="store_true",
+                  help="Use finer binning for limit inputs. [Default: False]")
 parser.add_option("--merge-bbb", dest="merge_bbb", default=False, action="store_true",
                   help="Merge bin-by-bin uncertainties according to Barlow-Beeston approach. [Default: False]")
 parser.add_option("--fine-scan", dest="fine_scan", default=False, action="store_true",
@@ -65,8 +67,9 @@ for chn in config.channels :
 
 ## postfix pattern for input files
 patterns = {
-    'no-bbb' : '',
-    'bbb'    : '',
+    'no-bbb'       : {'em': '', 'et' : '', 'mt' : '', 'tt' : '', 'mm' : ''},
+    'bbb'          : {'em': '', 'et' : '', 'mt' : '', 'tt' : '', 'mm' : ''},
+    'tail-bbb'     : {'em': '-ttbarcontrol', 'et' : '-taildebug', 'mt' : '-taildebug', 'tt' : '', 'mm' : ''},
     }
 
 if options.update_all :
@@ -85,6 +88,7 @@ print "# --analyses                :", options.analyses
 print "# --label                   :", options.label
 print "# --drop-list               :", options.drop_list
 print "# --tail-fitting            :", options.fit_tails
+print "# --fine_binning            :", options.fine_binning
 print "# --merge-bbb               :", options.merge_bbb
 print "# --fine-scan               :", options.fine_scan
 print "# --blind-datacards         :", options.blind_datacards
@@ -120,16 +124,16 @@ if options.reload :
             os.system("rm %s" % file)        
         ## define postfix for tail fitting
         tailfit = ''
-        if options.fit_tails :
+        if options.fine_binning :
             if chn != 'mm' :
-                tailfit = '' #'-fb'
+                tailfit = '-fb'
         for per in config.periods :
             if directories[chn][per] == 'None' :
                 continue
             for ana in analyses :
                 pattern = ''
                 if ana in patterns.keys() :
-                    pattern = patterns[ana]
+                    pattern = patterns[ana][chn]
                 input ="{CHN}.inputs-mssm-{PER}-0{PATTERN}{TAILFIT}.root".format(
                     CHN='htt_'+chn,
                     PER=per,
@@ -232,6 +236,15 @@ if options.update_setup :
                          DIR=dir, ANA=ana))
                      os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-7TeV-0.root -c et -e 7TeV -b 'QCD_CMS_htt_QCDShape_etau_nobtag_7TeVUp_fine_binning'   -k '8' --range 200 --no-uncerts".format(
                          DIR=dir, ANA=ana))
+                     ##
+                     ## tail fit for additional W shape uncerts (NB: this has been added for tail studies on et/mt. It need
+                     ## to be revised when such studies are redone)
+                     ##
+                     if 'tail' in ana :
+                         os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-7TeV-0.root -c et -e 7TeV -b 'W_tailShapeDown_fine_binning' -k '8' --range 200 --no-uncerts".format(
+                             DIR=dir, ANA=ana)) 
+                         os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-7TeV-0.root -c et -e 7TeV -b 'W_tailShapeUp_fine_binning' -k '8' --range 200 --no-uncerts".format(
+                             DIR=dir, ANA=ana))
                 if 'mt' in config.channels :
                     #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'QCD_fine_binning' -k '9' --range 120".format(
                     #    DIR=dir, ANA=ana))
@@ -248,6 +261,16 @@ if options.update_setup :
                     #    DIR=dir, ANA=ana))
                     #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'QCD_CMS_htt_QCDShape_mutau_btag_7TeVUp_fine_binning'   -k '9' --range 120  --no-uncerts".format(
                    #     DIR=dir, ANA=ana))
+                    ##
+                    ## tail fit for additional W shape uncerts (NB: this has been added for tail studies on et/mt. It need
+                    ## to be revised when such studies are redone)
+                    ##                    
+                    if 'tail' in ana :
+                        os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'W_tailShapeUp_fine_binning' -k '8' --range 200 --no-uncerts".format(
+                            DIR=dir, ANA=ana))
+                        os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'W_tailShapeDown_fine_binning' -k '8' --range 200 --no-uncerts".format(
+                            DIR=dir, ANA=ana))                                                
+           
             if "8TeV" in config.periods :
                 if 'em' in config.channels :
                     #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-8TeV-0.root -c em -e 8TeV -b 'Fakes_fine_binning' -k '8' --range 200  ".format( 
@@ -261,27 +284,40 @@ if options.update_setup :
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_em.inputs-mssm-8TeV-0.root -c em -e 8TeV -b 'ttbar_fine_binning' -k '8' --range 200 ".format(
                         DIR=dir, ANA=ana))
                 if 'et' in config.channels :
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_fine_binning' -k '9' --range 120 ".format(
-                         DIR=dir, ANA=ana))
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_fine_binning' -k '8' --range 120 ".format(
-                         DIR=dir, ANA=ana))
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'TT_fine_binning' -k '9' --range 150 ".format(
-                         DIR=dir, ANA=ana))
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'TT_fine_binning' -k '8' --range 120 ".format(
-                         DIR=dir, ANA=ana))
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_fine_binning' -k '9' --range 150 ".format(
-                         DIR=dir, ANA=ana))
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_fine_binning' -k '8' --range 350".format(
-                         DIR=dir, ANA=ana)) 
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_fine_binning' -k '9' --range 120 ".format(
+                        DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_fine_binning' -k '8' --range 120 ".format(
+                        DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'TT_fine_binning' -k '9' --range 150 ".format(
+                        DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'TT_fine_binning' -k '8' --range 120 ".format(
+                        DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_fine_binning' -k '9' --range 150 ".format(
+                        DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_fine_binning' -k '8' --range 350".format(
+                        DIR=dir, ANA=ana)) 
                     ## tail fit for QCD shape uncertainties
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_CMS_htt_QCDShape_etau_nobtag_8TeVDown_fine_binning' -k '8' --range 120 --no-uncerts".format(
-                         DIR=dir, ANA=ana))
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_CMS_htt_QCDShape_etau_nobtag_8TeVUp_fine_binning'   -k '8' --range 120 --no-uncerts".format(
-                         DIR=dir, ANA=ana))
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_CMS_htt_QCDShape_etau_btag_8TeVDown_fine_binning' -k '9' --range 120 --no-uncerts".format(
-                         DIR=dir, ANA=ana))
-                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_CMS_htt_QCDShape_etau_btag_8TeVUp_fine_binning'   -k '9' --range 120 --no-uncerts".format(
-                         DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_CMS_htt_QCDShape_etau_nobtag_8TeVDown_fine_binning' -k '8' --range 120 --no-uncerts".format(
+                        DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_CMS_htt_QCDShape_etau_nobtag_8TeVUp_fine_binning'   -k '8' --range 120 --no-uncerts".format(
+                        DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_CMS_htt_QCDShape_etau_btag_8TeVDown_fine_binning' -k '9' --range 120 --no-uncerts".format(
+                        DIR=dir, ANA=ana))
+                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_CMS_htt_QCDShape_etau_btag_8TeVUp_fine_binning'   -k '9' --range 120 --no-uncerts".format(
+                        DIR=dir, ANA=ana))
+                    ##
+                    ## tail fit for additional W shape uncerts (NB: this has been added for tail studies on et/mt. It need
+                    ## to be revised when such studies are redone)
+                    ##
+                    if 'tail' in ana :
+                        os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_tailShapeDown_fine_binning' -k '9' --range 150 --no-uncerts".format(
+                            DIR=dir, ANA=ana))
+                        os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_tailShapeUp_fine_binning' -k '9' --range 150 --no-uncerts".format(
+                            DIR=dir, ANA=ana))
+                        os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_tailShapeDown_fine_binning' -k '8' --range 200 --no-uncerts".format(
+                            DIR=dir, ANA=ana))
+                        os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_tailShapeUp_fine_binning' -k '8' --range 200 --no-uncerts".format(
+                            DIR=dir, ANA=ana)) 
                 if 'mt' in config.channels : 
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'QCD_fine_binning' -k '8' --range 200 ".format(
                         DIR=dir, ANA=ana))
@@ -298,6 +334,19 @@ if options.update_setup :
                         DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'QCD_CMS_htt_QCDShape_mutau_nobtag_8TeVUp_fine_binning'   -k '8' --range 200 --no-uncerts".format(
                         DIR=dir, ANA=ana))
+                    ##
+                    ## tail fit for additional W shape uncerts (NB: this has been added for tail studies on et/mt. It need
+                    ## to be revised when such studies are redone)
+                    ##
+                    if 'tail' in ana :
+                        os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_tailShapeDown_fine_binning' -k '9' --range 150 --no-uncerts".format(
+                            DIR=dir, ANA=ana))
+                        os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_tailShapeUp_fine_binning' -k '9' --range 150 --no-uncerts".format(
+                            DIR=dir, ANA=ana))           
+                        os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_tailShapeDown_fine_binning' -k '8' --range 150 --no-uncerts".format(
+                            DIR=dir, ANA=ana))
+                        os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_tailShapeUp_fine_binning' -k '8' --range 150 --no-uncerts".format(
+                            DIR=dir, ANA=ana))           
                 if 'tt' in config.channels :
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_tt.inputs-mssm-8TeV-0.root -c tt -e 8TeV -b 'QCD_fine_binning' -k '9' --range 200 ".format(
                         DIR=dir, ANA=ana))
@@ -307,11 +356,20 @@ if options.update_setup :
                 os.system("rm rootlogon.C")
                 os.system("mkdir -p tail-fitting")
                 os.system("mv *_Rebin.* tail-fitting")
-        if ana == 'no-bbb' :
+        if ana == 'plain' :
             print "##"
             print "## update no-bbb directory in setup:"
             print "##"
-        if ana == 'bbb' :
+        if 'tail' in ana :
+            print "##"
+            print "## update tail   directory in setup:"
+            print "##"
+            for chn in config.channels :
+                print "{DIR}/{TARGET}/{CHN}/unc-mssm-*.vals".format(DIR=dir, TARGET=ana, CHN=chn)
+                for file in glob.glob("{DIR}/{TARGET}/{CHN}/unc-mssm-*.vals".format(DIR=dir, TARGET=ana, CHN=chn)) :
+                    print "perl -pi -e 's/\#\[tail\]//g'   {FILE}".format(FILE=file)
+                    os.system("perl -pi -e 's/\#\[tail\]//g'   {FILE}".format(FILE=file))
+        if 'bbb' in ana :
             print "##"
             print "## update bbb    directory in setup:"
             print "##"
