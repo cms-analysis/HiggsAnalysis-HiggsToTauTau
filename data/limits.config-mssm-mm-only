@@ -1,0 +1,60 @@
+[inputs]
+
+em = MIT
+et = Imperial
+mt = Imperial
+mm = DESY-KIT
+tt = MIT
+
+
+[mssm]
+
+periods = 7TeV 8TeV
+channels = mm
+
+em_categories_7TeV = 8 9
+et_categories_7TeV = 8 9
+mt_categories_7TeV = 8 9
+mm_categories_7TeV = 8 9
+ee_categories_7TeV = 8 9
+tt_categories_7TeV =
+
+em_categories_8TeV = 8 9
+et_categories_8TeV = 8 9
+mt_categories_8TeV = 8 9
+mm_categories_8TeV = 8 9
+ee_categories_8TeV = 8 9
+tt_categories_8TeV = 8 9
+
+em_names = nobtag btag
+et_names = nobtag btag
+mt_names = nobtag btag
+mm_names = nobtag btag
+ee_names = nobtag btag
+tt_names = nobtag btag
+
+
+[bbb-mssm]
+
+threshold = 0.05
+
+ee_categories_7TeV = 08,09
+mm_categories_7TeV = 08 09
+em_categories_7TeV = 08,09
+et_categories_7TeV = 08,09
+mt_categories_7TeV = 08,09
+tt_categories_7TeV =
+
+ee_categories_8TeV = 08,09
+mm_categories_8TeV = 08 09
+em_categories_8TeV = 08,09
+et_categories_8TeV = 08,09
+mt_categories_8TeV = 08,09
+tt_categories_8TeV = 08,09
+
+ee_processes = QCD,TTJ,ZTT,ZEE,WJets,Dibosons
+mm_processes = QCD,TTJ,ZTT,ZMM,WJets,Dibosons QCD,TTJ,ZTT,ZMM,Dibosons
+em_processes = Fakes,EWK,ttbar,Ztt
+et_processes = TT,QCD,ZTT,W,ZL,ZJ,VV
+mt_processes = TT,QCD,ZTT,W,ZL,ZJ,VV
+tt_processes = ZTT,TT,QCD,W,ZL,ZJ,VV
