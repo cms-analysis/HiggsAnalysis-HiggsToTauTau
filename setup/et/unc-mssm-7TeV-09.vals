@@ -24,4 +24,5 @@ eleTau_btag     	QCD	          	CMS_htt_QCDShape_etau_btag_7TeV		1.00
 eleTau_btag         	ZL	          	CMS_htt_ZLeptonFakeTau_etau_7TeV	1.20
 eleTau_btag         	ZJ	          	CMS_htt_ZJetFakeTau_etau_btag_7TeV	1.20
 eleTau_btag		ZL			CMS_htt_ZLScale_etau_7TeV		1.00
+eleTau_btag		W			CMS_htt_WShape_etau_btag_7TeV		1.00
 #[tail]eleTau_btag	W			tailShape				1.00

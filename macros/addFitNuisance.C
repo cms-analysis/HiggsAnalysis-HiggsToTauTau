@@ -306,7 +306,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   //Define the fit function
   RooRealVar lM("m","m" ,0,5000);   //lM.setBinning(lBinning);
   RooRealVar lA("a","a" ,50,  0.1,200);
-  RooRealVar lB("b","b" ,0.0 , -10500,10500); //lB.setConstant(kTRUE);
+  RooRealVar lB("b","b" ,50 , -10500,10500); //lB.setConstant(kTRUE);
   RooDataHist *pH0  =  new RooDataHist("Data","Data" ,RooArgList(lM),lH0);
   TString iStr = TString::Format("%.0f",iFirst);
   //std::cout << iStr << std::endl;
