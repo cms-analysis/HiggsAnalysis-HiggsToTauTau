@@ -12,7 +12,7 @@ PlotLimits::higgsConstraint(const char* directory, double mass, double deltaM)
     std::string line;
     bool filled = false;
     float tanb, mh, mA, mH, upperTanb=-1., lowerTanb=-1.;
-    ifstream higgs (TString::Format("%s/%d/higgs_mass.dat", directory, (int)bins_[imass]));
+    ifstream higgs (TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/higgs_%d.dat", (int)bins_[imass]));
     if(higgs.is_open()){
       while(higgs.good()){
 	getline(higgs,line);
@@ -80,9 +80,12 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   // setup contratins from Higgs mass
   std::map<double, TGraphAsymmErrors*> higgsBands;
   if(higgs125_){
-    for(unsigned int deltaM=0; deltaM<3; ++deltaM){
-      higgsBands[3-deltaM] = higgsConstraint(directory, 125., 4-deltaM);
-    }
+    //higgsBands[3] = higgsConstraint(directory, 125., 3.);
+    //higgsBands[2] = higgsConstraint(directory, 125., 2.);
+    higgsBands[1] = higgsConstraint(directory, 125., 1.);
+    //for(unsigned int deltaM=0; deltaM<3; ++deltaM){
+    //  higgsBands[3-deltaM] = higgsConstraint(directory, 125., 4-deltaM);
+    //}
   }
   
   // this one is not supported here (see in macros/plotTanb.C to use this option - requires some manual work)
