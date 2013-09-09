@@ -186,24 +186,24 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, s
       }
   }
   //if( verbosity>0 ){
-    std::string monitor = std::string("SCAN-")+limitType(itype);
-    TCanvas* canv = new TCanvas(monitor.c_str(), monitor.c_str(), 600, 600);
-    TH1F* frame = canv->DrawFrame(graph->GetX()[0]-0.1, 0., graph->GetX()[graph->GetN()-1]+0.1, 10.);
-    canv->SetGridx(1); canv->SetGridy(1); canv->cd(); 
-    graph->SetMarkerStyle(20.); 
-    graph->SetMarkerColor(kBlack); 
-    graph->SetMarkerSize(1.3); 
-    graph->Draw("P");
-    //spline->SetLineColor(kBlue); 
-    //spline->SetLineWidth(3.); 
-    //spline->Draw("same");
-    if(filled) fnc->SetLineColor(kRed);
-    if(filled) fnc->SetLineWidth(3.);
-    if(filled) fnc->Draw("same");
-    canv->Print(monitor.append(".png").c_str(), "png");
-    delete frame; delete canv; delete spline;
-    if(filled) delete fnc;
-    //}
+  std::string monitor = std::string("SCAN-")+limitType(itype);
+  TCanvas* canv = new TCanvas(monitor.c_str(), monitor.c_str(), 600, 600);
+  TH1F* frame = canv->DrawFrame(graph->GetX()[0]-0.1, 0., graph->GetX()[graph->GetN()-1]+0.1, 10.);
+  canv->SetGridx(1); canv->SetGridy(1); canv->cd(); 
+  graph->SetMarkerStyle(20.); 
+  graph->SetMarkerColor(kBlack); 
+  graph->SetMarkerSize(1.3); 
+  graph->Draw("P");
+  //spline->SetLineColor(kBlue); 
+  //spline->SetLineWidth(3.); 
+  //spline->Draw("same");
+  if(filled) fnc->SetLineColor(kRed);
+  if(filled) fnc->SetLineWidth(3.);
+  if(filled) fnc->Draw("same");
+  canv->Print(monitor.append(".png").c_str(), "png");
+  delete frame; delete canv; delete spline;
+  if(filled) delete fnc;
+  //}
   return;
 }
 
