@@ -156,7 +156,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
     leg = new TLegend(0.55, (!higgsBands.empty() || !comparisons.empty()) ? 0.15 : 0.60, (!higgsBands.empty() || !comparisons.empty()) ? 0.93: 0.50, 0.43);
   }
   else{
-    leg = new TLegend(0.18, (!higgsBands.empty() || !comparisons.empty()) ? 0.53 : 0.53, (!higgsBands.empty() || !comparisons.empty()) ? 0.55: 0.50, 0.89);
+    leg = new TLegend(0.18, (!higgsBands.empty() || !comparisons.empty()) ? 0.53 : 0.62, (!higgsBands.empty() || !comparisons.empty()) ? 0.55: 0.50, 0.89);
   }
   leg->SetBorderSize(  1 );
   leg->SetFillStyle (1001);

@@ -69,7 +69,9 @@ for chn in config.channels :
 patterns = {
     'no-bbb'       : {'em': '', 'et' : '', 'mt' : '', 'tt' : '', 'mm' : ''},
     'bbb'          : {'em': '', 'et' : '', 'mt' : '', 'tt' : '', 'mm' : ''},
-    'tail-bbb'     : {'em': '-ttbarcontrol', 'et' : '-taildebug', 'mt' : '-taildebug', 'tt' : '', 'mm' : ''},
+    'em-ttbar-a'   : {'em': '-ttbarnorw' , 'et' : '', 'mt' : '', 'tt' : '', 'mm' : ''},
+    'em-ttbar-b'   : {'em': '-ttbarrw'   , 'et' : '', 'mt' : '', 'tt' : '', 'mm' : ''},
+    'em-ttbar-c'   : {'em': '-ttbaroldsf', 'et' : '', 'mt' : '', 'tt' : '', 'mm' : ''},
     }
 
 if options.update_all :
