@@ -20,7 +20,7 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   //canv.SetGridx(1);
   //canv.SetGridy(1);
   if(log){ 
-    canv.SetLogy(1); 
+    canv.SetLogy(1);
   }
   // for logx the label for x axis values below 100 needs to be slightly shifted to prevent 
   // the label from being printed into the canvas
