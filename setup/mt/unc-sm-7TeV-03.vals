@@ -10,7 +10,7 @@ muTau_1jet_medium		VH 	                        QCDscale_VH					1.04
 muTau_1jet_medium		signal				UEPS						1.04
 muTau_1jet_medium 		signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_m 					1.02
 muTau_1jet_medium 		signal,ZTT,TT,VV 		CMS_eff_t_mutau_7TeV 				1.08
-muTau_1jet_medium 		signal,ZTT,TT,VV 		CMS_eff_t_medium_mutau_7TeV 			1.08
+muTau_1jet_medium 		signal,ZTT,TT,VV 		CMS_eff_t_mutau_medium_7TeV 			1.08
 muTau_1jet_medium		signal,ZTT   			CMS_scale_t_mutau_7TeV 				1.00
 muTau_1jet_medium         	ggH				CMS_scale_j_7TeV				1.05
 muTau_1jet_medium         	qqH				CMS_scale_j_7TeV				1.01

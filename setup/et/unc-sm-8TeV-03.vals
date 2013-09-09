@@ -26,7 +26,8 @@ eleTau_1jet_medium	ZJ,TT	        		CMS_fake_b_8TeV		        		0.99
 eleTau_1jet_medium	ZTT,ZJ,ZL			CMS_htt_zttNorm_8TeV 				1.03
 eleTau_1jet_medium	TT				CMS_htt_ttbarNorm_8TeV				1.10
 eleTau_1jet_medium	VV				CMS_htt_DiBosonNorm_8TeV			1.15
-eleTau_1jet_medium	W				CMS_htt_WNorm_etau_1jet_medium_8TeV		1.10
+##UPDATE: 15% Ersatz, 5.1% stat
+eleTau_1jet_medium	W				CMS_htt_WNorm_etau_1jet_medium_8TeV		1.16
 eleTau_1jet_medium      ZTT				CMS_htt_extrap_ztt_etau_1jet_medium_8TeV	1.05
 eleTau_1jet_medium      QCD				CMS_htt_QCDSyst_etau_1jet_medium_8TeV		1.10
 eleTau_1jet_medium      QCD				CMS_htt_QCDShape_etau_1jet_medium_8TeV		1.00

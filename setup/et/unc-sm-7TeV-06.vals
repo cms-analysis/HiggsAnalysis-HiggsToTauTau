@@ -23,7 +23,10 @@ eleTau_vbf	   	TT,VV		    		CMS_htt_scale_met_7TeV			1.07
 eleTau_vbf		ZTT,ZL,ZJ				CMS_htt_zttNorm_7TeV 			1.03
 eleTau_vbf		TT				CMS_htt_ttbarNorm_7TeV			1.08
 eleTau_vbf		TT				CMS_htt_ttbarNorm_etau_vbf_7TeV		1.15
-eleTau_vbf		VV				CMS_htt_DiBosonNorm_7TeV		2.00
+##UPDATE: Not sure why this is 100%. Set back to 15%.
+eleTau_vbf		VV				CMS_htt_DiBosonNorm_7TeV		1.15
+##UPDATE: New nuisance for VV stat. uncertainty
+eleTau_vbf		VV				CMS_htt_DiBosonNorm_etau_vbf_7TeV	1.32
 eleTau_vbf		W				CMS_htt_WNorm_etau_vbf_7TeV		1.23
 eleTau_vbf		ZTT				CMS_htt_extrap_ztt_etau_vbf_7TeV	1.10
 eleTau_vbf		ZL				CMS_htt_extrap_ztt_etau_vbf_7TeV	1.10
