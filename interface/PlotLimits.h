@@ -83,6 +83,8 @@ class PlotLimits {
   void print(const char* filename, std::string& xval, std::string& yval, std::vector<TGraph*> contour, const char* type="txt");
   /// automatic maximum determination for TGraphs (used for several options)
   float maximum(TGraph* graph); 
+  /// automatic minimum determination for TGraphs (used for several options)
+  float minimum(TGraph* graph); 
   /// make a fillable TGraph out of a non-fillable TGraph that comes out of a contour plot (used for option scan2D)
   TGraph* convexGraph(TGraph* graph, double minX, double minY, double xLowerBound, double xUpperBound, double yLowerBound, double yUpperBound, double tollerance, bool sort=false);
   /// Sort the points of graph clockwise around minimum
