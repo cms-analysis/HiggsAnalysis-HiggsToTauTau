@@ -11,6 +11,9 @@
   <bin   file="xsec-sm.cc"> </bin>
   <bin   file="feyn-higgs-sm.cc"> </bin>
   <bin   file="feyn-higgs-mssm.cc"> </bin>
+  <bin   file="print-pulls.cc">
+    <use   name="boost_program_options"/>
+  </bin>
 </environment>
 
 
