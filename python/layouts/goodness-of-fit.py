@@ -9,6 +9,8 @@ layout = cms.PSet(
     yaxis = cms.string("Number of Toys"),
     ## min for plotting (for fine tuning)
     min = cms.double(0.),
+    ## max for plotting (for fine tuning)
+    max = cms.double(100.),
     ## min for plotting
     log = cms.int32(0),
     ## print to png
