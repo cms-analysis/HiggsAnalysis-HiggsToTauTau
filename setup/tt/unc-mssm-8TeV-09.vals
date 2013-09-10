@@ -1,4 +1,4 @@
-tauTau_btag			signal		            	lumi_8TeV            				1.042
+tauTau_btag			signal		            	lumi_8TeV            				1.022
 tauTau_btag 			signal,ZTT,TT,VV		CMS_eff_t_tautau_8TeV 				1.19
 tauTau_btag			signal,ZTT   			CMS_scale_t_tautau_8TeV 			1.00        
 tauTau_btag         		ggH				CMS_scale_j_8TeV				1.05

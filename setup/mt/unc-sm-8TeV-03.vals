@@ -1,13 +1,14 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-muTau_1jet_medium		signal		             	lumi_8TeV            				1.042
-muTau_1jet_medium	   	ggH				pdf_gg    					1.08
-muTau_1jet_medium	   	qqH				pdf_qqbar					1.03
+muTau_1jet_medium		signal		             	lumi_8TeV            				1.022
+muTau_1jet_medium	   	ggH				pdf_gg    					1.097
+muTau_1jet_medium	   	qqH				pdf_qqbar					1.036
 muTau_1jet_medium	   	VH				pdf_qqbar					1.04
 muTau_1jet_medium		ggH				QCDscale_ggH1in 				1.00
-muTau_1jet_medium		qqH				QCDscale_qqH					1.04
+muTau_1jet_medium		qqH				QCDscale_qqH					1.015
 muTau_1jet_medium		VH 	                        QCDscale_VH					1.04
-muTau_1jet_medium		signal				UEPS						1.04
+muTau_1jet_medium		qqH,VH				UEPS						1.007
+muTau_1jet_medium		ggH				UEPS						0.946
 muTau_1jet_medium 		signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_m 					1.02
 muTau_1jet_medium 		signal,ZTT,TT,VV 		CMS_eff_t_mutau_8TeV 				1.08
 muTau_1jet_medium 		signal,ZTT,TT,VV 		CMS_eff_t_mutau_medium_8TeV 			1.03
