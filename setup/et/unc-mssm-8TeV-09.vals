@@ -1,6 +1,6 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-eleTau_btag		signal            	lumi_8TeV            			1.042
+eleTau_btag		signal            	lumi_8TeV            			1.022
 eleTau_btag		signal,ZTT,ZL,ZJ,TT,VV  CMS_eff_e 				1.02
 eleTau_btag		signal,ZTT,VV  		CMS_eff_t_etau_8TeV			1.08
 eleTau_btag		signal,ZTT		CMS_scale_t_etau_8TeV          		1.00
