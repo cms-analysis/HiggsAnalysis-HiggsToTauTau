@@ -9,10 +9,11 @@ tt = MIT
 vhtt = VHTT
 
 
+
 [sm]
 
 periods = 7TeV 8TeV
-channels = em et mt tt mm ee
+channels = em 
 
 em_categories_7TeV = 0 1 2 3 4 
 et_categories_7TeV = 0 1 2 3 5 6
@@ -31,7 +32,7 @@ tt_categories_8TeV = 0 1 2
 vhtt_categories_8TeV = 0 1 2 3 4 5 6 7 8
 
 mt_names = 0jet_low 0jet_medium 0jet_high 1jet_medium 1jet_high_lowhiggs 1jet_high_mediumhiggs vbf_loose vbf_tight
-et_names = 0jet_low 0jet_medium 0jet_high 1jet_medium 1jet_high_lowhiggs 1jet_high_mediumhiggs vbf_loose vbf_tight
+et_names = 0jet_low 0jet_medium 0jet_high 1jet_medium 1jet_high_mediumhiggs vbf_loose vbf_tight
 em_names = 0jet_low 0jet_high 1jet_low 1jet_high vbf_loose vbf_tight
 ee_names = 0jet_low 0jet_high 1jet_low 1jet_high vbf
 mm_names = 0jet_low 0jet_high 1jet_low 1jet_high vbf 
@@ -119,11 +120,3 @@ em_processes = Fakes,EWK,ttbar,Ztt
 et_processes = TT,QCD,ZTT,W,ZL,ZJ,VV
 mt_processes = TT,QCD,ZTT,W,ZL,ZJ,VV
 tt_processes = ZTT,TT,QCD,W,ZL,ZJ,VV
-
-
-[combination]
-
-periods = 7TeV 8TeV 7TeV_8TeV
-channels = em et mt mm 
-categories_sm = 0jet
-categories_mssm = nobtag btag

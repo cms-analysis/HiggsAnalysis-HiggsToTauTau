@@ -19,7 +19,6 @@
 #include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
 
 static const float SIGNAL_SCALE = 1.;
-
 /**
    \class   postfit postfit.C "HiggsAnalysis/HiggsToTauTau/macros/postfit.C"
 
@@ -28,6 +27,7 @@ static const float SIGNAL_SCALE = 1.;
    This is a macro to create di-tau masses for all classic htt channels combined
 */
 
+static const bool HWWBG = $HWWBG;
 static const bool CONSERVATIVE_CHI2 = false;
 static const float UPPER_EDGE = 1495; // 695; 1495;
 
@@ -110,6 +110,10 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   if(std::string(extra) == std::string("e#tau_{h}")){
     EWK1 = refill((TH1F*)input->Get("EWK1"),  "EWK1");
   }
+  TH1F* ggH_hww = 0;
+  if(std::string(extra) == std::string("e#mu") and HWWBG){
+    ggH_hww= refill((TH1F*)input->Get("ggH_hww" ), "ggH_hww"  ); 
+  }
   TH1F* errorBand = (TH1F*)input->Get("errorBand");
 
   /* 
@@ -122,70 +126,96 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   if(!MSSM){ data->GetXaxis()->SetRange(0, data->FindBin(345)); }
   data->SetNdivisions(505);
   data->SetMinimum(min);
-  if(Zmm){
+  if(std::string(extra) == std::string("#mu#mu")){
     data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(Zmm, log)));
-  }
-  else{
-    data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(Ztt, log)));
-  }
-  data->Draw("e");
-
-  if(log){
-    if(Zmm){
+    data->Draw("e");
+    if(log){
       Zmm  ->Draw("same");
       Ztt  ->Draw("same");
       ttbar->Draw("same");
       Fakes->Draw("same");
       EWK  ->Draw("same");
+      if(ggH) ggH  ->Draw("histsame");
     }
-    else if(Zee){
-      EWK  ->Draw("same");
-      ttbar->Draw("same");
-      Fakes->Draw("same");
+  }
+  else if(std::string(extra) == std::string("ee")){
+    data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(Zee, log)));
+    data->Draw("e");
+    if(log){
       Zee  ->Draw("same");
       Ztt  ->Draw("same");
+      ttbar->Draw("same");
+      Fakes->Draw("same");
+      EWK  ->Draw("same");
+      if(ggH) ggH  ->Draw("histsame");
+    }
+  }
+  else if(std::string(extra) == std::string("e#tau_{h}")){
+    data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(Ztt, log)));
+    data->Draw("e");
+    if(log){
+      Ztt  ->Draw("same");
+      ttbar->Draw("same");
+      EWK  ->Draw("same");
+      EWK1 ->Draw("same");
+      Fakes->Draw("same");
+      if(ggH) ggH  ->Draw("histsame");
     }
     else{
+      if(ggH) ggH  ->Draw("histsame");
       Ztt  ->Draw("same");
       ttbar->Draw("same");
       EWK  ->Draw("same");
-      if(EWK1){
-	EWK1->Draw("same");
-      }
-      if(Fakes){ Fakes->Draw("same"); }
+      EWK1 ->Draw("same");
+      Fakes->Draw("same");
+    } 
+  }
+  else if(std::string(extra) == std::string("e#mu") && HWWBG){
+    data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(ggH_hww, log)));
+    data->Draw("e");
+    if(log){
+      ggH_hww -> Draw("same");
+      Ztt  ->Draw("same");
+      ttbar->Draw("same");
+      EWK  ->Draw("same");
+      Fakes->Draw("same");
+      if(ggH) ggH  ->Draw("histsame");
     }
-    if(ggH) ggH  ->Draw("histsame");
+    else{
+      if(ggH) ggH  ->Draw("histsame");
+      ggH_hww -> Draw("same");
+      Ztt  ->Draw("same");
+      ttbar->Draw("same");
+      EWK  ->Draw("same");
+      Fakes->Draw("same");
+    } 
   }
   else{
-    if(ggH) ggH  ->Draw("histsame");
-    if(Zmm){
-      Zmm->Draw("same");
-      Ztt->Draw("same");
-      ttbar->Draw("same");
-      Fakes->Draw("same");
-      EWK->Draw("same");
-    }   
-    else if(Zee){
-      EWK->Draw("same");
-      Fakes->Draw("same");
-      ttbar->Draw("same");
-      Zee->Draw("same");
-      Ztt->Draw("same");
-    }else{
+    data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(Ztt, log)));
+    data->Draw("e");
+    if(log){
       Ztt  ->Draw("same");
       ttbar->Draw("same");
       EWK  ->Draw("same");
-      if(EWK1){
-	EWK1->Draw("same");
-      }
-      if(Fakes){ Fakes->Draw("same"); }
+      Fakes->Draw("same");
+      if(ggH) ggH  ->Draw("histsame");
     }
+    else{
+      if(ggH) ggH  ->Draw("histsame");
+      Ztt  ->Draw("same");
+      ttbar->Draw("same");
+      EWK  ->Draw("same");
+      Fakes->Draw("same");
+    } 
   }
   if(errorBand){
     errorBand->Draw("e2same");
   }
   data->Draw("esame");
   canv->RedrawAxis();
+
+
+
 
   //CMSPrelim(dataset, extra, 0.17, 0.835);
   CMSPrelim(dataset, "", 0.18, 0.835);  
@@ -238,18 +268,41 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     }
   }
   leg->AddEntry(data , "observed"                       , "LP");
-  leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
-  if(Zmm){ leg->AddEntry(Zmm  , "Z#rightarrow#mu#mu"    , "F" ); }
-  if(Zee){ leg->AddEntry(Zee  , "Z#rightarrowee"        , "F" ); }
-  if(EWK1){
-    leg->AddEntry(EWK  , "Z#rightarrow ee"              , "F" );
-    leg->AddEntry(EWK1 , "electroweak"                  , "F" );
-  }
-  else{
+  
+  if(std::string(extra) == std::string("#mu#mu")){
+    leg->AddEntry(Zmm  , "Z#rightarrow#mu#mu"    , "F" );
+    leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
+    leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
+    leg->AddEntry(Fakes, "QCD"                 , "F" );
     leg->AddEntry(EWK  , "electroweak"                  , "F" );
   }
-  leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
-  if(Fakes){ leg->AddEntry(Fakes, "QCD"                 , "F" ); }
+  else if(std::string(extra) == std::string("ee")){
+    leg->AddEntry(Zee  , "Z#rightarrowee"        , "F" );
+    leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
+    leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
+    leg->AddEntry(Fakes, "QCD"                 , "F" );
+    leg->AddEntry(EWK  , "electroweak"                  , "F" );
+  }
+  else if(std::string(extra) == std::string("e#tau_{h}")){
+    leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
+    leg->AddEntry(EWK  , "Z#rightarrow ee"              , "F" );
+    leg->AddEntry(EWK1 , "electroweak"                  , "F" );
+    leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
+    leg->AddEntry(Fakes, "QCD"                 , "F" );
+  }
+  else if(std::string(extra) == std::string("e#mu") && HWWBG){
+    leg->AddEntry(ggH_hww  , "H(125 GeV)#rightarrowWW" , "F" );
+    leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
+    leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
+    leg->AddEntry(EWK  , "electroweak"                  , "F" );
+    leg->AddEntry(Fakes, "QCD"                 , "F" );
+  }
+  else{
+    leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
+    leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
+    leg->AddEntry(EWK  , "electroweak"                  , "F" );
+    leg->AddEntry(Fakes, "QCD"                 , "F" );
+  }
   if(errorBand){
     leg->AddEntry(errorBand, "bkg. uncertainty" , "F" );
   }
@@ -270,13 +323,18 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   canv0->SetGridx();
   canv0->SetGridy();
   canv0->cd(); 
-
   TH1F* model;
   if(CONSERVATIVE_CHI2){
-    if(Zmm){
+    if(std::string(extra) == std::string("#mu#mu")){
       model = (TH1F*)Zmm ->Clone("model");
     }
-    else{
+    else if(std::string(extra) == std::string("ee")){
+      model = (TH1F*)Zee ->Clone("model");
+    }
+    else if(std::string(extra) == std::string("e#mu") && HWWBG){
+      model = (TH1F*)ggH_hww ->Clone("model");
+    }
+    else{  
       model = (TH1F*)Ztt ->Clone("model");
     }
   }
@@ -326,7 +384,12 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   rat1->SetMinimum(-range);
   rat1->GetYaxis()->CenterTitle();
   rat1->GetYaxis()->SetTitle("#bf{Data/MC-1}");
-  rat1->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}");
+  if((std::string(extra) == std::string("#mu#mu") || std::string(extra) == std::string("ee")) && !MSSM){
+    rat1->GetXaxis()->SetTitle("#bf{D}");
+  }
+  else{
+    rat1->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}");
+  }
   rat1->Draw();
   zero->SetFillStyle(  3013);
   zero->SetFillColor(kBlack);
@@ -342,7 +405,8 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   stat1->SetTextSize ( 0.05 );
   stat1->SetTextColor(    1 );
   stat1->SetTextFont (   62 );
-  stat1->AddText(TString::Format("#chi^{2}/ndf=%.3f,  P(#chi^{2})=%.3f,  P(KS)=%.3f", chi2ndof, chi2prob, ksprob));
+  stat1->AddText(TString::Format("#chi^{2}/ndf=%.3f,  P(#chi^{2})=%.3f", chi2ndof, chi2prob));
+  //stat1->AddText(TString::Format("#chi^{2}/ndf=%.3f,  P(#chi^{2})=%.3f,  P(KS)=%.3f", chi2ndof, chi2prob, ksprob));
   stat1->Draw();
 
   /*

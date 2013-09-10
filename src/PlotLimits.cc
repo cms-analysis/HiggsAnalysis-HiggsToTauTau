@@ -294,3 +294,22 @@ PlotLimits::maximum(TGraph* graph)
   std::cout << "M A X I M U M   I S : " << maximum << std::endl;
   return maximum;
 }
+
+float
+PlotLimits::minimum(TGraph* graph)
+{
+  float minimum = 99999.;
+  if(min_<0){
+    for(int ibin=0; ibin<graph->GetN(); ++ibin){
+      if(graph->GetY()[ibin]<minimum){
+	minimum=graph->GetY()[ibin];
+      }
+    }
+    minimum/=2.5;
+  }
+  else{
+    minimum=min_;
+  }
+  std::cout << "M I N I M U M   I S : " << minimum << std::endl;
+  return minimum;
+}

@@ -21,13 +21,18 @@ PlotLimits::plotLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmEr
   }
   // set proper maximum
   float max = maximum(expected);
+  float min = minimum(expected);
+  if(log_){ max*=10; min/=10; }
+  std::cout << "max:" << max << std::endl;
+  std::cout << "min:" << min << std::endl;
+
   // do the plotting 
   std::string PLOT("LIMIT");
   if(injected_){ PLOT=std::string("INJECTED"); }
   if(BG_Higgs_){ PLOT=std::string("BG_HIGGS"); }	  
   if(bestfit_ ){ PLOT=std::string("BESTFIT" ); }
   if(mssm_    ){ PLOT=std::string("MSSM-LOG"); }
-  plottingLimit(canv, innerBand, outerBand, expected, observed, unit, xaxis_, yaxis_, min_, max, log_, PLOT, injectedMass_, mssm_, extra_);
+  plottingLimit(canv, innerBand, outerBand, expected, observed, unit, xaxis_, yaxis_, min, max, log_, PLOT, injectedMass_, mssm_, extra_);
   // setup CMS Preliminary
   //CMSPrelim(dataset_.c_str(), "", 0.160, 0.835);
   CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);

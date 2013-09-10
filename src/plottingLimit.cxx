@@ -20,7 +20,7 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   //canv.SetGridx(1);
   //canv.SetGridy(1);
   if(log){ 
-    canv.SetLogy(1); 
+    canv.SetLogy(1);
   }
   // for logx the label for x axis values below 100 needs to be slightly shifted to prevent 
   // the label from being printed into the canvas
@@ -129,8 +129,8 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   leg->SetFillStyle( 1001 );
   leg->SetFillColor(kWhite);
   if(observed){
-    //leg->AddEntry(observed, "observed",  "PL");
-    leg->AddEntry(observed, "Asimov w/ H(125)",  "PL");
+    leg->AddEntry(observed, "observed",  "PL");
+    //leg->AddEntry(observed, "Asimov w/ H(125)",  "PL");
   }
   if(injected){
     leg->AddEntry( expected , TString::Format("H(%s GeV) injected", injectedMass.c_str()),  "L" );

@@ -1,13 +1,14 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-eleTau_1jet_high_lowhiggs	signal		             	lumi_8TeV            				1.042
-eleTau_1jet_high_lowhiggs	ggH				pdf_gg    					1.08
-eleTau_1jet_high_lowhiggs	qqH				pdf_qqbar					1.03
+eleTau_1jet_high_lowhiggs	signal		             	lumi_8TeV            				1.022
+eleTau_1jet_high_lowhiggs	ggH				pdf_gg    					1.097
+eleTau_1jet_high_lowhiggs	qqH				pdf_qqbar					1.036
 eleTau_1jet_high_lowhiggs	VH				pdf_qqbar					1.04
 eleTau_1jet_high_lowhiggs	ggH				QCDscale_ggH1in 				1.00
-eleTau_1jet_high_lowhiggs	qqH				QCDscale_qqH					1.04
+eleTau_1jet_high_lowhiggs	qqH				QCDscale_qqH					1.013
 eleTau_1jet_high_lowhiggs	VH				QCDscale_VH					1.04
-eleTau_1jet_high_lowhiggs	signal				UEPS						1.04
+eleTau_1jet_high_lowhiggs	ggH				UEPS						0.954
+eleTau_1jet_high_lowhiggs	qqH,VH				UEPS						0.996
 eleTau_1jet_high_lowhiggs 	signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_e 					1.02
 eleTau_1jet_high_lowhiggs 	signal,ZTT,TT,VV 		CMS_eff_t_etau_8TeV 				1.08
 eleTau_1jet_high_lowhiggs 	signal,ZTT,TT,VV 		CMS_eff_t_etau_high_8TeV 			1.03

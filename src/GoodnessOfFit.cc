@@ -1,9 +1,9 @@
+#include "TDirectory.h"
 #include "HiggsAnalysis/HiggsToTauTau/interface/PlotLimits.h"
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plottingGoodnessOfFit(TCanvas& canv, TH1F* exp, TGraph* obs, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double max, int lowerBin, int upperBin, bool log);
-
+void plottingGoodnessOfFit(TCanvas& canv, TH1F* exp, TGraph* obs, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double min, double max, int lowerBin, int upperBin, bool log);
 
 void
 PlotLimits::plotGoodnessOfFit(TCanvas& canv, const char* directory)
@@ -15,11 +15,21 @@ PlotLimits::plotGoodnessOfFit(TCanvas& canv, const char* directory)
     // buffer mass value
     float mass = bins_[imass];
 
-    // fill histogram from TTree for observed
-    TString fullpath = TString::Format("%s/%d/higgsCombineTest.GoodnessOfFit.mH%d.root", directory, (int)mass, (int)mass);
+    // fill histogram from TTree for expected
+    TString fullpath = TString::Format("%s/%d/batch_collected_goodness_of_fit.root", directory, (int)mass);
     std::cout << "open file: " << fullpath << std::endl;
     TFile* file_ = TFile::Open(fullpath); if(!file_){ std::cout << "--> TFile is corrupt: skipping masspoint." << std::endl; continue; }
     TTree* limit = (TTree*) file_->Get("limit"); if(!limit){ std::cout << "--> TTree is corrupt: skipping masspoint." << std::endl; continue; }
+    limit->Draw("limit>>exp");
+    TH1F* exp = (TH1F*)gDirectory->Get("exp"); exp->SetTitle("");
+    int nq = 2; double xq[2] = {0.05, 0.95}; double yq[2]; exp->GetQuantiles(nq, yq, xq);
+    int digits_exp = pow(10, int(log10(yq[1]))); double lower_exp = std::max(0., yq[0]); double upper_exp = (int(yq[1]/digits_exp)+1.5)*digits_exp;
+
+    // fill histogram from TTree for observed
+    fullpath = TString::Format("%s/%d/higgsCombineTest.GoodnessOfFit.mH%d.root", directory, (int)mass, (int)mass);
+    std::cout << "open file: " << fullpath << std::endl;
+    file_ = TFile::Open(fullpath); if(!file_){ std::cout << "--> TFile is corrupt: skipping masspoint." << std::endl; continue; }
+    limit = (TTree*) file_->Get("limit"); if(!limit){ std::cout << "--> TTree is corrupt: skipping masspoint." << std::endl; continue; }
     double chi2;
     int digits_obs = pow(10, int(log10(limit->GetMaximum("limit"))));
     double lower_obs = std::max(0., double((int(limit->GetMinimum("limit")/digits_obs)-1)*digits_obs));
@@ -34,25 +44,10 @@ PlotLimits::plotGoodnessOfFit(TCanvas& canv, const char* directory)
     }
     file_->Close();
 
-    // fill histogram from TTree for expected
-    fullpath = TString::Format("%s/%d/batch_collected_goodness_of_fit.root", directory, (int)mass);
-    std::cout << "open file: " << fullpath << std::endl;
-    file_ = TFile::Open(fullpath); if(!file_){ std::cout << "--> TFile is corrupt: skipping masspoint." << std::endl; continue; }
-    limit = (TTree*) file_->Get("limit"); if(!limit){ std::cout << "--> TTree is corrupt: skipping masspoint." << std::endl; continue; }
-    int digits_exp = pow(10, int(log10(limit->GetMaximum("limit"))));
-    double lower_exp = std::max(0., double((int(limit->GetMinimum("limit")/digits_exp)-1.5)*digits_exp));
-    double upper_exp = (int(limit->GetMaximum("limit")/digits_exp)+1.5)*digits_exp;
-
-    TH1F* exp = new TH1F("exp", "", 100, std::min(lower_exp, lower_obs), std::max(upper_exp, upper_obs));
-    limit->SetBranchAddress("limit", &chi2);  
-    nevent = limit->GetEntries();
-    for(int i=0; i<nevent; ++i){
-      limit->GetEvent(i);
-      exp->Fill(chi2);
-    }
     // do the plotting
+    exp->GetXaxis()->SetRange(std::min(lower_exp, lower_obs), std::max(upper_exp, upper_obs));
     std::string masslabel = mssm_ ? std::string("m_{#phi}") : std::string("m_{H}");
-    plottingGoodnessOfFit(canv, exp, obs, xaxis_, yaxis_, masslabel, mass, max_, 0, 100, log_);    
+    plottingGoodnessOfFit(canv, exp, obs, xaxis_, yaxis_, masslabel, mass, min_, max_, 0, 100, log_);    
     // add the CMS Preliminary stamp
     CMSPrelim(dataset_.c_str(), "", 0.160, 0.835);
     
