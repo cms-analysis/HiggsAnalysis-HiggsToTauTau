@@ -25,8 +25,15 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
   TColor* obs = new TColor(1501, 0.463, 0.867, 0.957);
   TColor* lep = new TColor(1502, 0.494, 0.694, 0.298);
 
+  // for logx the label for x axis values below 100 needs to be slightly shifted to prevent 
+  // the label from being printed into the canvas
+  int shift_label = 1.;
+  if(log){
+    if(observed){ observed->GetX()[0] = observed->GetX()[0]+0.01; }
+    if(expected->GetX()[0]<100.){ shift_label = -1.; }
+  }
   // draw a frame to define the range
-  TH1F* hr = canv.DrawFrame(outerBand->GetX()[0]-.1, min, outerBand->GetX()[outerBand->GetN()-1]+.1, max);
+  TH1F* hr = canv.DrawFrame(outerBand->GetX()[0]-shift_label*.01, min, outerBand->GetX()[outerBand->GetN()-1]+.01, max);
   // format x axis
   hr->SetXTitle(xaxis.c_str());
   hr->GetXaxis()->SetLabelFont(62);
@@ -39,7 +46,12 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
   hr->GetYaxis()->SetTitleSize(0.05);
   hr->GetYaxis()->SetTitleOffset(1.12);
   hr->GetYaxis()->SetLabelSize(0.05);
-
+  if(log){
+    hr->SetNdivisions(50005, "X");
+    hr->GetXaxis()->SetMoreLogLabels();
+    hr->GetXaxis()->SetNoExponent();
+    hr->GetXaxis()->SetLabelSize(0.040);
+  }
   upperLEP->SetFillStyle(1001.);
   upperLEP->SetFillColor(lep->GetNumber());
   upperLEP->SetLineColor(lep->GetNumber());
@@ -106,7 +118,13 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
     comp->second->Draw("same");
   }
 
-  TPaveText * theory1 = new TPaveText(0.5, 0.24, 0.9, 0.30, "NDC");
+  TPaveText* theory1;
+  if(log){
+    theory1= new TPaveText(0.14, 0.85, 0.9, 0.90, "NDC");
+  }
+  else{
+    theory1= new TPaveText(0.55, 0.20, 0.9, 0.26, "NDC");
+  }
   theory1->SetBorderSize(   0 );
   theory1->SetFillStyle(    0 );
   theory1->SetTextAlign(   12 );
@@ -116,7 +134,13 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
   theory1->AddText("MSSM m_{h}^{max} scenario");
   theory1->Draw();
 
-  TPaveText * theory2 = new TPaveText(0.5, 0.18, 0.9, 0.24, "NDC");
+  TPaveText* theory2;
+  if(log){
+    theory2 = new TPaveText(0.53, 0.85, 0.9, 0.90, "NDC");
+  }
+  else{
+    theory2 = new TPaveText(0.55, 0.14, 0.9, 0.20, "NDC");
+  }
   theory2->SetBorderSize(   0 );
   theory2->SetFillStyle(    0 );
   theory2->SetTextAlign(   12 );
@@ -127,7 +151,13 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
   theory2->Draw();
 
   /// add the proper legend
-  TLegend* leg = new TLegend(0.18, (!higgsBands.empty() || !comparisons.empty()) ? 0.52 : 0.60, (!higgsBands.empty() || !comparisons.empty()) ? 0.63: 0.50, 0.90);
+  TLegend* leg;
+  if(log){
+    leg = new TLegend(0.55, (!higgsBands.empty() || !comparisons.empty()) ? 0.15 : 0.60, (!higgsBands.empty() || !comparisons.empty()) ? 0.93: 0.50, 0.43);
+  }
+  else{
+    leg = new TLegend(0.18, (!higgsBands.empty() || !comparisons.empty()) ? 0.53 : 0.62, (!higgsBands.empty() || !comparisons.empty()) ? 0.55: 0.50, 0.89);
+  }
   leg->SetBorderSize(  1 );
   leg->SetFillStyle (1001);
   leg->SetTextSize  (0.03);
@@ -149,7 +179,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
     leg->AddEntry(outerBand, "#pm 2#sigma Expected", "F"); 
   }
   for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band){
-    leg->AddEntry(band->second, TString::Format("mh=125GeV #pm %.0fGeV", band->first), "F");
+    leg->AddEntry(band->second, TString::Format("m_{h,H}=125GeV #pm %.0fGeV", band->first), "F");
   }
   leg->AddEntry(upperLEP, "LEP", "F");
   for(std::map<std::string,TGraph*>::const_iterator comp = comparisons.begin(); comp!=comparisons.end(); ++comp){

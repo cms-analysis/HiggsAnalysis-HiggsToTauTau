@@ -8,7 +8,7 @@
 #include "TPaveText.h"
 
 void
-plottingGoodnessOfFit(TCanvas& canv, TH1F* exp, TGraph* obs, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double max, int lowerBin, int upperBin, bool log=false)
+plottingGoodnessOfFit(TCanvas& canv, TH1F* exp, TGraph* obs, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double min, double max, int lowerBin, int upperBin, bool log=false)
 {
   // set up styles
   canv.cd();
@@ -28,7 +28,7 @@ plottingGoodnessOfFit(TCanvas& canv, TH1F* exp, TGraph* obs, std::string& xaxis,
   exp->GetYaxis()->SetTitleOffset(1.4);
   exp->GetYaxis()->SetLabelSize(0.04);
   exp->GetXaxis()->SetRange(lowerBin+1, upperBin);
-  exp->SetMinimum( 0.);
+  exp->SetMinimum(min);
   if(max>0){
     exp->SetMaximum(max);
   }

@@ -521,7 +521,8 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   stat1->SetTextSize ( 0.05 );
   stat1->SetTextColor(    1 );
   stat1->SetTextFont (   62 );
-  stat1->AddText(TString::Format("#chi^{2}/ndf=%.3f,  P(#chi^{2})=%.3f,  P(KS)=%.3f", chi2ndof, chi2prob, ksprob));
+  stat1->AddText(TString::Format("#chi^{2}/ndf=%.3f,  P(#chi^{2})=%.3f", chi2ndof, chi2prob));
+  //stat1->AddText(TString::Format("#chi^{2}/ndf=%.3f,  P(#chi^{2})=%.3f, P(KS)=%.3f", chi2ndof, chi2prob, ksprob));
   stat1->Draw();
 
   /*

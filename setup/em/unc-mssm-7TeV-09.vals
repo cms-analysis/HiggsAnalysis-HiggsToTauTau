@@ -15,3 +15,4 @@ emu_btag	Fakes				CMS_htt_fakes_em_7TeV			1.30
 emu_btag	Fakes				CMS_htt_fakes_em_btag_7TeV		1.12
 emu_btag	ttbar     		  	CMS_htt_ttbar_emb_7TeV 			1.02
 emu_btag	Fakes				CMS_htt_FakeShape_em_btag_7TeV		1.00
+emu_btag	ttbar				CMS_htt_TTbarShape_em_btag_7TeV 	1.00
