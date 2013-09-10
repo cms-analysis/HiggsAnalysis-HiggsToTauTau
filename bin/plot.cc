@@ -331,8 +331,11 @@ int main(int argc, char* argv[])
   // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--significance-frequentist") ){
     // observed significance
-    TGraph* observed  = new TGraph();
-    plot.fillCentral(directory, observed, "higgsCombineSIG-obs.ProfileLikelihood.mH$MASS");
+    TGraph* observed  = 0;
+    if(!expectedOnly){
+      observed  = new TGraph();
+      plot.fillCentral(directory, observed, "higgsCombineSIG-obs.ProfileLikelihood.mH$MASS");
+    }
     // expected significance
     TGraph* expected  = new TGraph();
     plot.fillCentral(directory, expected, "higgsCombineSIG-exp.ProfileLikelihood.mH$MASS");

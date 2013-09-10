@@ -135,14 +135,21 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
 
   // determine category tag
-  const char* category_extra = "";
-  if(std::string(directory) == std::string("mumu_0jet_low"  )){ category_extra = "0 jet, p_{T}(lep1) low";  }
-  if(std::string(directory) == std::string("mumu_0jet_high" )){ category_extra = "0 jet, p_{T}(lep1) high"; }
-  if(std::string(directory) == std::string("mumu_1jet_low"  )){ category_extra = "1 jet, p_{T}(lep1) low";  }
-  if(std::string(directory) == std::string("mumu_1jet_high" )){ category_extra = "1 jet, p_{T}(lep1) high"; }
-  if(std::string(directory) == std::string("mumu_vbf"       )){ category_extra = "2 jet (VBF)";             }
-  if(std::string(directory) == std::string("mumu_nobtag"    )){ category_extra = "No B-Tag";                }
-  if(std::string(directory) == std::string("mumu_btag"      )){ category_extra = "B-Tag";                   }
+  const char* category = ""; const char* category_extra = ""; const char* category_extra2 = "";
+  if(std::string(directory) == std::string("mumu_0jet_low"             )){ category = "#mu#mu, 0 jet";          }    
+  if(std::string(directory) == std::string("mumu_0jet_low"             )){ category_extra = "p_{T}(lep1) low";          }    
+  if(std::string(directory) == std::string("mumu_0jet_high"            )){ category = "#mu#mu, 0 jet";          }    
+  if(std::string(directory) == std::string("mumu_0jet_high"            )){ category_extra = "p_{T}(lep1) high";         }    
+  if(std::string(directory) == std::string("mumu_1jet_low"          )){ category = "#mu#mu, 1 jet";          }    
+  if(std::string(directory) == std::string("mumu_1jet_low"          )){ category_extra = "p_{T}(lep1) low";       }    
+  if(std::string(directory) == std::string("mumu_1jet_high"          )){ category = "#mu#mu, 1 jet";          }    
+  if(std::string(directory) == std::string("mumu_1jet_high"          )){ category_extra = "p_{T}(lep1) high";       }    
+  if(std::string(directory) == std::string("mumu_vbf"            )){ category = "#mu#mu, 2 jet";          }    
+  if(std::string(directory) == std::string("mumu_vbf"            )){ category_extra = "VBF";              }    
+  if(std::string(directory) == std::string("mumu_nobtag"               )){ category = "#mu#mu";          }    
+  if(std::string(directory) == std::string("mumu_nobtag"               )){ category_extra = "No B-Tag";                        }    
+  if(std::string(directory) == std::string("mumu_btag"                 )){ category = "#mu#mu";          }    
+  if(std::string(directory) == std::string("mumu_btag"                 )){ category_extra = "B-Tag";                           }
 
   const char* dataset;
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV";}
@@ -180,7 +187,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #ifdef MSSM
   InitHist(data, "#bf{m_{#tau#tau} [GeV]}" , "#bf{dN/dm_{#tau#tau} [1/GeV]}"); InitData(data);
 #else
-  InitHist(data, "#bf{final discriminator}", "#bf{dN/d(discriminator)}"     ); InitData(data);
+  InitHist(data, "#bf{D}", "#bf{dN/dD}"     ); InitData(data);
 #endif
 
   TH1F* ref=(TH1F*)ZTT->Clone("ref");
@@ -356,18 +363,20 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   canv->RedrawAxis();
 
   //CMSPrelim(dataset, "#tau_{#mu}#tau_{#mu}", 0.17, 0.835);
-  CMSPrelim(dataset, "", 0.16, 0.835);  
-  TPaveText* chan     = new TPaveText(0.20, 0.76+0.061, 0.32, 0.76+0.161, "NDC");
+  CMSPrelim(dataset, "", 0.16, 0.835);
+  TPaveText* chan     = new TPaveText(0.20, (category_extra2 && category_extra2[0]=='\0') ? 0.65+0.061 : 0.65+0.061, 0.32, 0.75+0.161, "tlbrNDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
   chan->SetTextAlign(   12 );
   chan->SetTextSize ( 0.05 );
   chan->SetTextColor(    1 );
   chan->SetTextFont (   62 );
-  chan->AddText("#mu#mu");
+  chan->AddText(category);
+  chan->AddText(category_extra);
+  chan->AddText(category_extra2);
   chan->Draw();
 
-  TPaveText* cat      = new TPaveText(0.20, 0.71+0.061, 0.32, 0.71+0.161, "NDC");
+/*  TPaveText* cat      = new TPaveText(0.20, 0.71+0.061, 0.32, 0.71+0.161, "NDC");
   cat->SetBorderSize(   0 );
   cat->SetFillStyle(    0 );
   cat->SetTextAlign(   12 );
@@ -376,7 +385,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   cat->SetTextFont (   62 );
   cat->AddText(category_extra);
   cat->Draw();
-
+*/
 #ifdef MSSM
   TPaveText* massA      = new TPaveText(0.55, 0.50+0.061, 0.95, 0.50+0.161, "NDC");
   massA->SetBorderSize(   0 );
@@ -472,7 +481,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #ifdef MSSM
   rat1->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}"); 
 #else
-  rat1->GetXaxis()->SetTitle("#bf{final discriminator}");
+  rat1->GetXaxis()->SetTitle("#bf{D}");
 #endif
   rat1->Draw();
   zero->SetFillStyle(  3013);
@@ -537,7 +546,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #if defined MSSM
   rat2->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}"); 
 #else
-  rat2->GetXaxis()->SetTitle("#bf{final discriminator}");
+  rat2->GetXaxis()->SetTitle("#bf{D}");
 #endif
   rat2->Draw();
   zero->SetFillStyle(  3013);
@@ -607,13 +616,13 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   canv   ->Print(TString::Format("%s_%sfit_%s_%s.png"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
   canv   ->Print(TString::Format("%s_%sfit_%s_%s.pdf"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
   canv   ->Print(TString::Format("%s_%sfit_%s_%s.eps"       , directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
-  if(!log || FULLPLOTS)
+  if(log || FULLPLOTS)
   {
     canv0->Print(TString::Format("%s_datamc_%sfit_%s_%s.png", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
     canv0->Print(TString::Format("%s_datamc_%sfit_%s_%s.pdf", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN"));
     canv0->Print(TString::Format("%s_datamc_%sfit_%s_%s.eps", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN"));
   }
-  if((!log && scaled) || FULLPLOTS)
+  if((log && scaled) || FULLPLOTS)
   {
     canv1->Print(TString::Format("%s_prefit_%sfit_%s_%s.png", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN")); 
     canv1->Print(TString::Format("%s_prefit_%sfit_%s_%s.pdf", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN"));
