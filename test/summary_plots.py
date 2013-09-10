@@ -236,7 +236,7 @@ for line in postfit_base :
     postfit_use.write(line)
 postfit_base.close()
 postfit_use.close()
-                
+
 
 type = options.type
 
@@ -253,16 +253,33 @@ for per in config.comb_periods:
         for cat in config.comb_categories:
             ## check whether the category which is to be processed is one of the "normal" categories
             if cat not in config.categoryname[chan]:
-                ## find all categories whos name contain the pattern {CAT} as substring
-                ## the category must be valid for the corresponding period. For 7TeV and 8TeV it must be valid for 7TeV
-                cat_add = [category for category in config.categoryname[chan] if (cat in category and config.categoryname[chan].index(category) < len(config.categories[chan][per.split("_")[0]]))]
-                rootfiles = ["{CHN}_{CAT}_{TYPE}_{PERIOD}_{LOG}.root".format(CHN=chn, CAT=caegoryt, TYPE=type, LOG=logarithm, PERIOD = per) for category in cat_add]
-                ## loop over all given configurations
-                for idx in range(len(min[chn,cat])):
-                    if rootfiles:
-                        if options.debug:
-                            print "hadd -f {CHN}_{CAT}_{TYPE}_{PERIOD}_{LOG}.root {ROOT}".format(CHN=chn, CAT=cat, TYPE=type, LOG=logarithm, PERIOD = per, ROOT=' '.join(rootfiles))
-                            print "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_{PERIOD}_{LIN}.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
+                if len(per.split('_')) == 1:
+                    ## find all categories whos name contain the pattern {CAT} as substring
+                    ## the category must be valid for the corresponding period. For 7TeV and 8TeV it must be valid for 7TeV
+                    cat_add = [category for category in config.categoryname[chan] if (cat in category and config.categoryname[chan].index(category) < len(config.categories[chan][per.split("_")[0]]))]
+                    rootfiles = ["{CHN}_{CAT}_{TYPE}_{PERIOD}_{LOG}.root".format(CHN=chn, CAT=category, TYPE=type, LOG=logarithm, PERIOD = per) for category in cat_add]
+                    ## loop over all given configurations
+                    for idx in range(len(min[chn,cat])):
+                        if rootfiles:
+                            if options.debug:
+                                print "hadd -f {CHN}_{CAT}_{TYPE}_{PERIOD}_{LOG}.root {ROOT}".format(CHN=chn, CAT=cat, TYPE=type, LOG=logarithm, PERIOD = per, ROOT=' '.join(rootfiles))
+                                print "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_{PERIOD}_{LIN}.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
+                                    CMSSW_BASE=os.environ['CMSSW_BASE'],
+                                    CHN=chn,
+                                    CAT=cat,
+                                    TYPE=type,
+                                    PERIOD=per,
+                                    LIN=logarithm,
+                                    ANA=options.analysis.upper(),
+                                    LABEL="2011+2012",
+                                    EXTRA=extra[chn],
+                                    EXTRA2=cat,
+                                    MIN=min[chn,cat][idx],
+                                    MAX=max[chn,cat][idx],
+                                    LOG=log[chn,cat][idx]
+                                    )
+                            os.system("hadd -f {CHN}_{CAT}_{TYPE}_{PERIOD}_{LOG}.root {ROOT}".format(CHN=chn, CAT=cat, TYPE=type, LOG=logarithm, PERIOD = per, ROOT=' '.join(rootfiles)))
+                            os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_{PERIOD}_{LIN}.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
                                 CMSSW_BASE=os.environ['CMSSW_BASE'],
                                 CHN=chn,
                                 CAT=cat,
@@ -276,47 +293,14 @@ for per in config.comb_periods:
                                 MIN=min[chn,cat][idx],
                                 MAX=max[chn,cat][idx],
                                 LOG=log[chn,cat][idx]
-                                )
-                        os.system("hadd -f {CHN}_{CAT}_{TYPE}_{PERIOD}_{LOG}.root {ROOT}".format(CHN=chn, CAT=cat, TYPE=type, LOG=logarithm, PERIOD = per, ROOT=' '.join(rootfiles)))
-                        os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_{PERIOD}_{LIN}.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
-                            CMSSW_BASE=os.environ['CMSSW_BASE'],
-                            CHN=chn,
-                            CAT=cat,
-                            TYPE=type,
-                            PERIOD=per,
-                            LIN=logarithm,
-                            ANA=options.analysis.upper(),
-                            LABEL="2011+2012",
-                            EXTRA=extra[chn],
-                            EXTRA2=cat,
-                            MIN=min[chn,cat][idx],
-                            MAX=max[chn,cat][idx],
-                            LOG=log[chn,cat][idx]
-                            ))
-            else:
-                ## the category is a existing one. The only thing left to do is to combine 7TeV and 8TeV if it is requested
-                if per == "7TeV_8TeV":
-                    for idx in range(len(min[chn,cat])):
-                        if options.debug:
-                            print "hadd {CHN}_{CAT}_{TYPE}_7TeV_8TeV.root {CHN}_{CAT}_{TYPE}_7TeV_{LOG}.root {CHN}_{CAT}_{TYPE}_8TeV_{LOG}.root".format(
-                                CHN=chn, CAT=cat, TYPE=type, LOG=logarithm)
-                            print "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7TeV_8TeV_{LIN}.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
-                                CMSSW_BASE=os.environ['CMSSW_BASE'],
-                                CHN=chn,
-                                CAT=cat,
-                                TYPE=type,
-                                LIN=logarithm,
-                                ANA=options.analysis.upper(),
-                                LABEL="2011+2012",
-                                EXTRA=extra[chn],
-                                EXTRA2=cat,
-                                MIN=min[chn,cat][idx],
-                                MAX=max[chn,cat][idx],
-                                LOG=log[chn,cat][idx]
-                                )
-                        os.system("hadd -f {CHN}_{CAT}_{TYPE}_7TeV_8TeV_{LOG}.root {CHN}_{CAT}_{TYPE}_7TeV_{LOG}.root {CHN}_{CAT}_{TYPE}_8TeV_{LOG}.root".format(
-                            CHN=chn, CAT=cat, TYPE=type, LOG=logarithm))
-                        os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7TeV_8TeV_{LIN}.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
+                                ))
+            ## combine 7TeV and 8TeV if it is requested
+            if per == "7TeV_8TeV":
+                for idx in range(len(min[chn,cat])):
+                    if options.debug:
+                        print "hadd -f {CHN}_{CAT}_{TYPE}_7TeV_8TeV_{LOG}.root {CHN}_{CAT}_{TYPE}_7TeV_{LOG}.root {CHN}_{CAT}_{TYPE}_8TeV_{LOG}.root".format(
+                            CHN=chn, CAT=cat, TYPE=type, LOG=logarithm)
+                        print "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7TeV_8TeV_{LIN}.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
                             CMSSW_BASE=os.environ['CMSSW_BASE'],
                             CHN=chn,
                             CAT=cat,
@@ -329,4 +313,20 @@ for per in config.comb_periods:
                             MIN=min[chn,cat][idx],
                             MAX=max[chn,cat][idx],
                             LOG=log[chn,cat][idx]
-                            ))
+                            )
+                    os.system("hadd -f {CHN}_{CAT}_{TYPE}_7TeV_8TeV_{LOG}.root {CHN}_{CAT}_{TYPE}_7TeV_{LOG}.root {CHN}_{CAT}_{TYPE}_8TeV_{LOG}.root".format(
+                        CHN=chn, CAT=cat, TYPE=type, LOG=logarithm))
+                    os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7TeV_8TeV_{LIN}.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
+                        CMSSW_BASE=os.environ['CMSSW_BASE'],
+                        CHN=chn,
+                        CAT=cat,
+                        TYPE=type,
+                        LIN=logarithm,
+                        ANA=options.analysis.upper(),
+                        LABEL="2011+2012",
+                        EXTRA=extra[chn],
+                        EXTRA2=cat,
+                        MIN=min[chn,cat][idx],
+                        MAX=max[chn,cat][idx],
+                        LOG=log[chn,cat][idx]
+                        ))
