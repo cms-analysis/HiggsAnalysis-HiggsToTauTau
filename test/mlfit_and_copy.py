@@ -33,7 +33,10 @@ system("mkdir -p datacards")
 system("mkdir -p root")
 system("mkdir -p fitresults")
 if not options.skip :
-    system("limit.py --max-likelihood --stable --rMin %s --rMax %s %s" % (options.rMin, options.rMax, dir))
+    if options.analysis == "sm" :
+        system("limit.py --max-likelihood --stable --rMin %s --rMax %s %s" % (options.rMin, options.rMax, dir))
+    if options.analysis == "mssm" :    
+        system("limit.py --max-likelihood --stable --rMin %s --rMax %s --physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH;ggHRange=-5:5' %s" % (options.rMin, options.rMax, dir))
 
 if options.analysis == "sm" :
     system("cp -v %s/out/mlfit.txt ./fitresults/mlfit_sm.txt" % dir)
