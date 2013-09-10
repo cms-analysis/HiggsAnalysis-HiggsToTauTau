@@ -180,6 +180,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   ref->Add(EWK1 );
   ref->Add(EWK2 );
 //ref->Add(EWK3 );
+  ref->Add(EWK );
   ref->Add(ttbar);
   ref->Add(Ztt  );
 
