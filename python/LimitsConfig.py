@@ -11,6 +11,9 @@ class configuration:
         self.categories={}
         self.categoryname={}
         self.inputs={}
+        self.comb_periods=self.config.get('combination', 'periods').split()
+        self.comb_channels=self.config.get('combination', 'channels').split()
+        self.comb_categories=self.config.get('combination', 'categories_'+mode).split()
         for channel in self.channels:
             self.categories[channel]={}
             for period in self.periods:

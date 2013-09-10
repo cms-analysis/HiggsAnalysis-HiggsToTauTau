@@ -1,4 +1,5 @@
 from optparse import OptionParser, OptionGroup
+from HiggsAnalysis.HiggsToTauTau.LimitsConfig import configuration
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options]",
@@ -8,40 +9,38 @@ parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choic
 parser.add_option("-t", "--type", dest="type", default="postfit", type="string", help="Type of plots, prefit or postfit. [Default: \"postfit\"]")
 parser.add_option("--mA", dest="mA", default="160", type="float", help="Mass of pseudoscalar mA only needed for mssm. [Default: '160']")
 parser.add_option("--tanb", dest="tanb", default="8", type="float", help="Tanb only needed for mssm. [Default: '8']")
+parser.add_option("-c", "--config", dest="config", default="", type="string", help="Additional configuration file to be used for the channels, periods and categories. [Default: '']")
+parser.add_option("--debug", dest="debug", action="store_true", default=False, help="Debug option to show only scripts which are run without actually running them [Default: False]")
+parser.add_option("--hww-background", dest="hwwbg", action="store_true", default=False, help="Add H->WW processes as background to the em channel [Default: False]")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 
+config=configuration(options.analysis, options.config)
 
 ## a set of pre-defined lists
-channels   = [
-    "emu",
-    "eleTau",
-    "muTau",
-    "mumu",
-    ]
 
-categories_sm = [
-    "0jet_low",
-    "0jet_high",
-    "0jet",
-    "1jet_low",
-    "1jet_high",
+#categories_sm = [
+#    "0jet_low",
+#    "0jet_high",
+#    "0jet",
+#    "1jet_low",
+#    "1jet_medium",
+#    "1jet_high_lowhiggs",
+#    "1jet_high_mediumhiggs",
+#    "1jet_high",
     #"1jet",  ## these are not combined at the moment due to different binning in low and high pt
-    "vbf",
-    ]
+#    "vbf",
+#    ]
 
-categories_mssm = [
-    #"0jet_low",
-    #"0jet_high",
-    #"0jet",
-    #"1jet_low",
-    #"1jet_high",
-    #"1jet",
-    #"btag_low",
-    #"btag_high",
-    "nobtag",
-    "btag",
-    ] 
+
+channels   = {
+    "em":"emu",
+    "et":"eleTau",
+    "mt":"muTau",
+    "mm":"mumu",
+    "ee":"ee",
+    "tt":"tauTau"
+    }
 
 extra = {
     "ee"      : "ee",
@@ -49,6 +48,7 @@ extra = {
     "eleTau"  : "e#tau_{h}",
     "muTau"   : "#mu#tau_{h}",
     "mumu"    : "#mu#mu",
+    "tauTau"   : "#tau_{h}#tau_{h}"
     }
 
 log = {
@@ -66,7 +66,9 @@ log = {
     ("muTau"  , "0jet_low"  ) : ["false",],
     ("muTau"  , "0jet_high" ) : ["false",],
     ("muTau"  , "0jet"      ) : ["false",],
-    ("muTau"  , "1jet_low"  ) : ["false",],
+    ("muTau"  , "1jet_medium"  ) : ["false",],
+    ("muTau"  , "1jet_high_lowhiggs" ) : ["false",],
+    ("muTau"  , "1jet_high_mediumhiggs" ) : ["false",],
     ("muTau"  , "1jet_high" ) : ["false",],
     ("muTau"  , "1jet"      ) : ["false",],
     ("muTau"  , "btag_low"  ) : ["false",],
@@ -77,7 +79,8 @@ log = {
     ("eleTau" , "0jet_low"  ) : ["false",],
     ("eleTau" , "0jet_high" ) : ["false",],
     ("eleTau" , "0jet"      ) : ["false",],
-    ("eleTau" , "1jet_low"  ) : ["false",],
+    ("eleTau" , "1jet_medium"  ) : ["false",],
+    ("eleTau" , "1jet_high_mediumhiggs" ) : ["false",],
     ("eleTau" , "1jet_high" ) : ["false",],
     ("eleTau" , "1jet"      ) : ["false",],
     ("eleTau" , "btag_low"  ) : ["false",],
@@ -85,17 +88,24 @@ log = {
     ("eleTau" , "nobtag"    ) : ["false", "true"],
     ("eleTau" , "btag"      ) : ["false", "true"],
     ("eleTau" , "vbf"       ) : ["false",],
-    ("mumu"   , "0jet_low"  ) : ["false", ],
-    ("mumu"   , "0jet_high" ) : ["false", ],
-    ("mumu"   , "0jet"      ) : ["false", ],
-    ("mumu"   , "1jet_low"  ) : ["false", ],
-    ("mumu"   , "1jet_high" ) : ["false", ],
-    ("mumu"   , "1jet"      ) : ["false", ],
+    ("mumu"   , "0jet_low"  ) : ["true", ],
+    ("mumu"   , "0jet_high" ) : ["true", ],
+    ("mumu"   , "0jet"      ) : ["true", ],
+    ("mumu"   , "1jet_low"  ) : ["true", ],
+    ("mumu"   , "1jet_high" ) : ["true", ],
+    ("mumu"   , "1jet"      ) : ["true", ],
     ("mumu"   , "btag_low"  ) : ["false", ],
     ("mumu"   , "btag_high" ) : ["false", ],
     ("mumu"   , "nobtag"    ) : ["false", "true"],
     ("mumu"   , "btag"      ) : ["false", "true"],
-    ("mumu"   , "vbf"       ) : ["false",],
+    ("mumu"   , "vbf"       ) : ["true",],
+    ("ee"   , "0jet_low"  ) : ["true", ],
+    ("ee"   , "0jet_high" ) : ["true", ],
+    ("ee"   , "0jet"      ) : ["true", ],
+    ("ee"   , "1jet_low"  ) : ["true", ],
+    ("ee"   , "1jet_high" ) : ["true", ],
+    ("ee"   , "1jet"      ) : ["true", ],
+    ("ee"   , "vbf"       ) : ["true",],
     }
 
 max = {
@@ -113,7 +123,9 @@ max = {
     ("muTau"  , "0jet_low"  ) : ["-1",],
     ("muTau"  , "0jet_high" ) : ["-1",],
     ("muTau"  , "0jet"      ) : ["-1",],
-    ("muTau"  , "1jet_low"  ) : ["-1",],
+    ("muTau"  , "1jet_medium"  ) : ["-1",],
+    ("muTau"  , "1jet_high_lowhiggs" ) : ["-1",],
+    ("muTau"  , "1jet_high_mediumhiggs" ) : ["-1",],
     ("muTau"  , "1jet_high" ) : ["-1",],
     ("muTau"  , "1jet"      ) : ["-1",],
     ("muTau"  , "btag_low"  ) : ["-1",],
@@ -124,7 +136,8 @@ max = {
     ("eleTau" , "0jet_low"  ) : ["-1",],
     ("eleTau" , "0jet_high" ) : ["-1",],
     ("eleTau" , "0jet"      ) : ["-1",],
-    ("eleTau" , "1jet_low"  ) : ["-1",],
+    ("eleTau" , "1jet_medium"  ) : ["-1",],
+    ("eleTau" , "1jet_high_mediumhiggs" ) : ["-1",],
     ("eleTau" , "1jet_high" ) : ["-1",],
     ("eleTau" , "1jet"      ) : ["-1",],
     ("eleTau" , "btag_low"  ) : ["-1",],
@@ -143,6 +156,13 @@ max = {
     ("mumu"   , "nobtag"    ) : ["-1",  "-1"], #["200000","120000"],
     ("mumu"   , "btag"      ) : ["-1",  "-1"], #["500","300"],
     ("mumu"   , "vbf"       ) : ["-1",],
+    ("ee"   , "0jet_low"  ) : ["-1",],
+    ("ee"   , "0jet_high" ) : ["-1",],
+    ("ee"   , "0jet"      ) : ["-1",],
+    ("ee"   , "1jet_low"  ) : ["-1",],
+    ("ee"   , "1jet_high" ) : ["-1",],
+    ("ee"   , "1jet"      ) : ["-1",],
+    ("ee"   , "vbf"       ) : ["-1",],
     }
 
 min = {
@@ -160,63 +180,50 @@ min = {
     ("muTau"  , "0jet_low"  ) : ["0",  ],
     ("muTau"  , "0jet_high" ) : ["0",  ],
     ("muTau"  , "0jet"      ) : ["0",  ],
-    ("muTau"  , "1jet_low"  ) : ["0",  ],
+    ("muTau"  , "1jet_medium"  ) : ["0",  ],
+    ("muTau"  , "1jet_high_lowhiggs" ) : ["0",  ],
+    ("muTau"  , "1jet_high_mediumhiggs" ) : ["0",  ],
     ("muTau"  , "1jet_high" ) : ["0",  ],
     ("muTau"  , "1jet"      ) : ["0",  ],
     ("muTau"  , "btag_low"  ) : ["0",  ],
     ("muTau"  , "btag_high" ) : ["0",  ],
-    ("muTau"  , "nobtag"    ) : ["0", "1e-3"],
-    ("muTau"  , "btag"      ) : ["0", "1e-3"],
+    ("muTau"  , "nobtag"    ) : ["0", "1e-2"],
+    ("muTau"  , "btag"      ) : ["0", "1e-2"],
     ("muTau"  , "vbf"       ) : ["0",  ],
     ("eleTau" , "0jet_low"  ) : ["0",  ],
     ("eleTau" , "0jet_high" ) : ["0",  ],
     ("eleTau" , "0jet"      ) : ["0",  ],
-    ("eleTau" , "1jet_low"  ) : ["0",  ],
+    ("eleTau" , "1jet_medium"  ) : ["0",  ],
+    ("eleTau" , "1jet_high_mediumhiggs" ) : ["0",  ],
     ("eleTau" , "1jet_high" ) : ["0",  ],
     ("eleTau" , "1jet"      ) : ["0",  ],
     ("eleTau" , "btag_low"  ) : ["0",  ],
     ("eleTau" , "btag_high" ) : ["0",  ],
-    ("eleTau" , "nobtag"    ) : ["0", "1e-3"],
-    ("eleTau" , "btag"      ) : ["0", "1e-3"],
+    ("eleTau" , "nobtag"    ) : ["0", "1e-2"],
+    ("eleTau" , "btag"      ) : ["0", "1e-2"],
     ("eleTau" , "vbf"       ) : ["0",  ],
-    ("mumu"   , "0jet_low"  ) : ["0",  ],
-    ("mumu"   , "0jet_high" ) : ["0",  ],
-    ("mumu"   , "0jet"      ) : ["0",  ],
-    ("mumu"   , "1jet_low"  ) : ["0",  ],
-    ("mumu"   , "1jet_high" ) : ["0",  ],
-    ("mumu"   , "1jet"      ) : ["0",  ],
+    ("mumu"   , "0jet_low"  ) : ["1e-2",  ],
+    ("mumu"   , "0jet_high" ) : ["1e-2",  ],
+    ("mumu"   , "0jet"      ) : ["1e-2",  ],
+    ("mumu"   , "1jet_low"  ) : ["1e-2",  ],
+    ("mumu"   , "1jet_high" ) : ["1e-2",  ],
+    ("mumu"   , "1jet"      ) : ["1e-2",  ],
     ("mumu"   , "btag_low"  ) : ["0",  ],
     ("mumu"   , "btag_high" ) : ["0",  ],
     ("mumu"   , "nobtag"    ) : ["0", "1e-2"],
     ("mumu"   , "btag"      ) : ["0", "1e-1"],
-    ("mumu"   , "vbf"       ) : ["0",  ],  
+    ("mumu"   , "vbf"       ) : ["1e-2",  ],  
+    ("ee"   , "0jet_low"  ) : ["1e-2",  ],
+    ("ee"   , "0jet_high" ) : ["1e-2",  ],
+    ("ee"   , "0jet"      ) : ["1e-2",  ],
+    ("ee"   , "1jet_low"  ) : ["1e-2",  ],
+    ("ee"   , "1jet_high" ) : ["1e-2",  ],
+    ("ee"   , "1jet"      ) : ["1e-2",  ],
+    ("ee"   , "vbf"       ) : ["1e-2",  ],  
     }
 
+
 import os
-
-type = options.type
-categories = categories_sm if options.analysis == "sm" else categories_mssm
-
-print "C R E A T I N G   S U M M A R Y   P L O T S :"
-print "CATEGORIES:", categories
-print "CHANNELS  :", channels
-
-## combine 2011+2012
-for chn in channels :
-    for cat in categories :
-        ## combine high and low pt categories, make sure in your 
-        ## list that {CAT}_low and {CAT}_high are run beforehand
-        if cat == "0jet" : ## or cat == "1jet" : ## in 1jet low and high pt have a different binning
-            #print "hadd {CHN}_{CAT}_{TYPE}_7TeV_8TeV.root {CHN}_{CAT}_low_{TYPE}_7TeV_8TeV.root {CHN}_{CAT}_high_{TYPE}_7TeV_8TeV.root".format(CHN=chn, CAT=cat, TYPE=type)
-            os.system("hadd -f {CHN}_{CAT}_{TYPE}_7TeV_8TeV_LIN.root {CHN}_{CAT}_low_{TYPE}_7TeV_8TeV_LIN.root {CHN}_{CAT}_high_{TYPE}_7TeV_8TeV_LIN.root".format(CHN=chn, CAT=cat, TYPE=type))
-        else :
-            #print "hadd {CHN}_{CAT}_{TYPE}_7TeV_8TeV.root {CHN}_{CAT}_{TYPE}_7TeV_{LOG}.root {CHN}_{CAT}_{TYPE}_8TeV_{LOG}.root".format(
-            #    CHN=chn, CAT=cat, TYPE=type, LOG="LOG" if log[(chn, cat)] else "LIN")
-            os.system("hadd -f {CHN}_{CAT}_{TYPE}_7TeV_8TeV_LIN.root {CHN}_{CAT}_{TYPE}_7TeV_LIN.root {CHN}_{CAT}_{TYPE}_8TeV_LIN.root".format(
-                CHN=chn, CAT=cat, TYPE=type))#, LOG="LOG" if log[(chn, cat)]==True else "LIN"))
-            if options.analysis == "mssm" :
-                os.system("hadd -f {CHN}_{CAT}_{TYPE}_7TeV_8TeV_LOG.root {CHN}_{CAT}_{TYPE}_7TeV_LOG.root {CHN}_{CAT}_{TYPE}_8TeV_LOG.root".format(
-                    CHN=chn, CAT=cat, TYPE=type))#, LOG="LOG" if log[(chn, cat)]==True else "LIN"))
 
 ##print in the right Signal label for MSSM
 postfit_base = open("{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit.C".format(CMSSW_BASE=os.environ['CMSSW_BASE']),'r')
@@ -225,38 +232,101 @@ for line in postfit_base :
     line = line.replace("$CMSSW_BASE", os.environ['CMSSW_BASE'])
     line = line.replace("$MA" , str(int(options.mA)))
     line = line.replace("$TANB", str(int(options.tanb)))
+    line = line.replace("$HWWBG", "true" if options.hwwbg else "false")
     postfit_use.write(line)
 postfit_base.close()
 postfit_use.close()
                 
-## make plots
-for chn in channels :
-    for cat in categories :
-        print chn, cat
-        os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7TeV_8TeV_LIN.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
-            CMSSW_BASE=os.environ['CMSSW_BASE'],
-            CHN=chn,
-            CAT=cat,
-            TYPE=type,
-            ANA=options.analysis.upper(),
-            LABEL="2011+2012",
-            EXTRA=extra[chn],
-            EXTRA2=cat,
-            MIN=min[chn,cat][0],
-            MAX=max[chn,cat][0],
-            LOG=log[chn,cat][0]
-            ))
-        if options.analysis == "mssm" :
-            os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7TeV_8TeV_LOG.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
-                CMSSW_BASE=os.environ['CMSSW_BASE'],
-                CHN=chn,
-                CAT=cat,
-                TYPE=type,
-                ANA=options.analysis.upper(),
-                LABEL="2011+2012",
-                EXTRA=extra[chn],
-                EXTRA2=cat,
-                MIN=min[chn,cat][1],
-                MAX=max[chn,cat][1],
-                LOG=log[chn,cat][1]
-                ))
+
+type = options.type
+
+print "C R E A T I N G   S U M M A R Y   P L O T S :"
+print "CATEGORIES:", config.comb_categories
+print "CHANNELS  :", config.comb_channels
+print "PERIODS   :", config.comb_periods
+
+## combine 2011+2012
+for per in config.comb_periods:
+    for chan in config.comb_channels:
+        chn = channels[chan]
+        logarithm = "LOG" if (chn in ["mumu","ee"] or options.analysis == "mssm") else "LIN"
+        for cat in config.comb_categories:
+            ## check whether the category which is to be processed is one of the "normal" categories
+            if cat not in config.categoryname[chan]:
+                ## find all categories whos name contain the pattern {CAT} as substring
+                ## the category must be valid for the corresponding period. For 7TeV and 8TeV it must be valid for 7TeV
+                cat_add = [category for category in config.categoryname[chan] if (cat in category and config.categoryname[chan].index(category) < len(config.categories[chan][per.split("_")[0]]))]
+                rootfiles = ["{CHN}_{CAT}_{TYPE}_{PERIOD}_{LOG}.root".format(CHN=chn, CAT=caegoryt, TYPE=type, LOG=logarithm, PERIOD = per) for category in cat_add]
+                ## loop over all given configurations
+                for idx in range(len(min[chn,cat])):
+                    if rootfiles:
+                        if options.debug:
+                            print "hadd -f {CHN}_{CAT}_{TYPE}_{PERIOD}_{LOG}.root {ROOT}".format(CHN=chn, CAT=cat, TYPE=type, LOG=logarithm, PERIOD = per, ROOT=' '.join(rootfiles))
+                            print "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_{PERIOD}_{LIN}.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
+                                CMSSW_BASE=os.environ['CMSSW_BASE'],
+                                CHN=chn,
+                                CAT=cat,
+                                TYPE=type,
+                                PERIOD=per,
+                                LIN=logarithm,
+                                ANA=options.analysis.upper(),
+                                LABEL="2011+2012",
+                                EXTRA=extra[chn],
+                                EXTRA2=cat,
+                                MIN=min[chn,cat][idx],
+                                MAX=max[chn,cat][idx],
+                                LOG=log[chn,cat][idx]
+                                )
+                        os.system("hadd -f {CHN}_{CAT}_{TYPE}_{PERIOD}_{LOG}.root {ROOT}".format(CHN=chn, CAT=cat, TYPE=type, LOG=logarithm, PERIOD = per, ROOT=' '.join(rootfiles)))
+                        os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_{PERIOD}_{LIN}.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
+                            CMSSW_BASE=os.environ['CMSSW_BASE'],
+                            CHN=chn,
+                            CAT=cat,
+                            TYPE=type,
+                            PERIOD=per,
+                            LIN=logarithm,
+                            ANA=options.analysis.upper(),
+                            LABEL="2011+2012",
+                            EXTRA=extra[chn],
+                            EXTRA2=cat,
+                            MIN=min[chn,cat][idx],
+                            MAX=max[chn,cat][idx],
+                            LOG=log[chn,cat][idx]
+                            ))
+            else:
+                ## the category is a existing one. The only thing left to do is to combine 7TeV and 8TeV if it is requested
+                if per == "7TeV_8TeV":
+                    for idx in range(len(min[chn,cat])):
+                        if options.debug:
+                            print "hadd {CHN}_{CAT}_{TYPE}_7TeV_8TeV.root {CHN}_{CAT}_{TYPE}_7TeV_{LOG}.root {CHN}_{CAT}_{TYPE}_8TeV_{LOG}.root".format(
+                                CHN=chn, CAT=cat, TYPE=type, LOG=logarithm)
+                            print "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7TeV_8TeV_{LIN}.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
+                                CMSSW_BASE=os.environ['CMSSW_BASE'],
+                                CHN=chn,
+                                CAT=cat,
+                                TYPE=type,
+                                LIN=logarithm,
+                                ANA=options.analysis.upper(),
+                                LABEL="2011+2012",
+                                EXTRA=extra[chn],
+                                EXTRA2=cat,
+                                MIN=min[chn,cat][idx],
+                                MAX=max[chn,cat][idx],
+                                LOG=log[chn,cat][idx]
+                                )
+                        os.system("hadd -f {CHN}_{CAT}_{TYPE}_7TeV_8TeV_{LOG}.root {CHN}_{CAT}_{TYPE}_7TeV_{LOG}.root {CHN}_{CAT}_{TYPE}_8TeV_{LOG}.root".format(
+                            CHN=chn, CAT=cat, TYPE=type, LOG=logarithm))
+                        os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7TeV_8TeV_{LIN}.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
+                            CMSSW_BASE=os.environ['CMSSW_BASE'],
+                            CHN=chn,
+                            CAT=cat,
+                            TYPE=type,
+                            LIN=logarithm,
+                            ANA=options.analysis.upper(),
+                            LABEL="2011+2012",
+                            EXTRA=extra[chn],
+                            EXTRA2=cat,
+                            MIN=min[chn,cat][idx],
+                            MAX=max[chn,cat][idx],
+                            LOG=log[chn,cat][idx]
+                            ))
