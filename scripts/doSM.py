@@ -126,11 +126,8 @@ def add_zero_jet(path) :
         for period in config.periods:
             print "period:",period
             for category in config.categories[channel][period]:
-                print "category",category
-                print "test:",config.categoryname[channel][int(category)]
                 if '0jet' in config.categoryname[channel][int(category)]:
                     filename="{PATH}/{CHANNEL}/cgs-sm-{PERIOD}-0{CATEGORY}.conf".format(PATH=path, CHANNEL=channel, PERIOD=period, CATEGORY=category)
-                    print 'processing file:', filename
                     cgs_adaptor.cgs_processes(filename,['ggH','qqH','VH'])
             if options.add_mutau_soft and channel == 'mt' and period == '8TeV':
                 for category in 10, 11, 12:
