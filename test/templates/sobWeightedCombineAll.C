@@ -27,9 +27,9 @@ root -b /PATH/sobWeightedCombineAll.C
 Authors: Jose Benitez, Lorenzo Bianchini 
 */
 
-#include "/home/rcaspart/cmssw/mumu_611/CMSSW_6_1_1/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
-#include "/home/rcaspart/cmssw/mumu_611/CMSSW_6_1_1/src/HiggsAnalysis/HiggsToTauTau/test/templates/sobWeightedCombine.C"
-#include "/home/rcaspart/cmssw/mumu_611/CMSSW_6_1_1/src/HiggsAnalysis/HiggsToTauTau/test/templates/sobWeightedCombineMSSM.C"
+#include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "HiggsAnalysis/HiggsToTauTau/test/templates/sobWeightedCombine.C"
+#include "HiggsAnalysis/HiggsToTauTau/test/templates/sobWeightedCombineMSSM.C"
 
 #define NMAXINPUT 65
 
