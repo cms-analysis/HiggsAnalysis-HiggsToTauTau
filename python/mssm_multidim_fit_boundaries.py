@@ -1,6 +1,6 @@
 mssm_multidim_fit_boundaries = {
     ## key=mass   first value=ggH; second value=bbH
-    ("ggH-bbH",  "90")  : (20.00, 10.0),
+    ("ggH-bbH",  "90")  : (40.00, 10.0),
     ("ggH-bbH", "100")  : (20.00, 10.0),
     ("ggH-bbH", "102")  : (20.00, 10.0),
     ("ggH-bbH", "104")  : (20.00, 10.0),
