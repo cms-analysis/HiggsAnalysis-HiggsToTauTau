@@ -17,9 +17,11 @@ cvs2local.py -i aux-yymmdd-mssm/bbb -o LIMITS-yymmdd-mssm/bbb-ggH-bbH -p 8TeV -a
 
 (2) launch ML-fit:
 ## choose ggH (default choice)
-submit.py --max-likelihood --options="--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH;ggHRange=-5:5'" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500]
+lxb: submit.py --max-likelihood --options="--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH;ggHRange=-5:5'" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500]
+lxq: submit.py --max-likelihood --options="--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH;ggHRange=-5:5'" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500] --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
 ## choose bbH
-submit.py --max-likelihood --options="--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=bbH;bbHRange=-5:5'" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500]
+lxb: submit.py --max-likelihood --options="--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=bbH;bbHRange=-5:5'" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500]
+lxq: submit.py --max-likelihood --options="--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=bbH;bbHRange=-5:5'" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500] --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
 
 (2a) pruning
 ## pruning after ML-fit
@@ -36,39 +38,46 @@ python summary_plots.py -a mssm
 
 (3) launch/collect/plot Goodness-of-fit
 ## launch
-submit.py --goodness-of-fit --toys 100 --cycles 10 LIMITS-yymmdd-mssm/bbb-gof/*/*/[160,350,500]
+lxb: submit.py --goodness-of-fit --toys 100 --cycles 10 LIMITS-yymmdd-mssm/bbb-gof/*/[160,350,500]
+lxq: submit.py --goodness-of-fit --toys 100 --cycles 10 LIMITS-yymmdd-mssm/bbb-gof/*/[160,350,500] --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
 ## collect
-submit.py --goodness-of-fit --collect-injected-toys LIMITS-yymmdd-mssm/bbb-gof/*/*/[160,350,500]
+lxb: submit.py --goodness-of-fit --collect-injected-toys LIMITS-yymmdd-mssm/bbb-gof/*/[160,350,500]
+lxq: submit.py --goodness-of-fit --collect-injected-toys LIMITS-yymmdd-mssm/bbb-gof/*/[160,350,500] --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
 ## plotting
 plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py LIMITS-yymmdd-mssm/bbb-mlfit masspoints='160 350'
 
 
 (4) launch/collect/plot mA-tanb
 ## lauch final setup of datacards
-lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/*
+lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/*
+lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* 
 ## lauch limit calculation
-submit.py --tanb+  -q '-q 2nd' LIMITS-yymmdd-mssm/bbb[-asimov]/*/*
+lxb: submit.py --tanb+  -q '-q 2nd' LIMITS-yymmdd-mssm/bbb[-asimov]/*/*
+lxq: submit.py --tanb+  -q '-q 2nd' LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_cpu=48:00:00 -j y -o /dev/null"
 ## plotting
 plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb.py LIMITS-yymmdd-mssm/bbb[-asimov] [expectedOnly=1]
 ## comparison plots (per channel)
-.x HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C+("limits_mA-tanb.root", "mm,em,tt,et,mt,cmb", true, false, "mssm-tanb", 0., 60., false, "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV", true, false)
+.x HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C+("limits_mA-tanb.root", "mm,em,tt,et,mt,cmb", true, false, "mssm-tanb", 0., 60., false, "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV", true, false)
 ## comparison plots (per category)
-
+.x HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C+("limits_mA-tanb.root", "btag,nobtag,cmb", true, false, "mssm-tanb", 0., 60., false, "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV", true, false)
 
 (5) launch/plot 1d limits
 ## launch ggH 1d limit
-submit.py --asymptotic --physics-model='ggH' LIMITS-yymmdd-mssm/bbb-ggH/*/*
+lxb: submit.py --asymptotic --physics-model='ggH' LIMITS-yymmdd-mssm/bbb-ggH/*/*
+lxq: submit.py --asymptotic --physics-model='ggH' LIMITS-yymmdd-mssm/bbb-ggH/*/* --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
 ## plot ggH 1d limit
 plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-ggH.py LIMITS-yymmdd-mssm/bbb-ggH/*/* [expecteOnly=1]
 ## launch ggH 1d limit
-submit.py --asymptotic --physics-model='bbH' LIMITS-yymmdd-mssm/bbb-bbH/*/*
+lxb: submit.py --asymptotic --physics-model='bbH' LIMITS-yymmdd-mssm/bbb-bbH/*/*
+lxq: submit.py --asymptotic --physics-model='bbH' LIMITS-yymmdd-mssm/bbb-bbH/*/* --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
 ## plot ggH 1d limit
 plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-bbH.py LIMITS-yymmdd-mssm/bbb-bbH/*/* [expecteOnly=1]
 
 
 (6) launch/collect/plot 2d limits
 ## launch ggH-bbH 2d limits
-submit.py --multidim-fit --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-ggH-bbH/*
+lxb: submit.py --multidim-fit --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-ggH-bbH/*
+lxq: submit.py --multidim-fit --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-ggH-bbH/* --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
 ## collect ggH-bbH 2d limits
 limit.py --collect --multidim-fit --physics-model="ggH-bbH" LIMITS-yymmdd-mssm/bbb-ggH-bbH/*
 ## plotting
