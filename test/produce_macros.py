@@ -124,6 +124,7 @@ class Analysis:
              line = line.replace("$DEFINE_MSSM", "#define MSSM" if self.analysis == "mssm" else "")
              line = line.replace("$DEFINE_DROP_SIGNAL", "#define DROP_SIGNAL" if self.drop_signal(self.category) else "")
              line = line.replace("$DEFINE_HWWBG", "#define HWW_BG" if options.hwwbg else "")
+             line = line.replace("$BLIND", "false" if config.unblind else "true")
              line = line.replace("$DEFINE_EXTRA_SAMPLES", "#define EXTRA_SAMPLES" if self.high_stat_category(self.category) else "")
              line = line.replace(template_name, output_name)
              line = line.replace("$HISTFILE", self.histfile)
