@@ -36,7 +36,6 @@ Authors: Jose Benitez, Lorenzo Bianchini
 void sobCombine(TString name, TString* Input,const char* dataset , const char* channel, const char* cat, int weight=1, float muValue=1.0, bool log=false, int mass=125, int tanb=0)
 {
   if(tanb==0){
-    std::cout << "combine" << std::endl;
     sobWeightedCombine(Input,name,weight,muValue);
     /*                                     |-> mu value from the fit to Data
 			 |     |     |->option to apply or not apply weights
@@ -56,7 +55,7 @@ void sobCombine(TString name, TString* Input,const char* dataset , const char* c
   }
 }
 
-void sobWeightedCombineAll(float muValue=1.02, bool log=false, int mass=125, int tanb=0)
+void sobWeightedCombineAll(float muValue=1.10, bool log=false, int mass=125, int tanb=0)
 {
   SetStyle();
 
