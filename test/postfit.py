@@ -6,7 +6,7 @@ Script to modify a datacard shape file to match the post-fit values.
 
 See --help for usage.
 
-Authors: R. Wolf, A. Hinzmann, E. Friis
+Authors: R. Wolf, A. Hinzmann, E. Friis, M. Verzetti
 
 '''
 
@@ -14,9 +14,12 @@ from RecoLuminosity.LumiDB import argparse
 import logging
 from DatacardUtils import parse_dcard
 import sys
+import math
 
 log = logging.getLogger('postfit')
 
+def quad(*args):
+    return math.sqrt(sum(args))
 
 def reset_bin_errors(histogram):
     ''' Reset a histograms errors to zero '''
@@ -35,8 +38,10 @@ def apply_postfit_normalization(histogram, scale, scale_uncertainty):
     histogram.Scale(scale)
     for i in range(1, histogram.GetNbinsX() + 1):
         content = histogram.GetBinContent(i)
-        error = histogram.GetBinError(i)
-        error += (scale_uncertainty * content) ** 2
+        error = quad(
+            histogram.GetBinError(i),
+            (scale_uncertainty * content)
+        )
         histogram.SetBinError(i, error)
 
 
@@ -53,30 +58,30 @@ def apply_postfit_shape(histogram, up, down, shift, shift_err):
         central = histogram.GetBinContent(bin)
         value = 1
         if shift > 0 and central > 0 and upper != central:
-            if central:
                 value = shift * (upper / central - 1) + 1
         elif shift < 0 and central > 0 and lower != central:
-            if lower:
-                value = shift * (central / lower - 1) + 1
+                value = shift * (lower / central - 1) + 1
         if value != 1:
-            current = histogram.GetBinContent(bin)
-            histogram.SetBinContent(bin, current)
+            central *= value
+            histogram.SetBinContent(bin, central)
 
         uncertainty = 1
-        if down.GetBinContent(bin) and histogram.GetBinContent(bin):
+        if lower and central: #central is the shifted value!
             uncertainty = max(
                 uncertainty,
-                histogram.GetBinContent(bin) / down.GetBinContent(bin),
-                down.GetBinContent(bin) / histogram.GetBinContent(bin))
+                central / lower,
+                lower / central)
 
-        if up.GetBinContent(bin) and histogram.GetBinContent(bin):
+        if upper and central:
             uncertainty = max(
                 uncertainty,
-                histogram.GetBinContent(bin) / up.GetBinContent(bin),
-                up.GetBinContent(bin) / histogram.GetBinContent(bin))
+                central / upper,
+                upper / central)
         uncertainty = shift_err * min(2, uncertainty - 1)
-        error = histogram.GetBinError(bin)
-        error += (histogram.GetBinContent(bin) * uncertainty) ** 2
+        error = quad( 
+            histogram.GetBinError(bin),
+            (histogram.GetBinContent(bin) * uncertainty)
+        )
         histogram.SetBinError(bin, error)
 
 if __name__ == "__main__":
@@ -103,6 +108,7 @@ if __name__ == "__main__":
 
     log.info("Loading input shape file %s", args.shapes)
     shapes = ROOT.TFile(args.shapes, "UPDATE")
+    from pdb import set_trace 
 
     for bin in args.bins:
         # We rely that the histograms are in the "<bin name>/" directory.
@@ -123,16 +129,13 @@ if __name__ == "__main__":
             if isinstance(histo, ROOT.TH1):
                 histogram_names.add(name)
 
+        set_trace()
         for name in histogram_names:
             histo = bin_directory.Get(name)
             #log.debug("Found histogram: %s", name)
             # Start the errors from scratch
             reset_bin_errors(histo)
-            # Apply normalization scale
-            if name in p_weight:
-                log.info("Scaling %s/%s by %0.3f +- %0.3f",
-                         bin, name, p_weight[name], p_unc[name])
-                apply_postfit_normalization(histo, p_weight[name], p_unc[name])
+
             # Apply shape shifts
             if name in p_shape_weight:
                 for shape, shape_shift in p_shape_weight[name].iteritems():
@@ -141,4 +144,10 @@ if __name__ == "__main__":
                     up = bin_directory.Get(name + "_" + shape + "Up")
                     down = bin_directory.Get(name + "_" + shape + "Down")
                     apply_postfit_shape(histo, up, down, shape_shift, 0)
+
+            # Apply normalization scale
+            if name in p_weight:
+                log.info("Scaling %s/%s by %0.3f +- %0.3f",
+                         bin, name, p_weight[name], p_unc[name])
+                apply_postfit_normalization(histo, p_weight[name], p_unc[name])
             histo.Write(name, ROOT.TObject.kOverwrite)
