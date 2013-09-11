@@ -42,6 +42,7 @@ int main(int argc, char* argv[]){
   string input2, name2;
   bool splusb_2;
   bool draw_difference;
+  bool draw_first;
   string output;
   vector<string> filter_regex_str;
 
@@ -58,6 +59,7 @@ int main(int argc, char* argv[]){
     ("sb1",                   po::value<bool>(&splusb_1)->required(), "Use s+b pulls from the first file? [REQUIRED]")
     ("sb2",                   po::value<bool>(&splusb_2)->required(), "Use s+b pulls from the second file? [REQUIRED]")
     ("draw_difference",       po::value<bool>(&draw_difference)->default_value(true), "Draw the difference between inputs")
+    ("draw_first",            po::value<bool>(&draw_first)->default_value(false), "Draw only first")
     ("filter_regex",          po::value<vector<string>>(&filter_regex_str), "A regular expression to filter pulls");
   po::variables_map vm;
   po::store(po::command_line_parser(argc, argv).options(help_config).allow_unregistered().run(), vm);
@@ -211,7 +213,8 @@ int main(int argc, char* argv[]){
   title_latex->SetNDC();
   title_latex->SetTextSize(0.03);
   title_latex->SetTextAlign(31);
-  title_latex->DrawLatex(0.95,0.965, (std::string(name1) + (splusb_1?"(s+b)":"(b-only)") + " vs. #color[4]{" + name2 + "}" + (splusb_2?"(s+b)":"(b-only)")).c_str());
+  if(!draw_first) title_latex->DrawLatex(0.95,0.965, (std::string(name1) + (splusb_1?"(s+b)":"(b-only)") + " vs. #color[4]{" + name2 + "}" + (splusb_2?"(s+b)":"(b-only)")).c_str());
+  else title_latex->DrawLatex(0.95,0.965, (std::string(name1) + (splusb_1?"(s+b)":"(b-only)")).c_str());
   canv.Update();
   if (output == "") output = ("compare_pulls_"+name1+(splusb_1?"_sb_":"_b_")+name2+(splusb_2?"_sb":"_b"));
   canv.SaveAs((output+".pdf").c_str());
