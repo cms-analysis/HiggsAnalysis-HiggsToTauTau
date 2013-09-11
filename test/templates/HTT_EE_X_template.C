@@ -34,7 +34,7 @@ $DEFINE_MSSM
    directory. The key words are replaced by proper values.
 */
 
-static const bool BLIND_DATA = true; //false;
+static const bool BLIND_DATA = $BLIND; //false;
 static const bool FULLPLOTS = true; //true;
 static const bool CONVERVATIVE_CHI2 = false;
 static const float UPPER_EDGE = 1495; // 695; 1495;
