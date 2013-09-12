@@ -1,12 +1,33 @@
-mmt simulated lumi_8TeV      1.042
-mmt simulated CMS_eff_m 1.02
-mmt simulated CMS_eff_t 1.08
-mmt simulated CMS_scale_t 1.03
-mmt simulated CMS_fake_b_8TeV 1.01
-mmt zz pdf_qqbar 1.033
-mmt zz QCDscale_VV 1.023
-mmt wz pdf_qqbar 1.04
-mmt wz QCDscale_VV 1.04
-mmt signal pdf_qqbar 1.034
-mmt signal QCDscale_VH 1.004
-mmt fakes CMS_vhtt_mmt_fakes_8TeV 0.89
+###########################################################################
+# unc.vals: specification of uncertainty values by category, sample, and uncertainty name
+# Example:
+# emu_vbf,emu_novbf,emu_boost     signal,EWK              lumi            1.045
+
+mmtCatHigh,mmtCatLow simulated lumi_8TeV      1.026
+
+# Trigger uncertainties
+mmtCatHigh,mmtCatLow simulated CMS_trigger_m 1.01
+
+# Efficiency uncertainties
+mmtCatHigh,mmtCatLow simulated CMS_eff_m 1.04
+mmtCatHigh,mmtCatLow simulated CMS_eff_t 1.06
+
+# Scale uncertainties
+mmtCatHigh,mmtCatLow simulated CMS_scale_t 1.03
+
+# Efficiency of b-jet veto
+mmtCatHigh,mmtCatLow simulated CMS_fake_b_8TeV 1.01
+
+# Background uncertainties - due to the theoretical unc. on the xsection
+mmtCatHigh,mmtCatLow zz pdf_qqbar 1.033
+mmtCatHigh,mmtCatLow zz QCDscale_VV 1.023
+
+mmtCatHigh,mmtCatLow wz pdf_qqbar 1.04
+mmtCatHigh,mmtCatLow wz QCDscale_VV 1.04
+
+mmtCatHigh,mmtCatLow signal pdf_qqbar 1.023
+mmtCatHigh,mmtCatLow signal QCDscale_VH 1.01
+
+
+# Stat shape uncertainties
+mmtCatHigh,mmtCatLow fakes CMS_vhtt_mmt_fakes_8TeV 1.50

@@ -1,13 +1,14 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 muTau_vbf_tight		signal		             	lumi_7TeV            				1.022
-muTau_vbf_tight   	ggH				pdf_gg    					1.08
-muTau_vbf_tight   	qqH				pdf_qqbar					1.03
+muTau_vbf_tight   	ggH				pdf_gg    					1.097
+muTau_vbf_tight   	qqH				pdf_qqbar					1.036
 muTau_vbf_tight   	VH				pdf_qqbar					1.02
-muTau_vbf_tight		ggH				QCDscale_ggH2in 				1.30
-muTau_vbf_tight		qqH				QCDscale_qqH					1.04
+muTau_vbf_tight		ggH				QCDscale_ggH2in 				0.70
+muTau_vbf_tight		qqH				QCDscale_qqH					1.01
 muTau_vbf_tight		VH 	                        QCDscale_VH					1.04
-muTau_vbf_tight		signal				UEPS						1.04
+muTau_vbf_tight		ggH				UEPS						0.881
+muTau_vbf_tight		qqH,VH				UEPS						0.986
 muTau_vbf_tight 	signal,ZTT,ZL,ZJ,TT,VV 		CMS_eff_m 					1.02
 muTau_vbf_tight 	signal,ZTT,TT,VV 		CMS_eff_t_mutau_7TeV 				1.08
 muTau_vbf_tight 	signal,ZTT,TT,VV 		CMS_eff_t_mutau_high_7TeV 			1.015

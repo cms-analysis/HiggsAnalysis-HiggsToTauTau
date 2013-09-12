@@ -1,15 +1,14 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-eleTau_vbf_loose		signal		             	lumi_8TeV            				1.042
-eleTau_vbf_loose   		ggH				pdf_gg    					1.08
-eleTau_vbf_loose   		qqH				pdf_qqbar					1.03
+eleTau_vbf_loose		signal		             	lumi_8TeV            				1.022
+eleTau_vbf_loose   		ggH				pdf_gg    					1.097
+eleTau_vbf_loose   		qqH				pdf_qqbar					1.036
 eleTau_vbf_loose   		VH				pdf_qqbar					1.04
-eleTau_vbf_loose		ggH				QCDscale_ggH2in 				1.30
-eleTau_vbf_loose		qqH				QCDscale_qqH					1.04
+eleTau_vbf_loose		ggH				QCDscale_ggH2in 				0.772
+eleTau_vbf_loose		qqH				QCDscale_qqH					1.018
 eleTau_vbf_loose		VH 	                        QCDscale_VH					1.04
-eleTau_vbf_loose		ggH				QCDscale_ggHVBFTight 				0.87	
-eleTau_vbf_loose		qqH				QCDscale_qqHVBFTight 				0.96
-eleTau_vbf_loose		signal				UEPS						1.04
+eleTau_vbf_loose		qqH,VH				UEPS						0.988
+eleTau_vbf_loose		ggH				UEPS						0.893
 eleTau_vbf_loose 		signal,ZTT,ZL,ZJ,TT,VV 		CMS_eff_e 					1.02
 eleTau_vbf_loose 		signal,ZTT,TT,VV 		CMS_eff_t_etau_8TeV 				1.08
 eleTau_vbf_loose 		signal,ZTT,TT,VV 		CMS_eff_t_etau_medium_8TeV 			1.01

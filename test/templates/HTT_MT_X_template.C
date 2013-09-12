@@ -35,7 +35,7 @@ $DEFINE_MSSM
    directory. The key words are replaced by proper values.
 */
 
-static const bool BLIND_DATA = false; //false;
+static const bool BLIND_DATA = $BLIND; //false;
 static const bool FULLPLOTS = true; //true;
 static const bool CONVERVATIVE_CHI2 = false;
 static const float UPPER_EDGE = 1495; // 695; 1495;
@@ -137,18 +137,29 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
 
   // determine category tag
-  const char* category_extra = ""; const char* category_extra2 = "";
-  if(std::string(directory) == std::string("muTau_0jet_low"             )){ category_extra = "0 jet, p_{T}(#tau) low";           }
-  if(std::string(directory) == std::string("muTau_0jet_medium"          )){ category_extra = "0 jet, p_{T}(#tau) medium";        }
-  if(std::string(directory) == std::string("muTau_0jet_high"            )){ category_extra = "0 jet, p_{T}(#tau) high";          }
-  if(std::string(directory) == std::string("muTau_1jet_medium"          )){ category_extra = "1 jet, p_{T}(#tau) medium";        }
-  if(std::string(directory) == std::string("muTau_1jet_high_lowhiggs"   )){ category_extra = "1 jet,";                           }
-  if(std::string(directory) == std::string("muTau_1jet_high_lowhiggs"   )){ category_extra2= "p_{T}(#tau) high, p_{T}(H) low";   }
-  if(std::string(directory) == std::string("muTau_1jet_high_mediumhiggs")){ category_extra = "1 jet,";                           }
-  if(std::string(directory) == std::string("muTau_1jet_high_mediumhiggs")){ category_extra2= "p_{T}(#tau) high, p_{T}(H) med.";  }
-  if(std::string(directory) == std::string("muTau_vbf_loose"            )){ category_extra = "2 jet (VBF), loose";               }
-  if(std::string(directory) == std::string("muTau_nobtag"               )){ category_extra = "No B-Tag";                         }
-  if(std::string(directory) == std::string("muTau_btag"                 )){ category_extra = "B-Tag";                            }
+  const char* category = ""; const char* category_extra = ""; const char* category_extra2 = "";
+  if(std::string(directory) == std::string("muTau_0jet_low"             )){ category = "#mu#tau_{h}, 0 jet";          }    
+  if(std::string(directory) == std::string("muTau_0jet_low"             )){ category_extra = "p_{T}(#tau) low";          }    
+  if(std::string(directory) == std::string("muTau_0jet_medium"          )){ category = "#mu#tau_{h}, 0 jet";          }    
+  if(std::string(directory) == std::string("muTau_0jet_medium"          )){ category_extra = "p_{T}(#tau) medium";       }    
+  if(std::string(directory) == std::string("muTau_0jet_high"            )){ category = "#mu#tau_{h}, 0 jet";          }    
+  if(std::string(directory) == std::string("muTau_0jet_high"            )){ category_extra = "p_{T}(#tau) high";         }    
+  if(std::string(directory) == std::string("muTau_1jet_medium"          )){ category = "#mu#tau_{h}, 1 jet";          }    
+  if(std::string(directory) == std::string("muTau_1jet_medium"          )){ category_extra = "p_{T}(#tau) medium";       }    
+  if(std::string(directory) == std::string("muTau_1jet_high_lowhiggs"   )){ category = "#mu#tau_{h}, 1 jet";                          }    
+  if(std::string(directory) == std::string("muTau_1jet_high_lowhiggs"   )){ category_extra= "p_{T}(#tau) high";  }
+  if(std::string(directory) == std::string("muTau_1jet_high_lowhiggs"   )){ category_extra2= "p_{T}(H) low";  }
+  if(std::string(directory) == std::string("muTau_1jet_high_mediumhiggs")){ category = "#mu#tau_{h}, 1 jet";                          }    
+  if(std::string(directory) == std::string("muTau_1jet_high_mediumhiggs")){ category_extra= "p_{T}(#tau) high"; }
+  if(std::string(directory) == std::string("muTau_1jet_high_mediumhiggs")){ category_extra2= "p_{T}(H) med."; }
+  if(std::string(directory) == std::string("muTau_vbf_loose"            )){ category = "#mu#tau_{h}, 2 jet";          }    
+  if(std::string(directory) == std::string("muTau_vbf_loose"            )){ category_extra = "VBF, loose";              }    
+  if(std::string(directory) == std::string("muTau_vbf_tight"            )){ category = "#mu#tau_{h}, 2 jet";          }    
+  if(std::string(directory) == std::string("muTau_vbf_tight"            )){ category_extra = "VBF, tight";              }    
+  if(std::string(directory) == std::string("muTau_nobtag"               )){ category = "#mu#tau_{h}";          }    
+  if(std::string(directory) == std::string("muTau_nobtag"               )){ category_extra = "No B-Tag";                        }    
+  if(std::string(directory) == std::string("muTau_btag"                 )){ category = "#mu#tau_{h}";          }    
+  if(std::string(directory) == std::string("muTau_btag"                 )){ category_extra = "B-Tag";                           }
 
   const char* dataset;
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV";}
@@ -363,18 +374,20 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   canv->RedrawAxis();
 
   //CMSPrelim(dataset, "#tau_{#mu}#tau_{h}", 0.17, 0.835);
-  CMSPrelim(dataset, "", 0.16, 0.835);  
-  TPaveText* chan     = new TPaveText(0.20, 0.76+0.061, 0.32, 0.76+0.161, "NDC");
+  CMSPrelim(dataset, "", 0.16, 0.835);
+  TPaveText* chan     = new TPaveText(0.20, (category_extra2 && category_extra2[0]=='\0') ? 0.65+0.061 : 0.65+0.061, 0.32, 0.75+0.161, "tlbrNDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
   chan->SetTextAlign(   12 );
   chan->SetTextSize ( 0.05 );
   chan->SetTextColor(    1 );
   chan->SetTextFont (   62 );
-  chan->AddText("#mu#tau_{h}");
+  chan->AddText(category);
+  chan->AddText(category_extra);
+  chan->AddText(category_extra2);
   chan->Draw();
 
-  TPaveText* cat      = new TPaveText(0.20, 0.71+0.061, 0.32, 0.71+0.161, "NDC");
+/*  TPaveText* cat      = new TPaveText(0.20, 0.71+0.061, 0.32, 0.71+0.161, "NDC");
   cat->SetBorderSize(   0 );
   cat->SetFillStyle(    0 );
   cat->SetTextAlign(   12 );
@@ -393,7 +406,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   cat2->SetTextFont (   62 );
   cat2->AddText(category_extra2);
   cat2->Draw();
-
+*/
 #ifdef MSSM
   TPaveText* massA      = new TPaveText(0.55, 0.50+0.061, 0.95, 0.50+0.161, "NDC");
   massA->SetBorderSize(   0 );
@@ -501,7 +514,8 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   stat1->SetTextSize ( 0.05 );
   stat1->SetTextColor(    1 );
   stat1->SetTextFont (   62 );
-  stat1->AddText(TString::Format("#chi^{2}/ndf=%.3f,  P(#chi^{2})=%.3f,  P(KS)=%.3f", chi2ndof, chi2prob, ksprob));
+  stat1->AddText(TString::Format("#chi^{2}/ndf=%.3f,  P(#chi^{2})=%.3f", chi2ndof, chi2prob));
+  //stat1->AddText(TString::Format("#chi^{2}/ndf=%.3f,  P(#chi^{2})=%.3f, P(KS)=%.3f", chi2ndof, chi2prob, ksprob));
   stat1->Draw();
 
   /*

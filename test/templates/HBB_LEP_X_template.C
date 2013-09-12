@@ -38,8 +38,8 @@ $DEFINE_MSSM
    are supposed to be made.
 */
 
-static const bool BLIND_DATA = false; //false;
-static const bool BLIND_DATA = false; //true;
+static const bool BLIND_DATA = $BLIND; //false;
+static const bool FULLPLOTS = false; //true;
 float blinding_MSSM(float mass){ return (100<mass); }
 float maximum(TH1F* h, bool LOG=false){
   if(LOG){

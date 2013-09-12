@@ -1,4 +1,4 @@
-mumu_1jet_low		  	signal,Dibosons,WJets           lumi_8TeV				1.045
+mumu_1jet_low		  	signal,Dibosons,WJets           lumi_8TeV				1.022
 mumu_1jet_low			signal,ZTT,TTJ,WJets,Dibosons 	CMS_eff_m				1.04
 mumu_1jet_low			signal,TTJ,Dibosons		CMS_scale_j_8TeV			0.5
 mumu_1jet_low			signal,TTJ,Dibosons   		CMS_htt_scale_met_8TeV			1.035

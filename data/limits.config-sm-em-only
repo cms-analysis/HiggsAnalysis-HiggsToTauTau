@@ -1,0 +1,23 @@
+[inputs]
+
+em = MIT
+
+
+[sm]
+
+periods = 7TeV 8TeV
+channels = em 
+
+em_categories_7TeV = 0 1 2 3 4 
+em_categories_8TeV = 0 1 2 3 4 5
+em_names = 0jet_low 0jet_high 1jet_low 1jet_high vbf_loose vbf_tight
+
+
+[bbb-sm]
+
+threshold = 0.1
+
+em_categories_7TeV = 01,03,04 04
+em_categories_8TeV = 01,03,04,05 04,05
+
+em_processes = Fakes EWK

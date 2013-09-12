@@ -1,0 +1,24 @@
+[inputs]
+
+ee = DESY-KIT
+
+
+[sm]
+
+periods = 7TeV 8TeV
+channels = ee 
+
+ee_categories_7TeV = 0 1 2 3 4
+ee_categories_8TeV = 0 1 2 3 4
+
+ee_names = 0jet_low 0jet_high 1jet_low 1jet_high vbf
+
+
+[bbb-sm]
+
+threshold = 0.1
+
+ee_categories_7TeV = 01,03,04
+ee_categories_8TeV = 01,03,04
+
+ee_processes = ZTT,ZEE,TTJ
