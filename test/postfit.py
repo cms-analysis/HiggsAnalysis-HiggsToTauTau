@@ -60,7 +60,7 @@ def apply_postfit_shape(histogram, up, down, shift, shift_err):
         if shift > 0 and central > 0 and upper != central:
                 value = shift * (upper / central - 1) + 1
         elif shift < 0 and central > 0 and lower != central:
-                value = shift * (lower / central - 1) + 1
+                value = abs(shift) * (lower / central - 1) + 1
         if value != 1:
             central *= value
             histogram.SetBinContent(bin, central)
