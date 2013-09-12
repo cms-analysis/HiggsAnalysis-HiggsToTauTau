@@ -28,11 +28,9 @@ muTau_1jet_high_mediumhiggs	ZTT,ZJ,ZL			CMS_htt_zttNorm_8TeV 					1.03
 muTau_1jet_high_mediumhiggs  	 ZTT				CMS_htt_extrap_ztt_mutau_1jet_high_mediumhiggs_8TeV	1.05
 muTau_1jet_high_mediumhiggs	TT				CMS_htt_ttbarNorm_8TeV					1.10
 muTau_1jet_high_mediumhiggs	VV				CMS_htt_DiBosonNorm_8TeV				1.15
-##UPDATE: 10% Ersatz, 13% stat
 muTau_1jet_high_mediumhiggs	W				CMS_htt_WNorm_mutau_1jet_high_mediumhiggs_8TeV		1.16
 muTau_1jet_high_mediumhiggs   	QCD				CMS_htt_QCDSyst_mutau_1jet_high_mediumhiggs_8TeV	1.10
 muTau_1jet_high_mediumhiggs	ZJ				CMS_htt_ZJetFakeTau_mutau_1jet_high_mediumhiggs_8TeV	1.20
 muTau_1jet_high_mediumhiggs	ZL				CMS_htt_ZLeptonFakeTau_mutau_8TeV			1.30
-##UPDATE: stat. uncertainty on ZL estimate
 muTau_1jet_high_mediumhiggs	ZL				CMS_htt_ZLeptonFakeTau_mutau_1jet_high_mediumhiggs_8TeV 1.26
 muTau_1jet_high_mediumhiggs	ZL				CMS_htt_ZLScale_mutau_8TeV              		1.00

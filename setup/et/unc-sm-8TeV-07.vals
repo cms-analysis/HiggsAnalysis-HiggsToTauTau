@@ -27,18 +27,14 @@ eleTau_vbf_tight	   	TT,W		    		CMS_htt_scale_met_8TeV				1.03
 eleTau_vbf_tight		ZTT,ZL,ZJ			CMS_htt_zttNorm_8TeV 				1.03
 eleTau_vbf_tight		TT				CMS_htt_ttbarNorm_8TeV				1.08
 eleTau_vbf_tight		TT				CMS_htt_ttbarNorm_etau_vbf_tight_8TeV		1.33
-##UPDATE: Not sure why this is 100%. Set back to 15%.
 eleTau_vbf_tight		VV				CMS_htt_DiBosonNorm_8TeV			1.15
-##UPDATE: New nuisance for VV stat. uncertainty
 eleTau_vbf_tight		VV				CMS_htt_DiBosonNorm_etau_vbf_tight_8TeV		1.33
-##UPDATE: 25% Ersatz, 32% stat, 39% relaxed extrap. cuts
 eleTau_vbf_tight		W				CMS_htt_WNorm_etau_vbf_tight_8TeV		1.56
 eleTau_vbf_tight		ZTT				CMS_htt_extrap_ztt_etau_vbf_tight_8TeV		1.10
 eleTau_vbf_tight		QCD				CMS_htt_QCDSyst_etau_vbf_tight_8TeV		1.30
 eleTau_vbf_tight		ZL				CMS_htt_ZLeptonFakeTau_etau_low_8TeV		1.06
 eleTau_vbf_tight		ZL				CMS_htt_ZLeptonFakeTau_etau_medium_8TeV		1.08
 eleTau_vbf_tight		ZL				CMS_htt_ZLeptonFakeTau_etau_high_8TeV		1.06
-##UPDATE: stat. uncertainty on ZL estimate
 eleTau_vbf_tight		ZL				CMS_htt_ZLeptonFakeTau_etau_vbf_tight_8TeV	1.74
 eleTau_vbf_tight		ZJ				CMS_htt_ZJetFakeTau_etau_vbf_tight_8TeV		1.20
 eleTau_vbf_tight        	ZL				CMS_htt_ZLScale_etau_8TeV	                1.00

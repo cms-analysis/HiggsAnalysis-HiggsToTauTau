@@ -28,7 +28,6 @@ muTau_1jet_high_lowhiggs	ZTT,ZJ,ZL			CMS_htt_zttNorm_8TeV 					1.03
 muTau_1jet_high_lowhiggs     	ZTT				CMS_htt_extrap_ztt_mutau_1jet_high_lowhiggs_8TeV	1.05
 muTau_1jet_high_lowhiggs	TT				CMS_htt_ttbarNorm_8TeV					1.10
 muTau_1jet_high_lowhiggs	VV				CMS_htt_DiBosonNorm_8TeV				1.15
-##UPDATE: 10% Ersatz, 5.1% stat
 muTau_1jet_high_lowhiggs	W				CMS_htt_WNorm_mutau_1jet_high_lowhiggs_8TeV		1.11
 muTau_1jet_high_lowhiggs     	QCD				CMS_htt_QCDSyst_mutau_1jet_high_lowhiggs_8TeV		1.10
 muTau_1jet_high_lowhiggs     	QCD				CMS_htt_QCDShape_mutau_1jet_high_lowhiggs_8TeV		1.00
