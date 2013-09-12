@@ -293,14 +293,16 @@ void addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std
 
   //Define the fit function
   RooRealVar lM("m","m" ,0,5000);   //lM.setBinning(lBinning);
-  RooRealVar lA("a","a" ,50,  0.1,100);
-  RooRealVar lB("b","b" ,0.0 , -10.5,10.5); //lB.setConstant(kTRUE);
+  RooRealVar lA("a","a" ,50,  0.1,200);
+  RooRealVar lB("b","b" ,50 , -10500,10500); //lB.setConstant(kTRUE);
   RooDataHist *pH0  =  new RooDataHist("Data","Data" ,RooArgList(lM),lH0);
-  RooGenericPdf *lFit  = 0; lFit = new RooGenericPdf("genPdf","exp(-m/(a+b*m))",RooArgList(lM,lA,lB));
-  if(iFitModel == 1) lFit = new RooGenericPdf("genPdf","exp(-a*pow(m,b))",RooArgList(lM,lA,lB));
+  TString iStr = TString::Format("%.0f",iFirst);
+  TString fn = "exp(-(m-"+iStr+")/(a+0.001*b*(m-"+iStr+")))";
+  RooGenericPdf *lFit  = 0; lFit = new RooGenericPdf("genPdf",fn,RooArgList(lM,lA,lB));
+  if(iFitModel == 1) lFit = new RooGenericPdf("genPdf","exp(-a*pow(m,0.001*b))",RooArgList(lM,lA,lB));
   if(iFitModel == 1) {lA.setVal(0.3); lB.setVal(0.5);}
-  if(iFitModel == 2) lFit = new RooGenericPdf("genPdf","a*exp(b*m)",RooArgList(lM,lA,lB));
-  if(iFitModel == 3) lFit = new RooGenericPdf("genPdf","a/pow(m,b)",RooArgList(lM,lA,lB));
+  if(iFitModel == 2) lFit = new RooGenericPdf("genPdf","a*exp(0.001*b*m)",RooArgList(lM,lA,lB));
+  if(iFitModel == 3) lFit = new RooGenericPdf("genPdf","a/pow(m,0.001*b)",RooArgList(lM,lA,lB));
   RooFitResult  *lRFit = 0;
   double lFirst = iFirst;
   double lLast  = iLast;
@@ -426,6 +428,11 @@ void addNuisanceWithToys(std::string iFileName,std::string iChannel,std::string 
   double lFirst = iFirst;
   double lLast  = iLast;
 
+ // if (!iVerbose) {
+    RooMsgService::instance().setStreamStatus(0,false);
+    RooMsgService::instance().setStreamStatus(1,false);
+    RooMsgService::instance().setSilentMode(true);
+ // }
   std::cout << "===================================================================================================================================================" <<std::endl;
   std::cout << "Using Initial fit model: " << iFitModel << ", fitting range: " << iFirst << "-" << iLast << " , using alternative fit model: " << iFitModel1 << std::endl; 
   std::cout << "===================================================================================================================================================" <<std::endl;
@@ -448,13 +455,19 @@ void addNuisanceWithToys(std::string iFileName,std::string iChannel,std::string 
 
   lSig->Rebin(10);  
 
+  TString iStr = TString::Format("%.0f",iFirst);
+  TString fn = "exp(-(m-"+iStr+")/(a+0.001*b*(m-"+iStr+")))";
+  TString iStr1 = TString::Format("%.0f",iFirst);
+  TString fn1 = "exp(-(m-"+iStr+")/(a1+0.001*b1*(m-"+iStr+")))";
+  
+  
   //Define the fit function
   RooRealVar lM("m","m" ,0,5000);
   lM.setRange(lFirst,lLast);
   RooRealVar lA("a","a" ,50,  0.1,200);
-  RooRealVar lB("b","b" ,0.0 , -10.5,10.5);
+  RooRealVar lB("b","b" ,50 , -10500,10500);
   RooRealVar lA1("a1","a1" ,50,  0.1, 200);
-  RooRealVar lB1("b1","b1" ,0.0 , -10.5,10.5);
+  RooRealVar lB1("b1","b1" ,50 , -10500,10500);
 
   RooDataHist *pH0  =  new RooDataHist("Data","Data" ,RooArgList(lM),lH0);
   double lNB0 = lH0->Integral(lH0->FindBin(lFirst),lH0->FindBin(lLast));
@@ -466,21 +479,21 @@ void addNuisanceWithToys(std::string iFileName,std::string iChannel,std::string 
   
   //Generate the "default" fit model 
 
-  RooGenericPdf *lFit  = 0; lFit = new RooGenericPdf("genPdf","exp(-m/(a+b*m))",RooArgList(lM,lA,lB));
-  if(iFitModel == 1) lFit = new RooGenericPdf("genPdf","exp(-a*pow(m,b))",RooArgList(lM,lA,lB));
+  RooGenericPdf *lFit  = 0; lFit = new RooGenericPdf("genPdf",fn,RooArgList(lM,lA,lB));
+  if(iFitModel == 1) lFit = new RooGenericPdf("genPdf","exp(-a*pow(m,0.001*b))",RooArgList(lM,lA,lB));
   if(iFitModel == 1) {lA.setVal(0.3); lB.setVal(0.5);}
-  if(iFitModel == 2) lFit = new RooGenericPdf("genPdf","a*exp(b*m)",RooArgList(lM,lA,lB));
+  if(iFitModel == 2) lFit = new RooGenericPdf("genPdf","a*exp(0.001*b*m)",RooArgList(lM,lA,lB));
   //if(iFitModel == 2) {lA.setVal(0.01); lA.setRange(0,10); }
-  if(iFitModel == 3) lFit = new RooGenericPdf("genPdf","a/pow(m,b)",RooArgList(lM,lA,lB));
+  if(iFitModel == 3) lFit = new RooGenericPdf("genPdf","a/pow(m,0.001*b)",RooArgList(lM,lA,lB));
  
   // Generate the alternative model
   
-  RooGenericPdf *lFit1  = 0; lFit1 = new RooGenericPdf("genPdf","exp(-m/(a1+b1*m))",RooArgList(lM,lA1,lB1));
-  if(iFitModel1 == 1) lFit1 = new RooGenericPdf("genPdf","exp(-a1*pow(m,b1))",RooArgList(lM,lA1,lB1));
+  RooGenericPdf *lFit1  = 0; lFit1 = new RooGenericPdf("genPdf",fn1,RooArgList(lM,lA1,lB1));
+  if(iFitModel1 == 1) lFit1 = new RooGenericPdf("genPdf","exp(-a1*pow(m,0.001*b1))",RooArgList(lM,lA1,lB1));
   if(iFitModel1 == 1) {lA1.setVal(0.3); lB1.setVal(0.5);}
-  if(iFitModel1 == 2) lFit1 = new RooGenericPdf("genPdf","a1*exp(b1*m)",RooArgList(lM,lA1,lB1));
+  if(iFitModel1 == 2) lFit1 = new RooGenericPdf("genPdf","a1*exp(0.001*b1*m)",RooArgList(lM,lA1,lB1));
   //if(iFitModel1 == 2) {lA1.setVal(0.01); lA1.setRange(0,10); }
-  if(iFitModel1 == 3) lFit1 = new RooGenericPdf("genPdf","a1/pow(m,b1)",RooArgList(lM,lA1,lB1));
+  if(iFitModel1 == 3) lFit1 = new RooGenericPdf("genPdf","a1/pow(m,0.001*b1)",RooArgList(lM,lA1,lB1));
   
   //=============================================================================================================================================
   //Perform the tail fit and generate the shift up and down histograms
@@ -537,12 +550,12 @@ void addNuisanceWithToys(std::string iFileName,std::string iChannel,std::string 
  
   //Generate the background pdf corresponding to the final result of the tail fit
  
- RooGenericPdf *lFitFinal  = 0; lFitFinal = new RooGenericPdf("genPdf","exp(-m/(a+b*m))",RooArgList(lM,lA,lB));
-  if(iFitModel == 1) lFitFinal = new RooGenericPdf("genPdf","exp(-a*pow(m,b))",RooArgList(lM,lA,lB));
+ RooGenericPdf *lFitFinal  = 0; lFitFinal = new RooGenericPdf("genPdf",fn,RooArgList(lM,lA,lB));
+  if(iFitModel == 1) lFitFinal = new RooGenericPdf("genPdf","exp(-a*pow(m,0.001*b))",RooArgList(lM,lA,lB));
   //if(iFitModel == 2) lFitFinal = new RooGenericPdf("genPdf","a*exp(b*m)",RooArgList(lM,lA,lB));
-  if(iFitModel == 2) lFitFinal = new RooGenericPdf("genPdf","exp(b*m)",RooArgList(lM,lB));
-  if(iFitModel == 3) lFitFinal = new RooGenericPdf("genPdf","1/pow(m,b)",RooArgList(lM,lB));
-  if(iFitModel == 4) lFitFinal = new RooGenericPdf("genPdf","exp(a+b*m)",RooArgList(lA,lM,lB));
+  if(iFitModel == 2) lFitFinal = new RooGenericPdf("genPdf","exp(0.001*b*m)",RooArgList(lM,lB));
+  if(iFitModel == 3) lFitFinal = new RooGenericPdf("genPdf","1/pow(m,0.001*b)",RooArgList(lM,lB));
+  if(iFitModel == 4) lFitFinal = new RooGenericPdf("genPdf","exp(a+0.001*b*m)",RooArgList(lA,lM,lB));
 
 
 
@@ -556,11 +569,11 @@ void addNuisanceWithToys(std::string iFileName,std::string iChannel,std::string 
   
   //Generate the background pdf corresponding to the result of the alternative tail fit
 
-  RooGenericPdf *lFit1Final  = 0; lFit1Final = new RooGenericPdf("genPdf","exp(-m/(a1+b1*m))",RooArgList(lM,lA1,lB1));
-  if(iFitModel1 == 1) lFit1Final = new RooGenericPdf("genPdf","exp(-a1*pow(m,b1))",RooArgList(lM,lA1,lB1));
-  if(iFitModel1 == 2) lFit1Final = new RooGenericPdf("genPdf","exp(b1*m)",RooArgList(lM,lB1));
-  if(iFitModel1 == 3) lFit1Final = new RooGenericPdf("genPdf","1/pow(m,b1)",RooArgList(lM,lB1));
-  if(iFitModel1 == 4) lFit1Final = new RooGenericPdf("genPdf","exp(a1+b1*m)",RooArgList(lM,lA1,lB1));
+  RooGenericPdf *lFit1Final  = 0; lFit1Final = new RooGenericPdf("genPdf",fn1,RooArgList(lM,lA1,lB1));
+  if(iFitModel1 == 1) lFit1Final = new RooGenericPdf("genPdf","exp(-a1*pow(m,0.001*b1))",RooArgList(lM,lA1,lB1));
+  if(iFitModel1 == 2) lFit1Final = new RooGenericPdf("genPdf","exp(0.001*b1*m)",RooArgList(lM,lB1));
+  if(iFitModel1 == 3) lFit1Final = new RooGenericPdf("genPdf","1/pow(m,0.001*b1)",RooArgList(lM,lB1));
+  if(iFitModel1 == 4) lFit1Final = new RooGenericPdf("genPdf","exp(a1+0.001*b1*m)",RooArgList(lM,lA1,lB1));
 
  // lA1.removeRange();
  // lB1.removeRange();
