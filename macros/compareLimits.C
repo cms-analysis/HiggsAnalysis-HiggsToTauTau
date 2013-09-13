@@ -108,7 +108,7 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV", bool legendOnRight=true, bool legendOnTop=true)
+void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV", bool legendOnRight=true, bool legendOnTop=true, bool ggH=true)
 {
   SetStyle();
 
@@ -194,7 +194,8 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   canv1->cd();
   canv1->SetGridx(1);
   canv1->SetGridy(1);
- 
+  if(std::string(type) == std::string("mssm-xsec")) canv1->SetLogx(1); 
+
   bool firstPlot=true;
   for(unsigned int i=0; i<hexp.size(); ++i){
     if(firstPlot){
@@ -225,12 +226,19 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       hexp[i]->GetXaxis()->SetTitleFont(62);
       hexp[i]->GetXaxis()->SetTitleColor(1);
       hexp[i]->GetXaxis()->SetTitleOffset(1.05);
+      if(std::string(type) == std::string("mssm-xsec")){
+	hexp[i]->GetXaxis()->SetNdivisions(50005, "X");
+	hexp[i]->GetXaxis()->SetMoreLogLabels();
+	hexp[i]->GetXaxis()->SetNoExponent();
+	hexp[i]->GetXaxis()->SetLabelSize(0.040);
+      }
       if(std::string(type) == std::string("mssm-tanb")) hexp[i]->GetYaxis()->SetRangeUser(0,maximum);
 
       // format y-axis
       std::string y_title;
       if( std::string(type) == std::string("mssm-xsec") ){
-	y_title = std::string("#sigma(#phi#rightarrow#tau#tau)_{95% CL} [pb]");
+	if(ggH) y_title = std::string("95% CL limit on #sigma(gg#rightarrow#phi)#timesBR [pb]");
+	else y_title = std::string("95% CL limit on #sigma(gg#rightarrowbb#phi)#timesBR [pb]");
       }
       else if(  std::string(type) == std::string("mssm-tanb")  ){
 	y_title = std::string("#bf{tan#beta}");
@@ -284,12 +292,19 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       hobs[i]->GetXaxis()->SetTitleFont(62);
       hobs[i]->GetXaxis()->SetTitleColor(1);
       hobs[i]->GetXaxis()->SetTitleOffset(1.05);
+      if(std::string(type) == std::string("mssm-xsec")){
+	hobs[i]->GetXaxis()->SetNdivisions(50005, "X");
+	hobs[i]->GetXaxis()->SetMoreLogLabels();
+	hobs[i]->GetXaxis()->SetNoExponent();
+	hobs[i]->GetXaxis()->SetLabelSize(0.040);
+      }
       if(std::string(type) == std::string("mssm-tanb")) hobs[i]->GetYaxis()->SetRangeUser(0,maximum);
       
       // format y-axis
       std::string y_title;
       if( std::string(type) == std::string("mssm-xsec") ){
-	y_title = std::string("#sigma(#phi#rightarrow#tau#tau)_{95% CL} [pb]");
+	if(ggH) y_title = std::string("95% CL limit on #sigma(gg#rightarrow#phi)#timesBR [pb]");
+	else y_title = std::string("95% CL limit on #sigma(gg#rightarrowbb#phi)#timesBR [pb]");
       }
       else if(  std::string(type) == std::string("mssm-tanb")  ){
 	y_title = std::string("#bf{tan#beta}");
@@ -315,6 +330,21 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     firstPlot=false;
   }
   canv1->RedrawAxis();
+
+  TPaveText* extra;
+  if( std::string(type) == std::string("mssm-xsec") ){
+    extra = new TPaveText(legendOnRight ? 0.6 : 0.18, 0.50, legendOnRight ? 0.95 : 0.605, 0.60, "NDC");
+    extra->SetBorderSize(   0 );
+    extra->SetFillStyle (   0 );
+    extra->SetTextAlign (  12 );
+    extra->SetTextSize  (0.04 );
+    extra->SetTextColor (   1 );
+    extra->SetTextFont  (  62 );
+    if(ggH) extra->AddText("gg#rightarrowbb#phi profiled");
+    else extra->AddText("gg#rightarrow#phi profiled");
+    extra->Draw();
+  }
+
   bool firstLeg=true;
   if(observed){
     TLegend* leg1;

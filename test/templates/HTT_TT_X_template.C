@@ -136,7 +136,9 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   if(std::string(directory) == std::string("tauTau_1jet_high_highhiggs")){ category_extra= "p_{T}(lep1) high"; }
   if(std::string(directory) == std::string("tauTau_1jet_high_highhiggs")){ category_extra2= "p_{T}(H) high"; }
   if(std::string(directory) == std::string("tauTau_vbf"                  )){ category_extra = "2 jet (VBF)";                     }
+  if(std::string(directory) == std::string("tauTau_nobtag"               )){ category = "#tau_{h}#tau_{h}";                        }
   if(std::string(directory) == std::string("tauTau_nobtag"               )){ category_extra = "No B-Tag";                        }
+  if(std::string(directory) == std::string("tauTau_btag"                 )){ category = "#tau_{h}#tau_{h}";                           }
   if(std::string(directory) == std::string("tauTau_btag"                 )){ category_extra = "B-Tag";                           }
 
   const char* dataset;
