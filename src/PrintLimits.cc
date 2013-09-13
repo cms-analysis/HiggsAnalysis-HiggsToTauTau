@@ -65,25 +65,81 @@ PlotLimits::print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsym
       << " & " << std::setw(15) << std::right << "Obs. Limit"
       << std::right << "  \\\\"
       << std::endl << "\\hline" << std::endl;
-    unsigned int precision = 2;
+    unsigned int precision = 3;
     for(int imass=0; imass<expected->GetN(); ++imass){
       file
 	<< "   " << std::setw(15) << std::setprecision(3) << std::resetiosflags(std::ios_base::fixed) << std::right << expected->GetX()[imass] << "~\\GeV";
       if(outerBand){
-	file
-	  << " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << expected->GetY()[imass] - outerBand->GetEYlow()[imass];
+	double value = expected->GetY()[imass] - outerBand->GetEYlow()[imass];
+	int exponent = TMath::Nint(TMath::Floor(TMath::Log10(value)));
+        double coeff = value/TMath::Power(10., exponent);
+	if(exponent>=0){
+	  file
+	    << " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << value;
+	}
+	else{
+	  file
+	    << " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << coeff << " \\cdot 10^{" << exponent << "}";
+	}
       }
-      file
-	<< " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << expected->GetY()[imass] - innerBand->GetEYlow()[imass]
-	<< " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << expected->GetY()[imass]
-	<< " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << expected->GetY()[imass] + innerBand->GetEYhigh()[imass];
-      if(outerBand){
+      double value = expected->GetY()[imass] - innerBand->GetEYlow()[imass];
+      int exponent = TMath::Nint(TMath::Floor(TMath::Log10(value)));
+      double coeff = value/TMath::Power(10., exponent);
+      if(exponent>=0){
 	file
-	  << " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << expected->GetY()[imass] + outerBand->GetEYhigh()[imass];
+	  << " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << value;
+      }
+      else{
+	file
+	  << " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << coeff << " \\cdot 10^{" << exponent << "}";
+      }
+      value =  expected->GetY()[imass];
+      exponent = TMath::Nint(TMath::Floor(TMath::Log10(value)));
+      coeff = value/TMath::Power(10., exponent);
+      if(exponent>=0){
+	file
+	  << " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << value;
+      }
+      else{
+	file
+	  << " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << coeff << " \\cdot 10^{" << exponent << "}";
+      }
+      value = expected->GetY()[imass] + innerBand->GetEYhigh()[imass];;
+      exponent = TMath::Nint(TMath::Floor(TMath::Log10(value)));
+      coeff = value/TMath::Power(10., exponent);
+      if(exponent>=0){
+	file
+	  << " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << value;
+      }
+      else{
+	file
+	  << " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << coeff << " \\cdot 10^{" << exponent << "}";
+      }
+      if(outerBand){	
+	double value = expected->GetY()[imass] - outerBand->GetEYlow()[imass];
+	int exponent = TMath::Nint(TMath::Floor(TMath::Log10(value)));
+        double coeff = value/TMath::Power(10., exponent);
+	if(exponent>=0){
+	  file
+	    << " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << value;
+	}
+	else{
+	  file
+	    << " & " << std::setw(15) << std::fixed << std::setprecision(precision) << std::right << coeff << " \\cdot 10^{" << exponent << "}";
+	}
       }
       if(observed){
-	file
-	  << " & " << std::setw(15) << std::right << observed->GetY()[imass];
+	double value = observed->GetY()[imass];
+	int exponent = TMath::Nint(TMath::Floor(TMath::Log10(value)));
+        double coeff = value/TMath::Power(10., exponent);
+	if(exponent>=0){
+	  file
+	    << " & " << std::setw(15) << std::right << value;
+	}
+	else{
+	  file
+	    << " & " << std::setw(15) << std::right << coeff << " \\cdot 10^{" << exponent << "}";
+	}
       }
       file
 	<< std::right << "  \\\\"
