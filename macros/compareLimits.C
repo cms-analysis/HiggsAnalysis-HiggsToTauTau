@@ -46,6 +46,18 @@ channel(std::string& label){
 	  label==std::string("mt")         ||
 	  label==std::string("mm")         ||
 	  label==std::string("ee")         ||
+	  label==std::string("btag-tt")         ||
+	  label==std::string("btag-em")         ||
+	  label==std::string("btag-et")         ||
+	  label==std::string("btag-mt")         ||
+	  label==std::string("btag-mm")         ||
+	  label==std::string("btag-ee")         ||
+	  label==std::string("nobtag-tt")         ||
+	  label==std::string("nobtag-em")         ||
+	  label==std::string("nobtag-et")         ||
+	  label==std::string("nobtag-mt")         ||
+	  label==std::string("nobtag-mm")         ||
+	  label==std::string("nobtag-ee")         ||
 	  label==std::string("ggH")        ||
 	  label==std::string("bbH")        ||
 	  label==std::string("mvis")       ||
@@ -79,6 +91,18 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("tt"        )) title = std::string("#tau_{h}#tau_{h}");
   if(channel==std::string("mm"        )) title = std::string("#mu#mu");
   if(channel==std::string("ee"        )) title = std::string("ee");
+  if(channel==std::string("btag-em"        )) title = std::string("e#mu");
+  if(channel==std::string("btag-et"        )) title = std::string("e#tau_{h}");
+  if(channel==std::string("btag-mt"        )) title = std::string("#mu#tau_{h}");
+  if(channel==std::string("btag-tt"        )) title = std::string("#tau_{h}#tau_{h}");
+  if(channel==std::string("btag-mm"        )) title = std::string("#mu#mu");
+  if(channel==std::string("btag-ee"        )) title = std::string("ee");
+  if(channel==std::string("nobtag-em"        )) title = std::string("e#mu");
+  if(channel==std::string("nobtag-et"        )) title = std::string("e#tau_{h}");
+  if(channel==std::string("nobtag-mt"        )) title = std::string("#mu#tau_{h}");
+  if(channel==std::string("nobtag-tt"        )) title = std::string("#tau_{h}#tau_{h}");
+  if(channel==std::string("nobtag-mm"        )) title = std::string("#mu#mu");
+  if(channel==std::string("nobtag-ee"        )) title = std::string("ee");
   if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau+l(l)");
   if(channel==std::string("htt"       )) title = std::string("e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu");
   if(channel==std::string("cmb"       )) title = std::string("Combined(H#rightarrow#tau#tau)");
@@ -124,14 +148,26 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["2jet"       ] = kMagenta;
   colors["vbf"        ] = kRed;
   colors["boost"      ] = kGreen;
-  colors["btag"       ] = kRed;
-  colors["nobtag"     ] = kBlue;
+  colors["btag"       ] = kBlack; //kRed
+  colors["nobtag"     ] = kBlack; //kBlue
   colors["em"         ] = kBlue;
   colors["et"         ] = kRed;
   colors["mt"         ] = kGreen;
   colors["mm"         ] = kMagenta;
   colors["ee"         ] = kCyan;
   colors["tt"         ] = kMagenta+3;
+  colors["btag-em"         ] = kBlue;
+  colors["btag-et"         ] = kRed;
+  colors["btag-mt"         ] = kGreen;
+  colors["btag-mm"         ] = kMagenta;
+  colors["btag-ee"         ] = kCyan;
+  colors["btag-tt"         ] = kMagenta+3;
+  colors["nobtag-em"         ] = kBlue;
+  colors["nobtag-et"         ] = kRed;
+  colors["nobtag-mt"         ] = kGreen;
+  colors["nobtag-mm"         ] = kMagenta;
+  colors["nobtag-ee"         ] = kCyan;
+  colors["nobtag-tt"         ] = kMagenta+3;
   colors["vhtt"       ] = kCyan-6;
   colors["cmb"        ] = kBlack;
   colors["cmb+"       ] = kBlack; //kGray+2;
@@ -232,7 +268,15 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 	hexp[i]->GetXaxis()->SetNoExponent();
 	hexp[i]->GetXaxis()->SetLabelSize(0.040);
       }
-      if(std::string(type) == std::string("mssm-tanb")) hexp[i]->GetYaxis()->SetRangeUser(0,maximum);
+      hexp[i]->GetXaxis()->SetLimits(hexp[i]->GetX()[0]-.1, hexp[i]->GetX()[hexp[i]->GetN()-1]+.1);
+      if(std::string(type) == std::string("mssm-xsec")){
+	if(log){
+	  hexp[i]->GetXaxis()->SetLimits(hexp[i]->GetX()[0], hexp[i]->GetX()[hexp[i]->GetN()-1]+.1);
+	}
+	else{
+	  hexp[i]->GetXaxis()->SetLimits(hexp[i]->GetX()[0]-.1, hexp[i]->GetX()[hexp[i]->GetN()-1]+.1);
+	}      
+      }
 
       // format y-axis
       std::string y_title;
@@ -251,7 +295,6 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       hexp[i]->GetYaxis()->SetLabelFont(62);
       hexp[i]->GetYaxis()->SetTitleOffset(1.05);
       hexp[i]->GetYaxis()->SetLabelSize(0.03);
-      hexp[i]->GetXaxis()->SetLimits(hexp[i]->GetX()[0]-.1, hexp[i]->GetX()[hexp[i]->GetN()-1]+.1);
     }
     hexp[i]->SetLineStyle(11.);
     hexp[i]->SetLineWidth( 3.); 
@@ -298,7 +341,15 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 	hobs[i]->GetXaxis()->SetNoExponent();
 	hobs[i]->GetXaxis()->SetLabelSize(0.040);
       }
-      if(std::string(type) == std::string("mssm-tanb")) hobs[i]->GetYaxis()->SetRangeUser(0,maximum);
+      hobs[i]->GetXaxis()->SetLimits(hobs[i]->GetX()[0]-.1, hobs[i]->GetX()[hobs[i]->GetN()-1]+.1);
+      if(std::string(type) == std::string("mssm-xsec")){
+	if(log){
+	  hobs[i]->GetXaxis()->SetLimits(hobs[i]->GetX()[0], hobs[i]->GetX()[hobs[i]->GetN()-1]+.1);
+	}
+	else{
+	  hobs[i]->GetXaxis()->SetLimits(hobs[i]->GetX()[0]-.1, hobs[i]->GetX()[hobs[i]->GetN()-1]+.1);
+	}      
+      }
       
       // format y-axis
       std::string y_title;
@@ -370,6 +421,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 	leg1 = new TLegend(legendOnRight ? 0.50 : 0.20, hobs.size()<5 ? 0.90-0.08*hobs.size() : 0.6, legendOnRight ? 0.94 : 0.64, 0.90);
       }
     }
+    if(std::string(type) == std::string("mssm-tanb")) {leg1->SetTextSize(0.03);}
     //leg1->SetTextSize(0.02);
     leg1->SetBorderSize( 0 );
     leg1->SetFillStyle ( 1001 );
