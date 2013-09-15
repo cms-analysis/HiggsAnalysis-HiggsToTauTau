@@ -11,7 +11,7 @@ for i in tt ee mm em et mt
 do
     while true
     do
-        if [ -s "LIMITS_droplist/bbb/$i/125/out/mlfit-largest_constraints.html" ]
+        if [ -s "LIMITS_droplist/bbb/$i/125/out/mlfit_largest-constraints.html" ]
         then
             python HiggsAnalysis/HiggsToTauTau/scripts/prune-uncerts-htt.py --fit-results LIMITS_droplist/bbb/$i/125/out/mlfit.txt --whitelist "_bin_" --shielding 125:0.3 LIMITS_droplist/bbb/$i/125
             mv -v uncertainty-pruning-drop.txt uncertainty-pruning-drop_${i}.txt
