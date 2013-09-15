@@ -95,7 +95,7 @@ elif options.condor:
     pass
 else: # user wants to run on lsf 
     sub = subprocess.Popen(['bsub'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stderr = sub.communicate()[1]
+    stderr = ''
     if stderr.startswith('bsub error'):
         errmsg = 'lxb-limit.py: if you want to run on lsf, you need to log to lxplus. ABORTING'
         print errmsg
