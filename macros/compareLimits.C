@@ -23,14 +23,7 @@ static const double MARKER_SIZE = 1.3;  // 0.7
 
 bool
 channel(std::string& label){
-  return (label==std::string("std")        ||
-	  label==std::string("pruneds0p3")     ||
-	  label==std::string("pruneds0p2")     ||
-	  label==std::string("pruneds05p1")     ||
-	  label==std::string("bin-by-bin-BBs0") ||
-	  label==std::string("bin-by-bin-BBs05") ||
-	  label==std::string("bbb")        ||
-	  label==std::string("cmb")        ||
+  return (label==std::string("cmb")        ||
 	  label==std::string("cmb+")       ||
 	  label==std::string("htt")        ||
 	  label==std::string("vhtt")       ||
@@ -46,6 +39,18 @@ channel(std::string& label){
 	  label==std::string("mt")         ||
 	  label==std::string("mm")         ||
 	  label==std::string("ee")         ||
+	  label==std::string("btag-tt")         ||
+	  label==std::string("btag-em")         ||
+	  label==std::string("btag-et")         ||
+	  label==std::string("btag-mt")         ||
+	  label==std::string("btag-mm")         ||
+	  label==std::string("btag-ee")         ||
+	  label==std::string("nobtag-tt")         ||
+	  label==std::string("nobtag-em")         ||
+	  label==std::string("nobtag-et")         ||
+	  label==std::string("nobtag-mt")         ||
+	  label==std::string("nobtag-mm")         ||
+	  label==std::string("nobtag-ee")         ||
 	  label==std::string("ggH")        ||
 	  label==std::string("bbH")        ||
 	  label==std::string("mvis")       ||
@@ -66,19 +71,24 @@ channel(std::string& label){
 
 std::string legendEntry(const std::string& channel){
   std::string title;
-  if(channel==std::string("std"       )) title = std::string("no bbb");
-  if(channel==std::string("pruneds05p1"   )) title = std::string("bbb stat>0.05 pruned<0.1");
-  if(channel==std::string("pruneds0p2"    )) title = std::string("bbb stat>0 pruned<0.2");
-  if(channel==std::string("pruneds0p3"    )) title = std::string("bbb stat>0 pruned<0.3");
-  if(channel==std::string("bin-by-bin-BBs0"       )) title = std::string("merged bbb stat>0");
-  if(channel==std::string("bin-by-bin-BBs05"      )) title = std::string("merged bbb stat>0.05");
-  if(channel==std::string("bbb"       )) title = std::string("full bbb");
   if(channel==std::string("em"        )) title = std::string("e#mu");
   if(channel==std::string("et"        )) title = std::string("e#tau_{h}");
   if(channel==std::string("mt"        )) title = std::string("#mu#tau_{h}");
   if(channel==std::string("tt"        )) title = std::string("#tau_{h}#tau_{h}");
   if(channel==std::string("mm"        )) title = std::string("#mu#mu");
   if(channel==std::string("ee"        )) title = std::string("ee");
+  if(channel==std::string("btag-em"        )) title = std::string("e#mu");
+  if(channel==std::string("btag-et"        )) title = std::string("e#tau_{h}");
+  if(channel==std::string("btag-mt"        )) title = std::string("#mu#tau_{h}");
+  if(channel==std::string("btag-tt"        )) title = std::string("#tau_{h}#tau_{h}");
+  if(channel==std::string("btag-mm"        )) title = std::string("#mu#mu");
+  if(channel==std::string("btag-ee"        )) title = std::string("ee");
+  if(channel==std::string("nobtag-em"        )) title = std::string("e#mu");
+  if(channel==std::string("nobtag-et"        )) title = std::string("e#tau_{h}");
+  if(channel==std::string("nobtag-mt"        )) title = std::string("#mu#tau_{h}");
+  if(channel==std::string("nobtag-tt"        )) title = std::string("#tau_{h}#tau_{h}");
+  if(channel==std::string("nobtag-mm"        )) title = std::string("#mu#mu");
+  if(channel==std::string("nobtag-ee"        )) title = std::string("ee");
   if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau+l(l)");
   if(channel==std::string("htt"       )) title = std::string("e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu");
   if(channel==std::string("cmb"       )) title = std::string("Combined(H#rightarrow#tau#tau)");
@@ -108,30 +118,35 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV", bool legendOnRight=true, bool legendOnTop=true)
+void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV", bool legendOnRight=true, bool legendOnTop=true, bool ggH=true)
 {
   SetStyle();
 
   std::map<std::string, unsigned int> colors;
-  colors["std"        ] = kMagenta;
-  colors["pruneds0p3"     ] = kGreen;
-  colors["pruneds0p2"     ] = kOrange;
-  colors["pruneds05p1"     ] = kRed;
-  colors["bin-by-bin-BBs0"        ] = kBlue;
-  colors["bin-by-bin-BBs05"        ] = kCyan;
-  colors["bbb"        ] = kBlack;
   colors["0jet"       ] = kBlue;
   colors["2jet"       ] = kMagenta;
   colors["vbf"        ] = kRed;
   colors["boost"      ] = kGreen;
-  colors["btag"       ] = kRed;
-  colors["nobtag"     ] = kBlue;
+  colors["btag"       ] = kBlack; //kRed
+  colors["nobtag"     ] = kBlack; //kBlue
   colors["em"         ] = kBlue;
   colors["et"         ] = kRed;
   colors["mt"         ] = kGreen;
   colors["mm"         ] = kMagenta;
   colors["ee"         ] = kCyan;
   colors["tt"         ] = kMagenta+3;
+  colors["btag-em"         ] = kBlue;
+  colors["btag-et"         ] = kRed;
+  colors["btag-mt"         ] = kGreen;
+  colors["btag-mm"         ] = kMagenta;
+  colors["btag-ee"         ] = kCyan;
+  colors["btag-tt"         ] = kMagenta+3;
+  colors["nobtag-em"         ] = kBlue;
+  colors["nobtag-et"         ] = kRed;
+  colors["nobtag-mt"         ] = kGreen;
+  colors["nobtag-mm"         ] = kMagenta;
+  colors["nobtag-ee"         ] = kCyan;
+  colors["nobtag-tt"         ] = kMagenta+3;
   colors["vhtt"       ] = kCyan-6;
   colors["cmb"        ] = kBlack;
   colors["cmb+"       ] = kBlack; //kGray+2;
@@ -194,7 +209,8 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   canv1->cd();
   canv1->SetGridx(1);
   canv1->SetGridy(1);
- 
+  if(std::string(type) == std::string("mssm-xsec")) canv1->SetLogx(1); 
+
   bool firstPlot=true;
   for(unsigned int i=0; i<hexp.size(); ++i){
     if(firstPlot){
@@ -225,12 +241,27 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       hexp[i]->GetXaxis()->SetTitleFont(62);
       hexp[i]->GetXaxis()->SetTitleColor(1);
       hexp[i]->GetXaxis()->SetTitleOffset(1.05);
-      if(std::string(type) == std::string("mssm-tanb")) hexp[i]->GetYaxis()->SetRangeUser(0,maximum);
+      if(std::string(type) == std::string("mssm-xsec")){
+	hexp[i]->GetXaxis()->SetNdivisions(50005, "X");
+	hexp[i]->GetXaxis()->SetMoreLogLabels();
+	hexp[i]->GetXaxis()->SetNoExponent();
+	hexp[i]->GetXaxis()->SetLabelSize(0.040);
+      }
+      hexp[i]->GetXaxis()->SetLimits(hexp[i]->GetX()[0]-.1, hexp[i]->GetX()[hexp[i]->GetN()-1]+.1);
+      if(std::string(type) == std::string("mssm-xsec")){
+	if(log){
+	  hexp[i]->GetXaxis()->SetLimits(hexp[i]->GetX()[0], hexp[i]->GetX()[hexp[i]->GetN()-1]+.1);
+	}
+	else{
+	  hexp[i]->GetXaxis()->SetLimits(hexp[i]->GetX()[0]-.1, hexp[i]->GetX()[hexp[i]->GetN()-1]+.1);
+	}      
+      }
 
       // format y-axis
       std::string y_title;
       if( std::string(type) == std::string("mssm-xsec") ){
-	y_title = std::string("#sigma(#phi#rightarrow#tau#tau)_{95% CL} [pb]");
+	if(ggH) y_title = std::string("95% CL limit on #sigma(gg#rightarrow#phi)#timesBR [pb]");
+	else y_title = std::string("95% CL limit on #sigma(gg#rightarrowbb#phi)#timesBR [pb]");
       }
       else if(  std::string(type) == std::string("mssm-tanb")  ){
 	y_title = std::string("#bf{tan#beta}");
@@ -243,7 +274,6 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       hexp[i]->GetYaxis()->SetLabelFont(62);
       hexp[i]->GetYaxis()->SetTitleOffset(1.05);
       hexp[i]->GetYaxis()->SetLabelSize(0.03);
-      hexp[i]->GetXaxis()->SetLimits(hexp[i]->GetX()[0]-.1, hexp[i]->GetX()[hexp[i]->GetN()-1]+.1);
     }
     hexp[i]->SetLineStyle(11.);
     hexp[i]->SetLineWidth( 3.); 
@@ -284,12 +314,27 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       hobs[i]->GetXaxis()->SetTitleFont(62);
       hobs[i]->GetXaxis()->SetTitleColor(1);
       hobs[i]->GetXaxis()->SetTitleOffset(1.05);
-      if(std::string(type) == std::string("mssm-tanb")) hobs[i]->GetYaxis()->SetRangeUser(0,maximum);
+      if(std::string(type) == std::string("mssm-xsec")){
+	hobs[i]->GetXaxis()->SetNdivisions(50005, "X");
+	hobs[i]->GetXaxis()->SetMoreLogLabels();
+	hobs[i]->GetXaxis()->SetNoExponent();
+	hobs[i]->GetXaxis()->SetLabelSize(0.040);
+      }
+      hobs[i]->GetXaxis()->SetLimits(hobs[i]->GetX()[0]-.1, hobs[i]->GetX()[hobs[i]->GetN()-1]+.1);
+      if(std::string(type) == std::string("mssm-xsec")){
+	if(log){
+	  hobs[i]->GetXaxis()->SetLimits(hobs[i]->GetX()[0], hobs[i]->GetX()[hobs[i]->GetN()-1]+.1);
+	}
+	else{
+	  hobs[i]->GetXaxis()->SetLimits(hobs[i]->GetX()[0]-.1, hobs[i]->GetX()[hobs[i]->GetN()-1]+.1);
+	}      
+      }
       
       // format y-axis
       std::string y_title;
       if( std::string(type) == std::string("mssm-xsec") ){
-	y_title = std::string("#sigma(#phi#rightarrow#tau#tau)_{95% CL} [pb]");
+	if(ggH) y_title = std::string("95% CL limit on #sigma(gg#rightarrow#phi)#timesBR [pb]");
+	else y_title = std::string("95% CL limit on #sigma(gg#rightarrowbb#phi)#timesBR [pb]");
       }
       else if(  std::string(type) == std::string("mssm-tanb")  ){
 	y_title = std::string("#bf{tan#beta}");
@@ -302,7 +347,6 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       hobs[i]->GetYaxis()->SetLabelFont(62);
       hobs[i]->GetYaxis()->SetTitleOffset(1.05);
       hobs[i]->GetYaxis()->SetLabelSize(0.03);
-      hobs[i]->GetXaxis()->SetLimits(hobs[i]->GetX()[0]-.1, hobs[i]->GetX()[hobs[i]->GetN()-1]+.1);
     }
     hobs[i]->SetLineStyle(11.);
     hobs[i]->SetLineWidth( 3.); 
@@ -315,6 +359,21 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     firstPlot=false;
   }
   canv1->RedrawAxis();
+
+  TPaveText* extra;
+  if( std::string(type) == std::string("mssm-xsec") ){
+    extra = new TPaveText(legendOnRight ? 0.6 : 0.18, 0.50, legendOnRight ? 0.95 : 0.605, 0.60, "NDC");
+    extra->SetBorderSize(   0 );
+    extra->SetFillStyle (   0 );
+    extra->SetTextAlign (  12 );
+    extra->SetTextSize  (0.04 );
+    extra->SetTextColor (   1 );
+    extra->SetTextFont  (  62 );
+    if(ggH) extra->AddText("gg#rightarrowbb#phi profiled");
+    else extra->AddText("gg#rightarrow#phi profiled");
+    extra->Draw();
+  }
+
   bool firstLeg=true;
   if(observed){
     TLegend* leg1;
@@ -340,6 +399,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 	leg1 = new TLegend(legendOnRight ? 0.50 : 0.20, hobs.size()<5 ? 0.90-0.08*hobs.size() : 0.6, legendOnRight ? 0.94 : 0.64, 0.90);
       }
     }
+    if(std::string(type) == std::string("mssm-tanb")) {leg1->SetTextSize(0.03);}
     //leg1->SetTextSize(0.02);
     leg1->SetBorderSize( 0 );
     leg1->SetFillStyle ( 1001 );
