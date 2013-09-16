@@ -108,7 +108,6 @@ if __name__ == "__main__":
 
     log.info("Loading input shape file %s", args.shapes)
     shapes = ROOT.TFile(args.shapes, "UPDATE")
-    from pdb import set_trace 
 
     for bin in args.bins:
         # We rely that the histograms are in the "<bin name>/" directory.
@@ -129,7 +128,6 @@ if __name__ == "__main__":
             if isinstance(histo, ROOT.TH1):
                 histogram_names.add(name)
 
-        set_trace()
         for name in histogram_names:
             histo = bin_directory.Get(name)
             #log.debug("Found histogram: %s", name)
