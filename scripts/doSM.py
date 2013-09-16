@@ -59,8 +59,6 @@ for idx in range(len(do_not_scales)) : do_not_scales[idx] = do_not_scales[idx].r
 ## analyses
 analyses = options.analyses.split()
 for idx in range(len(analyses)) : analyses[idx] = analyses[idx].rstrip(',')
-print "analyses",analyses
-
 ## CMSSW_BASE
 cmssw_base=os.environ['CMSSW_BASE']
 ## setup a backup directory
@@ -81,7 +79,6 @@ for chn in config.channels:
 patterns = {
     'no-bbb' : '',
     'bbb'    : '',
-    'bbb:hww-bg'    : '',
     }
 
 if options.update_all :
@@ -260,8 +257,8 @@ if options.update_setup :
         os.system("mv {DIR} {CMSSW_BASE}/src/backup/".format(DIR=dir, CMSSW_BASE=cmssw_base))
     os.system("mkdir -p {DIR}".format(DIR=dir))
     for ana in analyses :
-        #if 'hww-bg' in ana :
-            #continue
+        if 'hww-bg' in ana :
+            continue
         os.system("cp -r {SETUP} {DIR}/{ANA}".format(SETUP=setup, DIR=dir, ANA=ana))
         ##
         ## CENTRAL
@@ -275,7 +272,7 @@ if options.update_setup :
         ##
         ## BIN-BY-BIN
         ##
-        if ana != 'no-bbb' :
+        if ana == 'bbb' :
             print "##"
             print "## update bbb    directory in setup:"
             print "##"    
@@ -298,8 +295,7 @@ if options.update_setup :
                         os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                            
     for ana in analyses :
         if 'hww-bg' in ana :
-            #os.system("cp -r {DIR}/{SOURCE} {DIR}/{TARGET}".format(DIR=dir, SOURCE=ana[:ana.find(':')], TARGET=ana[ana.find(':')+1:]))
-            os.system("cp -r {DIR}/{SOURCE} {DIR}/{TARGET}".format(DIR=dir, SOURCE=ana, TARGET=ana[ana.find(':')+1:]))
+            os.system("cp -r {DIR}/{SOURCE} {DIR}/{TARGET}".format(DIR=dir, SOURCE=ana[:ana.find(':')], TARGET=ana[ana.find(':')+1:]))
             cgs_adaptor = UncertAdaptor()
             if 'em' in config.channels:
                 for period in config.periods:
