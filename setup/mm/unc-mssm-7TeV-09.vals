@@ -1,5 +1,5 @@
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-mumu_btag	  	signal,Dibosons			lumi_7TeV				1.022
+mumu_btag	  	signal,Dibosons			lumi_7TeV				1.026
 mumu_btag		signal,ZTT,TTJ,Dibosons 	CMS_eff_m				1.04
 mumu_btag		ggH				CMS_scale_j_7TeV			0.98
 mumu_btag               bbH			        CMS_scale_j_7TeV                        1.01
