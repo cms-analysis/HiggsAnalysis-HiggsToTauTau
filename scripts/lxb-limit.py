@@ -27,6 +27,7 @@ import sys
 import glob
 import random
 import string
+import subprocess
 
 import logging
 log = logging.getLogger("lxb-limit")
@@ -87,9 +88,20 @@ requirements = HasAFS_OSG && TARGET.FilesystemDomain =!= UNDEFINED && TARGET.UWC
 
 '''
 
+
 if options.lxq :
     script_template = script_template.replace('#!/bin/bash', lxq_fragment)
-
+elif options.condor:
+    pass
+else: # user wants to run on lsf 
+    sub = subprocess.Popen(['bsub'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stderr = ''
+    if stderr.startswith('bsub error'):
+        errmsg = 'lxb-limit.py: if you want to run on lsf, you need to log to lxplus. ABORTING'
+        print errmsg
+        # raise ValueError(errmsg)
+        sys.exit(1)
+        
 ## create a random stamp fro multiply submission
 stamp=''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))
 ## main submission script
