@@ -1,7 +1,7 @@
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 emu_1jet_high	signal,EWK              	lumi_7TeV            			1.022
 emu_1jet_high	signal,background 		CMS_eff_e 				1.02
-emu_1jet_high 	signal,Ztt	 		CMS_scale_e_7TeV			1.00
+emu_1jet_high 	signal,Ztt	 		CMS_scale_e_highpt_7TeV			1.00
 emu_1jet_high	signal,background 		CMS_eff_m 				1.02
 emu_1jet_high	ggH,ggH_hww			CMS_scale_j_7TeV			1.05
 emu_1jet_high	EWK,ttbar			CMS_scale_j_7TeV			1.05
