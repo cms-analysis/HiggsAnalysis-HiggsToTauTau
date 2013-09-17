@@ -4,6 +4,8 @@ import ROOT
 from HiggsAnalysis.CombinedLimit.DatacardParser import *
 from HiggsAnalysis.HiggsToTauTau.DatacardAdaptor import DatacardAdaptor
 
+ROOT.PyConfig.IgnoreCommandLineOptions = True
+ROOT.gROOT.SetBatch()
 
 class AsimovDatacard(DatacardAdaptor) :
     """
