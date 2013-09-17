@@ -17,6 +17,7 @@ parser.add_option("--tanb", dest="tanb", default="8", type="float", help="Tanb o
 parser.add_option("-u", "--uncertainties", dest="uncertainties", default="1", type="int", help="Set uncertainties of backgrounds. [Default: '1']")
 parser.add_option("--asimov", dest="asimov", action="store_true", default=False, help="Use asimov dataset for postfit-plots. [Default: 'False']")
 parser.add_option("--add-0jet-signal", dest="add_zero_jet", action="store_true", default=False, help="Add signal in the 0-jet event category of the mt, et, em channels [Default: False]")
+parser.add_option("--add-mutau-soft", dest="add_mutau_soft", action="store_true", default=False, help="Add the soft categories to the mt channel [Default: False]")
 parser.add_option("--hww-background", dest="hwwbg", action="store_true", default=False, help="Add H->WW processes as background to the em channel [Default: False]")
 parser.add_option("-v", "--verbose", dest="verbose", action="store_true", default=False, help="Run in verbose more. [Default: 'False']")
 parser.add_option("-c", "--config", dest="config", default="", help="Additional configuration file for the channels, periods and categories. [Default: '']")
@@ -252,9 +253,11 @@ class Analysis:
                  output_file.write("break; \n")
                  
 
-config=configuration(options.analysis, options.config)
+config=configuration(options.analysis, options.config, options.add_mutau_soft)
 fitresults = options.fitresults.format(ANALYSIS=options.analysis)
 for chn in config.channels :
+    if chn == 'vhtt':
+        continue
     for per in config.periods :
         for cat in config.categories[chn][per] :
             if chn == "hbb" :

@@ -8,6 +8,7 @@ parser = OptionParser(usage="usage: %prog [options]",
 ## direct options
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
+parser.add_option("--add-mutau-soft", dest="add_mutau_soft", action="store_true", default=False, help="Add the soft categories to the mt channel [Default: False]")
 parser.add_option("-c", "--config", dest="config", default="", type="string", help="Additional configuration file to be used for the channels, periods and categories. [Default: '']")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -16,7 +17,7 @@ if len(args) > 0 :
     exit(1)
 
 #import configuration 
-config=configuration(options.analysis, options.config)
+config=configuration(options.analysis, options.config, options.add_mutau_soft)
 
 log = {
     ("em", "0") : ["false",],
@@ -37,6 +38,12 @@ log = {
     ("mt", "5") : ["false",],
     ("mt", "6") : ["false",],
     ("mt", "7") : ["false",],
+    ("mt", "10") : ["false"],
+    ("mt", "11") : ["false"], 
+    ("mt", "12") : ["false"],
+    ("mt", "13") : ["false"],
+    ("mt", "15") : ["false"],
+    ("mt", "16") : ["false"],
     ("mt", "8") : ["false", "true"],
     ("mt", "9") : ["false", "true"],
     ("et", "0") : ["false" ],
@@ -89,6 +96,12 @@ max = {
     ("mt", "5") :  ["-1."],
     ("mt", "6") :  ["-1."],
     ("mt", "7") :  ["-1."],
+    ("mt", "10") : ["-1."],
+    ("mt", "11") : ["-1."], 
+    ("mt", "12") : ["-1."],
+    ("mt", "13") : ["-1."],
+    ("mt", "15") : ["-1."],
+    ("mt", "16") : ["-1."],
     ("mt", "8") :  ["-1.", "-1"],
     ("mt", "9") :  ["-1.", "-1"],
     ("et", "0") :  ["-1."],
@@ -141,6 +154,12 @@ min = {
     ("mt", "5") : ["0."],
     ("mt", "6") : ["0."],
     ("mt", "7") : ["0."],
+    ("mt", "10") : ["0."],
+    ("mt", "11") : ["0."], 
+    ("mt", "12") : ["0."],
+    ("mt", "13") : ["0."],
+    ("mt", "15") : ["0."],
+    ("mt", "16") : ["0."],
     ("mt", "8") : ["0.", "1e-4"],
     ("mt", "9") : ["0.", "1e-4"],
     ("et", "0") : ["0."],

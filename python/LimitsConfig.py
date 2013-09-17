@@ -2,7 +2,7 @@ import ConfigParser
 import os
 
 class configuration:
-    def __init__(self, mode, config):
+    def __init__(self, mode, config, mtsoft=False):
         self.config=ConfigParser.SafeConfigParser(allow_no_value=True)
         self.config.read(["{CMSSW}/src/HiggsAnalysis/HiggsToTauTau/limits.config".format(CMSSW=os.getenv('CMSSW_BASE')), config])
         #read values from config
@@ -15,7 +15,7 @@ class configuration:
         if self.config.has_option(mode, 'blind'):
             self.unblind = False
         self.comb_periods=self.config.get('combination', 'periods').split()
-        self.comb_channels=self.config.get('combination', 'channels_'+mode).split()
+        self.comb_channels=self.config.get('combination', 'channels').split()
         self.comb_categories=self.config.get('combination', 'categories_'+mode).split()
         for channel in self.channels:
             self.categories[channel]={}
@@ -23,6 +23,10 @@ class configuration:
                 self.categories[channel][period]=self.get_categories(channel, period, mode)
             self.categoryname[channel]=self.get_category_names(channel, mode)
             self.inputs[channel]=self.config.get('inputs', channel)
+        if mtsoft and 'mt' in self.channels and mode == 'sm':
+            self.categoryname['mt'] = self.categoryname['mt']+self.get_category_names('mt_soft', 'sm')
+            for period in self.periods:
+                self.categories['mt'][period] = self.categories['mt'][period]+self.get_categories('mt_soft', period, 'sm')
         self.bbbcat={}
         self.bbbproc={}
         self.bbbthreshold=self.config.get('bbb-'+mode,'threshold')
@@ -31,6 +35,11 @@ class configuration:
             for period in self.periods:
                 self.bbbcat[channel][period]=self.get_bbb_categories(channel, period, mode)
             self.bbbproc[channel]=self.get_bbb_processes(channel, mode)
+        if mtsoft and 'mt' in self.channels and mode == 'sm':
+            self.bbbproc['mt'] = self.bbbproc['mt']+self.get_bbb_processes('mt_soft', mode)
+            for period in self.periods:
+                self.bbbcat['mt'][period] = self.bbbcat['mt'][period]+self.get_bbb_categories('mt_soft', period, mode)
+
 
     def get_categories(self, channel, period, mode):
         categories=self.config.get(mode, channel+'_categories_'+period)

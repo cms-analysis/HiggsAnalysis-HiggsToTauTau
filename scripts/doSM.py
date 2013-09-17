@@ -64,7 +64,7 @@ cmssw_base=os.environ['CMSSW_BASE']
 ## setup a backup directory
 os.system("mkdir -p backup")
 ## configuration
-config=configuration('sm', options.config)
+config=configuration('sm', options.config, options.add_mutau_soft)
 
 ## define inputs from cvs; Note: not all analyses are available for all inputs
 directories = {}
@@ -125,13 +125,8 @@ def add_zero_jet(path) :
     for channel in config.channels:
         for period in config.periods:
             for category in config.categories[channel][period]:
-                if '0jet' in config.categoryname[channel][int(category)]:
-                    filename="{PATH}/{CHANNEL}/cgs-sm-{PERIOD}-0{CATEGORY}.conf".format(PATH=path, CHANNEL=channel, PERIOD=period, CATEGORY=category)
-                    print 'processing file:', filename
-                    cgs_adaptor.cgs_processes(filename,['ggH','qqH','VH'])
-            if options.add_mutau_soft and channel == 'mt' and period == '8TeV':
-                for category in 10, 11, 12:
-                    filename="{PATH}/{CHANNEL}/cgs-sm-{PERIOD}-{CATEGORY}.conf".format(PATH=path, CHANNEL=channel, PERIOD=period, CATEGORY=category)
+                if '0jet' in config.categoryname[channel][config.categories[channel][period].index(category)]:
+                    filename="{PATH}/{CHANNEL}/cgs-sm-{PERIOD}-{CATEGORY}.conf".format(PATH=path, CHANNEL=channel, PERIOD=period, CATEGORY=category if int(category)>9 else '0'+category)
                     print 'processing file:', filename
                     cgs_adaptor.cgs_processes(filename,['ggH','qqH','VH'])
 
@@ -198,10 +193,9 @@ if options.update_setup :
                         PATTERN=pattern
                         ))
     if 'mt' in config.channels and options.add_mutau_soft:
-        for ana in analyses:
-            os.system("hadd {SETUP}/mt/htt_mt.inputs-sm-8TeV-bak.root {SETUP}/mt/htt_mt.inputs-sm-8TeV.root {SETUP}/mt/htt_mt.inputs-sm-8TeV-soft.root".format(SETUP=setup))
-            os.system("mv {SETUP}/mt/htt_mt.inputs-sm-8TeV-bak.root {SETUP}/mt/htt_mt.inputs-sm-8TeV.root".format(SETUP=setup))
-            os.system("rm {SETUP}/mt/htt_mt.inputs-sm-8TeV-soft.root".format(SETUP=setup))
+        os.system("hadd {SETUP}/mt/htt_mt.inputs-sm-8TeV-bak.root {SETUP}/mt/htt_mt.inputs-sm-8TeV.root {SETUP}/mt/htt_mt.inputs-sm-8TeV-soft.root".format(SETUP=setup))
+        os.system("mv {SETUP}/mt/htt_mt.inputs-sm-8TeV-bak.root {SETUP}/mt/htt_mt.inputs-sm-8TeV.root".format(SETUP=setup))
+        os.system("rm {SETUP}/mt/htt_mt.inputs-sm-8TeV-soft.root".format(SETUP=setup))
     ## apply horizontal morphing for processes, which have not been simulated for 7TeV: ggH_hww145, qqH_hww145
     for file in glob.glob("{SETUP}/em/htt_em.inputs-sm-7TeV*.root".format(SETUP=setup)) :
         template_morphing = Morph(file, 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose', 'ggH_hww{MASS}', 'QCDscale_ggH1in,CMS_scale_e_7TeV', '140,150', 5, True,'') 
@@ -281,14 +275,13 @@ if options.update_setup :
             for chn in config.channels:
                 for per in config.periods:
                     for idx in range(len(config.bbbcat[chn][per])):
-                        os.system("add_bbb_errors.py '{CHN}:{PER}:{CAT}{SOFT}:{PROC}' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold {THR}".format(
+                        os.system("add_bbb_errors.py '{CHN}:{PER}:{CAT}:{PROC}' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold {THR}".format(
                             DIR=dir,
                             ANA=ana,
                             CHN=chn,
                             PER=per,
                             CAT=config.bbbcat[chn][per][idx],
                             PROC=config.bbbproc[chn][idx],
-                            SOFT=',10,11,12,13,15,16' if options.add_mutau_soft and chn=='mt' and per=='8TeV' else '',
                             THR=config.bbbthreshold
                             ))
                         os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
@@ -342,13 +335,12 @@ if options.update_aux :
         for chn in config.channels:
             for per in config.periods:
                 if config.categories[chn][per]:
-                    os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' --sm-categories-{CHN}='{CATS}{SOFT}' {MASSES}".format(
+                    os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' --sm-categories-{CHN}='{CATS}' {MASSES}".format(
                         CMSSW_BASE=cmssw_base,
                         LABEL=options.label,
                         ANA=ana,
                         DIR=dir,
                         CATS=' '.join(config.categories[chn][per]),
-                        SOFT=' 10 11 12 13 15 16' if options.add_mutau_soft and chn=='mt' and per=='8TeV'else '',
                         CHN=chn,
                         PER=per,
                         MASSES=' '.join(masses)
@@ -399,13 +391,12 @@ if options.update_limits :
         for chn in config.channels:
             for per in config.periods:
                 if config.categories[chn][per]:
-                    os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {LABEL} --sm-categories-{CHN}='{CATS}{SOFT}' {MASSES}".format(
+                    os.system("setup-htt.py -i aux{INDEX}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a sm -c '{CHN}' {LABEL} --sm-categories-{CHN}='{CATS}' {MASSES}".format(
                         INDEX=options.label,                
                         ANA=ana,
                         DIR=dir,
                         LABEL=label,
                         CATS=' '.join(config.categories[chn][per]),
-                        SOFT=' 10 11 12 13 15 16' if options.add_mutau_soft and chn=='mt' and per=='8TeV' else '',
                         CHN=chn,
                         PER=per,
                         MASSES=' '.join(masses)
