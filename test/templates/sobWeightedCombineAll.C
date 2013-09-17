@@ -66,12 +66,12 @@ void sobWeightedCombineAll(float muValue=1.10, bool log=false, int mass=125, int
   All_SM[ 0]="emu_vbf_loose_postfit_7TeV_LIN";
   All_SM[ 1]="emu_vbf_loose_postfit_8TeV_LIN";
   All_SM[ 2]="emu_vbf_tight_postfit_8TeV_LIN";
-  All_SM[ 3]="eleTau_vbf_loose_postfit_7TeV_LIN";
+  All_SM[ 3]="eleTau_vbf_postfit_7TeV_LIN";
   All_SM[ 4]="eleTau_vbf_loose_postfit_8TeV_LIN";
   All_SM[ 5]="eleTau_vbf_tight_postfit_8TeV_LIN"; 
   All_SM[ 6]="mumu_vbf_postfit_7TeV_LIN";
   All_SM[ 7]="mumu_vbf_postfit_8TeV_LIN";
-  All_SM[ 8]="muTau_vbf_loose_postfit_7TeV_LIN";
+  All_SM[ 8]="muTau_vbf_postfit_7TeV_LIN";
   All_SM[ 9]="muTau_vbf_loose_postfit_8TeV_LIN";
   All_SM[10]="muTau_vbf_tight_postfit_8TeV_LIN"; 
   All_SM[11]="tauTau_vbf_postfit_8TeV_LIN";
@@ -125,16 +125,23 @@ void sobWeightedCombineAll(float muValue=1.10, bool log=false, int mass=125, int
   All_SM[41]="muTau_0jet_medium_postfit_8TeV_LIN"; 
   All_SM[42]="muTau_0jet_high_postfit_7TeV_LIN";
   All_SM[43]="muTau_0jet_high_postfit_8TeV_LIN";  
+  //mt soft
+  All_SM[44]="muTau_soft_0jet_low_postfit_8TeV_LIN";
+  All_SM[45]="muTau_soft_0jet_medium_postfit_8TeV_LIN";
+  All_SM[46]="muTau_soft_0jet_high_postfit_8TeV_LIN";
+  All_SM[47]="muTau_soft_1jet_medium_postfit_8TeV_LIN";
+  All_SM[48]="muTau_soft_1jet_high_postfit_8TeV_LIN";
+  All_SM[49]="muTau_soft_vbf_postfit_8TeV_LIN";
   
   TString EMETMTTT_1JET_VBF_SM[NMAXINPUT]; 
   //vbf
   EMETMTTT_1JET_VBF_SM[ 0]="emu_vbf_loose_postfit_7TeV_LIN";
   EMETMTTT_1JET_VBF_SM[ 1]="emu_vbf_loose_postfit_8TeV_LIN";
   EMETMTTT_1JET_VBF_SM[ 2]="emu_vbf_tight_postfit_8TeV_LIN";
-  EMETMTTT_1JET_VBF_SM[ 3]="eleTau_vbf_loose_postfit_7TeV_LIN";
+  EMETMTTT_1JET_VBF_SM[ 3]="eleTau_vbf_postfit_7TeV_LIN";
   EMETMTTT_1JET_VBF_SM[ 4]="eleTau_vbf_loose_postfit_8TeV_LIN";
   EMETMTTT_1JET_VBF_SM[ 5]="eleTau_vbf_tight_postfit_8TeV_LIN"; 
-  EMETMTTT_1JET_VBF_SM[ 6]="muTau_vbf_loose_postfit_7TeV_LIN";
+  EMETMTTT_1JET_VBF_SM[ 6]="muTau_vbf_postfit_7TeV_LIN";
   EMETMTTT_1JET_VBF_SM[ 7]="muTau_vbf_loose_postfit_8TeV_LIN";
   EMETMTTT_1JET_VBF_SM[ 8]="muTau_vbf_tight_postfit_8TeV_LIN"; 
   EMETMTTT_1JET_VBF_SM[ 9]="tauTau_vbf_postfit_8TeV_LIN";
@@ -182,7 +189,7 @@ void sobWeightedCombineAll(float muValue=1.10, bool log=false, int mass=125, int
   EMu_SM[10]="emu_0jet_high_postfit_8TeV_LIN";
 
   TString ETau_SM[NMAXINPUT];
-  ETau_SM[ 0]="eleTau_vbf_loose_postfit_7TeV_LIN";
+  ETau_SM[ 0]="eleTau_vbf_postfit_7TeV_LIN";
   ETau_SM[ 1]="eleTau_vbf_loose_postfit_8TeV_LIN";
   ETau_SM[ 2]="eleTau_vbf_tight_postfit_8TeV_LIN"; 
   ETau_SM[ 3]="eleTau_1jet_medium_postfit_7TeV_LIN";
@@ -209,7 +216,7 @@ void sobWeightedCombineAll(float muValue=1.10, bool log=false, int mass=125, int
   MuMu_SM[ 9]="mumu_0jet_high_postfit_8TeV_LIN"; 
   
   TString MuTau_SM[NMAXINPUT];
-  MuTau_SM[ 0]="muTau_vbf_loose_postfit_7TeV_LIN";
+  MuTau_SM[ 0]="muTau_vbf_postfit_7TeV_LIN";
   MuTau_SM[ 1]="muTau_vbf_loose_postfit_8TeV_LIN";
   MuTau_SM[ 2]="muTau_vbf_tight_postfit_8TeV_LIN"; 
   MuTau_SM[ 3]="muTau_1jet_medium_postfit_7TeV_LIN";
@@ -224,6 +231,31 @@ void sobWeightedCombineAll(float muValue=1.10, bool log=false, int mass=125, int
   MuTau_SM[12]="muTau_0jet_medium_postfit_8TeV_LIN"; 
   MuTau_SM[13]="muTau_0jet_high_postfit_7TeV_LIN";
   MuTau_SM[14]="muTau_0jet_high_postfit_8TeV_LIN";
+  
+  TString MuTauSoft_SM[NMAXINPUT];
+  MuTau_SM[ 0]="muTau_vbf_postfit_7TeV_LIN";
+  MuTau_SM[ 1]="muTau_vbf_loose_postfit_8TeV_LIN";
+  MuTau_SM[ 2]="muTau_vbf_tight_postfit_8TeV_LIN"; 
+  MuTau_SM[ 3]="muTau_1jet_medium_postfit_7TeV_LIN";
+  MuTau_SM[ 4]="muTau_1jet_medium_postfit_8TeV_LIN";
+  MuTau_SM[ 5]="muTau_1jet_high_lowhiggs_postfit_7TeV_LIN";
+  MuTau_SM[ 6]="muTau_1jet_high_lowhiggs_postfit_8TeV_LIN"; 
+  MuTau_SM[ 7]="muTau_1jet_high_mediumhiggs_postfit_7TeV_LIN";
+  MuTau_SM[ 8]="muTau_1jet_high_mediumhiggs_postfit_8TeV_LIN"; 
+  MuTau_SM[ 9]="muTau_0jet_low_postfit_7TeV_LIN";
+  MuTau_SM[10]="muTau_0jet_low_postfit_8TeV_LIN";
+  MuTau_SM[11]="muTau_0jet_medium_postfit_7TeV_LIN";
+  MuTau_SM[12]="muTau_0jet_medium_postfit_8TeV_LIN"; 
+  MuTau_SM[13]="muTau_0jet_high_postfit_7TeV_LIN";
+  MuTau_SM[14]="muTau_0jet_high_postfit_8TeV_LIN";
+  MuTau_SM[15]="muTau_soft_0jet_low_postfit_8TeV_LIN";
+  MuTau_SM[16]="muTau_soft_0jet_medium_postfit_8TeV_LIN";
+  MuTau_SM[17]="muTau_soft_0jet_high_postfit_8TeV_LIN";
+  MuTau_SM[18]="muTau_soft_1jet_medium_postfit_8TeV_LIN";
+  MuTau_SM[19]="muTau_soft_1jet_high_postfit_8TeV_LIN";
+  MuTau_SM[20]="muTau_soft_vbf_postfit_8TeV_LIN";
+
+
 
   TString TauTau_SM[NMAXINPUT];
   TauTau_SM[ 0]="tauTau_vbf_postfit_8TeV_LIN";
