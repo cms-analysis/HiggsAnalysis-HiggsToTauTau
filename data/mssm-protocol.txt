@@ -7,9 +7,9 @@ setup-htt.py -i aux-yymmdd-mssm/bbb -o LIMITS-yymmdd-mssm/bbb -a mssm -c 'mt et 
 setup-htt.py -i aux-yymmdd-mssm/bbb -o LIMITS-yymmdd-mssm/bbb-mlfit -a mssm -c 'mt et em mm tt' 160 350 500
 ## datacards for goodness of fit 
 setup-htt.py -i aux-yymmdd-mssm/bbb -o LIMITS-yymmdd-mssm/bbb-gof   -a mssm -c 'mt et em mm tt' 160 350 500
-## datacards for goodness of fit 
+## datacards for 1d limits on ggH
 setup-htt.py -i aux-yymmdd-mssm/bbb -o LIMITS-yymmdd-mssm/bbb-ggH -p 8TeV -a mssm -c 'mt et em mm tt' 90 130 100-200:20 250-500:50 600-1000:100
-## datacards for goodness of fit 
+## datacards for 1d limits on bbH 
 setup-htt.py -i aux-yymmdd-mssm/bbb -o LIMITS-yymmdd-mssm/bbb-bbH -p 8TeV -a mssm -c 'mt et em mm tt' 90 130 100-200:20 250-500:50 600-1000:100
 ## datacards for 2d limits ggH-bbH (bbb-2d)
 mkdir LIMITS-yymmdd-mssm/bbb-ggH-bbH
@@ -50,10 +50,10 @@ plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fi
 (4) launch/collect/plot mA-tanb
 ## lauch final setup of datacards
 lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/*
-lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* 
+lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq
 ## lauch limit calculation
 lxb: submit.py --tanb+  -q '-q 2nd' LIMITS-yymmdd-mssm/bbb[-asimov]/*/*
-lxq: submit.py --tanb+  -q '-q 2nd' LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_cpu=48:00:00 -j y -o /dev/null"
+lxq: submit.py --tanb+  LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_cpu=48:00:00 -j y -o /dev/null" --options='--multi-core=4'
 ## plotting
 plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb.py LIMITS-yymmdd-mssm/bbb[-asimov] [expectedOnly=1]
 ## comparison plots (per channel)
@@ -67,10 +67,10 @@ lxb: submit.py --asymptotic --physics-model='ggH' LIMITS-yymmdd-mssm/bbb-ggH/*/*
 lxq: submit.py --asymptotic --physics-model='ggH' LIMITS-yymmdd-mssm/bbb-ggH/*/* --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
 ## plot ggH 1d limit
 plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-ggH.py LIMITS-yymmdd-mssm/bbb-ggH/*/* [expecteOnly=1]
-## launch ggH 1d limit
+## launch bbH 1d limit
 lxb: submit.py --asymptotic --physics-model='bbH' LIMITS-yymmdd-mssm/bbb-bbH/*/*
 lxq: submit.py --asymptotic --physics-model='bbH' LIMITS-yymmdd-mssm/bbb-bbH/*/* --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
-## plot ggH 1d limit
+## plot bbH 1d limit
 plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-bbH.py LIMITS-yymmdd-mssm/bbb-bbH/*/* [expecteOnly=1]
 
 
