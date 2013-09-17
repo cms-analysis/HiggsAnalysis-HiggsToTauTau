@@ -1,4 +1,4 @@
-ee_vbf		  	qqH,ggH,VH,Dibosons,WJets		lumi_8TeV				1.022
+ee_vbf		  	qqH,ggH,VH,Dibosons,WJets		lumi_8TeV				1.026
 ee_vbf			qqH,ggH,VH,ZTT,TTJ,WJets,Dibosons 	CMS_eff_e 				1.06
 ee_vbf			qqH,ggH,VH,ZEE,TTJ,WJets,Dibosons	CMS_scale_j_8TeV			1.12
 ee_vbf			qqH,ggH,VH,ZEE,TTJ,WJets,Dibosons   	CMS_htt_scale_met_8TeV			1.05

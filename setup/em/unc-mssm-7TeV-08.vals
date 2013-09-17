@@ -1,5 +1,5 @@
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-emu_nobtag	signal,EWK              	lumi_7TeV            			1.022
+emu_nobtag	signal,EWK              	lumi_7TeV            			1.026
 emu_nobtag	signal,background 		CMS_eff_e 				1.02
 emu_nobtag 	signal,Ztt	 		CMS_scale_e_7TeV 			1.00
 emu_nobtag	signal,background 		CMS_eff_m 				1.02

@@ -1,6 +1,6 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-muTau_0jet_high			signal	  	            	lumi_7TeV            				1.022
+muTau_0jet_high			signal	  	            	lumi_7TeV            				1.026
 muTau_0jet_high   		ggH				pdf_gg    					1.097
 muTau_0jet_high		   	qqH				pdf_qqbar					1.036
 muTau_0jet_high		   	VH				pdf_qqbar					1.04

@@ -1,6 +1,6 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-eleTau_vbf_loose		signal		             	lumi_8TeV            				1.022
+eleTau_vbf_loose		signal		             	lumi_8TeV            				1.026
 eleTau_vbf_loose   		ggH				pdf_gg    					1.097
 eleTau_vbf_loose   		qqH				pdf_qqbar					1.036
 eleTau_vbf_loose   		VH				pdf_qqbar					1.04
