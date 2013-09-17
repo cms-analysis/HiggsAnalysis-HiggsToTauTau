@@ -79,6 +79,7 @@ for chn in config.channels:
 patterns = {
     'no-bbb' : '',
     'bbb'    : '',
+    'bbb:hww-bg'    : '',
     }
 
 if options.update_all :
@@ -296,25 +297,12 @@ if options.update_setup :
                         filename="{DIR}/{TARGET}/em/cgs-sm-{PERIOD}-0{CATEGORY}.conf".format(DIR=dir, TARGET=ana[ana.find(':')+1:], PERIOD=period, CATEGORY=category)
                         print 'processing file:', filename
                         cgs_adaptor.cgs_processes(filename,None,['ggH_hww','qqH_hww'])
-            if 'vhtt' in config.channels:
-                for period in config.periods:
-                    for category in ['0','1','2','3','4','5','6']:
-                        if period == '7TeV' and category == '2': continue
-                        filename="{DIR}/{TARGET}/vhtt/cgs-sm-{PERIOD}-0{CATEGORY}.conf".format(DIR=dir, TARGET=ana[ana.find(':')+1:], PERIOD=period, CATEGORY=category)
-                        print 'processing file:', filename
-                        cgs_adaptor.cgs_processes(filename,None,['WH_hww' if int(cat) < 3 else 'ZH_hww'])
             for file in glob.glob("{DIR}/{TARGET}/em/cgs-sm-*.conf".format(  DIR=dir, TARGET=ana[ana.find(':')+1:])) :
                 os.system("perl -pi -e 's/ggH_hww/ggH_hww{MASS}/g' {FILE}".format(MASS='125', FILE=file))
                 os.system("perl -pi -e 's/qqH_hww/qqH_hww{MASS}/g' {FILE}".format(MASS='125', FILE=file))
             for file in glob.glob("{DIR}/{TARGET}/em/unc-sm-*.vals".format(  DIR=dir, TARGET=ana[ana.find(':')+1:])) :
                 os.system("perl -pi -e 's/ggH_hww/ggH_hww{MASS}/g' {FILE}".format(MASS='125', FILE=file))
                 os.system("perl -pi -e 's/qqH_hww/qqH_hww{MASS}/g' {FILE}".format(MASS='125', FILE=file))
-            for file in glob.glob("{DIR}/{TARGET}/vhtt/cgs-sm-*.conf".format(DIR=dir, TARGET=ana[ana.find(':')+1:])) :
-                os.system("perl -pi -e 's/WH_hww/WH_hww{MASS}/g'   {FILE}".format(MASS='125', FILE=file))
-                os.system("perl -pi -e 's/ZH_hww/ZH_hww{MASS}/g'   {FILE}".format(MASS='125', FILE=file))
-            for file in glob.glob("{DIR}/{TARGET}/vhtt/unc-sm-*.vals".format(DIR=dir, TARGET=ana[ana.find(':')+1:])) :
-                os.system("perl -pi -e 's/WH_hww/WH_hww{MASS}/g'   {FILE}".format(MASS='125', FILE=file))
-                os.system("perl -pi -e 's/ZH_hww/ZH_hww{MASS}/g'   {FILE}".format(MASS='125', FILE=file))
 
 if options.update_aux :
     print "##"
