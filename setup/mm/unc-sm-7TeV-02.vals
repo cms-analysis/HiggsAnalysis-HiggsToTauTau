@@ -1,4 +1,4 @@
-mumu_1jet_low		  	qqH,ggH,VH,Dibosons,WJets		lumi_7TeV				1.022
+mumu_1jet_low		  	qqH,ggH,VH,Dibosons,WJets		lumi_7TeV				1.026
 mumu_1jet_low			qqH,ggH,VH,ZTT,TTJ,WJets,Dibosons 	CMS_eff_m				1.04
 mumu_1jet_low			qqH,ggH,VH,TTJ,Dibosons			CMS_scale_j_7TeV			0.5
 mumu_1jet_low			qqH,ggH,VH,TTJ,Dibosons   		CMS_htt_scale_met_7TeV			1.03

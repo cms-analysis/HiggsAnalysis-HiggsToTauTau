@@ -54,12 +54,7 @@ channel(std::string& label){
 	  label==std::string("ggH")        ||
 	  label==std::string("bbH")        ||
 	  label==std::string("mvis")       ||
-	  label==std::string("test-0")     ||
-	  label==std::string("test-1")     ||
-	  label==std::string("test-2")     ||
-	  label==std::string("test-3")     ||
-	  label==std::string("test-4")     ||
-	  label==std::string("test-5")     ||
+	  label==std::string("HCPcorr")    ||
 	  label==std::string("HIG-11-020") ||
 	  label==std::string("HIG-11-029") ||
 	  label==std::string("HIG-12-018") ||
@@ -102,19 +97,14 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("ggH"       )) title = std::string("gg#rightarrow#phi (bbH profiled)");
   if(channel==std::string("bbH"       )) title = std::string("gg#rightarrowbb#phi (ggH profiled)");
   if(channel==std::string("mvis"      )) title = std::string("Visible mass");
-  if(channel==std::string("test-0"    )) title = std::string("w/o prefit");
-  if(channel==std::string("test-1"    )) title = std::string("w/o prefit");
-  if(channel==std::string("test-2"    )) title = std::string("gg#rightarrowbb#phi (w/o prefit)");
-  if(channel==std::string("test-3"    )) title = std::string("gg#rightarrow#phi (w/o prefit)");
-  if(channel==std::string("test-4"    )) title = std::string("Test-4");
-  if(channel==std::string("test-5"    )) title = std::string("Test-5");
+  if(channel==std::string("HCPcorr"   )) title = std::string("HIG-12-050 no-bug (17 fb^{-1})"); 
   if(channel==std::string("HIG-11-020")) title = std::string("HIG-11-020 (1.6 fb^{-1})");
   if(channel==std::string("HIG-11-020")) title = std::string("HIG-11-020 (1.6 fb^{-1})");
   if(channel==std::string("HIG-11-029")) title = std::string("HIG-11-029 (4.9 fb^{-1})");
   if(channel==std::string("HIG-12-018")) title = std::string("HIG-12-018 (10 fb^{-1})");
   if(channel==std::string("HIG-12-032")) title = std::string("HIG-12-032 (5-10 fb^{-1})");
   if(channel==std::string("HIG-12-043")) title = std::string("HIG-12-043 (17 fb^{-1})");
-  if(channel==std::string("HIG-12-050")) title = std::string("HIG-12-050 (17 fb^{-1})"); 
+  if(channel==std::string("HIG-12-050")) title = std::string("HIG-12-050 bug (17 fb^{-1})"); 
   return title;
 }
 
@@ -127,8 +117,8 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["2jet"       ] = kMagenta;
   colors["vbf"        ] = kRed;
   colors["boost"      ] = kGreen;
-  colors["btag"       ] = kBlack; //kRed
-  colors["nobtag"     ] = kBlack; //kBlue
+  colors["btag"       ] = kRed; 
+  colors["nobtag"     ] = kBlue; 
   colors["em"         ] = kBlue;
   colors["et"         ] = kRed;
   colors["mt"         ] = kGreen;
@@ -149,23 +139,18 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["nobtag-tt"         ] = kMagenta+3;
   colors["vhtt"       ] = kCyan-6;
   colors["cmb"        ] = kBlack;
-  colors["cmb+"       ] = kBlack; //kGray+2;
+  colors["cmb+"       ] = kGray+2; 
   colors["htt"        ] = kBlack;
   colors["ggH"        ] = kRed;
   colors["bbH"        ] = kBlue;
   colors["mvis"       ] = kBlue+2;
-  colors["test-0"     ] = kRed+2;
-  colors["test-1"     ] = kGreen+2;
-  colors["test-2"     ] = kGreen;
-  colors["test-3"     ] = kRed+2;
-  colors["test-4"     ] = kBlue;
-  colors["test-5"     ] = kViolet-6;
+  colors["HCPcorr"    ] = kBlue;
   colors["HIG-11-020" ] = kBlue+2;
   colors["HIG-11-029" ] = kRed+2;
   colors["HIG-12-018" ] = kBlue;
   colors["HIG-12-032" ] = kRed+2;
   colors["HIG-12-043" ] = kRed;
-  colors["HIG-12-050" ] = kBlack;
+  colors["HIG-12-050" ] = kRed;
 
   std::cout << " *******************************************************************************************************\n"
 	    << " * Usage     : root -l                                                                                  \n"
@@ -209,21 +194,14 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   canv1->cd();
   canv1->SetGridx(1);
   canv1->SetGridy(1);
-  if(std::string(type) == std::string("mssm-xsec")) canv1->SetLogx(1); 
+  if(std::string(type) == std::string("mssm-xsec") || std::string(type) == std::string("mssm-tanb")) canv1->SetLogx(1); 
 
   bool firstPlot=true;
   for(unsigned int i=0; i<hexp.size(); ++i){
     if(firstPlot){
-      if(std::string(type) == std::string("mssm-xsec")){
 	if(log){ canv1->SetLogy(1); }
 	hexp[i]->SetMaximum(maximum);
 	hexp[i]->SetMinimum(minimum);
-      }
-      else{
-	if(log){ canv1->SetLogy(1); }
-	hexp[i]->SetMaximum(maximum);
-	hexp[i]->SetMinimum(minimum);
-      }
       
       // format x-axis
       std::string x_title;
@@ -241,14 +219,14 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       hexp[i]->GetXaxis()->SetTitleFont(62);
       hexp[i]->GetXaxis()->SetTitleColor(1);
       hexp[i]->GetXaxis()->SetTitleOffset(1.05);
-      if(std::string(type) == std::string("mssm-xsec")){
+      if(std::string(type) == std::string("mssm-xsec") || std::string(type) == std::string("mssm-tanb")){
 	hexp[i]->GetXaxis()->SetNdivisions(50005, "X");
 	hexp[i]->GetXaxis()->SetMoreLogLabels();
 	hexp[i]->GetXaxis()->SetNoExponent();
 	hexp[i]->GetXaxis()->SetLabelSize(0.040);
       }
       hexp[i]->GetXaxis()->SetLimits(hexp[i]->GetX()[0]-.1, hexp[i]->GetX()[hexp[i]->GetN()-1]+.1);
-      if(std::string(type) == std::string("mssm-xsec")){
+      if(std::string(type) == std::string("mssm-xsec") || std::string(type) == std::string("mssm-tanb")){
 	if(log){
 	  hexp[i]->GetXaxis()->SetLimits(hexp[i]->GetX()[0], hexp[i]->GetX()[hexp[i]->GetN()-1]+.1);
 	}
@@ -287,16 +265,9 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   }
   for(unsigned int i=0; i<hobs.size(); ++i){
     if(firstPlot){
-      if(std::string(type) == std::string("mssm-xsec")){
-	if(log){ canv1->SetLogy(1); }
-	hobs[i]->SetMaximum(maximum);
-	hobs[i]->SetMinimum(minimum);
-      }
-      else{
-	if(log){ canv1->SetLogy(1); }
-	hobs[i]->SetMaximum(maximum);
-	hobs[i]->SetMinimum(minimum);
-      }
+      if(log){ canv1->SetLogy(1); }
+      hobs[i]->SetMaximum(maximum);
+      hobs[i]->SetMinimum(minimum);
       
       // format x-axis
       std::string x_title;
@@ -314,14 +285,14 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       hobs[i]->GetXaxis()->SetTitleFont(62);
       hobs[i]->GetXaxis()->SetTitleColor(1);
       hobs[i]->GetXaxis()->SetTitleOffset(1.05);
-      if(std::string(type) == std::string("mssm-xsec")){
+      if(std::string(type) == std::string("mssm-xsec") || std::string(type) == std::string("mssm-tanb")){
 	hobs[i]->GetXaxis()->SetNdivisions(50005, "X");
 	hobs[i]->GetXaxis()->SetMoreLogLabels();
 	hobs[i]->GetXaxis()->SetNoExponent();
 	hobs[i]->GetXaxis()->SetLabelSize(0.040);
       }
       hobs[i]->GetXaxis()->SetLimits(hobs[i]->GetX()[0]-.1, hobs[i]->GetX()[hobs[i]->GetN()-1]+.1);
-      if(std::string(type) == std::string("mssm-xsec")){
+      if(std::string(type) == std::string("mssm-xsec") || std::string(type) == std::string("mssm-tanb")){
 	if(log){
 	  hobs[i]->GetXaxis()->SetLimits(hobs[i]->GetX()[0], hobs[i]->GetX()[hobs[i]->GetN()-1]+.1);
 	}

@@ -600,4 +600,13 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   VH   ->Write("VH"      );
 #endif
   output->Close();
+ 
+  delete errorBand;
+  delete model;
+  delete test1;
+  delete zero;
+  delete rat1;
+  delete rat2;
+  delete zero_samples;
+  delete ref;
 }

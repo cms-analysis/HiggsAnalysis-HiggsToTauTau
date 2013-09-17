@@ -2,6 +2,9 @@ import os
 import glob
 import ROOT
 
+ROOT.PyConfig.IgnoreCommandLineOptions = True
+ROOT.gROOT.SetBatch()
+
 #from HiggsAnalysis.CombinedLimit.DatacardParser import *
 
 class DatacardAdaptor(object) :

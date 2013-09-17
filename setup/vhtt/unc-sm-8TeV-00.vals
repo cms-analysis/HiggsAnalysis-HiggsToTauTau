@@ -30,4 +30,4 @@ mmtCatHigh,mmtCatLow signal QCDscale_VH 1.01
 
 
 # Stat shape uncertainties
-mmtCatHigh,mmtCatLow fakes CMS_vhtt_mmt_fakes_8TeV 1.50
+mmtCatHigh,mmtCatLow fakes CMS_vhtt_mmt_fakes_8TeV 1.14

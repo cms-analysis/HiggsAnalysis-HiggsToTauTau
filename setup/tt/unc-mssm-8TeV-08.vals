@@ -1,4 +1,4 @@
-tauTau_nobtag			signal		            	lumi_8TeV            				1.022
+tauTau_nobtag			signal		            	lumi_8TeV            				1.026
 tauTau_nobtag 			signal,ZTT,TT,VV		CMS_eff_t_tautau_8TeV 				1.19
 tauTau_nobtag			signal,ZTT   			CMS_scale_t_tautau_8TeV 			1.00        
 tauTau_nobtag         		ggH				CMS_scale_j_8TeV				1.05
