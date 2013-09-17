@@ -19,7 +19,11 @@ import math
 log = logging.getLogger('postfit')
 
 def quad(*args):
-    return math.sqrt(sum(args))
+    return math.sqrt( 
+        sum(
+            map(lambda x: x**2, args)
+        )
+    )
 
 def reset_bin_errors(histogram):
     ''' Reset a histograms errors to zero '''
