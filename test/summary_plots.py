@@ -11,11 +11,12 @@ parser.add_option("--mA", dest="mA", default="160", type="float", help="Mass of 
 parser.add_option("--tanb", dest="tanb", default="8", type="float", help="Tanb only needed for mssm. [Default: '8']")
 parser.add_option("-c", "--config", dest="config", default="", type="string", help="Additional configuration file to be used for the channels, periods and categories. [Default: '']")
 parser.add_option("--debug", dest="debug", action="store_true", default=False, help="Debug option to show only scripts which are run without actually running them [Default: False]")
+parser.add_option("--add-mutau-soft", dest="add_mutau_soft", action="store_true", default=False, help="Add the soft categories to the mt channel [Default: False]")
 parser.add_option("--hww-background", dest="hwwbg", action="store_true", default=False, help="Add H->WW processes as background to the em channel [Default: False]")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 
-config=configuration(options.analysis, options.config)
+config=configuration(options.analysis, options.config, options.add_mutau_soft)
 
 ## a set of pre-defined lists
 
