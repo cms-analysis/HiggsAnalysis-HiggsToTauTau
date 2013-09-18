@@ -5,7 +5,7 @@ eleTau_vbf   		ggH				pdf_gg    				1.097
 eleTau_vbf   		qqH				pdf_qqbar				1.036
 eleTau_vbf   		VH				pdf_qqbar				1.02
 eleTau_vbf		ggH				QCDscale_ggH2in 			0.725
-eleTau_vbf		qqH				QCDscale_qqH				0.987
+eleTau_vbf		qqH				QCDscale_qqH				0.981
 eleTau_vbf		VH				QCDscale_VH				1.04
 eleTau_vbf		qqH,VH				UEPS					0.987
 eleTau_vbf		ggH				UEPS					0.90
