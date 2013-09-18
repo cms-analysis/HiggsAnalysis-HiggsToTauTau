@@ -27,7 +27,7 @@ eleTau_vbf_loose		ZTT,ZL,ZJ			CMS_htt_zttNorm_8TeV 				1.03
 eleTau_vbf_loose		TT				CMS_htt_ttbarNorm_8TeV				1.08
 eleTau_vbf_loose		TT				CMS_htt_ttbarNorm_etau_vbf_loose_8TeV		1.33
 eleTau_vbf_loose		VV				CMS_htt_DiBosonNorm_8TeV			1.15
-eleTau_vbf_loose		VV				CMS_htt_DiBosonNorm_etau_vbf_loose_8TeV		1.31
+eleTau_vbf_loose		VV				CMS_htt_DiBosonNorm_etau_vbf_loose_8TeV		1.39
 eleTau_vbf_loose		W				CMS_htt_WNorm_etau_vbf_loose_8TeV		1.26
 eleTau_vbf_loose		ZTT				CMS_htt_extrap_ztt_etau_vbf_loose_8TeV		1.10
 eleTau_vbf_loose		QCD				CMS_htt_QCDSyst_etau_vbf_loose_8TeV		1.30
@@ -35,6 +35,6 @@ eleTau_vbf_loose		QCD				CMS_htt_QCDShape_etau_vbf_loose_8TeV		1.00
 eleTau_vbf_loose		ZL				CMS_htt_ZLeptonFakeTau_etau_low_8TeV		1.06
 eleTau_vbf_loose		ZL				CMS_htt_ZLeptonFakeTau_etau_medium_8TeV		1.08
 eleTau_vbf_loose		ZL				CMS_htt_ZLeptonFakeTau_etau_high_8TeV		1.06
-eleTau_vbf_loose		ZL				CMS_htt_ZLeptonFakeTau_etau_vbf_loose_8TeV	1.61
+eleTau_vbf_loose		ZL				CMS_htt_ZLeptonFakeTau_etau_vbf_loose_8TeV	1.70
 eleTau_vbf_loose		ZJ				CMS_htt_ZJetFakeTau_etau_vbf_loose_8TeV		1.20
 eleTau_vbf_loose        	ZL				CMS_htt_ZLScale_etau_8TeV	                1.00

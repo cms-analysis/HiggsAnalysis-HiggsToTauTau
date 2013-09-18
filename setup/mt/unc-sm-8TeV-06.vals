@@ -31,9 +31,9 @@ muTau_vbf_loose		VV				CMS_htt_DiBosonNorm_8TeV			1.15
 muTau_vbf_loose		VV				CMS_htt_DiBosonNorm_mutau_vbf_loose_8TeV	1.50
 muTau_vbf_loose		W				CMS_htt_WNorm_mutau_vbf_loose_8TeV		1.21
 muTau_vbf_loose		ZTT				CMS_htt_extrap_ztt_mutau_vbf_loose_8TeV		1.10
-muTau_vbf_loose		QCD			        CMS_htt_QCDSyst_mutau_vbf_loose_8TeV		1.19
+muTau_vbf_loose		QCD			        CMS_htt_QCDSyst_mutau_vbf_loose_8TeV		1.30
 muTau_vbf_loose		QCD			        CMS_htt_QCDShape_mutau_vbf_loose_8TeV		1.00
 muTau_vbf_loose		ZL				CMS_htt_ZLeptonFakeTau_mutau_8TeV		1.30
-muTau_vbf_loose		ZL				CMS_htt_ZLeptonFakeTau_mutau_vbf_loose_8TeV	1.61
-muTau_vbf_loose		ZJ				CMS_htt_ZJetFakeTau_mutau_vbf_loose_8TeV	1.40
+muTau_vbf_loose		ZL				CMS_htt_ZLeptonFakeTau_mutau_vbf_loose_8TeV	1.70
+muTau_vbf_loose		ZJ				CMS_htt_ZJetFakeTau_mutau_vbf_loose_8TeV	1.30
 muTau_vbf_loose		ZL				CMS_htt_ZLScale_mutau_8TeV      		1.00
