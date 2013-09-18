@@ -16,6 +16,9 @@ import ROOT
 import shutil
 import sys
 
+ROOT.PyConfig.IgnoreCommandLineOptions = True
+ROOT.gROOT.SetBatch()  
+
 log = logging.getLogger('stat_shapes')
 
 def walk_and_copy(inputdir, outputdir, pattern, mergers, threshold, prefix, normalize):
