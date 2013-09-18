@@ -5,7 +5,7 @@ eleTau_0jet_medium   			ggH				pdf_gg    					1.097
 eleTau_0jet_medium		   	qqH				pdf_qqbar					1.036
 eleTau_0jet_medium		   	VH				pdf_qqbar					1.02
 eleTau_0jet_medium			ggH				QCDscale_ggH     				1.08
-eleTau_0jet_medium     			qqH				QCDscale_qqH					1.023
+eleTau_0jet_medium     			qqH				QCDscale_qqH					1.022
 eleTau_0jet_medium     			VH				QCDscale_VH					1.04
 eleTau_0jet_medium			qqH,VH				UEPS						1.05
 eleTau_0jet_medium			ggH				UEPS						1.013
