@@ -1,6 +1,6 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-muTau_soft_1jet_medium		signal		             	lumi_8TeV            				1.026
+muTau_soft_1jet_medium		signal		             	lumi_8TeV            				1.042
 muTau_soft_1jet_medium	   	ggH				pdf_gg    					1.08
 muTau_soft_1jet_medium	   	qqH				pdf_qqbar					1.03
 muTau_soft_1jet_medium	   	VH				pdf_qqbar					1.04
@@ -26,11 +26,11 @@ muTau_soft_1jet_medium		TT	        		CMS_eff_b_8TeV		        		0.95
 muTau_soft_1jet_medium		VV	        		CMS_eff_b_8TeV		        		0.99
 #muTau_soft_1jet_medium		signal,ZJ,ZL,TT,VV	        CMS_fake_b_8TeV		        		0.98
 muTau_soft_1jet_medium		ZTT,ZJ,ZL			CMS_htt_zttNorm_8TeV 				1.03
-muTau_soft_1jet_medium        	ZTT				CMS_htt_extrap_ztt_mutau_soft_1jet_medium_8TeV	1.05
+muTau_soft_1jet_medium        	ZTT				CMS_htt_extrap_ztt_mutau_soft_1jet_medium_8TeV	1.10
 muTau_soft_1jet_medium		TT				CMS_htt_ttbarNorm_8TeV				1.10
 muTau_soft_1jet_medium		VV				CMS_htt_DiBosonNorm_8TeV			1.15
-muTau_soft_1jet_medium		W				CMS_htt_WNorm_mutau_soft_1jet_medium_8TeV	1.10
+muTau_soft_1jet_medium		W				CMS_htt_WNorm_mutau_soft_1jet_medium_8TeV	1.18
 muTau_soft_1jet_medium         	QCD				CMS_htt_QCDSyst_mutau_soft_1jet_medium_8TeV	1.10
 muTau_soft_1jet_medium		ZJ				CMS_htt_ZJetFakeTau_mutau_soft_1jet_medium_8TeV 1.20
 muTau_soft_1jet_medium		ZL				CMS_htt_ZLeptonFakeTau_mutau_soft_8TeV	  	1.30
-muTau_soft_1jet_medium		background,signal		CMS_L1etm_mutau_soft_1jet_medium_8TeV		1.00
+muTau_soft_1jet_medium		signal,ZTT,ZL,ZJ,TT,VV,W	CMS_L1etm_mutau_soft_1jet_medium_8TeV		1.00

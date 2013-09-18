@@ -264,6 +264,7 @@ if options.optGoodnessOfFit :
             else :
                 if options.calculate_injected :
                     os.system("limit.py --goodness-of-fit --collect-injected-toys {USER} {DIR}".format(USER=options.opt, DIR=dir, ))
+                    os.system("limit.py --goodness-of-fit --observedOnly {USER} {DIR}".format(USER=options.opt, DIR=dir))
                 else:
                     os.system("limit.py --goodness-of-fit --expectedOnly --toys {TOYS} --seed {SEED} {USER} {DIR}".format(
                         TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt, DIR=dir, ))
@@ -290,13 +291,13 @@ if options.optMLFit :
             if mass == 'common' :
                 continue
             if options.printOnly :
-                print"limit.py --max-likelihood --stable --rMin -5 --rMax 5 {DIR}".format(DIR=dir)
+                print"limit.py --max-likelihood --stable-old --rMin -5 --rMax 5 {DIR}".format(DIR=dir)
             else :
-                os.system("limit.py --max-likelihood --stable --rMin -5 --rMax 5 {USER} {DIR}".format(USER=options.opt, DIR=dir))
+                os.system("limit.py --max-likelihood --stable-old --rMin -5 --rMax 5 {USER} {DIR}".format(USER=options.opt, DIR=dir))
     else :
         ## directories and mases per directory
         struct = directories(args)
-        lxb_submit(struct[0], struct[1], "--max-likelihood", "--stable --rMin -5 --rMax 5 {USER}".format(USER=options.opt))
+        lxb_submit(struct[0], struct[1], "--max-likelihood", "--stable-old --rMin -5 --rMax 5 {USER}".format(USER=options.opt))
 ##
 ## LIKELIHOOD-SCAN
 ##
