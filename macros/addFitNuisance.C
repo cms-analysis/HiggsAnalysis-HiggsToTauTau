@@ -7,6 +7,7 @@
 #include "TFitResultPtr.h"
 #include "TH1F.h"
 #include "TMath.h"
+#include "TPaveText.h"
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "RooBinning.h"                                                                                                                                                               
@@ -515,7 +516,6 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
       lM.setRange(lFirst,2000);
   }
 
-
   std::string lNuisance1 =  iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy + "_" + iBkg;
   std::string lNuisance2 =  iBkg+"_"+"CMS_"+iName+"2_" + iDir + "_" + iEnergy + "_" + iBkg;
   lHUp    = merge(lNuisance1 + "Up"   ,lFirst,lH0,lHUp);
@@ -524,6 +524,8 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   lHDown1 = merge(lNuisance2 + "Down" ,lFirst,lH0,lHDown1);
   lH      = merge(lH0->GetName()      ,lFirst,lH0,lH);
 
+  
+  
   double I1=lHUp->Integral(lHUp->FindBin(lFirst), lHUp->FindBin(2000));  
   double I2=lHDown->Integral(lHDown->FindBin(lFirst), lHDown->FindBin(2000));  
   double I3=lHUp1->Integral(lHUp1->FindBin(lFirst), lHUp1->FindBin(2000));  
@@ -618,6 +620,38 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   lHDown  = rebin(lHDown ,lNBins,lAxis);
   lHUp1   = rebin(lHUp1  ,lNBins,lAxis);
   lHDown1 = rebin(lHDown1,lNBins,lAxis);
+ 
+  //Clone the fit result and original template for computing the chi2 and KS probability of the fit
+  TH1F *lHclone = (TH1F*) lH->Clone(); 
+  TH1F *lH0clone =(TH1F*) lH0->Clone(); 
+  for(unsigned i=1; i<lData->FindBin(lFirst); i++)
+  {
+       lHclone->SetBinContent(i, 0.0);
+       lH0clone->SetBinContent(i, 0.0);
+       lHclone->SetBinError(i, 0.0);
+       lH0clone->SetBinError(i, 0.0);
+  }
+  //Compute the KS probability
+ double kstest=lHclone->KolmogorovTest(lH0clone);
+ //For the chi2 probability, remove bins with no entry in the original template as this screws up the chi2 calculation
+  for(unsigned i=lData->FindBin(lFirst); i<=lData->FindBin(2000); i++)
+  {
+       if(lH0clone->GetBinContent(i)==0)
+       {
+            lHclone->SetBinContent(i, 0.0);
+            //lH0clone->SetBinContent(i, 0.0);
+            lHclone->SetBinError(i, 0.0);
+            lH0clone->SetBinError(i, 0.0);
+       }
+  }
+ double chi2test= lHclone->Chi2Test(lH0clone, "WW");
+
+ if(iVerbose)
+ {
+    std::cout << "==========================================================================================================" << std::endl;
+    std::cout << "Result of chi2 probability test: " <<  chi2test << ", KS probability test: " << kstest << std::endl;
+    std::cout << "==========================================================================================================" << std::endl;
+ }
   
   // we dont need this bin errors since we do not use them (fit tails replaces bin-by-bin error!), therefore i set all errors to 0, this also saves us from modifying the add_bbb_error.py script in which I otherwise would have to include a option for adding bbb only in specific ranges
   int lMergeBin = lH->GetXaxis()->FindBin(iFirst);
@@ -699,6 +733,16 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   leg1->AddEntry( lHUp1 , "shift2 up",  "L" );
   leg1->AddEntry( lHDown1 , "shift2 down",  "L" );
   leg1->Draw("same");
+  
+  TPaveText* stat1 = new TPaveText(0.20, 0.90, 0.50, 0.99, "NDC");
+  stat1->SetBorderSize(   0 );
+  stat1->SetFillStyle(    0 );
+  stat1->SetTextAlign(   12 );
+  stat1->SetTextSize ( 0.05 );
+  stat1->SetTextColor(    1 );
+  stat1->SetTextFont (   62 );
+  stat1->AddText(TString::Format("P(#chi^{2})=%.5f, P(KS)=%.5f", chi2test, kstest));
+  stat1->Draw();
   
   lC0->cd(2)->SetPad(0,0,1.0,0.2); gPad->SetLeftMargin(0.2) ;
   drawDifference(lH0,lH,lHUp,lHDown,lHUp1,lHDown1);
