@@ -20,7 +20,7 @@ def get_sigma(factor,fname):
     ffile = open(fname,'r')
     for line in ffile.readlines():
         if line.strip().lower().startswith(factor.lower()):
-	    sigma = float(line.split("(")[1].split(")")[0].split(" ")[1])
+	    sigma = float(line.split("(")[2].split(")")[0].split(" ")[1])
             return sigma
             
 def parse_dcard(datacard,fitres,bin_name="ANYBIN"):
