@@ -29,12 +29,13 @@ def combine_cards(card_globs, output_stream=sys.stdout) :
     ]
     if isinstance(card_globs, basestring):
         card_globs = [card_globs]
-    cards = set([])
+    cards = list([])
     for card_glob in card_globs:
         for card in glob.glob(card_glob):
-            cards.add(card[:card.rfind('.txt')]+'='+card)
+            cards.append(card[:card.rfind('.txt')]+'='+card)
     if not cards:
         raise IOError("No cards matched by: " + " ".join(card_globs))
+    cards.sort()
     cmd.extend(cards)
     log.info(" %s", " ".join(cmd))
     return subprocess.call(cmd, stdout=output_stream)
