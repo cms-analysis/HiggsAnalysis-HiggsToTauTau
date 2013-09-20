@@ -2,40 +2,38 @@
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 
 
-mmmt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125, TTZ             lumi_7TeV                            1.022
-mmmt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125, TTZ             CMS_eff_m                            1.06
-mmmt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125, TTZ             CMS_eff_t                            1.06
-mmmt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125, TTZ             CMS_scale_m                          1.03
-mmmt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125, TTZ             CMS_trigger_m                        1.01
-mmmt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125, TTZ             CMS_fake_b                           1.01
-mmmt_zh      ZZ                               CMS_vhtt_ZZ                          1.023
-mmmt_zh      signal,ZZ                        pdf_qqbar                            1.034
-mmmt_zh      signal                           QCDscale_VH                          1.004
-mmmt_zh      ZZ                               CMS_zh2l2tau_ZZBkg_extrap            1.10
-mmmt_zh      Zjets                            CMS_zh2l2tau_ZjetBkg_lt_extrap       1.20
-mmmt_zh      Zjets                            CMS_zh2l2tau_ZjetBkg_emu_extrap      1.10
-mmmt_zh      Zjets                            CMS_zh2l2tau_ZjetBkgMMMT_7TeV        1
-mmmt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125, TTZ             CMS_scale_t                                 1.00
-mmmt_zh      GGToZZ2L2L                       CMS_zh2l2tau_GGZZ2L2LBkg             1.44
+mmmt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             lumi_7TeV                            1.022
+mmmt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_eff_m                            1.06
+mmmt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_eff_t_llmt                            1.06
+mmmt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_trigger_m                        1.01
+mmmt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_fake_b_7TeV                      1.01
+mmmt_zh      ZZ                                             QCDscale_VV                          1.023
+mmmt_zh      ZZ                                             pdf_qqbar                            1.033
+mmmt_zh      signal,ZH_hww125                               pdf_qqbar                            1.027
+mmmt_zh      signal,ZH_hww125                               QCDscale_VH                          1.029
+mmmt_zh      Zjets                                          CMS_zh2l2tau_ZjetBkg_lt_extrap       1.20
+mmmt_zh      Zjets                                          CMS_zh2l2tau_ZjetBkg_emu_extrap      1.10
+mmmt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_scale_t_llmt                          1.00
+mmmt_zh      GGToZZ2L2L                                     CMS_zh2l2tau_GGZZ2L2LBkg             1.44
+mmmt_zh      TTZ                                            CMS_zh2l2tau_TTZBkg                  1.50
 
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 
 
-eemt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125, TTZ             lumi_7TeV                            1.022
-eemt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125, TTZ             CMS_eff_e                            1.04
-eemt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125, TTZ             CMS_eff_m                            1.02
-eemt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125, TTZ             CMS_eff_t                            1.06
-eemt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125, TTZ             CMS_scale_e                          1.02
-eemt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125, TTZ             CMS_scale_m                          1.01
-eemt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125, TTZ             CMS_trigger_e                        1.01
-eemt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125, TTZ             CMS_fake_b                           1.01
-eemt_zh      ZZ                               CMS_vhtt_ZZ                          1.023
-eemt_zh      signal,ZZ                        pdf_qqbar                            1.034
-eemt_zh      signal                           QCDscale_VH                          1.004
-eemt_zh      ZZ                               CMS_zh2l2tau_ZZBkg_extrap            1.10
-eemt_zh      Zjets                            CMS_zh2l2tau_ZjetBkg_lt_extrap       1.20
-eemt_zh      Zjets                            CMS_zh2l2tau_ZjetBkg_emu_extrap      1.10
-eemt_zh      Zjets                            CMS_zh2l2tau_ZjetBkgEEMT_7TeV        1
-eemt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125, TTZ             CMS_scale_t                                 1.00
-eemt_zh      GGToZZ2L2L                       CMS_zh2l2tau_GGZZ2L2LBkg             1.44
+eemt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             lumi_7TeV                            1.022
+eemt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_eff_e                            1.04
+eemt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_eff_m                            1.02
+eemt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_eff_t_llmt                            1.06
+eemt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_trigger_e                        1.01
+eemt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_fake_b_7TeV                      1.01
+eemt_zh      ZZ                                             QCDscale_VV                          1.023
+eemt_zh      ZZ                                             pdf_qqbar                            1.033
+eemt_zh      signal,ZH_hww125                               pdf_qqbar                            1.027
+eemt_zh      signal,ZH_hww125                               QCDscale_VH                          1.029
+eemt_zh      Zjets                                          CMS_zh2l2tau_ZjetBkg_lt_extrap       1.20
+eemt_zh      Zjets                                          CMS_zh2l2tau_ZjetBkg_emu_extrap      1.10
+eemt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_scale_t_llmt                          1.00
+eemt_zh      GGToZZ2L2L                                     CMS_zh2l2tau_GGZZ2L2LBkg             1.44
+eemt_zh      TTZ                                            CMS_zh2l2tau_TTZBkg                  1.50
+

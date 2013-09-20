@@ -11,10 +11,10 @@ emtCatHigh,emtCatLow simulated CMS_trigger_em 1.01
 # Efficiency uncertainties
 emtCatHigh,emtCatLow simulated CMS_eff_e 1.02
 emtCatHigh,emtCatLow simulated CMS_eff_m 1.02
-emtCatHigh,emtCatLow simulated CMS_eff_t 1.08
+emtCatHigh,emtCatLow simulated CMS_eff_t_emt 1.08
 
 # Scale uncertainties
-emtCatHigh,emtCatLow simulated CMS_scale_t 1.03
+emtCatHigh,emtCatLow simulated CMS_scale_t_emt 1.03
 
 # Efficiency of b-jet veto
 emtCatHigh,emtCatLow simulated CMS_fake_b_7TeV 1.01
