@@ -29,8 +29,9 @@ class configuration:
                 self.categories['mt'][period] = self.categories['mt'][period]+self.get_categories('mt_soft', period, 'sm')
         self.bbbcat={}
         self.bbbproc={}
-        self.bbbthreshold=self.config.get('bbb-'+mode,'threshold')
+        self.bbbthreshold={}
         for channel in self.channels:
+            self.bbbthreshold[channel]=self.config.get('bbb-'+mode,channel+'_threshold')
             self.bbbcat[channel]={}
             for period in self.periods:
                 self.bbbcat[channel][period]=self.get_bbb_categories(channel, period, mode)

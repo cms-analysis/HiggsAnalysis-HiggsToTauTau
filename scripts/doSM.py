@@ -283,7 +283,7 @@ if options.update_setup :
                             PER=per,
                             CAT=config.bbbcat[chn][per][idx],
                             PROC=config.bbbproc[chn][idx],
-                            THR=config.bbbthreshold
+                            THR=config.bbbthreshold[chn]
                             ))
                         os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                         os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                            

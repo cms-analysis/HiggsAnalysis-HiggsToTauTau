@@ -7,7 +7,20 @@ do
 done
 
 ## create the droplists per channel and give them individual names
-for i in tt ee mm em et mt
+for i in ee mm
+do
+    while true
+    do
+        if [ -s "LIMITS_droplist/bbb/$i/125/out/mlfit_largest-constraints.html" ]
+        then
+            python HiggsAnalysis/HiggsToTauTau/scripts/prune-uncerts-htt.py --fit-results LIMITS_droplist/bbb/$i/125/out/mlfit.txt --whitelist "_bin_" --shielding 1:0.4 LIMITS_droplist/bbb/$i/125
+            mv -v uncertainty-pruning-drop.txt uncertainty-pruning-drop_${i}.txt
+            break
+        fi
+        sleep 15
+    done
+done
+for i in tt em et mt
 do
     while true
     do
