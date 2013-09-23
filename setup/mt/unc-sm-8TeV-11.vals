@@ -9,8 +9,8 @@ muTau_soft_0jet_medium     	qqH				QCDscale_qqH					1.01
 muTau_soft_0jet_medium     	VH				QCDscale_VH					1.01
 muTau_soft_0jet_medium		signal				UEPS						0.96
 muTau_soft_0jet_medium		signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_m 					1.02
-muTau_soft_0jet_medium		signal,ZTT,TT,VV 		CMS_eff_t_mutau_soft_8TeV 			1.08
-muTau_soft_0jet_medium		signal,ZTT,TT,VV 		CMS_eff_t_mutau_soft_medium_8TeV 		1.03
+muTau_soft_0jet_medium		signal,ZTT,TT,VV 		CMS_eff_t_mutau_8TeV 				1.08
+muTau_soft_0jet_medium		signal,ZTT,TT,VV 		CMS_eff_t_mutau_medium_8TeV 			1.03
 muTau_soft_0jet_medium		signal,ZTT			CMS_scale_t_mutau_soft_8TeV 			1.00
 muTau_soft_0jet_medium        	ggH				CMS_scale_j_8TeV				0.98
 muTau_soft_0jet_medium        	qqH				CMS_scale_j_8TeV				0.92

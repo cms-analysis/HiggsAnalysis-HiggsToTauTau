@@ -11,9 +11,9 @@ muTau_soft_vbf		ggH				QCDscale_ggHVBF 				0.87
 muTau_soft_vbf		qqH				QCDscale_qqHVBF 				0.96
 muTau_soft_vbf		signal				UEPS						1.04
 muTau_soft_vbf 		signal,ZTT,ZL,ZJ,TT,VV 		CMS_eff_m 					1.02
-muTau_soft_vbf 		signal,ZTT,TT,VV 		CMS_eff_t_mutau_soft_8TeV 			1.08
-muTau_soft_vbf		signal,ZTT,TT,VV 		CMS_eff_t_mutau_soft_medium_8TeV 		1.01
-muTau_soft_vbf		signal,ZTT,TT,VV 		CMS_eff_t_mutau_soft_high_8TeV 			1.012
+muTau_soft_vbf 		signal,ZTT,TT,VV 		CMS_eff_t_mutau_8TeV 				1.08
+muTau_soft_vbf		signal,ZTT,TT,VV 		CMS_eff_t_mutau_medium_8TeV 			1.01
+muTau_soft_vbf		signal,ZTT,TT,VV 		CMS_eff_t_mutau_high_8TeV 			1.012
 muTau_soft_vbf		signal,ZTT			CMS_scale_t_mutau_soft_8TeV 			1.00
 muTau_soft_vbf    	ggH				CMS_scale_j_8TeV				1.10
 muTau_soft_vbf    	qqH				CMS_scale_j_8TeV				1.04
