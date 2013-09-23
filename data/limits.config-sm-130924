@@ -30,7 +30,7 @@ mm_categories_8TeV = 0 1 2 3 4
 ee_categories_8TeV = 0 1 2 3 4
 tt_categories_8TeV = 0 1 2
 vhtt_categories_8TeV = 0 1 2 3 4 5 6 7 8
-mt_soft_categories_8TeV = 10 11 12 13 15 16
+mt_soft_categories_8TeV = 11 12 13 15 16
 
 mt_names = 0jet_medium 0jet_high 1jet_medium 1jet_high_mediumhiggs vbf_loose vbf_tight
 et_names = 0jet_medium 0jet_high 1jet_medium 1jet_high_lowhiggs 1jet_high_mediumhiggs vbf_loose vbf_tight
@@ -39,7 +39,7 @@ ee_names = 0jet_low 0jet_high 1jet_low 1jet_high vbf
 mm_names = 0jet_low 0jet_high 1jet_low 1jet_high vbf 
 tt_names = 1jet_high_mediumhiggs 1jet_high_highhiggs vbf
 vhtt_names = mmtCatHigh,mmtCatLow emtCatHigh,emtCatLow eetCatHigh,eetCatLow mmme_zh,eeem_zh mmmt_zh,eemt_zh mmet_zh,eeet_zh mmtt_zh,eett_zh mtt ett
-mt_soft_names = soft_0jet_low soft_0jet_medium soft_0jet_high soft_1jet_medium soft_1jet_high soft_vbf
+mt_soft_names = soft_0jet_medium soft_0jet_high soft_1jet_medium soft_1jet_high soft_vbf
 
 [bbb-sm]
 
