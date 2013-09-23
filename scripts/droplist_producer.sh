@@ -20,7 +20,7 @@ do
         sleep 15
     done
 done
-for i in tt em et mt
+for i in tt em et mt vhtt
 do
     while true
     do
