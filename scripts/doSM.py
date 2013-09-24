@@ -171,7 +171,7 @@ if options.update_setup :
                 if chn == 'mt' and options.add_mutau_soft:
                     os.system("cp -v {CMSSW_BASE}/src/auxiliaries/shapes/{DIR}/htt_mt.inputs-sm-8TeV-soft.root {SETUP}/mt/".format(
                         CMSSW_BASE=cmssw_base,
-                        DIR=directories[chn][per],
+                        DIR=config.inputs['mt_soft'],
                         SOURCE=file,
                         SETUP=setup
                         ))

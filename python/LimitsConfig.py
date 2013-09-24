@@ -27,6 +27,7 @@ class configuration:
             self.categoryname['mt'] = self.categoryname['mt']+self.get_category_names('mt_soft', 'sm')
             for period in self.periods:
                 self.categories['mt'][period] = self.categories['mt'][period]+self.get_categories('mt_soft', period, 'sm')
+            self.inputs['mt_soft']=self.config.get('inputs', 'mt_soft')
         self.bbbcat={}
         self.bbbproc={}
         self.bbbthreshold={}
