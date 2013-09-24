@@ -1,7 +1,7 @@
 #!/bin/bash
 
 python HiggsAnalysis/HiggsToTauTau/scripts/doSM.py --update-all --label _droplist -a "bbb" --add-mutau-soft 125
-for i in ee em et mt mm tt
+for i in ee em et mt mm tt vhtt
 do
     submit.py --max-likelihood LIMITS_droplist/bbb/$i/125
 done
