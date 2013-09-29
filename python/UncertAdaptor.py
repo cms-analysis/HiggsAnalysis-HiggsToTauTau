@@ -33,15 +33,15 @@ class UncertAdaptor(object) :
                 signals = [''] if signal_procs else line[line.rfind(self.cgs_signal_group)+len(self.cgs_signal_group)+1:].split(',')
                 signals = [sig.strip() for sig in signals]
                 line = line[:line.rfind(self.cgs_signal_group)+len(self.cgs_signal_group)+1]
-                signals = setup_processes(signals, signal_procs, background_procs)
-                signals = setup_processes(signals, None, signal_drop)
+                signals = self.setup_processes(signals, signal_procs, background_procs)
+                signals = self.setup_processes(signals, None, signal_drop)
                 line=line+','.join(signals)+'\n'
             if self.cgs_background_group in line:
                 backgrounds = line[line.rfind(self.cgs_background_group)+len(self.cgs_background_group)+1:].split(',')
                 backgrounds = [bck.strip() for bck in backgrounds]
                 line = line[:line.rfind(self.cgs_background_group)+len(self.cgs_background_group)+1]
-                backgrounds = setup_processes(backgrounds, background_procs, signal_procs)
-                backgrounds = setup_processes(backgrounds, None, background_drop)
+                backgrounds = self.setup_processes(backgrounds, background_procs, signal_procs)
+                backgrounds = self.setup_processes(backgrounds, None, background_drop)
                 line=line+','.join(backgrounds)+'\n'
             file_new.write(line)
         os.system("mv -v %s_tmp %s"%(cgs_path, cgs_path))
@@ -50,11 +50,12 @@ class UncertAdaptor(object) :
         Basic function to first remove strings given in removes from processes and afterwards append strings given in appends
         """
         if removes:
-            for proc in processes:
-                if proc in removes:
-                    backgrounds.remove(proc)
+            for proc in removes:
+                if proc in processes:
+                    processes.remove(proc)
         if appends:
-            for proc in processes:
-                if not proc in appends:
-                    backgrounds.append(proc)
+            for proc in appends:
+                if not proc in processes:
+                    processes.append(proc)
+        processes = filter(bool, processes)
         return processes
