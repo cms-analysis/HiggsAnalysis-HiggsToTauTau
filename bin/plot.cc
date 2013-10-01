@@ -191,10 +191,27 @@ int main(int argc, char* argv[])
     // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
     plot.fillBand(directory, inner, "CLs", true);
+
+    // low observed limit
+    TGraph* observed_low  = 0;
+    if(!expectedOnly){
+      observed_low = new TGraph();
+      plot.fillCentral(directory, observed_low, "higgsCombineTest.HybridNew.mH$MASS", "low");
+    }
+    // low expected limit
+    TGraph* expected_low  = new TGraph();
+    plot.fillCentral(directory, expected_low, "higgsCombineTest.HybridNew.mH$MASS.quant0.500", "low");
+    // low 2-sigma uncertainty band
+    TGraphAsymmErrors* outer_low  = new TGraphAsymmErrors();
+    plot.fillBand(directory, outer_low, "CLs", false, "low");
+    // low 1-sigma uncertainty band
+    TGraphAsymmErrors* inner_low  = new TGraphAsymmErrors();
+    plot.fillBand(directory, inner_low, "CLs", true, "low");
+
     // make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
-    plot.plotTanb(*canv, inner, outer, expected, observed, directory);
+    plot.plotTanb(*canv, inner, inner_low, outer, outer_low, expected, expected_low, observed, observed_low, directory);
   }
   // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--bayesian") ){
@@ -443,7 +460,7 @@ int main(int argc, char* argv[])
     // plots the layout corresponding to cross section limits
     //plot.plot(*canv, inner, outer, expected, observed);
     // plots the layout corresponding to the direct tanb limits
-    plot.plotTanb(*canv, inner, outer, expected, observed);
+    plot.plotTanb(*canv, inner, 0, outer, 0, expected, 0, observed, 0);
   }
   // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--HIG-11-029") ){
@@ -466,7 +483,7 @@ int main(int argc, char* argv[])
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     if(mssm){
-      plot.plotTanb(*canv, inner, outer, expected, observed);
+      plot.plotTanb(*canv, inner, 0, outer, 0, expected, 0, observed, 0);
     }
     else{
       plot.plotLimit(*canv, inner, outer, expected, observed);
@@ -558,7 +575,7 @@ int main(int argc, char* argv[])
     // make the plot
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
-    plot.plotTanb(*canv, inner, outer, expected, observed);
+    plot.plotTanb(*canv, inner, 0, outer, 0, expected, 0, observed, 0);
   }
   // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--HIG-13-004") ){
