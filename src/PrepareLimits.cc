@@ -35,7 +35,7 @@ PlotLimits::prepareByFitOutput(const char* directory, std::vector<double>& value
 }
 
 void
-PlotLimits::prepareByFile(const char* directory, std::vector<double>& values, const char* filename)
+PlotLimits::prepareByFile(const char* directory, std::vector<double>& values, const char* filename, const char* low_tanb /*=""*/)
 {
   for(unsigned int imass=0; imass<bins_.size(); ++imass){
     double value=-1.;
@@ -50,23 +50,42 @@ PlotLimits::prepareByFile(const char* directory, std::vector<double>& values, co
       valid_[imass]=false;
     }
     else{
-      TTree* limit = (TTree*) file->Get("limit");
-      if(!limit){
-	if(verbosity_>0){ std::cout << "INFO: tree 'limit' not found: limit" << std::endl; }
-	valid_[imass]=false;
-      }
-      else{
-	double x;
-	limit->SetBranchAddress("limit", &x);
-	int nevent = limit->GetEntries();
-	for(int i=0; i<nevent; ++i){
-	  limit->GetEvent(i);
-	  value = x;
+      if(std::string(low_tanb)==std::string("low")){
+	TTree* limit = (TTree*) file->Get("limit");
+	if(!limit){
+	  if(verbosity_>0){ std::cout << "INFO: tree 'limit' not found: limit" << std::endl; }
+	  valid_[imass]=false;
 	}
-      }
-      file->Close();
+	else{
+	  double x;
+	  limit->SetBranchAddress("lowlimit", &x);
+	  int nevent = limit->GetEntries();
+	  for(int i=0; i<nevent; ++i){
+	    limit->GetEvent(i);
+	    value = x;
+	  }
+	}
+	file->Close();
+      }   
+      else{
+	TTree* limit = (TTree*) file->Get("limit");
+	if(!limit){
+	  if(verbosity_>0){ std::cout << "INFO: tree 'limit' not found: limit" << std::endl; }
+	  valid_[imass]=false;
+	}
+	else{
+	  double x;
+	  limit->SetBranchAddress("limit", &x);
+	  int nevent = limit->GetEntries();
+	  for(int i=0; i<nevent; ++i){
+	    limit->GetEvent(i);
+	    value = x;
+	  }
+	}
+	file->Close();
+      } 
     }
-    values.push_back(value);
+    values.push_back(value); 
   }
   return;
 }
