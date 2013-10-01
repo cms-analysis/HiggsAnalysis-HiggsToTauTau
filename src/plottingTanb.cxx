@@ -10,7 +10,7 @@
 #include "TGraphAsymmErrors.h"
 
 void
-plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* lowerLEP, TGraph* upperLEP, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, TGraph* injected=0, double min=0., double max=60., bool log=false)
+plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_low, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* innerBand_low, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* outerBand_low, TGraph* expected, TGraph* expected_low, TGraph* observed, TGraph* observed_low, TGraph* lowerLEP, TGraph* upperLEP, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, TGraph* injected=0, double min=0., double max=60., bool log=false)
 {
   // set up styles
   canv.cd();
@@ -70,30 +70,61 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
     plain->SetFillStyle(1001.);
     plain->SetFillColor(obs->GetNumber());
     plain->Draw("Fsame");
-
     observed->SetMarkerStyle(20);
     observed->SetMarkerSize(1.0);
     observed->SetMarkerColor(kBlack);
     observed->SetLineWidth(3.);
   }
+ if(observed_low){  
+    plain_low->SetFillStyle(1001.);
+    plain_low->SetFillColor(obs->GetNumber());
+    //plain_low->Draw("Fsame"); //for old style comment that one out
+    observed_low->SetMarkerStyle(20);
+    observed_low->SetMarkerSize(1.0);
+    observed_low->SetMarkerColor(kBlack);
+    observed_low->SetLineWidth(3.);  
+  }
+
   if(outerBand){
     outerBand->SetFillColor(kGray);
     outerBand->SetLineColor(kGray);
     outerBand->SetLineWidth(-702); 
     outerBand->Draw("3same");
   }
+ if(outerBand_low){   
+    outerBand_low->SetFillColor(kGray);
+    outerBand_low->SetLineColor(kGray);
+    outerBand_low->SetLineWidth(-702); 
+    outerBand_low->Draw("3same"); 
+  }
+
   innerBand->SetFillColor(kGray+1);
   innerBand->SetLineColor(kGray+1);
   innerBand->SetLineWidth(-702);
   innerBand->Draw("3same");
+  if(innerBand_low){  
+    innerBand_low->SetFillColor(kGray+1);
+    innerBand_low->SetLineColor(kGray+1);
+    innerBand_low->SetLineWidth(-702);
+    innerBand_low->Draw("3same");
+  }
 
   expected->SetLineColor(kGray+2);
   expected->SetLineWidth(3);
   expected->SetLineStyle(1);
   expected->Draw("Lsame");
+  if(expected_low){ 
+    expected_low->SetLineColor(kGray+2);
+    expected_low->SetLineWidth(3);
+    expected_low->SetLineStyle(1);
+    expected_low->Draw("Lsame");
+  }
 
   if(observed){
     observed->Draw("Lsame");
+  }
+  if(observed_low){  
+    observed_low->Draw("Lsame");
   }
 
   if(injected){
@@ -153,7 +184,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
   /// add the proper legend
   TLegend* leg;
   if(log){
-    leg = new TLegend(0.55, (!higgsBands.empty() || !comparisons.empty()) ? 0.15 : 0.60, (!higgsBands.empty() || !comparisons.empty()) ? 0.93: 0.50, 0.43);
+    leg = new TLegend(0.60, (!higgsBands.empty() || !comparisons.empty()) ? 0.08 : 0.53, (!higgsBands.empty() || !comparisons.empty()) ? 0.93: 0.93, 0.33);
   }
   else{
     leg = new TLegend(0.18, (!higgsBands.empty() || !comparisons.empty()) ? 0.53 : 0.62, (!higgsBands.empty() || !comparisons.empty()) ? 0.55: 0.50, 0.89);
@@ -171,12 +202,18 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBa
     //leg->AddEntry(observed, "Asimov w/ H(125)", "FL");
   }
   if(injected){
-    leg->AddEntry(injected, "Injected", "L");
+    leg->AddEntry(injected, "Asimov w/ H(125)", "L");
+    leg->AddEntry(innerBand, "#pm 1#sigma Asimov","F");
+    if(outerBand){ 
+      leg->AddEntry(outerBand, "#pm 2#sigma Asimov", "F"); 
+    }
   }
   leg->AddEntry(expected, "Expected", "L");
-  leg->AddEntry(innerBand, "#pm 1#sigma Expected","F");
-  if(outerBand){ 
-    leg->AddEntry(outerBand, "#pm 2#sigma Expected", "F"); 
+  if(!injected){
+    leg->AddEntry(innerBand, "#pm 1#sigma Expected","F");
+    if(outerBand){ 
+      leg->AddEntry(outerBand, "#pm 2#sigma Expected", "F"); 
+    }
   }
   for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band){
     leg->AddEntry(band->second, TString::Format("m_{h,H}=125GeV #pm %.0fGeV", band->first), "F");

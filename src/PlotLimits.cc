@@ -78,7 +78,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
 }
 
 TGraph*
-PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filename)
+PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filename, const char* low_tanb /*=""*/)
 {
   std::vector<double> central;
   // fill pre-defined values from previous results
@@ -146,19 +146,33 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
       prepareByFitOutput(directory, central, "out/mlfit", "tree_fit_sb", "nll_min");
     }
     else{
-      prepareByFile(directory, central, filename);
+      if(std::string(low_tanb)==std::string("low")) prepareByFile(directory, central, filename, "low");
+      else prepareByFile(directory, central, filename);
     }
   }
+  bool first_low=true;
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
     if(valid_[imass] && std::string(filename).find("HIG")==std::string::npos){
-      plot->SetPoint(ipoint++, bins_[imass], central[imass]);
+      if(!first_low){
+	if((central[imass]==0.5 && central[imass-1]>0.5) || central[imass]!=0.5) {
+	  plot->SetPoint(ipoint++, bins_[imass], central[imass]);
+	  //std::cout<< "lastlow" << central[imass] << " " << bins_[imass] << std::endl;
+	}
+      }
+      if(first_low){
+	if((central[imass]==0.5 && central[imass+1]>0.5) || central[imass]!=0.5) {
+	  plot->SetPoint(ipoint++, bins_[imass], central[imass]); first_low=false;
+	  //std::cout<< "firstlow" << central[imass] << " "  << central[imass+1] << " "<< bins_[imass] << std::endl;
+	}
+      }
+      //plot->SetPoint(ipoint++, bins_[imass], central[imass]);	//old style
       if(verbosity_>1){ std::cout << "INFO: central [" << bins_[imass] << "] = " << central[imass] << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl; }
     }
     else{
       if(valid_[imass]){
 	for(unsigned int jmass=0; jmass<masses_.size(); ++jmass){
 	  if(masses_[jmass]==bins_[imass]){
-	    plot->SetPoint(ipoint++, masses_[jmass], central[jmass]);
+	    plot->SetPoint(ipoint++, masses_[jmass], central[jmass]);  
 	    if(verbosity_>1){ std::cout << "INFO: central [" << masses_[jmass] << "] = " << central[jmass] << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl; }
 	    break;
 	  }
@@ -169,7 +183,7 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
   return plot;
 }
 TGraphAsymmErrors*
-PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char* method, bool innerBand)
+PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char* method, bool innerBand, const char* low_tanb /*=""*/)
 {
   std::vector<double> upper, lower, expected;
 
@@ -221,9 +235,16 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
       prepareByToy(directory, lower   , innerBand ? "-1SIGMA" : "-2SIGMA");
     }
     else if(std::string(method) == std::string("CLs")){
-      prepareCLs(directory, expected, ".quant0.500");
-      prepareCLs(directory, upper   , innerBand ? ".quant0.840" : ".quant0.975");
-      prepareCLs(directory, lower   , innerBand ? ".quant0.160" : ".quant0.027");
+      if(std::string(low_tanb)==std::string("low")){
+	prepareCLs(directory, expected, ".quant0.500", "low");
+	prepareCLs(directory, upper   , innerBand ? ".quant0.840" : ".quant0.975", "low");
+	prepareCLs(directory, lower   , innerBand ? ".quant0.160" : ".quant0.027", "low");
+      }
+      else{
+	prepareCLs(directory, expected, ".quant0.500");
+	prepareCLs(directory, upper   , innerBand ? ".quant0.840" : ".quant0.975");
+	prepareCLs(directory, lower   , innerBand ? ".quant0.160" : ".quant0.027");
+      }
     }
     else if(std::string(method).find("Asymptotic") != std::string::npos){
       prepareByValue(directory, expected, method, 0.50);
