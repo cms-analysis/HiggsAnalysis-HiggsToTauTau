@@ -19,17 +19,29 @@ plotTanb(const char* filename, const char* channel, bool draw_injected_=false, d
   TFile* file = TFile::Open(filename);
   // retrieve TGraphs from file
   TGraph* expected = (TGraph*)file->Get(std::string(channel).append("/expected").c_str());
+  TGraph* expected_low = (TGraph*)file->Get(std::string(channel).append("/expected_low").c_str());
   TGraph* observed = (TGraph*)file->Get(std::string(channel).append("/observed").c_str());
+  TGraph* observed_low = (TGraph*)file->Get(std::string(channel).append("/observed_low").c_str());
   TGraph* upperLEP = (TGraph*)file->Get(std::string(channel).append("/upperLEP").c_str());
   TGraph* lowerLEP = (TGraph*)file->Get(std::string(channel).append("/lowerLEP").c_str());
   TGraphAsymmErrors* innerBand = (TGraphAsymmErrors*)file->Get(std::string(channel).append("/innerBand").c_str());
+  TGraphAsymmErrors* innerBand_low = (TGraphAsymmErrors*)file->Get(std::string(channel).append("/innerBand_low").c_str());
   TGraphAsymmErrors* outerBand = (TGraphAsymmErrors*)file->Get(std::string(channel).append("/outerBand").c_str());
+  TGraphAsymmErrors* outerBand_low = (TGraphAsymmErrors*)file->Get(std::string(channel).append("/outerBand_low").c_str()); 
   TGraphAsymmErrors* plain = (TGraphAsymmErrors*)file->Get(std::string(channel).append("/plain").c_str());
+  TGraphAsymmErrors* plain_low = (TGraphAsymmErrors*)file->Get(std::string(channel).append("/plain_low").c_str());
 
   // this is new for injected plot 
-  TGraph* injected = 0;
-  std::cout<< "hello"<<std::endl;
+  TGraph* injected = 0;;
   if(draw_injected_) {injected = (TGraph*)file->Get("injected/observed");}
+
+  if(draw_injected_){
+    for( int i=0; i<expected->GetN(); i++){
+      double shift = injected->GetY()[i]-expected->GetY()[i];
+      innerBand->SetPoint(i, innerBand->GetX()[i], innerBand->GetY()[i]+shift);
+      outerBand->SetPoint(i, outerBand->GetX()[i], outerBand->GetY()[i]+shift);
+    }
+  }
 
   // this functionality is not yet supported
   std::map<double, TGraphAsymmErrors*> higgsBands;
@@ -41,7 +53,7 @@ plotTanb(const char* filename, const char* channel, bool draw_injected_=false, d
   // do the plotting 
   TCanvas canv = TCanvas("canv", "Limits", 600, 600);
   // do the plotting 
-  plottingTanb(canv, plain, innerBand, outerBand, expected, observed, lowerLEP, upperLEP, higgsBands, comparisons, xaxis_, yaxis_, injected, min_, max_, log_);
+  plottingTanb(canv, plain, plain_low, innerBand, innerBand_low, outerBand, outerBand_low, expected, expected_low, observed, observed_low, lowerLEP, upperLEP, higgsBands, comparisons, xaxis_, yaxis_, injected, min_, max_, log_);
   /// setup the CMS Preliminary
   CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
   // write results to files

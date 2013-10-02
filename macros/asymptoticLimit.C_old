@@ -90,7 +90,7 @@ std::vector<CrossPoint> crossPoints(TGraph*& graph)
   return points;
 }
 
-void fillTree(TTree*& tree, TGraph*& graph, double& limit, double& lowlimit, unsigned int itype, std::map<double, std::string>& tanb_values, bool upper_exclusion, unsigned int verbosity)
+void fillTree(TTree*& tree, TGraph*& graph, double& limit, unsigned int itype, std::map<double, std::string>& tanb_values, bool upper_exclusion, unsigned int verbosity)
 {
   double value=-99;
   double tanb_help=-99;
@@ -111,7 +111,7 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, double& lowlimit, uns
   std::vector<CrossPoint> points = crossPoints(graph);
 
   int dist = 1;
-  bool filled = false, lowfilled=false;
+  bool filled = false;
   unsigned int np = 0;
   unsigned int steps = 10e6; 
   if(points.size()>0) limit = graph->GetX()[upper_exclusion ? points.begin()->first : points.end()->first];
@@ -133,16 +133,15 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, double& lowlimit, uns
 				  
     double deltaM = -999.;
     double offset = min; double step_size = (max-min)/steps;
-    double splinelimit;
     for(unsigned int scan=0; scan<=steps; ++scan){
       if(deltaM<0 || fabs(spline->Eval(offset+scan*step_size)-1.)<deltaM){
-	splinelimit=offset+scan*step_size;
+	limit=offset+scan*step_size;
 	deltaM=fabs(spline->Eval(offset+scan*step_size)-1.);
       }
     }
     std::cout << "****************************************************************" << std::endl;
     std::cout << "* [" << np+1 << "|" << point->second << "] asymptotic limit(";
-    std::cout << limitType(itype) << ") :" << crossing[np] << " -- " << splinelimit << " deltaM : " << deltaM;
+    std::cout << limitType(itype) << ") :" << crossing[np] << " -- " << limit << " deltaM : " << deltaM;
 //     if(((upper_exclusion && point->second) || (!upper_exclusion && !(point->second))) && !filled){
 //       //std::cout << "limit is taken from linear interpolation at the moment" << std::endl;
 //       //limit = crossing;
@@ -153,43 +152,25 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, double& lowlimit, uns
       fnc->SetParameter(0, (y_min-y_max)/(min-max));
       fnc->SetParameter(1, (y_max*min-y_min*max)/(min-max));
       std::cout << std::endl;
-      std::cout << "high limit is taken from linear interpolation at the moment" << std::endl;
+      std::cout << "limit is taken from linear interpolation at the moment" << std::endl;
       limit = crossing[np];
-      std::cout << "high limit = " << limit << std::endl;
-      filled=true;
-      //std::cout << "    [-->to file]"; filled=true; tree->Fill();
-    }
-    if(np==1){
-       fnc = new TF1("fnc", "[0]*x+[1]", min, max);
-       fnc->SetParameter(0, (y_min-y_max)/(min-max));
-       fnc->SetParameter(1, (y_max*min-y_min*max)/(min-max));
-       std::cout << std::endl;
-       std::cout << "low limit is taken from a spline fit at the moment" << std::endl;
-       lowlimit = splinelimit; //crossing[np];
-       std::cout << "low limit = " << lowlimit << std::endl;
-       lowfilled=true; 
-       //std::cout << "    [-->to file]"; lowfilled=true; tree->Fill();
+      std::cout << limit << std::endl;
+      std::cout << "    [-->to file]"; filled=true; tree->Fill();
     }
     std::cout << endl;
     std::cout << "****************************************************************" << std::endl;
-  }
-  if(filled){ 
-    if(lowfilled) {std::cout << "    [-->to file]"; tree->Fill();}
-    else{ lowlimit = 0.5; std::cout << "    [-->to file]"; tree->Fill();}
   }
   // catch cases where no crossing point was found
   if(!filled){
     if(value<1)
       {
 	std::cout << "WARNING: no crossing found - all tanb values excluded: " << value << std::endl;
-// 	if(itype == observed)     { limit=3.00; }
-// 	if(itype == plus_2sigma)  { limit=5.00; }
-// 	if(itype == plus_1sigma)  { limit=4.00; }
-// 	if(itype == expected)     { limit=3.00; }
-// 	if(itype == minus_1sigma) { limit=2.50; }
-// 	if(itype == minus_2sigma) { limit=2.00; }
-	limit=2;
-	lowlimit=2;
+	if(itype == observed)     { limit=3.00; }
+	if(itype == plus_2sigma)  { limit=5.00; }
+	if(itype == plus_1sigma)  { limit=4.00; }
+	if(itype == expected)     { limit=3.00; }
+	if(itype == minus_1sigma) { limit=2.50; }
+	if(itype == minus_2sigma) { limit=2.00; }
 	tree->Fill();
       }
     else
@@ -201,29 +182,28 @@ void fillTree(TTree*& tree, TGraph*& graph, double& limit, double& lowlimit, uns
 	if(itype == expected)     { limit=tanb_help*value; }
 	if(itype == minus_1sigma) { limit=tanb_help*value; }
 	if(itype == minus_2sigma) { limit=tanb_help*value; }
-	lowlimit=0.5;
 	tree->Fill();
       }
   }
   //if( verbosity>0 ){
-    std::string monitor = std::string("SCAN-")+limitType(itype);
-    TCanvas* canv = new TCanvas(monitor.c_str(), monitor.c_str(), 600, 600);
-    TH1F* frame = canv->DrawFrame(graph->GetX()[0]-0.1, 0., graph->GetX()[graph->GetN()-1]+0.1, 10.);
-    canv->SetGridx(1); canv->SetGridy(1); canv->cd(); 
-    graph->SetMarkerStyle(20.); 
-    graph->SetMarkerColor(kBlack); 
-    graph->SetMarkerSize(1.3); 
-    graph->Draw("P");
-    //spline->SetLineColor(kBlue); 
-    //spline->SetLineWidth(3.); 
-    //spline->Draw("same");
-    if(filled) fnc->SetLineColor(kRed);
-    if(filled) fnc->SetLineWidth(3.);
-    if(filled) fnc->Draw("same");
-    canv->Print(monitor.append(".png").c_str(), "png");
-    delete frame; delete canv; delete spline;
-    if(filled) delete fnc;
-    //}
+  std::string monitor = std::string("SCAN-")+limitType(itype);
+  TCanvas* canv = new TCanvas(monitor.c_str(), monitor.c_str(), 600, 600);
+  TH1F* frame = canv->DrawFrame(graph->GetX()[0]-0.1, 0., graph->GetX()[graph->GetN()-1]+0.1, 10.);
+  canv->SetGridx(1); canv->SetGridy(1); canv->cd(); 
+  graph->SetMarkerStyle(20.); 
+  graph->SetMarkerColor(kBlack); 
+  graph->SetMarkerSize(1.3); 
+  graph->Draw("P");
+  //spline->SetLineColor(kBlue); 
+  //spline->SetLineWidth(3.); 
+  //spline->Draw("same");
+  if(filled) fnc->SetLineColor(kRed);
+  if(filled) fnc->SetLineWidth(3.);
+  if(filled) fnc->Draw("same");
+  canv->Print(monitor.append(".png").c_str(), "png");
+  delete frame; delete canv; delete spline;
+  if(filled) delete fnc;
+  //}
   return;
 }
 
@@ -238,47 +218,46 @@ void asymptoticLimit(const char* outputfile, const char* inputfiles, unsigned in
     tanb_values[atof(tanb_file->substr(tanb_file->rfind("_")+1, tanb_file->find(".root")-tanb_file->rfind("_")-1).c_str())] = *tanb_file;
   }
 
-  double limit, lowlimit;
+  double limit;
   TGraph* graph = new TGraph();
   TFile* file = TFile::Open(outputfile, "update");
   TTree* tree = new TTree("limit", "limit");
   tree->Branch("limit", &limit, "limit/D");
-  tree->Branch("lowlimit", &lowlimit, "lowlimit/D");
   for(unsigned int itype=0; itype<all_types; ++itype){
     graph->Clear();
     if( std::string(outputfile).find("quant0.027")!=std::string::npos ){
       if( itype == minus_2sigma ){
-	fillTree(tree, graph, limit, lowlimit, itype, tanb_values, upper_exclusion, verbosity);
+	fillTree(tree, graph, limit, itype, tanb_values, upper_exclusion, verbosity);
 	break;
       }
     }
     else if( std::string(outputfile).find("quant0.160")!=std::string::npos ){
       if( itype == minus_1sigma ){
-	fillTree(tree, graph, limit, lowlimit, itype, tanb_values, upper_exclusion, verbosity);
+	fillTree(tree, graph, limit, itype, tanb_values, upper_exclusion, verbosity);
 	break;
       }
     }
     else if( std::string(outputfile).find("quant0.500")!=std::string::npos ){
       if( itype == expected ){
-	fillTree(tree, graph, limit, lowlimit, itype, tanb_values, upper_exclusion, verbosity);
+	fillTree(tree, graph, limit, itype, tanb_values, upper_exclusion, verbosity);
 	break;
       }
     }
     else if( std::string(outputfile).find("quant0.840")!=std::string::npos ){
       if( itype == plus_1sigma ){
-	fillTree(tree, graph, limit, lowlimit, itype, tanb_values, upper_exclusion, verbosity);
+	fillTree(tree, graph, limit, itype, tanb_values, upper_exclusion, verbosity);
 	break;
       }
     }
     else if( std::string(outputfile).find("quant0.975")!=std::string::npos ){
       if( itype == plus_2sigma ){
-	fillTree(tree, graph, limit, lowlimit, itype, tanb_values, upper_exclusion, verbosity);
+	fillTree(tree, graph, limit, itype, tanb_values, upper_exclusion, verbosity);
 	break;
       }
     }
     else{
       if( itype == observed ){
-	fillTree(tree, graph, limit, lowlimit, itype, tanb_values, upper_exclusion, verbosity);
+	fillTree(tree, graph, limit, itype, tanb_values, upper_exclusion, verbosity);
       }
     }
   }
