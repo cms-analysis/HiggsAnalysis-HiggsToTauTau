@@ -59,7 +59,7 @@ class MakeDatacard :
         new_hist = hist.Clone()
         new_hist_name = hist_name.replace("{MASS}".format(MASS=options.mass), "{MASS}_SCALE{SCALE}".format(MASS=options.mass, SCALE=str(scale)), 1) + uncertainty
         if options.mssm :
-            new_hist_name = hist_name.replace("{MASS}".format(MASS=options.mass), "_MSSM{LABEL}".format(LABEL=options.label), 1) + uncertainty
+            new_hist_name = hist_name.replace("125".format(MASS=options.mass), "125_MSSM{LABEL}".format(LABEL=options.label), 1) + uncertainty
         new_hist.Scale(scale)
         ## write modified histogram to file
         #help2 = directory + "/" + hist_name.replace("{MASS}".format(MASS=options.mass), "{MASS}_{SCALE}".format(MASS=options.mass, SCALE=str(scale))) + uncertainty
@@ -109,8 +109,10 @@ def cash_uncerts(dir, backgrounds, categories, signal_processes, datacard="htt_e
         if words[0]=="$" and words[2]=="background" :
             for idx, word in enumerate(words) :
                 if idx > 2:
-                    backgrounds.append(word)
-            
+                    backgrounds.append(word)        
+    if options.mssm:
+        options.mass=""
+        signal_processes = ['ggH_SM125','qqH_SM125','VH_SM125']
     ## parse uncertainty values file  
     for category in categories :
         uncert_cat  = {}
@@ -126,8 +128,13 @@ def cash_uncerts(dir, backgrounds, categories, signal_processes, datacard="htt_e
                 #for category in categories :
                 if category in words[0] :               
                     #for signal in signal_processes :
-                    if 'signal' in words[1] or signal in words[1] or 'simulated' in words[1] :                      
-                        uncert_signal[words[-2]] = words[-1]
+                    if options.mssm :
+                        if 'signal' in words[1] or 'ggH' in words[1] or 'simulated' in words[1] :                      
+                            uncert_signal[words[-2]] = words[-1]
+                    else :
+                        if 'signal' in words[1] or signal in words[1] or 'simulated' in words[1] :                      
+                            uncert_signal[words[-2]] = words[-1]
+                    
             input.close()
             uncert_cat[signal] = uncert_signal
         uncert[category] = uncert_cat
@@ -157,6 +164,9 @@ for dir in directoryList :
         else :
             continue
         cashed_uncerts = cash_uncerts(dir, backgrounds, categories, signal_processes, input_name)
+        if options.mssm:
+            options.mass=""
+            signal_processes = ['ggH_SM125','qqH_SM125','VH_SM125']
         if options.verbose :
             print "signal_processes", signal_processes
             print "backgrounds", backgrounds
@@ -184,7 +194,7 @@ for dir in directoryList :
                         """.format(SIGNAL=signal, LABEL=options.label, ROOTFILE=rootfile, MASS=options.mass, SCALE=options.scale)
                     if options.mssm :
                         output_line = output_line +"""shapes {SIGNAL}_MSSM{LABEL} * {ROOTFILE} $CHANNEL/{SIGNAL}_MSSM{LABEL} $CHANNEL/{SIGNAL}_MSSM{LABEL}_$SYSTEMATIC 
-                        """.format(SIGNAL=signal, LABEL=options.label, ROOTFILE=rootfile, MASS=options.mass)
+                        """.format(SIGNAL=signal, LABEL=options.label, ROOTFILE=rootfile)
                 add_shapes= False               
             ## determine the list of all single channels (in standardized format, multiple occurences possible)
             if words[0] == "bin" :
@@ -212,22 +222,10 @@ for dir in directoryList :
             if words[0] == "rate" :
                 output_line = output_line.replace("\n", "")
                 for category in categories :
-                    if options.mssm : # scale is xs*br for mA(800) and tanb=30 for little h
+                    if options.mssm : 
                         for signal in signal_processes :
-                            if "bbH" in signal :
-                                if "7TeV" in datacard :
-                                    rate=datacard_creator.rate_from_hist(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass))*0.0101049
-                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass), 0.0101049, "")
-                                if "8TeV" in datacard :
-                                    rate=datacard_creator.rate_from_hist(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass))*0.0132304
-                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass), 0.0132304, "")
-                            if "ggH" in signal :
-                                if "7TeV" in datacard :
-                                    rate=datacard_creator.rate_from_hist(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass))*0.741782
-                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass), 0.741782, "")
-                                if "8TeV" in datacard :
-                                    rate=datacard_creator.rate_from_hist(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass))*0.949702
-                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass), 0.949702, "")  
+                            rate=datacard_creator.rate_from_hist(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass))*options.scale
+                            datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}".format(SIGNAL=signal, MASS=options.mass), options.scale, "")
                             output_line = output_line + '\t \t' + str(rate)
                     else :
                         for signal in signal_processes :
@@ -251,41 +249,13 @@ for dir in directoryList :
                     for signal in signal_processes :
                         #if words[0] in cashed_uncerts[category][signal].keys() :
                         if options.mssm:
-                            if "bbH" in signal :
-                                if "7TeV" in datacard :
-                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], 0.0101049, "Up")
-                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], 0.0101049, "Down")
-                                if "8TeV" in datacard :
-                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], 0.0132304, "Up")
-                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], 0.0132304, "Down")
-                            if "ggH" in signal :
-                                if "7TeV" in datacard :
-                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], 0.741782, "Up")
-                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], 0.741782, "Down")
-                                if "8TeV" in datacard :
-                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], 0.949702, "Up")
-                                    datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], 0.949702, "Down")
+                            datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], options.scale, "Up")
+                            datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], options.scale, "Down")
                         else :
                             datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], options.scale, "Up")
                             datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], options.scale, "Down")
             if options.verbose :
                 print output_line   
-            output_file.write(output_line)
-        
-        ## for mssm case add 10% uncertainty on xs*br for h to bkg
-        if options.mssm :
-            output_line = "h_mA_tanb_uncertainties lnN"
-            for category in categories :
-                for background in backgrounds :
-                    value = '-'
-                    output_line = output_line + "\t {VALUE}".format(VALUE=value)
-                for signal in signal_processes :
-                    value = '-'
-                    output_line = output_line + "\t {VALUE}".format(VALUE=value)
-                for signal in signal_processes :                       
-                    value = "1.1"
-                    output_line = output_line + "\t {VALUE}".format(VALUE=value)
-            output_line = output_line + "\n"    
             output_file.write(output_line)
         
         ##close files
