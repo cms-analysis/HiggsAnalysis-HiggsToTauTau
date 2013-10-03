@@ -1,6 +1,6 @@
 ee_0jet_high		  	qqH,ggH,VH,Dibosons,WJets		lumi_8TeV            				1.026
 ee_0jet_high			qqH,ggH,VH,ZTT,TTJ,WJets,Dibosons 	CMS_eff_e 					1.06
-ee_0jet_high                    qqH,ggH,VH,TTJ,ZEE,ZTT,Dibosons         CMS_scale_e_8TeV                        	0.50
+ee_0jet_high                    qqH,ggH,VH,TTJ,ZTT,Dibosons         	CMS_scale_e_8TeV                        	0.50
 ee_0jet_high			qqH,ggH,VH,TTJ,Dibosons			CMS_scale_j_8TeV				0.50
 ee_0jet_high			qqH,ggH,VH,TTJ,WJets,Dibosons 		CMS_eff_b_8TeV 					0.99
 ee_0jet_high			qqH,ggH,VH,TTJ,WJets,Dibosons 		CMS_fake_b_8TeV					0.99
