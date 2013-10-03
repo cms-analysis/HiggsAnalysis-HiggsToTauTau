@@ -23,6 +23,10 @@ ee_vbf			TTJ					CMS_htt_ttbarNorm_8TeV			1.10
 ee_vbf			Dibosons				CMS_htt_ee_DiBosonNorm_8TeV		1.30
 #ee_vbf			ZEE					CMS_htt_ee_ZEENorm_8TeV			1.04
 #ee_vbf			ZEE					CMS_htt_ee_ZEE_extrap_vbf_8TeV		1.08
-ee_vbf			ZEE					CMS_htt_ee_zeeShape_vbf_8TeV		0.50
+#ee_vbf			ZEE					CMS_htt_ee_zeeShape_vbf_8TeV		0.50
+ee_vbf                  ZEE                                     CMS_htt_ee_zeeNorm_vbf_8TeV            	1.015
 ee_vbf			QCD					CMS_htt_ee_QCDNorm_vbf_8TeV		1.55
+ee_vbf			ZEE					CMS_htt_ee_zeeShape_vbf_mass0_8TeV	1.0
+ee_vbf                  ZEE                                     CMS_htt_ee_zeeShape_vbf_mass1_8TeV      1.0
+ee_vbf                  ZEE                                     CMS_htt_ee_zeeShape_vbf_mass2_8TeV      1.0
 
