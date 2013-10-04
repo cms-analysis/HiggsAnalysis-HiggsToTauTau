@@ -440,10 +440,12 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 
   std::vector<double> edges;
   TH1F* zero = (TH1F*)ref ->Clone("zero"); zero->Clear();
-  TH1F* rat1 = (TH1F*)data->Clone("rat1"); 
+  TH1F* rat1 = (TH1F*)data->Clone("rat1"); rat1->Reset("ICES");
   for(int ibin=0; ibin<rat1->GetNbinsX(); ++ibin){
-    rat1->SetBinContent(ibin+1, ZEE->GetBinContent(ibin+1)>0 ? data->GetBinContent(ibin+1)/ZEE->GetBinContent(ibin+1) : 0);
-    rat1->SetBinError  (ibin+1, ZEE->GetBinContent(ibin+1)>0 ? data->GetBinError  (ibin+1)/ZEE->GetBinContent(ibin+1) : 0);
+    if(data->GetBinContent(ibin+1) > 0){
+      rat1->SetBinContent(ibin+1, ZEE->GetBinContent(ibin+1)>0 ? data->GetBinContent(ibin+1)/ZEE->GetBinContent(ibin+1) : 0);
+      rat1->SetBinError  (ibin+1, ZEE->GetBinContent(ibin+1)>0 ? data->GetBinError  (ibin+1)/ZEE->GetBinContent(ibin+1) : 0);
+    }
     zero->SetBinContent(ibin+1, 0.);
     zero->SetBinError  (ibin+1, ZEE->GetBinContent(ibin+1)>0 ? ZEE ->GetBinError  (ibin+1)/ZEE->GetBinContent(ibin+1) : 0);
   }
@@ -472,7 +474,7 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #else
   rat1->GetXaxis()->SetTitle("#bf{D}");
 #endif
-  rat1->Draw();
+  rat1->Draw("E0");
   zero->SetFillStyle(  3013);
   zero->SetFillColor(kBlack);
   zero->SetLineColor(kBlack);

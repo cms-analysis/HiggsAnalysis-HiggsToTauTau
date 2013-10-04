@@ -49,7 +49,7 @@ float blinding_SM(float mass){
 float blinding_MSSM(float mass){ return (100<mass); }
 float maximum(TH1F* h, bool LOG=false){
   if(LOG){
-    if(h->GetMaximum()>1000){ return 1000.*TMath::Nint(30*h->GetMaximum()/1000.); }
+    if(h->GetMaximum()>1000){ return 1000.*TMath::Nint(130*h->GetMaximum()/1000.); }
     if(h->GetMaximum()>  10){ return   10.*TMath::Nint(30*h->GetMaximum()/  10.); }
     return 50*h->GetMaximum(); 
   }
@@ -451,10 +451,12 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 
   std::vector<double> edges;
   TH1F* zero = (TH1F*)ref ->Clone("zero"); zero->Clear();
-  TH1F* rat1 = (TH1F*)data->Clone("rat1"); 
+  TH1F* rat1 = (TH1F*)data->Clone("rat1"); rat1->Reset("ICES");
   for(int ibin=0; ibin<rat1->GetNbinsX(); ++ibin){
-    rat1->SetBinContent(ibin+1, ZMM->GetBinContent(ibin+1)>0 ? data->GetBinContent(ibin+1)/ZMM->GetBinContent(ibin+1) : 0);
-    rat1->SetBinError  (ibin+1, ZMM->GetBinContent(ibin+1)>0 ? data->GetBinError  (ibin+1)/ZMM->GetBinContent(ibin+1) : 0);
+    if(data->GetBinContent(ibin+1) > 0){
+      rat1->SetBinContent(ibin+1, ZMM->GetBinContent(ibin+1)>0 ? data->GetBinContent(ibin+1)/ZMM->GetBinContent(ibin+1) : 0);
+      rat1->SetBinError  (ibin+1, ZMM->GetBinContent(ibin+1)>0 ? data->GetBinError  (ibin+1)/ZMM->GetBinContent(ibin+1) : 0);
+    }
     zero->SetBinContent(ibin+1, 0.);
     zero->SetBinError  (ibin+1, ZMM->GetBinContent(ibin+1)>0 ? ZMM ->GetBinError  (ibin+1)/ZMM->GetBinContent(ibin+1) : 0);
   }
@@ -483,7 +485,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #else
   rat1->GetXaxis()->SetTitle("#bf{D}");
 #endif
-  rat1->Draw();
+  rat1->Draw("E0");
   zero->SetFillStyle(  3013);
   zero->SetFillColor(kBlack);
   zero->SetLineColor(kBlack);
