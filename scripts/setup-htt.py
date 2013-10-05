@@ -74,8 +74,8 @@ if options.analysis == "mssm" :
 ## configuration for summer13
 directories_sm = {
     'em' : {
-    '0' : ['1jet', 'dilepton', 'htt', 'cmb'],
-    '1' : ['1jet', 'dilepton', 'htt', 'cmb'],
+    '0' : ['0jet', 'dilepton', 'htt', 'cmb'],
+    '1' : ['0jet', 'dilepton', 'htt', 'cmb'],
     '2' : ['1jet', 'dilepton', 'htt', 'cmb'],
     '3' : ['1jet', 'dilepton', 'htt', 'cmb'],
     '4' : ['vbf' , 'dilepton', 'htt', 'cmb'],
