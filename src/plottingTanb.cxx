@@ -143,9 +143,24 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
     band->second->Draw("3same");
   }
   idx=0;
-  int coloredComps[] = {kRed, kBlue, kGreen+4, kOrange+8}; 
+  std::map<std::string,int> coloredComps;
+  coloredComps["arXiv_1211_6956" ] = kOrange+3;
+  coloredComps["arXiv_1204_2760" ] = kGreen+4;
+  coloredComps["arXiv_1302_2892" ] = kBlue;
+  coloredComps["arXiv_1205_5736" ] = kRed;
+  coloredComps["HIG_12_052_lower"] = kRed;
+  coloredComps["HIG_12_052_upper"] = kRed;
   for(std::map<std::string,TGraph*>::const_iterator comp = comparisons.begin(); comp!=comparisons.end(); ++comp, ++idx){
-    comp->second->SetLineColor(coloredComps[idx]);
+    comp->second->SetLineColor(coloredComps[comp->second->GetName()]);
+    comp->second->SetFillColor(coloredComps[comp->second->GetName()]);
+    if(std::string(comp->second->GetName())==std::string("HIG_12_052_upper")){
+      comp->second->SetFillStyle(3004);
+      comp->second->SetLineWidth(-702);
+    }
+    else{
+      comp->second->SetFillStyle(3005);
+      comp->second->SetLineWidth(+702);
+    }
     comp->second->Draw("same");
   }
 
@@ -184,7 +199,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   /// add the proper legend
   TLegend* leg;
   if(log){
-    leg = new TLegend(0.60, (!higgsBands.empty() || !comparisons.empty()) ? 0.08 : 0.53, (!higgsBands.empty() || !comparisons.empty()) ? 0.93: 0.93, 0.33);
+    leg = new TLegend(0.55, (!higgsBands.empty() || !comparisons.empty()) ? 0.15 : 0.15, (!higgsBands.empty() || !comparisons.empty()) ? 0.93: 0.93, 0.43);
   }
   else{
     leg = new TLegend(0.18, (!higgsBands.empty() || !comparisons.empty()) ? 0.53 : 0.62, (!higgsBands.empty() || !comparisons.empty()) ? 0.55: 0.50, 0.89);
@@ -220,7 +235,13 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   }
   leg->AddEntry(upperLEP, "LEP", "F");
   for(std::map<std::string,TGraph*>::const_iterator comp = comparisons.begin(); comp!=comparisons.end(); ++comp){
-    leg->AddEntry(comp->second, (comp->first).c_str(), "L");
+    if(std::string(comp->first) == std::string("EMPTY")) { continue; }
+    else if(std::string(comp->first) == std::string("HIG-12-050 exp")) {
+      leg->AddEntry(comp->second, (comp->first).c_str(), "L");
+    }
+    else{
+      leg->AddEntry(comp->second, (comp->first).c_str(), "FL");
+    }
   }
   leg->Draw("same");
   //canv.RedrawAxis("g");

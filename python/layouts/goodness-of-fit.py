@@ -10,7 +10,7 @@ layout = cms.PSet(
     ## min for plotting (for fine tuning)
     min = cms.double(0.),
     ## max for plotting (for fine tuning)
-    max = cms.double(100.),
+    max = cms.double(-1.),
     ## min for plotting
     log = cms.int32(0),
     ## print to png

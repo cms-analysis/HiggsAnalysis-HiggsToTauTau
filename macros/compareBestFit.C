@@ -16,9 +16,9 @@
 #include "TGraphAsymmErrors.h"
 #include "TLine.h"
 
-#include "/afs/cern.ch/user/p/pharris/Limits/CMSSW_5_2_5/src/HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
-#include "/afs/cern.ch/user/p/pharris/Limits/CMSSW_5_2_5/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
-#include "/afs/cern.ch/user/p/pharris/Limits/CMSSW_5_2_5/src/HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
+#include "HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
+#include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
 
 static const double MARKER_SIZE = 1.3;  // 0.7
 
@@ -29,6 +29,7 @@ channel(std::string& label){
 	  label==std::string("htt")        ||
 	  label==std::string("htt+")       ||
 	  label==std::string("0jet")       ||
+	  label==std::string("1jet")       ||
 	  label==std::string("2jet")       ||
 	  label==std::string("boost")      ||
 	  label==std::string("btag")       ||
@@ -39,6 +40,7 @@ channel(std::string& label){
 	  label==std::string("et")         ||
 	  label==std::string("mt")         ||
 	  label==std::string("mm")         ||
+	  label==std::string("ee")         ||
 	  label==std::string("ggH")        ||
 	  label==std::string("bbH")        ||
 	  label==std::string("mvis")       ||
@@ -64,11 +66,13 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("mt"        )) title = std::string("#mu#tau_{h}");
   if(channel==std::string("tt"        )) title = std::string("#tau_{h}#tau_{h}");
   if(channel==std::string("mm"        )) title = std::string("#mu#mu");
+  if(channel==std::string("ee"        )) title = std::string("ee");
   if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau+l(l)");
   if(channel==std::string("htt"       )) title = std::string("e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu");
   if(channel==std::string("cmb"       )) title = std::string("H#rightarrow#tau#tau");
   if(channel==std::string("cmb+"      )) title = std::string("H#rightarrow#tau#tau + VH#rightarrow#tau#tau+l(l)");
   if(channel==std::string("0jet"      )) title = std::string("0-Jet");
+  if(channel==std::string("1jet"      )) title = std::string("1-Jet");
   if(channel==std::string("2jet"      )) title = std::string("V(jj)H(#tau#tau)");
   if(channel==std::string("vbf"       )) title = std::string("2-Jet (VBF)");
   if(channel==std::string("boost"     )) title = std::string("1-Jet");
@@ -99,6 +103,7 @@ void compareBestFit(const char* filename="test.root", const char* channelstr="bo
 
   std::map<std::string, unsigned int> colors;
   colors["0jet"       ] = kBlue;
+  colors["1jet"       ] = kBlue;
   colors["2jet"       ] = kMagenta;
   colors["vbf"        ] = kRed;
   colors["boost"      ] = kGreen;
@@ -108,6 +113,7 @@ void compareBestFit(const char* filename="test.root", const char* channelstr="bo
   colors["et"         ] = kRed;
   colors["mt"         ] = kGreen;
   colors["mm"         ] = kMagenta;
+  colors["ee"         ] = kCyan;
   colors["tt"         ] = kOrange;
   colors["vhtt"       ] = kMagenta+2;
   colors["cmb"        ] = kBlack;
