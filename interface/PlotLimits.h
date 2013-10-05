@@ -171,6 +171,9 @@ class PlotLimits {
   void arXiv_1302_2892(TGraph* graph);
   /// fill CMS(H+)
   void arXiv_1205_5736(TGraph* graph);
+  /// fill CMS(H+), latest results
+  void HIG_12_052_lower(TGraph* graph);
+  void HIG_12_052_upper(TGraph* graph);
 
  private:
   /// output name (will be used to derived directory name in root files)
@@ -269,6 +272,8 @@ class PlotLimits {
 #include "HiggsAnalysis/HiggsToTauTau/interface/arXiv-1302-2892.h"
 /// official limits from CMS(H+)
 #include "HiggsAnalysis/HiggsToTauTau/interface/arXiv-1205-5736.h"
+/// official limits from CMS(H+), latest results
+#include "HiggsAnalysis/HiggsToTauTau/interface/HIG-12-052.h"
 
 inline void
 PlotLimits::upperLEPLimits(TGraph* graph)
