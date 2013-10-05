@@ -1,10 +1,14 @@
 import ConfigParser
 import os
+import sys
 
 class configuration:
     def __init__(self, mode, config, mtsoft=False):
         self.config=ConfigParser.SafeConfigParser(allow_no_value=True)
-        self.config.read(["{CMSSW}/src/HiggsAnalysis/HiggsToTauTau/limits.config".format(CMSSW=os.getenv('CMSSW_BASE')), config])
+        config_read=self.config.read(["{CMSSW}/src/HiggsAnalysis/HiggsToTauTau/limits.config".format(CMSSW=os.getenv('CMSSW_BASE')), config])
+        if len(config_read) == 1 and config:
+            sys.stderr.write("ERROR in LimitsConfig: Specified configuration file does not exist or is not readable.\n")
+            exit(1) 
         #read values from config
         self.periods=self.config.get(mode, 'periods').split()
         self.channels=self.config.get(mode, 'channels').split()
