@@ -38,8 +38,8 @@ parser.add_option("--update-LIMITS", dest="update_limits", default=False, action
                   help="update LIMITS directory for the indicated analyses. [Default: False]")
 parser.add_option("--drop-list", dest="drop_list", default="",  type="string",
                   help="The full path to the list of uncertainties to be dropped from the datacards due to pruning. If this string is empty no prunig will be applied. [Default: \"\"]")
-parser.add_option("-c", "--config", dest="config", default="",
-                  help="Additional configuration file to be used for the setup [Default: \"\"]")
+parser.add_option("-c", "--config", dest="config", default="HiggsAnalysis/HiggsToTauTau/limits.config",
+                  help="Additional configuration file to be used for the setup [Default: \"HiggsAnalysis/HiggsToTauTau/limits.config\"]")
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -51,6 +51,10 @@ if len(args) < 1 :
 import glob 
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
 
+## emergency exit in case of miss spelled limit.config names
+if not os.path.exists(options.config) :
+    print "Specified limit.config does not exist! Check spelling."
+    exit(1)
 ## masses
 masses = args
 ## do_not_scales
