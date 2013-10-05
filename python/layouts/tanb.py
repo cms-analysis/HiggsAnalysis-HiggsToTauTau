@@ -31,7 +31,7 @@ layout = cms.PSet(
    ,100.
    #,110.
    ,120.
-   #,130.
+   ,130.
    ,140.
    #,150.
    ,160.
@@ -71,4 +71,6 @@ layout = cms.PSet(
     arXiv_1302_2892 = cms.bool(False),
     ## add arXiv-1205-5736
     arXiv_1205_5736 = cms.bool(False),
+    ## add HIG-12-052
+    HIG_12_052 = cms.bool(False),
 )
