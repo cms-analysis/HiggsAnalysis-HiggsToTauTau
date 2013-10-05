@@ -113,15 +113,15 @@ def get_channel_dirs(finalstate, category):
         '09' : ['btag'  ],              
         },
         'vhtt' : {
-        '00' : ['mmt'],
-        '01' : ['emt'],
-        '02' : ['eet'],
+        '00' : ['mmtCatHigh', 'mmtCatLow'],
+        '01' : ['emtCatHigh', 'emtCatLow'],
+        '02' : ['eetCatHigh', 'eetCatLow'],
         '03' : ['mmme_zh', 'eeem_zh' ],
         '04' : ['mmmt_zh', 'eemt_zh' ],
         '05' : ['mmet_zh', 'eeet_zh' ],
         '06' : ['mmtt_zh', 'eett_zh' ],
-        '07' : ['mtt_low', 'mtt_high'],
-        '08' : ['ett_low', 'ett_high'],
+        '07' : ['mtt'],
+        '08' : ['ett'],
         },        
     }
     if fs_map[finalstate] == '' :
