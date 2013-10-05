@@ -227,6 +227,8 @@ class PlotLimits {
   bool arXiv_1302_2892_;
   /// add CMS(H+) in MSSM mA-tanb plot
   bool arXiv_1205_5736_;
+  /// add CMS(H+) in MSSM mA-tanb plot, latest results
+  bool HIG_12_052_;
 
   /// indicate signal component for signal strength plot from 2d-scan or fit (used for option max-likelihood)
   std::string signal_;
