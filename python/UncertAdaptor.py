@@ -16,7 +16,7 @@ class UncertAdaptor(object) :
         ## regex pattern to remove whitespaces if needed
         self.whitespace = re.compile(r',\s*,')
 
-    def cgs_processes(self, cgs_path, signal_procs=None, background_procs=None) :
+    def cgs_processes(self, cgs_path, signal_procs=None, background_procs=None, signal_drop=None, background_drop=None) :
         """
         Add processes to signal and/or background in the cgs file located at cgs_path. In case there is no definition of
         signal add or uncomment it. In case any element in processes is part of the backgrounds remomve it from the
@@ -25,45 +25,37 @@ class UncertAdaptor(object) :
         file_old = open(cgs_path, 'r')
         file_new = open(cgs_path+"_tmp", 'w')
         for line in file_old :
-            if "signals" in line :
+            if "signal" in line :
                 if signal_procs :
                     if line[0] == '#' :
-                        line = line.strip('#')
+                        line = line.lstrip('#')
             if self.cgs_signal_group in line :
-                signalstr = ''
-                if signal_procs :
-                    if line[0] == '#':
-                        ## uncomment and remove remnants of what had been commented, in case
-                        ## they exist; furthermore we need to get rid of the leading ',' for
-                        ## the first element.
-                        line = line[1:line.rfind(self.cgs_signal_group)+len(self.cgs_signal_group)+1]
-                    ## setup string of signal processes
-                    for signal in signal_procs :
-                        if not signal in line :
-                            signalstr+= ","+signal
-                if line.split()[-1] == 'signal' :
-                    signalstr = signalstr.strip(',')
-                line=line.rstrip('\n')+signalstr+'\n'
-                ## remove elements that might be part of signal, in case they should be moved
-                ## to background.
-                if background_procs :
-                    for signal in background_procs :
-                        line=line.replace(signal, '')
-                        line = re.sub(self.whitespace, '', line)
+                signals = [''] if signal_procs else line[line.rfind(self.cgs_signal_group)+len(self.cgs_signal_group)+1:].split(',')
+                signals = [sig.strip() for sig in signals]
+                line = line[:line.rfind(self.cgs_signal_group)+len(self.cgs_signal_group)+1]
+                signals = self.setup_processes(signals, signal_procs, background_procs)
+                signals = self.setup_processes(signals, None, signal_drop)
+                line=line+','.join(signals)+'\n'
             if self.cgs_background_group in line:
                 backgrounds = line[line.rfind(self.cgs_background_group)+len(self.cgs_background_group)+1:].split(',')
                 backgrounds = [bck.strip() for bck in backgrounds]
                 line = line[:line.rfind(self.cgs_background_group)+len(self.cgs_background_group)+1]
-                ## remove procs that might have been moved to signal from the background group
-                backgroundstr=''
-                if signal_procs:
-                    for background in backgrounds :
-                        if background in signal_procs :
-                            backgrounds.remove(background)
-                if background_procs :
-                    for background in background_procs :
-                        if not background in backgrounds :
-                            backgrounds.append(background)
+                backgrounds = self.setup_processes(backgrounds, background_procs, signal_procs)
+                backgrounds = self.setup_processes(backgrounds, None, background_drop)
                 line=line+','.join(backgrounds)+'\n'
             file_new.write(line)
         os.system("mv -v %s_tmp %s"%(cgs_path, cgs_path))
+    def setup_processes(self, processes, appends, removes):
+        """
+        Basic function to first remove strings given in removes from processes and afterwards append strings given in appends
+        """
+        if removes:
+            for proc in removes:
+                if proc in processes:
+                    processes.remove(proc)
+        if appends:
+            for proc in appends:
+                if not proc in processes:
+                    processes.append(proc)
+        processes = filter(bool, processes)
+        return processes

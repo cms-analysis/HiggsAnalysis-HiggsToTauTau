@@ -12,9 +12,9 @@ submit.py --max-likelihood LIMITS-yymmdd-sm/hww-bg/*/*
 (3a) blinded postfit plots (in HiggsAnalysis/HiggsToTauTau/test)
 ## setup postfit plots beginning to the end
 python mlfit_and_copy.py --skip $CMSSW_BASE/src/LIMITS-yymmdd-sm/hww-bg/cmb/125
-python produce_macros.py --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd --hww-background
+python produce_macros.py --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd
 python run_macros.py --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd
-python summary_plots.py --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd --hww-background
+python summary_plots.py --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd
 
 
 (4) launch/collect/plot Goodness-of-fit
@@ -54,9 +54,9 @@ plot --injected-sig HiggsAnalysis/HiggsToTauTau/python/layouts/significance-sm.p
 (6) unblinded postfit plots (in HiggsAnalysis/HiggsToTauTau/test)
 ## setup postfit plots beginning to the end
 python mlfit_and_copy.py --skip $CMSSW_BASE/src/LIMITS-yymmdd-sm/hww-bg/cmb/125
-python produce_macros.py --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd-unblinded --hww-background
+python produce_macros.py --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd-unblinded
 python run_macros.py --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd-unblinded
-python summary_plots.py --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd-unblinded --hww-background
+python summary_plots.py --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd-unblinded
 
 (7) limits and significances observed and expected
 ## launch limit

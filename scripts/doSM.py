@@ -11,8 +11,8 @@ import os
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGs",
                       description="This is a script to reload the Summer13 analysis for the main analyses [bbb, no-bbb] and potential cross check analyses [mvis, incl]. ARGs corresponds to the masses, for which to setup the structure.")
-parser.add_option("-a", "--analyses", dest="analyses", default="no-bbb, bbb, bbb:hww-bg",
-                  help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"no-bbb, bbb, bbb:hww-bg, mvis, inclusive\" [Default: \"no-bbb, bbb, bbb:hww-bg\"]")
+parser.add_option("-a", "--analyses", dest="analyses", default="no-bbb, bbb",
+                  help="Type of analyses to be considered for updating. Lower case is required. Possible choices are: \"no-bbb, bbb, bbb:hww-sig, no-bbb:hww-sig, mvis, inclusive\" [Default: \"no-bbb, bbb\"]")
 parser.add_option("--label", dest="label", default="", type="string", 
                   help="Possibility to give the setups, aux and LIMITS directory a index (example LIMITS-bbb). [Default: \"\"]")
 parser.add_option("--blind-datacards", dest="blind_datacards", default=False, action="store_true",
@@ -79,7 +79,8 @@ for chn in config.channels:
 patterns = {
     'no-bbb' : '',
     'bbb'    : '',
-    'bbb:hww-bg'    : '',
+    'no-bbb:hww-sig'    : '',
+    'bbb:hww-sig'    : '',
     }
 
 if options.update_all :
@@ -208,8 +209,12 @@ if options.update_setup :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
             ## vhtt is NOT scaled to 1pb. So nothing needs to be doen here
             if not chn in do_not_scales :
-                process = RescaleSamples(file, ['ggH', 'qqH', 'VH', 'WH', 'ZH'], masspoints)
-                process.rescale()
+                if chn == 'vhtt':
+                    process = RescaleSamples(file, ['VH', 'WH', 'ZH'], masspoints)
+                    process.rescale()
+                else:
+                    process = RescaleSamples(file, ['ggH', 'qqH', 'VH'], masspoints)
+                    process.rescale()
     if 'em' in config.channels :
         print "##"
         print "## --->>> adding extra scale for htt_hww contribution in em <<<---"
@@ -233,16 +238,28 @@ if options.update_setup :
             '145' : 0.60200/0.0261*3*0.108*3*0.108,
             }
         ## multiply with proper xsec and correct for proper BR everywhere, where any of the above processes occurs
-        for file in glob.glob("{SETUP}/em/*inputs-sm-*.root".format(SETUP=setup)) :
-            process = RescaleSamples(file, hww_processes, masspoints)
-            process.rescale()
-            for proc in hww_processes :
-                for mass in masspoints :
+        if any('hww-sig' in ana for ana in analyses):
+            for file in glob.glob("{SETUP}/em/*inputs-sm-*.root".format(SETUP=setup)) :
+                process = RescaleSamples(file, hww_processes, masspoints)
+                process.rescale()
+                for proc in hww_processes :
+                    for mass in masspoints :
+                        os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{INPUTFILE}\",\"{PROCESS}\",0\)".format(
+                            CMSSW_BASE=os.environ.get("CMSSW_BASE"),
+                            SCALE=hww_over_htt[str(mass)]*float(options.hww_scale),
+                            INPUTFILE=file,
+                            PROCESS=proc+mass
+                            ))
+        else:
+            for file in glob.glob("{SETUP}/em/*inputs-sm-*.root".format(SETUP=setup)) :
+                process = RescaleSamples(file, hww_processes, ['125'])
+                process.rescale()
+                for proc in hww_processes :
                     os.system(r"root -l -b -q {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+\(true,{SCALE},\"{INPUTFILE}\",\"{PROCESS}\",0\)".format(
                         CMSSW_BASE=os.environ.get("CMSSW_BASE"),
-                        SCALE=hww_over_htt[str(mass)]*float(options.hww_scale),
+                        SCALE=hww_over_htt['125']*float(options.hww_scale),
                         INPUTFILE=file,
-                        PROCESS=proc+mass
+                        PROCESS=proc+'125'
                         ))
     ## set up directory structure
     dir = "{CMSSW_BASE}/src/setups{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
@@ -252,7 +269,7 @@ if options.update_setup :
         os.system("mv {DIR} {CMSSW_BASE}/src/backup/".format(DIR=dir, CMSSW_BASE=cmssw_base))
     os.system("mkdir -p {DIR}".format(DIR=dir))
     for ana in analyses :
-        if 'hww-bg' in ana :
+        if 'hww-sig' in ana :
             continue
         os.system("cp -r {SETUP} {DIR}/{ANA}".format(SETUP=setup, DIR=dir, ANA=ana))
         ##
@@ -288,7 +305,7 @@ if options.update_setup :
                         os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                         os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                            
     for ana in analyses :
-        if 'hww-bg' in ana :
+        if 'hww-sig' in ana :
             os.system("cp -r {DIR}/{SOURCE} {DIR}/{TARGET}".format(DIR=dir, SOURCE=ana[:ana.find(':')], TARGET=ana[ana.find(':')+1:]))
             cgs_adaptor = UncertAdaptor()
             if 'em' in config.channels:
@@ -296,13 +313,10 @@ if options.update_setup :
                     for category in config.categories['em'][period]:
                         filename="{DIR}/{TARGET}/em/cgs-sm-{PERIOD}-0{CATEGORY}.conf".format(DIR=dir, TARGET=ana[ana.find(':')+1:], PERIOD=period, CATEGORY=category)
                         print 'processing file:', filename
-                        cgs_adaptor.cgs_processes(filename,None,['ggH_hww','qqH_hww'])
-            for file in glob.glob("{DIR}/{TARGET}/em/cgs-sm-*.conf".format(  DIR=dir, TARGET=ana[ana.find(':')+1:])) :
-                os.system("perl -pi -e 's/ggH_hww/ggH_hww{MASS}/g' {FILE}".format(MASS='125', FILE=file))
-                os.system("perl -pi -e 's/qqH_hww/qqH_hww{MASS}/g' {FILE}".format(MASS='125', FILE=file))
-            for file in glob.glob("{DIR}/{TARGET}/em/unc-sm-*.vals".format(  DIR=dir, TARGET=ana[ana.find(':')+1:])) :
-                os.system("perl -pi -e 's/ggH_hww/ggH_hww{MASS}/g' {FILE}".format(MASS='125', FILE=file))
-                os.system("perl -pi -e 's/qqH_hww/qqH_hww{MASS}/g' {FILE}".format(MASS='125', FILE=file))
+                        cgs_adaptor.cgs_processes(filename,['ggH','qqH','VH','ggH_hww','qqH_hww'],None,None,['ggH_hww125','qqH_hww125'])
+                for file in glob.glob("{DIR}/{ANA}/em/unc-sm-*.vals".format(DIR=dir, ANA=ana[ana.find(':')+1:])) :
+                    os.system("perl -pi -e 's/ggH_hww125/ggH_hww/g' {FILE}".format(FILE=file))
+                    os.system("perl -pi -e 's/qqH_hww125/qqH_hww/g' {FILE}".format(FILE=file))
 
 if options.update_aux :
     print "##"
@@ -340,7 +354,7 @@ if options.update_aux :
                     os.system("commentUncerts.py --drop-list={DROP} {SUB}".format(DROP=options.drop_list, SUB=subdir))
         ## fix hww mass to a given mass if configured such; do not apply this to hww-bg, where this has been done already at
         ## an earlier level
-        if not ana == 'hww-bg' :
+        if ana == 'hww-sig' :
             if not options.hww_mass == '' :
                 for file in glob.glob("{DIR}/{ANA}/sm/htt_em/htt_em_*.txt".format(DIR=dir, ANA=ana)) :
                     os.system("perl -pi -e 's/ggH_hww/ggH_hww{MASS}/g' {FILE}".format(MASS=options.hww_mass, FILE=file))

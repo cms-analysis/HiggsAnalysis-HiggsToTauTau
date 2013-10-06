@@ -12,7 +12,7 @@ parser.add_option("--tanb", dest="tanb", default="8", type="float", help="Tanb o
 parser.add_option("-c", "--config", dest="config", default="", type="string", help="Additional configuration file to be used for the channels, periods and categories. [Default: '']")
 parser.add_option("--debug", dest="debug", action="store_true", default=False, help="Debug option to show only scripts which are run without actually running them [Default: False]")
 parser.add_option("--add-mutau-soft", dest="add_mutau_soft", action="store_true", default=False, help="Add the soft categories to the mt channel [Default: False]")
-parser.add_option("--hww-background", dest="hwwbg", action="store_true", default=False, help="Add H->WW processes as background to the em channel [Default: False]")
+parser.add_option("--hww-signal", dest="hwwsig", action="store_true", default=False, help="Add H->WW processes as signal to the em channel [Default: False]")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 
@@ -233,7 +233,7 @@ for line in postfit_base :
     line = line.replace("$CMSSW_BASE", os.environ['CMSSW_BASE'])
     line = line.replace("$MA" , str(int(options.mA)))
     line = line.replace("$TANB", str(int(options.tanb)))
-    line = line.replace("$HWWBG", "true" if options.hwwbg else "false")
+    line = line.replace("$HWWBG", "false" if options.hwwsig else "true")
     postfit_use.write(line)
 postfit_base.close()
 postfit_use.close()
