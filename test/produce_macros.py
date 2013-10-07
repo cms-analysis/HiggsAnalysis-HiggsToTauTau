@@ -16,9 +16,9 @@ parser.add_option("--mA", dest="mA", default="160", type="float", help="Mass of 
 parser.add_option("--tanb", dest="tanb", default="8", type="float", help="Tanb only needed for mssm. [Default: '8']")
 parser.add_option("-u", "--uncertainties", dest="uncertainties", default="1", type="int", help="Set uncertainties of backgrounds. [Default: '1']")
 parser.add_option("--asimov", dest="asimov", action="store_true", default=False, help="Use asimov dataset for postfit-plots. [Default: 'False']")
-parser.add_option("--add-0jet-signal", dest="add_zero_jet", action="store_true", default=False, help="Add signal in the 0-jet event category of the mt, et, em channels [Default: False]")
+parser.add_option("--no-0jet-signal", dest="no_zero_jet", action="store_false", default=True, help="Add signal in the 0-jet event category of the mt, et, em channels [Default: False]")
 parser.add_option("--add-mutau-soft", dest="add_mutau_soft", action="store_true", default=False, help="Add the soft categories to the mt channel [Default: False]")
-parser.add_option("--hww-background", dest="hwwbg", action="store_true", default=False, help="Add H->WW processes as background to the em channel [Default: False]")
+parser.add_option("--hww-signal", dest="hwwsig", action="store_true", default=False, help="Add H->WW processes as background to the em channel [Default: False]")
 parser.add_option("-v", "--verbose", dest="verbose", action="store_true", default=False, help="Run in verbose more. [Default: 'False']")
 parser.add_option("-c", "--config", dest="config", default="", help="Additional configuration file for the channels, periods and categories. [Default: '']")
 
@@ -101,10 +101,9 @@ class Analysis:
         return False
 
     def drop_signal(self, category) :
-        if options.add_zero_jet :
-            return False
-        if '0jet' in category :
-            return True
+        if options.no_zero_jet:
+            if '0jet' in category:
+                return True
         return False
         
     def run(self):
@@ -124,7 +123,7 @@ class Analysis:
              line = line.replace("$DEFINE_ASIMOV", "#define ASIMOV" if options.asimov else "")
              line = line.replace("$DEFINE_MSSM", "#define MSSM" if self.analysis == "mssm" else "")
              line = line.replace("$DEFINE_DROP_SIGNAL", "#define DROP_SIGNAL" if self.drop_signal(self.category) else "")
-             line = line.replace("$DEFINE_HWWBG", "#define HWW_BG" if options.hwwbg else "")
+             line = line.replace("$DEFINE_HWWBG", "#define HWW_BG" if not options.hwwsig else "")
              line = line.replace("$BLIND", "false" if config.unblind else "true")
              line = line.replace("$DEFINE_EXTRA_SAMPLES", "#define EXTRA_SAMPLES" if self.high_stat_category(self.category) else "")
              line = line.replace(template_name, output_name)

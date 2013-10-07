@@ -84,7 +84,6 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
     //std::cout << observed_low->GetX()[observed_low->GetN()-1] << std::endl;
   }
 
-
   // create LEP exclusion plot
   TGraph* upperLEP = new TGraph();
   upperLEPLimits(upperLEP);
@@ -94,10 +93,12 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
 
   // create plots for additional comparisons
   std::map<std::string, TGraph*> comparisons; TGraph* comp=0;
-  if(arXiv_1211_6956_){ comp = new TGraph(), arXiv_1211_6956(comp); comp->SetName("arXiv_1211_6956"); comparisons[std::string("ATLAS H#rightarrow#tau#tau (4.8/fb)")] = comp;}
-  if(arXiv_1204_2760_){ comp = new TGraph(); arXiv_1204_2760(comp); comp->SetName("arXiv_1204_2760"); comparisons[std::string("ATLAS H^{+} (4.6/fb)")               ] = comp;}
-  if(arXiv_1302_2892_){ comp = new TGraph(); arXiv_1302_2892(comp); comp->SetName("arXiv_1302_2892"); comparisons[std::string("CMS bbH#rightarrow 4b (4.8/fb)")     ] = comp;}
-  if(arXiv_1205_5736_){ comp = new TGraph(); arXiv_1205_5736(comp); comp->SetName("arXiv_1205_5736"); comparisons[std::string("CMS H^{+} (2/fb)")                   ] = comp;}
+  if(arXiv_1211_6956_){ comp = new TGraph(), arXiv_1211_6956 (comp); comp->SetName("arXiv_1211_6956" ); comparisons[std::string("ATLAS H#rightarrow#tau#tau (4.8/fb)")] = comp;}
+  if(arXiv_1204_2760_){ comp = new TGraph(); arXiv_1204_2760 (comp); comp->SetName("arXiv_1204_2760" ); comparisons[std::string("ATLAS H^{+} (4.6/fb)")               ] = comp;}
+  if(arXiv_1302_2892_){ comp = new TGraph(); arXiv_1302_2892 (comp); comp->SetName("arXiv_1302_2892" ); comparisons[std::string("CMS bbH#rightarrow 4b (4.8/fb)")     ] = comp;}
+  if(arXiv_1205_5736_){ comp = new TGraph(); arXiv_1205_5736 (comp); comp->SetName("arXiv_1205_5736" ); comparisons[std::string("CMS H^{+} (2/fb)")                   ] = comp;}
+  if(HIG_12_052_     ){ comp = new TGraph(); HIG_12_052_lower(comp); comp->SetName("HIG_12_052_lower"); comparisons[std::string("CMS H^{+} (2-4.9/fb)")               ] = comp;}
+  if(HIG_12_052_     ){ comp = new TGraph(); HIG_12_052_upper(comp); comp->SetName("HIG_12_052_upper"); comparisons[std::string("EMPTY")                              ] = comp;}
 
   // setup contratins from Higgs mass
   std::map<double, TGraphAsymmErrors*> higgsBands;

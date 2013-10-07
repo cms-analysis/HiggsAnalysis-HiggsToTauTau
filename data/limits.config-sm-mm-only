@@ -16,7 +16,7 @@ mm_names = 0jet_low 0jet_high 1jet_low 1jet_high vbf
 
 [bbb-sm]
 
-threshold = 0.1
+mm_threshold = 0.
 
 mm_categories_7TeV = 01,03,04
 mm_categories_8TeV = 01,03,04

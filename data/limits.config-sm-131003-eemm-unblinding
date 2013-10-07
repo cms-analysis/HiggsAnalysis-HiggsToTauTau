@@ -11,8 +11,10 @@ mt_soft = LLR
 
 [sm]
 
+unblind
+
 periods = 7TeV 8TeV
-channels = em et mt tt mm ee vhtt
+channels = mm ee
 
 em_categories_7TeV = 0 1 2 3 4 
 et_categories_7TeV = 1 2 3 5 6
@@ -47,8 +49,8 @@ et_threshold = 0.1
 mt_threshold = 0.1
 em_threshold = 0.1
 tt_threshold = 0.1
-mm_threshold = 0.0
-ee_threshold = 0.0
+mm_threshold = 0
+ee_threshold = 0
 vhtt_threshold = 0.1
 
 ee_categories_7TeV = 01,03,04

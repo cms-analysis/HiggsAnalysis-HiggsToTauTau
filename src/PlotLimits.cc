@@ -73,6 +73,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   arXiv_1204_2760_ =cfg.existsAs<bool>("arXiv_1204_2760" ) ? cfg.getParameter<bool>("arXiv_1204_2760" ) : false;
   arXiv_1302_2892_ =cfg.existsAs<bool>("arXiv_1302_2892" ) ? cfg.getParameter<bool>("arXiv_1302_2892" ) : false;
   arXiv_1205_5736_ =cfg.existsAs<bool>("arXiv_1205_5736" ) ? cfg.getParameter<bool>("arXiv_1205_5736" ) : false;
+  HIG_12_052_      =cfg.existsAs<bool>("HIG_12_052"      ) ? cfg.getParameter<bool>("HIG_12_052"      ) : false;
   higgs125_ =cfg.existsAs<bool>("higgs125" ) ? cfg.getParameter<bool>("higgs125" ) : false;
   outerband_=cfg.existsAs<bool>("outerband") ? cfg.getParameter<bool>("outerband") : false;
 }
