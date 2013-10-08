@@ -102,7 +102,6 @@ else: # user wants to run on lsf
     #    print errmsg
     #    # raise ValueError(errmsg)
     #    sys.exit(1)
-        
 ## create a random stamp fro multiply submission
 stamp=''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))
 ## main submission script
@@ -125,6 +124,8 @@ with open(submit_name, 'w') as submit_script:
         script_file_name = '%s/%s_%i.sh' % (name, name, i)
         ## create random directory in tmp. This allows to do more than one submission in parallel
         tmp_head = '/tmp/'+stamp
+        if options.condor:
+            tmp_head = "${_CONDOR_SCRATCH_DIR}/" + stamp
         dir_head = dir.rstrip('/')[:dir.rstrip('/').rfind('/')+1]
         dir_tail = dir.rstrip('/')[dir.rstrip('/').rfind('/')+1:]
         with open(script_file_name, 'w') as script:
