@@ -12,6 +12,8 @@ agroup.add_option("--goodness-of-fit", dest="optGoodnessOfFit", default=False, a
                   help="Perform a test of the goodness of fit (equivalernt to a chisquared fit but suited for an arbitary abount of channels and for the use with nuisance parameters). The expected goodness of fit test is toy based. [Default: False]")
 agroup.add_option("--max-likelihood", dest="optMLFit", default=False, action="store_true",
                   help="Perform a maximum likelihood fit from the datacards in the directory/ies. corresponding to ARGs The results of this fit are used for htt postfit plots. [Default: False]")
+agroup.add_option("--max-likelihood-toys", dest="optMLFitToys", default=False, action="store_true",
+                  help="Perform a maximum likelihood fit on generated toys")
 agroup.add_option("--likelihood-scan", dest="optNLLScan", default=False, action="store_true",
                   help="Perform a maximum likelihood scan to determine the signal strength from the datacards in the directory/ies corresponding to ARGs. [Default: False]")
 agroup.add_option("--multidim-fit", dest="optMDFit", default=False, action="store_true",
@@ -407,7 +409,7 @@ for directory in args :
                 if options.fromScratch :
                     os.system("rm batch_collected_goodness_of_fit.root")
                 else :
-                    os.system("mv batch_collected_goodness_of_fit.root old_goodness_of_fit.root")                
+                    os.system("mv batch_collected_goodness_of_fit.root old_goodness_of_fit.root")
             os.system("hadd -f batch_collected_goodness_of_fit.root higgsCombineTest.GoodnessOfFit.mH{MASS}.[0-9]*.root".format(MASS=mass))
             ## clean up the files that have been combined
             os.system("rm higgsCombineTest.GoodnessOfFit.mH{MASS}.[0-9]*.root".format(MASS=mass))
@@ -431,7 +433,7 @@ for directory in args :
                 os.system("combine -M GoodnessOfFit -m {mass} --algo saturated -t {toys} -s {seed} {user} {wdir}/tmp.root".format(
                     mass=mass, user=options.userOpt, toys=options.toys, seed=options.seed, wdir=options.workingdir))
             ## run observed limit in any case if expectedOnly is not specified
-            else: 
+            else:
                 print "combine -M GoodnessOfFit -m {mass} --algo saturated {user} {wdir}/tmp.root".format(
                     mass=mass, user=options.userOpt, wdir=options.workingdir)
                 os.system("combine -M GoodnessOfFit -m {mass} --algo saturated {user} {wdir}/tmp.root".format(
@@ -456,7 +458,7 @@ for directory in args :
                     if options.fromScratch :
                         os.system("rm batch_collected_%s.root" % collect_file)
                     else :
-                        os.system("mv batch_collected_%s.root old_%s.root" % (collect_file, collect_file))                
+                        os.system("mv batch_collected_%s.root old_%s.root" % (collect_file, collect_file))
                 ## to allow for more files to be combined distinguish by first digit in a first
                 ## iteration, than combine the resulting 10 files to the final output file.
                 njob = 0
@@ -466,7 +468,7 @@ for directory in args :
                 for idx in range(10 if njob>10 else njob) :
                     ## taking {IDX}* instead of *{IDX} produces uneven amount of toys in each file, but it is an easy trick to prevent an ambiguous pattern
                     inputfiles = collect_inputs[collect_file].replace('{MASS}-', '{MASS}-{IDX}')
-                    os.system("hadd -f batch_collected_{LABEL}_{IDX}.root {INPUTFILES}".format( 
+                    os.system("hadd -f batch_collected_{LABEL}_{IDX}.root {INPUTFILES}".format(
                         LABEL=collect_file,
                         INPUTFILES=inputfiles.format(MASS=mass, IDX=idx),
                         MASS=mass,
@@ -483,7 +485,7 @@ for directory in args :
                     os.system("mv batch_collected_%s.root new_%s.root"%(collect_file, collect_file))
                     os.system("hadd batch_collected_%s.root old_%s.root new_%s.root"%(collect_file, collect_file, collect_file))
                     os.system("rm old_%s.root new_%s.root"%(collect_file, collect_file))
-        else : 
+        else :
             ## prepare workspace
             create_card_workspace(mass)
             ## create sub-directory out from scratch
@@ -526,15 +528,53 @@ for directory in args :
                 ## add a version with only problematic values (the signal pull is not part of the listing)
                 os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --stol 0.99 --vtol2 2.0 --stol2 0.99 -f text  mlfit.root > mlfit_largest-pulls.txt")
                 os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --stol 0.99 --vtol2 2.0 --stol2 0.99 -f latex mlfit.root > mlfit_largest-pulls.tex")
-                os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --stol 0.99 --vtol2 2.0 --stol2 0.99 -f html  mlfit.root > mlfit_largest-pulls.html")    
+                os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 1.0 --stol 0.99 --vtol2 2.0 --stol2 0.99 -f html  mlfit.root > mlfit_largest-pulls.html")
                 os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 99. --stol 0.50 --vtol2 99. --stol2 0.90 -f text  mlfit.root > mlfit_largest-constraints.txt")
                 os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 99. --stol 0.50 --vtol2 99. --stol2 0.90 -f latex mlfit.root > mlfit_largest-constraints.tex")
                 os.system("python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -A --vtol 99. --stol 0.50 --vtol2 99. --stol2 0.90 -f html  mlfit.root > mlfit_largest-constraints.html")
-        os.chdir(subdirectory)    
+        os.chdir(subdirectory)
+    ##
+    ## ML of toys
+    ##
+    if options.optMLFitToys:
+        ## determine mass value from directory name
+        mass  = get_mass(directory)
+        ## prepare workspace
+        create_card_workspace(mass)
+        ## create sub-directory out from scratch
+        if os.path.exists("out") :
+            os.system("rm -r out")
+        os.system("mkdir out")
+        ## if it does not exist already, create link to executable
+        if not os.path.exists("combine") :
+            os.system("cp -s $(which combine) .")
+        ## prepare fit option
+        minuitopt = ""
+        if options.minuit :
+            minuitopt = "--minimizerAlgo minuit"
+        stableopt = ""
+        if options.stable_old:
+            stableopt = "--robustFit=1 --stepSize=0.5  --minimizerStrategy=0 --minimizerTolerance=0.1 --preFitValue=0.1  --X-rtd FITTER_DYN_STEP  --cminFallbackAlgo=\"Minuit,0:0.001\" --keepFailures "
+        if options.stable :
+            stableopt = "--robustFit=1 --preFitValue=1. --X-rtd FITTER_NEW_CROSSING_ALGO --minimizerAlgoForMinos=Minuit2 --minimizerToleranceForMinos=0.01 --X-rtd FITTER_NEVER_GIVE_UP --X-rtd FITTER_BOUND --minimizerAlgo=Minuit2 --minimizerStrategy=0 --minimizerTolerance=0.001 --cminFallbackAlgo \"Minuit,0:0.001\" --keepFailures "
+            stableopt+= "--rMin {MIN} --rMax {MAX} ".format(MIN=options.rMin, MAX=options.rMax)
+        toys_opts = "--toysFrequentist -t 200 -s %s --expectSignal 1 --noErrors --minos none" % options.seed
+        redirect = ""
+        if options.hide_fitresult :
+            redirect = '> /tmp/'+''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))
+        ## run maximum likelihood fit
+        print "combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} {toys_opts} {wdir}/tmp.root --out=out".format(
+            mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt, wdir=options.workingdir, toys_opts=toys_opts)
+        os.system("combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} {toys_opts} {wdir}/tmp.root --out=out {redir}".format(
+            mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt, wdir=options.workingdir, redir=redirect, toys_opts=toys_opts))
+        ## change to sub-directory out and prepare formated output
+        os.chdir(os.path.join(subdirectory, "out"))
+    os.chdir(subdirectory)
+
     ##
     ## LIKELIHOOD-SCAN
     ##
-    if options.optNLLScan :        
+    if options.optNLLScan :
         footprint = open("{DIR}/.scan".format(DIR=options.workingdir), "w")
         footprint.write("points : {POINTS}\n".format(POINTS=options.gridPoints))
         footprint.write("r : {RMIN} \t {RMAX}\n".format(RMIN=options.rMin, RMAX=options.rMax))
@@ -554,7 +594,7 @@ for directory in args :
         if not os.path.exists("combine") :
             os.system("cp -s $(which combine) .")
         gridpointsOpts = ""
-        options.fitAlgo = "grid" 
+        options.fitAlgo = "grid"
         if options.fitAlgo == "grid" :
             if options.firstPoint == "" :
                 gridpointsOpts = "--points %s --firstPoint 1 --lastPoint %s" % (options.gridPoints, options.gridPoints)
@@ -686,7 +726,7 @@ for directory in args :
                 if options.fromScratch :
                     os.system("rm batch_collected_%s.root" %collect_file)
                 else :
-                    os.system("mv batch_collected_%s.root old_%s.root" %(collect_file, collect_file))                
+                    os.system("mv batch_collected_%s.root old_%s.root" %(collect_file, collect_file))
             ## to allow for more files to be combined distinguish by first digit in a first
             ## iteration, than combine the resulting 10 files to the final output file.
             njob = 0
