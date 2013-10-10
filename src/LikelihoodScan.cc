@@ -46,7 +46,7 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
   SetStyle();
   
   // pick up boundaries of the scan from .scan file in masses directory. This
-  // requires that you have run imits.py beforehand with option --multidim-fit
+  // requires that you have run limits.py beforehand with option --multidim-fit
   char type[20]; 
   float first, second;
   int points=0;
