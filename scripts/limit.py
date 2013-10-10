@@ -725,6 +725,8 @@ for directory in args :
             extension = 'SIG'
         if options.optPValue :
             extension = 'PVAL'
+        if options.stable:
+            options.userOpt = options.userOpt+' --rMin -2 --rMax 2 --minimizerAlgo Minuit'
         ## do the calculation a la HCG
         if not options.observedOnly :
             ## calculate expected p-value

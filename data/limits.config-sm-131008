@@ -11,6 +11,8 @@ mt_soft = LLR
 
 [sm]
 
+unblind
+
 periods = 7TeV 8TeV
 channels = em et mt tt mm ee
 
