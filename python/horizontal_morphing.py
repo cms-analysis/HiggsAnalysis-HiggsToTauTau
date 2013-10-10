@@ -8,9 +8,11 @@ ROOT.gSystem.Load('$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so'
 from ROOT import th1fmorph
 
 class Morph:
-    def __init__(self,input,directories,samples,uncerts,masses,step_size,verbose,extrapolate):
+    def __init__(self,input,directories,samples,uncerts,masses,step_size,verbose,extrapolate,trivial):
         ## verbose
         self.verbose = verbose
+        ## trivial
+        self.trivial = trivial
         ## input file
         self.input = input
         ## step size
@@ -67,7 +69,13 @@ class Morph:
         hist_lower = self.zero_safe(self.load_hist(file, directory, name.format(MASS=lower)))
         hist_upper = self.zero_safe(self.load_hist(file, directory, name.format(MASS=upper)))
         norm = self.norm_hist(hist_lower, hist_upper, float(lower), float(upper), float(value))
-        hist_morph = th1fmorph(name.format(MASS=value),name.format(MASS=value),hist_lower, hist_upper, float(lower), float(upper), float(value), norm, 0)
+        if self.trivial :
+            if abs(float(value)-float(lower)) < abs(float(upper)-float(value)) :
+                hist_morph = hist_lower.Clone(name.format(MASS=value)); hist_morph.SetTitle(name.format(MASS=value)); hist_morph.Scale(norm/hist_morph.Integral())
+            else :
+                hist_morph = hist_upper.Clone(name.format(MASS=value)); hist_morph.SetTitle(name.format(MASS=value)); hist_morph.Scale(norm/hist_morph.Integral())
+        else :
+            hist_morph = th1fmorph(name.format(MASS=value),name.format(MASS=value),hist_lower, hist_upper, float(lower), float(upper), float(value), norm, 0)
         # th1fmorph() will set a value null if you are right on top of it
         if not hist_lower and lower == value:
             hist_lower = hist_morph
