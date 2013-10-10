@@ -39,7 +39,10 @@ parser.add_option("-c", "--config", dest="config", default="",
 (options, args) = parser.parse_args()
 if len(args) < 1 :
     #parser.print_usage()
-    args.append("90 130 100-200:20 250-500:50 600-1000:100")
+    if not options.fine_scan:
+        args.append("90 130 100-200:20 250-500:50 600-1000:100")
+    else :
+        args.append("90-250:10 300-500:50 600-1000:100")
     #exit(1)
 
 import os
@@ -67,12 +70,10 @@ for chn in config.channels :
 
 ## postfix pattern for input files
 patterns = {
-    'no-bbb'       : {'em': '', 'et' : '', 'mt' : '', 'tt' : '', 'mm' : ''},
+    'plain'       : {'em': '', 'et' : '', 'mt' : '', 'tt' : '', 'mm' : ''},
     'bbb'          : {'em': '', 'et' : '', 'mt' : '', 'tt' : '', 'mm' : ''},
-    'em-ttbar-a'   : {'em': '-ttbarnorw' , 'et' : '', 'mt' : '', 'tt' : '', 'mm' : ''},
-    'em-ttbar-b'   : {'em': '-ttbarrw'   , 'et' : '', 'mt' : '', 'tt' : '', 'mm' : ''},
-    'em-ttbar-c'   : {'em': '-ttbaroldsf', 'et' : '', 'mt' : '', 'tt' : '', 'mm' : ''},
-    'em-ttbar-d'   : {'em': '-ttbarcontrol', 'et' : '', 'mt' : '', 'tt' : '', 'mm' : ''},
+    'bbb-gt60'     : {'em': '-gt60', 'et' : '-gt60', 'mt' : '-gt60', 'tt' : '-gt60', 'mm' : ''},
+    'bbb-pt30'     : {'em': '', 'et' : '-pt30', 'mt' : '-pt30', 'tt' : '', 'mm' : ''},
     }
 
 if options.update_all :
@@ -189,7 +190,7 @@ if options.reload :
 if options.update_setup :
     ## scale by acceptance correction. This needs to be done for all available masses independent
     ## from args to guarantee that the tanb_grid templates are properly scaled.
-    for chn in config.channels :
+    for chn in config.channels : #felix
         for per in config.periods :
             if directories[chn][per] == 'None' :
                 continue
@@ -200,13 +201,15 @@ if options.update_setup :
                 ))
     ## apply horizontal template morphing for finer step sizes for limit calculation
     if options.fine_scan :
-        os.system("horizontal-morphing.py --categories='emu_btag,emu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_e_7TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v .setup-130831-mssm-low/em/htt_em.inputs-mssm-7TeV-0.root")
-        os.system("horizontal-morphing.py --categories='emu_btag,emu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_e_8TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v .setup-130831-mssm-low/em/htt_em.inputs-mssm-8TeV-0.root")
-        os.system("horizontal-morphing.py --categories='eleTau_btag,eleTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_etau_7TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v .setup-130831-mssm-low/et/htt_et.inputs-mssm-7TeV-0.root")
-        os.system("horizontal-morphing.py --categories='eleTau_btag,eleTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_etau_8TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v .setup-130831-mssm-low/et/htt_et.inputs-mssm-8TeV-0.root")
-        os.system("horizontal-morphing.py --categories='muTau_btag,muTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_mutau_7TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v .setup-130831-mssm-low/mt/htt_mt.inputs-mssm-7TeV-0.root")
-        os.system("horizontal-morphing.py --categories='muTau_btag,muTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_mutau_8TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v .setup-130831-mssm-low/mt/htt_mt.inputs-mssm-8TeV-0.root")
-        os.system("horizontal-morphing.py --categories='tauTau_btag,tauTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_tautau_8TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v .setup-130831-mssm-low/tt/htt_tt.inputs-mssm-8TeV-0.root")
+        os.system("horizontal-morphing.py --categories='emu_btag,emu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_e_7TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/em/htt_em.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='emu_btag,emu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_e_8TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/em/htt_em.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='eleTau_btag,eleTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_etau_7TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/et/htt_et.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='eleTau_btag,eleTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_etau_8TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/et/htt_et.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='muTau_btag,muTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_mutau_7TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/mt/htt_mt.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='muTau_btag,muTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_mutau_8TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/mt/htt_mt.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='tauTau_btag,tauTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_tautau_8TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/tt/htt_tt.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --trivial --categories='mumu_btag,mumu_nobtag' --samples='ggH{MASS},bbH{MASS}' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/mm/htt_mm.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --trivial --categories='mumu_btag,mumu_nobtag' --samples='ggH{MASS},bbH{MASS}' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/mm/htt_mm.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}")) 
     ## setup directory structure
     dir = "{CMSSW_BASE}/src/setups{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
     if os.path.exists(dir) :
@@ -258,19 +261,19 @@ if options.update_setup :
                 if 'mt' in config.channels :
                     #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'QCD_fine_binning' -k '9' --range 120".format(
                     #    DIR=dir, ANA=ana))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'QCD_fine_binning' -k '8' --range 150 --rangelast 700 ".format(
-                        DIR=dir, ANA=ana))
+                    #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'QCD_fine_binning' -k '8' --range 150 --rangelast 700 ".format(
+                    #    DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'W_fine_binning' -k '8' --range 300 ".format(
                         DIR=dir, ANA=ana))
                     ## tail fit for QCD shape uncertainties
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'QCD_CMS_htt_QCDShape_mutau_nobtag_7TeVDown_fine_binning' -k '8' --range 150 --rangelast 700 --no-uncerts".format(
-                        DIR=dir, ANA=ana))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'QCD_CMS_htt_QCDShape_mutau_nobtag_7TeVUp_fine_binning'   -k '8' --range 150 --rangelast 700 --no-uncerts".format(
-                        DIR=dir, ANA=ana))
-                    #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'QCD_CMS_htt_QCDShape_mutau_btag_7TeVDown_fine_binning' -k '9' --range 120  --no-uncerts".format(
-                    #    DIR=dir, ANA=ana))
-                    #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'QCD_CMS_htt_QCDShape_mutau_btag_7TeVUp_fine_binning'   -k '9' --range 120  --no-uncerts".format(
-                    #    DIR=dir, ANA=ana))
+                    #os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'QCD_CMS_htt_QCDShape_mutau_nobtag_7TeVDown_fine_binning' -k '8' --range 150 --rangelast 700 --no-uncerts".format(
+                   #     DIR=dir, ANA=ana))
+                   # os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'QCD_CMS_htt_QCDShape_mutau_nobtag_7TeVUp_fine_binning'   -k '8' --range 150 --rangelast 700 --no-uncerts".format(
+                   #     DIR=dir, ANA=ana))
+                   # os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'QCD_CMS_htt_QCDShape_mutau_btag_7TeVDown_fine_binning' -k '9' --range 120  --no-uncerts".format(
+                   #     DIR=dir, ANA=ana))
+                   # os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'QCD_CMS_htt_QCDShape_mutau_btag_7TeVUp_fine_binning'   -k '9' --range 120  --no-uncerts".format(
+                   #     DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'W_CMS_htt_WShape_mutau_nobtag_7TeVDown_fine_binning' -k '8' --range 300 --no-uncerts".format(
                         DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-7TeV-0.root -c mt -e 7TeV -b 'W_CMS_htt_WShape_mutau_nobtag_7TeVUp_fine_binning'   -k '8' --range 300 --no-uncerts".format(
@@ -303,7 +306,7 @@ if options.update_setup :
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_fine_binning' -k '9' --range 120 ".format(
                         DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_fine_binning' -k '8' --range 120 ".format(
-                        DIR=dir, ANA=ana))
+                       DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'TT_fine_binning' -k '9' --range 150 ".format(
                         DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'TT_fine_binning' -k '8' --range 120 ".format(
@@ -330,8 +333,8 @@ if options.update_setup :
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_btag_8TeVUp_fine_binning'   -k '9' --range 150 --no-uncerts".format(
                         DIR=dir, ANA=ana))
                 if 'mt' in config.channels : 
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'QCD_fine_binning' -k '8' --range 200 --rangelast 700 ".format(
-                        DIR=dir, ANA=ana))
+                   ## os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'QCD_fine_binning' -k '8' --range 200 --rangelast 700 ".format(
+                   ##     DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_fine_binning' -k '9' --range 150 ".format(
                         DIR=dir, ANA=ana))           
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_fine_binning' -k '8' --range 300".format(
@@ -341,10 +344,10 @@ if options.update_setup :
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'TT_fine_binning' -k '8' --range 200 ".format(
                         DIR=dir, ANA=ana))           
                     ## tail fit for QCD shape uncertainties
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'QCD_CMS_htt_QCDShape_mutau_nobtag_8TeVDown_fine_binning' -k '8' --range 200 --rangelast 700 --no-uncerts".format(
-                        DIR=dir, ANA=ana))
-                    os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'QCD_CMS_htt_QCDShape_mutau_nobtag_8TeVUp_fine_binning'   -k '8' --range 200 --rangelast 700 --no-uncerts".format(
-                        DIR=dir, ANA=ana))
+                   ##  os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'QCD_CMS_htt_QCDShape_mutau_nobtag_8TeVDown_fine_binning' -k '8' --range 200 --rangelast 700 --no-uncerts".format(
+##                         DIR=dir, ANA=ana))
+##                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'QCD_CMS_htt_QCDShape_mutau_nobtag_8TeVUp_fine_binning'   -k '8' --range 200 --rangelast 700 --no-uncerts".format(
+##                         DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_nobtag_8TeVDown_fine_binning' -k '8' --range 300 --no-uncerts".format(
                         DIR=dir, ANA=ana))
                     os.system("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_nobtag_8TeVUp_fine_binning'   -k '8' --range 300 --no-uncerts".format(
@@ -389,8 +392,8 @@ if options.update_setup :
                             PROC=config.bbbproc[chn][idx],
                             DIR=dir,
                             ANA=ana,
-                            THR=config.bbbthreshold
-                            ))
+                            THR=config.bbbthreshold[chn]
+                            ))                   
                         os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                         os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
 if options.update_aux :
@@ -405,7 +408,7 @@ if options.update_aux :
     os.system("mkdir -p {DIR}".format(DIR=dir))    
     for ana in analyses :
         for chn in config.channels:
-            for per in config.periods:
+            for per in config.periods: 
                 if config.categories[chn][per]:
                     os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a mssm -c '{CHN}' --mssm-categories-{CHN}='{CATS}' {MASSES}".format(
                     CMSSW_BASE=cmssw_base,
@@ -417,7 +420,7 @@ if options.update_aux :
                     CATS=' '.join(config.categories[chn][per]),
                     MASSES=' '.join(masses),
                     ))
-        if ana == "bbb" :
+        if 'bbb' in ana :
             if options.drop_list != '' :
                 for subdir in glob.glob("{DIR}/{ANA}/mssm/*".format(DIR=dir, ANA=ana)) :
                     print '...comment bbb uncertainties for', subdir

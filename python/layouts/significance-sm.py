@@ -36,5 +36,5 @@ layout = cms.PSet(
     ## define masspoints for limit plot
     masspoints = cms.vdouble(range(110, 146, 5)),
     ## plot expected only
-    expectedOnly = cms.bool(True),
+    expectedOnly = cms.bool(False),
 )
