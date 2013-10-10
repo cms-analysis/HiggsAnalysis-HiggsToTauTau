@@ -9,6 +9,8 @@ tt = MIT
 
 [mssm]
 
+unblind
+
 periods = 7TeV 8TeV
 channels = em et mt mm tt
 
@@ -36,7 +38,11 @@ tt_names = nobtag btag
 
 [bbb-mssm]
 
-threshold = 0.05
+et_threshold = 0.05
+mt_threshold = 0.05
+em_threshold = 0.05
+tt_threshold = 0.05
+mm_threshold = 0.05
 
 ee_categories_7TeV = 08,09
 mm_categories_7TeV = 08 09
@@ -58,3 +64,14 @@ em_processes = Fakes,EWK,ttbar,Ztt
 et_processes = TT,QCD,ZTT,W,ZL,ZJ,VV
 mt_processes = TT,QCD,ZTT,W,ZL,ZJ,VV
 tt_processes = ZTT,TT,QCD,W,ZL,ZJ,VV
+
+
+[combination]
+
+periods = 7TeV 8TeV 7TeV_8TeV
+
+channels_sm = em et mt
+categories_sm = 0jet
+
+channels_mssm = em et mt mm tt
+categories_mssm = nobtag btag
