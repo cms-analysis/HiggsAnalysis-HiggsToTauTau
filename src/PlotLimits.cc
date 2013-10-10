@@ -147,26 +147,38 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
       prepareByFitOutput(directory, central, "out/mlfit", "tree_fit_sb", "nll_min");
     }
     else{
-      if(std::string(low_tanb)==std::string("low")) prepareByFile(directory, central, filename, "low");
-      else prepareByFile(directory, central, filename);
+      if(std::string(low_tanb)==std::string("low")){
+	prepareByFile(directory, central, filename, "low");
+      }
+      else{ 
+	prepareByFile(directory, central, filename);
+      }
     }
   }
   bool first_low=true;
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
     if(valid_[imass] && std::string(filename).find("HIG")==std::string::npos){
-      if(!first_low){
-	if((central[imass]==0.5 && central[imass-1]>0.5) || central[imass]!=0.5) {
-	  plot->SetPoint(ipoint++, bins_[imass], central[imass]);
-	  //std::cout<< "lastlow" << central[imass] << " " << bins_[imass] << std::endl;
+      if(mssm_){
+	// fill the upper limit contour for MSSM. The lowest value in the MSSM tanb scan is 0.5. If
+	// central value is 0.5 for the upper limit this mean that there is now upper bound found. 
+	// For such cases it is necessary to consider the first and last point before and after the 
+	// uppler limit exclusion starts to be able to close the contour for plotting. 
+	if(!first_low){
+	  if((central[imass]==0.5 && central[imass-1]>0.5) || central[imass]!=0.5) {
+	    plot->SetPoint(ipoint++, bins_[imass], central[imass]);
+	    //std::cout<< "lastlow" << central[imass] << " " << bins_[imass] << std::endl;
+	  }
+	}
+	if(first_low){
+	  if((central[imass]==0.5 && central[imass+1]>0.5) || central[imass]!=0.5) {
+	    plot->SetPoint(ipoint++, bins_[imass], central[imass]); first_low=false;
+	    //std::cout<< "firstlow" << central[imass] << " "  << central[imass+1] << " "<< bins_[imass] << std::endl;
+	  }
 	}
       }
-      if(first_low){
-	if((central[imass]==0.5 && central[imass+1]>0.5) || central[imass]!=0.5) {
-	  plot->SetPoint(ipoint++, bins_[imass], central[imass]); first_low=false;
-	  //std::cout<< "firstlow" << central[imass] << " "  << central[imass+1] << " "<< bins_[imass] << std::endl;
-	}
+      else {
+	plot->SetPoint(ipoint++, bins_[imass], central[imass]);
       }
-      //plot->SetPoint(ipoint++, bins_[imass], central[imass]);	//old style
       if(verbosity_>1){ std::cout << "INFO: central [" << bins_[imass] << "] = " << central[imass] << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl; }
     }
     else{
@@ -174,7 +186,10 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
 	for(unsigned int jmass=0; jmass<masses_.size(); ++jmass){
 	  if(masses_[jmass]==bins_[imass]){
 	    plot->SetPoint(ipoint++, masses_[jmass], central[jmass]);  
-	    if(verbosity_>1){ std::cout << "INFO: central [" << masses_[jmass] << "] = " << central[jmass] << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl; }
+	    if(verbosity_>1){ 
+	      std::cout << "INFO: central [" << masses_[jmass] << "] = " << central[jmass] << "[" << (valid_[imass] ? "OK]" : "FAILED]") << std::endl; 
+	      std::cout << plot->GetN() << " " << plot->GetX()[imass] << " " << plot->GetY()[imass] << std::endl;
+	    }
 	    break;
 	  }
 	}
