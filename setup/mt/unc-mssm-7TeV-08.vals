@@ -3,6 +3,7 @@
 muTau_nobtag			signal	  	            	lumi_7TeV            				1.026
 muTau_nobtag		 	signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_m 					1.02
 muTau_nobtag		 	signal,ZTT,TT,VV 		CMS_eff_t_mutau_7TeV				1.08
+muTau_nobtag		 	signal           		CMS_eff_t_mssmHigh_mutau_7TeV		        1.00
 muTau_nobtag		 	signal,ZTT			CMS_scale_t_mutau_7TeV 				1.00
 muTau_nobtag	 		signal,ZL,ZJ	   		CMS_htt_scale_met_7TeV				1.05
 muTau_nobtag	 		TT		    		CMS_htt_scale_met_7TeV				1.07
