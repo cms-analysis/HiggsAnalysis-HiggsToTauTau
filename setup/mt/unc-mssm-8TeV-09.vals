@@ -3,6 +3,7 @@
 muTau_btag		signal            	lumi_8TeV            			1.026
 muTau_btag		signal,ZTT,ZL,ZJ,TT,VV  CMS_eff_m 				1.01
 muTau_btag		signal,ZTT,VV  		CMS_eff_t_mutau_8TeV			1.08
+muTau_btag		signal           	CMS_eff_t_mssmHigh_mutau_8TeV		1.00
 muTau_btag		signal,ZTT		CMS_scale_t_mutau_8TeV         		1.00
 muTau_btag      	ggH		  	CMS_scale_j_8TeV 			0.99	
 muTau_btag      	bbH		  	CMS_scale_j_8TeV 			1.01
