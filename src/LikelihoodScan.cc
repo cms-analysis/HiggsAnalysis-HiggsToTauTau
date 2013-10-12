@@ -84,7 +84,8 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
     bool validValue = false;
     int lowerBin = 0; int upperBin = nbins;
     TH1F* scan1D = new TH1F("scan1D", "", nbins, xmin, xmax);
-    limit->SetBranchAddress("deltaNLL", &nll );  
+    float nll_min = limit->GetMinimum("deltaNLL");
+    limit->SetBranchAddress("deltaNLL", &nll );
     limit->SetBranchAddress(std::string("r").c_str() , &x);
     int nevent = limit->GetEntries();
     for(int i=0; i<nevent; ++i){
@@ -92,7 +93,7 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
       //std::cout << "bin:" << scan1D->FindBin(x) << " -- r=" << x << " -- NLL=" << nll << std::endl; 
       if(scan1D->GetBinContent(scan1D->FindBin(x))==0){
 	// catch small negative values that might occure due to rounding
-	if(fabs(nll)>50){
+	if(fabs(nll-nll_min)>50){
 	  if(validValue){
 	    lowerBin = scan1D->FindBin(x);
 	  }
@@ -102,7 +103,7 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
 	}
 	else{
 	  validValue=true;
-	  scan1D->Fill(x, fabs(nll));
+	  scan1D->Fill(x, fabs(nll-nll_min));
 	}
       }
     }
@@ -139,40 +140,40 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
     for(int i=0; i<nevent; ++i){
       if (i+1==nevent) break;
       limit->GetEvent(i);
-      double nll_first=nll;
+      double nll_first=nll-nll_min;
       limit->GetEvent(i+1);
-      double nll_second=nll;
+      double nll_second=nll-nll_min;
       if( fabs(nll_first-nll_second)>25 ) continue;
       limit->GetEvent(i);
-      if (nll>1.92 && x<bestX) {
+      if (nll-nll_min>1.92 && x<bestX) {
 	limit->GetEvent(i+1);	
-	if (nll<1.92 && x<bestX) {
-	  limit->GetEvent(i);   minus_2sigma_above=nll; minus_2sigma_above_x=x;
-	  limit->GetEvent(i+1); minus_2sigma_below=nll; minus_2sigma_below_x=x;
+	if (nll-nll_min<1.92 && x<bestX) {
+	  limit->GetEvent(i);   minus_2sigma_above=nll-nll_min; minus_2sigma_above_x=x;
+	  limit->GetEvent(i+1); minus_2sigma_below=nll-nll_min; minus_2sigma_below_x=x;
 	}
       }
       limit->GetEvent(i);
-      if (nll>0.5 && x<bestX) {
+      if (nll-nll_min>0.5 && x<bestX) {
 	limit->GetEvent(i+1);	
-	if (nll<0.5 && x<bestX) {
-	  limit->GetEvent(i);   minus_1sigma_above=nll; minus_1sigma_above_x=x;
-	  limit->GetEvent(i+1); minus_1sigma_below=nll; minus_1sigma_below_x=x;
+	if (nll-nll_min<0.5 && x<bestX) {
+	  limit->GetEvent(i);   minus_1sigma_above=nll-nll_min; minus_1sigma_above_x=x;
+	  limit->GetEvent(i+1); minus_1sigma_below=nll-nll_min; minus_1sigma_below_x=x;
 	}
       }
       limit->GetEvent(i);
-      if (nll<0.5 && x>bestX) {
+      if (nll-nll_min<0.5 && x>bestX) {
 	limit->GetEvent(i+1);	
-	if (nll>0.5 && x>bestX) {
-	  limit->GetEvent(i);   plus_1sigma_below=nll; plus_1sigma_below_x=x;
-	  limit->GetEvent(i+1); plus_1sigma_above=nll; plus_1sigma_above_x=x;
+	if (nll-nll_min>0.5 && x>bestX) {
+	  limit->GetEvent(i);   plus_1sigma_below=nll-nll_min; plus_1sigma_below_x=x;
+	  limit->GetEvent(i+1); plus_1sigma_above=nll-nll_min; plus_1sigma_above_x=x;
 	}
       }
       limit->GetEvent(i);
-      if (nll<1.92 && x>bestX) {
+      if (nll-nll_min<1.92 && x>bestX) {
 	limit->GetEvent(i+1);	
-	if (nll>1.92 && x>bestX) {
-	  limit->GetEvent(i);   plus_2sigma_below=nll; plus_2sigma_below_x=x; 
-	  limit->GetEvent(i+1); plus_2sigma_above=nll; plus_2sigma_above_x=x;
+	if (nll-nll_min>1.92 && x>bestX) {
+	  limit->GetEvent(i);   plus_2sigma_below=nll-nll_min; plus_2sigma_below_x=x; 
+	  limit->GetEvent(i+1); plus_2sigma_above=nll-nll_min; plus_2sigma_above_x=x;
 	}
       }
     }
