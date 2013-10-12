@@ -14,6 +14,7 @@
 #include "TLegend.h"
 #include "TPaveLabel.h"
 #include "TGraphAsymmErrors.h"
+#include "Math/ProbFunc.h"
 
 #include "HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
 #include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
@@ -80,7 +81,7 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV", bool legendOnRight=true, bool legendOnTop=true, bool ggH=true)
+void comparePValues(const char* filename, const char* channelstr, bool expected, bool observed, double minimum=1e-8, double maximum=1., bool log=true, const char* label="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV", double legx0=0.2, double legy0=0.2, double legx1=0.6, double legy1=0.4)
 {
   SetStyle();
 
@@ -112,7 +113,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 
   std::cout << " *******************************************************************************************************\n"
 	    << " * Usage     : root -l                                                                                  \n"
-	    << " *             .x MitLimits/Higgs2Tau/macros/compareLimits.C+(file, chn, exp, obs, type, min, max, log) \n"
+	    << " *             .x MitLimits/Higgs2Tau/macros/comparePValues.C+(file, chn, exp, obs, type, min, max, log)\n"
 	    << " *                                                                                                      \n"
 	    << " * Arguments :  + file     const char*      full path to the input file                                 \n"
 	    << " *              + chn      const char*      list of channels; choose between: 'cmb', 'htt', 'emu',      \n"
@@ -152,7 +153,6 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   canv1->cd();
   canv1->SetGridx(1);
   canv1->SetGridy(1);
-  if(std::string(type) == std::string("mssm-xsec") || std::string(type) == std::string("mssm-tanb")) canv1->SetLogx(1); 
 
   bool firstPlot=true;
   for(unsigned int i=0; i<hexp.size(); ++i){
@@ -163,49 +163,17 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       
       // format x-axis
       std::string x_title;
-      if(std::string(type) == std::string("mssm-tanb")){
-	x_title = std::string("m_{A} [GeV]");
-      }
-      else if(std::string(type) == std::string("mssm-xsec")){
-	x_title = std::string("m_{#phi} [GeV]");
-      }
-      else{
-	x_title = std::string("m_{H} [GeV]");
-      }
+      x_title = std::string("m_{H} [GeV]");
       hexp[i]->GetXaxis()->SetTitle(x_title.c_str());
       hexp[i]->GetXaxis()->SetLabelFont(62);
       hexp[i]->GetXaxis()->SetTitleFont(62);
       hexp[i]->GetXaxis()->SetTitleColor(1);
       hexp[i]->GetXaxis()->SetTitleOffset(1.05);
-      if(std::string(type) == std::string("mssm-xsec") || std::string(type) == std::string("mssm-tanb")){
-	hexp[i]->GetXaxis()->SetNdivisions(50005, "X");
-	hexp[i]->GetXaxis()->SetMoreLogLabels();
-	hexp[i]->GetXaxis()->SetNoExponent();
-	hexp[i]->GetXaxis()->SetLabelSize(0.040);
-      }
       hexp[i]->GetXaxis()->SetLimits(hexp[i]->GetX()[0]-.1, hexp[i]->GetX()[hexp[i]->GetN()-1]+.1);
-      if(std::string(type) == std::string("mssm-xsec") || std::string(type) == std::string("mssm-tanb")){
-	if(log){
-	  hexp[i]->GetXaxis()->SetLimits(hexp[i]->GetX()[0], hexp[i]->GetX()[hexp[i]->GetN()-1]+.1);
-	}
-	else{
-	  hexp[i]->GetXaxis()->SetLimits(hexp[i]->GetX()[0]-.1, hexp[i]->GetX()[hexp[i]->GetN()-1]+.1);
-	}      
-      }
 
       // format y-axis
       std::string y_title;
-      if( std::string(type) == std::string("mssm-xsec") ){
-	if(ggH) y_title = std::string("95% CL limit on #sigma(gg#rightarrow#phi)#timesBR [pb]");
-	else y_title = std::string("95% CL limit on #sigma(gg#rightarrowbb#phi)#timesBR [pb]");
-      }
-      else if(  std::string(type) == std::string("mssm-tanb")  ){
-	y_title = std::string("#bf{tan#beta}");
-      }
-      else{
-	//y_title = std::string("#sigma(H#rightarrow#tau#tau)_{95% CL} / #sigma(H#rightarrow#tau#tau)_{SM}");
-	y_title = std::string("95% CL limit on #sigma/#sigma_{SM}");
-      }
+      y_title = std::string("Local p-Value");
       hexp[i]->GetYaxis()->SetTitle(y_title.c_str());
       hexp[i]->GetYaxis()->SetLabelFont(62);
       hexp[i]->GetYaxis()->SetTitleOffset(1.05);
@@ -218,7 +186,6 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     hexp[i]->SetMarkerSize(MARKER_SIZE);
     hexp[i]->SetMarkerColor(colors.find(channels[i])->second);
     hexp[i]->Draw(firstPlot ? "APL" : "PLsame");
-    //hexp[i]->Draw(firstPlot ? "AL" : "Lsame");
     firstPlot=false;
   }
   for(unsigned int i=0; i<hobs.size(); ++i){
@@ -229,49 +196,16 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       
       // format x-axis
       std::string x_title;
-      if(std::string(type) == std::string("mssm-tanb")){
-	x_title = std::string("m_{A} [GeV]");
-      }
-      else if(std::string(type) == std::string("mssm-xsec")){
-	x_title = std::string("m_{#phi} [GeV]");
-      }
-      else{
-	x_title = std::string("m_{H} [GeV]");
-      }
+      x_title = std::string("m_{H} [GeV]");
       hobs[i]->GetXaxis()->SetTitle(x_title.c_str());
       hobs[i]->GetXaxis()->SetLabelFont(62);
       hobs[i]->GetXaxis()->SetTitleFont(62);
       hobs[i]->GetXaxis()->SetTitleColor(1);
       hobs[i]->GetXaxis()->SetTitleOffset(1.05);
-      if(std::string(type) == std::string("mssm-xsec") || std::string(type) == std::string("mssm-tanb")){
-	hobs[i]->GetXaxis()->SetNdivisions(50005, "X");
-	hobs[i]->GetXaxis()->SetMoreLogLabels();
-	hobs[i]->GetXaxis()->SetNoExponent();
-	hobs[i]->GetXaxis()->SetLabelSize(0.040);
-      }
       hobs[i]->GetXaxis()->SetLimits(hobs[i]->GetX()[0]-.1, hobs[i]->GetX()[hobs[i]->GetN()-1]+.1);
-      if(std::string(type) == std::string("mssm-xsec") || std::string(type) == std::string("mssm-tanb")){
-	if(log){
-	  hobs[i]->GetXaxis()->SetLimits(hobs[i]->GetX()[0], hobs[i]->GetX()[hobs[i]->GetN()-1]+.1);
-	}
-	else{
-	  hobs[i]->GetXaxis()->SetLimits(hobs[i]->GetX()[0]-.1, hobs[i]->GetX()[hobs[i]->GetN()-1]+.1);
-	}      
-      }
-      
       // format y-axis
       std::string y_title;
-      if( std::string(type) == std::string("mssm-xsec") ){
-	if(ggH) y_title = std::string("95% CL limit on #sigma(gg#rightarrow#phi)#timesBR [pb]");
-	else y_title = std::string("95% CL limit on #sigma(gg#rightarrowbb#phi)#timesBR [pb]");
-      }
-      else if(  std::string(type) == std::string("mssm-tanb")  ){
-	y_title = std::string("#bf{tan#beta}");
-      }
-      else{
-	y_title = std::string("95% CL limit on #sigma/#sigma_{SM}");
-	//y_title = std::string("#sigma(H)_{95% CL} / #sigma(H)_{SM}");
-      }
+      y_title = std::string("Local p-value");
       hobs[i]->GetYaxis()->SetTitle(y_title.c_str());
       hobs[i]->GetYaxis()->SetLabelFont(62);
       hobs[i]->GetYaxis()->SetTitleOffset(1.05);
@@ -284,101 +218,111 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     hobs[i]->SetMarkerSize(MARKER_SIZE);
     hobs[i]->SetMarkerColor(colors.find(channels[i])->second);
     hobs[i]->Draw(firstPlot ? "APL" : "PLsame");
-    //hobs[i]->Draw(firstPlot ? "AL" : "Lsame");
     firstPlot=false;
   }
   canv1->RedrawAxis();
 
-  TPaveText* extra;
-  if( std::string(type) == std::string("mssm-xsec") ){
-    extra = new TPaveText(legendOnRight ? 0.6 : 0.18, 0.50, legendOnRight ? 0.95 : 0.605, 0.60, "NDC");
-    extra->SetBorderSize(   0 );
-    extra->SetFillStyle (   0 );
-    extra->SetTextAlign (  12 );
-    extra->SetTextSize  (0.04 );
-    extra->SetTextColor (   1 );
-    extra->SetTextFont  (  62 );
-    if(ggH) extra->AddText("gg#rightarrowbb#phi profiled");
-    else extra->AddText("gg#rightarrow#phi profiled");
-    extra->Draw();
+  // create the unit line
+  TGraph* unit = new TGraph();
+  for(int idx=0; idx<hexp[0]->GetN(); ++idx){
+    unit->SetPoint(idx, hexp[0]->GetX()[idx], 1.);
+  }
+  // create sigma lines
+  std::vector<TGraph*> sigmas;
+  for(unsigned int isigma=0; isigma<5; ++isigma){
+    TGraph* sigma = new TGraph();
+    for(int idx=0; idx<hexp[0]->GetN(); ++idx){
+      sigma->SetPoint(idx, hexp[0]->GetX()[idx], ROOT::Math::normal_cdf_c(isigma+1));
+    }
+    sigmas.push_back(sigma);
   }
 
-  bool firstLeg=true;
+  unit->SetLineColor(kBlue);
+  unit->SetLineWidth(3.);
+  unit->Draw("Lsame");
+
+  for(std::vector<TGraph*>::const_iterator sigma = sigmas.begin(); sigma!=sigmas.end(); ++sigma){
+    (*sigma)->SetLineColor(kRed);
+    (*sigma)->SetLineWidth(3.);
+    (*sigma)->Draw("Lsame");
+  }
+
+  /// 5 sigma
+  TPaveText * sigma5 = new TPaveText(0.96, 0.25, 1.00, 0.30, "NDC");
+  sigma5->SetBorderSize(   0 );
+  sigma5->SetFillStyle(    0 );
+  sigma5->SetTextAlign(   12 );
+  sigma5->SetTextSize ( 0.04 );
+  sigma5->SetTextColor( kRed );
+  sigma5->SetTextFont (   62 );
+  sigma5->AddText("5#sigma");
+  sigma5->Draw("same");
+
+  /// 4 sigma
+  TPaveText * sigma4 = new TPaveText(0.96, 0.45, 1.00, 0.50, "NDC");
+  sigma4->SetBorderSize(   0 );
+  sigma4->SetFillStyle(    0 );
+  sigma4->SetTextAlign(   12 );
+  sigma4->SetTextSize ( 0.04 );
+  sigma4->SetTextColor( kRed );
+  sigma4->SetTextFont (   62 );
+  sigma4->AddText("4#sigma");
+  sigma4->Draw("same");
+
+  /// 3 sigma
+  TPaveText * sigma3 = new TPaveText(0.96, 0.61, 1.00, 0.66, "NDC");
+  sigma3->SetBorderSize(   0 );
+  sigma3->SetFillStyle(    0 );
+  sigma3->SetTextAlign(   12 );
+  sigma3->SetTextSize ( 0.04 );
+  sigma3->SetTextColor( kRed );
+  sigma3->SetTextFont (   62 );
+  sigma3->AddText("3#sigma");
+  sigma3->Draw("same");
+
+  /// 2 sigma
+  TPaveText * sigma2 = new TPaveText(0.96, 0.73, 1.00, 0.78, "NDC");
+  sigma2->SetBorderSize(   0 );
+  sigma2->SetFillStyle(    0 );
+  sigma2->SetTextAlign(   12 );
+  sigma2->SetTextSize ( 0.04 );
+  sigma2->SetTextColor( kRed );
+  sigma2->SetTextFont (   62 );
+  sigma2->AddText("2#sigma");
+  sigma2->Draw("same"); 
+
+  /// 1 sigma
+  TPaveText * sigma1 = new TPaveText(0.96, 0.82, 1.00, 0.87, "NDC");
+  sigma1->SetBorderSize(   0 );
+  sigma1->SetFillStyle(    0 );
+  sigma1->SetTextAlign(   12 );
+  sigma1->SetTextSize ( 0.04 );
+  sigma1->SetTextColor( kRed );
+  sigma1->SetTextFont (   62 );
+  sigma1->AddText("1#sigma");
+  sigma1->Draw("same");
+
+  CMSPrelim(label, "", 0.15, 0.835);
+
+  TLegend* leg0 = new TLegend(legx0, legy0, legx1, legy1);
+  leg0->SetTextSize(0.03);
+  leg0->SetBorderSize( 0 );
+  leg0->SetFillStyle ( 1001 );
+  leg0->SetFillColor (kWhite);
   if(observed){
-    TLegend* leg1;
-    if(expected && observed){
-      /// setup the CMS Preliminary
-       if(std::string(type) == std::string("mssm-tanb")){
-	  if (firstLeg) CMSPrelim(label, "", 0.15, 0.835);
-	  leg1 = new TLegend(firstLeg ? 0.60 : 0.20, hobs.size()<5 ? 0.20-0.06*hobs.size() : 0.4, firstLeg ? 0.93 : 0.60, 0.20);
-       }
-       else{
-	  if (firstLeg) CMSPrelim(label, "", 0.15, 0.835);
-	  leg1 = new TLegend(firstLeg ? 0.20 : 0.20, hobs.size()<5 ? 0.90-0.08*hobs.size() : 0.6, firstLeg ? 0.63 : 0.60, 0.90);
-       }
-    }
-    else{
-      /// setup the CMS Preliminary
-      if(std::string(type) == std::string("mssm-tanb")){
-	CMSPrelim(label, "", 0.15, 0.835);
-	leg1 = new TLegend(legendOnRight?0.60:0.20, hobs.size()<5 ? (legendOnTop?0.90:0.20)-0.06*hobs.size() : (legendOnTop?0.6:0.4), legendOnRight?0.94:0.45, (legendOnTop?0.90:0.20));
-	   }
-      else{
-	CMSPrelim(label, "", 0.15, 0.835);
-	leg1 = new TLegend(legendOnRight ? 0.50 : 0.20, hobs.size()<5 ? 0.90-0.08*hobs.size() : 0.6, legendOnRight ? 0.94 : 0.64, 0.90);
-      }
-    }
-    if(std::string(type) == std::string("mssm-tanb")) {leg1->SetTextSize(0.03);}
-    //leg1->SetTextSize(0.02);
-    leg1->SetBorderSize( 0 );
-    leg1->SetFillStyle ( 1001 );
-    //leg1->SetFillColor ( 0 );
-    leg1->SetFillColor (kWhite);
-    leg1->SetHeader( "#bf{observed}" );
     for(unsigned int i=0; i<hobs.size(); ++i){
-      leg1->AddEntry( hobs[i] , channel(channels[i]) ? legendEntry(channels[i]).c_str() : legendEntry(channels[i]).append("-Channel").c_str(),  "PL" );
+      leg0->AddEntry( hobs[i] , channel(channels[i]) ? legendEntry(channels[i]).c_str() : legendEntry(channels[i]).append("-Channel").c_str(),  "PL" );
     }
-    leg1->Draw("same");
-    firstLeg=false;
   }
   if(expected){
-    TLegend* leg0;
-    if(expected && observed){
-      /// setup the CMS Preliminary
-      if(std::string(type) == std::string("mssm-tanb")){
-	CMSPrelim(label, "", 0.15, 0.835);
-	leg0 = new TLegend(legendOnRight ? 0.60 : 0.20, hexp.size()<5 ? 0.20-0.06*hexp.size() : 0.4, legendOnRight ? 0.94 : 0.63, 0.20);
-      }
-      else{
-	CMSPrelim(label, "", 0.15, 0.835);
-	leg0 = new TLegend(legendOnRight ? 0.20 : 0.20, hexp.size()<5 ? 0.75-0.08*hexp.size() : 0.6, legendOnRight ? 0.94 : 0.63, 0.75);
-      }
-    }
-    else{
-      /// setup the CMS Preliminary
-      if(std::string(type) == std::string("mssm-tanb")){
-	CMSPrelim(label, "", 0.15, 0.835);
-	leg0 = new TLegend(legendOnRight?0.60:0.20, hexp.size()<5 ? (legendOnTop?0.90:0.40)-0.04*hexp.size() : (legendOnTop?0.6:0.2), legendOnRight?0.94:0.45, (legendOnTop?0.90:0.40));
-	   }
-      else{
-	CMSPrelim(label, "", 0.15, 0.835);
-	leg0 = new TLegend(legendOnRight ? 0.50 : 0.20, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.6, legendOnRight ? 0.94 : 0.63, 0.90);
-	//leg0 = new TLegend(legendOnRight ? 0.50 : 0.20, hexp.size()<5 ? 0.90-0.08*hexp.size() : 0.6, legendOnRight ? 0.94 : 0.80, 0.90);
-      }
-    }
-    if(std::string(type) == std::string("mssm-tanb")) {leg0->SetTextSize(0.03);}
-    leg0->SetBorderSize( 0 );
-    leg0->SetFillStyle ( 1001 );
-    leg0->SetFillColor (kWhite);
-    leg0->SetHeader( "#bf{expected}" );
     for(unsigned int i=0; i<hexp.size(); ++i){
       leg0->AddEntry( hexp[i] , channel(channels[i]) ? legendEntry(channels[i]).c_str() : legendEntry(channels[i]).append("-Channel").c_str(),  "PL" );
     }
-    leg0->Draw("same");
-    firstLeg=false;
   }
-  canv1->Print(std::string("singleLimits").append(expected ? "_expected" : "").append(observed ? "_observed" : "").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.png" : "_sm.png").c_str());
-  canv1->Print(std::string("singleLimits").append(expected ? "_expected" : "").append(observed ? "_observed" : "").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.pdf" : "_sm.pdf").c_str());
-  canv1->Print(std::string("singleLimits").append(expected ? "_expected" : "").append(observed ? "_observed" : "").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.pdf" : "_sm.eps").c_str());
+  leg0->Draw("same");
+
+  canv1->Print(std::string("singlePValues").append(expected ? "_expected" : "").append(observed ? "_observed.png" : ".png").c_str());
+  canv1->Print(std::string("singlePValues").append(expected ? "_expected" : "").append(observed ? "_observed.pdf" : ".pdf").c_str());
+  canv1->Print(std::string("singlePValues").append(expected ? "_expected" : "").append(observed ? "_observed.eps" : ".eps").c_str());
   return;
 }
