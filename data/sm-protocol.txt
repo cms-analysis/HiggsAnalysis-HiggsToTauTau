@@ -1,72 +1,115 @@
-(1) producing a droplist (not necessary if already provided via auxiliaries/pruning) :
+Usually needed plots are: 
+-------------------------
+ - limits (Brazilian flag)
+ - limit w/ Higgs as BG (green band)
+ - limit w/ Higgs injected (blue band)
+ - sensitivity split by channel
+ - sensitivity split by category
+ - mu-value split by channel 
+ - mu-value split by category
+ - significance w/ and w/o band
+ - pvalue w/ and w/o band
+ - pvalue split by channel
+ - pvalue split by category
+ - mu NLL scan (1-dim)
+ - mass NLL scan w/ bands (1-dim)
+ - mass vs mu value scan (2-dim)
+ - cV-cF scan (2-dim)
+ - rV-rF scan (2-dim)
+
+
+(1) produce a droplist (not necessary if already provided via auxiliaries/pruning):
 ./HiggsAnalysis/HiggsToTauTau/scripts/droplist-producer.sh
 cp uncertainty-pruning-drop-yymmdd-sm.txt $PWD/auxiliaries/pruning/uncertainty-pruning-drop-yymmdd-sm.txt
-
 
 (2) setup limit structure:
 python HiggsAnalysis/HiggsToTauTau/scripts/doSM.py --label='-yymmdd-sm' --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-yymmdd-sm.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd" --update-all
 
-(3) launch ML-fit:
-submit.py --max-likelihood LIMITS-yymmdd-sm/bbb/*/*
-
-(3a) blinded postfit plots (in HiggsAnalysis/HiggsToTauTau/test)
-## setup postfit plots beginning to the end
-python mlfit_and_copy.py --skip $CMSSW_BASE/src/LIMITS-yymmdd-sm/bbb/cmb/125
-python produce_macros.py --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd
-python run_macros.py --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd
-python summary_plots.py --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd
-
-
-(4) launch/collect/plot Goodness-of-fit
-## launch
+(3) run goodness-of-fit:
+## calculation and plotting
 submit.py --goodness-of-fit --toys 100 --cycles 10 LIMITS-yymmdd-sm/bbb/*/125
-## collect
 submit.py --goodness-of-fit --collect-injected-toys LIMITS-yymmdd-sm/bbb/*/125
-## plotting
 plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py LIMITS-yymmdd-sm/bbb/*
 
+(4) run max-likelihood fit:
+## calculation and plotting
+submit.py --max-likelihood LIMITS-yymmdd-sm/bbb/*/*
+plot --max-likelihood HiggsAnalysis/HiggsToTauTau/python/layouts/max-likelihood_sm.py LIMITS-yymmdd-sm/bbb/*/*
 
-(5) limits and significances
-## launch limit
-lxb: submit.py --asymptotic LIMITS-yymmdd-sm/bbb/*/* --options "--expectedOnly"
-lxq: submit.py --asymptotic LIMITS-yymmdd-sm/bbb/*/* --options "--expectedOnly" --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
-## plot limit
-plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-sm.py LIMITS-yymmdd-mssm/bbb/* "expecteOnly=True"
-
-## launch significance
-lxb: submit.py --significance-frequentist --options "--expectedOnly" LIMITS-yymmdd-sm/bbb/*/*
-lxq: submit.py --significance-frequentist --options "--expectedOnly" LIMITS-yymmdd-sm/bbb/*/* --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
-## plot significance
-plot --significance-frequentist HiggsAnalysis/HiggsToTauTau/python/layouts/significance-sm.py LIMITS-yymmdd-sm/bbb/* "expecteOnly=True"
-
-
-(5a) significance with error band
-## launch toys
-## ATTENTION: this spawns ~8000 jobs to the batch system
-lxb: submit.py --injected --injected-method "--significance-frequentist" --toys 1000 --bunch-masses 1 LIMITS-yymmdd-sm/bbb/*/*
-lxq: submit.py --injected --injected-method "--significance-frequentist" --toys 1000 --bunch-masses 1 LIMITS-yymmdd-sm/bbb/*/* --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
-## collect ggH-bbH 2d limits
-lxb: submit.py --injected --injected-method "--significance-frequentist" --collect-injected-toys LIMITS-yymmdd-sm/bbb/*/*
-lxq: submit.py --injected --injected-method "--significance-frequentist" --collect-injected-toys LIMITS-yymmdd-sm/bbb/*/* --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
-## plotting
-plot --injected-sig HiggsAnalysis/HiggsToTauTau/python/layouts/significance-sm.py LIMITS-yymmdd-sm/bbb/* 'expectedOnly=True'
-
-(6) unblinded postfit plots (in HiggsAnalysis/HiggsToTauTau/test)
+(4a) make [un-]blinded postfit plots (in HiggsAnalysis/HiggsToTauTau/test):
 ## setup postfit plots beginning to the end
 python mlfit_and_copy.py --skip $CMSSW_BASE/src/LIMITS-yymmdd-sm/bbb/cmb/125
-python produce_macros.py --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd-unblinded
-python run_macros.py --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd-unblinded
-python summary_plots.py --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd-unblinded
+python produce_macros.py --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd[-unblinded]
+python run_macros.py --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd[-unblinded]
+python summary_plots.py --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd[-unblinded]
 
-(7) limits and significances observed and expected
-## launch limit
-lxb: submit.py --asymptotic LIMITS-yymmdd-sm/bbb/*/*
-lxq: submit.py --asymptotic LIMITS-yymmdd-sm/bbb/*/* --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
-## plot limit
-plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-sm.py LIMITS-yymmdd-mssm/bbb/*
+(4b) make plot of mu value per channel/category:
+## requires max-likelihood fit to be run and plotted for each channel/category in question
+root -l >> .x HiggsAnalysis/HiggsToTauTau/macros/compareBestFit.C++("inputfile.root","cmb,mt,et,em,ee,mm,tt,vhtt","sm",125.,-3.,10.)
 
-## launch significance
-lxb: submit.py --significance-frequentist LIMITS-yymmdd-sm/bbb/*/*
-lxq: submit.py --significance-frequentist LIMITS-yymmdd-sm/bbb/*/* --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
-## plot significance
-plot --significance-frequentist HiggsAnalysis/HiggsToTauTau/python/layouts/significance-sm.py LIMITS-yymmdd-sm/bbb/*
+(5) run asymptotic limits: 
+## calculation and plotting
+submit.py --asymptotic LIMITS-yymmdd-sm/bbb/*/* ]--options "--expectedOnly"] [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
+plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-sm.py LIMITS-yymmdd-sm/bbb/* ["expecteOnly=True"]
+
+(5a) run asymptotic limits with higgs as BG (green band):
+## to run asymptotic limits with higgs as BG use the tool addHiggs2BG.py as indicated below during setup of the limit calculation structure
+addHiggs2BG.py --uncert-inputs="{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup" aux-yymmdd-sm/bbb/*   
+
+(5b) run asymptotic limits with higgs injected (blue band):
+## calculation and plotting (ATTENTION: this spawns ~1000*N(masses) jobs to the batch system)
+submit.py --injected injected-method="--asymptotic" --toys 1000 --bunch-masses=1 LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
+submit.py --injected --injected-method "--asymptotic" --collect-injected-toys LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
+plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-sm.py LIMITS-yymmdd-sm/bbb/* injected=1 ["expecteOnly=True"]
+
+(5a) sensitivity per channel/category:
+## requires asymptotic limit to be run and plotted for each channel/category in question 
+root -l >> .x HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C++("inputfile.root","cmb,mt,et,em,ee,mm,tt,vhtt",true,false,"sm-xsec",0.,20.,false)
+
+(6) significance:
+## calculation and plotting
+submit.py --significance-frequentist [--options "--expectedOnly"] LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
+plot --significance-frequentist HiggsAnalysis/HiggsToTauTau/python/layouts/significance-sm.py LIMITS-yymmdd-sm/bbb/* ["expecteOnly=True"]
+
+(6a) significance w/ uncertainty band:
+## calculation and plotting (ATTENTION: this spawns ~1000*N(masses) jobs to the batch system)
+submit.py --injected --injected-method "--significance-frequentist" --toys 1000 --bunch-masses 1 LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
+submit.py --injected --injected-method "--significance-frequentist" --collect-injected-toys LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
+plot --injected-sig HiggsAnalysis/HiggsToTauTau/python/layouts/significance-sm.py LIMITS-yymmdd-sm/bbb/* ['expectedOnly=True']
+
+(7) p-value:
+## calculation and plotting
+submit.py --pvalue-frequentist --options ["--expectedOnly"] LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
+plot --pvalue-frequentist HiggsAnalysis/HiggsToTauTau/python/layouts/pvalue-sm.py LIMITS-yymmdd-sm/bbb/* ["expecteOnly=True"]
+
+(7a) p-value w/ uncertainty band:
+## calculation and plotting (ATTENTION: this spawns ~1000*N(masses) jobs to the batch system)
+submit.py --injected --injected-method "--pvalue-frequentist" --toys 1000 --bunch-masses 1 LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
+submit.py --injected --injected-method "--pvalue-frequentist" --collect-injected-toys LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
+plot --injected-pval HiggsAnalysis/HiggsToTauTau/python/layouts/pvalue-sm.py LIMITS-yymmdd-sm/bbb/* ['expectedOnly=True']
+
+(7b) p-value per channel/category:
+## requires pvalues to be run and plotted for each channel/category in question 
+root -l >> .x HiggsAnalysis/HiggsToTauTau/macros/comparePValues.C++("inputfile.root","cmb,mt,et,em,ee,mm,tt,vhtt",true,false)
+
+(6) mass scan w/ uncertainty band (1-dim):
+## calculation and plotting (ATTENTION: this spawns ~1000*N(masses) jobs to the batch system)
+submit.py --injected --injected-method "--max-likelihood" --toys 1000 --bunch-masses 1 LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
+submit.py --injected --injected-method "--max-likelihood" --collect-injected-toys LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
+plot --mass-estimate HiggsAnalysis/HiggsToTauTau/python/layouts/likelihood-scan-mass.py LIMITS-yymmdd-sm/bbb/* ['expectedOnly=True']
+
+(7) mu vs mass scan (2-dim):
+STILL NEEDS TO BE IMPLEMENTED/REWORKED
+
+(8) cV-cF scan (2-dim):
+## calculation and plotting
+submit.py --multidim-fit --physics-model="cV-cF" LIMITS-yymmdd-sm/bbb/*
+limit.py --multidim-fit --physics-model="cV-cF" --collect LIMITS-yymmdd-sm/bbb/*
+plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-cV-cF.py LIMITS-yymmdd-sm/bbb/*
+
+(9) rV-rF scan (2-dim):
+## calculation and plotting
+submit.py --multidim-fit --physics-model="rV-rF" LIMITS-yymmdd-sm/bbb/*
+limit.py --multidim-fit --physics-model="rV-rF" --collect LIMITS-yymmdd-sm/bbb/*
+plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-rV-rF.py LIMITS-yymmdd-sm/bbb/*
+
