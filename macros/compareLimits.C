@@ -24,37 +24,24 @@ static const double MARKER_SIZE = 1.3;  // 0.7
 bool
 channel(std::string& label){
   return (label==std::string("cmb")        ||
-	  label==std::string("cmb+")       ||
 	  label==std::string("htt")        ||
 	  label==std::string("vhtt")       ||
 	  label==std::string("0jet")       ||
+	  label==std::string("1jet")       ||
 	  label==std::string("2jet")       ||
 	  label==std::string("boost")      ||
+	  label==std::string("vbf")        ||
 	  label==std::string("btag")       ||
 	  label==std::string("nobtag")     ||
-	  label==std::string("vbf")        ||
 	  label==std::string("tt")         ||
 	  label==std::string("em")         ||
 	  label==std::string("et")         ||
 	  label==std::string("mt")         ||
 	  label==std::string("mm")         ||
 	  label==std::string("ee")         ||
-	  label==std::string("btag-tt")         ||
-	  label==std::string("btag-em")         ||
-	  label==std::string("btag-et")         ||
-	  label==std::string("btag-mt")         ||
-	  label==std::string("btag-mm")         ||
-	  label==std::string("btag-ee")         ||
-	  label==std::string("nobtag-tt")         ||
-	  label==std::string("nobtag-em")         ||
-	  label==std::string("nobtag-et")         ||
-	  label==std::string("nobtag-mt")         ||
-	  label==std::string("nobtag-mm")         ||
-	  label==std::string("nobtag-ee")         ||
 	  label==std::string("ggH")        ||
 	  label==std::string("bbH")        ||
 	  label==std::string("mvis")       ||
-	  label==std::string("HCPcorr")    ||
 	  label==std::string("HIG-11-020") ||
 	  label==std::string("HIG-11-029") ||
 	  label==std::string("HIG-12-018") ||
@@ -72,39 +59,24 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("tt"        )) title = std::string("#tau_{h}#tau_{h}");
   if(channel==std::string("mm"        )) title = std::string("#mu#mu");
   if(channel==std::string("ee"        )) title = std::string("ee");
-  if(channel==std::string("btag-em"        )) title = std::string("e#mu");
-  if(channel==std::string("btag-et"        )) title = std::string("e#tau_{h}");
-  if(channel==std::string("btag-mt"        )) title = std::string("#mu#tau_{h}");
-  if(channel==std::string("btag-tt"        )) title = std::string("#tau_{h}#tau_{h}");
-  if(channel==std::string("btag-mm"        )) title = std::string("#mu#mu");
-  if(channel==std::string("btag-ee"        )) title = std::string("ee");
-  if(channel==std::string("nobtag-em"        )) title = std::string("e#mu");
-  if(channel==std::string("nobtag-et"        )) title = std::string("e#tau_{h}");
-  if(channel==std::string("nobtag-mt"        )) title = std::string("#mu#tau_{h}");
-  if(channel==std::string("nobtag-tt"        )) title = std::string("#tau_{h}#tau_{h}");
-  if(channel==std::string("nobtag-mm"        )) title = std::string("#mu#mu");
-  if(channel==std::string("nobtag-ee"        )) title = std::string("ee");
-  if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau+l(l)");
-  if(channel==std::string("htt"       )) title = std::string("e#mu+e#tau_{h}+#mu#tau_{h}+#mu#mu");
-  if(channel==std::string("cmb"       )) title = std::string("Combined(H#rightarrow#tau#tau)");
-  if(channel==std::string("cmb+"      )) title = std::string("H#rightarrow#tau#tau + VH#rightarrow#tau#tau+l(l)");
-  if(channel==std::string("0jet"      )) title = std::string("0 jet");
-  if(channel==std::string("2jet"      )) title = std::string("V(jj)H(#tau#tau)");
-  if(channel==std::string("vbf"       )) title = std::string("2 jet (VBF)");
-  if(channel==std::string("boost"     )) title = std::string("1 jet");
+  if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau");
+  if(channel==std::string("htt"       )) title = std::string("H#rightarrow#tau#tau");
+  if(channel==std::string("cmb"       )) title = std::string("H#rightarrow#tau#tau+VH#rightarrow#tau#tau");
+  if(channel==std::string("0jet"      )) title = std::string("0-Jet");
+  if(channel==std::string("0jet"      )) title = std::string("1-Jet");
+  if(channel==std::string("2jet"      )) title = std::string("2-Jet (VBF)");
+  if(channel==std::string("vbf"       )) title = std::string("2-Jet (VBF)");
+  if(channel==std::string("boost"     )) title = std::string("1-Jet");
   if(channel==std::string("btag"      )) title = std::string("B-Tag");
   if(channel==std::string("nobtag"    )) title = std::string("No B-Tag");
   if(channel==std::string("ggH"       )) title = std::string("gg#rightarrow#phi (bbH profiled)");
   if(channel==std::string("bbH"       )) title = std::string("gg#rightarrowbb#phi (ggH profiled)");
-  if(channel==std::string("mvis"      )) title = std::string("Visible mass");
-  if(channel==std::string("HCPcorr"   )) title = std::string("HIG-12-050 no-bug (17 fb^{-1})"); 
-  if(channel==std::string("HIG-11-020")) title = std::string("HIG-11-020 (1.6 fb^{-1})");
   if(channel==std::string("HIG-11-020")) title = std::string("HIG-11-020 (1.6 fb^{-1})");
   if(channel==std::string("HIG-11-029")) title = std::string("HIG-11-029 (4.9 fb^{-1})");
   if(channel==std::string("HIG-12-018")) title = std::string("HIG-12-018 (10 fb^{-1})");
   if(channel==std::string("HIG-12-032")) title = std::string("HIG-12-032 (5-10 fb^{-1})");
   if(channel==std::string("HIG-12-043")) title = std::string("HIG-12-043 (17 fb^{-1})");
-  if(channel==std::string("HIG-12-050")) title = std::string("HIG-12-050 bug (17 fb^{-1})"); 
+  if(channel==std::string("HIG-12-050")) title = std::string("HIG-12-050 (17 fb^{-1})"); 
   return title;
 }
 
@@ -114,6 +86,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 
   std::map<std::string, unsigned int> colors;
   colors["0jet"       ] = kBlue;
+  colors["1jet"       ] = kRed;
   colors["2jet"       ] = kMagenta;
   colors["vbf"        ] = kRed;
   colors["boost"      ] = kGreen;
@@ -125,26 +98,11 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["mm"         ] = kMagenta;
   colors["ee"         ] = kCyan;
   colors["tt"         ] = kMagenta+3;
-  colors["btag-em"         ] = kBlue;
-  colors["btag-et"         ] = kRed;
-  colors["btag-mt"         ] = kGreen;
-  colors["btag-mm"         ] = kMagenta;
-  colors["btag-ee"         ] = kCyan;
-  colors["btag-tt"         ] = kMagenta+3;
-  colors["nobtag-em"         ] = kBlue;
-  colors["nobtag-et"         ] = kRed;
-  colors["nobtag-mt"         ] = kGreen;
-  colors["nobtag-mm"         ] = kMagenta;
-  colors["nobtag-ee"         ] = kCyan;
-  colors["nobtag-tt"         ] = kMagenta+3;
   colors["vhtt"       ] = kCyan-6;
   colors["cmb"        ] = kBlack;
-  colors["cmb+"       ] = kGray+2; 
   colors["htt"        ] = kBlack;
   colors["ggH"        ] = kRed;
   colors["bbH"        ] = kBlue;
-  colors["mvis"       ] = kBlue+2;
-  colors["HCPcorr"    ] = kBlue;
   colors["HIG-11-020" ] = kBlue+2;
   colors["HIG-11-029" ] = kRed+2;
   colors["HIG-12-018" ] = kBlue;
@@ -376,10 +334,8 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     leg1->SetFillStyle ( 1001 );
     //leg1->SetFillColor ( 0 );
     leg1->SetFillColor (kWhite);
-    leg1->SetHeader( "#bf{Observed Limit}" );
+    leg1->SetHeader( "#bf{observed}" );
     for(unsigned int i=0; i<hobs.size(); ++i){
-      // skip one of the two split options
-      if(channels[i] == std::string("hzz2l2q+")){ continue; }
       leg1->AddEntry( hobs[i] , channel(channels[i]) ? legendEntry(channels[i]).c_str() : legendEntry(channels[i]).append("-Channel").c_str(),  "PL" );
     }
     leg1->Draw("same");
@@ -414,10 +370,8 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     leg0->SetBorderSize( 0 );
     leg0->SetFillStyle ( 1001 );
     leg0->SetFillColor (kWhite);
-    leg0->SetHeader( "#bf{Expected Limit}" );
+    leg0->SetHeader( "#bf{expected}" );
     for(unsigned int i=0; i<hexp.size(); ++i){
-      // skip one of the two split options
-      if(channels[i] == std::string("hzz2l2q+")){ continue; }
       leg0->AddEntry( hexp[i] , channel(channels[i]) ? legendEntry(channels[i]).c_str() : legendEntry(channels[i]).append("-Channel").c_str(),  "PL" );
     }
     leg0->Draw("same");
