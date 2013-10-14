@@ -82,8 +82,8 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   bool MSSM = std::string(analysis) == std::string("MSSM");
   // determine label
   if (std::string(dataset) == std::string("2011"     )){ dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV"; }
-  if (std::string(dataset) == std::string("2012"     )){ dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 19.8 fb^{-1} at 8 TeV"; }
-  if (std::string(dataset) == std::string("2011+2012")){ dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV"; }
+  if (std::string(dataset) == std::string("2012"     )){ dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 19.7 fb^{-1} at 8 TeV"; }
+  if (std::string(dataset) == std::string("2011+2012")){ dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV"; }
   // determine category tag
   const char* category_extra = "";
   if(std::string(extra2) == std::string("0jet_low"  )){ category_extra = "0 jet, low p_{T}";  }
