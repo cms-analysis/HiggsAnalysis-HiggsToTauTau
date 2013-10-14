@@ -2,8 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string("CMS Preliminary, H #rightarrow #tau #tau, 19.8 fb^{-1} at 8 TeV"),	
-    #dataset = cms.string("CMS Preliminary, H #rightarrow #tau #tau, 4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV"),
+    #dataset = cms.string("CMS Preliminary, H #rightarrow #tau #tau, 19.7 fb^{-1} at 8 TeV"),	
+    dataset = cms.string("CMS Preliminary, H #rightarrow #tau #tau, 18.3 fb^{-1} at 8 TeV"),
     ## extra labels (below legend)
     extra = cms.string("gg#rightarrow#phi bb profiled"),	
     ## x-axis title
