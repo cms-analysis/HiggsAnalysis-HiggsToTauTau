@@ -559,7 +559,6 @@ for directory in args :
             stableopt = "--robustFit=1 --preFitValue=1. --X-rtd FITTER_NEW_CROSSING_ALGO --minimizerAlgoForMinos=Minuit2 --minimizerToleranceForMinos=0.01 --X-rtd FITTER_NEVER_GIVE_UP --X-rtd FITTER_BOUND --minimizerAlgo=Minuit2 --minimizerStrategy=0 --minimizerTolerance=0.001 --cminFallbackAlgo \"Minuit,0:0.001\" --keepFailures "
             stableopt+= "--rMin {MIN} --rMax {MAX} ".format(MIN=options.rMin, MAX=options.rMax)
         #toys_opts = "--toysFrequentist -t %s -s %s --expectSignal 1 --noErrors --minos none" % (options.toys, options.seed)
-        #toys_opts = "-t %s -s %s --expectSignal 1 --noErrors --minos none" % (options.toys, options.seed)
         toys_opts = "-t %s -s %s --expectSignal 1" % (options.toys, options.seed)
         redirect = ""
         if options.hide_fitresult :

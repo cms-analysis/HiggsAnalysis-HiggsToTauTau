@@ -102,6 +102,7 @@ else: # user wants to run on lsf
     #    print errmsg
     #    # raise ValueError(errmsg)
     #    sys.exit(1)
+
 ## create a random stamp fro multiply submission
 stamp=''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))
 ## main submission script
