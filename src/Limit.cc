@@ -2,7 +2,7 @@
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* unit, std::string& xaxis, std::string& yaxis, double min, double max, bool log, std::string PLOT, std::string injectedMass, bool legendOnRight, std::string extra_label=std::string("")); 
+void plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* unit, std::string& xaxis, std::string& yaxis, TGraph* injected, double min, double max, bool log, std::string PLOT, std::string injectedMass, bool legendOnRight, std::string extra_label=std::string("")); 
 
 void
 PlotLimits::plotLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed)
@@ -32,7 +32,7 @@ PlotLimits::plotLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmEr
   if(BG_Higgs_){ PLOT=std::string("BG_HIGGS"); }	  
   if(bestfit_ ){ PLOT=std::string("BESTFIT" ); }
   if(mssm_    ){ PLOT=std::string("MSSM-LOG"); }
-  plottingLimit(canv, innerBand, outerBand, expected, observed, unit, xaxis_, yaxis_, min, max, log_, PLOT, injectedMass_, mssm_, extra_);
+  plottingLimit(canv, innerBand, outerBand, expected, observed, unit, xaxis_, yaxis_, 0, min, max, log_, PLOT, injectedMass_, mssm_, extra_);
   // setup CMS Preliminary
   //CMSPrelim(dataset_.c_str(), "", 0.160, 0.835);
   CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
