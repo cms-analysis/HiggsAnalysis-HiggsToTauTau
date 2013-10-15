@@ -61,7 +61,7 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("ee"        )) title = std::string("ee");
   if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau");
   if(channel==std::string("htt"       )) title = std::string("H#rightarrow#tau#tau");
-  if(channel==std::string("cmb"       )) title = std::string("H#rightarrow#tau#tau+VH#rightarrow#tau#tau");
+  if(channel==std::string("cmb"       )) title = std::string("H#rightarrow#tau#tau");
   if(channel==std::string("0jet"      )) title = std::string("0-Jet");
   if(channel==std::string("0jet"      )) title = std::string("1-Jet");
   if(channel==std::string("2jet"      )) title = std::string("2-Jet (VBF)");
@@ -152,7 +152,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   canv1->cd();
   canv1->SetGridx(1);
   canv1->SetGridy(1);
-  if(std::string(type) == std::string("mssm-xsec") || std::string(type) == std::string("mssm-tanb")) canv1->SetLogx(1); 
+  if((std::string(type) == std::string("mssm-xsec") || std::string(type) == std::string("mssm-tanb")) && log) canv1->SetLogx(1); 
 
   bool firstPlot=true;
   for(unsigned int i=0; i<hexp.size(); ++i){
@@ -177,7 +177,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       hexp[i]->GetXaxis()->SetTitleFont(62);
       hexp[i]->GetXaxis()->SetTitleColor(1);
       hexp[i]->GetXaxis()->SetTitleOffset(1.05);
-      if(std::string(type) == std::string("mssm-xsec") || std::string(type) == std::string("mssm-tanb")){
+      if((std::string(type) == std::string("mssm-xsec") || std::string(type) == std::string("mssm-tanb")) && log){
 	hexp[i]->GetXaxis()->SetNdivisions(50005, "X");
 	hexp[i]->GetXaxis()->SetMoreLogLabels();
 	hexp[i]->GetXaxis()->SetNoExponent();
@@ -243,7 +243,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       hobs[i]->GetXaxis()->SetTitleFont(62);
       hobs[i]->GetXaxis()->SetTitleColor(1);
       hobs[i]->GetXaxis()->SetTitleOffset(1.05);
-      if(std::string(type) == std::string("mssm-xsec") || std::string(type) == std::string("mssm-tanb")){
+      if((std::string(type) == std::string("mssm-xsec") || std::string(type) == std::string("mssm-tanb")) && log){
 	hobs[i]->GetXaxis()->SetNdivisions(50005, "X");
 	hobs[i]->GetXaxis()->SetMoreLogLabels();
 	hobs[i]->GetXaxis()->SetNoExponent();
