@@ -13,14 +13,16 @@ parser.add_option("--channels", dest="channels", default="mt, et, em, mm, tt", t
 parser.add_option("--categories", dest="categories", default="0, 1, 2, 3, 5", type="string", help="Categories to produce the tables for. [Default: \"0, 1, 2, 3, 5\"]")
 cats1 = OptionGroup(parser, "LUMI PER CHANNEL", "Luminosities per channel.")
 cats1.add_option("--lumi-7TeV-mm", dest="lumi_7TeV_mm", default= 4.9, type="float", help="Luminosity used for mm channel. [Default:  4.9]")
+cats1.add_option("--lumi-7TeV-ee", dest="lumi_7TeV_ee", default= 4.9, type="float", help="Luminosity used for ee channel. [Default:  4.9]")
 cats1.add_option("--lumi-7TeV-em", dest="lumi_7TeV_em", default= 4.9, type="float", help="Luminosity used for em channel. [Default:  4.9]")
 cats1.add_option("--lumi-7TeV-mt", dest="lumi_7TeV_mt", default= 4.9, type="float", help="Luminosity used for mt channel. [Default:  4.9]")
 cats1.add_option("--lumi-7TeV-et", dest="lumi_7TeV_et", default= 4.9, type="float", help="Luminosity used for et channel. [Default:  4.9]")
-cats1.add_option("--lumi-8TeV-mm", dest="lumi_8TeV_mm", default=19.8, type="float", help="Luminosity used for mm channel. [Default: 19.8]")
-cats1.add_option("--lumi-8TeV-em", dest="lumi_8TeV_em", default=19.8, type="float", help="Luminosity used for em channel. [Default: 19.8]")
-cats1.add_option("--lumi-8TeV-mt", dest="lumi_8TeV_mt", default=19.8, type="float", help="Luminosity used for mt channel. [Default: 19.8]")
-cats1.add_option("--lumi-8TeV-et", dest="lumi_8TeV_et", default=19.8, type="float", help="Luminosity used for et channel. [Default: 19.8]")
-cats1.add_option("--lumi-8TeV-tt", dest="lumi_8TeV_tt", default=18.4, type="float", help="Luminosity used for tt channel. [Default: 18.4]")
+cats1.add_option("--lumi-8TeV-mm", dest="lumi_8TeV_mm", default=19.7, type="float", help="Luminosity used for mm channel. [Default: 19.7]")
+cats1.add_option("--lumi-8TeV-ee", dest="lumi_8TeV_ee", default=19.7, type="float", help="Luminosity used for ee channel. [Default: 19.7]")
+cats1.add_option("--lumi-8TeV-em", dest="lumi_8TeV_em", default=19.7, type="float", help="Luminosity used for em channel. [Default: 19.7]")
+cats1.add_option("--lumi-8TeV-mt", dest="lumi_8TeV_mt", default=19.7, type="float", help="Luminosity used for mt channel. [Default: 19.7]")
+cats1.add_option("--lumi-8TeV-et", dest="lumi_8TeV_et", default=19.7, type="float", help="Luminosity used for et channel. [Default: 19.7]")
+cats1.add_option("--lumi-8TeV-tt", dest="lumi_8TeV_tt", default=19.7, type="float", help="Luminosity used for tt channel. [Default: 19.7]")
 parser.add_option_group(cats1)
 
 ## check number of arguments; in case print usage
@@ -122,6 +124,7 @@ def extractor(path, period):
             ## in /pb
             "tt" : 1000*options.lumi_7TeV_mm,
             "mm" : 1000*options.lumi_7TeV_mm,
+            "ee" : 1000*options.lumi_7TeV_ee,
             "em" : 1000*options.lumi_7TeV_em,
             "mt" : 1000*options.lumi_7TeV_mt,
             "et" : 1000*options.lumi_7TeV_et,
@@ -131,6 +134,7 @@ def extractor(path, period):
             ## in /pb
             "tt" : 1000*options.lumi_8TeV_tt,
             "mm" : 1000*options.lumi_8TeV_mm,
+            "ee" : 1000*options.lumi_8TeV_ee,
             "em" : 1000*options.lumi_8TeV_em,
             "mt" : 1000*options.lumi_8TeV_mt,
             "et" : 1000*options.lumi_8TeV_et,
@@ -145,26 +149,34 @@ def extractor(path, period):
         channel = 'em'
     if '_mm_' in path:
         channel = 'mm'
+    if '_ee_' in path:
+        channel = 'ee'
     if '_tt_' in path:
         channel = 'tt'        
     ## determine event category from path
     category = 'NONE'        
     if '_0_' in  path:
-        category = 'boost' if channel == 'tt' else '0jet_low'
+        category = '1jet_high_mediumhiggs' if channel == 'tt' else '0jet_low'
     if '_1_' in  path:
-        category = 'vbf' if channel == 'tt' else '0jet_high'
+        category = '1jet_high_highhiggs' if channel == 'tt' else '0jet_high'
+        if channel == 'et' or channel == 'mt' :
+            category = '0jet_medium'
     if '_2_' in  path:
-        category = 'boost_low'
+        category = 'vbf' if channel == 'tt' else '1jet_low'
+        if channel == 'et' or channel == 'mt' :
+            category = '0jet_high'
     if '_3_' in  path:
-        category = 'boost_high'
+        category = '1jet_medium' if channel == 'et' or channel == 'mt' else '1jet_high'
     if '_4_' in  path:
-        category = '2jets'
+        category = '1jet_high_lowhiggs' if channel == 'et' or channel == 'mt' else 'vbf_loose'
+        if channel == 'mm' or channel == 'ee' :
+            category = 'vbf'
     if '_5_' in  path:
-        category = 'vbf'
+        category = '1jet_high_mediumhiggs' if channel == 'et' or channel == 'mt' else 'vbf_tight'
     if '_6_' in  path:
-        category = 'btag_low'
+        category = 'btag_low' if options.analysis == "mssm" else 'vbf_loose'
     if '_7_' in  path:
-        category = 'btag_high'
+        category = 'btag_high' if options.analysis == "mssm" else 'vbf_tight'
     if '_8_' in  path:
         category = 'nobtag'
     if '_9_' in  path:
@@ -213,6 +225,7 @@ def extractor(path, period):
         'CMS_htt_em_0',
         'CMS_htt_tt_0',
         'CMS_htt_mm_0'
+        'CMS_htt_ee_0'
         ]
     ## largest index for signal samples (used for split up of uncertainties for signal
     ## and background) 
@@ -221,144 +234,149 @@ def extractor(path, period):
     ## signal and background)
     range_bkg = -1
 
-    file = open(path)
-    ## loop datacard and extract all necessary inputs
-    for line in file:
-        ## COMMENT LINE (skip)
-        if line.startswith('---') or line.startswith('#') :
-            continue
-        values = line.split()
-        ## OBSERVATION (pick up observed number of events)
-        if values[0] == 'observation':
-            observed = values[1]
-            continue
-        ## PROCESS (organize dict's for signal and background uncertianties, collect
-        ## names of backgrounds)
-        if values[0] =='process' :
-            if first_process_line :
-                range_bkg = len(values)
-                for idx in range(len(values)) :
-                    ## if correct this change can catch categories where there is no
-                    ## signal included
-                    if values[idx].isdigit() and int(values[idx]) == 1 : # == 0
-                        range_sig = idx #idx+1
-                        break
-                first_process_line = False
+    if category == 'vbf_tight' and period == "7TeV" :
+        file = ''
+    elif category == '1jet_high_lowhiggs' and channel == 'et' :
+        file = ''
+    else :
+        file = open(path)
+        ## loop datacard and extract all necessary inputs
+        for line in file:
+            ## COMMENT LINE (skip)
+            if line.startswith('---') or line.startswith('#') :
                 continue
-            elif len(names_bkg)==0 :
-                names_bkg = values[range_sig:]
+            values = line.split()
+            ## OBSERVATION (pick up observed number of events)
+            if values[0] == 'observation':
+                observed = values[1]
                 continue
-        ## RATE (pick up rates of signal and backgrounds)
-        if values[0] == 'rate':
-            passed_rate_line = True
-            rate_bkg = values[range_sig:]
-            rate_sig = values[1:range_sig]
-            continue
-        ## UNCERTAINTIES (add all relevant uncertainties for signal and backgrounds in
-        ## quadrature; there is a special treatment for gmN, shapes are skipped)
-        if passed_rate_line and values[0] not in ignore_line:
-            if len(uncert_sig) == 0 :
-                uncert_sig = dict([(i,0) for i in range(2, range_sig+1)])
-            if len(uncert_bkg) == 0 :
-                uncert_bkg = dict([(i,0) for i in range(range_sig+1, range_bkg+1)])
-            ## add systematic uncertainties in quadrature for signal
-            for i in range(2, range_sig+1) :
-                value = values[i]
-                if values[1] == 'gmN':                    
-                    ## it never happens for the signal to have an uncertainty of type gmN
+            ## PROCESS (organize dict's for signal and background uncertianties, collect
+            ## names of backgrounds)
+            if values[0] =='process' :
+                if first_process_line :
+                    range_bkg = len(values)
+                    for idx in range(len(values)) :
+                        ## if correct this change can catch categories where there is no
+                        ## signal included
+                        if values[idx].isdigit() and int(values[idx]) == 1 : # == 0
+                            range_sig = idx #idx+1
+                            break
+                    first_process_line = False
                     continue
-                try:                
-                    value = float(value)
-                    if value != 0 :
-                        value = value-1                    
-                    uncert_sig[i] += value*value
-                except ValueError:
-                    continue        
-            ## shift ranges in case of uncertainties of type gmN
-            range_shift = 1 if values[1] == 'gmN' else 0
-            ## add systematic uncertainties in quadrature for signal
-            for i in range(range_sig+1+range_shift, range_bkg+1+range_shift):
-                value = values[i]
-                try:
-                    value = float(value)
-                    if value != 0:
-                        if values[1] == 'gmN':
-                            value = 1./math.sqrt(float(values[2]))
-                        else:
+                elif len(names_bkg)==0 :
+                    names_bkg = values[range_sig:]
+                    continue
+            ## RATE (pick up rates of signal and backgrounds)
+            if values[0] == 'rate':
+                passed_rate_line = True
+                rate_bkg = values[range_sig:]
+                rate_sig = values[1:range_sig]
+                continue
+            ## UNCERTAINTIES (add all relevant uncertainties for signal and backgrounds in
+            ## quadrature; there is a special treatment for gmN, shapes are skipped)
+            if passed_rate_line and values[0] not in ignore_line:
+                if len(uncert_sig) == 0 :
+                    uncert_sig = dict([(i,0) for i in range(2, range_sig+1)])
+                if len(uncert_bkg) == 0 :
+                    uncert_bkg = dict([(i,0) for i in range(range_sig+1, range_bkg+1)])
+                ## add systematic uncertainties in quadrature for signal
+                for i in range(2, range_sig+1) :
+                    value = values[i]
+                    if values[1] == 'gmN':                    
+                        ## it never happens for the signal to have an uncertainty of type gmN
+                        continue
+                    try:                
+                        value = float(value)
+                        if value != 0 :
                             value = value-1                    
-                    if values[1] == 'gmN':
-                        uncert_bkg[i-1] += value*value 
-                    else:
-                        uncert_bkg[i] += value*value  
-                except ValueError:
-                    continue        
-    file.close()
+                        uncert_sig[i] += value*value
+                    except ValueError:
+                        continue        
+                ## shift ranges in case of uncertainties of type gmN
+                range_shift = 1 if values[1] == 'gmN' else 0
+                ## add systematic uncertainties in quadrature for signal
+                for i in range(range_sig+1+range_shift, range_bkg+1+range_shift):
+                    value = values[i]
+                    try:
+                        value = float(value)
+                        if value != 0:
+                            if values[1] == 'gmN':
+                                value = 1./math.sqrt(float(values[2]))
+                            else:
+                                value = value-1                    
+                        if values[1] == 'gmN':
+                            uncert_bkg[i-1] += value*value 
+                        else:
+                            uncert_bkg[i] += value*value  
+                    except ValueError:
+                        continue        
+        file.close()
+        
+        ## sum up total signal rate
+        rate_sig_summed = 0
+        if options.analysis == "mssm" :
+            for i in range(0, len(rate_sig)) :
+                rate_sig[i] = float(rate_sig[i])
+            rate_sig_summed = xsec["ggH"]*BR*rate_sig[0] + xsec["bbH"]*BR*rate_sig[1]
+        else : 
+            for i in range(0, len(rate_sig)):
+                rate_sig[i] = float(rate_sig[i])
+                rate_sig_summed += rate_sig[i]
+        ## sum up uncertainty of total signal rate
+        uncert_sig_split = []
+        uncert_sig_summed = 0
+        if options.analysis == "mssm" :
+            uncert_sig_split.append(math.sqrt(xsec["ggH"]*BR*xsec["ggH"]*BR*uncert_sig[2])*rate_sig[0])
+            uncert_sig_split.append(math.sqrt(xsec["bbH"]*BR*xsec["bbH"]*BR*uncert_sig[3])*rate_sig[1])
+            uncert_sig_summed+=uncert_sig_split[0]*uncert_sig_split[0]
+            uncert_sig_summed+=uncert_sig_split[1]*uncert_sig_split[1]
+        else :
+            for i in range(0, len(rate_sig)):
+                ## the newest is that we can have categories w/o signal
+                #if len(uncert_sig) == 0 :
+                #    break
+                uncert_sig_split.append(math.sqrt(uncert_sig[2+i])*rate_sig[i])
+                uncert_sig_summed+=uncert_sig_split[i]*uncert_sig_split[i]
+        uncert_sig_summed = math.sqrt(uncert_sig_summed)
+        
+        ## sum up total background rate
+        rate_bkg_summed = 0
+        for i in range(0, len(rate_bkg)):
+            rate_bkg[i] = float(rate_bkg[i])
+    	    if rate_bkg[i]!=0.0 :
+                rate_bkg[i] = round(rate_bkg[i], 0 if round(math.log10(rate_bkg[i]))>0 else -int(math.ceil(-math.log10(rate_bkg[i])))+1)
+                rate_bkg_summed += rate_bkg[i]
+        ## sum up uncertainty of total background rate
+        uncert_bkg_split = []
+        uncert_bkg_summed = 0
     
-    ## sum up total signal rate
-    rate_sig_summed = 0
-    if options.analysis == "mssm" :
-        for i in range(0, len(rate_sig)) :
-            rate_sig[i] = float(rate_sig[i])
-        rate_sig_summed = xsec["ggH"]*BR*rate_sig[0] + xsec["bbH"]*BR*rate_sig[1]
-    else : 
-        for i in range(0, len(rate_sig)):
-            rate_sig[i] = float(rate_sig[i])
-            rate_sig_summed += rate_sig[i]
-    ## sum up uncertainty of total signal rate
-    uncert_sig_split = []
-    uncert_sig_summed = 0
-    if options.analysis == "mssm" :
-        uncert_sig_split.append(math.sqrt(xsec["ggH"]*BR*xsec["ggH"]*BR*uncert_sig[2])*rate_sig[0])
-        uncert_sig_split.append(math.sqrt(xsec["bbH"]*BR*xsec["bbH"]*BR*uncert_sig[3])*rate_sig[1])
-        uncert_sig_summed+=uncert_sig_split[0]*uncert_sig_split[0]
-        uncert_sig_summed+=uncert_sig_split[1]*uncert_sig_split[1]
-    else :
-        for i in range(0, len(rate_sig)):
-            ## the newest is that we can have categories w/o signal
-            #if len(uncert_sig) == 0 :
-            #    break
-            uncert_sig_split.append(math.sqrt(uncert_sig[2+i])*rate_sig[i])
-            uncert_sig_summed+=uncert_sig_split[i]*uncert_sig_split[i]
-    uncert_sig_summed = math.sqrt(uncert_sig_summed)
+        for i in range(0, len(rate_bkg)):
+            uncert_bkg_split.append(math.sqrt(uncert_bkg[range_sig+1+i])*rate_bkg[i])
+            uncert_bkg_summed+=uncert_bkg_split[i]*uncert_bkg_split[i]        
+        uncert_bkg_summed = math.sqrt(uncert_bkg_summed)
     
-    ## sum up total background rate
-    rate_bkg_summed = 0
-    for i in range(0, len(rate_bkg)):
-        rate_bkg[i] = float(rate_bkg[i])
-	if rate_bkg[i]!=0.0 :
-            rate_bkg[i] = round(rate_bkg[i], 0 if round(math.log10(rate_bkg[i]))>0 else -int(math.ceil(-math.log10(rate_bkg[i])))+1)
-            rate_bkg_summed += rate_bkg[i]
-    ## sum up uncertainty of total background rate
-    uncert_bkg_split = []
-    uncert_bkg_summed = 0
-
-    for i in range(0, len(rate_bkg)):
-        uncert_bkg_split.append(math.sqrt(uncert_bkg[range_sig+1+i])*rate_bkg[i])
-        uncert_bkg_summed+=uncert_bkg_split[i]*uncert_bkg_split[i]        
-    uncert_bkg_summed = math.sqrt(uncert_bkg_summed)
-
-    ## write tmp results to file, identified by channel, category and period
-    yields = open(channel+'_'+category+'_'+period+'.tmp', 'w')
-    for name, rate, uncert in zip(names_bkg, rate_bkg, uncert_bkg_split):
-        yields.write(formated_line(name, rate, uncert))
-    yields.write(formated_line('Total' , rate_bkg_summed, uncert_bkg_summed))
-    yields.write(formated_line('Signal', rate_sig_summed, uncert_sig_summed))
-    yields.write('Data \t %d \n' % int(observed))
-    yields.close()
-
-    efficiencies = open('eff_'+channel+'_'+period+'.tmp','a')
-    efficiencies.write(channel+'_'+category+"\n")
-    if options.analysis == "mssm" :
-        if len(rate_sig)>1 :
-            ## for mssm the yield needs to be multiplied with xsec*BR
-            efficiencies.write("ggH \t %f \t %f \n" % (xsec["ggH"]*BR*rate_sig[0], xsec["ggH"]*BR*lumi[channel]))
-            efficiencies.write("bbH \t %f \t %f \n" % (xsec["bbH"]*BR*rate_sig[1], xsec["bbH"]*BR*lumi[channel]))
-    else :
-        if len(rate_sig)>2 :
-            efficiencies.write("ggH \t %f \t %f \n" % (rate_sig[0], xsec["ggH"]*BR*lumi[channel]))
-            efficiencies.write("qqH \t %f \t %f \n" % (rate_sig[1], xsec["qqH"]*BR*lumi[channel]))
-            efficiencies.write("VH  \t %f \t %f \n" % (rate_sig[2], xsec["VH" ]*BR*lumi[channel]))
-    efficiencies.close()
+        ## write tmp results to file, identified by channel, category and period
+        yields = open(channel+'_'+category+'_'+period+'.tmp', 'w')
+        for name, rate, uncert in zip(names_bkg, rate_bkg, uncert_bkg_split):
+            yields.write(formated_line(name, rate, uncert))
+        yields.write(formated_line('Total' , rate_bkg_summed, uncert_bkg_summed))
+        yields.write(formated_line('Signal', rate_sig_summed, uncert_sig_summed))
+        yields.write('Data \t %d \n' % int(observed))
+        yields.close()
+    
+        efficiencies = open('eff_'+channel+'_'+period+'.tmp','a')
+        efficiencies.write(channel+'_'+category+"\n")
+        if options.analysis == "mssm" :
+            if len(rate_sig)>1 :
+                ## for mssm the yield needs to be multiplied with xsec*BR
+                efficiencies.write("ggH \t %f \t %f \n" % (xsec["ggH"]*BR*rate_sig[0], xsec["ggH"]*BR*lumi[channel]))
+                efficiencies.write("bbH \t %f \t %f \n" % (xsec["bbH"]*BR*rate_sig[1], xsec["bbH"]*BR*lumi[channel]))
+        else :
+            if len(rate_sig)>2 :
+                efficiencies.write("ggH \t %f \t %f \n" % (rate_sig[0], xsec["ggH"]*BR*lumi[channel]))
+                efficiencies.write("qqH \t %f \t %f \n" % (rate_sig[1], xsec["qqH"]*BR*lumi[channel]))
+                efficiencies.write("VH  \t %f \t %f \n" % (rate_sig[2], xsec["VH" ]*BR*lumi[channel]))
+        efficiencies.close()
     return
 
 def sum_list(source, target, squared=False) :
@@ -458,13 +476,16 @@ def merge_efficiencies(channel, categories, periods) :
         file.close()
 
     file = open('eff_'+channel+'_split.tmp', 'w')
-    for i in range(len(lines[periods[0]])) :
-        line = lines[periods[0]][i]
+    pidx = 1 if len(periods) > 1 else 0
+    for i in range(len(lines[periods[pidx]])) :
+        line = lines[periods[pidx]][i]
         if len(line) == 1 :
             file.write(line[0]+'\n')
         else :
             line_summed = []
             for per in periods :
+                if i > len(lines[per])-1 :
+                    continue
                 for j in range(len(lines[per][i])) :
                     if len(line_summed) == j :
                         line_summed.append(float(lines[per][i][j]) if j>0 else str(lines[per][i][j]))
@@ -588,6 +609,7 @@ def make_tables(channel, categories, category_labels):
         "mt" : ["ZTT", "QCD", "W", "ZLL", "TT", "VV", "Total", "Signal"],
         "et" : ["ZTT", "QCD", "W", "ZLL", "TT", "VV", "Total", "Signal"],
         "mm" : ["ZTT", "ZMM", "QCD", "TTJ", "EWK", "Total", "Signal"],
+        "ee" : ["ZTT", "ZEE", "QCD", "TTJ", "EWK", "Total", "Signal"],
         "em" : ["Ztt", "Fakes", "ttbar", "EWK","Total", "Signal"],
         }
     ## labels of the samples that should appear in the table
@@ -601,6 +623,7 @@ def make_tables(channel, categories, category_labels):
         "ZLL"      : 'Z+jets (l/jet faking $\\tau$)',
         "ZJ"       : 'Z+jets (l/jet faking $\\tau$)',
         "ZMM"      : 'Z$\\rightarrow \\mu\\mu$     ',
+        "ZEE"      : 'Z$\\rightarrow ee$           ',
         "TT"       : 't$\\bar{\\rm{t}}$            ',
         "ttbar"    : 't$\\bar{\\rm{t}}$            ',
         "TTJ"      : 't$\\bar{\\rm{t}}$            ',
@@ -705,11 +728,38 @@ if len(periods) == 1 and contained('7TeV', periods) :
             "nobtag": ["7TeV"],
             }
     else :
-        subsets_extended = {
-            "0jet"  : ["low_7TeV", "high_7TeV"],
-            "boost" : ["low_7TeV", "high_7TeV"],
-            "vbf"   : ["7TeV"],
-            }
+        if len(channels) == 1 and contained('em', channels) :
+            subsets_extended = {
+                "0jet"  : ["low_7TeV", "high_7TeV"],
+                "1jet"  : ["low_7TeV", "high_7TeV"],
+                "vbf"   : ["loose_7TeV"],
+                }
+        elif len(channels) == 1 and contained('et', channels) :
+            subsets_extended = {
+                "0jet"  : ["medium_7TeV", "high_7TeV"],
+                "1jet"  : ["medium_7TeV", "high_mediumhiggs_7TeV"],
+                "vbf"   : ["loose_7TeV"],
+                }
+        elif len(channels) == 1 and contained('mt', channels) :
+            subsets_extended = {
+                "0jet"  : ["medium_7TeV", "high_7TeV"],
+                "1jet"  : ["medium_7TeV", "high_lowhiggs_7TeV", "high_mediumhiggs_7TeV"],
+                "vbf"   : ["loose_7TeV"],
+                }
+        elif len(channels) == 1 and contained('mm', channels) :
+            subsets_extended = {
+                "0jet"  : ["low_7TeV", "high_7TeV"],
+                "1jet"  : ["low_7TeV", "high_7TeV"],
+                "vbf"   : ["7TeV"],
+                }
+        elif len(channels) == 1 and contained('ee', channels) :
+            subsets_extended = {
+                "0jet"  : ["low_7TeV", "high_7TeV"],
+                "1jet"  : ["low_7TeV", "high_7TeV"],
+                "vbf"   : ["7TeV"],
+                }
+        else :
+            subsets_extended = {}
 if len(periods) == 1 and contained('8TeV', periods) :
     if options.analysis == "mssm" :
         subsets_extended = {
@@ -717,11 +767,43 @@ if len(periods) == 1 and contained('8TeV', periods) :
             "nobtag": ["8TeV"],
             }
     else :
-        subsets_extended = {
-            "0jet"  : ["low_8TeV", "high_8TeV"],
-            "boost" : ["low_8TeV", "high_8TeV"],
-            "vbf"   : ["8TeV"],
-            }
+        if len(channels) == 1 and contained('em', channels) :
+            subsets_extended = {
+                "0jet"  : ["low_8TeV", "high_8TeV"],
+                "1jet"  : ["low_8TeV", "high_8TeV"],
+                "vbf"   : ["loose_8TeV", "tight_8TeV"],
+                }
+        elif len(channels) == 1 and contained('et', channels) :
+            subsets_extended = {
+                "0jet"  : ["medium_8TeV", "high_8TeV"],
+                "1jet"  : ["medium_8TeV", "high_mediumhiggs_8TeV"],
+                "vbf"   : ["loose_8TeV", "tight_8TeV"],
+                }
+        elif len(channels) == 1 and contained('mt', channels) :
+            subsets_extended = {
+                "0jet"  : ["medium_8TeV", "high_8TeV"],
+                "1jet"  : ["medium_8TeV", "high_lowhiggs_8TeV", "high_mediumhiggs_8TeV"],
+                "vbf"   : ["loose_8TeV", "tight_8TeV"],
+                }
+        elif len(channels) == 1 and contained('tt', channels) :
+            subsets_extended = {
+                "1jet"  : ["high_mediumhiggs_8TeV", "high_highhiggs_8TeV"],
+                "vbf"   : ["8TeV"],
+                }
+        elif len(channels) == 1 and contained('mm', channels) :
+            subsets_extended = {
+                "0jet"  : ["low_8TeV", "high_8TeV"],
+                "1jet"  : ["low_8TeV", "high_8TeV"],
+                "vbf"   : ["8TeV"],
+                }
+        elif len(channels) == 1 and contained('ee', channels) :
+            subsets_extended = {
+                "0jet"  : ["low_8TeV", "high_8TeV"],
+                "1jet"  : ["low_8TeV", "high_8TeV"],
+                "vbf"   : ["8TeV"],
+                }
+        else :
+            subsets_extended = {}
 if contained('7TeV', periods) and contained('8TeV', periods) :
     if options.analysis == "mssm" :
         subsets_extended = {
@@ -729,11 +811,43 @@ if contained('7TeV', periods) and contained('8TeV', periods) :
             "nobtag": ["7TeV", "8TeV"],
             }
     else :
-        subsets_extended = {
-            "0jet"  : ["low_7TeV", "low_8TeV", "high_7TeV", "high_8TeV"],
-            "boost" : ["low_7TeV", "low_8TeV", "high_7TeV", "high_8TeV"],
-            "vbf"   : ["7TeV", "8TeV"],
-            }
+        if len(channels) == 1 and contained('em', channels) :
+            subsets_extended = {
+                "0jet"  : ["low_7TeV", "low_8TeV", "high_7TeV", "high_8TeV"],
+                "1jet"  : ["low_7TeV", "low_8TeV", "high_7TeV", "high_8TeV"],
+                "vbf"   : ["loose_7TeV", "loose_8TeV", "tight_8TeV"],
+                }
+        elif len(channels) == 1 and contained('et', channels) :
+            subsets_extended = {
+                "0jet"  : ["medium_7TeV", "high_7TeV", "medium_8TeV", "high_8TeV"],
+                "1jet"  : ["medium_7TeV", "high_mediumhiggs_7TeV", "medium_8TeV", "high_mediumhiggs_8TeV"],
+                "vbf"   : ["loose_7TeV", "loose_8TeV", "tight_8TeV"],
+                }
+        elif len(channels) == 1 and contained('mt', channels) :
+            subsets_extended = {
+                "0jet"  : ["medium_7TeV", "high_7TeV", "medium_8TeV", "high_8TeV"],
+                "1jet"  : ["medium_7TeV", "high_lowhiggs_7TeV", "high_mediumhiggs_7TeV", "medium_8TeV", "high_lowhiggs_8TeV", "high_mediumhiggs_8TeV"],
+                "vbf"   : ["loose_7TeV", "loose_8TeV", "tight_8TeV"],
+                }
+        elif len(channels) == 1 and contained('tt', channels) :
+            subsets_extended = {
+                "1jet"  : ["high_mediumhiggs_8TeV", "high_highhiggs_8TeV"],
+                "vbf"   : ["8TeV"],
+                }
+        elif len(channels) == 1 and contained('mm', channels) :
+            subsets_extended = {
+                "0jet"  : ["low_7TeV", "high_7TeV", "low_8TeV", "high_8TeV"],
+                "1jet"  : ["low_7TeV", "high_7TeV", "low_8TeV", "high_8TeV"],
+                "vbf"   : ["7TeV", "8TeV"],
+                }
+        elif len(channels) == 1 and contained('ee', channels) :
+            subsets_extended = {
+                "0jet"  : ["low_7TeV", "high_7TeV", "low_8TeV", "high_8TeV"],
+                "1jet"  : ["low_7TeV", "high_7TeV", "low_8TeV", "high_8TeV"],
+                "vbf"   : ["7TeV", "8TeV"],
+                }
+        else :
+            subsets_extended = {}
 ## compact dictionary of subsets to be contraced (used fro mergin of efficiencies) and categories to be shown in the table(s)
 if options.analysis == "mssm" :
     subsets_compact  = {
@@ -749,22 +863,97 @@ if options.analysis == "mssm" :
         'nobtag'   : "\emph{No B-Tag}",
         }
 else :
-    subsets_compact  = {
-        '0jet'     : ['low', 'high'],
-        'boost'    : ['low', 'high'],
-        #'boost'    : [], ##for tt
-        'vbf'      : [],
-        }
-    categories_in_table = [
-        '0jet',
-        'boost',
-        'vbf',
-        ]
-    category_labels_in_table = {
-        '0jet'     : "\emph{0-Jet}",
-        'boost'    : "\emph{1-Jet}",
-        'vbf'      : "\emph{VBF}",
-        }
+    if len(periods) == 1 and contained('7TeV', periods) :
+        if len(channels) == 1 and contained('em', channels) :
+            subsets_compact  = {
+                '0jet'     : ['low', 'high'],
+                '1jet'     : ['low', 'high'],
+                'vbf'      : ['loose'],
+                }
+        elif len(channels) == 1 and contained('et', channels) :
+            subsets_compact = {
+                "0jet"  : ['medium', 'high'],
+                "1jet"  : ['medium', 'high_mediumhiggs'],
+                "vbf"   : ['loose'],
+                }
+        elif len(channels) == 1 and contained('mt', channels) :
+            subsets_compact = {
+                "0jet"  : ['medium', 'high'],
+                "1jet"  : ['medium', 'high_lowhiggs', 'high_mediumhiggs'],
+                "vbf"   : ['loose'],
+                }
+        elif len(channels) == 1 and contained('mm', channels) :
+            subsets_compact = {
+                '0jet'     : ['low', 'high'],
+                '1jet'     : ['low', 'high'],
+                'vbf'      : [],
+                }
+        elif len(channels) == 1 and contained('ee', channels) :
+            subsets_compact = {
+                '0jet'     : ['low', 'high'],
+                '1jet'     : ['low', 'high'],
+                'vbf'      : [],
+                }
+        else :
+            subsets_compact = {}
+    else :
+        if len(channels) == 1 and contained('em', channels) :
+            subsets_compact  = {
+                '0jet'     : ['low', 'high'],
+                '1jet'     : ['low', 'high'],
+                'vbf'      : ['loose', 'tight'],
+                }
+        elif len(channels) == 1 and contained('et', channels) :
+            subsets_compact = {
+                "0jet"  : ['medium', 'high'],
+                "1jet"  : ['medium', 'high_mediumhiggs'],
+                "vbf"   : ['loose', 'tight'],
+                }
+        elif len(channels) == 1 and contained('mt', channels) :
+            subsets_compact = {
+                "0jet"  : ['medium', 'high'],
+                "1jet"  : ['medium', 'high_lowhiggs', 'high_mediumhiggs'],
+                "vbf"   : ['loose', 'tight'],
+                }
+        elif len(channels) == 1 and contained('tt', channels) :
+            subsets_compact = {
+                "1jet"  : ['high_mediumhiggs', 'high_highhiggs'],
+                "vbf"   : [],
+                }
+        elif len(channels) == 1 and contained('mm', channels) :
+            subsets_compact = {
+                '0jet'     : ['low', 'high'],
+                '1jet'     : ['low', 'high'],
+                'vbf'      : [],
+                }
+        elif len(channels) == 1 and contained('ee', channels) :
+            subsets_compact = {
+                '0jet'     : ['low', 'high'],
+                '1jet'     : ['low', 'high'],
+                'vbf'      : [],
+                }
+        else :
+            subsets_compact = {}
+    if len(channels) == 1 and contained('tt', channels) :
+        categories_in_table = [
+            '1jet',
+            'vbf',
+            ]
+        category_labels_in_table = {
+            '1jet'     : "\emph{1-Jet}",
+            'vbf'      : "\emph{VBF}",
+            }
+    else :
+        categories_in_table = [
+            '0jet',
+            '1jet',
+            'vbf',
+            ]
+        category_labels_in_table = {
+            '0jet'     : "\emph{0-Jet}",
+            '1jet'     : "\emph{1-Jet}",
+            'vbf'      : "\emph{VBF}",
+            }
 
 os.system("rm -f *.tmp")
 for chn in channels :
