@@ -25,11 +25,11 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
 
   // setup the CMS colors
   TColor* obs = new TColor(1501, 0.463, 0.867, 0.957);
-  obs->SetAlpha(0.9);
+  obs->SetAlpha(0.5);
   TColor* lep = new TColor(1502, 0.494, 0.694, 0.298);
-  lep->SetAlpha(0.5);
+  lep->SetAlpha(1);
   TColor* twosigma = gROOT->GetColor(kGray);
-  twosigma->SetAlpha(0.7);
+  twosigma->SetAlpha(0.5);
   TColor* onesigma = gROOT->GetColor(kGray+1);
   onesigma->SetAlpha(0.5);
   TColor* ph = gROOT->GetColor(kYellow);
@@ -76,27 +76,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   lowerLEP->SetLineWidth(4.);
   lowerLEP->Draw("F");
 
-  if(observed){
-    plain->SetLineColor(ph->GetNumber());
-    plain->SetFillStyle(1001.);
-    plain->SetFillColor(obs->GetNumber());
-    plain->Draw("Fsame");
-    observed->SetMarkerStyle(20);
-    observed->SetMarkerSize(1.0);
-    observed->SetMarkerColor(kBlack);
-    observed->SetLineWidth(3.);
-  }
-  if(observed_low){  
-    plain_low->SetLineColor(ph->GetNumber());
-    plain_low->SetFillStyle(1001.);
-    plain_low->SetFillColor(obs->GetNumber());
-    //plain_low->Draw("Fsame"); //for old style comment that one out
-    observed_low->SetMarkerStyle(20);
-    observed_low->SetMarkerSize(1.0);
-    observed_low->SetMarkerColor(kBlack);
-    observed_low->SetLineWidth(3.);  
-  }
-
+  
   if(outerBand){
     outerBand->SetFillStyle(1001);
     outerBand->SetFillColor(twosigma->GetNumber()); //kGray
@@ -133,9 +113,25 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   }
 
   if(observed){
+    plain->SetLineColor(ph->GetNumber());
+    plain->SetFillStyle(1001.);
+    plain->SetFillColor(obs->GetNumber());
+    plain->Draw("Fsame");
+    observed->SetMarkerStyle(20);
+    observed->SetMarkerSize(1.0);
+    observed->SetMarkerColor(kBlack);
+    observed->SetLineWidth(3.);
     observed->Draw("Lsame");
   }
   if(observed_low){  
+    plain_low->SetLineColor(ph->GetNumber());
+    plain_low->SetFillStyle(1001.);
+    plain_low->SetFillColor(obs->GetNumber());
+    //plain_low->Draw("Fsame"); //for old style comment that one out
+    observed_low->SetMarkerStyle(20);
+    observed_low->SetMarkerSize(1.0);
+    observed_low->SetMarkerColor(kBlack);
+    observed_low->SetLineWidth(3.);  
     //observed_low->Draw("Lsame");
   }
 
