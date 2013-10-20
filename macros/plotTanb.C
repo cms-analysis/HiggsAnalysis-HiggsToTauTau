@@ -14,7 +14,7 @@
 #include "HiggsAnalysis/HiggsToTauTau/src/plottingTanb.cxx"
 
 void
-plotTanb(const char* filename, const char* channel, bool draw_injected_=false, double min_=0., double max_=60., bool log_=false, std::string dataset_="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV", std::string xaxis_="m_{A} [GeV]", std::string yaxis_="#bf{tan#beta}")
+plotTanb(const char* filename, const char* channel, bool draw_injected_=false, double min_=0., double max_=60., bool log_=false, std::string dataset_="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV", std::string xaxis_="m_{A} [GeV]", std::string yaxis_="#bf{tan#beta}")
 {
   TFile* file = TFile::Open(filename);
   // retrieve TGraphs from file
@@ -31,17 +31,17 @@ plotTanb(const char* filename, const char* channel, bool draw_injected_=false, d
   TGraphAsymmErrors* plain = (TGraphAsymmErrors*)file->Get(std::string(channel).append("/plain").c_str());
   TGraphAsymmErrors* plain_low = (TGraphAsymmErrors*)file->Get(std::string(channel).append("/plain_low").c_str());
 
-  // this is new for injected plot 
-  TGraph* injected = 0;;
+  // this is new for injected plot together with observed
+  TGraph* injected = 0;
   if(draw_injected_) {injected = (TGraph*)file->Get("injected/observed");}
 
-  if(draw_injected_){
-    for( int i=0; i<expected->GetN(); i++){
-      double shift = injected->GetY()[i]-expected->GetY()[i];
-      innerBand->SetPoint(i, innerBand->GetX()[i], innerBand->GetY()[i]+shift);
-      outerBand->SetPoint(i, outerBand->GetX()[i], outerBand->GetY()[i]+shift);
-    }
-  }
+  //if(draw_injected_){
+  //  for( int i=0; i<expected->GetN(); i++){
+  //    double shift = injected->GetY()[i]-expected->GetY()[i];
+  //    innerBand->SetPoint(i, innerBand->GetX()[i], innerBand->GetY()[i]+shift);
+  //    outerBand->SetPoint(i, outerBand->GetX()[i], outerBand->GetY()[i]+shift);
+  //  }
+  //}
 
   // this functionality is not yet supported
   std::map<double, TGraphAsymmErrors*> higgsBands;

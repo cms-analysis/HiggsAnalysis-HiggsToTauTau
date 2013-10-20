@@ -5,16 +5,16 @@
 #include "TLegend.h"
 #include "TPaveText.h"
 #include "TGraphAsymmErrors.h"
+#include <iostream>
 
 void
-plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* unit, std::string& xaxis, std::string& yaxis, double min=0., double max=5., bool log=false, std::string PLOT=std::string("LIMIT"), std::string injectedMass=std::string("125"), bool legendOnRight=false, std::string extra_label=std::string(""))
+plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, TGraph* unit, std::string& xaxis, std::string& yaxis, TGraph* expected_injected=0, double min=0., double max=5., bool log=false, std::string PLOT=std::string("LIMIT"), std::string injectedMass=std::string("125"), bool legendOnRight=false, std::string extra_label=std::string(""))
 {
   // define PLOT type
   bool injected = (PLOT == std::string("INJECTED"));
   bool bestfit  = (PLOT == std::string("BESTFIT" ));
   bool BG_Higgs = (PLOT == std::string("BG_HIGGS"));
   bool mssm_log = (PLOT == std::string("MSSM-LOG"));
-
   // set up styles
   canv.cd();
   //canv.SetGridx(1);
@@ -111,6 +111,13 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
     observed->Draw("PLsame");
   }
 
+  if(expected_injected){
+    expected_injected->SetLineColor(kBlue);
+    expected_injected->SetLineWidth(3);
+    expected_injected->SetLineStyle(1);
+    expected_injected->Draw("Lsame");
+  }
+
   TPaveText* extra;
   if(!extra_label.empty()){
     extra = new TPaveText(legendOnRight ? 0.5 : 0.18, 0.60, legendOnRight ? 0.90 : 0.605, 0.70, "NDC");
@@ -131,6 +138,9 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   if(observed){
     leg->AddEntry(observed, "observed",  "PL");
     //leg->AddEntry(observed, "Asimov w/ H(125)",  "PL");
+  }
+  if(expected_injected){
+    leg->AddEntry( expected_injected , TString::Format("SM H(%s GeV) injected", injectedMass.c_str()),  "L" );
   }
   if(injected){
     leg->AddEntry( expected , TString::Format("H(%s GeV) injected", injectedMass.c_str()),  "L" );
