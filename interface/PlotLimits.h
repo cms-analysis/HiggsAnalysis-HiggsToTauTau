@@ -215,6 +215,8 @@ class PlotLimits {
   std::string injectedMass_;
   /// potential extra label meant to be located below the legend (at the moment only used for limit plotting in mssm case)
   std::string extra_;
+  /// print transparent? (used for option tanb)
+  bool transparent_;
   /// indicate whether the +/- 2 sigma should be shown or not (used for option tanb)
   bool outerband_;
   /// print constraint on mA-tanb plane from Higgs boson at 125 GeV? (used for option tanb)
