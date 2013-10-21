@@ -103,13 +103,6 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
     unit->SetLineWidth(3.);
     unit->Draw("Lsame");
   }
-  if(observed){
-    observed->SetMarkerColor(kBlack);
-    observed->SetMarkerSize(1.0);
-    observed->SetMarkerStyle(20);
-    observed->SetLineWidth(3.);
-    observed->Draw("PLsame");
-  }
 
   if(expected_injected){
     expected_injected->SetLineColor(kBlue);
@@ -118,6 +111,16 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
     expected_injected->Draw("Lsame");
   }
 
+
+  if(observed){
+    observed->SetMarkerColor(kBlack);
+    observed->SetMarkerSize(1.0);
+    observed->SetMarkerStyle(20);
+    observed->SetLineWidth(3.);
+    observed->Draw("PLsame");
+  }
+
+  
   TPaveText* extra;
   if(!extra_label.empty()){
     extra = new TPaveText(legendOnRight ? 0.5 : 0.18, 0.60, legendOnRight ? 0.90 : 0.605, 0.70, "NDC");

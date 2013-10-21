@@ -12,7 +12,7 @@
 //#include "TRint.h"
 
 void
-plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_low, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* innerBand_low, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* outerBand_low, TGraph* expected, TGraph* expected_low, TGraph* observed, TGraph* observed_low, TGraph* lowerLEP, TGraph* upperLEP, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, TGraph* injected=0, double min=0., double max=60., bool log=false)
+plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_low, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* innerBand_low, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* outerBand_low, TGraph* expected, TGraph* expected_low, TGraph* observed, TGraph* observed_low, TGraph* lowerLEP, TGraph* upperLEP, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, TGraph* injected=0, double min=0., double max=60., bool log=false, bool transparent=false)
 {
   // set up styles
   canv.cd();
@@ -25,13 +25,13 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
 
   // setup the CMS colors
   TColor* obs = new TColor(1501, 0.463, 0.867, 0.957);
-  obs->SetAlpha(0.5);
+  if(transparent) obs->SetAlpha(0.5);
   TColor* lep = new TColor(1502, 0.494, 0.694, 0.298);
-  lep->SetAlpha(1);
+  if(transparent) lep->SetAlpha(1);
   TColor* twosigma = gROOT->GetColor(kGray);
-  twosigma->SetAlpha(0.5);
+  if(transparent) twosigma->SetAlpha(0.5);
   TColor* onesigma = gROOT->GetColor(kGray+1);
-  onesigma->SetAlpha(0.5);
+  if(transparent) onesigma->SetAlpha(0.5);
   TColor* ph = gROOT->GetColor(kYellow);
   ph->SetAlpha(0.0);
 
@@ -76,7 +76,28 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   lowerLEP->SetLineWidth(4.);
   lowerLEP->Draw("F");
 
-  
+  if(observed){
+    plain->SetLineColor(ph->GetNumber());
+    plain->SetFillStyle(1001.);
+    plain->SetFillColor(obs->GetNumber());
+    if (!transparent) plain->Draw("Fsame");
+    observed->SetMarkerStyle(20);
+    observed->SetMarkerSize(1.0);
+    observed->SetMarkerColor(kBlack);
+    observed->SetLineWidth(3.);
+  }
+
+  if(observed_low){  
+    plain_low->SetLineColor(ph->GetNumber());
+    plain_low->SetFillStyle(1001.);
+    plain_low->SetFillColor(obs->GetNumber());
+    //if (!transparent) plain_low->Draw("Fsame"); //for old style comment that one out
+    observed_low->SetMarkerStyle(20);
+    observed_low->SetMarkerSize(1.0);
+    observed_low->SetMarkerColor(kBlack);
+    observed_low->SetLineWidth(3.);  
+  }
+
   if(outerBand){
     outerBand->SetFillStyle(1001);
     outerBand->SetFillColor(twosigma->GetNumber()); //kGray
@@ -112,26 +133,12 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
     //expected_low->Draw("Lsame");
   }
 
-  if(observed){
-    plain->SetLineColor(ph->GetNumber());
-    plain->SetFillStyle(1001.);
-    plain->SetFillColor(obs->GetNumber());
-    plain->Draw("Fsame");
-    observed->SetMarkerStyle(20);
-    observed->SetMarkerSize(1.0);
-    observed->SetMarkerColor(kBlack);
-    observed->SetLineWidth(3.);
+  if(observed){;
+    if(transparent) plain->Draw("Fsame");
     observed->Draw("Lsame");
   }
   if(observed_low){  
-    plain_low->SetLineColor(ph->GetNumber());
-    plain_low->SetFillStyle(1001.);
-    plain_low->SetFillColor(obs->GetNumber());
-    //plain_low->Draw("Fsame"); //for old style comment that one out
-    observed_low->SetMarkerStyle(20);
-    observed_low->SetMarkerSize(1.0);
-    observed_low->SetMarkerColor(kBlack);
-    observed_low->SetLineWidth(3.);  
+    //if(transparent) plain_low->Draw("Fsame"); //for old style comment that one out
     //observed_low->Draw("Lsame");
   }
 
@@ -221,7 +228,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   leg->SetHeader("95% CL Excluded:");
   if(observed){ 
     observed->SetFillColor(obs->GetNumber()); 
-    leg->AddEntry(observed, "Observed", "FL");
+    leg->AddEntry(observed, "observed", "FL");
     //leg->AddEntry(observed, "SM Higgs injected", "FL");
   }
   if(injected){
@@ -232,11 +239,11 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
     //  leg->AddEntry(outerBand, "#pm 2#sigma Asimov", "F"); 
     //}
   }
-  leg->AddEntry(expected, "Expected", "L");
+  leg->AddEntry(expected, "expected", "L");
   //if(!injected){
-    leg->AddEntry(innerBand, "#pm 1#sigma Expected","F");
+    leg->AddEntry(innerBand, "#pm 1#sigma expected","F");
     if(outerBand){ 
-      leg->AddEntry(outerBand, "#pm 2#sigma Expected", "F"); 
+      leg->AddEntry(outerBand, "#pm 2#sigma expected", "F"); 
       //  }
   }
   for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band){
