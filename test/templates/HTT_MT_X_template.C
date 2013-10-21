@@ -408,7 +408,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   cat2->Draw();
 */
 #ifdef MSSM
-  TPaveText* massA      = new TPaveText(0.55, 0.50+0.061, 0.95, 0.50+0.161, "NDC");
+  TPaveText* massA      = new TPaveText(0.53, 0.50+0.061, 0.95, 0.50+0.161, "NDC");
   massA->SetBorderSize(   0 );
   massA->SetFillStyle(    0 );
   massA->SetTextAlign(   12 );
@@ -420,7 +420,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
 
 #ifdef MSSM
-  TLegend* leg = new TLegend(0.55, 0.65, 0.95, 0.90);
+  TLegend* leg = new TLegend(0.53, 0.65, 0.95, 0.90);
   SetLegendStyle(leg);
   leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau" , "L" );
 #else
