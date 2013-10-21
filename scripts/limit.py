@@ -67,6 +67,7 @@ bgroup.add_option("--observedOnly", dest="observedOnly", default=False, action="
                   help="Calculate the observed limit only. This option applies to limit and significance calculations only. [Default: False]")
 bgroup.add_option("--seed", dest="seed", default="-1", type="string",
                   help="Choose a random seed if required. At the moment this is only explicitely needed for option --goodness-of-fit. [Default: '-1']")
+
 bgroup.add_option("--userOpt", dest="userOpt", default="", type="string",
                   help="With this option you can specify any kind of user option that is not covered by limit.py and that you would like to be passed on to the combine tool. [Defaul: \"\"]")
 bgroup.add_option("--working-dir", dest="workingdir", default=".",
@@ -147,6 +148,8 @@ igroup.add_option("--signal-strength", dest="signal_strength", default="1", type
                   help="Set the signal strength for the calculation the expected significance. [Default: \"1\"]")
 igroup.add_option("--toys", dest="toys", default="100", type="string",
                   help="Set number of toys of the median and quantiles for expected significance calculation. [Default: \"100\"]")
+igroup.add_option("--uncapped", dest="uncapped", default=False, action="store_true",
+                  help="Use uncapped option, a la ATLAS, to allow for p-values larger than 0.5 and negative significances in case of deficits in the data. [Default: False]")
 parser.add_option_group(igroup)
 ##
 ## ASYMPTOTIC OPTIONS
@@ -508,11 +511,12 @@ for directory in args :
             redirect = ""
             if options.hide_fitresult :
                 redirect = '> /tmp/'+''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))
+            postfit = "--saveNormalizations --saveShapes --saveWithUncertainties"
             ## run maximum likelihood fit
-            print "combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} {wdir}/tmp.root --out=out".format(
-                mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt, wdir=options.workingdir)
-            os.system("combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {user} {wdir}/tmp.root --out=out {redir}".format(
-                mass=mass, minuit=minuitopt, stable=stableopt, user=options.userOpt, wdir=options.workingdir, redir=redirect))
+            print "combine -M MaxLikelihoodFit -m {mass} {minuit} {stable}  {postfit} {user} {wdir}/tmp.root --out=out".format(
+                mass=mass, minuit=minuitopt, stable=stableopt, postfit=postfit, user=options.userOpt, wdir=options.workingdir)
+            os.system("combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {postfit} {user} {wdir}/tmp.root --out=out {redir}".format(
+                mass=mass, minuit=minuitopt, stable=stableopt, postfit=postfit, user=options.userOpt, wdir=options.workingdir, redir=redirect))
             ## change to sub-directory out and prepare formated output
             os.chdir(os.path.join(subdirectory, "out"))
             print "formating output..."
@@ -768,19 +772,23 @@ for directory in args :
             extension = 'PVAL'
         if options.stable:
             options.userOpt = options.userOpt+' --rMin -2 --rMax 2 --minimizerAlgo Minuit'
+        uncapped = ''
+        ## uncapped pvalues or significances
+        if options.uncapped :
+            uncapped = '--uncapped=1'
         ## do the calculation a la HCG
         if not options.observedOnly :
             ## calculate expected p-value
-            print "combine -M ProfileLikelihood -n {EXT}-exp --significance {pvalue} --expectSignal=1 -t -1 --toysFreq -m {mass} {user} {wdir}/tmp.root".format(
-                EXT=extension, pvalue=pvalue, mass=mass, user=options.userOpt, wdir=options.workingdir)
-            os.system("combine -M ProfileLikelihood -n {EXT}-exp --significance {pvalue} --expectSignal=1 -t -1 --toysFreq -m {mass} {user} {wdir}/tmp.root".format(
-                EXT=extension, pvalue=pvalue, mass=mass, user=options.userOpt, wdir=options.workingdir))
+            print "combine -M ProfileLikelihood -n {EXT}-exp --significance {pvalue} --expectSignal=1 -t -1 --toysFreq -m {mass} {user} {uncapped} {wdir}/tmp.root".format(
+                EXT=extension, pvalue=pvalue, mass=mass, user=options.userOpt, uncapped=uncapped, wdir=options.workingdir)
+            os.system("combine -M ProfileLikelihood -n {EXT}-exp --significance {pvalue} --expectSignal=1 -t -1 --toysFreq -m {mass} {user} {uncapped} {wdir}/tmp.root".format(
+                EXT=extension, pvalue=pvalue, mass=mass, user=options.userOpt, uncapped=uncapped, wdir=options.workingdir))
         if not options.expectedOnly :
             ## calculate expected p-value
-            print "combine -M ProfileLikelihood -n {EXT}-obs --significance {pvalue} -m {mass} {user} {wdir}/tmp.root".format(
-                EXT=extension, pvalue=pvalue, mass=mass, user=options.userOpt,  wdir=options.workingdir)
-            os.system("combine -M ProfileLikelihood -n {EXT}-obs --significance {pvalue} -m {mass} {user} {wdir}/tmp.root".format(
-                EXT=extension, pvalue=pvalue, mass=mass, user=options.userOpt,  wdir=options.workingdir))
+            print "combine -M ProfileLikelihood -n {EXT}-obs --significance {pvalue} -m {mass} {user} {uncapped} {wdir}/tmp.root".format(
+                EXT=extension, pvalue=pvalue, mass=mass, user=options.userOpt, uncapped=uncapped,  wdir=options.workingdir)
+            os.system("combine -M ProfileLikelihood -n {EXT}-obs --significance {pvalue} -m {mass} {user} {uncapped} {wdir}/tmp.root".format(
+                EXT=extension, pvalue=pvalue, mass=mass, user=options.userOpt, uncapped=uncapped,  wdir=options.workingdir))
     ##
     ## ASYMPTOTIC
     ##

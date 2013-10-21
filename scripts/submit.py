@@ -95,6 +95,8 @@ fgroup.add_option("--jobs", dest="jobs", default="100", type="string",
                   help="Set the number crab jobs that you want to submit to calculate the toy based expected significance. [Default: 100]")
 fgroup.add_option("--seed", dest="seed", default="", type="string",
                   help="Per default toys are run with a random seed. In case you want to run on pseudo toys with a well defined seed add the seed here. If \"\" this option will have no effect. [Default: \"\"]")
+fgroup.add_option("--uncapped", dest="uncapped", default=False, action="store_true",
+                  help="Use uncapped option, a la ATLAS, to allow for p-values larger than 0.5 and negatove significances in case of deficits in the data. [Default: False]")
 fgroup.add_option("--grid", dest="grid", default=False, action="store_true",
                   help="Use this option if you want to submit your jobs to the grid. Otherwise they will be submitted to lxb (lxq). [Default: False]")
 parser.add_option_group(fgroup)
@@ -408,19 +410,22 @@ if options.optSigFreq or options.optPValue :
         method = '--significance-frequentist'
     elif options.optPValue :
         method = '--pvalue'
+    uncapped = ''
+    if options.uncapped :
+        uncapped = '--uncapped'
     if options.interactive :
         for dir in args :
             mass = get_mass(dir)
             if mass == 'common' :
                 continue
             if options.printOnly :
-                print "limit.py {METHOD} {USER} {DIR}".format(METHOD=method, USER=options.opt, DIR=dir)
+                print "limit.py {METHOD} {UNCAPPED} {USER} {DIR}".format(METHOD=method, UNCAPPED=uncapped, USER=options.opt, DIR=dir)
             else :
-                os.system("limit.py {METHOD} {USER} {DIR}".format(METHOD=method, USER=options.opt, DIR=dir))
+                os.system("limit.py {METHOD} {UNCAPPED} {USER} {DIR}".format(METHOD=method, UNCAPPED=uncapped, USER=options.opt, DIR=dir))
     else :
         ## directories and mases per directory
         struct = directories(args)
-        lxb_submit(struct[0], struct[1], method, "{USER}".format(USER=options.opt))
+        lxb_submit(struct[0], struct[1], method, "{UNCAPPED} {USER}".format(UNCAPPED=uncapped, USER=options.opt))
 ##
 ## ASYMPTOTIC (with dedicated models)
 ##
