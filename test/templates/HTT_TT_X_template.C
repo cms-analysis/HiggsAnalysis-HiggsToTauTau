@@ -144,7 +144,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   const char* dataset;
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV";}
   if(std::string(inputfile).find("8TeV")!=std::string::npos){
-    if(std::string(inputfile).find("btag")!=std::string::npos){
+    if(std::string(directory).find("btag")!=std::string::npos){
       dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  18.3 fb^{-1} at 8 TeV";
     }
     else{
@@ -359,7 +359,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   cat2->Draw();
 */  
 #ifdef MSSM
-  TPaveText* massA      = new TPaveText(0.55, 0.50+0.061, 0.95, 0.50+0.161, "NDC");
+  TPaveText* massA      = new TPaveText(0.53, 0.50+0.061, 0.95, 0.50+0.161, "NDC");
   massA->SetBorderSize(   0 );
   massA->SetFillStyle(    0 );
   massA->SetTextAlign(   12 );
@@ -371,7 +371,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
   
 #ifdef MSSM
-  TLegend* leg = new TLegend(0.55, 0.65, 0.95, 0.88);
+  TLegend* leg = new TLegend(0.53, 0.65, 0.95, 0.88);
   SetLegendStyle(leg);
   leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau" , "L" );
 #else
