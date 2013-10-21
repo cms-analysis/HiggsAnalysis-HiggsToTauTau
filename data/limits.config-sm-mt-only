@@ -1,24 +1,152 @@
 [inputs]
 
+em = MIT
+et = Imperial
 mt = Imperial
-
+mm = DESY-KIT
+ee = DESY-KIT
+tt = MIT
+vhtt = VHTT
+mt_soft = LLR
 
 [sm]
 
+unblind
+
 periods = 7TeV 8TeV
-channels = mt 
+channels = mt
 
-mt_categories_7TeV = 0 1 2 3 4 5 6
-mt_categories_8TeV = 0 1 2 3 4 5 6 7
+em_categories_7TeV = 0 1 2 3 4 
+et_categories_7TeV = 1 2 3 5 6
+mt_categories_7TeV = 1 2 3 4 5 6
+mm_categories_7TeV = 0 1 2 3 4
+ee_categories_7TeV = 0 1 2 3 4
+tt_categories_7TeV = 
+vhtt_categories_7TeV = 0 1 2 3 4 5 6 7 8
+mt_soft_categories_7TeV =
 
-mt_names = 0jet_low 0jet_medium 0jet_high 1jet_medium 1jet_high_lowhiggs 1jet_high_mediumhiggs vbf_loose vbf_tight
+em_categories_8TeV = 0 1 2 3 4 5
+et_categories_8TeV = 1 2 3 5 6 7
+mt_categories_8TeV = 1 2 3 4 5 6 7
+mm_categories_8TeV = 0 1 2 3 4
+ee_categories_8TeV = 0 1 2 3 4
+tt_categories_8TeV = 0 1 2
+vhtt_categories_8TeV = 0 1 2 3 4 5 6 7 8
+mt_soft_categories_8TeV = 11 12 13 15 16
 
+et_names = 0jet_medium 0jet_high 1jet_medium 1jet_high_mediumhiggs vbf_loose vbf_tight
+mt_names = 0jet_medium 0jet_high 1jet_medium 1jet_high_lowhiggs 1jet_high_mediumhiggs vbf_loose vbf_tight
+em_names = 0jet_low 0jet_high 1jet_low 1jet_high vbf_loose vbf_tight
+ee_names = 0jet_low 0jet_high 1jet_low 1jet_high vbf
+mm_names = 0jet_low 0jet_high 1jet_low 1jet_high vbf 
+tt_names = 1jet_high_mediumhiggs 1jet_high_highhiggs vbf
+vhtt_names = mmtCatHigh,mmtCatLow emtCatHigh,emtCatLow eetCatHigh,eetCatLow mmme_zh,eeem_zh mmmt_zh,eemt_zh mmet_zh,eeet_zh mmtt_zh,eett_zh mtt ett
+mt_soft_names = soft_0jet_medium soft_0jet_high soft_1jet_medium soft_1jet_high soft_vbf
 
 [bbb-sm]
 
-threshold = 0.1
+et_threshold = 0.1
+mt_threshold = 0.1
+em_threshold = 0.1
+tt_threshold = 0.1
+mm_threshold = 0.0
+ee_threshold = 0.0
+vhtt_threshold = 0.1
 
-mt_categories_7TeV = 01,02,04,05,06
-mt_categories_8TeV = 01,02,04,05,06,07
+ee_categories_7TeV = 01,03,04
+mm_categories_7TeV = 01,03,04
+em_categories_7TeV = 01,03,04 04 04
+et_categories_7TeV = 01,02,04,05,06 06
+mt_categories_7TeV = 01,02,04,05,06 06
+tt_categories_7TeV =
+vhtt_categories_7TeV = 00,01 03,04,05,06 07,08
+mt_soft_categories_7TeV =
 
-mt_processes = ZL,ZJ,QCD>W
+ee_categories_8TeV = 01,03,04
+mm_categories_8TeV = 01,03,04
+em_categories_8TeV = 01,03,04,05 04,05 05
+et_categories_8TeV = 01,02,04,05,06,07 07
+mt_categories_8TeV = 01,02,04,05,06,07 07
+tt_categories_8TeV = 00,01,02
+vhtt_categories_8TeV = 00 03,04,05,06 07,08 01,02
+mt_soft_categories_8TeV = 10,11,12,13,15,16
+
+ee_processes = ZTT,ZEE,TTJ
+mm_processes = ZTT,ZMM,TTJ
+em_processes = Fakes EWK Ztt
+et_processes = ZL,ZJ,QCD>W ZTT
+mt_processes = ZL,ZJ,QCD>W ZTT
+tt_processes = ZTT,QCD
+vhtt_processes = fakes Zjets wz fakes,charge_fakes
+mt_soft_processes = ZL,ZJ,W>QCD
+
+
+[mssm]
+
+unblind
+
+periods = 7TeV 8TeV
+channels = em et mt mm tt
+
+em_categories_7TeV = 8 9
+et_categories_7TeV = 8 9
+mt_categories_7TeV = 8 9
+mm_categories_7TeV = 8 9
+ee_categories_7TeV = 8 9
+tt_categories_7TeV =
+
+em_categories_8TeV = 8 9
+et_categories_8TeV = 8 9
+mt_categories_8TeV = 8 9
+mm_categories_8TeV = 8 9
+ee_categories_8TeV = 8 9
+tt_categories_8TeV = 8 9
+
+em_names = nobtag btag
+et_names = nobtag btag
+mt_names = nobtag btag
+mm_names = nobtag btag
+ee_names = nobtag btag
+tt_names = nobtag btag
+
+
+[bbb-mssm]
+
+ee_threshold = 0.05
+mm_threshold = 0.05
+em_threshold = 0.05
+et_threshold = 0.05
+mt_threshold = 0.05
+tt_threshold = 0.05
+
+ee_categories_7TeV = 08,09
+mm_categories_7TeV = 08 09
+em_categories_7TeV = 08,09
+et_categories_7TeV = 08,09
+mt_categories_7TeV = 08,09
+tt_categories_7TeV =
+
+ee_categories_8TeV = 08,09
+mm_categories_8TeV = 08 09
+em_categories_8TeV = 08,09
+et_categories_8TeV = 08,09
+mt_categories_8TeV = 08,09
+tt_categories_8TeV = 08,09
+
+ee_processes = QCD,TTJ,ZTT,ZEE,WJets,Dibosons
+mm_processes = QCD,TTJ,ZTT,ZMM,WJets,Dibosons QCD,TTJ,ZTT,ZMM,Dibosons
+em_processes = Fakes,EWK,ttbar,Ztt
+et_processes = TT,QCD,ZTT,W,ZL,ZJ,VV
+mt_processes = TT,QCD,ZTT,W,ZL,ZJ,VV
+tt_processes = ZTT,TT,QCD,W,ZL,ZJ,VV
+
+
+[combination]
+
+periods = 7TeV 8TeV 7TeV_8TeV
+
+channels_sm = em et mt
+categories_sm = 0jet
+
+channels_mssm = em et mt mm tt
+categories_mssm = nobtag btag
