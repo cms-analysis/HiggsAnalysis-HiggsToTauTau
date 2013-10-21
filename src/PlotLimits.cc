@@ -76,6 +76,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   HIG_12_052_      =cfg.existsAs<bool>("HIG_12_052"      ) ? cfg.getParameter<bool>("HIG_12_052"      ) : false;
   higgs125_ =cfg.existsAs<bool>("higgs125" ) ? cfg.getParameter<bool>("higgs125" ) : false;
   outerband_=cfg.existsAs<bool>("outerband") ? cfg.getParameter<bool>("outerband") : false;
+  transparent_=cfg.existsAs<bool>("transparent") ? cfg.getParameter<bool>("transparent") : false;
 }
 
 TGraph*

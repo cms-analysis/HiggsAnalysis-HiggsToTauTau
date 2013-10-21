@@ -219,7 +219,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
 
   //CMSPrelim(dataset, extra, 0.17, 0.835);
   CMSPrelim(dataset, "", 0.18, 0.835);  
-  TPaveText* chan     = new TPaveText(0.20, 0.74+0.061, 0.32, 0.74+0.161, "NDC");
+  TPaveText* chan     = new TPaveText(0.20, 0.74+0.061, 0.32, 0.74+0.161, "tlbrNDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
   chan->SetTextAlign(   12 );
@@ -227,8 +227,9 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   chan->SetTextColor(    1 );
   chan->SetTextFont (   62 );
   chan->AddText(extra);
+  chan->AddText(category_extra);
   chan->Draw();
-
+  /*
   TPaveText* cat      = new TPaveText(0.20, 0.68+0.061, 0.32, 0.68+0.161, "NDC");
   cat->SetBorderSize(   0 );
   cat->SetFillStyle(    0 );
@@ -238,10 +239,10 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   cat->SetTextFont (   62 );
   cat->AddText(category_extra);
   cat->Draw();
-
+  */
   if(MSSM){
     float lower_bound = EWK1 ? 0.45 : 0.50;
-    TPaveText* massA      = new TPaveText(0.55, lower_bound+0.061, 0.95, lower_bound+0.161, "NDC");
+    TPaveText* massA      = new TPaveText(0.53, lower_bound+0.061, 0.95, lower_bound+0.161, "NDC");
     massA->SetBorderSize(   0 );
     massA->SetFillStyle(    0 );
     massA->SetTextAlign(   12 );
@@ -252,7 +253,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     massA->Draw();
   }    
   float lower_bound = EWK1 ? 0.60 : 0.65;
-  TLegend* leg = new TLegend(MSSM ? 0.55 : 0.50, lower_bound, 0.93, 0.90);
+  TLegend* leg = new TLegend(MSSM ? 0.53 : 0.50, lower_bound, 0.93, 0.90);
   SetLegendStyle(leg);
   if(MSSM){
     leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau", "L" );

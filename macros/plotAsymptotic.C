@@ -16,7 +16,7 @@ void
 plotAsymptotic(const char* filename, const char* channel, std::string TYPE="LIMIT", bool draw_injected_=false, double min_=0., double max_=-1., bool log_=false, std::string injectedMass_="125", std::string dataset_="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV", std::string xaxis_="m_{H} [GeV]", std::string yaxis_="95% CL limit on #sigma/#sigma_{SM}", std::string extra="", bool mssm_=false)
 {
   /*
-    TYPE can be: LIMIT, INJECTED, BG_HIGGS
+    TYPE can be: LIMIT, INJECTED, BG_HIGGS, MSSM-LOG
   */
   TFile* file = TFile::Open(filename);
   // retrieve TGraphs from file
