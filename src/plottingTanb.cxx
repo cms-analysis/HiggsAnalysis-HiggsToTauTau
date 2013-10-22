@@ -214,7 +214,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   /// add the proper legend
   TLegend* leg;
   if(log){
-    leg = new TLegend(0.68, (!higgsBands.empty() || !comparisons.empty()) ? 0.15 : 0.33, (!higgsBands.empty() || !comparisons.empty()) ? 0.93: 0.93, 0.61);
+    leg = new TLegend(0.68, (!higgsBands.empty() || !comparisons.empty()) ? 0.15 : 0.32, (!higgsBands.empty() || !comparisons.empty()) ? 0.935: 0.935, 0.61);
   }
   else{
     leg = new TLegend(0.18, (!higgsBands.empty() || !comparisons.empty()) ? 0.53 : 0.62, (!higgsBands.empty() || !comparisons.empty()) ? 0.55: 0.50, 0.89);
@@ -232,8 +232,8 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
     //leg->AddEntry(observed, "SM Higgs injected", "FL");
   }
   if(injected){
-    leg->AddEntry(injected , "SM H(125 GeV)",  "L" );
-    leg->AddEntry((TObject*)0 , "injected",  "" );
+    leg->AddEntry(injected , "SM H injected",  "L" );
+    //leg->AddEntry((TObject*)0 , "injected",  "" );
     //leg->AddEntry(innerBand, "#pm 1#sigma Asimov","F");
     //if(outerBand){ 
     //  leg->AddEntry(outerBand, "#pm 2#sigma Asimov", "F"); 
