@@ -31,9 +31,9 @@ prune-uncerts-htt.py --mass=160  --blacklist='tauTau_nobtag_8TeV_QCD,tauTau_btag
 (2b) postfit plots (in HiggsAnalysis/HiggsToTauTau/test)
 ## setup postfit plots beginning to the end
 python mlfit_and_copy.py -a mssm --skip --mA [160,350,500] --tanb [8,20,40] $CMSSW_BASE/src/LIMITS-yymmdd-mssm/bbb-mlfit/cmb/[160,350,500]
-python produce_macros.py -a mssm --mA [160,350,500] --tanb [8,20,40] --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-yymmdd
+python produce_macros.py -a mssm --mA [160,350,500] --tanb [8,20,40] --hww-signal --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-yymmdd
 python run_macros.py -a mssm --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-yymmdd
-python summary_plots.py -a mssm
+python summary_plots.py -a mssm --mA [160,350,500] --tanb [8,20,40] --hww-signal
 
 
 (3) launch/collect/plot Goodness-of-fit
