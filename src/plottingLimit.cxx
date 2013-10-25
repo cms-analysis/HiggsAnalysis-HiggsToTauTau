@@ -143,7 +143,8 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
     //leg->AddEntry(observed, "Asimov w/ H(125)",  "PL");
   }
   if(expected_injected){
-    leg->AddEntry( expected_injected , TString::Format("SM H(%s GeV) injected", injectedMass.c_str()),  "L" );
+    if(!mssm_log) leg->AddEntry( expected_injected , TString::Format("SM H(%s GeV) injected", injectedMass.c_str()),  "L" );
+    else leg->AddEntry( expected_injected , "SM H injected",  "L" );
   }
   if(injected){
     leg->AddEntry( expected , TString::Format("H(%s GeV) injected", injectedMass.c_str()),  "L" );
