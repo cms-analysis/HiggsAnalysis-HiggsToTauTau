@@ -28,110 +28,14 @@ Author: Evan K. Friis, UW Madison
 '''
 
 from RecoLuminosity.LumiDB import argparse
+from HiggsAnalysis.HiggsToTauTau.utils import get_channel_dirs
+
 import logging
 import os
 import shutil
 import subprocess
 import sys
 import re
-
-def get_channel_dirs(finalstate, category):
-    ''' Turn 'mt' + 00 -> muTau_0jet_low '''
-    fs_map = {
-        'mt'  : 'muTau',
-        'et'  : 'eleTau',
-        'em'  : 'emu',
-        'mm'  : 'mumu',
-        'ee'  : 'ee',
-        'tt'  : 'tauTau',
-        'vhtt': '',
-    }
-    cat_map = {
-        'ee' : {
-        '00' : ['0jet_low' ],
-        '01' : ['0jet_high'],
-        '02' : ['1jet_low' ],
-        '03' : ['1jet_high'],
-        '04' : ['vbf'      ],
-        '08' : ['nobtag'   ],
-        '09' : ['btag'     ],
-        },
-        'mm' : {
-        '00' : ['0jet_low' ],
-        '01' : ['0jet_high'],
-        '02' : ['1jet_low' ],
-        '03' : ['1jet_high'],
-        '04' : ['vbf'      ],
-        '08' : ['nobtag'   ],
-        '09' : ['btag'     ],
-        },
-        'em' : {
-        '00' : ['0jet_low' ],
-        '01' : ['0jet_high'],
-        '02' : ['1jet_low' ],
-        '03' : ['1jet_high'],
-        '04' : ['vbf_loose'],
-        '05' : ['vbf_tight'],
-        '08' : ['nobtag'   ],
-        '09' : ['btag'     ],
-        },
-        'et' : {
-        '00' : ['0jet_low'   ],
-        '01' : ['0jet_medium'],
-        '02' : ['0jet_high'  ],
-        '03' : ['1jet_medium'],
-        '04' : ['1jet_high_lowhiggs'],
-        '05' : ['1jet_high_mediumhiggs'],
-        '06' : ['vbf_loose'  ],
-        '07' : ['vbf_tight'  ],
-        '08' : ['nobtag'     ],
-        '09' : ['btag'       ],
-        },
-        'mt' : {
-        '00' : ['0jet_low'   ],
-        '01' : ['0jet_medium'],
-        '02' : ['0jet_high'  ],
-        '03' : ['1jet_medium'],
-        '04' : ['1jet_high_lowhiggs'],
-        '05' : ['1jet_high_mediumhiggs'],
-        '06' : ['vbf_loose'  ],
-        '07' : ['vbf_tight'  ],
-        '08' : ['nobtag'     ],
-        '09' : ['btag'       ],
-        '10' : ['soft_0jet_low'   ],
-        '11' : ['soft_0jet_medium'],
-        '12' : ['soft_0jet_high'  ],
-        '13' : ['soft_1jet_medium'],
-        '15' : ['soft_1jet_high'  ],
-        '16' : ['soft_vbf'   ],
-        },
-        'tt' : {
-        '00' : ['1jet_high_mediumhiggs'],
-        '01' : ['1jet_high_highhiggs'],
-        '02' : ['vbf'   ],
-        '08' : ['nobtag'],
-        '09' : ['btag'  ],              
-        },
-        'vhtt' : {
-        '00' : ['mmtCatHigh', 'mmtCatLow'],
-        '01' : ['emtCatHigh', 'emtCatLow'],
-        '02' : ['eetCatHigh', 'eetCatLow'],
-        '03' : ['mmme_zh', 'eeem_zh' ],
-        '04' : ['mmmt_zh', 'eemt_zh' ],
-        '05' : ['mmet_zh', 'eeet_zh' ],
-        '06' : ['mmtt_zh', 'eett_zh' ],
-        '07' : ['mtt'],
-        '08' : ['ett'],
-        },        
-    }
-    if fs_map[finalstate] == '' :
-        return cat_map[finalstate][category]
-    else :
-        combined_names = []
-        for dir in cat_map[finalstate][category] :
-            combined_names.append(fs_map[finalstate]+'_'+dir)
-        return combined_names
-
 
 def get_shape_file(sourcedir, channel, period, ana='sm'):
     # Ex: shape file for mt lives in
@@ -179,7 +83,7 @@ def add_systematics(cat_name, process, systematics, unc_conf_file, unc_val_file)
 def create_systematics(channel, category, process, period, shape_file, threshold, normalize):
     '''
     Create the bin-by-bin systematics in the shape file.
-    Returns a list oif tuples of kind [(channel name, list of added systs)]
+    Returns a list of tuples of kind [(channel name, list of added systs)]
     '''
     ## determine directories pointred to in the datacards (NB: can be more than one, e.g. in vhtt)
     channel_names = get_channel_dirs(channel, category)
@@ -231,7 +135,7 @@ def create_systematics(channel, category, process, period, shape_file, threshold
         stdout = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=sys.stderr).communicate()[0]
         added_systematics = []
         for line in stdout.split('\n'):
-            ###### add proper regex match here
+            ## add proper regex match here
             match=re.compile("CMS_v?htt")
             if line and match.search(line):
                 added_systematics.append(line.strip())
