@@ -72,13 +72,17 @@ parser.add_option_group(dgroup)
 ##
 ## LIKELIHOOD-SCAN
 ##
-egroup = OptionGroup(parser, "LIKELIHOOD-SCAN OPTIONS", "These are the command line options that can be used to configure the submission of the likelihood scan. The number of scan points the minimum and the maximum of the scan can be given. Note that the likelihood scan is only possible for the SM case with all signal contributions as single POI. At the moment there is no job splitting implemented, yet.")
+egroup = OptionGroup(parser, "LIKELIHOOD-SCAN AND MAX-LIKELIHOOD FIT OPTIONS", "These are the command line options that can be used to configure the submission of the likelihood scan. The number of scan points the minimum and the maximum of the scan can be given. Note that the likelihood scan is only possible for the SM case with all signal contributions as single POI. At the moment there is no job splitting implemented, yet.")
 egroup.add_option("--points", dest="points", default="100", type="string",
                   help="Number of scan points for the likelihood scan. [Default: 100]")
 egroup.add_option("--rMin", dest="rMin", default="-2.0", type="string",
                   help="Minimum of the scan. [Default: -2.0]")
 egroup.add_option("--rMax", dest="rMax", default="+4.0", type="string",
                   help="Maximum of the scan. [Default: +4.0]")
+egroup.add_option("--stable", dest="stable", default=False, action="store_true",
+                  help="Specify this option to run the max-likelihood fit calculation with option --stable. [Default: False]")
+egroup.add_option("--stable-old", dest="stable_old", default=False, action="store_true",
+                  help="Specify this option to run the max-likelihood fit calculation with option --stable-old. [Default: False]")
 parser.add_option_group(egroup)
 ##
 ## MULTIDIM-FIT
@@ -285,19 +289,25 @@ if options.optGoodnessOfFit :
 ## MAX-LIKELIHOOD
 ##
 if options.optMLFit :
+    stable = ''
+    if options.stable :
+        stable = '--stable'
+    elif options.stable_old :
+        stable = '--stable-old'
     if options.interactive :
         for dir in args :
             mass = get_mass(dir)
             if mass == 'common' :
                 continue
             if options.printOnly :
-                print"limit.py --max-likelihood --stable-old --rMin -5 --rMax 5 {DIR}".format(DIR=dir)
+                print"limit.py --max-likelihood {STABLE} --rMin {RMIN} --rMax {RMAX} {DIR}".format(DIR=dir, STABLE=stable, RMIN=options.rMin, RMAX=options.rMax)
             else :
-                os.system("limit.py --max-likelihood --stable-old --rMin -5 --rMax 5 {USER} {DIR}".format(USER=options.opt, DIR=dir))
+                os.system("limit.py --max-likelihood {STABLE} --rMin {RMIN} --rMax {RMAX} {USER} {DIR}".format(
+                    STABLE-stable, RMIN=options.rMin, RMAX=options.rMax, USER=options.opt, DIR=dir))
     else :
         ## directories and mases per directory
         struct = directories(args)
-        lxb_submit(struct[0], struct[1], "--max-likelihood", "--stable-old --rMin -5 --rMax 5 {USER}".format(USER=options.opt))
+        lxb_submit(struct[0], struct[1], "--max-likelihood", "{STABLE} --rMin {RMIN} --rMax {RMAX} {USER}".format(STABLE=stable, RMIN=options.rMin, RMAX=options.rMax, USER=options.opt))
 ##
 ## LIKELIHOOD-SCAN
 ##
