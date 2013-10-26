@@ -6,7 +6,6 @@ from HiggsAnalysis.HiggsToTauTau.horizontal_morphing import Morph
 from HiggsAnalysis.HiggsToTauTau.AsimovDatacard import *
 from HiggsAnalysis.HiggsToTauTau.scale2SM import RescaleSamples
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs 
-import os
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGs",
@@ -19,13 +18,15 @@ parser.add_option("--blind-datacards", dest="blind_datacards", default=False, ac
                   help="Option to blind datacards. Also needs to be turned on to inject SM to datacards. [Default: False]")
 parser.add_option("--extra-templates", dest="extra_templates", default="", type="string", help="List of extra background or signal templates which should be injected to the asimov dataset. Needs to be comma seperated list. Here used to inject SM signal into MSSM datacards. [Default: \"\"]")
 parser.add_option("--ignore-during-scaling", dest="do_not_scales", default="mm vhtt", type="string",
-                  help="List of channels, which the scaling by cross seciton times BR shoul not be applied. The list should be embraced by call-ons and separeted by whitespace or comma. [Default: \"vhtt mm\"]")
+                  help="List of channels, which the scaling by cross seciton times BR should not be applied. The list should be embraced by call-ons and separeted by whitespace or comma. [Default: \"vhtt mm\"]")
 parser.add_option("--hww-mass", dest="hww_mass", default='', type="string",
                   help="specify this option if you want to fix the hww contributions for the channels em and vhtt to a given mass. This configuration applies to hww as part of the signal. When an empty string is given the mass will be scanned. For analysis hhw-bg, where hww signal contributions are defined as background in any case mH=125 GeV willbe chosenindependent from this configuration. [Default: '']")
 parser.add_option("--hww-scale", dest="hww_scale", default='1.', type="string",
                   help="specify the scale factor for the hww contribution here. The scale factor should be relative to the SM expectation. [Default: 1.]")
-parser.add_option("--add-0jet-signal", dest="add_0jet_signal", default=False, action="store_true",
-                  help="Specify this option to add the signal in the 0jet event categories of the main channels. [Default: False]")
+parser.add_option("--new-merging", dest="new_merging", default=False, action="store_true",
+                  help="added to test the new merging introduced by Andrew. [Default: False]")
+parser.add_option("--new-merging-threshold", dest="new_merging_threshold", default="0.4", type="string",
+                  help="Threshold for the new merging by Andrew. [Default: \"0.4\"]")
 parser.add_option("--add-mutau-soft", dest="add_mutau_soft", default=False, action="store_true",
                   help="Specify this option to add the soft muon pt analysis. [Default: False]")
 parser.add_option("--update-all", dest="update_all", default=False, action="store_true",
@@ -48,8 +49,11 @@ if len(args) < 1 :
     args.append("110-145:5")
     #exit(1)
 
+import os
+import re
 import glob 
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
+from HiggsAnalysis.HiggsToTauTau.utils import get_channel_dirs
 
 ## masses
 masses = args
@@ -77,9 +81,9 @@ for chn in config.channels:
 
 ## postfix pattern for input files
 patterns = {
-    'no-bbb' : '',
-    'bbb'    : '',
-    'no-bbb:hww-sig'    : '',
+    'no-bbb'         : '',
+    'bbb'            : '',
+    'no-bbb:hww-sig' : '',
     'bbb:hww-sig'    : '',
     }
 
@@ -103,7 +107,8 @@ print "# --drop-list               :", options.drop_list
 print "# --ignore-during-scaling   :", options.do_not_scales
 print "# --hww-mass                :", 'free' if options.hww_mass == '' else options.hww_mass
 print "# --hww-scale               :", options.hww_scale
-print "# --add-0jet-signal         :", options.add_0jet_signal
+print "# --new-merging             :", options.new_merging
+print "# --new-merging-threshold   :", options.new_merging_threshold
 print "# --add-mutau-soft          :", options.add_mutau_soft
 print "# --blind-datacards         :", options.blind_datacards
 print "# --extra-templates         :", options.extra_templates
@@ -118,20 +123,6 @@ print "# Check option --help in case of doubt about the meaning of one or more o
 print "# guration parameters.                           "
 print "# --------------------------------------------------------------------------------------"
 
-## add 0jet signal to the main channels
-def add_zero_jet(path) :
-    """
-    Add signal to the 0jet event categories
-    """
-    cgs_adaptor = UncertAdaptor()
-    for channel in config.channels:
-        for period in config.periods:
-            for category in config.categories[channel][period]:
-                if '0jet' in config.categoryname[channel][config.categories[channel][period].index(category)]:
-                    filename="{PATH}/{CHANNEL}/cgs-sm-{PERIOD}-{CATEGORY}.conf".format(PATH=path, CHANNEL=channel, PERIOD=period, CATEGORY=category if int(category)>9 else '0'+category)
-                    print 'processing file:', filename
-                    cgs_adaptor.cgs_processes(filename,['ggH','qqH','VH'])
-
 ## setup main directory 
 setup="{CMSSW_BASE}/src/.setup{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
 
@@ -143,7 +134,7 @@ if options.update_setup :
     if os.path.exists("{CMSSW_BASE}/src/.setup{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)):
         os.system("rm -r {CMSSW_BASE}/src/.setup{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label))
     os.system("cp -r {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup {CMSSW_BASE}/src/.setup{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label))
-
+    ## copy all input files in question and nothing else by these
     for chn in config.channels :
         print "... copy files for channel:", chn
         ## remove legacy
@@ -175,8 +166,8 @@ if options.update_setup :
                         DIR=config.inputs['mt_soft'],
                         SOURCE=file,
                         SETUP=setup
-                        ))
-                    
+                        ))                    
+    ## hadd all single vhtt channels in combined files for 7TeV and 8TeV. Remove all junk afterwards.
     if 'vhtt' in config.channels :
         for per in config.periods :
             if directories['vhtt'][per] == 'None' :
@@ -194,6 +185,7 @@ if options.update_setup :
                         PER=per,
                         PATTERN=pattern
                         ))
+    ## hadd musoft into the combined mt inputs files and remove junk afterwards.
     if 'mt' in config.channels and options.add_mutau_soft:
         os.system("hadd {SETUP}/mt/htt_mt.inputs-sm-8TeV-bak.root {SETUP}/mt/htt_mt.inputs-sm-8TeV.root {SETUP}/mt/htt_mt.inputs-sm-8TeV-soft.root".format(SETUP=setup))
         os.system("mv {SETUP}/mt/htt_mt.inputs-sm-8TeV-bak.root {SETUP}/mt/htt_mt.inputs-sm-8TeV.root".format(SETUP=setup))
@@ -204,13 +196,14 @@ if options.update_setup :
         template_morphing.run()
         template_morphing = Morph(file, 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose', 'qqH_hww{MASS}', 'CMS_scale_e_7TeV', '140,150', 5, True,'', '') 
         template_morphing.run()
-    ## scale to SM cross section (main processes and all channels tbu those listed in do_not_scales)
+    ## scale to SM cross section (main processes and all channels but those listed in do_not_scales)
     for chn in config.channels :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
-            ## vhtt is NOT scaled to 1pb. So nothing needs to be doen here
             if not chn in do_not_scales :
                 if chn == 'vhtt':
-                    process = RescaleSamples(file, ['VH', 'WH', 'ZH'], masspoints)
+                    ## vhtt is part of do_no_scale in the current configuration. So nothing will
+                    ## happen here fro the moment.
+                    process = RescaleSamples(file, ['VH' , 'WH' , 'ZH'], masspoints)
                     process.rescale()
                 else:
                     process = RescaleSamples(file, ['ggH', 'qqH', 'VH'], masspoints)
@@ -237,7 +230,7 @@ if options.update_setup :
             '140' : 0.50300/0.0354*3*0.108*3*0.108,
             '145' : 0.60200/0.0261*3*0.108*3*0.108,
             }
-        ## multiply with proper xsec and correct for proper BR everywhere, where any of the above processes occurs
+        ## multiply with proper xsec and correct for proper BR everywhere, where any of the above processes occur
         if any('hww-sig' in ana for ana in analyses):
             for file in glob.glob("{SETUP}/em/*inputs-sm-*.root".format(SETUP=setup)) :
                 process = RescaleSamples(file, hww_processes, masspoints)
@@ -279,8 +272,6 @@ if options.update_setup :
             print "##"
             print "## update no-bbb directory in setup:"
             print "##"
-            if options.add_0jet_signal :
-                add_zero_jet(dir+'/'+ana)
         ##
         ## BIN-BY-BIN
         ##
@@ -288,18 +279,30 @@ if options.update_setup :
             print "##"
             print "## update bbb    directory in setup:"
             print "##"    
-            if options.add_0jet_signal :
-                add_zero_jet(dir+'/'+ana)
             for chn in config.channels:
                 for per in config.periods:
                     for idx in range(len(config.bbbcat[chn][per])):
+                        if options.new_merging :
+                            filename='vhtt.inputs-sm-'+per+'.root' if chn == vhtt else 'htt_'+chn+'.inputs-sm-'+per+'.root'
+                            for cat in config.bbbcat[chn][per][idx].split(',') :
+                                ## loop all categories in question for index idx
+                                if len(config.bbbproc[chn][idx].replace('>',',').split(','))>1 :
+                                    ## only get into action if there is more than one sample to do the merging for
+                                    os.system("merge_bin_errors.py --folder {DIR} --processes {PROC} --bbb_threshold=0. --merge_threshold={THRESH} --verbose {SOURCE} {TARGET}".format(
+                                        ## this list has only one entry by construction
+                                        DIR=get_channel_dirs(chn, cat)[0],
+                                        PROC=config.bbbproc[chn][idx].replace('>',','),
+                                        THRESH=options.new_merging_threshold,
+                                        SOURCE=dir+'/'+ana+'/'+chn+'/'+filename,
+                                        TARGET=dir+'/'+ana+'/'+chn+'/'+filename,
+                                        ))
                         os.system("add_bbb_errors.py '{CHN}:{PER}:{CAT}:{PROC}' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold {THR}".format(
                             DIR=dir,
                             ANA=ana,
                             CHN=chn,
                             PER=per,
                             CAT=config.bbbcat[chn][per][idx],
-                            PROC=config.bbbproc[chn][idx],
+                            PROC=config.bbbproc[chn][idx].replace('>',',') if options.new_merging else config.bbbproc[chn][idx],
                             THR=config.bbbthreshold[chn]
                             ))
                         os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
