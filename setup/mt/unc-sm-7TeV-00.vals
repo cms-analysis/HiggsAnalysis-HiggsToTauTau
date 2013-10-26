@@ -20,8 +20,7 @@ muTau_0jet_low        	        VV				CMS_scale_j_7TeV				0.97
 muTau_0jet_low	 		signal,ZL,ZJ	   		CMS_htt_scale_met_7TeV				1.05
 muTau_0jet_low	 		TT		    		CMS_htt_scale_met_7TeV				1.07
 muTau_0jet_low	 		VV    				CMS_htt_scale_met_7TeV				1.07
-muTau_0jet_low			signal,ZJ,ZL,TT,VV 		CMS_eff_b_7TeV 					0.99
-muTau_0jet_low			signal,ZJ,ZL,TT,VV 		CMS_fake_b_7TeV 				0.99
+muTau_0jet_low			TT 				CMS_eff_b_7TeV 					0.90
 muTau_0jet_low			ZTT,ZL,ZJ			CMS_htt_zttNorm_7TeV 				1.03
 muTau_0jet_low			TT				CMS_htt_ttbarNorm_7TeV				1.08
 muTau_0jet_low			W				CMS_htt_WNorm_mutau_0jet_low_7TeV 		1.20
