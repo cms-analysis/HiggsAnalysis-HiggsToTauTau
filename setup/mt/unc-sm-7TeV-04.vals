@@ -21,8 +21,8 @@ muTau_1jet_high_lowhiggs      	VV				CMS_scale_j_7TeV 					1.04
 muTau_1jet_high_lowhiggs	signal,ZJ,ZL	    		CMS_htt_scale_met_7TeV					1.05
 muTau_1jet_high_lowhiggs	TT		    		CMS_htt_scale_met_7TeV					1.07
 muTau_1jet_high_lowhiggs	VV		    		CMS_htt_scale_met_7TeV					1.07
-muTau_1jet_high_lowhiggs	signal,ZJ,ZL,TT,VV	        CMS_eff_b_7TeV		        			0.98
-muTau_1jet_high_lowhiggs	signal,ZJ,ZL,TT,VV	        CMS_fake_b_7TeV		        			0.99
+muTau_1jet_high_lowhiggs	TT	        		CMS_eff_b_7TeV		        			0.90
+muTau_1jet_high_lowhiggs	VV	        		CMS_eff_b_7TeV		        			0.98
 muTau_1jet_high_lowhiggs	ZTT,ZJ,ZL			CMS_htt_zttNorm_7TeV 					1.03
 muTau_1jet_high_lowhiggs      	ZTT				CMS_htt_extrap_ztt_mutau_1jet_high_lowhiggs_7TeV	1.05
 muTau_1jet_high_lowhiggs	TT				CMS_htt_ttbarNorm_7TeV					1.08

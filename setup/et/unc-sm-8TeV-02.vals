@@ -24,8 +24,7 @@ eleTau_0jet_high	signal	   			CMS_htt_scale_met_8TeV				1.01
 eleTau_0jet_high	ZL   				CMS_htt_scale_met_8TeV				1.02
 eleTau_0jet_high	TT		    		CMS_htt_scale_met_8TeV				1.04
 eleTau_0jet_high	W    				CMS_htt_scale_met_8TeV				1.01
-#eleTau_0jet_high	signal,ZL,ZJ,TT,VV 		CMS_eff_b_8TeV 					1.00
-#elaTau_0jet_high	signal,ZL,ZJ,TT,VV 		CMS_fake_b_8TeV 				1.00
+eleTau_0jet_high	TT 				CMS_eff_b_8TeV 					0.96
 eleTau_0jet_high	ZTT,ZL,ZJ			CMS_htt_zttNorm_8TeV 				1.03
 eleTau_0jet_high        ZTT				CMS_htt_extrap_ztt_etau_0jet_high_8TeV		1.05
 eleTau_0jet_high	TT				CMS_htt_ttbarNorm_8TeV				1.10

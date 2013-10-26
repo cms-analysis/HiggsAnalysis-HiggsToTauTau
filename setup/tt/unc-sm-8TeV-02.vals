@@ -16,9 +16,7 @@ tauTau_vbf         		TT				CMS_scale_j_8TeV			1.02
 tauTau_vbf         		VV				CMS_scale_j_8TeV			1.08
 tauTau_vbf         		ZL,ZJ				CMS_scale_j_8TeV			1.03
 tauTau_vbf         		W				CMS_htt_scale_met_8TeV			1.015
-tauTau_vbf			VV	        		CMS_eff_b_8TeV		        	0.99
-tauTau_vbf			TT	        		CMS_eff_b_8TeV		        	0.925
-tauTau_vbf			signal,ZJ,ZL,TT,VV	        CMS_fake_b_8TeV		        	0.99
+tauTau_vbf			TT	        		CMS_eff_b_8TeV		        	0.93
 tauTau_vbf			TT	        		CMS_fake_b_8TeV		        	0.96
 tauTau_vbf         		ZTT				CMS_htt_extrap_ztt_tautau_vbf_8TeV   	1.10
 tauTau_vbf         		QCD			   	CMS_htt_QCDSyst_tautau_vbf_8TeV		1.35

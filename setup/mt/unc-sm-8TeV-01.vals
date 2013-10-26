@@ -19,11 +19,9 @@ muTau_0jet_medium        	        VH				CMS_scale_j_8TeV				0.96
 muTau_0jet_medium        	        TT				CMS_scale_j_8TeV				0.95
 muTau_0jet_medium        	        VV,ZJ				CMS_scale_j_8TeV				0.98
 muTau_0jet_medium        	        ZL				CMS_scale_j_8TeV				0.99
-#muTau_0jet_medium	 		signal,ZL,ZJ	   		CMS_htt_scale_met_8TeV				1.00 
 muTau_0jet_medium	 		TT		    		CMS_htt_scale_met_8TeV				1.05
 muTau_0jet_medium	 		W	    			CMS_htt_scale_met_8TeV				1.01
-#muTau_0jet_medium			signal,ZJ,ZL,TT,VV 		CMS_eff_b_8TeV 					1.00
-#muTau_0jet_medium			signal,ZJ,ZL,TT,VV 		CMS_fake_b_8TeV 				1.00
+muTau_0jet_medium			TT 				CMS_eff_b_8TeV 					0.98
 muTau_0jet_medium			ZTT,ZL,ZJ			CMS_htt_zttNorm_8TeV 				1.03
 muTau_0jet_medium         		ZTT				CMS_htt_extrap_ztt_mutau_0jet_medium_8TeV	1.05
 muTau_0jet_medium			TT				CMS_htt_ttbarNorm_8TeV				1.10
