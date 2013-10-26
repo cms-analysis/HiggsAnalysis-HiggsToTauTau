@@ -57,7 +57,7 @@ def walk_and_copy(inputdir, outputdir, folder, processes, bbb_threshold, merge_t
       for ibin in range(1, hist_map[0][1].GetNbinsX()+1):
         log.debug("==== Bin %(ibin)s" % vars())
         # tot_bbb_added is the sum of squared bin errors for all
-        # bacgrounds in the list that pass the bbb_threshold
+        # backgrounds in the list that pass the bbb_threshold
         tot_bbb_added = 0.
         # In this first pass just count the total squared error
         for bkg in hist_map: 
