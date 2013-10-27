@@ -773,7 +773,7 @@ for directory in args :
         ## add a stable option to significance of pvalue calculation
         stable = ''
         if options.stable:
-            stable = ' --rMin=-2 --rMax=2 --minimizerAlgo Minuit'
+            stable = ' --rMin=-2 --rMax=2 --minimizerAlgo Minuit --minimizerTolerance=0.05 '
         uncapped = ''
         ## uncapped pvalues or significances
         if options.uncapped :
