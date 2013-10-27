@@ -23,7 +23,7 @@ Usually needed plots are:
 cp uncertainty-pruning-drop-yymmdd-sm.txt $PWD/auxiliaries/pruning/uncertainty-pruning-drop-yymmdd-sm.txt
 
 (2) setup limit structure:
-python HiggsAnalysis/HiggsToTauTau/scripts/doSM.py --label='-yymmdd-sm' --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-yymmdd-sm.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd" --update-all
+python HiggsAnalysis/HiggsToTauTau/scripts/doSM.py --label='-yymmdd-sm' --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-yymmdd-sm.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-sm-yymmdd" --update-all [--new-merging --new-merging-threshold=0.4]
 
 (3) run goodness-of-fit:
 ## calculation and plotting
