@@ -15,10 +15,11 @@ parser.add_option("--shapes-mm-special", dest="shapes_mm_special", default="0", 
 parser.add_option("--mA", dest="mA", default="160", type="float", help="Mass of pseudoscalar mA only needed for mssm. [Default: '160']")
 parser.add_option("--tanb", dest="tanb", default="8", type="float", help="Tanb only needed for mssm. [Default: '8']")
 parser.add_option("-u", "--uncertainties", dest="uncertainties", default="1", type="int", help="Set uncertainties of backgrounds. [Default: '1']")
+parser.add_option("-o", "--omit", dest="omit", default="0", type="int", help="Do not include uncertainty from original file. [Default: '0']")
 parser.add_option("--asimov", dest="asimov", action="store_true", default=False, help="Use asimov dataset for postfit-plots. [Default: 'False']")
-parser.add_option("--add-0jet-signal", dest="add_zero_jet", action="store_true", default=False, help="Add signal in the 0-jet event category of the mt, et, em channels [Default: False]")
+parser.add_option("--no-0jet-signal", dest="no_zero_jet", action="store_false", default=False, help="Add signal in the 0-jet event category of the mt, et, em channels [Default: False]")
 parser.add_option("--add-mutau-soft", dest="add_mutau_soft", action="store_true", default=False, help="Add the soft categories to the mt channel [Default: False]")
-parser.add_option("--hww-background", dest="hwwbg", action="store_true", default=False, help="Add H->WW processes as background to the em channel [Default: False]")
+parser.add_option("--hww-signal", dest="hwwsig", action="store_true", default=False, help="Add H->WW processes as background to the em channel [Default: False]")
 parser.add_option("-v", "--verbose", dest="verbose", action="store_true", default=False, help="Run in verbose more. [Default: 'False']")
 parser.add_option("-c", "--config", dest="config", default="", help="Additional configuration file for the channels, periods and categories. [Default: '']")
 
@@ -101,10 +102,9 @@ class Analysis:
         return False
 
     def drop_signal(self, category) :
-        if options.add_zero_jet :
-            return False
-        if '0jet' in category :
-            return True
+        if options.no_zero_jet:
+            if '0jet' in category:
+                return True
         return False
         
     def run(self):
@@ -124,7 +124,7 @@ class Analysis:
              line = line.replace("$DEFINE_ASIMOV", "#define ASIMOV" if options.asimov else "")
              line = line.replace("$DEFINE_MSSM", "#define MSSM" if self.analysis == "mssm" else "")
              line = line.replace("$DEFINE_DROP_SIGNAL", "#define DROP_SIGNAL" if self.drop_signal(self.category) else "")
-             line = line.replace("$DEFINE_HWWBG", "#define HWW_BG" if options.hwwbg else "")
+             line = line.replace("$DEFINE_HWWBG", "#define HWW_BG" if not options.hwwsig else "")
              line = line.replace("$BLIND", "false" if config.unblind else "true")
              line = line.replace("$DEFINE_EXTRA_SAMPLES", "#define EXTRA_SAMPLES" if self.high_stat_category(self.category) else "")
              line = line.replace(template_name, output_name)
@@ -230,7 +230,7 @@ class Analysis:
                              value = (hist.GetBinContent(bin)-hist_down.GetBinContent(bin))/hist.GetBinWidth(bin)
 			 if value!=0:
 		             print_me  = '''std::cout << "scaling bin %(bin)i by %(shift)f %(name)s" << std::endl;''' % {"bin":bin, "shift":shift, "name":shape_name}
-		             out_line  = print_me+"hin->SetBinContent(%(bin)i,hin->GetBinContent(%(bin)i)+%(value)f); \n" % {"bin":bin, "value":value*shift}
+		             out_line = print_me+"hin->SetBinContent(%(bin)i,hin->GetBinContent(%(bin)i)+%(value)f); \n" % {"bin":bin, "value":value*shift}
 			 if options.uncertainties:
 			   if self.process_shape_uncertainties[curr_name][shape_name]>0.99 and self.process_shape_weight[curr_name][shape_name]==0:
 			       if options.verbose:
@@ -240,9 +240,11 @@ class Analysis:
 			       print "WARNING: There is a bin-by-bin uncertainty larger than 100%. Make sure there is no problem with the bin-by-bin uncertainties in the root file",histfile,"in",self.analysis,self.category,". Please check:",shape_name,"bin-down:",hist_down.GetBinContent(bin),"bin-center:",hist.GetBinContent(bin),"bin-up:",hist_up.GetBinContent(bin)
 		           if not process_name+str(bin) in uncertainties_set:
    		               uncertainties_set+=[process_name+str(bin)]
-                               out_line  += "hin->SetBinError(%(bin)i,%(uncertainty)f); \n" % {"bin":bin, "uncertainty":uncertainty}
+                               if not options.omit:
+                                   out_line  += "hin->SetBinError(%(bin)i,%(uncertainty)f); \n" % {"bin":bin, "uncertainty":uncertainty}
 			   elif uncertainty!=0:
-                               out_line  += "hin->SetBinError(%(bin)i,sqrt(pow(hin->GetBinError(%(bin)i),2)+pow(%(uncertainty)f,2))); \n" % {"bin":bin, "uncertainty":uncertainty}
+                               if not options.omit:
+                                   out_line  += "hin->SetBinError(%(bin)i,sqrt(pow(hin->GetBinError(%(bin)i),2)+pow(%(uncertainty)f,2))); \n" % {"bin":bin, "uncertainty":uncertainty}
                          output_file.write(out_line)
                          if options.verbose :
                              if out_line :
@@ -252,6 +254,12 @@ class Analysis:
 	     else:
                  output_file.write("break; \n")
                  
+
+
+
+
+
+################
 
 config=configuration(options.analysis, options.config, options.add_mutau_soft)
 fitresults = options.fitresults.format(ANALYSIS=options.analysis)

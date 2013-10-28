@@ -84,6 +84,33 @@ TH1F* refill(TH1F* hin, const char* sample, bool data=false)
   return hout;
 }
 
+TH1F* shape_histos(TH1F* hin, const TString datacard, const TString name)
+/*
+  use the proper histograms and errors including shpae uncertainties as provided by combine
+*/
+{
+  TH1F* hout = (TH1F*)hin->Clone(); hout->Clear();
+  TFile* mlfit = new TFile("fitresults/mlfit.root", "READ");
+  TH1F* shape = (TH1F*)mlfit->Get(TString("shapes_fit_s/").Append(datacard).Append("/").Append(name)); // currently problems with data and hioggsprocesses -> different name
+
+  if(shape==0) std::cout << " No histogram found for " << name << std::endl;
+
+  //  for(int i=0; i<hout->GetNbinsX(); ++i)
+  for(int i=1; i<hout->GetNbinsX()+1; i++)
+  {
+
+    Float_t Norig = hin->GetBinContent(i)*hin->GetBinWidth(i);
+    Float_t Nshape = shape->GetBinContent(i);
+    Float_t scale_err = (Nshape==0) ? 1 : Norig/Nshape;
+
+    //    hout->SetBinContent(i,shape->GetBinContent(i));
+    hout->SetBinContent(i,hin->GetBinContent(i)*hin->GetBinWidth(i));
+    hout->SetBinError(i,shape->GetBinError(i)*scale_err);
+  }
+  mlfit->Close();
+  return hout;
+}
+
 void rescale(TH1F* hin, unsigned int idx)
 /*
   rescale histograms according to fit results. The keywords like $Ztt will be replaced 
@@ -131,7 +158,8 @@ void rescale(TH1F* hin, unsigned int idx)
 }
 
 void 
-HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string inputfile="root/$HISTFILE", const char* directory="muTau_$CATEGORY")
+//HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string inputfile="root/$HISTFILE", const char* directory="muTau_$CATEGORY")
+HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString datacard="htt_mt_1_7TeV", string inputfile="root/$HISTFILE", const char* directory="muTau_$CATEGORY")
 {
   // defining the common canvas, axes pad styles
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
@@ -230,7 +258,52 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
 #endif
 
+
   if(scaled){
+
+//  TH1F* EWK1   = refill((TH1F*)input->Get(TString::Format("%s/W"       , directory)), "W"  ); InitHist(EWK1 , "", "", kRed    + 2, 1001);
+//#ifdef EXTRA_SAMPLES
+//  TH1F* EWK2   = refill((TH1F*)input->Get(TString::Format("%s/ZJ"      , directory)), "ZJ" ); InitHist(EWK2 , "", "", kRed    + 2, 1001);
+//  TH1F* EWK3   = refill((TH1F*)input->Get(TString::Format("%s/ZL"      , directory)), "ZL" ); InitHist(EWK3 , "", "", kRed    + 2, 1001);
+//#else
+//  TH1F* EWK2   = refill((TH1F*)input->Get(TString::Format("%s/ZLL"     , directory)), "ZLL"); InitHist(EWK2 , "", "", kRed    + 2, 1001);
+//#endif
+//  TH1F* EWK    = refill((TH1F*)input->Get(TString::Format("%s/VV"      , directory)), "VV" ); InitHist(EWK  , "", "", kRed    + 2, 1001);
+//  TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/TT"      , directory)), "TT" ); InitHist(ttbar, "", "", kBlue   - 8, 1001);
+//  TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/ZTT"     , directory)), "ZTT"); InitHist(Ztt  , "", "", kOrange - 4, 1001);
+//#ifdef MSSM
+//  TH1F* ggH    = refill((TH1F*)input2->Get(TString::Format("%s/ggH$MA" , directory)), "ggH"); InitSignal(ggH); ggH->Scale($TANB);
+//  TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA" , directory)), "bbH"); InitSignal(bbH); bbH->Scale($TANB);
+//#else
+//#ifndef DROP_SIGNAL
+//  TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125"  , directory)), "ggH"); InitSignal(ggH); ggH->Scale(SIGNAL_SCALE);
+//  TH1F* qqH    = refill((TH1F*)input->Get(TString::Format("%s/qqH125"  , directory)), "qqH"); InitSignal(qqH); qqH->Scale(SIGNAL_SCALE);
+//  TH1F* VH     = refill((TH1F*)input->Get(TString::Format("%s/VH125"   , directory)), "VH" ); InitSignal(VH ); VH ->Scale(SIGNAL_SCALE);
+//#endif
+
+
+  Fakes = refill(shape_histos(Fakes, datacard, "QCD"), "QCD");
+  EWK1 = refill(shape_histos(EWK1, datacard, "W"), "W"); 
+#ifdef EXTRA_SAMPLES
+  EWK2 = refill(shape_histos(EWK2, datacard, "ZJ"), "ZJ");
+  EWK3 = refill(shape_histos(EWK3, datacard, "ZL"), "ZL");
+#else
+  //  EWK2 = refill(shape_histos(EWK2, datacard, "ZLL"), "ZLL");
+#endif
+  EWK = refill(shape_histos(EWK, datacard, "VV"), "VV");
+  ttbar = refill(shape_histos(ttbar, datacard, "TT"), "TT");
+  Ztt = refill(shape_histos(Ztt, datacard, "ZTT"), "ZTT");
+#ifdef MSSM
+    ggH = refill(shape_histos(ggH, datacard, "ggH$MA"), "ggH$MA"); 
+    bbH = refill(shape_histos(bbH, datacard, "bbH$MA"), "bbH$MA"); 
+#else
+#ifndef DROP_SIGNAL
+    ggH = refill(shape_histos(ggH, datacard, "ggH"), "ggH"); 
+    qqH = refill(shape_histos(qqH, datacard, "qqH"), "qqH"); 
+    VH = refill(shape_histos(VH, datacard, "VH"), "VH"); 
+#endif  
+#endif
+
     rescale(Fakes, 7); 
     rescale(EWK1 , 3); 
     rescale(EWK2 , 4); 

@@ -85,6 +85,34 @@ TH1F* refill(TH1F* hin, const char* sample, bool data=false)
   return hout;
 }
 
+TH1F* shape_histos(TH1F* hin, const TString datacard, const TString name)
+/*
+  use the proper histograms and errors including shpae uncertainties as provided by combine
+*/
+{
+  TH1F* hout = (TH1F*)hin->Clone(); hout->Clear();
+  TFile* mlfit = new TFile("fitresults/mlfit.root", "READ");
+  TH1F* shape = (TH1F*)mlfit->Get(TString("shapes_fit_s/").Append(datacard).Append("/").Append(name)); // currently problems with data and hioggsprocesses -> different name
+
+  if(shape==0) std::cout << " No histogram found for " << name << std::endl;
+
+  //  for(int i=0; i<hout->GetNbinsX(); ++i)
+  for(int i=1; i<hout->GetNbinsX()+1; i++)
+  {
+
+    Float_t Norig = hin->GetBinContent(i)*hin->GetBinWidth(i);
+    Float_t Nshape = shape->GetBinContent(i);
+    Float_t scale_err = (Nshape==0) ? 1 : Norig/Nshape;
+
+    //    hout->SetBinContent(i,shape->GetBinContent(i));
+    hout->SetBinContent(i,hin->GetBinContent(i)*hin->GetBinWidth(i));
+    hout->SetBinError(i,shape->GetBinError(i)*scale_err);
+  }
+  mlfit->Close();
+  return hout;
+}
+
+
 void rescale(TH1F* hin, unsigned int idx)
 /*
   rescale histograms according to fit results. The keywords like $Ztt will be replaced 
@@ -132,7 +160,8 @@ void rescale(TH1F* hin, unsigned int idx)
 }
 
 void 
-HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string inputfile="root/$HISTFILE", const char* directory="eleTau_$CATEGORY")
+//HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string inputfile="root/$HISTFILE", const char* directory="eleTau_$CATEGORY")
+HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString datacard="htt_et_1_7TeV", string inputfile="root/$HISTFILE", const char* directory="eleTau_$CATEGORY")
 {
   // defining the common canvas, axes pad styles
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
@@ -231,6 +260,30 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
 
   if(scaled){
+
+    Fakes = refill(shape_histos(Fakes, datacard, "QCD"), "QCD");
+    EWK0 = refill(shape_histos(EWK0, datacard, "VV"), "VV"); 
+    EWK1 = refill(shape_histos(EWK1, datacard, "W"), "W"); 
+#ifdef EXTRA_SAMPLES
+    EWK2 = refill(shape_histos(EWK2, datacard, "ZJ"), "ZJ");
+    EWK = refill(shape_histos(EWK, datacard, "ZL"), "ZL");
+#else
+    //    EWK = refill(shape_histos(EWK, datacard, "ZLL"), "ZLL");
+#endif
+    ttbar = refill(shape_histos(ttbar, datacard, "TT"), "TT");
+    Ztt = refill(shape_histos(Ztt, datacard, "ZTT"), "ZTT");
+#ifdef MSSM
+    ggH = refill(shape_histos(ggH, datacard, "ggH$MA"), "ggH$MA"); 
+    bbH = refill(shape_histos(bbH, datacard, "bbH$MA"), "bbH$MA"); 
+#else
+#ifndef DROP_SIGNAL
+    ggH = refill(shape_histos(ggH, datacard, "ggH"), "ggH"); 
+    qqH = refill(shape_histos(qqH, datacard, "qqH"), "qqH"); 
+    VH = refill(shape_histos(VH, datacard, "VH"), "VH"); 
+#endif  
+#endif
+
+
     rescale(Fakes, 7); 
     rescale(EWK0 , 6); 
     rescale(EWK1 , 3); 
@@ -647,6 +700,8 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   output->cd();
   data ->Write("data_obs");
   Fakes->Write("Fakes"   );
+  //  EWK  ->Write("Zee"     );
+  //  EWK1 ->Write("EWK"    );
   EWK  ->Write("EWK"     );
   EWK1 ->Write("EWK1"    );
   ttbar->Write("ttbar"   );
