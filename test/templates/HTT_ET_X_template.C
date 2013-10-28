@@ -163,8 +163,13 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   if(std::string(directory) == std::string("eleTau_btag"                 )){ category_extra = "B-Tag";                           }
 
   const char* dataset;
+#ifdef MSSM
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV";}
   if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 19.7 fb^{-1} at 8 TeV";}
+#else
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS,  H#rightarrow#tau#tau, 19.7 fb^{-1} at 8 TeV";}
+#endif
   
   TFile* input = new TFile(inputfile.c_str());
 #ifdef MSSM
