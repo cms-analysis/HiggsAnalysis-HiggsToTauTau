@@ -73,9 +73,8 @@ void adjustUncerts(TH1F* hist){
   }
 }
 
-void randomize(TH1F* hist, unsigned int seed, unsigned int debug=0.)
+void randomize(TRandom3* rnd, TH1F* hist, unsigned int debug=0.)
 {
-  TRandom3* rnd = new TRandom3(); rnd->SetSeed(seed);
   for(int idx=0; idx<hist->GetNbinsX(); ++idx){
     float value = rnd->Poisson(hist->GetBinContent(idx+1));
     // --------------------------------- DEBUG > 2 ------------------------------- //
@@ -84,7 +83,6 @@ void randomize(TH1F* hist, unsigned int seed, unsigned int debug=0.)
   }
   // make sure there is no rounding error, and the total is really an integer.
   hist->Scale(TMath::Nint(hist->Integral())/hist->Integral());
-  delete rnd;
 }
 
 bool inPatterns(const std::string& test, const char* patterns)
@@ -101,7 +99,7 @@ bool inPatterns(const std::string& test, const char* patterns)
 }
 
 void
-blinding(TFile* inputFile, TFile* outputFile, std::string dir, std::string hist, std::vector<std::string> samples, const char* signal_patterns, double signal_scale, int rnd, bool armed, unsigned int debug)
+blinding(TRandom3* rnd, TFile* inputFile, TFile* outputFile, std::string dir, std::string hist, std::vector<std::string> samples, const char* signal_patterns, double signal_scale, bool armed, unsigned int debug)
 {
   if(!dir.empty()){ dir+='/'; }
   TH1F* buffer = (TH1F*)inputFile->Get((dir+hist).c_str());
@@ -134,10 +132,10 @@ blinding(TFile* inputFile, TFile* outputFile, std::string dir, std::string hist,
   else{
     std::cout << "INFO  : Data are not blinded." << std::endl;
   }
-  if(rnd>=0){
+  if(rnd){
     // randomize histogram; this will automatically have integer integral
     std::cout << "-- R A N D O M I Z I N G --" << std::endl;
-    randomize(blind_data_obs, rnd, debug);
+    randomize(rnd, blind_data_obs, debug);
   }
   else{
     // use expected mean with signal injected
@@ -162,9 +160,14 @@ blinding(TFile* inputFile, TFile* outputFile, std::string dir, std::string hist,
   }
 }
 
-
-void blindData(const char* filename, const char* background_patterns="Fakes, EWK, ttbar, Ztt", const char* signal_patterns="ggH125, qqH125, VH125", const char* directory_patterns="*", bool armed=false, int rnd=-1, float signal_scale=1., const char* outputLabel="", const char* data_obs="data_obs", unsigned int debug=1)
+void blindData(const char* filename, const char* background_patterns="Fakes, EWK, ttbar, Ztt", const char* signal_patterns="ggH125, qqH125, VH125", const char* directory_patterns="*", bool armed=false, int seed=-1, float signal_scale=1., const char* outputLabel="", const char* data_obs="data_obs", unsigned int debug=1)
 {
+  /// init random seed
+  TRandom3* rnd = 0;
+  if(seed>0){
+    rnd = new TRandom3(); 
+    rnd->SetSeed(seed);
+  }
   /// prepare input parameters
   std::vector<std::string> signals;
   string2Vector(cleanupWhitespaces(signal_patterns), signals);
@@ -198,15 +201,16 @@ void blindData(const char* filename, const char* background_patterns="Fakes, EWK
       }
       if(inputFile->GetDirectory(idir->GetName())){
 	inputFile->cd(idir->GetName()); // change to sub-directory
-	blinding(inputFile, outputFile, idir->GetName(), data_obs, samples, signal_patterns, signal_scale, rnd, armed, debug);
+	blinding(rnd, inputFile, outputFile, idir->GetName(), data_obs, samples, signal_patterns, signal_scale, armed, debug);
       }
     }
   }
-  blinding(inputFile, outputFile, "", data_obs, samples, signal_patterns, signal_scale, rnd, armed, debug);
+  blinding(rnd, inputFile, outputFile, "", data_obs, samples, signal_patterns, signal_scale, armed, debug);
   inputFile->Close();
   if(outputFile){
     outputFile->Close();
   }
+  if(rnd){ delete rnd; }
   return;
 }
 
