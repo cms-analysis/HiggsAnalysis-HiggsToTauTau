@@ -24,6 +24,7 @@ muTau_vbf_loose         ZJ				CMS_scale_j_8TeV				1.10
 muTau_vbf_loose   	signal	    			CMS_htt_scale_met_8TeV				0.99
 muTau_vbf_loose   	ZL,ZJ	    			CMS_htt_scale_met_8TeV				1.03
 muTau_vbf_loose	   	TT,W		    		CMS_htt_scale_met_8TeV				1.04
+muTau_vbf_loose		TT	        		CMS_eff_b_8TeV		        		0.94
 muTau_vbf_loose		ZTT,ZL,ZJ			CMS_htt_zttNorm_8TeV 				1.03
 muTau_vbf_loose		TT				CMS_htt_ttbarNorm_8TeV				1.08
 muTau_vbf_loose		TT				CMS_htt_ttbarNorm_mutau_vbf_loose_8TeV		1.33
