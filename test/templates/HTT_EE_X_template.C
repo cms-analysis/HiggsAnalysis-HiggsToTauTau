@@ -136,15 +136,15 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 
   // determine category tag
   const char* category = ""; const char* category_extra = ""; const char* category_extra2 = "";
-  if(std::string(directory) == std::string("ee_0jet_low"             )){ category = "ee, 0 jet";          }    
-  if(std::string(directory) == std::string("ee_0jet_low"             )){ category_extra = "p_{T}(lep1) low";          }    
-  if(std::string(directory) == std::string("ee_0jet_high"            )){ category = "ee, 0 jet";          }    
-  if(std::string(directory) == std::string("ee_0jet_high"            )){ category_extra = "p_{T}(lep1) high";         }    
-  if(std::string(directory) == std::string("ee_1jet_low"          )){ category = "ee, 1 jet";          }    
-  if(std::string(directory) == std::string("ee_1jet_low"          )){ category_extra = "p_{T}(lep1) low";       }    
-  if(std::string(directory) == std::string("ee_1jet_high"          )){ category = "ee, 1 jet";          }    
-  if(std::string(directory) == std::string("ee_1jet_high"          )){ category_extra = "p_{T}(lep1) high";       }    
-  if(std::string(directory) == std::string("ee_vbf"            )){ category = "ee, 2 jet";          }    
+  if(std::string(directory) == std::string("ee_0jet_low"             )){ category = "ee";          }    
+  if(std::string(directory) == std::string("ee_0jet_low"             )){ category_extra = "0-jet low";          }    
+  if(std::string(directory) == std::string("ee_0jet_high"            )){ category = "ee";          }    
+  if(std::string(directory) == std::string("ee_0jet_high"            )){ category_extra = "0-jet high";         }    
+  if(std::string(directory) == std::string("ee_1jet_low"          )){ category = "ee";          }    
+  if(std::string(directory) == std::string("ee_1jet_low"          )){ category_extra = "1-jet low";       }    
+  if(std::string(directory) == std::string("ee_1jet_high"          )){ category = "ee";          }    
+  if(std::string(directory) == std::string("ee_1jet_high"          )){ category_extra = "1-jet high";       }    
+  if(std::string(directory) == std::string("ee_vbf"            )){ category = "ee";          }    
   if(std::string(directory) == std::string("ee_vbf"            )){ category_extra = "VBF";              }    
   if(std::string(directory) == std::string("ee_nobtag"               )){ category = "ee";          }    
   if(std::string(directory) == std::string("ee_nobtag"               )){ category_extra = "No B-Tag";                        }    
