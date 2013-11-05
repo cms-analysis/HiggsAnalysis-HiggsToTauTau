@@ -63,7 +63,7 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("htt"       )) title = std::string("H#rightarrow#tau#tau");
   if(channel==std::string("cmb"       )) title = std::string("H#rightarrow#tau#tau");
   if(channel==std::string("0jet"      )) title = std::string("0-Jet");
-  if(channel==std::string("0jet"      )) title = std::string("1-Jet");
+  if(channel==std::string("1jet"      )) title = std::string("1-Jet");
   if(channel==std::string("2jet"      )) title = std::string("2-Jet (VBF)");
   if(channel==std::string("vbf"       )) title = std::string("2-Jet (VBF)");
   if(channel==std::string("boost"     )) title = std::string("1-Jet");
@@ -135,6 +135,10 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 
   /// open input file  
   TFile* inputFile = new TFile(filename); if(inputFile->IsZombie()){ std::cout << "ERROR:: file: " << filename << " does not exist.\n"; }
+  
+  if(std::string(type).find("sm")!=std::string::npos){
+    label="CMS,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV";
+  }
 
   /// prepare input parameters
   std::vector<std::string> channels;
@@ -313,7 +317,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 	  leg1 = new TLegend(firstLeg ? 0.60 : 0.20, hobs.size()<5 ? 0.20-0.06*hobs.size() : 0.4, firstLeg ? 0.93 : 0.60, 0.20);
        }
        else{
-	  if (firstLeg) CMSPrelim(label, "", 0.15, 0.835);
+	  if (firstLeg) CMSPrelim(label, "", 0.135, 0.835);
 	  leg1 = new TLegend(firstLeg ? 0.20 : 0.20, hobs.size()<5 ? 0.90-0.08*hobs.size() : 0.6, firstLeg ? 0.63 : 0.60, 0.90);
        }
     }
@@ -324,7 +328,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 	leg1 = new TLegend(legendOnRight?0.60:0.20, hobs.size()<5 ? (legendOnTop?0.90:0.20)-0.06*hobs.size() : (legendOnTop?0.6:0.4), legendOnRight?0.94:0.45, (legendOnTop?0.90:0.20));
 	   }
       else{
-	CMSPrelim(label, "", 0.15, 0.835);
+	CMSPrelim(label, "", 0.135, 0.835);
 	leg1 = new TLegend(legendOnRight ? 0.50 : 0.20, hobs.size()<5 ? 0.90-0.08*hobs.size() : 0.6, legendOnRight ? 0.94 : 0.64, 0.90);
       }
     }
@@ -350,7 +354,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 	leg0 = new TLegend(legendOnRight ? 0.60 : 0.20, hexp.size()<5 ? 0.20-0.06*hexp.size() : 0.4, legendOnRight ? 0.94 : 0.63, 0.20);
       }
       else{
-	CMSPrelim(label, "", 0.15, 0.835);
+	CMSPrelim(label, "", 0.135, 0.835);
 	leg0 = new TLegend(legendOnRight ? 0.20 : 0.20, hexp.size()<5 ? 0.75-0.08*hexp.size() : 0.6, legendOnRight ? 0.94 : 0.63, 0.75);
       }
     }
@@ -361,7 +365,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 	leg0 = new TLegend(legendOnRight?0.60:0.20, hexp.size()<5 ? (legendOnTop?0.90:0.40)-0.04*hexp.size() : (legendOnTop?0.6:0.2), legendOnRight?0.94:0.45, (legendOnTop?0.90:0.40));
 	   }
       else{
-	CMSPrelim(label, "", 0.15, 0.835);
+	CMSPrelim(label, "", 0.135, 0.835);
 	leg0 = new TLegend(legendOnRight ? 0.50 : 0.20, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.6, legendOnRight ? 0.94 : 0.63, 0.90);
 	//leg0 = new TLegend(legendOnRight ? 0.50 : 0.20, hexp.size()<5 ? 0.90-0.08*hexp.size() : 0.6, legendOnRight ? 0.94 : 0.80, 0.90);
       }

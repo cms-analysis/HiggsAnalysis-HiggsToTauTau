@@ -86,6 +86,10 @@ void compareBestFit(const char* filename="test.root", const char* channelstr="bo
   /// open input file  
   TFile* inputFile = new TFile(filename); if(inputFile->IsZombie()){ std::cout << "ERROR:: file: " << filename << " does not exist.\n"; }
 
+  if(std::string(type).find("sm")!=std::string::npos){
+    label="CMS,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV";
+  }
+
   /// prepare input parameters
   std::vector<std::string> channels;
   string2Vector(cleanupWhitespaces(channelstr), channels);
@@ -249,7 +253,7 @@ void compareBestFit(const char* filename="test.root", const char* channelstr="bo
   pt->SetTextFont (   62 );
   pt->Draw("same");
   canv1->RedrawAxis();
-  CMSPrelim(label, "", 0.15, 0.835);
+  CMSPrelim(label, "", 0.13, 0.835);
   
   canv1->Print(std::string("BestFit").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.png" : "_sm.png").c_str());
   canv1->Print(std::string("BestFit").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.pdf" : "_sm.pdf").c_str());
