@@ -159,18 +159,18 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 
   // determine category tag
   const char* category = ""; const char* category_extra = ""; const char* category_extra2 = "";
-  if(std::string(directory) == std::string("emu_0jet_low"             )){ category = "e#mu, 0 jet";          }    
-  if(std::string(directory) == std::string("emu_0jet_low"             )){ category_extra = "p_{T}(lep1) low";          }    
-  if(std::string(directory) == std::string("emu_0jet_high"            )){ category = "e#mu, 0 jet";          }    
-  if(std::string(directory) == std::string("emu_0jet_high"            )){ category_extra = "p_{T}(lep1) high";         }    
-  if(std::string(directory) == std::string("emu_1jet_low"          )){ category = "e#mu, 1 jet";          }    
-  if(std::string(directory) == std::string("emu_1jet_low"          )){ category_extra = "p_{T}(lep1) low";       }    
-  if(std::string(directory) == std::string("emu_1jet_high"          )){ category = "e#mu, 1 jet";          }    
-  if(std::string(directory) == std::string("emu_1jet_high"          )){ category_extra = "p_{T}(lep1) high";       }    
-  if(std::string(directory) == std::string("emu_vbf_loose"            )){ category = "e#mu, 2 jet";          }    
-  if(std::string(directory) == std::string("emu_vbf_loose"            )){ category_extra = "VBF, loose";              }    
-  if(std::string(directory) == std::string("emu_vbf_tight"            )){ category = "e#mu, 2 jet";          }    
-  if(std::string(directory) == std::string("emu_vbf_tight"            )){ category_extra = "VBF, tight";              }    
+  if(std::string(directory) == std::string("emu_0jet_low"             )){ category = "e#mu";          }    
+  if(std::string(directory) == std::string("emu_0jet_low"             )){ category_extra = "0-jet low";          }    
+  if(std::string(directory) == std::string("emu_0jet_high"            )){ category = "e#mu";          }    
+  if(std::string(directory) == std::string("emu_0jet_high"            )){ category_extra = "0-jet high";         }    
+  if(std::string(directory) == std::string("emu_1jet_low"          )){ category = "e#mu, ";          }    
+  if(std::string(directory) == std::string("emu_1jet_low"          )){ category_extra = "1-jet low";       }    
+  if(std::string(directory) == std::string("emu_1jet_high"          )){ category = "e#mu";          }    
+  if(std::string(directory) == std::string("emu_1jet_high"          )){ category_extra = "1-jet high";       }    
+  if(std::string(directory) == std::string("emu_vbf_loose"            )){ category = "e#mu";          }    
+  if(std::string(directory) == std::string("emu_vbf_loose"            )){ category_extra = "VBF loose";              }    
+  if(std::string(directory) == std::string("emu_vbf_tight"            )){ category = "e#mu";          }    
+  if(std::string(directory) == std::string("emu_vbf_tight"            )){ category_extra = "VBF tight";              }    
   if(std::string(directory) == std::string("emu_nobtag"               )){ category = "e#mu";          }    
   if(std::string(directory) == std::string("emu_nobtag"               )){ category_extra = "No B-Tag";                        }    
   if(std::string(directory) == std::string("emu_btag"                 )){ category = "e#mu";          }    
