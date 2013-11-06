@@ -290,7 +290,7 @@ if options.update_setup :
                                     ## only get into action if there is more than one sample to do the merging for
                                     os.system("merge_bin_errors.py --folder {DIR} --processes {PROC} --bbb_threshold=0. --merge_threshold={THRESH} --verbose {SOURCE} {TARGET}".format(
                                         ## this list has only one entry by construction
-                                        DIR=get_channel_dirs(chn, cat)[0],
+                                        DIR=get_channel_dirs(chn, cat,per)[0],
                                         PROC=config.bbbproc[chn][idx].replace('>',','),
                                         THRESH=options.new_merging_threshold,
                                         SOURCE=dir+'/'+ana+'/'+chn+'/'+filename,
