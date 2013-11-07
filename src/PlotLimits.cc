@@ -53,8 +53,9 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
     }
   }
   // common configs
+  theory_ = cfg.existsAs<std::string>("theory") ? cfg.getParameter<std::string>("theory") : std::string();
   label_ = cfg.existsAs<std::string>("outputLabel") ? cfg.getParameter<std::string>("outputLabel") : std::string();
-  verbosity_ = cfg.existsAs<unsigned int>("verbosity") ? cfg.getParameter<unsigned int>("verbosity") : 0,
+  verbosity_ = cfg.existsAs<unsigned int>("verbosity") ? cfg.getParameter<unsigned int>("verbosity") : 0;
   // specifics to plot signal strength
   signal_ = cfg.existsAs<std::string>("signal") ? cfg.getParameter<std::string>("signal") : std::string();
   // specifics to plot scan-2d
