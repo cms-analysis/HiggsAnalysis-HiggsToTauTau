@@ -252,7 +252,7 @@ for directory in args :
                             mass=masspoint, tanb=tanb, model=options.model, interpolation=options.interpolation_mode))
                     else :
                         ## new
-                        os.system("python tanb_grid_new.py --mA {mass} --tanb {tanb} tmp.txt".format(mass=masspoint, tanb=tanb))
+                        os.system("python tanb_grid_new.py --mA {mass} --tanb {tanb} --model {model} tmp.txt".format(mass=masspoint, tanb=tanb, model=options.model))
                 ## setup the batchjob creation for combine -M CLs with tanb grid points instead of cross section grid points
                 opts = "-o {out} -n {points} -m {mass} -O {options} -T {toysH} -t {toys} -j {jobs} -q {queue}".format(
                     out=options.out, points=options.points, mass=masspoint, options=options.options, toysH=options.T,

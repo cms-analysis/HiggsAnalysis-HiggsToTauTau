@@ -12,7 +12,7 @@
 //#include "TRint.h"
 
 void
-plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_low, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* innerBand_low, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* outerBand_low, TGraph* expected, TGraph* expected_low, TGraph* observed, TGraph* observed_low, TGraph* lowerLEP, TGraph* upperLEP, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, TGraph* injected=0, double min=0., double max=60., bool log=false, bool transparent=false)
+plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_low, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* innerBand_low, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* outerBand_low, TGraph* expected, TGraph* expected_low, TGraph* observed, TGraph* observed_low, TGraph* lowerLEP, TGraph* upperLEP, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, TGraph* injected=0, double min=0., double max=60., bool log=false, bool transparent=false)
 {
   // set up styles
   canv.cd();
@@ -67,14 +67,14 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   upperLEP->SetLineColor(ph->GetNumber());
   upperLEP->SetLineStyle(1.);
   upperLEP->SetLineWidth(4.);
-  upperLEP->Draw("F");
+  if(theory=="MSSM m_{h}^{max} scenario") upperLEP->Draw("F");
 
   lowerLEP->SetFillStyle(1001.);
   lowerLEP->SetFillColor(kWhite);
   lowerLEP->SetLineColor(kWhite);
   lowerLEP->SetLineStyle(1.);
   lowerLEP->SetLineWidth(4.);
-  lowerLEP->Draw("F");
+  if(theory=="MSSM m_{h}^{max} scenario") lowerLEP->Draw("F");
 
   if(observed){
     plain->SetLineColor(ph->GetNumber());
@@ -192,7 +192,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   theory1->SetTextSize ( 0.04 );
   theory1->SetTextColor(    1 );
   theory1->SetTextFont (   62 );
-  theory1->AddText("MSSM m_{h}^{max} scenario");
+  theory1->AddText(theory.c_str());
   theory1->Draw();
 
   TPaveText* theory2;
@@ -209,7 +209,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   theory2->SetTextColor(    1 );
   theory2->SetTextFont (   62 );
   theory2->AddText("M_{SUSY} = 1 TeV");
-  theory2->Draw();
+  if(theory=="MSSM m_{h}^{max} scenario") theory2->Draw();
 
   /// add the proper legend
   TLegend* leg;
@@ -249,7 +249,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band){
     leg->AddEntry(band->second, TString::Format("m_{h,H}=125GeV #pm %.0fGeV", band->first), "F");
   }
-  leg->AddEntry(upperLEP, "LEP", "F");
+  if(theory=="MSSM m_{h}^{max} scenario") leg->AddEntry(upperLEP, "LEP", "F");
   for(std::map<std::string,TGraph*>::const_iterator comp = comparisons.begin(); comp!=comparisons.end(); ++comp){
     if(std::string(comp->first) == std::string("EMPTY")) { continue; }
     else if(std::string(comp->first) == std::string("HIG-12-050 exp")) {

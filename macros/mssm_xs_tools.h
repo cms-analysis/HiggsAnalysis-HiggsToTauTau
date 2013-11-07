@@ -58,113 +58,62 @@ class mssm_xs_tools{
   Double_t Give_XsecUnc_pdfalphas68down_ggFH(Double_t mA, Double_t tanb);
   Double_t Give_XsecUnc_pdfalphas68down_ggFh(Double_t mA, Double_t tanb);
   
-  // ggF+bbH5f stuff
-  //combined
-  Double_t Give_Xsec_ggFplusbbA5f(Double_t mA, Double_t tanb);
-  Double_t Give_Xsec_ggFplusbbH5f(Double_t mA, Double_t tanb);
-  Double_t Give_Xsec_ggFplusbbh5f(Double_t mA, Double_t tanb);
-  
-  Double_t Give_XsecUnc_muup_ggFplusbbA5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_muup_ggFplusbbH5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_muup_ggFplusbbh5f(Double_t mA, Double_t tanb);
-  
-  Double_t Give_XsecUnc_mudown_ggFplusbbA5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_mudown_ggFplusbbH5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_mudown_ggFplusbbh5f(Double_t mA, Double_t tanb);
-  
-  
-  Double_t Give_XsecUnc_pdf68up_ggFplusbbA5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_pdf68up_ggFplusbbH5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_pdf68up_ggFplusbbh5f(Double_t mA, Double_t tanb);
-  
-  Double_t Give_XsecUnc_pdf68down_ggFplusbbA5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_pdf68down_ggFplusbbH5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_pdf68down_ggFplusbbh5f(Double_t mA, Double_t tanb);
-  
-  
-  Double_t Give_XsecUnc_pdfalphas68up_ggFplusbbA5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_pdfalphas68up_ggFplusbbH5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_pdfalphas68up_ggFplusbbh5f(Double_t mA, Double_t tanb);
-  
-  Double_t Give_XsecUnc_pdfalphas68down_ggFplusbbA5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_pdfalphas68down_ggFplusbbH5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_pdfalphas68down_ggFplusbbh5f(Double_t mA, Double_t tanb);
-  
-
+ 
+ 
 
 
   
-  // access xsec bb->phi (5-flavor scheme) in fb
+  // access xsec bb->phi (5-flavor scheme) in pb
   Double_t Give_Xsec_bbA5f(Double_t mA, Double_t tanb);
   Double_t Give_Xsec_bbh5f(Double_t mA, Double_t tanb);
   Double_t Give_Xsec_bbH5f(Double_t mA, Double_t tanb);
   // TNV
 
   // access xsec bb->phi (5-flavor scheme)
-  // total scale uncertainty (quadratic addition) upwards direction in fb
+  // total scale uncertainty (quadratic addition) upwards direction in pb
   Double_t Give_XsecUnc_muup_bbA5f(Double_t mA, Double_t tanb);
   Double_t Give_XsecUnc_muup_bbh5f(Double_t mA, Double_t tanb);
   Double_t Give_XsecUnc_muup_bbH5f(Double_t mA, Double_t tanb);
   // access xsec bb->phi (5-flavor scheme)
-  // total scale uncertainty (quadratic addition) downwards direction in fb
+  // total scale uncertainty (quadratic addition) downwards direction in pb
   Double_t Give_XsecUnc_mudown_bbA5f(Double_t mA, Double_t tanb);
   Double_t Give_XsecUnc_mudown_bbh5f(Double_t mA, Double_t tanb);
   Double_t Give_XsecUnc_mudown_bbH5f(Double_t mA, Double_t tanb);
   
   // access xsec bb->phi (5-flavor scheme)
-  // PDF  (MSTW2008, 68%) upwards direction in fb
+  // PDF  (MSTW2008, 68%) upwards direction in pb
   Double_t Give_XsecUnc_pdf68up_bbA5f(Double_t mA, Double_t tanb);
   Double_t Give_XsecUnc_pdf68up_bbh5f(Double_t mA, Double_t tanb);
   Double_t Give_XsecUnc_pdf68up_bbH5f(Double_t mA, Double_t tanb);
-   // access xsec bb->phi (5-flavor scheme)
-  // PDF  (MSTW2008, 68%) upwards direction in fb
-  Double_t Give_XsecUnc_pdf90up_bbA5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_pdf90up_bbh5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_pdf90up_bbH5f(Double_t mA, Double_t tanb);
   
   // access xsec bb->phi (5-flavor scheme)
-  // PDF+alphas  (MSTW2008, 68%) upwards direction in fb
+  // PDF+alphas  (MSTW2008, 68%) upwards direction in pb
   Double_t Give_XsecUnc_pdfalphas68up_bbA5f(Double_t mA, Double_t tanb);
   Double_t Give_XsecUnc_pdfalphas68up_bbh5f(Double_t mA, Double_t tanb);
   Double_t Give_XsecUnc_pdfalphas68up_bbH5f(Double_t mA, Double_t tanb);
-   // access xsec bb->phi (5-flavor scheme)
-  // PDF+alphas  (MSTW2008, 68%) upwards direction in fb
-  Double_t Give_XsecUnc_pdfalphas90up_bbA5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_pdfalphas90up_bbh5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_pdfalphas90up_bbH5f(Double_t mA, Double_t tanb);
   
   // access xsec bb->phi (5-flavor scheme)
-  // PDF  (MSTW2008, 68%) downwards direction in fb
+  // PDF  (MSTW2008, 68%) downwards direction in pb
   Double_t Give_XsecUnc_pdf68down_bbA5f(Double_t mA, Double_t tanb);
   Double_t Give_XsecUnc_pdf68down_bbh5f(Double_t mA, Double_t tanb);
   Double_t Give_XsecUnc_pdf68down_bbH5f(Double_t mA, Double_t tanb);
-   // access xsec bb->phi (5-flavor scheme)
-  // PDF  (MSTW2008, 68%) downwards direction in fb
-  Double_t Give_XsecUnc_pdf90down_bbA5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_pdf90down_bbh5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_pdf90down_bbH5f(Double_t mA, Double_t tanb);
   
   // access xsec bb->phi (5-flavor scheme)
-  // PDF+alphas  (MSTW2008, 68%) downwards direction in fb
+  // PDF+alphas  (MSTW2008, 68%) downwards direction in pb
   Double_t Give_XsecUnc_pdfalphas68down_bbA5f(Double_t mA, Double_t tanb);
   Double_t Give_XsecUnc_pdfalphas68down_bbh5f(Double_t mA, Double_t tanb);
   Double_t Give_XsecUnc_pdfalphas68down_bbH5f(Double_t mA, Double_t tanb);
-  // access xsec bb->phi (5-flavor scheme)
-  // PDF+alphas  (MSTW2008, 68%) downwards direction in fb
-  Double_t Give_XsecUnc_pdfalphas90down_bbA5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_pdfalphas90down_bbh5f(Double_t mA, Double_t tanb);
-  Double_t Give_XsecUnc_pdfalphas90down_bbH5f(Double_t mA, Double_t tanb);
   
   // access xsec gg->bbphi (4-flavor scheme)
-  // numbers are in fb
+  // numbers are in pb
   Double_t Give_Xsec_bbA4f(Double_t mA, Double_t tanb);
   Double_t Give_Xsec_bbh4f(Double_t mA, Double_t tanb);
   Double_t Give_Xsec_bbH4f(Double_t mA, Double_t tanb);
-  // access scale uncertainty upwards direction in fb 
+  // access scale uncertainty upwards direction in pb 
   Double_t Give_XsecUnc_muup_bbA4f(Double_t mA, Double_t tanb);
   Double_t Give_XsecUnc_muup_bbh4f(Double_t mA, Double_t tanb);
   Double_t Give_XsecUnc_muup_bbH4f(Double_t mA, Double_t tanb);
-  // access scale uncertainty downwards direction in fb 
+  // access scale uncertainty downwards direction in pb 
   Double_t Give_XsecUnc_mudown_bbA4f(Double_t mA, Double_t tanb);
   Double_t Give_XsecUnc_mudown_bbh4f(Double_t mA, Double_t tanb);
   Double_t Give_XsecUnc_mudown_bbH4f(Double_t mA, Double_t tanb);
@@ -180,12 +129,12 @@ class mssm_xs_tools{
   Double_t GiveXsec_Santander_H(Double_t mA, Double_t tanb);
   Double_t GiveXsec_Santander_A(Double_t mA, Double_t tanb);
   
-  Double_t GiveXsec_UncUp_Santander_H(Double_t mA, Double_t tanb, TString PDFCL);
-  Double_t GiveXsec_UncUp_Santander_h(Double_t mA, Double_t tanb, TString PDFCL);
-  Double_t GiveXsec_UncUp_Santander_A(Double_t mA, Double_t tanb, TString PDFCL);
-Double_t GiveXsec_UncDown_Santander_H(Double_t mA, Double_t tanb, TString PDFCL);
-  Double_t GiveXsec_UncDown_Santander_h(Double_t mA, Double_t tanb, TString PDFCL);
-  Double_t GiveXsec_UncDown_Santander_A(Double_t mA, Double_t tanb, TString PDFCL);
+  Double_t GiveXsec_UncUp_Santander_H(Double_t mA, Double_t tanb);
+  Double_t GiveXsec_UncUp_Santander_h(Double_t mA, Double_t tanb);
+  Double_t GiveXsec_UncUp_Santander_A(Double_t mA, Double_t tanb);
+  Double_t GiveXsec_UncDown_Santander_H(Double_t mA, Double_t tanb);
+  Double_t GiveXsec_UncDown_Santander_h(Double_t mA, Double_t tanb);
+  Double_t GiveXsec_UncDown_Santander_A(Double_t mA, Double_t tanb);
 
 
  private:
@@ -203,7 +152,7 @@ Double_t GiveXsec_UncDown_Santander_H(Double_t mA, Double_t tanb, TString PDFCL)
   TH2F*	m_h_brmumu_H;	 //BR(H->mumu)	
   TH2F* m_h_brmumu_A;	 //BR(A->mumu)
   
-  // NB: ggF cross-sections are in fb
+  // NB: ggF cross-sections are in pb
   TH2F*	m_h_ggF_xsec_h;	   //   gg->h xsection (mA,tan(beta))
   TH2F*	m_h_ggF_xsec_H;	   //   gg->H xsection (mA,tan(beta))
   TH2F*	m_h_ggF_xsec_A;	   //   gg->A xsection (mA,tan(beta))
@@ -228,35 +177,6 @@ Double_t GiveXsec_UncDown_Santander_H(Double_t mA, Double_t tanb, TString PDFCL)
   TH2F*	m_h_ggF_alphasdown_h;  //	gg->h xsection PDFALPHAS uncertainty- (mA,tan(beta))
   TH2F*	m_h_ggF_alphasdown_H;  //	gg->H xsection PDFALPHAS uncertainty- (mA,tan(beta))
   TH2F*	m_h_ggF_alphasdown_A;  //	gg->A xsection PDFALPHAS uncertainty- (mA,tan(beta))
-
-  //ggFplusbbH5f combined
- // NB: ggF cross-sections are in fb
-  TH2F*	m_h_ggFplusbbH_xsec_h;	   //   gg->h xsection (mA,tan(beta))
-  TH2F*	m_h_ggFplusbbH_xsec_H;	   //   gg->H xsection (mA,tan(beta))
-  TH2F*	m_h_ggFplusbbH_xsec_A;	   //   gg->A xsection (mA,tan(beta))
-  TH2F*	m_h_ggFplusbbH_xsec05_h;  //	gg->h xsection (scale 0.5)(mA,tan(beta))
-  TH2F*	m_h_ggFplusbbH_xsec05_H;  //	gg->H xsection (scale 0.5)(mA,tan(beta))
-  TH2F*	m_h_ggFplusbbH_xsec05_A;  //	gg->A xsection (scale 0.5)(mA,tan(beta))
-  TH2F*	m_h_ggFplusbbH_xsec20_h;  //	gg->h xsection (scale 2.0)(mA,tan(beta))
-  TH2F*	m_h_ggFplusbbH_xsec20_H;  //	gg->H xsection (scale 2.0)(mA,tan(beta))
-  TH2F*	m_h_ggFplusbbH_xsec20_A;  //	gg->A xsection (scale 2.0)(mA,tan(beta))
-
-  TH2F*	m_h_ggFplusbbH_pdfup_h;  //	gg->h xsection PDF uncertainty+ (mA,tan(beta))
-  TH2F*	m_h_ggFplusbbH_pdfup_H;  //	gg->H xsection PDF uncertainty+ (mA,tan(beta))
-  TH2F*	m_h_ggFplusbbH_pdfup_A;  //	gg->A xsection PDF uncertainty+ (mA,tan(beta))
-  TH2F*	m_h_ggFplusbbH_pdfdown_h;  //	gg->h xsection PDF uncertainty- (mA,tan(beta))
-  TH2F*	m_h_ggFplusbbH_pdfdown_H;  //	gg->H xsection PDF uncertainty- (mA,tan(beta))
-  TH2F*	m_h_ggFplusbbH_pdfdown_A;  //	gg->A xsection PDF uncertainty- (mA,tan(beta))
-
-  // NB: ggFplusbbH_pdfalphas are all only pdf uncertainties; still need to add alphas unc. in quadrature
-  TH2F*	m_h_ggFplusbbH_alphasup_h;  //	gg->h xsection PDFALPHAS uncertainty+ (mA,tan(beta))
-  TH2F*	m_h_ggFplusbbH_alphasup_H;  //	gg->H xsection PDFALPHAS uncertainty+ (mA,tan(beta))
-  TH2F*	m_h_ggFplusbbH_alphasup_A;  //	gg->A xsection PDFALPHAS uncertainty+ (mA,tan(beta))
-  TH2F*	m_h_ggFplusbbH_alphasdown_h;  //	gg->h xsection PDFALPHAS uncertainty- (mA,tan(beta))
-  TH2F*	m_h_ggFplusbbH_alphasdown_H;  //	gg->H xsection PDFALPHAS uncertainty- (mA,tan(beta))
-  TH2F*	m_h_ggFplusbbH_alphasdown_A;  //	gg->A xsection PDFALPHAS uncertainty- (mA,tan(beta))
-
-
 
 
   TH2F*	m_h_bbH4f_xsec_h;  //	bbh xsection (mA,tan(beta))
@@ -301,26 +221,12 @@ Double_t GiveXsec_UncDown_Santander_H(Double_t mA, Double_t tanb, TString PDFCL)
   TH2F*	m_h_bbH_pdf68up_H;  //	bb->H xsection pdf68 unc.+ (mA,tan(beta))
   TH2F*	m_h_bbH_pdf68up_A;  //	bb->A xsection pdf68 unc.+ (mA,tan(beta))
 
-  TH2F*	m_h_bbH_pdf90down_h;  //	bb->h xsection pdf90 unc.- (mA,tan(beta))
-  TH2F*	m_h_bbH_pdf90down_H;  //	bb->H xsection pdf90 unc.- (mA,tan(beta))
-  TH2F*	m_h_bbH_pdf90down_A;  //	bb->A xsection pdf90 unc.- (mA,tan(beta))
-  TH2F*	m_h_bbH_pdf90up_h;  //	bb->h xsection pdf90 unc.+ (mA,tan(beta))
-  TH2F*	m_h_bbH_pdf90up_H;  //	bb->H xsection pdf90 unc.+ (mA,tan(beta))
-  TH2F*	m_h_bbH_pdf90up_A;  //	bb->A xsection pdf90 unc.+ (mA,tan(beta))
-
   TH2F*	m_h_bbH_pdfalphas68down_h;  //	bb->h xsection pdfalphas68 unc.- (mA,tan(beta))
   TH2F*	m_h_bbH_pdfalphas68down_H;  //	bb->H xsection pdfalphas68 unc.- (mA,tan(beta))
   TH2F*	m_h_bbH_pdfalphas68down_A;  //	bb->A xsection pdfalphas68 unc.- (mA,tan(beta))
   TH2F*	m_h_bbH_pdfalphas68up_h;  //	bb->h xsection pdfalphas68 unc.+ (mA,tan(beta))
   TH2F*	m_h_bbH_pdfalphas68up_H;  //	bb->H xsection pdfalphas68 unc.+ (mA,tan(beta))
   TH2F*	m_h_bbH_pdfalphas68up_A;  //	bb->A xsection pdfalphas68 unc.+ (mA,tan(beta))
-
-  TH2F*	m_h_bbH_pdfalphas90down_h;  //	bb->h xsection pdfalphas90 unc.- (mA,tan(beta))
-  TH2F*	m_h_bbH_pdfalphas90down_H;  //	bb->H xsection pdfalphas90 unc.- (mA,tan(beta))
-  TH2F*	m_h_bbH_pdfalphas90down_A;  //	bb->A xsection pdfalphas90 unc.- (mA,tan(beta))
-  TH2F*	m_h_bbH_pdfalphas90up_h;  //	bb->h xsection pdfalphas90 unc.+ (mA,tan(beta))
-  TH2F*	m_h_bbH_pdfalphas90up_H;  //	bb->H xsection pdfalphas90 unc.+ (mA,tan(beta))
-  TH2F*	m_h_bbH_pdfalphas90up_A;  //	bb->A xsection pdfalphas90 unc.+ (mA,tan(beta))
 
   TH2F*	m_h_mh;  //	mh (mA,tan(beta))
   TH2F*	m_h_mH;  //	mH (mA,tan(beta))

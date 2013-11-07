@@ -12,6 +12,8 @@ model_opts.add_option("--mA", dest="mA", default="", type="string",
                        help="The value of the free mass parameter in the model. Default: \"\"]")
 model_opts.add_option("--tanb", dest="tanb", default="", type="string",
                        help="The value of tanb in the model. Default: \"\"]")
+model_opts.add_option("--model", dest="modelname", default="mhmax-mu+200", type="string",
+                       help="The model which should be used (choices are: mhmax-mu+200, mhmodp, mhmodm). Default: \"mhmax-mu+200\"]")
 parser.add_option_group(model_opts)
 morph_opts = OptionGroup(parser, "MORPHING OPTIONS", "With these options you can configure what kind of morphing should be applied for a given decay channel. Note that the same morphing mode is applied to all templates in a given input file.")
 morph_opts.add_option("--morphing-htt_ee", dest="morphing_htt_ee", default="NEAREST_NEIGHBOUR", type="choice",
@@ -145,7 +147,7 @@ def main() :
     old_file.close()
     
     ## determine MODEL for given datacard.
-    model = MODEL(float(options.mA), float(options.tanb))
+    model = MODEL(float(options.mA), float(options.tanb), options.modelname)
     match = re.compile('(?P<CHN>\w*)_\w*_[0-9]?_(?P<PER>[0-9]*\w*)')
     for bin in card.list_of_bins() :
         ## a bin can be made up of different decay channels or different run periods. Pick decay channel (chn) and run period
