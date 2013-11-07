@@ -6,7 +6,7 @@ ee_1jet_low			TTJ 							CMS_eff_b_7TeV					0.95
 ee_1jet_low			ggH,ggH_hww125						pdf_gg						1.097
 ee_1jet_low			qqH,qqH_hww125						pdf_qqbar					1.036
 ee_1jet_low			VH							pdf_vh						1.01
-ee_1jet_low			ggH,ggH_hww125						QCDscale_ggH1in					1.109
+ee_1jet_low			ggH,ggH_hww125						QCDscale_ggH					1.109
 ee_1jet_low			qqH,qqH_hww125						QCDscale_qqH					1.008
 ee_1jet_low			VH 	                        			QCDscale_VH					1.04
 ee_1jet_low			ggH,ggH_hww125						UEPS						0.984

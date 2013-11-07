@@ -2,7 +2,7 @@ tauTau_1jet_high_highhiggs			signal		            	lumi_8TeV            						1.0
 tauTau_1jet_high_highhiggs	   		ggH				pdf_gg    							1.097                    
 tauTau_1jet_high_highhiggs	   		qqH				pdf_qqbar							1.036              
 tauTau_1jet_high_highhiggs	   		VH				pdf_qqbar							1.02              
-tauTau_1jet_high_highhiggs			ggH				QCDscale_ggH1in	 						1.175
+tauTau_1jet_high_highhiggs			ggH				QCDscale_ggH	 						1.175
 tauTau_1jet_high_highhiggs			qqH				QCDscale_qqH							1.014            
 tauTau_1jet_high_highhiggs			VH				QCDscale_VH	 						1.04            
 tauTau_1jet_high_highhiggs		   	qqH,VH				UEPS								0.996

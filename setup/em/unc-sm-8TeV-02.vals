@@ -13,7 +13,7 @@ emu_1jet_low	ttbar			        CMS_eff_b_8TeV		        	0.97
 emu_1jet_low	ggH,ggH_hww125			pdf_gg    				1.097
 emu_1jet_low	qqH,qqH_hww125			pdf_qqbar				1.036
 emu_1jet_low	VH,VH_hww125			pdf_qqbar				1.02
-emu_1jet_low	ggH,ggH_hww125			QCDscale_ggH1in 			1.105
+emu_1jet_low	ggH,ggH_hww125			QCDscale_ggH    			1.105
 emu_1jet_low	qqH,qqH_hww125			QCDscale_qqH				1.008
 emu_1jet_low	VH,VH_hww125 	                QCDscale_VH				1.04
 emu_1jet_low	ggH,ggH_hww125			UEPS					0.984

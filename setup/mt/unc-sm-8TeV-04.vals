@@ -4,7 +4,7 @@ muTau_1jet_high_lowhiggs	signal		             	lumi_8TeV            					1.026
 muTau_1jet_high_lowhiggs	ggH				pdf_gg    						1.097
 muTau_1jet_high_lowhiggs	qqH				pdf_qqbar						1.036
 muTau_1jet_high_lowhiggs	VH				pdf_qqbar						1.04
-muTau_1jet_high_lowhiggs	ggH				QCDscale_ggH1in 					1.095
+muTau_1jet_high_lowhiggs	ggH				QCDscale_ggH 	        				1.095
 muTau_1jet_high_lowhiggs	qqH				QCDscale_qqH						1.013
 muTau_1jet_high_lowhiggs      	VH 	                        QCDscale_VH						1.04
 muTau_1jet_high_lowhiggs	ggH				UEPS							0.954
