@@ -168,32 +168,38 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 
   // determine category tag
   const char* category = ""; const char* category_extra = ""; const char* category_extra2 = "";
-  if(std::string(directory) == std::string("eleTau_0jet_low"             )){ category = "e#tau_{h}, 0 jet";          }    
-  if(std::string(directory) == std::string("eleTau_0jet_low"             )){ category_extra = "p_{T}(#tau) low";          }    
-  if(std::string(directory) == std::string("eleTau_0jet_medium"          )){ category = "e#tau_{h}, 0 jet";          }    
-  if(std::string(directory) == std::string("eleTau_0jet_medium"          )){ category_extra = "p_{T}(#tau) medium";       }    
-  if(std::string(directory) == std::string("eleTau_0jet_high"            )){ category = "e#tau_{h}, 0 jet";          }    
-  if(std::string(directory) == std::string("eleTau_0jet_high"            )){ category_extra = "p_{T}(#tau) high";         }    
-  if(std::string(directory) == std::string("eleTau_1jet_medium"          )){ category = "e#tau_{h}, 1 jet";          }    
-  if(std::string(directory) == std::string("eleTau_1jet_medium"          )){ category_extra = "p_{T}(#tau) medium";       }    
-  if(std::string(directory) == std::string("eleTau_1jet_high_lowhiggs"   )){ category = "e#tau_{h}, 1 jet";                          }    
-  if(std::string(directory) == std::string("eleTau_1jet_high_lowhiggs"   )){ category_extra= "p_{T}(#tau) high";  }
-  if(std::string(directory) == std::string("eleTau_1jet_high_lowhiggs"   )){ category_extra2= "p_{T}(H) low";  }
-  if(std::string(directory) == std::string("eleTau_1jet_high_mediumhiggs")){ category = "e#tau_{h}, 1 jet";                          }    
-  if(std::string(directory) == std::string("eleTau_1jet_high_mediumhiggs")){ category_extra= "p_{T}(#tau) high"; }
-  if(std::string(directory) == std::string("eleTau_1jet_high_mediumhiggs")){ category_extra2= "p_{T}(H) med."; }
-  if(std::string(directory) == std::string("eleTau_vbf_loose"            )){ category = "e#tau_{h}, 2 jet";          }    
-  if(std::string(directory) == std::string("eleTau_vbf_loose"            )){ category_extra = "VBF, loose";              }    
-  if(std::string(directory) == std::string("eleTau_vbf_tight"            )){ category = "e#tau_{h}, 2 jet";          }    
-  if(std::string(directory) == std::string("eleTau_vbf_tight"            )){ category_extra = "VBF, tight";              }    
+  if(std::string(directory) == std::string("eleTau_0jet_low"             )){ category = "e#tau_{h}";          }    
+  if(std::string(directory) == std::string("eleTau_0jet_low"             )){ category_extra = "0-jet low";          }    
+  if(std::string(directory) == std::string("eleTau_0jet_medium"          )){ category = "e#tau_{h}";          }    
+  if(std::string(directory) == std::string("eleTau_0jet_medium"          )){ category_extra = "0-jet medium";       }    
+  if(std::string(directory) == std::string("eleTau_0jet_high"            )){ category = "e#tau_{h}";          }    
+  if(std::string(directory) == std::string("eleTau_0jet_high"            )){ category_extra = "0-jet high";         }    
+  if(std::string(directory) == std::string("eleTau_1jet_medium"          )){ category = "e#tau_{h}";          }    
+  if(std::string(directory) == std::string("eleTau_1jet_medium"          )){ category_extra = "1-jet medium";       }    
+  if(std::string(directory) == std::string("eleTau_1jet_high_lowhiggs"   )){ category = "e#tau_{h}";                          }    
+  if(std::string(directory) == std::string("eleTau_1jet_high_lowhiggs"   )){ category_extra= "1-jet high";  }
+  if(std::string(directory) == std::string("eleTau_1jet_high_mediumhiggs")){ category = "e#tau_{h}";                          }    
+  if(std::string(directory) == std::string("eleTau_1jet_high_mediumhiggs")){ category_extra= "1-jet high"; }
+  if(std::string(directory) == std::string("eleTau_1jet_high_mediumhiggs")){ category_extra2= "boost"; }
+  if(std::string(directory) == std::string("eleTau_vbf"                  )){ category = "e#tau_{h}";          }    
+  if(std::string(directory) == std::string("eleTau_vbf"                  )){ category_extra = "VBF loose";              }    
+  if(std::string(directory) == std::string("eleTau_vbf_loose"            )){ category = "e#tau_{h}";          }    
+  if(std::string(directory) == std::string("eleTau_vbf_loose"            )){ category_extra = "VBF loose";              }    
+  if(std::string(directory) == std::string("eleTau_vbf_tight"            )){ category = "e#tau_{h}";          }    
+  if(std::string(directory) == std::string("eleTau_vbf_tight"            )){ category_extra = "VBF tight";              }    
   if(std::string(directory) == std::string("eleTau_nobtag"               )){ category = "e#tau_{h}";          }    
   if(std::string(directory) == std::string("eleTau_nobtag"               )){ category_extra = "No B-Tag";                        }    
   if(std::string(directory) == std::string("eleTau_btag"                 )){ category = "e#tau_{h}";          }    
   if(std::string(directory) == std::string("eleTau_btag"                 )){ category_extra = "B-Tag";                           }
 
   const char* dataset;
+#ifdef MSSM
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV";}
   if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 19.7 fb^{-1} at 8 TeV";}
+#else
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS,  H#rightarrow#tau#tau, 19.7 fb^{-1} at 8 TeV";}
+#endif
   
   TFile* input = new TFile(inputfile.c_str());
 #ifdef MSSM

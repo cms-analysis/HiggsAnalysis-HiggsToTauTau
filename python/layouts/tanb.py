@@ -8,6 +8,8 @@ layout = cms.PSet(
     xaxis = cms.string("m_{A} [GeV]"),
     ## x-axis title
     yaxis = cms.string("#bf{tan#beta}"),
+    ## theory label 
+    theory = cms.string("MSSM m_{h}^{modp} scenario"),
     ## min for plotting
     min = cms.double(0),
     ## max for plotting
@@ -59,7 +61,7 @@ layout = cms.PSet(
     ## is this mssm?
     mssm = cms.bool(True),
     ## plot transparent?
-    transparent = cms.bool(True),
+    transparent = cms.bool(False),
     ## print the 2-sigma band
     outerband = cms.bool(True),
     ## plot expected only

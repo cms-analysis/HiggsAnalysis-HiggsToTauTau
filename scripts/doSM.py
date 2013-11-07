@@ -6,6 +6,7 @@ from HiggsAnalysis.HiggsToTauTau.horizontal_morphing import Morph
 from HiggsAnalysis.HiggsToTauTau.AsimovDatacard import *
 from HiggsAnalysis.HiggsToTauTau.scale2SM import RescaleSamples
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs 
+from HiggsAnalysis.HiggsToTauTau.utils import get_shape_systematics
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGs",
@@ -41,6 +42,8 @@ parser.add_option("--drop-list", dest="drop_list", default="",  type="string",
                   help="The full path to the list of uncertainties to be dropped from the datacards due to pruning. If this string is empty no prunig will be applied. [Default: \"\"]")
 parser.add_option("-c", "--config", dest="config", default="",
                   help="Additional configuration file to be used for the setup [Default: \"\"]")
+parser.add_option("--interpolate", dest="interpolate", default="",
+                  help="Step size for interpolation of masspoints between the given arguments. [Default: \"\"]")
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -112,6 +115,7 @@ print "# --new-merging-threshold   :", options.new_merging_threshold
 print "# --add-mutau-soft          :", options.add_mutau_soft
 print "# --blind-datacards         :", options.blind_datacards
 print "# --extra-templates         :", options.extra_templates
+print "# --interpolate             :", options.interpolate
 print "# --------------------------------------------------------------------------------------"
 for chn in config.channels:
     print "# --inputs-"+chn+"               :", config.inputs[chn]
@@ -254,6 +258,20 @@ if options.update_setup :
                         INPUTFILE=file,
                         PROCESS=proc+'125'
                         ))
+    ## if requested apply horizontal morphing for processes to get templates for intermediate masses
+    if options.interpolate:
+        for i in range(len(masspoints)-1):
+            for chn in config.channels:
+                for per in config.periods:
+                    for cat in config.categories[chn][per]:
+                        for file in glob.glob("{SETUP}/{CHN}/htt_{CHN}.inputs-sm-{PER}*.root".format(SETUP=setup,CHN=chn, PER=per, CAT=cat)):
+                            for proc in ['ggH','qqH','VH']:
+                                template_morphing = Morph(file, get_channel_dirs(chn,"0"+cat,per)[0], proc+'{MASS}', ','.join(get_shape_systematics(setup,per,chn,"0"+cat,proc)), masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '') 
+                                template_morphing.run()
+            ## add the new points to the masses array
+            masses.append(masspoints[i]+'-'+masspoints[i+1]+':'+options.interpolate)
+        ## set the masspoint list to the new points
+        masspoints = [str(m) for m in range(int(masspoints[0]),int(masspoints[-1])+1,int(options.interpolate))]
     ## set up directory structure
     dir = "{CMSSW_BASE}/src/setups{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
     if os.path.exists(dir) :
@@ -290,7 +308,7 @@ if options.update_setup :
                                     ## only get into action if there is more than one sample to do the merging for
                                     os.system("merge_bin_errors.py --folder {DIR} --processes {PROC} --bbb_threshold=0. --merge_threshold={THRESH} --verbose {SOURCE} {TARGET}".format(
                                         ## this list has only one entry by construction
-                                        DIR=get_channel_dirs(chn, cat)[0],
+                                        DIR=get_channel_dirs(chn, cat,per)[0],
                                         PROC=config.bbbproc[chn][idx].replace('>',','),
                                         THRESH=options.new_merging_threshold,
                                         SOURCE=dir+'/'+ana+'/'+chn+'/'+filename,

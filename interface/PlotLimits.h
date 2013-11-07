@@ -184,6 +184,8 @@ class PlotLimits {
   std::string xaxis_;
   /// string for y-axis title
   std::string yaxis_;
+  /// string for theory title used in tanb plots
+  std::string theory_;
   /// minimum on y axis for plotting
   double min_;
   /// maximum on y axis for plotting

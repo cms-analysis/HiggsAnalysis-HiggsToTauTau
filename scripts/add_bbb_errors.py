@@ -86,7 +86,7 @@ def create_systematics(channel, category, process, period, shape_file, threshold
     Returns a list of tuples of kind [(channel name, list of added systs)]
     '''
     ## determine directories pointred to in the datacards (NB: can be more than one, e.g. in vhtt)
-    channel_names = get_channel_dirs(channel, category)
+    channel_names = get_channel_dirs(channel, category, period)
     # Parse process description in case we merge histograms
     process_to_merge_in = []
     ## default case -> process = target_process
