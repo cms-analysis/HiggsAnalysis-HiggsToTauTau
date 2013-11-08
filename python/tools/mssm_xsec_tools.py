@@ -106,7 +106,6 @@ class mssm_xsec_tools():
         type, type_info = input
         type_info.setdefault('mu', {})
         if(self.inputFileName_.find('mhmax-mu+200')>-1) : #for old mhmax scenario not produced with sushi
-            print 'mu', self.inputFileName_ 
             type_info['mu']['bbH'] = {
                 -1 : self.lookup_value(mA, tan_beta, 'h_bbH_mudown_%s' % type)*self.unit_pb,
                 +1 : self.lookup_value(mA, tan_beta, 'h_bbH_muup_%s' % type)*self.unit_pb,
@@ -140,7 +139,6 @@ class mssm_xsec_tools():
         type, type_info = input
         type_info.setdefault('pdf', {})
         if(self.inputFileName_.find('mhmax-mu+200')>-1) : #for old mhmax scenario not produced with sushi
-            print 'pdf', self.inputFileName_ 
             type_info['pdf']['bbH'] = {
                 -1 : self.lookup_value(mA, tan_beta, 'h_bbH_pdfalphas68down_%s' % type)*self.unit_pb,
                 +1 : self.lookup_value(mA, tan_beta, 'h_bbH_pdfalphas68up_%s'   % type)*self.unit_pb,
