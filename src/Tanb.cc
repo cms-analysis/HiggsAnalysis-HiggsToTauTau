@@ -57,7 +57,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
 	++ipoint;
       }
     }
-    plain->SetPoint(observed->GetN(), observed->GetX()[observed->GetN()-1]+10, observed->GetY()[bins_.size()-1]); //100.
+    plain->SetPoint(observed->GetN(), observed->GetX()[observed->GetN()-1], 100.);
     plain->SetPointEYlow (observed->GetN(), 0);
     plain->SetPointEYhigh(observed->GetN(), 100); 
   }
