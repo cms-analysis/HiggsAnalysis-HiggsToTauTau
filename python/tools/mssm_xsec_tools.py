@@ -105,13 +105,20 @@ class mssm_xsec_tools():
     def _add_mu(self, mA, tan_beta, input):
         type, type_info = input
         type_info.setdefault('mu', {})
-        type_info['mu']['bbH'] = {
-            -1 : (self.lookup_value(mA, tan_beta, 'h_bbH_mudown_%s' % type) -
-                  self.lookup_value(mA, tan_beta, 'h_bbH_xsec_%s' % type)) *self.unit_pb,
-            +1 : (self.lookup_value(mA, tan_beta, 'h_bbH_muup_%s' % type) -
-                  self.lookup_value(mA, tan_beta, 'h_bbH_xsec_%s' % type))*self.unit_pb,
-            0 : 0,
+        if(self.inputFileName_.find('mhmax-mu+200')>-1) : #for old mhmax scenario not produced with sushi
+            type_info['mu']['bbH'] = {
+                -1 : self.lookup_value(mA, tan_beta, 'h_bbH_mudown_%s' % type)*self.unit_pb,
+                +1 : self.lookup_value(mA, tan_beta, 'h_bbH_muup_%s' % type)*self.unit_pb,
+                0 : 0,
             }
+        else :
+            type_info['mu']['bbH'] = {
+                -1 : (self.lookup_value(mA, tan_beta, 'h_bbH_mudown_%s' % type) -
+                      self.lookup_value(mA, tan_beta, 'h_bbH_xsec_%s' % type))*self.unit_pb,
+                +1 : (self.lookup_value(mA, tan_beta, 'h_bbH_muup_%s' % type) -
+                      self.lookup_value(mA, tan_beta, 'h_bbH_xsec_%s' % type))*self.unit_pb,
+                0 : 0,
+                }
         type_info['mu']['bbH4f'] = {
             -1 : (self.lookup_value(mA, tan_beta, 'h_bbH4f_xsec_%s_low' % type) -
                   self.lookup_value(mA, tan_beta, 'h_bbH4f_xsec_%s' % type))*self.unit_pb,
@@ -131,18 +138,24 @@ class mssm_xsec_tools():
     def _add_pdf(self, mA, tan_beta, input):
         type, type_info = input
         type_info.setdefault('pdf', {})
-        
-        bbH_alphasdown = self.lookup_value(mA, tan_beta, 'h_bbH_pdfalphas68down_%s' % type)
-        bbH_pdfdown = self.lookup_value(mA, tan_beta, 'h_bbH_pdf68down_%s' % type)
-        
-        bbH_alphasup = self.lookup_value(mA, tan_beta, 'h_bbH_pdfalphas68up_%s' % type)
-        bbH_pdfup = self.lookup_value(mA, tan_beta, 'h_bbH_pdf68up_%s' % type)
-        
-        type_info['pdf']['bbH'] = {               
-            -1 : mssm_xsec_tools._add_in_quadrature(bbH_alphasdown, bbH_pdfdown)*self.unit_pb,
-            +1 : mssm_xsec_tools._add_in_quadrature(bbH_alphasup, bbH_pdfup)*self.unit_pb,
-            0 : 0,
-            }
+        if(self.inputFileName_.find('mhmax-mu+200')>-1) : #for old mhmax scenario not produced with sushi
+            type_info['pdf']['bbH'] = {
+                -1 : self.lookup_value(mA, tan_beta, 'h_bbH_pdfalphas68down_%s' % type)*self.unit_pb,
+                +1 : self.lookup_value(mA, tan_beta, 'h_bbH_pdfalphas68up_%s'   % type)*self.unit_pb,
+                 0 : 0,
+                }
+        else :
+            bbH_alphasdown = self.lookup_value(mA, tan_beta, 'h_bbH_pdfalphas68down_%s' % type)
+            bbH_pdfdown = self.lookup_value(mA, tan_beta, 'h_bbH_pdf68down_%s' % type)
+            
+            bbH_alphasup = self.lookup_value(mA, tan_beta, 'h_bbH_pdfalphas68up_%s' % type)
+            bbH_pdfup = self.lookup_value(mA, tan_beta, 'h_bbH_pdf68up_%s' % type)
+            
+            type_info['pdf']['bbH'] = {               
+                -1 : mssm_xsec_tools._add_in_quadrature(bbH_alphasdown, bbH_pdfdown)*self.unit_pb,
+                +1 : mssm_xsec_tools._add_in_quadrature(bbH_alphasup, bbH_pdfup)*self.unit_pb,
+                0 : 0,
+                }
         # Supposedly negligble compared to scale
         type_info['pdf']['bbH4f'] = {
             -1 : 0,
