@@ -301,12 +301,9 @@ if options.update_setup :
                 for per in config.periods:
                     for idx in range(len(config.bbbcat[chn][per])):
                         if options.new_merging :
-                            print chn == "vhtt"
                             filename='vhtt.inputs-sm-'+per+'.root' if chn == "vhtt" else 'htt_'+chn+'.inputs-sm-'+per+'.root'
-                            print filename
                             for cat in config.bbbcat[chn][per][idx].split(',') :
                                 ## loop all categories in question for index idx
-                                print cat
                                 if len(config.bbbproc[chn][idx].replace('>',',').split(','))>1 :
                                     ## only get into action if there is more than one sample to do the merging for
                                     os.system("merge_bin_errors.py --folder {DIR} --processes {PROC} --bbb_threshold=0. --merge_threshold={THRESH} --verbose {SOURCE} {TARGET}".format(
