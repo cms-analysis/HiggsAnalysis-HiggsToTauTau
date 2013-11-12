@@ -30,6 +30,7 @@ eetCatLow,eetCatHigh signal QCDscale_VH 1.009
 
 #charge flip uncertainty
 eetCatLow,eetCatHigh charge_fakes CMS_vhtt_eet_chargeFlip_7TeV 1.0
+
 # Stat shape uncertainties
 #eetCatHigh,eetCatLow fakes CMS_vhtt_eet_fakes_7TeV 1.66
 eetCatHigh  fakes  CMS_vhtt_eetCatHigh_fakes_7TeV  1.30
