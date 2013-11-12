@@ -301,7 +301,7 @@ if options.update_setup :
                 for per in config.periods:
                     for idx in range(len(config.bbbcat[chn][per])):
                         if options.new_merging :
-                            filename='vhtt.inputs-sm-'+per+'.root' if chn == vhtt else 'htt_'+chn+'.inputs-sm-'+per+'.root'
+                            filename='vhtt.inputs-sm-'+per+'.root' if chn == "vhtt" else 'htt_'+chn+'.inputs-sm-'+per+'.root'
                             for cat in config.bbbcat[chn][per][idx].split(',') :
                                 ## loop all categories in question for index idx
                                 if len(config.bbbproc[chn][idx].replace('>',',').split(','))>1 :
