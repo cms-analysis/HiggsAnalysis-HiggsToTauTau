@@ -33,4 +33,6 @@ emtCatHigh,emtCatLow signal QCDscale_VH 1.01
 emtCatHigh,emtCatLow charge_fakes CMS_vhtt_emt_chargeFlip_8TeV 1.0
 
 # Stat shape uncertainties
-emtCatHigh,emtCatLow fakes CMS_vhtt_emt_fakes_8TeV 1.07
+#emtCatHigh,emtCatLow fakes CMS_vhtt_emt_fakes_8TeV 1.07
+emtCatHigh  fakes  CMS_vhtt_emtCatHigh_fakes_8TeV  1.30
+emtCatLow   fakes  CMS_vhtt_emtCatLow_fakes_8TeV   1.30
