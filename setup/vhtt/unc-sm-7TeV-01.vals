@@ -29,10 +29,10 @@ emtCatHigh,emtCatLow wz QCDscale_VV 1.04
 emtCatHigh,emtCatLow signal pdf_qqbar 1.026
 emtCatHigh,emtCatLow signal QCDscale_VH 1.009
 
-#charge flip uncertainty
+# charge flip uncertainty
 emtCatHigh,emtCatLow charge_fakes CMS_vhtt_emt_chargeFlip_7TeV 1.0
 
 # Stat shape uncertainties
-#emtCatHigh,emtCatLow fakes CMS_vhtt_emt_fakes_7TeV 1.40
+# emtCatHigh,emtCatLow fakes CMS_vhtt_emt_fakes_7TeV 1.40
 emtCatHigh  fakes  CMS_vhtt_emtCatHigh_fakes_7TeV  1.30
 emtCatLow   fakes  CMS_vhtt_emtCatLow_fakes_7TeV   1.30
