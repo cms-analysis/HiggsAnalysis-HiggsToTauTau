@@ -499,6 +499,8 @@ if options.optInject :
             folder_extension = "-pval"
         if not options.injected_method == "--max-likelihood" :
             opts+=" --observedOnly"
+        else:
+            opts+=" --mass-scan"
         if not options.nuisances == "" :
             opts+=" --no-prefit --external-pulls \"{PATH}\" --signal-plus-background {SPLUSB}".format(PATH=options.nuisances, SPLUSB=options.signal_plus_BG)
         method = options.injected_method
