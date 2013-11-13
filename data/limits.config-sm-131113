@@ -12,7 +12,7 @@ mt_soft = LLR
 [sm]
 
 periods = 7TeV 8TeV
-channels = vhtt ; mm em et mt tt mm ee
+channels = mm em et mt tt mm ee
 
 em_categories_7TeV = 0 1 2 3 4 
 et_categories_7TeV = 1 2 3 5 6
