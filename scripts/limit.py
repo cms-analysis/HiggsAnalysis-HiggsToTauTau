@@ -518,9 +518,9 @@ for directory in args :
             postfit = "--saveNormalizations --saveShapes --saveWithUncertainties"
             ## run maximum likelihood fit
             print "combine -M MaxLikelihoodFit -m {mass} {minuit} {stable}  {postfit} {user} {wdir}/tmp.root --out=out".format(
-                mass=mass, minuit=minuitopt, stable=stableopt, postfit=postfit if not options.scan_mass else '', user=options.userOpt, wdir=options.workingdir)
+                mass=mass, minuit=minuitopt, stable=stableopt, postfit=postfit if not options.mass_scan else '', user=options.userOpt, wdir=options.workingdir)
             os.system("combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {postfit} {user} {wdir}/tmp.root --out=out {redir}".format(
-                mass=mass, minuit=minuitopt, stable=stableopt, postfit=postfit if not options.scan_mass else '', user=options.userOpt, wdir=options.workingdir, redir=redirect))
+                mass=mass, minuit=minuitopt, stable=stableopt, postfit=postfit if not options.mass_scan else '', user=options.userOpt, wdir=options.workingdir, redir=redirect))
             ## change to sub-directory out and prepare formated output
             os.chdir(os.path.join(subdirectory, "out"))
             print "formating output..."
