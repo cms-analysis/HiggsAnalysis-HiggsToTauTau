@@ -26,8 +26,8 @@ parser.add_option("--hww-scale", dest="hww_scale", default='1.', type="string",
                   help="specify the scale factor for the hww contribution here. The scale factor should be relative to the SM expectation. [Default: 1.]")
 parser.add_option("--new-merging", dest="new_merging", default=False, action="store_true",
                   help="added to test the new merging introduced by Andrew. [Default: False]")
-parser.add_option("--new-merging-threshold", dest="new_merging_threshold", default="0.4", type="string",
-                  help="Threshold for the new merging by Andrew. [Default: \"0.4\"]")
+parser.add_option("--new-merging-threshold", dest="new_merging_threshold", default="0.5", type="string",
+                  help="Threshold for the new merging by Andrew. [Default: \"0.5\"]")
 parser.add_option("--drop-normalize-bbb", dest="drop_normalize_bbb", default=False, action="store_true",
                   help="Normalize yield to stay constand when adding bbb shape uncertainties. [Default: False]")
 parser.add_option("--add-mutau-soft", dest="add_mutau_soft", default=False, action="store_true",
@@ -309,10 +309,11 @@ if options.update_setup :
                                 ## loop all categories in question for index idx
                                 if len(config.bbbproc[chn][idx].replace('>',',').split(','))>1 :
                                     ## only get into action if there is more than one sample to do the merging for
-                                    os.system("merge_bin_errors.py --folder {DIR} --processes {PROC} --bbb_threshold=0. --merge_threshold={THRESH} --verbose {SOURCE} {TARGET}".format(
+                                    os.system("merge_bin_errors.py --folder {DIR} --processes {PROC} --bbb_threshold={BBBTHR} --merge_threshold={THRESH} --verbose {SOURCE} {TARGET}".format(
                                         ## this list has only one entry by construction
                                         DIR=get_channel_dirs(chn, cat,per)[0],
                                         PROC=config.bbbproc[chn][idx].replace('>',','),
+                                        BBBTHR=config.bbbthreshold[chn],
                                         THRESH=options.new_merging_threshold,
                                         SOURCE=dir+'/'+ana+'/'+chn+'/'+filename,
                                         TARGET=dir+'/'+ana+'/'+chn+'/'+filename,
