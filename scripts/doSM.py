@@ -28,6 +28,8 @@ parser.add_option("--new-merging", dest="new_merging", default=False, action="st
                   help="added to test the new merging introduced by Andrew. [Default: False]")
 parser.add_option("--new-merging-threshold", dest="new_merging_threshold", default="0.4", type="string",
                   help="Threshold for the new merging by Andrew. [Default: \"0.4\"]")
+parser.add_option("--drop-normalize-bbb", dest="drop_normalize_bbb", default=False, action="store_true",
+                  help="Normalize yield to stay constand when adding bbb shape uncertainties. [Default: False]")
 parser.add_option("--add-mutau-soft", dest="add_mutau_soft", default=False, action="store_true",
                   help="Specify this option to add the soft muon pt analysis. [Default: False]")
 parser.add_option("--update-all", dest="update_all", default=False, action="store_true",
@@ -112,6 +114,7 @@ print "# --hww-mass                :", 'free' if options.hww_mass == '' else opt
 print "# --hww-scale               :", options.hww_scale
 print "# --new-merging             :", options.new_merging
 print "# --new-merging-threshold   :", options.new_merging_threshold
+print "# --drop-bbb-normalisation  :", options.drop_normalize_bbb
 print "# --add-mutau-soft          :", options.add_mutau_soft
 print "# --blind-datacards         :", options.blind_datacards
 print "# --extra-templates         :", options.extra_templates
@@ -314,11 +317,15 @@ if options.update_setup :
                                         SOURCE=dir+'/'+ana+'/'+chn+'/'+filename,
                                         TARGET=dir+'/'+ana+'/'+chn+'/'+filename,
                                         ))
-                        os.system("add_bbb_errors.py '{CHN}:{PER}:{CAT}:{PROC}' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold {THR}".format(
+                        normalize_bbb = ''
+                        if not options.drop_normalize_bbb :
+                            normalize_bbb = ' --normalize '
+                        os.system("add_bbb_errors.py '{CHN}:{PER}:{CAT}:{PROC}' {NORMALIZE} -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold {THR}".format(
                             DIR=dir,
                             ANA=ana,
                             CHN=chn,
                             PER=per,
+                            NORMALIZE=normalize_bbb,
                             CAT=config.bbbcat[chn][per][idx],
                             PROC=config.bbbproc[chn][idx].replace('>',',') if options.new_merging else config.bbbproc[chn][idx],
                             THR=config.bbbthreshold[chn]
