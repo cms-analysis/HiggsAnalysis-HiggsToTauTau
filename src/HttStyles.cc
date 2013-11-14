@@ -196,7 +196,7 @@ void CMSPrelim(const char* dataset, const char* channel, double lowX, double low
   lumi->SetBorderSize(   0 );
   lumi->SetFillStyle(    0 );
   lumi->SetTextAlign(   12 );
-  lumi->SetTextSize ( 0.03 );
+  lumi->SetTextSize ( 0.04 );
   lumi->SetTextColor(    1 );
   lumi->SetTextFont (   62 );
   lumi->AddText(dataset);
@@ -206,7 +206,7 @@ void CMSPrelim(const char* dataset, const char* channel, double lowX, double low
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
   chan->SetTextAlign(   12 );
-  chan->SetTextSize ( 0.05 );
+  chan->SetTextSize ( 0.04 );
   chan->SetTextColor(    1 );
   chan->SetTextFont (   62 );
   chan->AddText(channel);
