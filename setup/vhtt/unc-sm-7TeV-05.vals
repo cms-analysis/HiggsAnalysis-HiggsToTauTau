@@ -17,7 +17,9 @@ mmet_zh      Zjets                                          CMS_zh2l2tau_ZjetBkg
 mmet_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_scale_t_llet_7TeV                          1.000
 mmet_zh      GGToZZ2L2L                                     CMS_zh2l2tau_GGZZ2L2LBkg_7TeV             1.44
 mmet_zh      TTZ                                            CMS_zh2l2tau_TTZBkg_7TeV                  1.50
- 
+mmet_zh      GGToZZ2L2L                                     CMS_vhtt_ggZZNorm_et_7TeV             1.05
+mmet_zh      TTZ                                            CMS_vhtt_ttZNorm_et_7TeV                  1.15
+mmet_zh      ZZ                                            CMS_vhtt_zzNorm_et_7TeV                  1.05
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 
@@ -36,4 +38,6 @@ eeet_zh      Zjets                                          CMS_zh2l2tau_ZjetBkg
 eeet_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_scale_t_llet_7TeV                          1.00
 eeet_zh      GGToZZ2L2L                                     CMS_zh2l2tau_GGZZ2L2LBkg_7TeV             1.44
 eeet_zh      TTZ                                            CMS_zh2l2tau_TTZBkg_7TeV                  1.50
-
+eeet_zh      GGToZZ2L2L                                    CMS_vhtt_ggZZNorm_et_7TeV             1.05
+eeet_zh      TTZ                                           CMS_vhtt_ttZNorm_et_7TeV                  1.15
+eeet_zh      ZZ                                            CMS_vhtt_zzNorm_et_7TeV                  1.05

@@ -14,8 +14,6 @@ ett		signal,wz,zz			CMS_vhtt_el_veto             1.038
 ett		signal,wz,zz			CMS_vhtt_mu_veto             1.007
 ett		fakes				CMS_vhtt_ett_fakes_norm_8TeV 1.150
 ett		fakes				CMS_vhtt_ett_fakes_fit_8TeV  1.0
-ett              zz                             CMS_acceptance_ett_zz_8TeV 1.06
-ett              wz                             CMS_acceptance_ett_wz_8TeV 1.06
 ett             wz                              CMS_vhtt_wzNorm_ett_8TeV     1.05
 ett             zz                              CMS_vhtt_zzNorm_ett_8TeV     1.04
 ett             signal                          CMS_vhtt_signalNorm_ett_8TeV 1.07

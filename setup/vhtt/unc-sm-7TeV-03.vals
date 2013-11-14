@@ -14,6 +14,9 @@ mmme_zh      signal,ZH_hww125                               QCDscale_VH         
 mmme_zh      Zjets                                          CMS_zh2l2tau_ZjetBkg_emu_extrap_7TeV      1.30
 mmme_zh      GGToZZ2L2L                                     CMS_zh2l2tau_GGZZ2L2LBkg_7TeV             1.44
 mmme_zh      TTZ                                            CMS_zh2l2tau_TTZBkg_7TeV                  1.50
+mmme_zh      GGToZZ2L2L                                     CMS_vhtt_ggZZNorm_em_7TeV             1.05
+mmme_zh      TTZ                                            CMS_vhtt_ttZNorm_em_7TeV                  1.10
+mmme_zh      ZZ                                            CMS_vhtt_zzNorm_em_7TeV                  1.05
 
 
 ###########################################################################
@@ -30,6 +33,7 @@ eeem_zh      ZZ                                            pdf_qqbar            
 eeem_zh      signal,ZH_hww125                              pdf_qqbar                            1.027
 eeem_zh      signal,ZH_hww125                              QCDscale_VH                          1.029
 eeem_zh      Zjets                                         CMS_zh2l2tau_ZjetBkg_emu_extrap_7TeV      1.30
-eeem_zh      GGToZZ2L2L                                    CMS_zh2l2tau_GGZZ2L2LBkg_7TeV             1.44
-eeem_zh      TTZ                                           CMS_zh2l2tau_TTZBkg_7TeV                  1.50
+eeem_zh      GGToZZ2L2L                                    CMS_vhtt_ggZZNorm_em_7TeV             1.05
+eeem_zh      TTZ                                           CMS_vhtt_ttZNorm_em_7TeV                  1.10
+eeem_zh      ZZ                                           CMS_vhtt_zzNorm_em_7TeV                  1.05
 

@@ -29,8 +29,10 @@ mmtCatHigh,mmtCatLow signal pdf_qqbar 1.026
 mmtCatHigh,mmtCatLow signal QCDscale_VH 1.009
 
 
-mmtCatHigh,mmtCatLow zz CMS_acceptance_mmt_zz_7TeV 1.06
-mmtCatHigh,mmtCatLow wz CMS_acceptance_mmt_wz_7TeV 1.06
+mmtCatHigh  zz CMS_vhtt_zzNorm_mmtCatHigh_7TeV 1.07
+mmtCatLow   zz CMS_vhtt_zzNorm_mmtCatHigh_7TeV 1.06
+mmtCatHigh  wz CMS_vhtt_wzNorm_mmtCatLow_7TeV  1.05
+mmtCatLow   wz CMS_vhtt_wzNorm_mmtCatLow_7TeV  1.05
 
 
 # Stat shape uncertainties

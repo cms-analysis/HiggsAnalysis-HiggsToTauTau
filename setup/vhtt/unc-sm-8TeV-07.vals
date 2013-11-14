@@ -14,8 +14,6 @@ mtt		signal,wz,zz			CMS_vhtt_el_veto             1.038
 mtt		signal,wz,zz			CMS_vhtt_mu_veto             1.007
 mtt		fakes				CMS_vhtt_mtt_fakes_norm_8TeV 1.150
 mtt		fakes				CMS_vhtt_mtt_fakes_fit_8TeV  1.0
-mtt              zz                             CMS_acceptance_mtt_zz_8TeV 1.06
-mtt              wz                             CMS_acceptance_mtt_wz_8TeV 1.06
 mtt             wz                              CMS_vhtt_wzNorm_mtt_8TeV     1.04
 mtt             zz                              CMS_vhtt_zzNorm_mtt_8TeV     1.04
 mtt             signal                          CMS_vhtt_signalNorm_mtt_8TeV 1.05
