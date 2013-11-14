@@ -28,8 +28,10 @@ eetCatLow,eetCatHigh wz QCDscale_VV 1.04
 eetCatLow,eetCatHigh signal pdf_qqbar 1.023
 eetCatLow,eetCatHigh signal QCDscale_VH 1.01
 
-eetCatHigh,eetCatLow zz CMS_acceptance_eet_zz_8TeV 1.06
-eetCatHigh,eetCatLow wz CMS_acceptance_eet_wz_8TeV 1.06
+eetCatHigh  zz CMS_vhtt_zzNorm_eetCatHigh_8TeV 1.05
+eetCatLow   zz CMS_vhtt_zzNorm_eetCatHigh_8TeV 1.05
+eetCatHigh  wz CMS_vhtt_wzNorm_eetCatLow_8TeV  1.05
+eetCatLow   wz CMS_vhtt_wzNorm_eetCatLow_8TeV  1.07
 
 #charge flip uncertainty
 eetCatLow,eetCatHigh charge_fakes CMS_vhtt_eet_chargeFlip_8TeV 1.0
