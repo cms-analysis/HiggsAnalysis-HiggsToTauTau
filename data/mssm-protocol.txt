@@ -47,10 +47,10 @@ lxq: submit.py --goodness-of-fit --collect-injected-toys LIMITS-yymmdd-mssm/bbb-
 plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py LIMITS-yymmdd-mssm/bbb-mlfit masspoints='160 350'
 
 
-(4) launch/collect/plot mA-tanb
+(4) launch/collect/plot mA-tanb 
 ## lauch final setup of datacards
-lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/*
-lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq
+lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --model [mhmodm,mhmodp,mhmax-mu+200]
+lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --model [mhmodm,mhmodp,mhmax-mu+200] --lxq
 ## lauch limit calculation
 lxb: submit.py --tanb+  -q '-q 2nd' LIMITS-yymmdd-mssm/bbb[-asimov]/*/*
 lxq: submit.py --tanb+  LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_cpu=48:00:00 -j y -o /dev/null" --options='--multi-core=4'

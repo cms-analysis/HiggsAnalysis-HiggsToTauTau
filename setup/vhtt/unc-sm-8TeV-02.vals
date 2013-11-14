@@ -10,10 +10,10 @@ eetCatLow,eetCatHigh simulated CMS_trigger_e 1.01
 
 # Efficiency uncertainties
 eetCatLow,eetCatHigh simulated CMS_eff_e 1.04
-eetCatLow,eetCatHigh simulated CMS_eff_t_eet 1.06
+eetCatLow,eetCatHigh simulated CMS_eff_t_eet_8TeV 1.06
 
 # Scale uncertainties
-eetCatLow,eetCatHigh simulated CMS_scale_t_eet 1.03
+eetCatLow,eetCatHigh simulated CMS_scale_t_eet_8TeV 1.03
 
 # Efficiency of b-jet veto
 eetCatLow,eetCatHigh simulated CMS_fake_b_8TeV 1.01
@@ -27,6 +27,9 @@ eetCatLow,eetCatHigh wz QCDscale_VV 1.04
 
 eetCatLow,eetCatHigh signal pdf_qqbar 1.023
 eetCatLow,eetCatHigh signal QCDscale_VH 1.01
+
+eetCatHigh,eetCatLow zz CMS_acceptance_eet_zz_8TeV 1.06
+eetCatHigh,eetCatLow wz CMS_acceptance_eet_wz_8TeV 1.06
 
 #charge flip uncertainty
 eetCatLow,eetCatHigh charge_fakes CMS_vhtt_eet_chargeFlip_8TeV 1.0
