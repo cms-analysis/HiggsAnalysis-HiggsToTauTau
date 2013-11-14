@@ -3,10 +3,10 @@
 
 
 mmet_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             lumi_7TeV                            1.022
-mmet_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_eff_e                            1.02
-mmet_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_eff_m                            1.04
+mmet_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_eff_e_7TeV                            1.02
+mmet_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_eff_m_7TeV                            1.04
 mmet_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_eff_t_llet_7TeV                            1.06
-mmet_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_trigger_m                        1.01
+mmet_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_trigger_m_7TeV                        1.01
 mmet_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_fake_b_7TeV                      1.01
 mmet_zh      ZZ                                             QCDscale_VV                          1.06
 mmet_zh      ZZ                                             pdf_qqbar                            1.05
@@ -25,9 +25,9 @@ mmet_zh      ZZ                                            CMS_vhtt_zzNorm_et_7T
 
 
 eeet_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             lumi_7TeV                            1.022
-eeet_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_eff_e                            1.06
+eeet_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_eff_e_7TeV                            1.06
 eeet_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_eff_t_llet_7TeV                            1.06
-eeet_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_trigger_e                        1.01
+eeet_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_trigger_e_7TeV                        1.01
 eeet_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ             CMS_fake_b_7TeV                      1.01
 eeet_zh      ZZ                                             QCDscale_VV                          1.06
 eeet_zh      ZZ                                             pdf_qqbar                            1.05

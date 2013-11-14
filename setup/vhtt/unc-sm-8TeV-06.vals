@@ -3,9 +3,9 @@
 
 
 mmtt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ   lumi_8TeV                            1.026
-mmtt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ   CMS_eff_m                            1.04
+mmtt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ   CMS_eff_m_8TeV                            1.04
 mmtt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ   CMS_eff_t_lltt_8TeV                            1.12
-mmtt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ   CMS_trigger_m                        1.01
+mmtt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ   CMS_trigger_m_8TeV                        1.01
 mmtt_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ   CMS_fake_b_8TeV                      1.01
 mmtt_zh      ZZ                                   QCDscale_VV                          1.06
 mmtt_zh      ZZ                                   pdf_qqbar                            1.05
@@ -24,9 +24,9 @@ mmtt_zh      ZZ                                             CMS_vhtt_zzNorm_tt_8
 
 
 eett_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ   lumi_8TeV                            1.026
-eett_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ   CMS_eff_e                            1.04
+eett_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ   CMS_eff_e_8TeV                            1.04
 eett_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ   CMS_eff_t_lltt_8TeV                            1.12
-eett_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ   CMS_trigger_e                        1.01
+eett_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ   CMS_trigger_e_8TeV                        1.01
 eett_zh      signal,ZZ,GGToZZ2L2L,ZH_hww125,TTZ   CMS_fake_b_8TeV                      1.01
 eett_zh      ZZ                                   QCDscale_VV                          1.06
 eett_zh      ZZ                                   pdf_qqbar                            1.05
