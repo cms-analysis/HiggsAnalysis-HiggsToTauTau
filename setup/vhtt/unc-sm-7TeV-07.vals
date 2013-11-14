@@ -16,3 +16,6 @@ mtt		fakes				CMS_vhtt_mtt_fakes_norm_7TeV 1.150
 mtt		fakes				CMS_vhtt_mtt_fakes_fit_7TeV  1.0
 mtt              zz                             CMS_acceptance_mtt_zz_7TeV 1.06
 mtt              wz                             CMS_acceptance_mtt_wz_7TeV 1.06
+mtt             wz                              CMS_vhtt_wzNorm_mtt_7TeV     1.06
+mtt             zz                              CMS_vhtt_zzNorm_mtt_7TeV     1.05
+mtt             signal                          CMS_vhtt_signalNorm_mtt_7TeV 1.05
