@@ -1,7 +1,7 @@
 #!/bin/bash
 
 python HiggsAnalysis/HiggsToTauTau/scripts/doSM.py --update-all --label _droplist -a "bbb" --new-merging --new-merging-threshold=0.5 125
-for i in em et mt tt
+for i in em et mt tt vhtt
 do
     submit.py --max-likelihood --stable LIMITS_droplist/bbb/$i/125
 done
