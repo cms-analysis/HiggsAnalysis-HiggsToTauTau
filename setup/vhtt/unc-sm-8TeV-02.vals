@@ -6,10 +6,10 @@
 eetCatLow,eetCatHigh simulated lumi_8TeV      1.026
 
 # Trigger uncertainties
-eetCatLow,eetCatHigh simulated CMS_trigger_e 1.01
+eetCatLow,eetCatHigh simulated CMS_trigger_e_8TeV 1.01
 
 # Efficiency uncertainties
-eetCatLow,eetCatHigh simulated CMS_eff_e 1.04
+eetCatLow,eetCatHigh simulated CMS_eff_e_8TeV 1.04
 eetCatLow,eetCatHigh simulated CMS_eff_t_eet_8TeV 1.06
 
 # Scale uncertainties

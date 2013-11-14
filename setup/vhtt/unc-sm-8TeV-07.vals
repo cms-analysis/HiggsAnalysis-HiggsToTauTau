@@ -5,13 +5,13 @@ mtt		wz                              pdf_qqbar_wz                    1.040
 mtt		wz                              QCDscale_VV_wz                  1.040
 mtt		zz                              pdf_qqbar_zz                    1.033
 mtt		zz                              QCDscale_VV_zz                  1.023
-mtt		signal,wz,zz			CMS_trigger_m                1.010
-mtt		signal,wz,zz			CMS_eff_m                    1.020
+mtt		signal,wz,zz			CMS_trigger_m_8TeV                1.010
+mtt		signal,wz,zz			CMS_eff_m_8TeV                    1.020
 mtt		signal,wz,zz			CMS_eff_t_mtt_8TeV                    1.120
 mtt		signal,wz,zz			CMS_scale_t_mtt_8TeV                  1.0
 mtt		signal,wz,zz			CMS_scale_met_8TeV                1.0
-mtt		signal,wz,zz			CMS_vhtt_el_veto             1.038
-mtt		signal,wz,zz			CMS_vhtt_mu_veto             1.007
+mtt		signal,wz,zz			cms_vhtt_el_veto_8TeV             1.038
+mtt		signal,wz,zz			cms_vhtt_mu_veto_8TeV             1.007
 mtt		fakes				CMS_vhtt_mtt_fakes_norm_8TeV 1.150
 mtt		fakes				CMS_vhtt_mtt_fakes_fit_8TeV  1.0
 mtt             wz                              CMS_vhtt_wzNorm_mtt_8TeV     1.04

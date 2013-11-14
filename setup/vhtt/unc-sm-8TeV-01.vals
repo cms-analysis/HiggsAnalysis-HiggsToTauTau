@@ -6,11 +6,11 @@
 emtCatHigh,emtCatLow simulated lumi_8TeV      1.026
 
 # Trigger uncertainties
-emtCatHigh,emtCatLow simulated CMS_trigger_em 1.01
+emtCatHigh,emtCatLow simulated CMS_trigger_e_8TeVm 1.01
 
 # Efficiency uncertainties
-emtCatHigh,emtCatLow simulated CMS_eff_e 1.02
-emtCatHigh,emtCatLow simulated CMS_eff_m 1.02
+emtCatHigh,emtCatLow simulated CMS_eff_e_8TeV 1.02
+emtCatHigh,emtCatLow simulated CMS_eff_m_8TeV 1.02
 emtCatHigh,emtCatLow simulated CMS_eff_t_emt_8TeV 1.06
 
 # Scale uncertainties
@@ -41,3 +41,4 @@ emtCatHigh,emtCatLow charge_fakes CMS_vhtt_emt_chargeFlip_8TeV 1.0
 #emtCatHigh,emtCatLow fakes CMS_vhtt_emt_fakes_8TeV 1.07
 emtCatHigh  fakes  CMS_vhtt_emtCatHigh_fakes_8TeV  1.30
 emtCatLow   fakes  CMS_vhtt_emtCatLow_fakes_8TeV   1.30
+
