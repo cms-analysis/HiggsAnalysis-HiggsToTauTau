@@ -173,7 +173,7 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   //leg->SetHeader("Local p-value");
   leg->AddEntry( observed, "p-value observed",  "PL");
   if(innerBand){ leg->AddEntry( innerBand, "#pm 1#sigma expected",  "F" ); }
-  leg->AddEntry( expected, "p-value expected",  "L" );
+  leg->AddEntry( expected, "expected for SM Higgs",  "L" );
   if(outerBand){ leg->AddEntry( outerBand, "#pm 2#sigma expected",  "F" ); }
   leg->Draw("same");
   //canv.RedrawAxis("g");
