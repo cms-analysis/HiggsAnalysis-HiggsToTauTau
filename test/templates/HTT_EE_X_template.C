@@ -14,6 +14,7 @@
 #include <TLegend.h>
 #include <TAttLine.h>
 #include <TPaveText.h>
+#include <TColor.h>
 
 #include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 #include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
@@ -164,12 +165,12 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #ifdef MSSM
   TFile* input2 = new TFile((inputfile+"_$MA_$TANB").c_str());
 #endif
-  TH1F* ZTT     = refill((TH1F*)input ->Get(TString::Format("%s/ZTT"     , directory)), "ZTT"     ); InitHist(ZTT     , "", "", kOrange  -  4, 1001);
-  TH1F* ZEE     = refill((TH1F*)input ->Get(TString::Format("%s/ZEE"     , directory)), "ZEE"     ); InitHist(ZEE     , "", "", kAzure   +  2, 1001);
-  TH1F* TTJ     = refill((TH1F*)input ->Get(TString::Format("%s/TTJ"     , directory)), "TTJ"     ); InitHist(TTJ     , "", "", kBlue    -  8, 1001);
-  TH1F* QCD     = refill((TH1F*)input ->Get(TString::Format("%s/QCD"     , directory)), "QCD"     ); InitHist(QCD     , "", "", kMagenta - 10, 1001);
+  TH1F* ZTT     = refill((TH1F*)input ->Get(TString::Format("%s/ZTT"     , directory)), "ZTT"     ); InitHist(ZTT     , "", "", TColor::GetColor(248,206,104), 1001);
+  TH1F* ZEE     = refill((TH1F*)input ->Get(TString::Format("%s/ZEE"     , directory)), "ZEE"     ); InitHist(ZEE     , "", "", TColor::GetColor(100,182,232), 1001);
+  TH1F* TTJ     = refill((TH1F*)input ->Get(TString::Format("%s/TTJ"     , directory)), "TTJ"     ); InitHist(TTJ     , "", "", TColor::GetColor(155,152,204), 1001);
+  TH1F* QCD     = refill((TH1F*)input ->Get(TString::Format("%s/QCD"     , directory)), "QCD"     ); InitHist(QCD     , "", "", TColor::GetColor(250,202,255), 1001);
   TH1F* Dibosons= refill((TH1F*)input ->Get(TString::Format("%s/Dibosons", directory)), "Dibosons"); InitHist(Dibosons, "", "", kGreen   -  4, 1001);
-  TH1F* WJets   = refill((TH1F*)input ->Get(TString::Format("%s/WJets"   , directory)), "WJets"   ); InitHist(WJets   , "", "", kRed     +  2, 1001);
+  TH1F* WJets   = refill((TH1F*)input ->Get(TString::Format("%s/WJets"   , directory)), "WJets"   ); InitHist(WJets   , "", "", TColor::GetColor(222,90,106), 1001);
 #ifdef MSSM
   TH1F* ggH     = refill((TH1F*)input2->Get(TString::Format("%s/ggH$MA"  , directory)), "ggH"     ); InitSignal(ggH); ggH->Scale($TANB);
   TH1F* bbH     = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA"  , directory)), "bbH"     ); InitSignal(bbH); bbH->Scale($TANB);
@@ -559,12 +560,12 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   canv2->SetGridy();
   canv2->cd();
 
-  InitHist  (scales[0], "", "", kOrange  -  4, 1001);
-  InitHist  (scales[1], "", "", kAzure   +  2, 1001);
-  InitHist  (scales[2], "", "", kBlue    -  8, 1001);
-  InitHist  (scales[3], "", "", kMagenta - 10, 1001);
+  InitHist  (scales[0], "", "", TColor::GetColor(248,206,104), 1001);
+  InitHist  (scales[1], "", "", TColor::GetColor(100,182,232), 1001);
+  InitHist  (scales[2], "", "", TColor::GetColor(155,152,204), 1001);
+  InitHist  (scales[3], "", "", TColor::GetColor(250,202,255), 1001);
   InitHist  (scales[4], "", "", kGreen   -  4, 1001);
-  InitHist  (scales[5], "", "", kRed     +  2, 1001);  
+  InitHist  (scales[5], "", "", TColor::GetColor(222,90,106), 1001);  
 #ifndef DROP_SIGNAL
   InitSignal(scales[6]);
   InitSignal(scales[7]);
