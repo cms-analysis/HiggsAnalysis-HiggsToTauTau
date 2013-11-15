@@ -14,6 +14,7 @@
 #include <TLegend.h>
 #include <TAttLine.h>
 #include <TPaveText.h>
+#include <TColor.h>
 
 #include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 #include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
@@ -191,10 +192,10 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 #ifdef MSSM
   TFile* input2 = new TFile((inputfile+"_$MA_$TANB").c_str());
 #endif
-  TH1F* Fakes  = refill((TH1F*)input->Get(TString::Format("%s/Fakes"     , directory)), "Fakes"  ); InitHist(Fakes, "", "", kMagenta-10, 1001);
-  TH1F* EWK    = refill((TH1F*)input->Get(TString::Format("%s/EWK"       , directory)), "EWK"    ); InitHist(EWK  , "", "", kRed    + 2, 1001);
-  TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/ttbar"     , directory)), "ttbar"  ); InitHist(ttbar, "", "", kBlue   - 8, 1001);
-  TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/Ztt"       , directory)), "Ztt"    ); InitHist(Ztt  , "", "", kOrange - 4, 1001);
+  TH1F* Fakes  = refill((TH1F*)input->Get(TString::Format("%s/Fakes"     , directory)), "Fakes"  ); InitHist(Fakes, "", "", TColor::GetColor(250,202,255), 1001);
+  TH1F* EWK    = refill((TH1F*)input->Get(TString::Format("%s/EWK"       , directory)), "EWK"    ); InitHist(EWK  , "", "", TColor::GetColor(222,90,106), 1001);
+  TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/ttbar"     , directory)), "ttbar"  ); InitHist(ttbar, "", "", TColor::GetColor(155,152,204), 1001);
+  TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/Ztt"       , directory)), "Ztt"    ); InitHist(Ztt  , "", "", TColor::GetColor(248,206,104), 1001);
 #ifdef MSSM
   TH1F* ggH  = refill((TH1F*)input2->Get(TString::Format("%s/ggH$MA"     , directory)), "ggH"    ); InitSignal(ggH    ); ggH    ->Scale($TANB);
   TH1F* bbH  = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA"     , directory)), "bbH"    ); InitSignal(bbH    ); bbH    ->Scale($TANB);
@@ -642,10 +643,10 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   canv2->SetGridy();
   canv2->cd();
 
-  InitHist  (scales[0], "", "", kMagenta-10, 1001);
-  InitHist  (scales[1], "", "", kRed    + 2, 1001);
-  InitHist  (scales[2], "", "", kBlue   - 8, 1001);
-  InitHist  (scales[3], "", "", kOrange - 4, 1001);
+  InitHist  (scales[0], "", "", TColor::GetColor(250,202,255), 1001);
+  InitHist  (scales[1], "", "", TColor::GetColor(222,90,106), 1001);
+  InitHist  (scales[2], "", "", TColor::GetColor(155,152,204), 1001);
+  InitHist  (scales[3], "", "", TColor::GetColor(248,206,104), 1001);
 #ifdef HWW_BG
   InitHist(scales[4], "", "", kGreen + 2, 1001);
   InitHist(scales[5], "", "", kGreen + 2, 1001);
