@@ -200,9 +200,13 @@ if options.update_setup :
     ## apply horizontal morphing for processes, which have not been simulated for 7TeV: ggH_hww145, qqH_hww145
     if any('hww-sig' in ana for ana in analyses):
         for file in glob.glob("{SETUP}/em/htt_em.inputs-sm-7TeV*.root".format(SETUP=setup)) :
-            template_morphing = Morph(file, 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose', 'ggH_hww{MASS}', 'QCDscale_ggH1in,CMS_scale_e_7TeV', '140,150', 5, True,'', '') 
+            template_morphing = Morph(file, 'emu_0jet_low,emu_1jet_low,emu_vbf_loose', 'ggH_hww{MASS}', 'QCDscale_ggH1in,CMS_scale_e_7TeV', '140,150', 5, True,'', '') 
             template_morphing.run()
-            template_morphing = Morph(file, 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose', 'qqH_hww{MASS}', 'CMS_scale_e_7TeV', '140,150', 5, True,'', '') 
+            template_morphing = Morph(file, 'emu_0jet_high,emu_1jet_high', 'ggH_hww{MASS}', 'QCDscale_ggH1in,CMS_scale_e_highpt_7TeV', '140,150', 5, True,'', '') 
+            template_morphing.run()
+            template_morphing = Morph(file, 'emu_0jet_low,emu_1jet_low,emu_vbf_loose', 'qqH_hww{MASS}', 'CMS_scale_e_7TeV', '140,150', 5, True,'', '') 
+            template_morphing.run()
+            template_morphing = Morph(file, 'emu_0jet_high,emu_1jet_high', 'qqH_hww{MASS}', 'CMS_scale_e_highpt_7TeV', '140,150', 5, True,'', '') 
             template_morphing.run()
     ## scale to SM cross section (main processes and all channels but those listed in do_not_scales)
     for chn in config.channels :
