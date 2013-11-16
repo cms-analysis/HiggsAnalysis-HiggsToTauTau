@@ -102,7 +102,7 @@ if options.analysis == "sm" :
         "mt"   : ( 90, 160),
         "et"   : ( 90, 160),
         "tt"   : ( 90, 160),
-        "vhtt" : (110, 145),
+        "vhtt" : ( 90, 145),
         "vhbb" : (110, 145),
     }
 if options.analysis == "mssm" :
