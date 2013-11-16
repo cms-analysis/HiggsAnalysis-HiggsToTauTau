@@ -101,15 +101,24 @@ plot --mass-estimate HiggsAnalysis/HiggsToTauTau/python/layouts/likelihood-scan-
 (7) mu vs mass scan (2-dim):
 STILL NEEDS TO BE IMPLEMENTED/REWORKED
 
+### WARNING: Reliable multi-dimensional fits require a patch to combine, from $CMSSW_BASE/src please run:
+###   patch -u --verbose HiggsAnalysis/CombinedLimit/src/CascadeMinimizer.cc HiggsAnalysis/HiggsToTauTau/data/CascadeMinimizer.diff
+
 (8) cV-cF scan (2-dim):
 ## calculation and plotting
-submit.py --multidim-fit --physics-model="cV-cF" LIMITS-yymmdd-sm/bbb/*
+## Strongly recommend to use option --stable for reliable fit convergence
+submit.py --multidim-fit [--queue='-q 1nd'] [--stable] --physics-model="cV-cF" LIMITS-yymmdd-sm/bbb/*
 limit.py --multidim-fit --physics-model="cV-cF" --collect LIMITS-yymmdd-sm/bbb/*
 plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-cV-cF.py LIMITS-yymmdd-sm/bbb/*
 
 (9) rV-rF scan (2-dim):
 ## calculation and plotting
-submit.py --multidim-fit --physics-model="rV-rF" LIMITS-yymmdd-sm/bbb/*
+## Strongly recommend to use option --stable for reliable fit convergence
+## Ranges for rV-rF are hard-coded in HiggsAnalysis/CombinedLimit/python/PhysicsModel.py, class: RvRfXSHiggs
+## Recommend changing to:
+##  self.modelBuilder.doVar("RV[1,-1,5]")
+##  self.modelBuilder.doVar("RF[1,-2,4]")
+submit.py --multidim-fit [--queue='-q 1nd'] [--stable] --physics-model="rV-rF" LIMITS-yymmdd-sm/bbb/*
 limit.py --multidim-fit --physics-model="rV-rF" --collect LIMITS-yymmdd-sm/bbb/*
 plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-rV-rF.py LIMITS-yymmdd-sm/bbb/*
 
