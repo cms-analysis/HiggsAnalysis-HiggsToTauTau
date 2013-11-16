@@ -486,17 +486,17 @@ if options.optInject :
                 tail = dir[dir.rstrip('/').rfind('/')+1:]
                 if is_number(tail) :
                     dirs[path].append(tail)
+    if options.injected_method == "--max-likelihood" :
+        folder_extension = "-mlfit"
+    elif options.injected_method == "--asymptotic" :
+        folder_extension = "-limit"
+    elif options.injected_method == "--significance-frequentist" :
+        folder_extension = "-sig"
+    elif options.injected_method == "--pvalue-frequentist" :
+        folder_extension = "-pval"
     if not options.calculate_injected :
-        ## prepare options
         opts = options.opt
-        if options.injected_method == "--max-likelihood" :
-            folder_extension = "-mlfit"
-        elif options.injected_method == "--asymptotic" :
-            folder_extension = "-limit"
-        elif options.injected_method == "--significance-frequentist" :
-            folder_extension = "-sig"
-        elif options.injected_method == "--pvalue-frequentist" :
-            folder_extension = "-pval"
+        ## prepare options
         if not options.injected_method == "--max-likelihood" :
             opts+=" --observedOnly"
         else:
@@ -514,6 +514,7 @@ if options.optInject :
                 os.system("lxb-injected.py --name {NAME} --method {METHOD} --input {PATH} {LXQ} {CONDOR} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" --injected-mass {INJECTEDMASS} {MASSES}".format(
                     NAME=jobname, METHOD=options.injected_method, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else ""))
     else :
+        opts = options.opt
         ## directories and masses per directory
         print "Collecting results"
         struct = directories(args)
@@ -528,6 +529,13 @@ if options.optInject :
                     os.system("limit.py --max-likelihood --collect-injected-toys {DIR}/{MASS}".format(DIR=dir, MASS=mass))
             ## finally obtain the result on data 
             lxb_submit(struct[0], struct[1], "--max-likelihood", "{USER}".format(USER=options.opt))
+            ## obtain the expected results using an asimov dataset
+            opts+=" --mass-scan"
+            for path in paths:
+                jobname = "injected-"+path[path.rstrip('/').rfind('/')+1:]+folder_extension+'-exp'
+                os.system("lxb-injected.py --name {NAME} --method {METHOD} --expected --input {PATH} {LXQ} {CONDOR} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" --injected-mass {INJECTEDMASS} {MASSES}".format(
+                    NAME=jobname, METHOD=options.injected_method, PATH=path, SUB=options.queue, NJOB='1', NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else ""))
+           
         else :
             lxb_submit(struct[0], struct[1], "{METHOD} --collect-injected-toys".format(METHOD=options.injected_method), "{USER}".format(USER=options.opt))
 ##
