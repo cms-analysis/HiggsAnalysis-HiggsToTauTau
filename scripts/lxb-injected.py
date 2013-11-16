@@ -66,7 +66,7 @@ masses = "{MASSES}".strip().rstrip().split()
 print "Copying limit folder {PWD}/{PATH}/{DIR} => {TMPDIR}/{USER}/{DIR}_{JOBID}"
 for m in masses :
     os.system("mkdir -p {TMPDIR}/{USER}/{DIR}_{JOBID}/%s"%m)
-    os.system("cp {PWD}/{PATH}/{DIR}/%s/{vhtt,htt}_* {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/"%(m,m))
+    os.system("cp {PWD}/{PATH}/{DIR}/%s/{{vhtt,htt}}_* {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/"%(m,m))
 os.system("cp -r {PWD}/{PATH}/{DIR}/common {TMPDIR}/{USER}/{DIR}_{JOBID}/")
 for m in masses :
     if m :
