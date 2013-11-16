@@ -303,7 +303,7 @@ if options.optMLFit :
                 print"limit.py --max-likelihood {STABLE} --rMin {RMIN} --rMax {RMAX} {DIR}".format(DIR=dir, STABLE=stable, RMIN=options.rMin, RMAX=options.rMax)
             else :
                 os.system("limit.py --max-likelihood {STABLE} --rMin {RMIN} --rMax {RMAX} {USER} {DIR}".format(
-                    STABLE-stable, RMIN=options.rMin, RMAX=options.rMax, USER=options.opt, DIR=dir))
+                    STABLE=stable, RMIN=options.rMin, RMAX=options.rMax, USER=options.opt, DIR=dir))
     else :
         ## directories and mases per directory
         struct = directories(args)
