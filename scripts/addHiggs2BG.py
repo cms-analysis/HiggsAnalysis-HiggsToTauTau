@@ -57,7 +57,7 @@ class MakeDatacard :
         ## prepare mA hist
         hist = self.load_hist(file, help)
         new_hist = hist.Clone()
-        new_hist_name = hist_name.replace("{MASS}".format(MASS=options.mass), "{MASS}_SCALE{SCALE}".format(MASS=options.mass, SCALE=str(scale)), 1) + uncertainty
+        new_hist_name = hist_name.replace("{MASS}".format(MASS=options.mass), "{MASS}_SCALE{SCALE}".format(MASS=options.mass, SCALE=str(int(scale))), 1) + uncertainty
         if options.mssm :
             new_hist_name = hist_name.replace("125".format(MASS=options.mass), "125_MSSM{LABEL}".format(LABEL=options.label), 1) + uncertainty
         new_hist.Scale(scale)
@@ -191,7 +191,7 @@ for dir in directoryList :
                 for signal in signal_processes :
                     if not options.mssm :
                         output_line = output_line +"""shapes {SIGNAL}_SM{LABEL} * {ROOTFILE} $CHANNEL/{SIGNAL}{MASS}_SCALE{SCALE} $CHANNEL/{SIGNAL}{MASS}_SCALE{SCALE}_$SYSTEMATIC 
-                        """.format(SIGNAL=signal, LABEL=options.label, ROOTFILE=rootfile, MASS=options.mass, SCALE=options.scale)
+                        """.format(SIGNAL=signal, LABEL=options.label, ROOTFILE=rootfile, MASS=options.mass, SCALE=int(options.scale))
                     if options.mssm :
                         output_line = output_line +"""shapes {SIGNAL}_MSSM{LABEL} * {ROOTFILE} $CHANNEL/{SIGNAL}_MSSM{LABEL} $CHANNEL/{SIGNAL}_MSSM{LABEL}_$SYSTEMATIC 
                         """.format(SIGNAL=signal, LABEL=options.label, ROOTFILE=rootfile)
