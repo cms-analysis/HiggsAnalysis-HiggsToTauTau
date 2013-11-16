@@ -418,7 +418,7 @@ int main(int argc, char* argv[])
     TGraph* observed  = new TGraph(); //not needed for plot1DScan
     plot.fillCentral(directory, observed, "NLL");
     TGraph* expected = new TGraph();
-    plot.fillCentral(directory, expected, "MEDIAN");
+    plot.fillCentral(directory, expected, "higgsCombineMLFIT.Exp.mH$MASS");
     // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
     plot.fillBand(directory, inner, "TOYBASED", true);
