@@ -1,5 +1,6 @@
 #include "HiggsAnalysis/HiggsToTauTau/interface/PlotLimits.h"
 
+
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
 void plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_low, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* innerBand_low, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* outerBand_low, TGraph* expected, TGraph* expected_low, TGraph* observed, TGraph* observed_low, TGraph* lowerLEP, TGraph* upperLEP, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, TGraph* injected=0, double min=0., double max=50., bool log=false, bool transparent=false);
@@ -38,6 +39,14 @@ PlotLimits::higgsConstraint(const char* directory, double mass, double deltaM)
 void
 PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* innerBand_low, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* outerBand_low, TGraph* expected, TGraph* expected_low, TGraph* observed, TGraph* observed_low, const char* directory)
 {
+  //different MSSM scenarios
+  std::string extralabel_ = "";
+  if(theory_=="MSSM m_{h}^{max} scenario") extralabel_= "mhmax-";
+  if(theory_=="MSSM m_{h}^{modm} scenario") extralabel_= "mhmodm-";
+  if(theory_=="MSSM m_{h}^{modp} scenario") extralabel_= "mhmodp-";
+  //lowmH
+
+
   // set up styles
   SetStyle();
 
@@ -119,18 +128,18 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
   // write results to files
   if(png_){
-    canv.Print(std::string(output_).append("_").append(label_).append(".png").c_str());
+    canv.Print(std::string(output_).append("_").append(extralabel_).append(label_).append(".png").c_str());
   }
   if(pdf_){
-    canv.Print(std::string(output_).append("_").append(label_).append(".pdf").c_str());
-    canv.Print(std::string(output_).append("_").append(label_).append(".eps").c_str());
+    canv.Print(std::string(output_).append("_").append(extralabel_).append(label_).append(".pdf").c_str());
+    canv.Print(std::string(output_).append("_").append(extralabel_).append(label_).append(".eps").c_str());
   }
   if(txt_){
-    print(std::string(output_).append("_").append(label_).c_str(), outerBand, innerBand, expected, observed, "txt");
-    print(std::string(output_).append("_").append(label_).c_str(), outerBand, innerBand, expected, observed, "tex");
+    print(std::string(output_).append("_").append(extralabel_).append(label_).c_str(), outerBand, innerBand, expected, observed, "txt");
+    print(std::string(output_).append("_").append(extralabel_).append(label_).c_str(), outerBand, innerBand, expected, observed, "tex");
   }
   if(root_){
-    TFile* output = new TFile(std::string("limits_").append(label_).append(".root").c_str(), "update");
+    TFile* output = new TFile(std::string("limits_").append(extralabel_).append(label_).append(".root").c_str(), "update");
     if(!output->cd(output_.c_str())){
       output->mkdir(output_.c_str());
       output->cd(output_.c_str());
@@ -146,8 +155,8 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
     if(innerBand_low) innerBand_low->Write("innerBand_low");
     if(outerBand_low) outerBand_low->Write("outerBand_low");
     // auxiliary graphs
-    upperLEP->Write("upperLEP");
-    lowerLEP->Write("lowerLEP");
+    if(extralabel_=="mhmax-") upperLEP->Write("upperLEP");
+    if(extralabel_=="mhmax-") lowerLEP->Write("lowerLEP");
     if(plain) plain->Write("plain");
     if(plain_low) plain_low->Write("plain_low");
     
