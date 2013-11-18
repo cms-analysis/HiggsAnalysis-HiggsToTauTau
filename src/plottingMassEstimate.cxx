@@ -28,6 +28,11 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   double upperBound = 9999.;
   double minX = 0, minY = 9999.;
 
+  // calculate the DeltaNLL for the expected
+  TGraph *newexpected = new TGraph();
+  for(int idx=0; idx<expected->GetN(); ++idx){
+    newexpected->SetPoint(idx,expected->GetX()[idx],expected->GetY()[idx]-TMath::MinElement(expected->GetN(),expected->GetY()));
+  }
   for(int idx=0; idx<observed->GetN(); ++idx){
     if(observed->GetY()[idx] < minY){
       minX = observed->GetX()[idx];
@@ -85,10 +90,10 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   innerBand->SetFillColor(kGreen);
   innerBand->Draw("3same");
 
-  expected->SetLineColor(kBlue);
-  expected->SetLineWidth(3.);
-  expected->SetLineStyle(11);
-  expected->Draw("Lsame");
+  newexpected->SetLineColor(kBlue);
+  newexpected->SetLineWidth(3.);
+  newexpected->SetLineStyle(11);
+  newexpected->Draw("Lsame");
   
   observed->SetMarkerStyle(20);
   observed->SetMarkerSize(1.0);
@@ -107,7 +112,7 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
   leg->AddEntry(observed, "observed",  "PL");
-  leg->AddEntry( expected , "H (125 GeV) expected",  "L" );
+  leg->AddEntry( newexpected , "H (125 GeV) expected",  "L" );
   leg->AddEntry( innerBand, "#pm 1#sigma expected",  "F" ); 
   leg->AddEntry( outerBand, "#pm 2#sigma expected",  "F" ); 
   leg->Draw("same");

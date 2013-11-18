@@ -113,6 +113,8 @@ fgroup.add_option("--strategy", dest="strategy", default=2, type="int",
                   help="Change the strategy of the fit that is performed before the asymptotic limits are calculated. Possible strategies are 0, 1, 2. [Default: 2]")
 fgroup.add_option("--hide-fitresult", dest="hide_fitresult", default=False, action="store_true",
                   help="Specify this option if you want to hide the result of the ML fit from the prompt. [Default: False]")
+fgroup.add_option("--mass-scan", dest="mass_scan", default=False, action="store_true",
+                  help="Specify this option if you want to calculate toys for the mass-scan. This speeds up the calculation a lot. [Default: False]")
 parser.add_option_group(fgroup)
 ##
 ## LIKELIHOOD-SCAN OPTIONS
@@ -507,6 +509,8 @@ for directory in args :
                 stableopt = "--robustFit=1 --stepSize=0.5  --minimizerStrategy=0 --minimizerTolerance=0.1 --preFitValue=0.1  --X-rtd FITTER_DYN_STEP  --cminFallbackAlgo=\"Minuit,0:0.001\" --keepFailures "
             if options.stable :
                 stableopt = "--robustFit=1 --preFitValue=1. --X-rtd FITTER_NEW_CROSSING_ALGO --minimizerAlgoForMinos=Minuit2 --minimizerToleranceForMinos=0.01 --X-rtd FITTER_NEVER_GIVE_UP --X-rtd FITTER_BOUND --minimizerAlgo=Minuit2 --minimizerStrategy=0 --minimizerTolerance=0.001 --cminFallbackAlgo \"Minuit,0:0.001\" --keepFailures "
+            if options.mass_scan:
+                stableopt = "--robustFit=0 --minimizerAlgo=Minuit2 --minimizerStrategy=0 --minimizerTolerance=0.1 --cminPreScan --minos=none "
             stableopt+= "--rMin {MIN} --rMax {MAX} ".format(MIN=options.rMin, MAX=options.rMax)
             redirect = ""
             if options.hide_fitresult :
@@ -514,9 +518,9 @@ for directory in args :
             postfit = "--saveNormalizations --saveShapes --saveWithUncertainties"
             ## run maximum likelihood fit
             print "combine -M MaxLikelihoodFit -m {mass} {minuit} {stable}  {postfit} {user} {wdir}/tmp.root --out=out".format(
-                mass=mass, minuit=minuitopt, stable=stableopt, postfit=postfit, user=options.userOpt, wdir=options.workingdir)
+                mass=mass, minuit=minuitopt, stable=stableopt, postfit=postfit if not options.mass_scan else '', user=options.userOpt, wdir=options.workingdir)
             os.system("combine -M MaxLikelihoodFit -m {mass} {minuit} {stable} {postfit} {user} {wdir}/tmp.root --out=out {redir}".format(
-                mass=mass, minuit=minuitopt, stable=stableopt, postfit=postfit, user=options.userOpt, wdir=options.workingdir, redir=redirect))
+                mass=mass, minuit=minuitopt, stable=stableopt, postfit=postfit if not options.mass_scan else '', user=options.userOpt, wdir=options.workingdir, redir=redirect))
             ## change to sub-directory out and prepare formated output
             os.chdir(os.path.join(subdirectory, "out"))
             print "formating output..."

@@ -257,3 +257,41 @@ def get_channel_dirs(finalstate, category, period):
         for dir in cat_map[period][finalstate][category] :
             combined_names.append(fs_map[finalstate]+'_'+dir)
         return combined_names
+
+def get_shape_systematics(setup, period, channel, category, proc):
+    """
+    take a set of inputs corresponding to an uncertainty configuration
+    and return a list of all shape uncertainties corresponding to the given process
+    """
+    card = "-sm-{PER}-{CAT}".format(PER=period, CAT=category)
+    shape_systematics = []
+    proc_qualifier = [proc]
+    ## determine the names used for the process in the uncertainty file
+    cgs = open(setup+"/"+channel+"/cgs"+card+".conf")
+    for line in cgs:
+        line = line.strip().split()
+        if line and line[0] == '$':
+            new_line = []
+            for l in line:
+                new_line.extend(l.split(','))
+            line = [l.strip().strip(',') for l in new_line]
+            if proc in line:
+                   proc_qualifier.append(line[2])
+    cgs.close()
+    ## extract all uncertainties which are associated with the process from the unc*.vals file
+    vals = open(setup+"/"+channel+"/unc"+card+".vals")
+    for line in vals:
+        line = line.strip().split()
+        if line and '#' not in line[0]:
+            if any(procs in [i.strip() for i in line[1].split(',')] for procs in proc_qualifier):
+                shape_systematics.append(line[2])
+    vals.close()
+    ## remove all non-shape uncertainties from the list of uncertainties
+    config = open(setup+"/"+channel+"/unc"+card+".conf")
+    for line in config:
+        line = line.strip().split()
+        if line and '#' not in line[0]:
+            if line[0] in shape_systematics and line[1] != 'shape':
+                shape_systematics.remove(line[0])
+    config.close()
+    return shape_systematics

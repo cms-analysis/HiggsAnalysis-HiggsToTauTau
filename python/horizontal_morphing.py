@@ -49,6 +49,29 @@ class Morph:
             hist.SetBinContent(1, 10e-6)
         return hist
 
+    def no_negative(self,file, directory, sample, value):
+        """
+        set any negative entries of the histogram to zero.
+        """
+        name = sample
+        hist = self.load_hist(file, directory, name.format(MASS=value))
+        print file, directory, name.format(MASS=value)
+        for i in range(hist.GetNbinsX()):
+            if hist.GetBinContent(i+1) < 0:
+                print "Warning: setting negativ content of bin {BIN} to zero".format(BIN=str(i))
+                hist.SetBinContent(i+1,0)
+        file.Cd("/"+directory)
+        hist.Write(name.format(MASS=value),ROOT.TObject.kOverwrite)
+        for uncert in self.uncerts:
+            for suffix in ['Up','Down']:
+                name = sample+'_'+uncert+suffix
+                hist = self.load_hist(file, directory, name.format(MASS=value))
+                for i in range(hist.GetNbinsX()):
+                    if hist.GetBinContent(i+1) < 0:
+                        hist.SetBinContent(i+1,0)
+                file.Cd("/"+directory)
+                hist.Write(name.format(MASS=value),ROOT.TObject.kOverwrite)
+
     def norm_hist(self, hist_lower, hist_upper, lower, upper, value) :
         """
         Determine the normalization for the morphed histogram from the lower and
@@ -146,3 +169,4 @@ class Morph:
                                 self.morph_hist(file, dir, sample+'_'+uncert+'Down', mass_low, mass_high, value)
                         except AttributeError:
                             print "Warning: could not find shape systematic %s, skipping"  % uncert
+                    self.no_negative(file, dir, sample, value)

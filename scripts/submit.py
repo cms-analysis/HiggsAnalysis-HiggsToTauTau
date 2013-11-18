@@ -303,7 +303,7 @@ if options.optMLFit :
                 print"limit.py --max-likelihood {STABLE} --rMin {RMIN} --rMax {RMAX} {DIR}".format(DIR=dir, STABLE=stable, RMIN=options.rMin, RMAX=options.rMax)
             else :
                 os.system("limit.py --max-likelihood {STABLE} --rMin {RMIN} --rMax {RMAX} {USER} {DIR}".format(
-                    STABLE-stable, RMIN=options.rMin, RMAX=options.rMax, USER=options.opt, DIR=dir))
+                    STABLE=stable, RMIN=options.rMin, RMAX=options.rMax, USER=options.opt, DIR=dir))
     else :
         ## directories and mases per directory
         struct = directories(args)
@@ -347,9 +347,12 @@ if options.optMDFit :
         head = prefix[:prefix.rfind('/')]
         prefix = prefix[head.rfind('/')+1:].replace('/', '-')
         ## define command line, model and model options
-        cmd   = ""
-        model = ""
-        opts  = ""
+        cmd    = ""
+        model  = ""
+        opts   = ""
+        stable = ""
+        if options.stable :
+          stable = ' --limit-options=\"--userOpt=\\\" --minimizerStrategy=0 --minimizerTolerance=0.1 --cminPreScan --cminFallbackAlgo \\\\\\\"Minuit2,0:1.0\\\\\\\" --cminFallbackAlgo \\\\\\\"Minuit2,0:10.0\\\\\\\" --cminFallbackAlgo \\\\\\\"Minuit2,0:50.0\\\\\\\"\\\"\"'
         ## MSSM ggH versus bbH
         if "ggH-bbH" in options.fitModel :
             from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
@@ -371,18 +374,18 @@ if options.optMDFit :
             opts  = "--physics-model-options 'clRange=0:{CL};cqRange=0:{CQ}'".format(CL=bounds["cl-cq",mass][0], CQ=bounds["cl-cq",mass][1])
         ## SM ggH versus qqH (this configuration is optimized for mH=125)
         elif "ggH-qqH" in options.fitModel :
-            cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-QQH-{MASS} --njob 400 --npoints 16".format(PRE=prefix, MASS=mass)
+            cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-QQH-{MASS} --njob 160 --npoints 40".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'ggH-qqH=HiggsAnalysis.CombinedLimit.PhysicsModel:floatingXSHiggs'"
             opts  = "--physics-model-options 'modes=ggH,qqH ggHRange=0:4 qqHRange=0:4'"
         ## SM rV versus rF (this configuration is optimized for mH=125)
         elif "rV-rF" in options.fitModel :
-            cmd   = "lxb-multidim-fit.py --name {PRE}-RV-RF-{MASS} --njob 400 --npoints 16".format(PRE=prefix, MASS=mass)
+            cmd   = "lxb-multidim-fit.py --name {PRE}-RV-RF-{MASS} --njob 160 --npoints 40".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'rV-rF=HiggsAnalysis.CombinedLimit.PhysicsModel:rVrFXSHiggs'"
             #opts  = "--physics-model-options 'rVRange=0:5 rFRange=0:4'"
             opts  = "--physics-model-options 'rVRange=-3:5 rFRange=-2:4'"
         ## SM cV versus cF (this configuration is optimized for mH=125)
         elif "cV-cF" in options.fitModel :
-            cmd   = "lxb-multidim-fit.py --name {PRE}-CV-CF-{MASS} --njob 300 --npoints 12".format(PRE=prefix, MASS=mass)
+            cmd   = "lxb-multidim-fit.py --name {PRE}-CV-CF-{MASS} --njob 120 --npoints 30".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'cV-cF=HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcF'"
             opts  = "--physics-model-options 'cVRange=0:3 cFRange=0:2'"            
         ## add lxq compliance
@@ -394,11 +397,11 @@ if options.optMDFit :
         ## add fastScan option
         fastScan = " --limit-options '--fastScan'" if options.fastScan else ""
         if options.printOnly :
-            print "{CMD} {MODEL} {OPTS} {FAST} {QUEUE} {SYS} {USER} {DIR}".format(
-                CMD=cmd, MODEL=model, OPTS=opts, FAST=fastScan, QUEUE=queue, SYS=sys, USER=options.opt, DIR=dir)
+          print "{CMD} {MODEL} {OPTS} {FAST} {QUEUE} {SYS} {USER} {STABLE} {DIR}".format(
+                CMD=cmd, MODEL=model, OPTS=opts, FAST=fastScan, QUEUE=queue, SYS=sys, USER=options.opt, STABLE=stable, DIR=dir)
         else :
-            os.system("{CMD} {MODEL} {OPTS} {FAST} {QUEUE} {SYS} {USER} {DIR}".format(
-                CMD=cmd, MODEL=model, OPTS=opts, FAST=fastScan, QUEUE=queue, SYS=sys, USER=options.opt, DIR=dir))
+            os.system("{CMD} {MODEL} {OPTS} {FAST} {QUEUE} {SYS} {USER} {STABLE} {DIR}".format(
+                CMD=cmd, MODEL=model, OPTS=opts, FAST=fastScan, QUEUE=queue, SYS=sys, USER=options.opt, STABLE=stable, DIR=dir))
 ##
 ## SIGNIFICANCE
 ##
@@ -486,19 +489,21 @@ if options.optInject :
                 tail = dir[dir.rstrip('/').rfind('/')+1:]
                 if is_number(tail) :
                     dirs[path].append(tail)
+    if options.injected_method == "--max-likelihood" :
+        folder_extension = "-mlfit"
+    elif options.injected_method == "--asymptotic" :
+        folder_extension = "-limit"
+    elif options.injected_method == "--significance-frequentist" :
+        folder_extension = "-sig"
+    elif options.injected_method == "--pvalue-frequentist" :
+        folder_extension = "-pval"
     if not options.calculate_injected :
-        ## prepare options
         opts = options.opt
-        if options.injected_method == "--max-likelihood" :
-            folder_extension = "-mlfit"
-        elif options.injected_method == "--asymptotic" :
-            folder_extension = "-limit"
-        elif options.injected_method == "--significance-frequentist" :
-            folder_extension = "-sig"
-        elif options.injected_method == "--pvalue-frequentist" :
-            folder_extension = "-pval"
+        ## prepare options
         if not options.injected_method == "--max-likelihood" :
             opts+=" --observedOnly"
+        else:
+            opts+=" --mass-scan"
         if not options.nuisances == "" :
             opts+=" --no-prefit --external-pulls \"{PATH}\" --signal-plus-background {SPLUSB}".format(PATH=options.nuisances, SPLUSB=options.signal_plus_BG)
         method = options.injected_method
@@ -512,6 +517,7 @@ if options.optInject :
                 os.system("lxb-injected.py --name {NAME} --method {METHOD} --input {PATH} {LXQ} {CONDOR} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" --injected-mass {INJECTEDMASS} {MASSES}".format(
                     NAME=jobname, METHOD=options.injected_method, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else ""))
     else :
+        opts = options.opt
         ## directories and masses per directory
         print "Collecting results"
         struct = directories(args)
@@ -526,6 +532,13 @@ if options.optInject :
                     os.system("limit.py --max-likelihood --collect-injected-toys {DIR}/{MASS}".format(DIR=dir, MASS=mass))
             ## finally obtain the result on data 
             lxb_submit(struct[0], struct[1], "--max-likelihood", "{USER}".format(USER=options.opt))
+            ## obtain the expected results using an asimov dataset
+            opts+=" --mass-scan"
+            for path in paths:
+                jobname = "injected-"+path[path.rstrip('/').rfind('/')+1:]+folder_extension+'-exp'
+                os.system("lxb-injected.py --name {NAME} --method {METHOD} --expected --input {PATH} {LXQ} {CONDOR} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" --injected-mass {INJECTEDMASS} {MASSES}".format(
+                    NAME=jobname, METHOD=options.injected_method, PATH=path, SUB=options.queue, NJOB='1', NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else ""))
+           
         else :
             lxb_submit(struct[0], struct[1], "{METHOD} --collect-injected-toys".format(METHOD=options.injected_method), "{USER}".format(USER=options.opt))
 ##

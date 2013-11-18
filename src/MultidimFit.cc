@@ -35,18 +35,59 @@ PlotLimits::convexGraph(TGraph* graph, double minX, double minY, double xLowerBo
   int n=graph->GetN();
   unsigned int lowerX=0, upperX=0;
   unsigned int lowerY=0, upperY=0;
+  /*
+   Add four variables to keep track of the average cross point on each axis
+   These midpoints will be need when adding extra points to the TGraph beyond
+   the axis range
+  */
+  double upperX_midpoint = 0.;
+  double upperY_midpoint = 0.;
+  double lowerX_midpoint = 0.;
+  double lowerY_midpoint = 0.;
   double bx[n]; double by[n];
   for(int idx=0; idx<n; ++idx){ 
     graph->GetPoint(idx, bx[idx],by[idx]);
-    if(fabs(bx[idx]-xUpperBound)<tollerance){ if(fabs(buffer[0]-by[idx])>3*tollerance){ ++upperX; buffer[0]=by[idx];} }
-    if(fabs(bx[idx]-xLowerBound)<tollerance){ if(fabs(buffer[1]-by[idx])>3*tollerance){ ++lowerX; buffer[1]=by[idx];} }
-    if(fabs(by[idx]-yUpperBound)<tollerance){ if(fabs(buffer[2]-bx[idx])>3*tollerance){ ++upperY; buffer[2]=bx[idx];} }
-    if(fabs(by[idx]-yLowerBound)<tollerance){ if(fabs(buffer[3]-bx[idx])>3*tollerance){ ++lowerY; buffer[3]=bx[idx];} }
+    //std::cout << idx << " " << bx[idx] << " " << by[idx] << std::endl;
+    if(fabs(bx[idx]-xUpperBound)<tollerance){
+      if(fabs(buffer[0]-by[idx])>3*tollerance){
+        bool divide = (upperX_midpoint != 0.);
+        upperX_midpoint+= by[idx];
+        if (divide) upperX_midpoint /= 2.;
+        ++upperX; buffer[0]=by[idx];
+      }
+    }
+    if(fabs(bx[idx]-xLowerBound)<tollerance){
+      if(fabs(buffer[1]-by[idx])>3*tollerance){
+        bool divide = (lowerX_midpoint != 0.);
+        lowerX_midpoint+= by[idx];
+        if (divide) lowerX_midpoint /= 2.;
+        ++lowerX; buffer[1]=by[idx];
+      }
+    }
+    if(fabs(by[idx]-yUpperBound)<tollerance){
+      if(fabs(buffer[2]-bx[idx])>3*tollerance){
+        bool divide = (upperY_midpoint != 0.);
+        upperY_midpoint+= by[idx];
+        if (divide) upperY_midpoint /= 2.;
+        ++upperY; buffer[2]=bx[idx];
+      }
+    }
+    if(fabs(by[idx]-yLowerBound)<tollerance){
+      if(fabs(buffer[3]-bx[idx])>3*tollerance){
+        bool divide = (lowerY_midpoint != 0.);
+        lowerY_midpoint+= by[idx];
+        if (divide) lowerY_midpoint /= 2.;
+        ++lowerY; buffer[3]=bx[idx];
+      }
+    }
   }
   // set up the convex graph that can be filled for plotting
   TGraph* convex = new TGraph(); int idx=0;
-  if(upperX>0){
+  if(upperX==1){ // Exactly one crossing on the x upper bound
     convex->SetPoint(idx++, xUpperBound+9999., 0.);
+  }
+  if(upperX>1){ // More than one (probably two) crossings on the x upperbound
+    convex->SetPoint(idx++, xUpperBound+tollerance, upperX_midpoint);
   }
   if(upperY>0){
     if(upperX>0){
@@ -55,7 +96,7 @@ PlotLimits::convexGraph(TGraph* graph, double minX, double minY, double xLowerBo
     else{
       if(upperY>1){
 	// for cases where there are two intercepts with a boundary
-	convex->SetPoint(idx++, minX, yUpperBound+tollerance);
+	convex->SetPoint(idx++, upperY_midpoint, yUpperBound+tollerance);
       }
       else{
 	// for cases where there is only one intercept with a boundary
@@ -66,18 +107,21 @@ PlotLimits::convexGraph(TGraph* graph, double minX, double minY, double xLowerBo
   for(int isrc=0; isrc<n; ++isrc){
     convex->SetPoint(idx++, bx[isrc], by[isrc]);
   }
-  if(lowerX>0){
+  if(lowerX==1){
     convex->SetPoint(idx++, xLowerBound-9999., 0.);
+  }
+  if(lowerX>1){
+    convex->SetPoint(idx++, xLowerBound-tollerance, lowerX_midpoint);
   }
   if(lowerY>0){
     if(lowerX>0){
       std::cout << "adding far away point to close" << std::endl;
-      convex->SetPoint(idx++, 0., yLowerBound-9999.);
+      convex->SetPoint(idx++, 0, yLowerBound-9999.);
     }
     else{
       if(lowerY>1){
 	// for cases where there are two intercepts with a boundary
-	convex->SetPoint(idx++, minX, 0.);
+	convex->SetPoint(idx++, lowerY_midpoint, 0.);
       }
       else{
 	// for cases where there is only one intercept with a boundary
@@ -87,7 +131,21 @@ PlotLimits::convexGraph(TGraph* graph, double minX, double minY, double xLowerBo
   }
   TGraph* sorted = convex ;
   if(sort){
-    sorted = sortedGraph(convex, minX, minY);
+    // If the graph is effectively a single line going from
+    // negative to positive we don't want to sort in the
+    // standard way, but instead just order by x-coord
+    if (!(lowerX >0 && upperX > 0)) {
+      if (lowerX>0 && lowerY>0) {
+        // Order around the origin instead
+        sorted = sortedGraph(convex, 0, 0);
+      } else if (upperX>0 && lowerY>0) {
+        sorted = sortedGraph(convex, xUpperBound, 0);
+      } else {
+        sorted = sortedGraph(convex, minX, minY);
+      }
+    } else {
+      sorted->Sort();
+    }
   }
   /*
   // uncomment for debugging

@@ -84,7 +84,10 @@ class AsimovDatacard(DatacardAdaptor) :
                         hist = hist_file.Get(card.path_to_shape(bin, 'data_obs'))
                         value = hist.Integral()
                         hist_file.Close()
-                    observations.append('%.d' % round(value))
+                    if value:
+                        observations.append('%.d' % round(value))
+                    else:
+                        observations.append('0')
                 new_line = 'observation '+' '.join(observations)+'\n'
             new_file.write(new_line)
         old_file.close()

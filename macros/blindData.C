@@ -82,7 +82,9 @@ void randomize(TRandom3* rnd, TH1F* hist, unsigned int debug=0.)
     hist->SetBinContent(idx+1, value); hist->SetBinError(idx+1, TMath::Sqrt(value));
   }
   // make sure there is no rounding error, and the total is really an integer.
-  hist->Scale(TMath::Nint(hist->Integral())/hist->Integral());
+  if(hist->Integral() != 0){
+    hist->Scale(TMath::Nint(hist->Integral())/hist->Integral());
+  }
 }
 
 bool inPatterns(const std::string& test, const char* patterns)

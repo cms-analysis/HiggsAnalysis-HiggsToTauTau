@@ -6,6 +6,7 @@ from HiggsAnalysis.HiggsToTauTau.horizontal_morphing import Morph
 from HiggsAnalysis.HiggsToTauTau.AsimovDatacard import *
 from HiggsAnalysis.HiggsToTauTau.scale2SM import RescaleSamples
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs 
+from HiggsAnalysis.HiggsToTauTau.utils import get_shape_systematics
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGs",
@@ -25,8 +26,10 @@ parser.add_option("--hww-scale", dest="hww_scale", default='1.', type="string",
                   help="specify the scale factor for the hww contribution here. The scale factor should be relative to the SM expectation. [Default: 1.]")
 parser.add_option("--new-merging", dest="new_merging", default=False, action="store_true",
                   help="added to test the new merging introduced by Andrew. [Default: False]")
-parser.add_option("--new-merging-threshold", dest="new_merging_threshold", default="0.4", type="string",
-                  help="Threshold for the new merging by Andrew. [Default: \"0.4\"]")
+parser.add_option("--new-merging-threshold", dest="new_merging_threshold", default="0.5", type="string",
+                  help="Threshold for the new merging by Andrew. [Default: \"0.5\"]")
+parser.add_option("--drop-normalize-bbb", dest="drop_normalize_bbb", default=False, action="store_true",
+                  help="Normalize yield to stay constand when adding bbb shape uncertainties. [Default: False]")
 parser.add_option("--add-mutau-soft", dest="add_mutau_soft", default=False, action="store_true",
                   help="Specify this option to add the soft muon pt analysis. [Default: False]")
 parser.add_option("--update-all", dest="update_all", default=False, action="store_true",
@@ -41,6 +44,8 @@ parser.add_option("--drop-list", dest="drop_list", default="",  type="string",
                   help="The full path to the list of uncertainties to be dropped from the datacards due to pruning. If this string is empty no prunig will be applied. [Default: \"\"]")
 parser.add_option("-c", "--config", dest="config", default="",
                   help="Additional configuration file to be used for the setup [Default: \"\"]")
+parser.add_option("--interpolate", dest="interpolate", default="",
+                  help="Step size for interpolation of masspoints between the given arguments. [Default: \"\"]")
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -109,9 +114,11 @@ print "# --hww-mass                :", 'free' if options.hww_mass == '' else opt
 print "# --hww-scale               :", options.hww_scale
 print "# --new-merging             :", options.new_merging
 print "# --new-merging-threshold   :", options.new_merging_threshold
+print "# --drop-bbb-normalisation  :", options.drop_normalize_bbb
 print "# --add-mutau-soft          :", options.add_mutau_soft
 print "# --blind-datacards         :", options.blind_datacards
 print "# --extra-templates         :", options.extra_templates
+print "# --interpolate             :", options.interpolate
 print "# --------------------------------------------------------------------------------------"
 for chn in config.channels:
     print "# --inputs-"+chn+"               :", config.inputs[chn]
@@ -191,11 +198,12 @@ if options.update_setup :
         os.system("mv {SETUP}/mt/htt_mt.inputs-sm-8TeV-bak.root {SETUP}/mt/htt_mt.inputs-sm-8TeV.root".format(SETUP=setup))
         os.system("rm {SETUP}/mt/htt_mt.inputs-sm-8TeV-soft.root".format(SETUP=setup))
     ## apply horizontal morphing for processes, which have not been simulated for 7TeV: ggH_hww145, qqH_hww145
-    for file in glob.glob("{SETUP}/em/htt_em.inputs-sm-7TeV*.root".format(SETUP=setup)) :
-        template_morphing = Morph(file, 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose', 'ggH_hww{MASS}', 'QCDscale_ggH1in,CMS_scale_e_7TeV', '140,150', 5, True,'', '') 
-        template_morphing.run()
-        template_morphing = Morph(file, 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose', 'qqH_hww{MASS}', 'CMS_scale_e_7TeV', '140,150', 5, True,'', '') 
-        template_morphing.run()
+    if any('hww-sig' in ana for ana in analyses):
+        for file in glob.glob("{SETUP}/em/htt_em.inputs-sm-7TeV*.root".format(SETUP=setup)) :
+            template_morphing = Morph(file, 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose', 'ggH_hww{MASS}', 'QCDscale_ggH1in,CMS_scale_e_7TeV', '140,150', 5, True,'', '') 
+            template_morphing.run()
+            template_morphing = Morph(file, 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose', 'qqH_hww{MASS}', 'CMS_scale_e_7TeV', '140,150', 5, True,'', '') 
+            template_morphing.run()
     ## scale to SM cross section (main processes and all channels but those listed in do_not_scales)
     for chn in config.channels :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
@@ -254,6 +262,20 @@ if options.update_setup :
                         INPUTFILE=file,
                         PROCESS=proc+'125'
                         ))
+    ## if requested apply horizontal morphing for processes to get templates for intermediate masses
+    if options.interpolate:
+        for i in range(len(masspoints)-1):
+            for chn in config.channels:
+                for per in config.periods:
+                    for cat in config.categories[chn][per]:
+                        for file in glob.glob("{SETUP}/{CHN}/htt_{CHN}.inputs-sm-{PER}*.root".format(SETUP=setup,CHN=chn, PER=per, CAT=cat)):
+                            for proc in ['ggH','qqH','VH']:
+                                template_morphing = Morph(file, get_channel_dirs(chn,"0"+cat,per)[0], proc+'{MASS}', ','.join(get_shape_systematics(setup,per,chn,"0"+cat,proc)), masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '') 
+                                template_morphing.run()
+            ## add the new points to the masses array
+            masses.append(masspoints[i]+'-'+masspoints[i+1]+':'+options.interpolate)
+        ## set the masspoint list to the new points
+        masspoints = [str(m) for m in range(int(masspoints[0]),int(masspoints[-1])+1,int(options.interpolate))]
     ## set up directory structure
     dir = "{CMSSW_BASE}/src/setups{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
     if os.path.exists(dir) :
@@ -283,24 +305,29 @@ if options.update_setup :
                 for per in config.periods:
                     for idx in range(len(config.bbbcat[chn][per])):
                         if options.new_merging :
-                            filename='vhtt.inputs-sm-'+per+'.root' if chn == vhtt else 'htt_'+chn+'.inputs-sm-'+per+'.root'
+                            filename='vhtt.inputs-sm-'+per+'.root' if chn == "vhtt" else 'htt_'+chn+'.inputs-sm-'+per+'.root'
                             for cat in config.bbbcat[chn][per][idx].split(',') :
                                 ## loop all categories in question for index idx
                                 if len(config.bbbproc[chn][idx].replace('>',',').split(','))>1 :
                                     ## only get into action if there is more than one sample to do the merging for
-                                    os.system("merge_bin_errors.py --folder {DIR} --processes {PROC} --bbb_threshold=0. --merge_threshold={THRESH} --verbose {SOURCE} {TARGET}".format(
+                                    os.system("merge_bin_errors.py --folder {DIR} --processes {PROC} --bbb_threshold={BBBTHR} --merge_threshold={THRESH} --verbose {SOURCE} {TARGET}".format(
                                         ## this list has only one entry by construction
                                         DIR=get_channel_dirs(chn, cat,per)[0],
                                         PROC=config.bbbproc[chn][idx].replace('>',','),
+                                        BBBTHR=config.bbbthreshold[chn],
                                         THRESH=options.new_merging_threshold,
                                         SOURCE=dir+'/'+ana+'/'+chn+'/'+filename,
                                         TARGET=dir+'/'+ana+'/'+chn+'/'+filename,
                                         ))
-                        os.system("add_bbb_errors.py '{CHN}:{PER}:{CAT}:{PROC}' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold {THR}".format(
+                        normalize_bbb = ''
+                        if not options.drop_normalize_bbb :
+                            normalize_bbb = ' --normalize '
+                        os.system("add_bbb_errors.py '{CHN}:{PER}:{CAT}:{PROC}' {NORMALIZE} -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold {THR}".format(
                             DIR=dir,
                             ANA=ana,
                             CHN=chn,
                             PER=per,
+                            NORMALIZE=normalize_bbb,
                             CAT=config.bbbcat[chn][per][idx],
                             PROC=config.bbbproc[chn][idx].replace('>',',') if options.new_merging else config.bbbproc[chn][idx],
                             THR=config.bbbthreshold[chn]

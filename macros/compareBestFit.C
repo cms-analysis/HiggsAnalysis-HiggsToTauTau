@@ -87,7 +87,7 @@ void compareBestFit(const char* filename="test.root", const char* channelstr="bo
   TFile* inputFile = new TFile(filename); if(inputFile->IsZombie()){ std::cout << "ERROR:: file: " << filename << " does not exist.\n"; }
 
   if(std::string(type).find("sm")!=std::string::npos){
-    label="CMS,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV";
+    label="CMS,  4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV";
   }
 
   /// prepare input parameters
@@ -191,7 +191,11 @@ void compareBestFit(const char* filename="test.root", const char* channelstr="bo
       //std::cout<<gr->GetYaxis()->GetBinCenter(hexp.size()-i)<<std::endl;
       //BAND->GetYaxis()->SetBinLabel(hexp.size()-1, legendEntry(channels[hexp.size()-1]).c_str());
       for(unsigned int j=0; j<hexp.size(); ++j){
-	gr  ->GetYaxis()->SetBinLabel(hexp.size()-j, legendEntry(channels[j]).c_str());
+        char bestfit_char[40];
+        float central = hexp[j]->Eval(mass);
+        float error = (hband[j]->GetErrorYhigh(massid)+hband[j]->GetErrorYlow(massid))/2;
+        sprintf(bestfit_char,"}}{#bf{#scale[0.5]{%.2f#pm%.2f}}}",central, error);
+        gr  ->GetYaxis()->SetBinLabel(hexp.size()-j, std::string("#splitline{#scale[0.9]{").append(legendEntry(channels[j])).append(bestfit_char).c_str());
       }
       gr->GetYaxis()->SetTickLength(0);
       gr->GetYaxis()->SetLabelFont(62);
@@ -242,7 +246,7 @@ void compareBestFit(const char* filename="test.root", const char* channelstr="bo
   //ZERO->Draw("same");
   
   //TPaveText *pt = new TPaveText(2*(maximum+minimum)/3,hexp.size()-0.3,maximum,hexp.size()-0.02);
-  TPaveText *pt = new TPaveText(0.76, 0.88, 1.0, 1.0, "NDC");
+  TPaveText *pt = new TPaveText(0.62, 0.85, 0.69, 0.88, "NDC");
   if(std::string(type).find("mssm")!=std::string::npos) pt->AddText(TString::Format("m_{A} = %0.0f GeV" , mass));
   else pt->AddText(TString::Format("m_{H} = %0.0f GeV" , mass));
   pt->SetBorderSize(   0 );

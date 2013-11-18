@@ -23,16 +23,24 @@ log = logging.getLogger('stat_shapes')
 
 def walk_and_copy(inputdir, outputdir, pattern, mergers, threshold, prefix, normalize):
     ''' Recursive function which copies from inputdir to outputdir '''
+    keys = []
     for key in inputdir.GetListOfKeys():
+        # Prevent double counting of histograms
+        if key.GetName() in keys :
+            continue
+        elif isinstance(inputdir.Get(key.GetName()), ROOT.TH1) :
+            keys.append(key.GetName())
         # Keep track of stuff we find in this directory
         directories = []
         histos = []
         name = key.GetName()
         classname = key.GetClassName()
         if classname.startswith('TDirectory'):
-            directories.append(name)
+            if not name in directories :
+                directories.append(name)
         elif isinstance(inputdir.Get(name), ROOT.TH1):
-            histos.append(name)
+            if not name in histos :
+                histos.append(name)
         # Copy all histograms from input -> output directory
         for histo in histos:
             th1 = inputdir.Get(histo)

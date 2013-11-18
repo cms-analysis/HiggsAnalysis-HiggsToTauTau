@@ -1,0 +1,27 @@
+diff --git a/src/CascadeMinimizer.cc b/src/CascadeMinimizer.cc
+index 0b342fa..d64e1f3 100644
+--- a/src/CascadeMinimizer.cc
++++ b/src/CascadeMinimizer.cc
+@@ -72,6 +72,7 @@ bool CascadeMinimizer::improveOnce(int verbose)
+ {
+     std::string myType(ROOT::Math::MinimizerOptions::DefaultMinimizerType());
+     std::string myAlgo(ROOT::Math::MinimizerOptions::DefaultMinimizerAlgo());
++    minimizer_->setEps(ROOT::Math::MinimizerOptions::DefaultTolerance());
+     bool outcome = false;
+     if (oldFallback_){
+         outcome = nllutils::robustMinimize(nll_, *minimizer_, verbose, setZeroPoint_);
+@@ -124,9 +125,12 @@ bool CascadeMinimizer::minimize(int verbose, bool cascade)
+         RooMsgService::instance().setStreamStatus(1,kFALSE);
+         RooMsgService::instance().setGlobalKillBelow(RooFit::FATAL);
+     }
+-    minimizer_->setPrintLevel(verbose-2);  
++    minimizer_->setPrintLevel(verbose-2);
+     minimizer_->setStrategy(strategy_);
+-    if (preScan_) minimizer_->minimize("Minuit2","Scan");
++    if (preScan_) {
++      minimizer_->setEps(ROOT::Math::MinimizerOptions::DefaultTolerance());
++      minimizer_->minimize("Minuit2","Scan");
++    }
+     if (preFit_ && nuisances_ != 0) {
+         RooArgSet frozen(*nuisances_);
+         RooStats::RemoveConstantParameters(&frozen);
