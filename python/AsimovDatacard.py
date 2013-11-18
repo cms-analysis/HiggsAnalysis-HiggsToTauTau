@@ -148,7 +148,7 @@ class AsimovDatacard(DatacardAdaptor) :
                                 BKG = bkg_list,
                                 SIG = sig_list.replace('$MASS',self.mass),
                                 DIR = bin,
-                                SEED = catseeds[ind],
+                                SEED = catseeds[ind] if not int(self.seed) == -1 else -1,
                                 SCALE = self.signal_scale,
                                 IDX = '' if self.update_file else index,
                                 DATA_OBS = self.list2string(card, bin, ['data_obs']) 
