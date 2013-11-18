@@ -347,9 +347,12 @@ if options.optMDFit :
         head = prefix[:prefix.rfind('/')]
         prefix = prefix[head.rfind('/')+1:].replace('/', '-')
         ## define command line, model and model options
-        cmd   = ""
-        model = ""
-        opts  = ""
+        cmd    = ""
+        model  = ""
+        opts   = ""
+        stable = ""
+        if options.stable :
+          stable = ' --limit-options=\"--userOpt=\\\" --minimizerStrategy=0 --minimizerTolerance=0.1 --cminPreScan --cminFallbackAlgo \\\\\\\"Minuit2,0:1.0\\\\\\\" --cminFallbackAlgo \\\\\\\"Minuit2,0:10.0\\\\\\\" --cminFallbackAlgo \\\\\\\"Minuit2,0:50.0\\\\\\\"\\\"\"'
         ## MSSM ggH versus bbH
         if "ggH-bbH" in options.fitModel :
             from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
@@ -371,18 +374,18 @@ if options.optMDFit :
             opts  = "--physics-model-options 'clRange=0:{CL};cqRange=0:{CQ}'".format(CL=bounds["cl-cq",mass][0], CQ=bounds["cl-cq",mass][1])
         ## SM ggH versus qqH (this configuration is optimized for mH=125)
         elif "ggH-qqH" in options.fitModel :
-            cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-QQH-{MASS} --njob 400 --npoints 16".format(PRE=prefix, MASS=mass)
+            cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-QQH-{MASS} --njob 160 --npoints 40".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'ggH-qqH=HiggsAnalysis.CombinedLimit.PhysicsModel:floatingXSHiggs'"
             opts  = "--physics-model-options 'modes=ggH,qqH ggHRange=0:4 qqHRange=0:4'"
         ## SM rV versus rF (this configuration is optimized for mH=125)
         elif "rV-rF" in options.fitModel :
-            cmd   = "lxb-multidim-fit.py --name {PRE}-RV-RF-{MASS} --njob 400 --npoints 16".format(PRE=prefix, MASS=mass)
+            cmd   = "lxb-multidim-fit.py --name {PRE}-RV-RF-{MASS} --njob 160 --npoints 40".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'rV-rF=HiggsAnalysis.CombinedLimit.PhysicsModel:rVrFXSHiggs'"
             #opts  = "--physics-model-options 'rVRange=0:5 rFRange=0:4'"
             opts  = "--physics-model-options 'rVRange=-3:5 rFRange=-2:4'"
         ## SM cV versus cF (this configuration is optimized for mH=125)
         elif "cV-cF" in options.fitModel :
-            cmd   = "lxb-multidim-fit.py --name {PRE}-CV-CF-{MASS} --njob 300 --npoints 12".format(PRE=prefix, MASS=mass)
+            cmd   = "lxb-multidim-fit.py --name {PRE}-CV-CF-{MASS} --njob 120 --npoints 30".format(PRE=prefix, MASS=mass)
             model = "--physics-model 'cV-cF=HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcF'"
             opts  = "--physics-model-options 'cVRange=0:3 cFRange=0:2'"            
         ## add lxq compliance
@@ -394,11 +397,11 @@ if options.optMDFit :
         ## add fastScan option
         fastScan = " --limit-options '--fastScan'" if options.fastScan else ""
         if options.printOnly :
-            print "{CMD} {MODEL} {OPTS} {FAST} {QUEUE} {SYS} {USER} {DIR}".format(
-                CMD=cmd, MODEL=model, OPTS=opts, FAST=fastScan, QUEUE=queue, SYS=sys, USER=options.opt, DIR=dir)
+          print "{CMD} {MODEL} {OPTS} {FAST} {QUEUE} {SYS} {USER} {STABLE} {DIR}".format(
+                CMD=cmd, MODEL=model, OPTS=opts, FAST=fastScan, QUEUE=queue, SYS=sys, USER=options.opt, STABLE=stable, DIR=dir)
         else :
-            os.system("{CMD} {MODEL} {OPTS} {FAST} {QUEUE} {SYS} {USER} {DIR}".format(
-                CMD=cmd, MODEL=model, OPTS=opts, FAST=fastScan, QUEUE=queue, SYS=sys, USER=options.opt, DIR=dir))
+            os.system("{CMD} {MODEL} {OPTS} {FAST} {QUEUE} {SYS} {USER} {STABLE} {DIR}".format(
+                CMD=cmd, MODEL=model, OPTS=opts, FAST=fastScan, QUEUE=queue, SYS=sys, USER=options.opt, STABLE=stable, DIR=dir))
 ##
 ## SIGNIFICANCE
 ##
