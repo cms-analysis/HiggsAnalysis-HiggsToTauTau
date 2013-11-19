@@ -172,10 +172,12 @@ if options.update_setup :
                     PATTERN=pattern
                     )
                 for file in glob.glob(source) :
-                    os.system("cp -v {SOURCE} {SETUP}/{CHN}/".format(
+                    os.system("cp -v {SOURCE} {SETUP}/{CHN}/{CHNNAME}.inputs-sm-{PER}.root".format(
                         SOURCE=file,
+                        CHN=chn,
+                        CHNNAME=chn+'_*' if chn == 'vhtt' else 'htt_'+chn,
                         SETUP=setup,
-                        CHN=chn
+                        PER=per
                         ))
                 if chn == 'mt' and options.add_mutau_soft:
                     os.system("cp -v {CMSSW_BASE}/src/auxiliaries/shapes/{DIR}/htt_mt.inputs-sm-8TeV-soft.root {SETUP}/mt/".format(
