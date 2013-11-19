@@ -325,7 +325,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       /// setup the CMS Preliminary
       if(std::string(type) == std::string("mssm-tanb")){
 	CMSPrelim(label, "", 0.15, 0.835);
-	leg1 = new TLegend(legendOnRight?0.60:0.20, hobs.size()<5 ? (legendOnTop?0.90:0.20)-0.06*hobs.size() : (legendOnTop?0.6:0.4), legendOnRight?0.94:0.45, (legendOnTop?0.90:0.20));
+	leg1 = new TLegend(legendOnRight?0.60:0.20, hobs.size()<5 ? (legendOnTop?0.90:0.40)-0.04*hobs.size() : (legendOnTop?0.6:0.2), legendOnRight?0.94:0.45, (legendOnTop?0.90:0.40));
 	   }
       else{
 	CMSPrelim(label, "", 0.135, 0.835);
