@@ -26,6 +26,8 @@ parser.add_option("--hww-scale", dest="hww_scale", default='1.', type="string",
                   help="specify the scale factor for the hww contribution here. The scale factor should be relative to the SM expectation. [Default: 1.]")
 parser.add_option("--new-merging", dest="new_merging", default=False, action="store_true",
                   help="added to test the new merging introduced by Andrew. [Default: False]")
+parser.add_option("--mvis", dest="mvis", default=False, action="store_true",
+                  help="Use mvis inputs instead of svfit [Default: False]")
 parser.add_option("--new-merging-threshold", dest="new_merging_threshold", default="0.5", type="string",
                   help="Threshold for the new merging by Andrew. [Default: \"0.5\"]")
 parser.add_option("--drop-normalize-bbb", dest="drop_normalize_bbb", default=False, action="store_true",
@@ -91,6 +93,14 @@ patterns = {
     'no-bbb:hww-sig' : '',
     'bbb:hww-sig'    : '',
     }
+if options.mvis: 
+    patterns = {
+        'no-bbb'         : '-mvis',
+        'bbb'            : '-mvis',
+        'no-bbb:hww-sig' : '-mvis',
+        'bbb:hww-sig'    : '-mvis',
+        }
+
 
 if options.update_all :
     options.update_setup     = True
@@ -162,11 +172,20 @@ if options.update_setup :
                     PATTERN=pattern
                     )
                 for file in glob.glob(source) :
-                    os.system("cp -v {SOURCE} {SETUP}/{CHN}/".format(
-                        SOURCE=file,
-                        SETUP=setup,
-                        CHN=chn
-                        ))
+                    if not chn == "vhtt" :
+                        os.system("cp -v {SOURCE} {SETUP}/{CHN}/{CHNNAME}.inputs-sm-{PER}.root".format(
+                            SOURCE=file,
+                            CHN=chn,
+                            CHNNAME='htt_'+chn,
+                            SETUP=setup,
+                            PER=per
+                            ))
+                    else : 
+                        os.system("cp -v {SOURCE} {SETUP}/{CHN}/".format(
+                            SOURCE=file,
+                            SETUP=setup,
+                            CHN=chn
+                            ))
                 if chn == 'mt' and options.add_mutau_soft:
                     os.system("cp -v {CMSSW_BASE}/src/auxiliaries/shapes/{DIR}/htt_mt.inputs-sm-8TeV-soft.root {SETUP}/mt/".format(
                         CMSSW_BASE=cmssw_base,
