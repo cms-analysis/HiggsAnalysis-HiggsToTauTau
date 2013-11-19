@@ -434,7 +434,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 
   //CMSPrelim(dataset, "#tau_{e}#tau_{#mu}", 0.17, 0.835);
   CMSPrelim(dataset, "", 0.16, 0.835);
-  TPaveText* chan     = new TPaveText(0.55, 0.35, 0.94, 0.55, "tlbrNDC");
+  TPaveText* chan     = new TPaveText(0.52, 0.35, 0.91, 0.55, "tlbrNDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
   chan->SetTextAlign(   12 );
@@ -473,7 +473,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   SetLegendStyle(leg);
   leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau" , "L" );
 #else
-  TLegend* leg = new TLegend(0.55, 0.60, 0.94, 0.89);
+  TLegend* leg = new TLegend(0.52, 0.58, 0.92, 0.89);
   SetLegendStyle(leg);
 #ifndef DROP_SIGNAL
   if(SIGNAL_SCALE!=1){
@@ -481,7 +481,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   }
   else{
 #ifdef HWW_BG
-    leg->AddEntry(ggH  , "H(125 GeV)#rightarrow#tau#tau" , "L" );
+    leg->AddEntry(ggH  , "SM H(125 GeV)#rightarrow#tau#tau" , "L" );
 #else
     leg->AddEntry(ggH  , "#splitline{H(125 GeV)#rightarrow#tau#tau}{H(125 GeV)#rightarrowWW}" , "L" );
     leg->AddEntry((TObject*)0, "", "");
@@ -495,12 +495,12 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   leg->AddEntry(data , "observed"                       , "LP");
 #endif
 #ifdef HWW_BG
-  leg->AddEntry(ggH_hww  , "H(125 GeV)#rightarrowWW" , "F" );
+  leg->AddEntry(ggH_hww  , "SM H(125 GeV)#rightarrowWW" , "F" );
 #endif
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
   leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
   leg->AddEntry(EWK  , "electroweak"                    , "F" );
-  leg->AddEntry(Fakes, "Fakes"                          , "F" );
+  leg->AddEntry(Fakes, "Misidentified e/#mu"                   , "F" );
   $ERROR_LEGEND
   leg->Draw();
 
