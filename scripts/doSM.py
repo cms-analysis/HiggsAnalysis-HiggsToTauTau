@@ -200,9 +200,13 @@ if options.update_setup :
     ## apply horizontal morphing for processes, which have not been simulated for 7TeV: ggH_hww145, qqH_hww145
     if any('hww-sig' in ana for ana in analyses):
         for file in glob.glob("{SETUP}/em/htt_em.inputs-sm-7TeV*.root".format(SETUP=setup)) :
-            template_morphing = Morph(file, 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose', 'ggH_hww{MASS}', 'QCDscale_ggH1in,CMS_scale_e_7TeV', '140,150', 5, True,'', '') 
+            template_morphing = Morph(file, 'emu_0jet_low,emu_1jet_low,emu_vbf_loose', 'ggH_hww{MASS}', 'QCDscale_ggH1in,CMS_scale_e_7TeV', '140,150', 5, True,'', '') 
             template_morphing.run()
-            template_morphing = Morph(file, 'emu_0jet_low,emu_0jet_high,emu_1jet_low,emu_1jet_high,emu_vbf_loose', 'qqH_hww{MASS}', 'CMS_scale_e_7TeV', '140,150', 5, True,'', '') 
+            template_morphing = Morph(file, 'emu_0jet_high,emu_1jet_high', 'ggH_hww{MASS}', 'QCDscale_ggH1in,CMS_scale_e_highpt_7TeV', '140,150', 5, True,'', '') 
+            template_morphing.run()
+            template_morphing = Morph(file, 'emu_0jet_low,emu_1jet_low,emu_vbf_loose', 'qqH_hww{MASS}', 'CMS_scale_e_7TeV', '140,150', 5, True,'', '') 
+            template_morphing.run()
+            template_morphing = Morph(file, 'emu_0jet_high,emu_1jet_high', 'qqH_hww{MASS}', 'CMS_scale_e_highpt_7TeV', '140,150', 5, True,'', '') 
             template_morphing.run()
     ## scale to SM cross section (main processes and all channels but those listed in do_not_scales)
     for chn in config.channels :
@@ -338,15 +342,35 @@ if options.update_setup :
         if 'hww-sig' in ana :
             os.system("cp -r {DIR}/{SOURCE} {DIR}/{TARGET}".format(DIR=dir, SOURCE=ana[:ana.find(':')], TARGET=ana[ana.find(':')+1:]))
             cgs_adaptor = UncertAdaptor()
-            if 'em' in config.channels:
-                for period in config.periods:
-                    for category in config.categories['em'][period]:
-                        filename="{DIR}/{TARGET}/em/cgs-sm-{PERIOD}-0{CATEGORY}.conf".format(DIR=dir, TARGET=ana[ana.find(':')+1:], PERIOD=period, CATEGORY=category)
-                        print 'processing file:', filename
-                        cgs_adaptor.cgs_processes(filename,['ggH','qqH','VH','ggH_hww','qqH_hww'],None,None,['ggH_hww125','qqH_hww125'])
-                for file in glob.glob("{DIR}/{ANA}/em/unc-sm-*.vals".format(DIR=dir, ANA=ana[ana.find(':')+1:])) :
-                    os.system("perl -pi -e 's/ggH_hww125/ggH_hww/g' {FILE}".format(FILE=file))
-                    os.system("perl -pi -e 's/qqH_hww125/qqH_hww/g' {FILE}".format(FILE=file))
+            for chn in ['mm', 'ee', 'em']:
+                if chn in config.channels:
+                    for period in config.periods:
+                        for category in config.categories[chn][period]:
+                            filename="{DIR}/{TARGET}/{CHN}/cgs-sm-{PERIOD}-0{CATEGORY}.conf".format(DIR=dir, TARGET=ana[ana.find(':')+1:], CHN=chn, PERIOD=period, CATEGORY=category)
+                            print 'processing file:', filename
+                            cgs_adaptor.cgs_processes(filename,['ggH','qqH','VH','ggH_hww','qqH_hww'],None,None,['ggH_hww125','qqH_hww125'])
+                    for file in glob.glob("{DIR}/{ANA}/{CHN}/unc-sm-*.vals".format(DIR=dir, ANA=ana[ana.find(':')+1:], CHN=chn)) :
+                        os.system("perl -pi -e 's/ggH_hww125/ggH_hww/g' {FILE}".format(FILE=file))
+                        os.system("perl -pi -e 's/qqH_hww125/qqH_hww/g' {FILE}".format(FILE=file))
+            for chn in ['vhtt']:
+                if chn in config.channels:
+                    for period in config.periods:
+                        for category in ['0', '1', '2']:
+                            filename="{DIR}/{TARGET}/{CHN}/cgs-sm-{PERIOD}-0{CATEGORY}.conf".format(DIR=dir, TARGET=ana[ana.find(':')+1:], CHN=chn, PERIOD=period, CATEGORY=category)
+                            print 'processing file:', filename
+                            cgs_adaptor.cgs_processes(filename,['WH','WH_hww'],None,None,['WH_hww125'])
+                            cgs_adaptor2 = UncertAdaptor()
+                            cgs_adaptor2.cgs_signal_group = 'GROUP simulated'
+                            cgs_adaptor2.cgs_processes(filename,['WH','WH_hww'],None,['WH_hww125'],None)
+                    for file in glob.glob("{DIR}/{ANA}/{CHN}/unc-sm-*.vals".format(DIR=dir, ANA=ana[ana.find(':')+1:], CHN=chn)) :
+                        os.system("perl -pi -e 's/WH_hww125/WH_hww/g' {FILE}".format(FILE=file))
+                    for period in config.periods:
+                        for category in ['3', '4', '5', '6']:
+                            filename="{DIR}/{TARGET}/{CHN}/cgs-sm-{PERIOD}-0{CATEGORY}.conf".format(DIR=dir, TARGET=ana[ana.find(':')+1:], CHN=chn, PERIOD=period, CATEGORY=category)
+                            print 'processing file:', filename
+                            cgs_adaptor.cgs_processes(filename,['ZH_htt','ZH_hww'],None,None,['ZH_hww125'])
+                    for file in glob.glob("{DIR}/{ANA}/{CHN}/unc-sm-*.vals".format(DIR=dir, ANA=ana[ana.find(':')+1:], CHN=chn)) :
+                        os.system("perl -pi -e 's/ZH_hww125/ZH_hww/g' {FILE}".format(FILE=file))
 
 if options.update_aux :
     print "##"
