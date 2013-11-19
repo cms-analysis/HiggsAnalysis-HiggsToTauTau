@@ -28,6 +28,8 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
   plot2D->GetXaxis()->SetLabelFont(62);
   plot2D->GetXaxis()->SetTitleColor(1);
   plot2D->GetXaxis()->SetTitleOffset(1.05);
+  plot2D->GetXaxis()->SetTitleFont(62);
+  plot2D->GetXaxis()->SetTitleSize(0.055);
   plot2D->SetYTitle(yaxis.c_str());
   if(ymax>0){
     plot2D->GetYaxis()->SetRange(plot2D->GetYaxis()->FindBin(ymin), plot2D->GetYaxis()->FindBin(ymax)-1);
@@ -35,6 +37,7 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
   plot2D->GetYaxis()->SetLabelFont(62);
   plot2D->GetYaxis()->SetTitleSize(0.055);
   plot2D->GetYaxis()->SetTitleOffset(1.4);
+  plot2D->GetYaxis()->SetTitleFont(62);
   plot2D->GetYaxis()->SetLabelSize(0.04);
   plot2D->SetZTitle("#bf{#Delta NLL}");
   plot2D->GetZaxis()->SetLabelFont(62);
@@ -60,7 +63,7 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
       else{
 	(*g)->SetFillColor(kWhite);
       }
-      (*g)->Draw("cfsame"); 
+      (*g)->Draw("fsame"); 
       (*g)->Draw("contsame");
     }
     else{
@@ -78,7 +81,7 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
       (*g)->SetLineColor(kBlack); 
       (*g)->SetLineWidth(3);
       (*g)->SetFillColor(kBlue-8);
-      (*g)->Draw("cfsame"); 
+      (*g)->Draw("fsame"); 
       (*g)->Draw("contsame");
     }
     else{

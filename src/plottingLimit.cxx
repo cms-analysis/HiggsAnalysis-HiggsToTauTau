@@ -4,6 +4,7 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TPaveText.h"
+#include "TColor.h"
 #include "TGraphAsymmErrors.h"
 #include <iostream>
 
@@ -59,7 +60,7 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
     outerBand->SetLineColor(kBlack);
     if(injected) outerBand->SetFillColor(kAzure-9);
     else if(BG_Higgs) outerBand->SetFillColor(kSpring+5);
-    else outerBand->SetFillColor(kYellow);
+    else outerBand->SetFillColor(TColor::GetColor(252,241,15));
     outerBand->Draw("3");
   }
   if(innerBand){
@@ -134,7 +135,7 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
     extra->Draw();
   }
   // add proper legend
-  TLegend* leg = new TLegend(legendOnRight ? 0.5 : 0.18, 0.70, legendOnRight ? 0.90 : 0.605, 0.90);
+  TLegend* leg = new TLegend(legendOnRight ? 0.5 : 0.18, 0.70, legendOnRight ? 0.90 : (injected ? 0.75 :0.605), 0.90);
   leg->SetBorderSize( 0 );
   leg->SetFillStyle( 1001 );
   leg->SetFillColor(kWhite);
@@ -148,8 +149,8 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   }
   if(injected){
     leg->AddEntry( expected , TString::Format("expected for SM H(%s GeV)", injectedMass.c_str()),  "L" );
-    if(innerBand){ leg->AddEntry( innerBand, TString::Format("#pm 1#sigma expected for H(%s GeV)", injectedMass.c_str()),  "F" ); }
-    if(outerBand){ leg->AddEntry( outerBand, TString::Format("#pm 2#sigma expected for H(%s GeV)", injectedMass.c_str()),  "F" ); }
+    if(innerBand){ leg->AddEntry( innerBand, TString::Format("#pm 1#sigma expected", injectedMass.c_str()),  "F" ); }
+    if(outerBand){ leg->AddEntry( outerBand, TString::Format("#pm 2#sigma expected", injectedMass.c_str()),  "F" ); }
   }
   else if(BG_Higgs){
     leg->AddEntry( expected , TString::Format("expected for H(%s GeV) as BG", injectedMass.c_str()),  "L" );
