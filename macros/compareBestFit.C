@@ -33,10 +33,10 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau");
   if(channel==std::string("htt"       )) title = std::string("H#rightarrow#tau#tau");
   if(channel==std::string("cmb"       )) title = std::string("H#rightarrow#tau#tau+VH#rightarrow#tau#tau");
-  if(channel==std::string("0jet"      )) title = std::string("0-Jet");
-  if(channel==std::string("1jet"      )) title = std::string("1-Jet");
-  if(channel==std::string("2jet"      )) title = std::string("2-Jet (VBF)");
-  if(channel==std::string("vbf"       )) title = std::string("2-Jet (VBF)");
+  if(channel==std::string("0jet"      )) title = std::string("0-jet");
+  if(channel==std::string("1jet"      )) title = std::string("1-jet");
+  if(channel==std::string("2jet"      )) title = std::string("2-jet (VBF tag)");
+  if(channel==std::string("vbf"       )) title = std::string("2-jet (VBF tag)");
   if(channel==std::string("boost"     )) title = std::string("1-Jet");
   if(channel==std::string("btag"      )) title = std::string("B-Tag");
   if(channel==std::string("nobtag"    )) title = std::string("No B-Tag");
