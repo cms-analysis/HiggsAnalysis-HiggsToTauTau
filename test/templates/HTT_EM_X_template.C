@@ -500,7 +500,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
   leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
   leg->AddEntry(EWK  , "electroweak"                    , "F" );
-  leg->AddEntry(Fakes, "Misidentified e/#mu"                   , "F" );
+  leg->AddEntry(Fakes, "misidentified e/#mu"                   , "F" );
   $ERROR_LEGEND
   leg->Draw();
 
