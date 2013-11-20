@@ -104,7 +104,7 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
   leg->SetFillColor (kWhite);
   if(!graph95.empty()){ leg->AddEntry(graph95.back(), "95% CL", temp ? "L" : "FL"); }
   if(!graph68.empty()){ leg->AddEntry(graph68.back(), "68% CL", temp ? "L" : "FL"); }
-  if(bestfit){ leg->AddEntry(bestfit, "Best fit", "P"); }
+  if(bestfit){ leg->AddEntry(bestfit, "best fit", "P"); }
   leg->Draw("same");
   
   TString label = TString::Format("%s = %d GeV", masslabel.c_str(), mass);
