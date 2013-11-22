@@ -55,7 +55,7 @@ class Morph:
         """
         name = sample
         hist = self.load_hist(file, directory, name.format(MASS=value))
-        print file, directory, name.format(MASS=value)
+        ##print file, directory, name.format(MASS=value)
         for i in range(hist.GetNbinsX()):
             if hist.GetBinContent(i+1) < 0:
                 print "Warning: setting negativ content of bin {BIN} to zero".format(BIN=str(i))
