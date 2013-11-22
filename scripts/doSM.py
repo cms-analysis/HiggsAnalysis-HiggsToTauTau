@@ -101,7 +101,6 @@ if options.mvis:
         'bbb:hww-sig'    : '-mvis',
         }
 
-
 if options.update_all :
     options.update_setup     = True
     options.update_aux       = True
@@ -139,6 +138,44 @@ print "# --update-LIMITS           :", options.update_limits
 print "# Check option --help in case of doubt about the meaning of one or more of these confi-"
 print "# guration parameters.                           "
 print "# --------------------------------------------------------------------------------------"
+
+## patch to allow mm/ee to point to the hww125 templates when running with option
+## hww-sig
+def simplistic_shift_bg_to_signal(path, procs):
+    """
+    open datacards located at path, search for the indices for the processes listed in procs.
+    For those processes switch the sign of the index to change the definition from BG to sig.
+    """
+    proc_old   = []
+    proc_names = []
+    file = open(path, 'r')
+    for line in file :
+        words = line.lstrip().split()
+        if words[0] == 'process' :
+            if is_number(words[1]) :
+                proc_old = words[1:]
+            else :
+                proc_names = words[1:]
+    file.close()
+    proc_line = 'process\t'+'\t'.join(proc_old)
+    for j in range(len(procs)) :
+        for i in range(len(proc_old)) :
+            if proc_names[i] == procs[j] :
+                proc_old[i] = str(int(proc_old[0])-j-1)
+    #print 'process\t'+'\t'.join(proc_old)
+    #print 'process\t'+'\t'.join(proc_names)
+    source = open(path, 'r')
+    target = open(path+'_tmp', 'w')
+    for line in source :
+        words = line.lstrip().split()
+        if words[0] == 'process' :
+            if is_number(words[1]) :
+                line = 'process\t'+'\t'.join(proc_old)+'\n'
+            else :
+                line = 'process\t'+'\t'.join(proc_names)+'\n'
+        target.write(line)
+    os.system("mv {SOURCE} {TARGET}".format(SOURCE=path+'_tmp', TARGET=path))
+    return
 
 ## setup main directory 
 setup="{CMSSW_BASE}/src/.setup{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
@@ -233,7 +270,7 @@ if options.update_setup :
             if not chn in do_not_scales :
                 if chn == 'vhtt':
                     ## vhtt is part of do_no_scale in the current configuration. So nothing will
-                    ## happen here fro the moment.
+                    ## happen here for the moment.
                     process = RescaleSamples(file, ['VH' , 'WH' , 'ZH'], masspoints)
                     process.rescale()
                 else:
@@ -297,8 +334,6 @@ if options.update_setup :
                                 template_morphing.run()
             ## add the new points to the masses array
             masses.append(masspoints[i]+'-'+masspoints[i+1]+':'+options.interpolate)
-        ## set the masspoint list to the new points
-        masspoints = [str(m) for m in range(int(masspoints[0]),int(masspoints[-1])+1,int(options.interpolate))]
     ## set up directory structure
     dir = "{CMSSW_BASE}/src/setups{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
     if os.path.exists(dir) :
@@ -361,7 +396,9 @@ if options.update_setup :
         if 'hww-sig' in ana :
             os.system("cp -r {DIR}/{SOURCE} {DIR}/{TARGET}".format(DIR=dir, SOURCE=ana[:ana.find(':')], TARGET=ana[ana.find(':')+1:]))
             cgs_adaptor = UncertAdaptor()
-            for chn in ['mm', 'ee', 'em']:
+            ## drop ggH_hww and qqH_hww templte for ee and mm unless
+            ## templates for other masspoints but 125 GeV are provided            
+            for chn in ['em']:
                 if chn in config.channels:
                     for period in config.periods:
                         for category in config.categories[chn][period]:
@@ -369,8 +406,11 @@ if options.update_setup :
                             print 'processing file:', filename
                             cgs_adaptor.cgs_processes(filename,['ggH','qqH','VH','ggH_hww','qqH_hww'],None,None,['ggH_hww125','qqH_hww125'])
                     for file in glob.glob("{DIR}/{ANA}/{CHN}/unc-sm-*.vals".format(DIR=dir, ANA=ana[ana.find(':')+1:], CHN=chn)) :
-                        os.system("perl -pi -e 's/ggH_hww125/ggH_hww/g' {FILE}".format(FILE=file))
-                        os.system("perl -pi -e 's/qqH_hww125/qqH_hww/g' {FILE}".format(FILE=file))
+                        if chn in ['ee','mm'] :
+                            pass
+                        else:
+                            os.system("perl -pi -e 's/ggH_hww125/ggH_hww/g' {FILE}".format(FILE=file))
+                            os.system("perl -pi -e 's/qqH_hww125/qqH_hww/g' {FILE}".format(FILE=file))
             for chn in ['vhtt']:
                 if chn in config.channels:
                     for period in config.periods:
@@ -429,6 +469,7 @@ if options.update_aux :
         ## an earlier level
         if ana == 'hww-sig' :
             if not options.hww_mass == '' :
+                print '... fixing mass for hww as background to mH={MASS}'.format(MASS=options.hww_mass)
                 for file in glob.glob("{DIR}/{ANA}/sm/htt_em/htt_em_*.txt".format(DIR=dir, ANA=ana)) :
                     os.system("perl -pi -e 's/ggH_hww/ggH_hww{MASS}/g' {FILE}".format(MASS=options.hww_mass, FILE=file))
                     os.system("perl -pi -e 's/qqH_hww/qqH_hww{MASS}/g' {FILE}".format(MASS=options.hww_mass, FILE=file))
@@ -439,8 +480,16 @@ if options.update_aux :
         if not options.hww_mass == '' :
             file = "{DIR}/{ANA}/sm/htt_{em,vhtt}/{htt_em,vhtt}_*.txt".format(DIR=dir, ANA=ana)
             os.system("sed -i -e '/_hww125/ s/$PROCESS$MASS/$PROCESS/g' {FILE}".format(MASS=options.hww_mass, FILE=file))
+        ## move ggH_hww125 and qqH_hww125 from BG to signal in a very simplistic way that keeps the process name pointing to
+        ## the only existing masspoint for these two channels, which is the one for 125 GeV.
+        if ana == 'hww-sig' :
+            for chn in ['ee','mm'] :
+                print '... simplistic switch of ggH_hww125 and qqH_hww125 from background to signal for channel', chn
+                for file in glob.glob("{DIR}/{ANA}/sm/htt_{CHN}/htt_{CHN}_*.txt".format(DIR=dir, ANA=ana, CHN=chn)) :
+                    simplistic_shift_bg_to_signal(file, ["ggH_hww125","qqH_hww125"])        
         ## blind datacards 
-        if options.blind_datacards : 
+        if options.blind_datacards :
+            print '... blinding datacards'
             for chn in channels :
                 cardMaker = AsimovDatacard('', True, -1, False, '125', '1.0',options.extra_templates)
                 for dir in '{DIR}/{ANA}/sm/{CHN}'.format(DIR=dir, ANA=ana, CHN=chn if chn == 'vhtt' else 'htt_'+chn):
