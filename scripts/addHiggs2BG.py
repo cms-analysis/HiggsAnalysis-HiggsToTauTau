@@ -244,16 +244,16 @@ for dir in directoryList :
                         output_line = output_line + "\t {VALUE}".format(VALUE=value)
                 output_line = output_line + "\n"       
             ## add new scaled uncertainty histograms
-            if words[1]=="shape" and words[0] in cashed_uncerts[category][signal].keys() : #and str(options.mass) in words[0]:
+            if words[1]=="shape" : #and words[0] in cashed_uncerts[category][signal].keys() : #and str(options.mass) in words[0]:
                 for category in categories :
                     for signal in signal_processes :
-                        #if words[0] in cashed_uncerts[category][signal].keys() :
-                        if options.mssm:
-                            datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], options.scale, "Up")
-                            datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], options.scale, "Down")
-                        else :
-                            datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], options.scale, "Up")
-                            datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], options.scale, "Down")
+                        if words[0] in cashed_uncerts[category][signal].keys() :
+                            if options.mssm:
+                                datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], options.scale, "Up")
+                                datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], options.scale, "Down")
+                            else :
+                                datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], options.scale, "Up")
+                                datacard_creator.scale_histogram(full_rootfile, category, "{SIGNAL}{MASS}_".format(SIGNAL=signal, MASS=options.mass) + words[0], options.scale, "Down")
             if options.verbose :
                 print output_line   
             output_file.write(output_line)
