@@ -6,6 +6,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gROOT.SetBatch()
 
 #from HiggsAnalysis.CombinedLimit.DatacardParser import *
+from HiggsAnalysis.HiggsToTauTau.utils import *
 
 class DatacardAdaptor(object) :
     """
@@ -116,3 +117,40 @@ class DatacardAdaptor(object) :
         new_file.close()
         old_file.close()
         os.system("mv {TMP} {FINAL}".format(TMP=path+'_tmp', FINAL=path))
+
+
+    def simplistic_shift_bg_to_signal(self, path, procs) :
+        """
+        open datacards located at path, search for the indices for the processes listed in procs.
+        For those processes switch the sign of the index to change the definition from BG to sig.
+        """
+        proc_old   = []
+        proc_names = []
+        file = open(path, 'r')
+        for line in file :
+            words = line.lstrip().split()
+            if words[0] == 'process' :
+                if is_number(words[1]) :
+                    proc_old = words[1:]
+                else :
+                    proc_names = words[1:]
+        file.close()
+        proc_line = 'process\t'+'\t'.join(proc_old)
+        for j in range(len(procs)) :
+            for i in range(len(proc_old)) :
+                if proc_names[i] == procs[j] :
+                    proc_old[i] = str(int(proc_old[0])-j-1)
+        #print 'process\t'+'\t'.join(proc_old)
+        #print 'process\t'+'\t'.join(proc_names)
+        source = open(path, 'r')
+        target = open(path+'_tmp', 'w')
+        for line in source :
+            words = line.lstrip().split()
+            if words[0] == 'process' :
+                if is_number(words[1]) :
+                    line = 'process\t'+'\t'.join(proc_old)+'\n'
+                else :
+                    line = 'process\t'+'\t'.join(proc_names)+'\n'
+            target.write(line)
+        os.system("mv {SOURCE} {TARGET}".format(SOURCE=path+'_tmp', TARGET=path))
+        return
