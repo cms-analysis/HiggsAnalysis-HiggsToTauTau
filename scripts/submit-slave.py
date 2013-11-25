@@ -25,6 +25,8 @@ parser.add_option("--interpolation", dest="interpolation_mode", default='mode-1'
                   help="Mode for mass interpolation for direct limits tanb (only applicable for --method tanb, for other methods this option will have no effect). [Default: mode-1]", choices=["mode-0", "mode-1", "mode-2", "mode-3", "mode-4", "mode-5"])
 parser.add_option("--noSystematics", dest="nosys", default=False, action="store_true",
                   help="Use statistical uncertainties only (currently only implemented for combine). [Default: False]")
+parser.add_option("--MSSMvsSM", dest="MSSMvsSM", default=False, action="store_true",
+                  help="Do a signal hypothesis separation test. [Default: False]")
 ## lands options for Bayesian
 lgroup = OptionGroup(parser, "LANDS (Bayesian) COMMAND OPTIONS", "Command options for the use of lands with method -M bayesian.")
 lgroup.add_option("-b", "--bands", dest="bands", default=1, type="int",
@@ -252,7 +254,8 @@ for directory in args :
                             mass=masspoint, tanb=tanb, model=options.model, interpolation=options.interpolation_mode))
                     else :
                         ## new
-                        os.system("python tanb_grid_new.py --mA {mass} --tanb {tanb} --model {model} tmp.txt".format(mass=masspoint, tanb=tanb, model=options.model))
+                        os.system("python tanb_grid_new.py --mA {mass} --tanb {tanb} --model {model} {MSSMvsSM} tmp.txt".format(
+                            mass=masspoint, tanb=tanb, model=options.model, MSSMvsSM='--MSSMvsSM' if options.MSSMvsSM else ""))
                 ## setup the batchjob creation for combine -M CLs with tanb grid points instead of cross section grid points
                 opts = "-o {out} -n {points} -m {mass} -O {options} -T {toysH} -t {toys} -j {jobs} -q {queue}".format(
                     out=options.out, points=options.points, mass=masspoint, options=options.options, toysH=options.T,

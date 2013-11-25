@@ -14,6 +14,8 @@ model_opts.add_option("--tanb", dest="tanb", default="", type="string",
                        help="The value of tanb in the model. Default: \"\"]")
 model_opts.add_option("--model", dest="modelname", default="mhmax-mu+200", type="string",
                        help="The model which should be used (choices are: mhmax-mu+200, mhmodp, mhmodm). Default: \"mhmax-mu+200\"]")
+model_opts.add_option("--MSSMvsSM", dest="MSSMvsSM", default=False, action="store_true",
+                      help="This is needed for the signal hypothesis separation test MSSM vs SM [Default: False]")
 parser.add_option_group(model_opts)
 morph_opts = OptionGroup(parser, "MORPHING OPTIONS", "With these options you can configure what kind of morphing should be applied for a given decay channel. Note that the same morphing mode is applied to all templates in a given input file.")
 morph_opts.add_option("--morphing-htt_ee", dest="morphing_htt_ee", default="NEAREST_NEIGHBOUR", type="choice",
@@ -168,6 +170,9 @@ def main() :
     new_name = path[:path.rfind('.txt')]+'_%.2f'%float(options.tanb)+'.txt'
     os.system("cp {SRC} {TARGET}".format(SRC=path, TARGET=new_name))
     ## adapt datacards
+    if options.MSSMvsSM :
+        ## this options rejects the scaling of bbH and ggH by 1/tanb -> therefore at each mA/tanb point all signals (including SM) are xs*BR
+        model.tanb = 1 
     adaptor.make_model_datacard(new_name, model, morph)
 
 main()

@@ -13,6 +13,8 @@ parser.add_option("--old", dest="old", default=False, action="store_true",
                   help="Switch between tanb_grid.py and tanb_grid_new.py. If validated this could be deleted [Default: False]")
 parser.add_option("--model", dest="modelname", default="mhmax-mu+200", type="string",
                   help="The model which should be used (choices are: mhmax-mu+200, mhmodp, mhmodm). Default: \"mhmax-mu+200\"]")
+parser.add_option("--MSSMvsSM", dest="MSSMvsSM", default=False, action="store_true",
+                  help="Do a signal hypothesis separation test MSSM vs SM. [Default: False]")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 if len(args) < 1 :
@@ -47,7 +49,7 @@ eval `scram runtime -sh`
 echo "Running submit.py:"
 echo "in directory {directory}"
 
-$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/submit.py --tanb+ --setup {OLD} {directory} --options "--model {MODEL}"
+$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/submit.py --tanb+ --setup {OLD} {directory} --options "--model {MODEL} {MSSMvsSM}"
 '''
 
 lxq_fragment = '''
@@ -98,7 +100,8 @@ def submit(name, key, masses) :
                     working_dir = os.getcwd(),
                     directory = dir,
                     OLD = "--old" if options.old else "",
-                    MODEL = options.modelname 
+                    MODEL = options.modelname,
+                    MSSMvsSM = "--MSSMvsSM" if options.MSSMvsSM else ""
                     ))
             os.system('chmod a+x %s' % script_file_name)
             if options.condor :
