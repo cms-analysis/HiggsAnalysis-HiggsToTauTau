@@ -107,7 +107,7 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
     (*sigma)->Draw("Lsame");
   }
 
-  TLegend* leg = new TLegend(0.20, 0.71, 0.8, 0.90);
+  TLegend* leg = new TLegend(0.40, 0.75, 0.8, 0.90);
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
@@ -118,7 +118,7 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   leg->Draw("same");
 
   /// Mass
-  TPaveText * mass = new TPaveText(0.2, 0.61, 0.7, 0.71, "NDC");
+  TPaveText * mass = new TPaveText(0.4, 0.66, 0.8, 0.75, "NDC");
   mass->SetBorderSize( 0);
   mass->SetFillStyle ( 0);
   //mass->SetTextAlign ( 0);

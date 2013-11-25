@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string(" Preliminary, H #rightarrow #tau #tau, L = 24.3 fb^{-1}"),
+    dataset = cms.string("CMS H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV"),
     ## x-axis title
     xaxis = cms.string("m_{H} [GeV]"),
     ## x-axis title
@@ -18,7 +18,7 @@ layout = cms.PSet(
     ## min for plotting
     min = cms.double(0.),
     ## max for plotting
-    max = cms.double(4),
+    max = cms.double(10),
     ## log for plotting
     log = cms.int32(0),
     ## define verbosity level
