@@ -1,12 +1,12 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-eleTau_nobtag		signal	  	            	lumi_8TeV            				1.026
-eleTau_nobtag		signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_e 					1.02
-eleTau_nobtag		signal,ZTT,TT,VV 		CMS_eff_t_etau_8TeV				1.08
-eleTau_nobtag		signal  	               	CMS_eff_t_mssmHigh_etau_8TeV                    1.00
-eleTau_nobtag		signal,ZTT			CMS_scale_t_etau_8TeV 				1.00
+eleTau_nobtag		signal,SM 	            	lumi_8TeV            				1.026
+eleTau_nobtag		signal,SM,ZTT,ZJ,ZL,TT,VV	CMS_eff_e 					1.02
+eleTau_nobtag		signal,SM,ZTT,TT,VV 		CMS_eff_t_etau_8TeV				1.08
+eleTau_nobtag		signal,SM  	               	CMS_eff_t_mssmHigh_etau_8TeV                    1.00
+eleTau_nobtag		signal,SM,ZTT			CMS_scale_t_etau_8TeV 				1.00
 eleTau_nobtag        	bbH,TT				CMS_scale_j_8TeV				0.99
-eleTau_nobtag	 	signal	   			CMS_htt_scale_met_8TeV				0.99
+eleTau_nobtag	 	signal,SM   			CMS_htt_scale_met_8TeV				0.99
 eleTau_nobtag	 	TT,ZL,ZJ		    	CMS_htt_scale_met_8TeV				1.01
 eleTau_nobtag		bbH 				CMS_eff_b_8TeV 					0.99
 eleTau_nobtag		VV 				CMS_eff_b_8TeV 					0.99
@@ -24,3 +24,11 @@ eleTau_nobtag		ZL				CMS_htt_ZLeptonFakeTau_etau_8TeV		1.20
 eleTau_nobtag		ZL				CMS_htt_ZLScale_etau_8TeV			1.00
 eleTau_nobtag		W				CMS_htt_WShape_etau_nobtag_8TeV			1.00
 #[tail]eleTau_nobtag	W				tailShape					1.00
+eleTau_nobtag           ggH_SM125                       pdf_gg                                          1.097
+eleTau_nobtag           qqH_SM125                       pdf_qqbar                                       1.036
+eleTau_nobtag           VH_SM125                        pdf_qqbar                                       1.04
+eleTau_nobtag           ggH_SM125                       QCDscale_ggH                                    1.08
+eleTau_nobtag           qqH_SM125                       QCDscale_qqH                                    1.022
+eleTau_nobtag           VH_SM125                        QCDscale_VH                                     1.01
+eleTau_nobtag           qqH_SM125,VH_SM125              UEPS                                            1.05
+eleTau_nobtag           ggH_SM125                       UEPS                                            1.013
