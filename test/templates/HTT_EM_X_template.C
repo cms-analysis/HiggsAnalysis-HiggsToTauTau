@@ -358,7 +358,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 #else
 #ifndef DROP_SIGNAL
 #ifdef HWW_BG
-    VH   ->Add(qqH_hww);
+    VH   ->Add(ggH_hww);
 #else
     VH   ->Add(Ztt);
 #endif
