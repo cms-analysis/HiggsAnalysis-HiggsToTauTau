@@ -789,10 +789,10 @@ for directory in args :
         ## do the calculation a la HCG
         if not options.observedOnly :
             ## calculate expected p-value
-            print "combine -M ProfileLikelihood -n {EXT}-exp --significance {pvalue} --expectSignal=1 -t -1 --toysFreq -m {mass} {user} {stable} {uncapped} {wdir}/tmp.root".format(
-                EXT=extension, pvalue=pvalue, mass=mass, user=options.userOpt, stable=stable, uncapped=uncapped, wdir=options.workingdir)
-            os.system("combine -M ProfileLikelihood -n {EXT}-exp --significance {pvalue} --expectSignal=1 -t -1 --toysFreq -m {mass} {user} {stable} {uncapped} {wdir}/tmp.root".format(
-                EXT=extension, pvalue=pvalue, mass=mass, user=options.userOpt, stable=stable, uncapped=uncapped, wdir=options.workingdir))
+            print "combine -M ProfileLikelihood -n {EXT}-exp --significance {pvalue} --expectSignal={SIG} -t -1 --toysFreq -m {mass} {user} {stable} {uncapped} {wdir}/tmp.root".format(
+                EXT=extension, pvalue=pvalue, SIG=options.signal_strength, mass=mass, user=options.userOpt, stable=stable, uncapped=uncapped, wdir=options.workingdir)
+            os.system("combine -M ProfileLikelihood -n {EXT}-exp --significance {pvalue} --expectSignal={SIG} -t -1 --toysFreq -m {mass} {user} {stable} {uncapped} {wdir}/tmp.root".format(
+                EXT=extension, pvalue=pvalue, SIG=options.signal_strength, mass=mass, user=options.userOpt, stable=stable, uncapped=uncapped, wdir=options.workingdir))
         if not options.expectedOnly :
             ## calculate expected p-value
             print "combine -M ProfileLikelihood -n {EXT}-obs --significance {pvalue} -m {mass} {user} {stable} {uncapped} {wdir}/tmp.root".format(
