@@ -5,6 +5,7 @@ from HiggsAnalysis.HiggsToTauTau.UncertAdaptor import UncertAdaptor
 from HiggsAnalysis.HiggsToTauTau.horizontal_morphing import Morph
 from HiggsAnalysis.HiggsToTauTau.AsimovDatacard import *
 from HiggsAnalysis.HiggsToTauTau.scale2SM import RescaleSamples
+from HiggsAnalysis.HiggsToTauTau.utils import is_number
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs 
 from HiggsAnalysis.HiggsToTauTau.utils import get_shape_systematics
 
