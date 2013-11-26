@@ -83,6 +83,8 @@ egroup.add_option("--stable", dest="stable", default=False, action="store_true",
                   help="Specify this option to run the max-likelihood fit calculation with option --stable. [Default: False]")
 egroup.add_option("--stable-old", dest="stable_old", default=False, action="store_true",
                   help="Specify this option to run the max-likelihood fit calculation with option --stable-old. [Default: False]")
+egroup.add_option("--stable-new", dest="stable_new", default=False, action="store_true",
+                  help="Specify this option to run the max-likelihood fit calculation with option --stable-new. [Default: False]")
 parser.add_option_group(egroup)
 ##
 ## MULTIDIM-FIT
@@ -294,6 +296,8 @@ if options.optMLFit :
         stable = '--stable'
     elif options.stable_old :
         stable = '--stable-old'
+    elif options.stable_new :
+        stable = '--stable-new'
     if options.interactive :
         for dir in args :
             mass = get_mass(dir)

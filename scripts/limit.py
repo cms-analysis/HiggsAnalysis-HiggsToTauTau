@@ -105,6 +105,8 @@ fgroup.add_option("--stable", dest="stable", default=False, action="store_true",
                   help="Run maximum likelihood fit with a pre-defined set of options that lead to more stable results. This option requires further input via the common options --rMin and --rMax to define the boundaries of the fit. [Default: False]")
 fgroup.add_option("--stable-old", dest="stable_old", default=False, action="store_true",
                   help="Run maximum likelihood fit with a pre-defined set of options that lead to more stable results. This option requires further input via the common options --rMin and --rMax to define the boundaries of the fit (old version). [Default: False]")
+fgroup.add_option("--stable-new", dest="stable_new", default=False, action="store_true",
+                  help="Run maximum likelihood fit with a pre-defined set of options that lead to more stable results. This option requires further input via the common options --rMin and --rMax to define the boundaries of the fit (new version). [Default: False]")
 fgroup.add_option("--minuit", dest="minuit", default=False, action="store_true",
                   help="Switch from minuit2 to minuit for the fit that is performed before the asymptotic limits are calculated. [Default: False]")
 fgroup.add_option("--qtilde", dest="qtilde", default=False, action="store_true",
@@ -509,6 +511,8 @@ for directory in args :
                 stableopt = "--robustFit=1 --stepSize=0.5  --minimizerStrategy=0 --minimizerTolerance=0.1 --preFitValue=0.1  --X-rtd FITTER_DYN_STEP  --cminFallbackAlgo=\"Minuit,0:0.001\" --keepFailures "
             if options.stable :
                 stableopt = "--robustFit=1 --preFitValue=1. --X-rtd FITTER_NEW_CROSSING_ALGO --minimizerAlgoForMinos=Minuit2 --minimizerToleranceForMinos=0.01 --X-rtd FITTER_NEVER_GIVE_UP --X-rtd FITTER_BOUND --minimizerAlgo=Minuit2 --minimizerStrategy=0 --minimizerTolerance=0.001 --cminFallbackAlgo \"Minuit,0:0.001\" --keepFailures "
+            if options.stable_new :    
+                stableopt = "--robustFit=1 --preFitValue=1. --X-rtd FITTER_NEW_CROSSING_ALGO --minimizerAlgoForMinos=Minuit2 --minimizerToleranceForMinos=0.1 --X-rtd FITTER_NEVER_GIVE_UP --X-rtd FITTER_BOUND --minimizerAlgo=Minuit2 --minimizerStrategy=0 --minimizerTolerance=0.1 --cminFallbackAlgo \"Minuit2,0:1.\"  "
             if options.mass_scan:
                 stableopt = "--robustFit=0 --minimizerAlgo=Minuit2 --minimizerStrategy=0 --minimizerTolerance=0.1 --cminPreScan --minos=none "
             stableopt+= "--rMin {MIN} --rMax {MAX} ".format(MIN=options.rMin, MAX=options.rMax)
