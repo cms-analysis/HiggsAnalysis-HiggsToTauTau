@@ -268,28 +268,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 
   if(scaled){
 
-//  TH1F* EWK1   = refill((TH1F*)input->Get(TString::Format("%s/W"       , directory)), "W"  ); InitHist(EWK1 , "", "", TColor::GetColor(222,90,106), 1001);
-//#ifdef EXTRA_SAMPLES
-//  TH1F* EWK2   = refill((TH1F*)input->Get(TString::Format("%s/ZJ"      , directory)), "ZJ" ); InitHist(EWK2 , "", "", TColor::GetColor(222,90,106), 1001);
-//  TH1F* EWK3   = refill((TH1F*)input->Get(TString::Format("%s/ZL"      , directory)), "ZL" ); InitHist(EWK3 , "", "", TColor::GetColor(222,90,106), 1001);
-//#else
-//  TH1F* EWK2   = refill((TH1F*)input->Get(TString::Format("%s/ZLL"     , directory)), "ZLL"); InitHist(EWK2 , "", "", TColor::GetColor(222,90,106), 1001);
-//#endif
-//  TH1F* EWK    = refill((TH1F*)input->Get(TString::Format("%s/VV"      , directory)), "VV" ); InitHist(EWK  , "", "", TColor::GetColor(222,90,106), 1001);
-//  TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/TT"      , directory)), "TT" ); InitHist(ttbar, "", "", TColor::GetColor(155,152,204), 1001);
-//  TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/ZTT"     , directory)), "ZTT"); InitHist(Ztt  , "", "", TColor::GetColor(248,206,104), 1001);
-//#ifdef MSSM
-//  TH1F* ggH    = refill((TH1F*)input2->Get(TString::Format("%s/ggH$MA" , directory)), "ggH"); InitSignal(ggH); ggH->Scale($TANB);
-//  TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA" , directory)), "bbH"); InitSignal(bbH); bbH->Scale($TANB);
-//#else
-//#ifndef DROP_SIGNAL
-//  TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125"  , directory)), "ggH"); InitSignal(ggH); ggH->Scale(SIGNAL_SCALE);
-//  TH1F* qqH    = refill((TH1F*)input->Get(TString::Format("%s/qqH125"  , directory)), "qqH"); InitSignal(qqH); qqH->Scale(SIGNAL_SCALE);
-//  TH1F* VH     = refill((TH1F*)input->Get(TString::Format("%s/VH125"   , directory)), "VH" ); InitSignal(VH ); VH ->Scale(SIGNAL_SCALE);
-//#endif
-
-
-  Fakes = refill(shape_histos(Fakes, datacard, "QCD"), "QCD");
+/*  Fakes = refill(shape_histos(Fakes, datacard, "QCD"), "QCD");
   EWK1 = refill(shape_histos(EWK1, datacard, "W"), "W"); 
 #ifdef EXTRA_SAMPLES
   EWK2 = refill(shape_histos(EWK2, datacard, "ZJ"), "ZJ");
@@ -310,7 +289,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
     VH = refill(shape_histos(VH, datacard, "VH"), "VH"); 
 #endif  
 #endif
-
+*/
     rescale(Fakes, 7); 
     rescale(EWK1 , 3); 
     rescale(EWK2 , 4); 

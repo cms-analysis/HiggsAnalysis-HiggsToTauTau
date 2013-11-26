@@ -268,7 +268,7 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 
   if(scaled){
 
-    Fakes = refill(shape_histos(Fakes, datacard, "QCD"), "QCD");
+/*    Fakes = refill(shape_histos(Fakes, datacard, "QCD"), "QCD");
     EWK0 = refill(shape_histos(EWK0, datacard, "VV"), "VV"); 
     EWK1 = refill(shape_histos(EWK1, datacard, "W"), "W"); 
 #ifdef EXTRA_SAMPLES
@@ -289,7 +289,7 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
     VH = refill(shape_histos(VH, datacard, "VH"), "VH"); 
 #endif  
 #endif
-
+*/
 
     rescale(Fakes, 7); 
     rescale(EWK0 , 6); 

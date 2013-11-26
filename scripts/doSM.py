@@ -29,8 +29,8 @@ parser.add_option("--new-merging", dest="new_merging", default=False, action="st
                   help="added to test the new merging introduced by Andrew. [Default: False]")
 parser.add_option("--mvis", dest="mvis", default=False, action="store_true",
                   help="Use mvis inputs instead of svfit [Default: False]")
-parser.add_option("--new-merging-threshold", dest="new_merging_threshold", default="0.5", type="string",
-                  help="Threshold for the new merging by Andrew. [Default: \"0.5\"]")
+parser.add_option("--new-merging-threshold", dest="new_merging_threshold", default="0.4", type="string",
+                  help="Threshold for the new merging by Andrew. [Default: \"0.4\"]")
 parser.add_option("--drop-normalize-bbb", dest="drop_normalize_bbb", default=False, action="store_true",
                   help="Normalize yield to stay constand when adding bbb shape uncertainties. [Default: False]")
 parser.add_option("--add-mutau-soft", dest="add_mutau_soft", default=False, action="store_true",
@@ -373,7 +373,7 @@ if options.update_setup :
                                         ## this list has only one entry by construction
                                         DIR=get_channel_dirs(chn, cat,per)[0],
                                         PROC=config.bbbproc[chn][idx].replace('>',','),
-                                        BBBTHR=config.bbbthreshold[chn],
+                                        BBBTHR=0,#config.bbbthreshold[chn],
                                         THRESH=options.new_merging_threshold,
                                         SOURCE=dir+'/'+ana+'/'+chn+'/'+filename,
                                         TARGET=dir+'/'+ana+'/'+chn+'/'+filename,
