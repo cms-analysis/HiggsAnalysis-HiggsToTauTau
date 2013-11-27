@@ -23,6 +23,7 @@ class Morph:
         self.samples = re.sub(r'\s', '', samples).split(',')
         ## list of uncertainties
         self.uncerts = re.sub(r'\s', '', uncerts).split(',')
+        self.uncerts = filter(bool,self.uncerts)
         ## list of event categories
         self.directories = re.sub(r'\s', '', directories).split(',')
         ## list of mass points outside the range
@@ -56,21 +57,24 @@ class Morph:
         name = sample
         hist = self.load_hist(file, directory, name.format(MASS=value))
         ##print file, directory, name.format(MASS=value)
+        preintegral=hist.GetIntegral()
         for i in range(hist.GetNbinsX()):
             if hist.GetBinContent(i+1) < 0:
                 print "Warning: setting negativ content of bin {BIN} to zero".format(BIN=str(i))
                 hist.SetBinContent(i+1,0)
+        hist->Scale(preintegral/hist.Integral())
         file.Cd("/"+directory)
         hist.Write(name.format(MASS=value),ROOT.TObject.kOverwrite)
-        for uncert in self.uncerts:
-            for suffix in ['Up','Down']:
-                name = sample+'_'+uncert+suffix
-                hist = self.load_hist(file, directory, name.format(MASS=value))
-                for i in range(hist.GetNbinsX()):
-                    if hist.GetBinContent(i+1) < 0:
-                        hist.SetBinContent(i+1,0)
-                file.Cd("/"+directory)
-                hist.Write(name.format(MASS=value),ROOT.TObject.kOverwrite)
+        if self.uncerts:
+            for uncert in self.uncerts:
+                for suffix in ['Up','Down']:
+                    name = sample+'_'+uncert+suffix
+                    hist = self.load_hist(file, directory, name.format(MASS=value))
+                    for i in range(hist.GetNbinsX()):
+                        if hist.GetBinContent(i+1) < 0:
+                            hist.SetBinContent(i+1,0)
+                    file.Cd("/"+directory)
+                    hist.Write(name.format(MASS=value),ROOT.TObject.kOverwrite)
 
     def norm_hist(self, hist_lower, hist_upper, lower, upper, value) :
         """
