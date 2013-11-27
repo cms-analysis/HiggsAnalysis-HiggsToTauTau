@@ -8,7 +8,7 @@
 #include "TPaveText.h"
 
 void
-plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::vector<TGraph*> graph68, TGraph* bestfit, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp=false, bool log=false)
+plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::vector<TGraph*> graph68, TGraph* bestfit, TGraph* SMexpected, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp=false, bool log=false)
 {
   // set up styles
   canv.cd();
@@ -98,6 +98,12 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
     bestfit->SetMarkerColor(kBlack);
     bestfit->Draw("Psame");
   }
+  if(SMexpected){
+    SMexpected->SetMarkerStyle(34);
+    SMexpected->SetMarkerSize(3.0);
+    SMexpected->SetMarkerColor(kRed);
+    SMexpected->Draw("Psame");
+  }
   TLegend* leg = new TLegend(0.60, 0.70, 0.90, 0.90);
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 0 );
@@ -105,6 +111,7 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
   if(!graph95.empty()){ leg->AddEntry(graph95.back(), "95% CL", temp ? "L" : "FL"); }
   if(!graph68.empty()){ leg->AddEntry(graph68.back(), "68% CL", temp ? "L" : "FL"); }
   if(bestfit){ leg->AddEntry(bestfit, "best fit", "P"); }
+  if(SMexpected){ leg->AddEntry(SMexpected, "SM", "P"); }
   leg->Draw("same");
   
   TString label = TString::Format("%s = %d GeV", masslabel.c_str(), mass);

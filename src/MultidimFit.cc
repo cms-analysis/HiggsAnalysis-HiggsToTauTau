@@ -2,7 +2,7 @@
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::vector<TGraph*> graph68, TGraph* bestfit, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp, bool log);
+void plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::vector<TGraph*> graph68, TGraph* bestfit, TGraph* SMexpected, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp, bool log);
 
 TGraph* 
 PlotLimits::sortedGraph(TGraph* graph, double minX, double minY)
@@ -374,6 +374,11 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     }
     TGraph* bestfit = new TGraph();
     bestfit->SetPoint(0, bestX, bestY);
+    TGraph* SMexpected = 0;
+    if(drawsm_){
+      SMexpected = new TGraph();
+      SMexpected->SetPoint(0,1,1);
+    }
     // determine new contours for 68% CL and 95% CL limits
     double contours[2];
     contours[0] = TMath::ChisquareQuantile(0.68,2)/2; //0.5;     //68% CL
@@ -435,10 +440,10 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     // do the plotting
     std::string masslabel = mssm_ ? std::string("m_{#phi}") : std::string("m_{H}");
     if(temp_){
-      plotting2DScan(canv, plot2D, graph95 , graph68 , bestfit, xaxis_, yaxis_, masslabel, mass, xmins_[mass], xmaxs_[mass], ymins_[mass], ymaxs_[mass], temp_, log_);    
+      plotting2DScan(canv, plot2D, graph95 , graph68 , bestfit, SMexpected, xaxis_, yaxis_, masslabel, mass, xmins_[mass], xmaxs_[mass], ymins_[mass], ymaxs_[mass], temp_, log_);    
     }
     else{
-      plotting2DScan(canv, plot2D, filled95, filled68, bestfit, xaxis_, yaxis_, masslabel, mass, xmins_[mass], xmaxs_[mass], ymins_[mass], ymaxs_[mass], temp_, log_);    
+      plotting2DScan(canv, plot2D, filled95, filled68, bestfit, SMexpected, xaxis_, yaxis_, masslabel, mass, xmins_[mass], xmaxs_[mass], ymins_[mass], ymaxs_[mass], temp_, log_);    
     }
     // add the CMS Preliminary stamp
     CMSPrelim(dataset_.c_str(), "", 0.135, 0.835);
