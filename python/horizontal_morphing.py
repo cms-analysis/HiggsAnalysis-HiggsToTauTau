@@ -65,7 +65,7 @@ class Morph:
         hist->Scale(preintegral/hist.Integral())
         file.Cd("/"+directory)
         hist.Write(name.format(MASS=value),ROOT.TObject.kOverwrite)
-        if any(self.uncerts):
+        if self.uncerts:
             for uncert in self.uncerts:
                 for suffix in ['Up','Down']:
                     name = sample+'_'+uncert+suffix
