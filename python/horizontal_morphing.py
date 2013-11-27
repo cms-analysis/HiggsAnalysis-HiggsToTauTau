@@ -23,6 +23,7 @@ class Morph:
         self.samples = re.sub(r'\s', '', samples).split(',')
         ## list of uncertainties
         self.uncerts = re.sub(r'\s', '', uncerts).split(',')
+        self.uncerts = filter(bool,self.uncerts)
         ## list of event categories
         self.directories = re.sub(r'\s', '', directories).split(',')
         ## list of mass points outside the range
