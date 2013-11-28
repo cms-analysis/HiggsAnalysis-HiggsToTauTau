@@ -108,8 +108,18 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
-  if(!graph95.empty()){ leg->AddEntry(graph95.back(), "95% CL", temp ? "L" : "FL"); }
-  if(!graph68.empty()){ leg->AddEntry(graph68.back(), "68% CL", temp ? "L" : "FL"); }
+  if(!graph95.empty()){
+    TGraph *graph95_copy = (TGraph*)graph95.back()->Clone();
+    graph95_copy->SetLineWidth(0);
+    graph95_copy->SetLineColor(0);
+    graph95_copy->SetLineStyle(1);
+    leg->AddEntry(graph95_copy, "95% CL", temp ? "L" : "F"); }
+  if(!graph68.empty()){
+    TGraph *graph68_copy = (TGraph*)graph68.back()->Clone();
+    graph68_copy->SetLineWidth(0);
+    graph68_copy->SetLineColor(0);
+    graph68_copy->SetLineStyle(1);
+    leg->AddEntry(graph68_copy, "68% CL", temp ? "L" : "F"); }
   if(bestfit){ leg->AddEntry(bestfit, "best fit", "P"); }
   if(SMexpected){ leg->AddEntry(SMexpected, "SM", "P"); }
   leg->Draw("same");

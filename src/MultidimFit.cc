@@ -91,7 +91,7 @@ PlotLimits::convexGraph(TGraph* graph, double minX, double minY, double xLowerBo
   if (upperX==1 && upperY==1) {
     pivot = true;
     if (minY > upperX_crossing[0].second && minX > upperY_crossing[0].first) {
-      convex->SetPoint(idx++, xUpperBound+tollerance, yUpperBound+tollerance);
+      convex->SetPoint(idx++, xUpperBound+20*tollerance, yUpperBound+20*tollerance);
       pivot_x = xUpperBound;
       pivot_y = yUpperBound;
     } else {
@@ -107,7 +107,7 @@ PlotLimits::convexGraph(TGraph* graph, double minX, double minY, double xLowerBo
   if (upperX==1 && lowerY==1) {
     pivot = true;
     if (minY < upperX_crossing[0].second && minX > lowerY_crossing[0].first) {
-      convex->SetPoint(idx++, xUpperBound+tollerance, yUpperBound-tollerance);
+      convex->SetPoint(idx++, xUpperBound+20*tollerance, yUpperBound-20*tollerance);
       pivot_x = xUpperBound;
       pivot_y = yLowerBound;
     } else {
@@ -121,7 +121,7 @@ PlotLimits::convexGraph(TGraph* graph, double minX, double minY, double xLowerBo
   if (lowerX==1 && upperY==1) {
     pivot = true;
     if (minY > lowerX_crossing[0].second && minX < upperY_crossing[0].first) {
-      convex->SetPoint(idx++, xLowerBound-tollerance, yUpperBound+tollerance);
+      convex->SetPoint(idx++, xLowerBound-20*tollerance, yUpperBound+20*tollerance);
       pivot_x = xLowerBound;
       pivot_y = yUpperBound;
     } else {
@@ -135,7 +135,7 @@ PlotLimits::convexGraph(TGraph* graph, double minX, double minY, double xLowerBo
   if (lowerX==1 && lowerY==1) {
     pivot = true;
     if (minY < lowerX_crossing[0].second && minX < lowerY_crossing[0].first) {
-      convex->SetPoint(idx++, xLowerBound-tollerance, yLowerBound-tollerance);
+      convex->SetPoint(idx++, xLowerBound-20*tollerance, yLowerBound-20*tollerance);
       pivot_x = xLowerBound;
       pivot_y = yLowerBound;
     } else {
