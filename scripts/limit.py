@@ -36,6 +36,8 @@ agroup.add_option("--tanb", dest="optTanb", default=False, action="store_true",
                   help="Calculate the observed and expected limits directly in the MSSM mA-tanb plane based on full CLs limits. This method is completely toy based. It requires that the toys have been run beforehand using the script submit.py with option --tanb. This script will submit toys to a batch system or to the grid via crab. This action will require a grid certificate. You can monitor and receive the results of your jobs once finished using the command options explained in section COMMON CRAB COMMAND OPTIONS of this parameter description. [Default: False]")
 agroup.add_option("--tanb+", dest="optTanbPlus", default=False, action="store_true",
                   help="Calculate the observed and expected limits directly in the MSSM mA-tanb plane based on asymptotic CLs limits. This method requires that the directory structure to calculate these limits has been set up beforehand using the script submit.py with option --tanb+. [Default: False]")
+agroup.add_option("--HypothesisTest", dest="optHypothesisTest", default=False, action="store_true",
+                  help="Calculate the Signal Hypothesis separation test for two hypothesis based on the CLs with a tevatron test statistic. This method requires that the directory structure to calculate these limits has been set up beforehand using the script submit.py with option --tanb+. [Default: False]")
 parser.add_option_group(agroup)
 ##
 ## COMMON OPTIONS
@@ -1088,6 +1090,38 @@ for directory in args :
             os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.quant0.500.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
             os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.quant0.840.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
             os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.quant0.975.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
+
+    if options.optHypothesisTest:
+        ## determine mass value from directory name
+        mass  = get_mass(directory)
+        ## fetch workspace for each tanb point
+        directoryList = os.listdir(".")
+        ## list of all tasks to do
+        tasks = []
+        for wsp in directoryList :
+            if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) :
+                tanb_string = wsp[wsp.rfind("_")+1:]
+                if not options.refit :
+                    tasks.append(
+                        ["combine -m {mass} -M HybridNew --testStat=TEV --generateExt=1 --generateNuis=0 {wsp} --singlePoint 1 --saveHybridResult --fork 40 -T 1000 -i 1 --clsAcc 0 --fullBToys".format(mass=mass, wsp=wsp),
+                         "mv higgsCombineTest.HybridNew.mH{mass}.root point_{tanb}".format(mass=mass, tanb=tanb_string)
+                         ]
+                        )
+        if options.tanbMultiCore == -1:
+            for task in tasks:
+                for subtask in task:
+                    print subtask
+                    os.system(subtask)
+        else:
+            ## run in parallel using multiple cores
+            parallelize(tasks, options.tanbMultiCore)
+        directoryList = os.listdir(".")
+        for wsp in directoryList :
+            if re.match(r"point_\d+(.\d\d)?.root", wsp) :
+                tanb_string = wsp[wsp.rfind("_")+1:]
+                os.system(r"root -q -b point_{tanb} \"{CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/test/plotting/hypoTestResultTree.cxx(\"qmu.FixedMu_{tanb}\",{mass},1,\"x\")\"".format(CMSSW_BASE=os.environ["CMSSW_BASE"], MASS=mass, tanb=tanb_string))
+        
+    
     ## always remove all tmp remainders from the parallelized harvesting
     tmps = os.listdir(os.getcwd())
     for tmp in tmps :

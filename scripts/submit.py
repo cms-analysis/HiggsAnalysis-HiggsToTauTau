@@ -33,6 +33,8 @@ agroup.add_option("--tanb", dest="optTanb", default=False, action="store_true",
                   help="Calculate the observed and expected limits directly in the MSSM mA-tanb plane based on full CLs limits. This method is completely toy based. This script will prepare the directory structure to do these calculations and submit toys to the grid using crab. This action will require a grid certificate. As this operation is very computing intensive there is no pre-defined option to submit to lxb (lxq). You can monitor and receive the results of your jobs once finished using the script limit.py using the CRAB OPTIONS as explained in the parameter description, there. [Default: False]")
 agroup.add_option("--tanb+", dest="optTanbPlus", default=False, action="store_true",
                   help="Calculate the observed and expected limits directly in the MSSM mA-tanb plane based on asymptotic CLs limits. This script will prepare the directory structure to do these calculations and submit and submit the required asymptotic limit calculation for each corresponding point in mA to lxb (lxq). The process will be executed via lxb (lxq), split by each single mass point that is part of ARGs or as a single interactive job when using the option --interactive. When submitting to lxb (lxq) you can configure the queue to which the jobs will be submitted as described in section BATCH OPTIONS of this parameter description. When running in batch mode you can go one level up in the expected directory structure as described in the head of this section. [Default: False]")
+agroup.add_option("--HypothesisTest", dest="optHypothesisTest", default=False, action="store_true",
+                  help="Calculate the Signal separation for two hypothesis based on the CLs with a Tevatron test statistic. This script will prepare the directory structure to do these calculations and submit and submit the required asymptotic limit calculation for each corresponding point in mA to lxb (lxq). The process will be executed via lxb (lxq), split by each single mass point that is part of ARGs or as a single interactive job when using the option --interactive. When submitting to lxb (lxq) you can configure the queue to which the jobs will be submitted as described in section BATCH OPTIONS of this parameter description. When running in batch mode you can go one level up in the expected directory structure as described in the head of this section. [Default: False]")
 agroup.add_option("--injected", dest="optInject", default=False, action="store_true",
                   help="Calculate expected asymptotic CLs limits, frequentist significance or p-value with a SM signal injected from the datacards in the directory/ies corresponding to ARGs. You can determine what calculations should be applied by the option --injected-method. These calculations are fully toy based and will require a large number of toys, which will be submitted via lxb (lxq). For each toy a pseudo-dataset will be created and an observed limit, observed frequentist significance or p-value will be calculated. It is possible to give an input file from which the pulls of the nuisance parameters will be taken, when running the calculations. The median and quantiles of the tossed toys define the expected limit with signal injected and the uncertainties. This script internally calls the script lxb-injected.py. [Default: False]")
 parser.add_option_group(agroup)
@@ -680,5 +682,26 @@ if options.optTanb or options.optTanbPlus :
                 struct = directories(args)
                 lxb_submit(struct[0], struct[1], "--tanb+", options.opt)
         cycle = cycle-1
+if options.optHypothesisTest :
+    dirs = []
+    if options.interactive :
+        for dir in args :
+            mass = get_mass(dir)
+            if mass == 'common' :
+                continue
+        if options.printOnly :
+            print "limit.py --HypothesisTest {OPTS} {DIR}".format(OPTS=options.opt, DIR=dir)
+        else :
+            os.system("limit.py --HypothesisTest {OPTS} {DIR}".format(OPTS=options.opt, DIR=dir))
+    else :
+        for dir in args :
+            print arg
+            ## chop off masses directory if present as this will be added automatically by the submission script
+            if is_number(get_mass(dir)) or get_mass(dir) == "common" :
+                dir = dir[:dir.rstrip('/').rfind('/')]
+            if not dir in dirs :
+                dirs.append(dir)
+        print "not yet build in"
+    
 
 
