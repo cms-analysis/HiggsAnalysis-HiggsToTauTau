@@ -329,10 +329,16 @@ if options.update_setup :
             for chn in config.channels:
                 for per in config.periods:
                     for cat in config.categories[chn][per]:
-                        for file in glob.glob("{SETUP}/{CHN}/htt_{CHN}.inputs-sm-{PER}*.root".format(SETUP=setup,CHN=chn, PER=per, CAT=cat)):
-                            for proc in ['ggH','qqH','VH']:
-                                template_morphing = Morph(file, get_channel_dirs(chn,"0"+cat,per)[0], proc+'{MASS}', ','.join(get_shape_systematics(setup,per,chn,"0"+cat,proc)), masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '') 
-                                template_morphing.run()
+                        if chn == 'vhtt':
+                            for file in glob.glob("{SETUP}/{CHN}/vhtt.inputs-sm-{PER}*.root".format(SETUP=setup,CHN=chn, PER=per, CAT=cat)):
+                                for proc in ['WH','ZH','VH']:
+                                    template_morphing = Morph(file, get_channel_dirs(chn,"0"+cat,per)[0], proc+'{MASS}', ','.join(get_shape_systematics(setup,per,chn,"0"+cat,proc)), masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '') 
+                                    template_morphing.run()
+                        else:
+                            for file in glob.glob("{SETUP}/{CHN}/htt_{CHN}.inputs-sm-{PER}*.root".format(SETUP=setup,CHN=chn, PER=per, CAT=cat)):
+                                for proc in ['ggH','qqH','VH']:
+                                    template_morphing = Morph(file, get_channel_dirs(chn,"0"+cat,per)[0], proc+'{MASS}', ','.join(get_shape_systematics(setup,per,chn,"0"+cat,proc)), masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '') 
+                                    template_morphing.run()
             ## add the new points to the masses array
             masses.append(masspoints[i]+'-'+masspoints[i+1]+':'+options.interpolate)
     ## set up directory structure
@@ -415,7 +421,7 @@ if options.update_setup :
             for chn in ['vhtt']:
                 if chn in config.channels:
                     for period in config.periods:
-                        for category in ['0', '1', '2']:
+                        for category in ['0', '1']:
                             filename="{DIR}/{TARGET}/{CHN}/cgs-sm-{PERIOD}-0{CATEGORY}.conf".format(DIR=dir, TARGET=ana[ana.find(':')+1:], CHN=chn, PERIOD=period, CATEGORY=category)
                             print 'processing file:', filename
                             cgs_adaptor.cgs_processes(filename,['WH','WH_hww'],None,None,['WH_hww125'])
