@@ -6,7 +6,7 @@
 emt simulated lumi_7TeV      1.022
 
 # Trigger uncertainties
-emt simulated CMS_trigger_e_7TeVm 1.01
+emt simulated CMS_trigger_e_7TeV 1.01
 
 # Efficiency uncertainties
 emt simulated CMS_eff_e_7TeV 1.02
