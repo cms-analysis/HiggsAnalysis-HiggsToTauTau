@@ -282,10 +282,16 @@ for directory in args :
                 if options.v != 0 :
                     print "> creating batch job for combine -M CLs"
                 ## create the job
-                os.system("combine-tanb.py %s --shape %s tmp.txt %s %s" % (opts, options.shape, options.min, options.max))
-                if not os.path.exists("debug") :
-                    os.system("mkdir debug")
-                os.system("cp tmp*.txt debug")
+                if not options.MSSMvsSM :
+                    os.system("combine-tanb.py %s --shape %s tmp.txt %s %s" % (opts, options.shape, options.min, options.max))
+                    if not os.path.exists("debug") :
+                        os.system("mkdir debug")
+                    os.system("cp tmp*.txt debug")
+                else :
+                    for tanb in points :
+                        print "translating tmp_{tanb}0.txt into workspace".format(tanb=tanb)
+                        os.system("text2workspace.py -m {mass} tmp_{tanb}0.txt -P HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:twoHypothesisHiggs -o fixedMu_{tanb}0.root".format(
+                            mass=masspoint, tanb=tanb))
             if options.method == "Bayesian" :
                 ## -----------------------------------------------------------------------------------------
                 ## Option: combine Bayesian
