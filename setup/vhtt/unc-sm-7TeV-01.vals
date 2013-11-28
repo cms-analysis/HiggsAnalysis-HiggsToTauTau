@@ -31,8 +31,8 @@ emt signal QCDscale_VH 1.009
 
 emt fakes CMS_vhtt_emt_fakeshape_7TeV 1.0
 
+emt  wz CMS_vhtt_wzNorm_emt_7TeV 1.05
 emt  zz CMS_vhtt_zzNorm_emt_7TeV 1.05
-emt   zz CMS_vhtt_zzNorm_emt_7TeV 1.05
 
 #charge flip uncertainty
 emt charge_fakes CMS_vhtt_emt_chargeFlip_7TeV 1.0
