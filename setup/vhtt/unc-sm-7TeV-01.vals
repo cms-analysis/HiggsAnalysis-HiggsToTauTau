@@ -6,7 +6,7 @@
 emtCatHigh,emtCatLow simulated lumi_7TeV      1.022
 
 # Trigger uncertainties
-emtCatHigh,emtCatLow simulated CMS_trigger_e_7TeVm 1.01
+emtCatHigh,emtCatLow simulated CMS_trigger_e_7TeV 1.01
 
 # Efficiency uncertainties
 emtCatHigh,emtCatLow simulated CMS_eff_e_7TeV 1.02
