@@ -159,8 +159,8 @@ def get_channel_dirs(finalstate, category, period):
         'tt' : {
         },
         'vhtt' : {
-        '00' : ['mmtCatHigh', 'mmtCatLow'],
-        '01' : ['emtCatHigh', 'emtCatLow'],
+        '00' : ['mmt'],
+        '01' : ['emt'],
         '02' : ['eetCatHigh', 'eetCatLow'],
         '03' : ['mmme_zh', 'eeem_zh' ],
         '04' : ['mmmt_zh', 'eemt_zh' ],
