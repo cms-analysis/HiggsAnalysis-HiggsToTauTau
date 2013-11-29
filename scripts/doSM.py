@@ -169,11 +169,15 @@ def simplistic_shift_bg_to_signal(path, procs):
     target = open(path+'_tmp', 'w')
     for line in source :
         words = line.lstrip().split()
+        if words[0] == 'shapes' :
+            for sig in ['ggH','qqH'] :
+                if sig in line :
+                    line+='\n'+line.replace(sig,sig+'_hww').replace('$MASS','125')+'\n'        
         if words[0] == 'process' :
             if is_number(words[1]) :
                 line = 'process\t'+'\t'.join(proc_old)+'\n'
             else :
-                line = 'process\t'+'\t'.join(proc_names)+'\n'
+                line = ('process\t'+'\t'.join(proc_names)+'\n').replace('hww125','hww')
         target.write(line)
     os.system("mv {SOURCE} {TARGET}".format(SOURCE=path+'_tmp', TARGET=path))
     return
@@ -339,6 +343,21 @@ if options.update_setup :
                                 for proc in ['ggH','qqH','VH']:
                                     template_morphing = Morph(file, get_channel_dirs(chn,"0"+cat,per)[0], proc+'{MASS}', ','.join(get_shape_systematics(setup,per,chn,"0"+cat,proc)), masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '') 
                                     template_morphing.run()
+                                if chn == 'em' :
+                                    ## needed to fudge in morphing for uncertainties for ggH_hww/qqH_hww for em
+                                    ## these are still treated as BG at this point even if they might turn  into
+                                    ## signal later on.
+                                    em_uncerts = {
+                                        '0' : 'CMS_scale_e_',
+                                        '1' : 'CMS_scale_e_highpt_', 
+                                        '2' : 'CMS_scale_e_',
+                                        '3' : 'CMS_scale_e_highpt_',
+                                        '4' : 'CMS_scale_e_',
+                                        '5' : 'CMS_scale_e_'}
+                                    if any('hww-sig' in ana for ana in analyses):
+                                        for proc in ['ggH_hww','qqH_hww']:
+                                            template_morphing = Morph(file, get_channel_dirs(chn,"0"+cat,per)[0], proc+'{MASS}', em_uncerts[cat]+per, masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '') 
+                                            template_morphing.run()
             ## add the new points to the masses array
             masses.append(masspoints[i]+'-'+masspoints[i+1]+':'+options.interpolate)
     ## set up directory structure
@@ -403,7 +422,7 @@ if options.update_setup :
         if 'hww-sig' in ana :
             os.system("cp -r {DIR}/{SOURCE} {DIR}/{TARGET}".format(DIR=dir, SOURCE=ana[:ana.find(':')], TARGET=ana[ana.find(':')+1:]))
             cgs_adaptor = UncertAdaptor()
-            ## drop ggH_hww and qqH_hww templte for ee and mm unless
+            ## drop ggH_hww and qqH_hww template for ee and mm unless
             ## templates for other masspoints but 125 GeV are provided            
             for chn in ['em']:
                 if chn in config.channels:
@@ -453,7 +472,7 @@ if options.update_aux :
         prune = 'bbb' in ana 
         if ':' in ana :
             ana = ana[ana.find(':')+1:]
-        print "setup datacards for:", ana
+        print "setup datacards for:", ana, masses
         for chn in config.channels:
             for per in config.periods:
                 if config.categories[chn][per]:
