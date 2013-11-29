@@ -434,7 +434,7 @@ if options.optSigFreq or options.optPValue :
     uncapped = ''
     if options.uncapped :
         uncapped = '--uncapped'
-    sig = '--signal-strength', options.signal_strength        
+    sig = '--signal-strength '+options.signal_strength        
     if options.interactive :
         for dir in args :
             mass = get_mass(dir)
