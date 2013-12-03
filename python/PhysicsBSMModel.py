@@ -174,7 +174,7 @@ class TwoHypotesisHiggs(PhysicsModel):
 
         isAlt = (self.altSignal in process)
 
-        if self.pois:
+        if self.pois: ## NOT USED FOR MSSMvsSM 
             target = "%(bin)s/%(process)s" % locals()
             scale = 1
             for p, l in self.poiMap:
@@ -185,18 +185,18 @@ class TwoHypotesisHiggs(PhysicsModel):
             print "Will scale ", target, " by ", scale
             return scale;
 
-	elif self.fqqFloating:
+	elif self.fqqFloating: ## NOT USED FOR MSSMvsSM 
 	    ret = self.sigNorms[isAlt]
 	    if isAlt: ret+= self.sigNormsqqH["qqbarH" in process]
             print "Process ", process, " will get scaled by ", ret
 	    return ret
 
-        else:
+        else:  ## USED FOR MSSMvsSM
             print "Process ", process, " will get norm ", self.sigNorms[isAlt]
             return self.sigNorms[isAlt]
     
-    def setPhysicsOptions(self,physOptions):
-        for po in physOptions:
+    def setPhysicsOptions(self,physOptions): 
+        for po in physOptions: ##this is not used at all!
 	    if po == "fqqFloating":
 		print "Will consider fqq = fraction of qqH in Alt signal (signal strength will be left floating)"
 		# Here alsways setting muFloating if fqq in model, should this be kept optional?
@@ -234,7 +234,7 @@ class TwoHypotesisHiggs(PhysicsModel):
         self.modelBuilder.doVar("x[0,0,1]");
         poi = "x"
 
-        if self.muFloating: 
+        if self.muFloating: ##this is not used at all!
 
             if self.pois:
                 for pn,pf in self.pois.items():
@@ -265,7 +265,7 @@ class TwoHypotesisHiggs(PhysicsModel):
  
 			self.sigNormsqqH = {True:'_times_fqq',False:'_times_not_fqq'}
 
-        else:
+        else: ## USED FOR MSSMvsSM
             self.modelBuilder.factory_("expr::not_x(\"(1-@0)\", x)")
             self.sigNorms = { True:'x', False:'not_x' }
         if self.modelBuilder.out.var("MH"):
