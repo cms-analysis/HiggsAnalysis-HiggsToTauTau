@@ -48,8 +48,8 @@ if len(args) < 1 :
     if not options.fine_scan:
         args.append("90 130 100-200:20 250-500:50 600-1000:100")
     else :
-        #args.append("90-250:10 300-500:50 600-1000:100")
-        args.append("90 100-180:5 200 250-500:50 600-1000:100")
+        args.append("90-250:10 300-500:50 600-1000:100")
+        #args.append("90 100-180:5 200 250-500:50 600-1000:100")
     #exit(1)
 
 import os
@@ -79,8 +79,6 @@ for chn in config.channels :
 patterns = {
     'plain'        : {'em': '', 'et' : '', 'mt' : '', 'tt' : '', 'mm' : ''},
     'bbb'          : {'em': '', 'et' : '', 'mt' : '', 'tt' : '', 'mm' : ''},
-    'bbb-gt60'     : {'em': '-gt60', 'et' : '-gt60', 'mt' : '-gt60', 'tt' : '-gt60', 'mm' : ''},
-    'bbb-pt30'     : {'em': '', 'et' : '-pt30', 'mt' : '-pt30', 'tt' : '', 'mm' : ''},
     }
 
 if options.update_all :
