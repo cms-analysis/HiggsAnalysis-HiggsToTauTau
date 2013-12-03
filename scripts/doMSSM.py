@@ -61,6 +61,7 @@ masses = args
 for idx in range(len(masses)) : masses[idx] = masses[idx].rstrip(',')
 ## analyses
 analyses = options.analyses.split()
+analyses_save = analyses
 for idx in range(len(analyses)) : analyses[idx] = analyses[idx].rstrip(',')
 ## CMSSW_BASE
 cmssw_base=os.environ['CMSSW_BASE']
@@ -413,7 +414,7 @@ if options.update_setup :
                             ))                   
                         os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                         os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-        if options.SMHasBackground : ###NEW HAS TO BE TESTED
+        if options.SMHasBackground : 
             analysesv2 = []
             for ana in analyses :
                 os.system("cp -r {DIR}/{TARGET} {DIR}/{TARGET}-SMHbkg".format(DIR=dir, TARGET=ana))
@@ -427,7 +428,7 @@ if options.update_setup :
                                 cgs_adaptor.cgs_processes(filename,None,['ggH_SM125','qqH_SM125','VH_SM125'],None,None)
                 analysesv2.append(ana)                
                 analysesv2.append(ana+'-SMHbkg')
-            analyses=analysesv2
+        analyses=analysesv2
                                 
 if options.update_aux :
     print "##"
@@ -457,21 +458,9 @@ if options.update_aux :
             if options.drop_list != '' :
                 for subdir in glob.glob("{DIR}/{ANA}/mssm/*".format(DIR=dir, ANA=ana)) :
                     print '...comment bbb uncertainties for', subdir
-                    os.system("commentUncerts.py --drop-list={DROP} {SUB}".format(DROP=options.drop_list, SUB=subdir))            
-        ## blind datacards 
-        if options.blind_datacards :
-            os.system("cp -r {DIR}/{ANA} {DIR}/{ANA}-asimov".format(DIR=dir,ANA=ana))
-            for chn in config.channels :
-                os.system("blindData.py --update-file --extra-templates '{EXTRA_TEMPLATES}' {DIR}/{ANA}-asimov/mssm/{CHN}".format(
-                    EXTRA_TEMPLATES = options.extra_templates,
-                    DIR=dir,
-                    ANA=ana,
-                    CHN='htt_'+chn
-                    ))
-    if options.SMHasBackground and options.SMHasSignal:
-        analysesv2 = []
-        print "analyses", analyses 
-        for ana in analyses :
+                    os.system("commentUncerts.py --drop-list={DROP} {SUB}".format(DROP=options.drop_list, SUB=subdir))
+        if options.SMHasBackground and options.SMHasSignal:
+            analysesv2 = []
             if '-SMHbkg' in ana :
                 anav2= ana.replace('-SMHbkg','')
                 os.system("cp -r {DIR}/{ANA} {DIR}/{ANAv2}-MSSMvsSM".format(DIR=dir,ANA=ana,ANAv2=anav2))
@@ -482,9 +471,20 @@ if options.update_aux :
                             datacard_adaptor.simplistic_shift_bg_to_signal(datacard,["ggH_SM125","qqH_SM125","VH_SM125"])
                 analysesv2.append(ana)  
                 analysesv2.append(anav2+'-MSSMvsSM')
-            else :
-                analysesv2.append(ana)   
-        analyses=analysesv2
+                analysesv2.append(anav2)
+    analyses=analysesv2
+    print "analyses", analyses  
+    ## blind datacards
+    if options.blind_datacards :
+        for ana in analyses : 
+            os.system("cp -r {DIR}/{ANA} {DIR}/{ANA}-asimov".format(DIR=dir,ANA=ana))
+            for chn in config.channels :
+                os.system("blindData.py --update-file --extra-templates '{EXTRA_TEMPLATES}' {DIR}/{ANA}-asimov/mssm/{CHN}".format(
+                    EXTRA_TEMPLATES = '' if "-SMHbkg" in ana else options.extra_templates,
+                    DIR=dir,
+                    ANA=ana,
+                    CHN='htt_'+chn
+                    ))
                              
 if options.update_limits :
     print "##"
