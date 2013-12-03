@@ -694,7 +694,7 @@ if options.optHypothesisTest :
                 dir = dir[:dir.rstrip('/').rfind('/')]
             if not dir in dirs :
                 dirs.append(dir)
-        print "not yet build in"
+        print "not yet build in - only interactive available"
     
 
 
