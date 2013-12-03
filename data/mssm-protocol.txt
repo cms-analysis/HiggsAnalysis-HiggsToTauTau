@@ -1,6 +1,6 @@
 (1) setup limit structure (blinded + unblinded):
 ## datacards blinded (bbb-asimov)
-doMSSM.py -a bbb --label='-yymmdd-mssm' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-yymmdd-mssm.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-yymmdd" --update-all --blind-datacards [--extra-templates='ggH_SM125,qqH_SM125,VH_SM125']
+doMSSM.py -a bbb --label='-yymmdd-mssm' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-yymmdd-mssm.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-yymmdd" --update-all --SMHasBackground --SMHasSignal  --blind-datacards [--extra-templates='ggH_SM125,qqH_SM125,VH_SM125'] 
 ## datacards unblinded (bbb)
 setup-htt.py -i aux-yymmdd-mssm/bbb -o LIMITS-yymmdd-mssm/bbb -a mssm -c 'mt et em mm tt' 90 130 100-200:20 250-500:50 600-1000:100
 ## datacards for ML-fit (bbb-mlfit)
@@ -52,7 +52,7 @@ plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fi
 lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --model [mhmodm,mhmodp,mhmax-mu+200]
 lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --model [mhmodm,mhmodp,mhmax-mu+200] --lxq
 ## lauch limit calculation
-lxb: submit.py --tanb+  -q '-q 2nd' LIMITS-yymmdd-mssm/bbb[-asimov]/*/*
+lxb: submit.py --tanb+  LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
 lxq: submit.py --tanb+  LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_cpu=48:00:00 -j y -o /dev/null" --options='--multi-core=4'
 ## plotting
 plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb.py LIMITS-yymmdd-mssm/bbb[-asimov] [expectedOnly=1]
@@ -82,3 +82,14 @@ lxq: submit.py --multidim-fit --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-g
 limit.py --collect --multidim-fit --physics-model="ggH-bbH" LIMITS-yymmdd-mssm/bbb-ggH-bbH/*
 ## plotting
 plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-bbH.py
+
+
+(7) launch/collect/plot signal hypothesis test SM vs MSSM in mA-tanb plane 
+## lauch final setup of datacards
+lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM --model [mhmodm,mhmodp,mhmax-mu+200]
+lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM --model [mhmodm,mhmodp,mhmax-mu+200] --lxq
+## lauch limit calculation
+lxb: submit.py --HypothesisTest  LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
+lxq: submit.py --HypothesisTest  LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_cpu=48:00:00 -j y -o /dev/null" --options='--multi-core=4'
+## plotting
+
