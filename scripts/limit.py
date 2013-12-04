@@ -1086,7 +1086,9 @@ for directory in args :
             os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.quant0.500.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
             os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.quant0.840.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
             os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.quant0.975.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
-
+    ##
+    ## HYPO-TEST
+    ##
     if options.optHypothesisTest:
         ## determine mass value from directory name
         mass  = get_mass(directory)
@@ -1099,7 +1101,7 @@ for directory in args :
                 tanb_string = wsp[wsp.rfind("_")+1:]
                 if not options.refit :
                     tasks.append(
-                        ["combine -m {mass} -M HybridNew --testStat=TEV --generateExt=1 --generateNuis=0 {wsp} --singlePoint 1 --saveHybridResult --fork 40 -T 1000 -i 1 --clsAcc 0 --fullBToys".format(mass=mass, wsp=wsp),
+                        ["combine -m {mass} -M HybridNew --testStat=TEV --generateExt=1 --generateNuis=0 {wsp} --singlePoint 1 --saveHybridResult --fork 4 -T 1000 -i 1 --clsAcc 0 --fullBToys".format(mass=mass, wsp=wsp), #fork down from 40
                          "mv higgsCombineTest.HybridNew.mH{mass}.root point_{tanb}".format(mass=mass, tanb=tanb_string)
                          ]
                         )
@@ -1115,7 +1117,15 @@ for directory in args :
         for wsp in directoryList :
             if re.match(r"point_\d+(.\d\d)?.root", wsp) :
                 tanb_string = wsp[wsp.rfind("_")+1:]
-                os.system(r"root -q -b point_{tanb} \"{CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/test/plotting/hypoTestResultTree.cxx(\"qmu.FixedMu_{tanb}\",{mass},1,\"x\")\" ".format(CMSSW_BASE=os.environ["CMSSW_BASE"], MASS=mass, tanb=tanb_string)) ##problem with""
+                os.system(r'root -l -q -b point_{tanb} "{CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/test/plotting/hypoTestResultTree.cxx(\"qmu.FixedMu_{tanb}\",{mass},1,\"x\")"'.format(CMSSW_BASE=os.environ["CMSSW_BASE"], mass=mass, tanb=tanb_string)) 
+        directoryList = os.listdir(".")
+        if "HypothesisTest.root" in directoryList :
+            os.system("rm HypothesisTest.root")
+        for wsp in directoryList :
+            if re.match(r"qmu.FixedMu_\d+(.\d\d)?.root", wsp) :
+                tanb_string = wsp[wsp.rfind("_")+1:]
+                os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/extractSignificanceStats.py --filename qmu.FixedMu_{TANB}".format(CMSSW_BASE=os.environ["CMSSW_BASE"], TANB=tanb_string))
+        os.system("hadd HypothesisTest.root HypothesisTest_*.root") 
         
     
     ## always remove all tmp remainders from the parallelized harvesting
