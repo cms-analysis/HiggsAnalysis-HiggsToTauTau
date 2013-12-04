@@ -37,24 +37,19 @@ Int_t type;\
 }" )
 
 
-
-print "hello"
+tanb=options.filename.lstrip("qmu.FixedMu_").rstrip(".root")
 
 file = ROOT.TFile(options.filename, 'r')
-
 #file.ls()
-
 tree = file.Get("q")
-
 staff = staff_t()
-
 tree.SetBranchAddress("q",AddressOf(staff,"q"));
 tree.SetBranchAddress("mh",AddressOf(staff,"mh"));
 tree.SetBranchAddress("weight",AddressOf(staff,"weight"));
 tree.SetBranchAddress("type",AddressOf(staff,"type"));
 
-xlow=0.0
-xup=0.0
+xlow=999.0
+xup=-999.0
 nbins=(tree.GetEntries()-1)*10
 for i in range(tree.GetEntries()) :
     tree.GetEntry(i);
@@ -68,15 +63,12 @@ hSM   = ROOT.TH1F("hSM  ;S = -2 #times ln(L_{1}/L_{2});Number of Toys","",nbins,
 hMSSM = ROOT.TH1F("hMSSM;S = -2 #times ln(L_{1}/L_{2});Number of Toys","",nbins,int(xlow)-int(xlow/100),int(xup)+int(xup/100))
 hObs  = ROOT.TH1F("hObserved"                                         ,"",nbins,int(xlow)-int(xlow/100),int(xup)+int(xup/100));
 
-
 if options.verbosity :
     print "Start to loop on tree in file", options.filename
-    
-    
+       
 v_SM   = []
 v_MSSM = []
 v_Obs  = []
-
 
 for i in range(tree.GetEntries()) :
     tree.GetEntry(i);
@@ -122,20 +114,15 @@ if options.verbosity :
 integralSM=hSM.Integral()
 integralMSSM=hMSSM.Integral()
 
-
 tailSMexp  =hSM.Integral  (1,hSM.FindBin(medianSM))
 tailMSSMexp=hMSSM.Integral(1,hMSSM.FindBin(medianSM))
 #tailSMexp  =hSM.Integral  (hSM.FindBin(medianSM),nbins)
 #tailMSSMexp=hMSSM.Integral(hMSSM.FindBin(medianSM),nbins)
 
-
 tailSMobs  =hSM.Integral  (1,hObs.FindBin(medianObs))
 tailMSSMobs=hMSSM.Integral(1,hObs.FindBin(medianObs))
 #tailSMobs  =hSM.Integral  (hObs.FindBin(medianObs),nbins)
 #tailMSSMobs=hMSSM.Integral(hObs.FindBin(medianObs),nbins)
-
-
-
 
 if options.verbosity :
     #print integralSM, integralMSSM
@@ -145,6 +132,21 @@ if options.verbosity :
     print "Expected separation power", tailMSSMexp/tailSMexp
     print "Observed separation power", tailMSSMobs/tailSMobs
 
+#for mA-tanb plotting save everything in a root file
+f = ROOT.TFile("HypothesisTest_{TANB}.root".format(TANB=tanb), "recreate")
+t = ROOT.TTree("tree", "HypoTest")
+tanbeta = n.zeros(1, dtype=float)
+exp     = n.zeros(1, dtype=float)
+obs     = n.zeros(1, dtype=float)
+t.Branch('tanb', tanbeta, 'tanb/D')
+t.Branch('expected', exp, 'expected/D')
+t.Branch('observed', obs, 'observed/D')
+tanbeta[0]=float(tanb)
+exp[0]    =float(tailMSSMexp/tailSMexp)
+obs[0]    =float(tailMSSMobs/tailSMobs)
+t.Fill()
+f.Write()
+f.Close()
 
 
 ##Fancy plot
@@ -179,7 +181,6 @@ hObs.Draw("sames");
 ##ar5.Draw()
 
 
-
 leg = ROOT.TLegend(0.12,0.7,0.3,0.88);
 leg.SetFillColor(0);
 leg.SetBorderSize(0);
@@ -192,13 +193,17 @@ pt = ROOT.TPaveText(0.16,0.95,0.45,0.99,"NDC");
 pt.SetFillColor(0);
 pt.AddText("CMS Expected");
 pt.SetBorderSize(0);
-pt2 = ROOT.TPaveText(0.55,0.95,0.99,0.99,"NDC");
+pt2 = ROOT.TPaveText(0.45,0.95,0.89,0.99,"NDC");
 pt2.SetFillColor(0);
 pt2.AddText(" #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}; #sqrt{s} = 8 TeV, L = 19.7 fb^{-1}");
 pt2.SetBorderSize(0);
+pt3 = ROOT.TPaveText(0.45,0.90,0.74,0.94,"NDC");
+pt3.SetFillColor(0);
+pt3.AddText(" mA = {MASS} GeV,  tanb = {TANB}".format(MASS=staff.mh, TANB=tanb));
+pt3.SetBorderSize(0);
 pt.Draw();
 pt2.Draw();
-tanb=options.filename.lstrip("qmu.FixedMu_").rstrip(".root")
+pt3.Draw();
 c1.SaveAs("sigsep_"+tanb+".png");
 c1.SaveAs("sigsep_"+tanb+".pdf");
 #c1.SaveAs("sigsep_"+tanb+".root");
