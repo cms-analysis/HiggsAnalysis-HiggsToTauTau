@@ -26,7 +26,7 @@ layout = cms.PSet(
     ## define masspoints for limit plot
     masspoints = cms.vdouble(125),
     ## make a temperature plot?
-    temp = cms.bool(True),
+    temp = cms.bool(False),
     ## smooth plot? 
     smooth = cms.bool(True),
     ## define physics-model
