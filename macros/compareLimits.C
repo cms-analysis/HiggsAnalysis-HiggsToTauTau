@@ -61,7 +61,7 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("ee"        )) title = std::string("ee");
   if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau");
   if(channel==std::string("htt"       )) title = std::string("H#rightarrow#tau#tau");
-  if(channel==std::string("cmb"       )) title = std::string("H#rightarrow#tau#tau");
+  if(channel==std::string("cmb"       )) title = std::string("H#rightarrow#tau#tau+VH#rightarrow#tau#tau");
   if(channel==std::string("0jet"      )) title = std::string("0-Jet");
   if(channel==std::string("1jet"      )) title = std::string("1-Jet");
   if(channel==std::string("2jet"      )) title = std::string("2-Jet (VBF)");
@@ -88,7 +88,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   colors["0jet"       ] = kBlue;
   colors["1jet"       ] = kRed;
   colors["2jet"       ] = kMagenta;
-  colors["vbf"        ] = kRed;
+  colors["vbf"        ] = kMagenta;
   colors["boost"      ] = kGreen;
   colors["btag"       ] = kRed; 
   colors["nobtag"     ] = kBlue; 
@@ -137,7 +137,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   TFile* inputFile = new TFile(filename); if(inputFile->IsZombie()){ std::cout << "ERROR:: file: " << filename << " does not exist.\n"; }
   
   if(std::string(type).find("sm")!=std::string::npos){
-    label="CMS,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV";
+    label="CMS H#rightarrow#tau#tau, up to 4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV";
   }
 
   /// prepare input parameters
@@ -212,6 +212,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       }
       hexp[i]->GetYaxis()->SetTitle(y_title.c_str());
       hexp[i]->GetYaxis()->SetLabelFont(62);
+      hexp[i]->GetYaxis()->SetTitleFont(62);
       hexp[i]->GetYaxis()->SetTitleOffset(1.05);
       hexp[i]->GetYaxis()->SetLabelSize(0.03);
     }
@@ -366,7 +367,7 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 	   }
       else{
 	CMSPrelim(label, "", 0.135, 0.835);
-	leg0 = new TLegend(legendOnRight ? 0.50 : 0.20, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.6, legendOnRight ? 0.94 : 0.63, 0.90);
+	leg0 = new TLegend(legendOnRight ? 0.50 : 0.20, hexp.size()<5 ? 0.90-0.06*hexp.size() : 0.6, legendOnRight ? 0.74 : 0.63, 0.90);
 	//leg0 = new TLegend(legendOnRight ? 0.50 : 0.20, hexp.size()<5 ? 0.90-0.08*hexp.size() : 0.6, legendOnRight ? 0.94 : 0.80, 0.90);
       }
     }
