@@ -695,13 +695,14 @@ if options.optHypothesisTest :
             os.system("limit.py --HypothesisTest {OPTS} {DIR}".format(OPTS=options.opt, DIR=dir))
     else :
         for dir in args :
-            print arg
             ## chop off masses directory if present as this will be added automatically by the submission script
             if is_number(get_mass(dir)) or get_mass(dir) == "common" :
                 dir = dir[:dir.rstrip('/').rfind('/')]
             if not dir in dirs :
                 dirs.append(dir)
-        print "not yet build in - only interactive available"
+        ## directories and mases per directory
+        struct = directories(args)
+        lxb_submit(struct[0], struct[1], "--HypothesisTest", options.opt)
     
 
 
