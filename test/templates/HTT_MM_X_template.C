@@ -138,13 +138,13 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   // determine category tag
   const char* category = ""; const char* category_extra = ""; const char* category_extra2 = "";
   if(std::string(directory) == std::string("mumu_0jet_low"             )){ category = "#mu#mu";          }
-  if(std::string(directory) == std::string("mumu_0jet_low"             )){ category_extra = "0-jet low p_{T}(#mu)";          }
+  if(std::string(directory) == std::string("mumu_0jet_low"             )){ category_extra = "0-jet low p_{T}^{#mu}";          }
   if(std::string(directory) == std::string("mumu_0jet_high"            )){ category = "#mu#mu";          }
-  if(std::string(directory) == std::string("mumu_0jet_high"            )){ category_extra = "0-jet high p_{T}(#mu)";         }
+  if(std::string(directory) == std::string("mumu_0jet_high"            )){ category_extra = "0-jet high p_{T}^{#mu}";         }
   if(std::string(directory) == std::string("mumu_1jet_low"          )){ category = "#mu#mu";          }
-  if(std::string(directory) == std::string("mumu_1jet_low"          )){ category_extra = "1-jet low p_{T}(#mu)";       }
+  if(std::string(directory) == std::string("mumu_1jet_low"          )){ category_extra = "1-jet low p_{T}^{#mu}";       }
   if(std::string(directory) == std::string("mumu_1jet_high"          )){ category = "#mu#mu";          }
-  if(std::string(directory) == std::string("mumu_1jet_high"          )){ category_extra = "1-jet high p_{T}(#mu)";       }
+  if(std::string(directory) == std::string("mumu_1jet_high"          )){ category_extra = "1-jet high p_{T}^{#mu}";       }
   if(std::string(directory) == std::string("mumu_vbf"            )){ category = "#mu#mu";          }
   if(std::string(directory) == std::string("mumu_vbf"            )){ category_extra = "2-jet";              }
   if(std::string(directory) == std::string("mumu_nobtag"               )){ category = "#mu#mu";          }
@@ -333,7 +333,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 
   TH1F* errorBand = (TH1F*)ZMM->Clone("errorBand");
   errorBand->SetMarkerSize(0);
-  errorBand->SetFillColor(1);
+  errorBand->SetFillColor(13);
   errorBand->SetFillStyle(3013);
   errorBand->SetLineWidth(1);
   for(int idx=0; idx<errorBand->GetNbinsX(); ++idx){
@@ -423,13 +423,13 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #ifdef ASIMOV
   leg->AddEntry(data    , "sum(bkg) + H(125)"           , "LP");
 #else
-  leg->AddEntry(data    , "observed"                    , "LP");
+  leg->AddEntry(data    , "Observed"                    , "LP");
 #endif
   leg->AddEntry(ZMM     , "Z#rightarrow#mu#mu"          , "F" );
   leg->AddEntry(ZTT     , "Z#rightarrow#tau#tau"        , "F" );
   leg->AddEntry(TTJ     , "t#bar{t}"                    , "F" );
   leg->AddEntry(QCD     , "QCD"                         , "F" );
-  leg->AddEntry(Dibosons, "electroweak"                 , "F" );
+  leg->AddEntry(Dibosons, "Electroweak"                 , "F" );
   $ERROR_LEGEND
   leg->Draw();
 

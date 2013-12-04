@@ -170,9 +170,9 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   // determine category tag
   const char* category = ""; const char* category_extra = ""; const char* category_extra2 = "";
   if(std::string(directory) == std::string("tauTau_1jet_high_mediumhiggs")){ category = "#tau_{h}#tau_{h}";           }
-  if(std::string(directory) == std::string("tauTau_1jet_high_mediumhiggs")){ category_extra= "1-jet boost";           }
+  if(std::string(directory) == std::string("tauTau_1jet_high_mediumhiggs")){ category_extra= "1-jet boosted";           }
   if(std::string(directory) == std::string("tauTau_1jet_high_highhiggs"  )){ category = "#tau_{h}#tau_{h}";           }
-  if(std::string(directory) == std::string("tauTau_1jet_high_highhiggs"  )){ category_extra= "1-jet large boost";     }
+  if(std::string(directory) == std::string("tauTau_1jet_high_highhiggs"  )){ category_extra= "1-jet"; category_extra2= "highly boosted";     }
   if(std::string(directory) == std::string("tauTau_vbf"                  )){ category = "#tau_{h}#tau_{h}";           }
   if(std::string(directory) == std::string("tauTau_vbf"                  )){ category_extra = "VBF tag";              }
   if(std::string(directory) == std::string("tauTau_nobtag"               )){ category = "#tau_{h}#tau_{h}";           }
@@ -356,7 +356,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 
   TH1F* errorBand = (TH1F*)Ztt ->Clone();
   errorBand  ->SetMarkerSize(0);
-  errorBand  ->SetFillColor(1);
+  errorBand  ->SetFillColor(13);
   errorBand  ->SetFillStyle(3013);
   errorBand  ->SetLineWidth(1);
   for(int idx=0; idx<errorBand->GetNbinsX(); ++idx){
@@ -447,11 +447,11 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 #ifdef ASIMOV
   leg->AddEntry(data , "sum(bkg) + H(125)"              , "LP");
 #else
-  leg->AddEntry(data , "observed"                       , "LP");
+  leg->AddEntry(data , "Observed"                       , "LP");
 #endif
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
   leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
-  leg->AddEntry(EWK  , "electroweak"                    , "F" );
+  leg->AddEntry(EWK  , "Electroweak"                    , "F" );
   leg->AddEntry(Fakes, "QCD"                            , "F" );
   $ERROR_LEGEND
   leg->Draw();

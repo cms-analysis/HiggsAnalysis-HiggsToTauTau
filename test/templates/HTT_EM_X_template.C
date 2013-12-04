@@ -161,13 +161,13 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   // determine category tag
   const char* category = ""; const char* category_extra = ""; const char* category_extra2 = "";
   if(std::string(directory) == std::string("emu_0jet_low"             )){ category = "e#mu";          }
-  if(std::string(directory) == std::string("emu_0jet_low"             )){ category_extra = "0-jet low p_{T}(#mu)";          }
+  if(std::string(directory) == std::string("emu_0jet_low"             )){ category_extra = "0-jet low p_{T}^{#mu}";          }
   if(std::string(directory) == std::string("emu_0jet_high"            )){ category = "e#mu";          }
-  if(std::string(directory) == std::string("emu_0jet_high"            )){ category_extra = "0-jet high p_{T}(#mu)";         }
+  if(std::string(directory) == std::string("emu_0jet_high"            )){ category_extra = "0-jet high p_{T}^{#mu}";         }
   if(std::string(directory) == std::string("emu_1jet_low"          )){ category = "e#mu";          }
-  if(std::string(directory) == std::string("emu_1jet_low"          )){ category_extra = "1-jet low p_{T}(#mu)";       }
+  if(std::string(directory) == std::string("emu_1jet_low"          )){ category_extra = "1-jet low p_{T}^{#mu}";       }
   if(std::string(directory) == std::string("emu_1jet_high"          )){ category = "e#mu";          }
-  if(std::string(directory) == std::string("emu_1jet_high"          )){ category_extra = "1-jet high p_{T}(#mu)";       }
+  if(std::string(directory) == std::string("emu_1jet_high"          )){ category_extra = "1-jet high p_{T}^{#mu}";       }
   if(std::string(directory) == std::string("emu_vbf_loose"            )){ category = "e#mu";          }
   if(std::string(directory) == std::string("emu_vbf_loose"            )){ category_extra = "Loose VBF tag";              }
   if(std::string(directory) == std::string("emu_vbf_loose") 
@@ -394,7 +394,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   TH1F* errorBand = (TH1F*)Ztt ->Clone("errorBand");
 #endif
   errorBand  ->SetMarkerSize(0);
-  errorBand  ->SetFillColor(1);
+  errorBand  ->SetFillColor(13);
   errorBand  ->SetFillStyle(3013);
   errorBand  ->SetLineWidth(1);
   for(int idx=0; idx<errorBand->GetNbinsX(); ++idx){
@@ -492,15 +492,15 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 #ifdef ASIMOV
   leg->AddEntry(data , "sum(bkg) + H(125)"              , "LP");
 #else
-  leg->AddEntry(data , "observed"                       , "LP");
+  leg->AddEntry(data , "Observed"                       , "LP");
 #endif
 #ifdef HWW_BG
   leg->AddEntry(ggH_hww  , "SM H(125 GeV)#rightarrowWW" , "F" );
 #endif
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
   leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
-  leg->AddEntry(EWK  , "electroweak"                    , "F" );
-  leg->AddEntry(Fakes, "misidentified e/#mu"                   , "F" );
+  leg->AddEntry(EWK  , "Electroweak"                    , "F" );
+  leg->AddEntry(Fakes, "Misidentified e/#mu"                   , "F" );
   $ERROR_LEGEND
   leg->Draw();
 
