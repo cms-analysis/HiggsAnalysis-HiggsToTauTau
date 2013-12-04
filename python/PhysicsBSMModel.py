@@ -164,7 +164,7 @@ class TwoHypotesisHiggs(PhysicsModel):
         self.poiMap  = []
         self.pois    = {}
         self.verbose = False
-        self.altSignal  = "SM125"
+        self.SMSignal  = "SM125" #SM signal 
     def setModelBuilder(self, modelBuilder):
         PhysicsModel.setModelBuilder(self, modelBuilder)
         self.modelBuilder.doModelBOnly = False
@@ -172,7 +172,7 @@ class TwoHypotesisHiggs(PhysicsModel):
         "Split in production and decay, and call getHiggsSignalYieldScale; return 1 for backgrounds "
         if not self.DC.isSignal[process]: return 1
 
-        isAlt = (self.altSignal in process)
+        isAlt = (self.SMSignal not in process) #altenative hypothesis if SMSignal not in process name
 
         if self.pois: ## NOT USED FOR MSSMvsSM 
             target = "%(bin)s/%(process)s" % locals()
@@ -196,7 +196,7 @@ class TwoHypotesisHiggs(PhysicsModel):
             return self.sigNorms[isAlt]
     
     def setPhysicsOptions(self,physOptions): 
-        for po in physOptions: ##this is not used at all!
+        for po in physOptions: ## NOT USED FOR MSSMvsSM 
 	    if po == "fqqFloating":
 		print "Will consider fqq = fraction of qqH in Alt signal (signal strength will be left floating)"
 		# Here alsways setting muFloating if fqq in model, should this be kept optional?
@@ -234,7 +234,7 @@ class TwoHypotesisHiggs(PhysicsModel):
         self.modelBuilder.doVar("x[0,0,1]");
         poi = "x"
 
-        if self.muFloating: ##this is not used at all!
+        if self.muFloating: ## NOT USED FOR MSSMvsSM 
 
             if self.pois:
                 for pn,pf in self.pois.items():
