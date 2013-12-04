@@ -168,18 +168,18 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   // determine category tag
   const char* category = ""; const char* category_extra = ""; const char* category_extra2 = "";
   if(std::string(directory) == std::string("muTau_0jet_low"             )){ category = "#mu#tau_{h}";          }
-  if(std::string(directory) == std::string("muTau_0jet_low"             )){ category_extra = "0-jet low p_{T}(#tau_{h})";          }
+  if(std::string(directory) == std::string("muTau_0jet_low"             )){ category_extra = "0-jet low p_{T}^{#tau_{h}}";          }
   if(std::string(directory) == std::string("muTau_0jet_medium"          )){ category = "#mu#tau_{h}";          }
-  if(std::string(directory) == std::string("muTau_0jet_medium"          )){ category_extra = "0-jet low p_{T}(#tau_{h})";       }
+  if(std::string(directory) == std::string("muTau_0jet_medium"          )){ category_extra = "0-jet low p_{T}^{#tau_{h}}";       }
   if(std::string(directory) == std::string("muTau_0jet_high"            )){ category = "#mu#tau_{h}";          }
-  if(std::string(directory) == std::string("muTau_0jet_high"            )){ category_extra = "0-jet high p_{T}(#tau_{h})";         }
+  if(std::string(directory) == std::string("muTau_0jet_high"            )){ category_extra = "0-jet high p_{T}^{#tau_{h}}";         }
   if(std::string(directory) == std::string("muTau_1jet_medium"          )){ category = "#mu#tau_{h}";          }
-  if(std::string(directory) == std::string("muTau_1jet_medium"          )){ category_extra = "1-jet low p_{T}(#tau_{h})";       }
+  if(std::string(directory) == std::string("muTau_1jet_medium"          )){ category_extra = "1-jet low p_{T}^{#tau_{h}}";       }
   if(std::string(directory) == std::string("muTau_1jet_high_lowhiggs"   )){ category = "#mu#tau_{h}";                          }
-  if(std::string(directory) == std::string("muTau_1jet_high_lowhiggs"   )){ category_extra= "1-jet high p_{T}(#tau_{h})";  }
+  if(std::string(directory) == std::string("muTau_1jet_high_lowhiggs"   )){ category_extra= "1-jet high p_{T}^{#tau_{h}}";  }
   if(std::string(directory) == std::string("muTau_1jet_high_mediumhiggs")){ category = "#mu#tau_{h}";                          }
-  if(std::string(directory) == std::string("muTau_1jet_high_mediumhiggs")){ category_extra= "1-jet high p_{T}(#tau_{h})"; }
-  if(std::string(directory) == std::string("muTau_1jet_high_mediumhiggs")){ category_extra2= "boost"; }
+  if(std::string(directory) == std::string("muTau_1jet_high_mediumhiggs")){ category_extra= "1-jet high p_{T}^{#tau_{h}}"; }
+  if(std::string(directory) == std::string("muTau_1jet_high_mediumhiggs")){ category_extra2= "boosted"; }
   if(std::string(directory) == std::string("muTau_vbf"                  )){ category = "#mu#tau_{h}";          }
   if(std::string(directory) == std::string("muTau_vbf"                  )){ category_extra = "VBF tag";              }
   if(std::string(directory) == std::string("muTau_vbf_loose"            )){ category = "#mu#tau_{h}";          }
@@ -400,7 +400,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 
   TH1F* errorBand = (TH1F*)Ztt ->Clone("errorBand");
   errorBand  ->SetMarkerSize(0);
-  errorBand  ->SetFillColor(1);
+  errorBand  ->SetFillColor(13);
   errorBand  ->SetFillStyle(3013);
   errorBand  ->SetLineWidth(1);
   for(int idx=0; idx<errorBand->GetNbinsX(); ++idx){
@@ -497,11 +497,11 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 #ifdef ASIMOV
   leg->AddEntry(data , "sum(bkg) + H(125)"              , "LP");
 #else
-  leg->AddEntry(data , "observed"                       , "LP");
+  leg->AddEntry(data , "Observed"                       , "LP");
 #endif
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
   leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
-  leg->AddEntry(EWK  , "electroweak"                    , "F" );
+  leg->AddEntry(EWK  , "Electroweak"                    , "F" );
   leg->AddEntry(Fakes, "QCD"                            , "F" );
   $ERROR_LEGEND
   leg->Draw();

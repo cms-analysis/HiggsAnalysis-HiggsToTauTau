@@ -138,13 +138,13 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   // determine category tag
   const char* category = ""; const char* category_extra = ""; const char* category_extra2 = "";
   if(std::string(directory) == std::string("ee_0jet_low"             )){ category = "ee";          }
-  if(std::string(directory) == std::string("ee_0jet_low"             )){ category_extra = "0-jet low p_{T}(e)";          }
+  if(std::string(directory) == std::string("ee_0jet_low"             )){ category_extra = "0-jet low p_{T}^{e}";          }
   if(std::string(directory) == std::string("ee_0jet_high"            )){ category = "ee";          }
-  if(std::string(directory) == std::string("ee_0jet_high"            )){ category_extra = "0-jet high p_{T}(e)";         }
+  if(std::string(directory) == std::string("ee_0jet_high"            )){ category_extra = "0-jet high p_{T}^{e}";         }
   if(std::string(directory) == std::string("ee_1jet_low"          )){ category = "ee";          }
-  if(std::string(directory) == std::string("ee_1jet_low"          )){ category_extra = "1-jet low p_{T}(e)";       }
+  if(std::string(directory) == std::string("ee_1jet_low"          )){ category_extra = "1-jet low p_{T}^{e}";       }
   if(std::string(directory) == std::string("ee_1jet_high"          )){ category = "ee";          }
-  if(std::string(directory) == std::string("ee_1jet_high"          )){ category_extra = "1-jet high p_{T}(e)";       }
+  if(std::string(directory) == std::string("ee_1jet_high"          )){ category_extra = "1-jet high p_{T}^{e}";       }
   if(std::string(directory) == std::string("ee_vbf"            )){ category = "ee";          }
   if(std::string(directory) == std::string("ee_vbf"            )){ category_extra = "2-jet";              }
   if(std::string(directory) == std::string("ee_nobtag"               )){ category = "ee";          }
@@ -319,7 +319,7 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 
   TH1F* errorBand = (TH1F*)ZEE ->Clone("errorBand");
   errorBand  ->SetMarkerSize(0);
-  errorBand  ->SetFillColor(1);
+  errorBand  ->SetFillColor(13);
   errorBand  ->SetFillStyle(3013);
   errorBand  ->SetLineWidth(1);
   for(int idx=0; idx<errorBand->GetNbinsX(); ++idx){
@@ -411,13 +411,13 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #ifdef ASIMOV
   leg->AddEntry(data , "sum(bkg) + H(125)"           , "LP");
 #else
-  leg->AddEntry(data , "observed"                    , "LP");
+  leg->AddEntry(data , "Observed"                    , "LP");
 #endif
   leg->AddEntry(ZEE  , "Z#rightarrowee"              , "F" );
   leg->AddEntry(ZTT  , "Z#rightarrow#tau#tau"        , "F" );
   leg->AddEntry(TTJ  , "t#bar{t}"                    , "F" );
   leg->AddEntry(QCD  , "QCD"                         , "F" );
-  leg->AddEntry(WJets, "electroweak"                 , "F" );
+  leg->AddEntry(WJets, "Electroweak"                 , "F" );
   //leg->AddEntry(Dibosons  , "Dibosons"             , "F" );
   $ERROR_LEGEND
   leg->Draw();

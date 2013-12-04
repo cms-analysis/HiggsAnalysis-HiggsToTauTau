@@ -137,7 +137,7 @@ class Analysis:
                  line = line.replace("$TANB", str(int(options.tanb)))
 	     if options.uncertainties and (options.yields or options.shapes):
                  line = line.replace("$DRAW_ERROR", 'if(scaled) errorBand->Draw("e2same");')
-                 line = line.replace("$ERROR_LEGEND", 'if(scaled) leg->AddEntry(errorBand, "bkg. uncertainty" , "F" );')
+                 line = line.replace("$ERROR_LEGEND", 'if(scaled) leg->AddEntry(errorBand, "Bkg. uncertainty" , "F" );')
 	     else:
                  line = line.replace("$DRAW_ERROR", '')
                  line = line.replace("$ERROR_LEGEND", '')
