@@ -77,7 +77,7 @@ if __name__ == "__main__":
         assert(len(root_files) == 1)
         shape_file = tuple(root_files)[0]
         shape_file_name = os.path.basename(shape_file)
-        output_dir = os.path.join(args.output, chan, mass)
+        output_dir = os.path.join(args.output, mass)
         output_file = os.path.join(output_dir, card_name)
         log.info("Card %s => %s", card, output_file)
         if not args.dry:
