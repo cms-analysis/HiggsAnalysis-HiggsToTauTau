@@ -113,6 +113,8 @@ class PlotLimits {
   void plot2DScan(TCanvas& canv, const char* directory="");
   /// plot 1d-scans for several masses on canvases, print out png, pdf, root formats if desired  
   void plot1DScan(TCanvas& canv, const char* directory="");
+  /// plot Hypothesis test for MSSM vs SM in mA-tanb for several masses on canvases, print out png, pdf, root formats if desired  
+  void plotHypoTest(TCanvas& canv, const char* directory);
 
  private:
   /// fill a single vector of values from toys. Values are obtained from the mean and/or the quantiles of the 
