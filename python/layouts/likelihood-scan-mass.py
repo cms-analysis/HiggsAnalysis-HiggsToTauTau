@@ -26,6 +26,6 @@ layout = cms.PSet(
     ## define output label
     outputLabel = cms.string("mass_scan"),
     ## define masspoints for limit plot
-    masspoints = cms.vdouble(range(110, 146, 5))
+    masspoints = cms.vdouble(range(90, 146, 5))
 #    masspoints = cms.vdouble(range(110, 146, 1))
 )

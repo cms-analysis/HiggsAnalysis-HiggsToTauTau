@@ -107,7 +107,7 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
     (*sigma)->Draw("Lsame");
   }
 
-  TLegend* leg = new TLegend(0.40, 0.75, 0.8, 0.90);
+  TLegend* leg = new TLegend(0.45, 0.75, 0.85, 0.90);
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
@@ -118,14 +118,19 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   leg->Draw("same");
 
   /// Mass
-  TPaveText * mass = new TPaveText(0.4, 0.66, 0.8, 0.75, "NDC");
+  TPaveText * mass = new TPaveText(0.45, 0.69, 0.75, 0.75, "NDC");
   mass->SetBorderSize( 0);
   mass->SetFillStyle ( 0);
   //mass->SetTextAlign ( 0);
   //mass->SetTextSize  ( 0.06 );
   mass->SetTextColor( kBlue );
   //mass->SetTextFont (   62 );
-  std::stringstream massText; massText << "m_{best-fit} = " << minX << "^{+" << std::setprecision(1) << upperBound-minX << "}" << "_{-" << std::setprecision(1) << minX-lowerBound << "}" << " GeV";
+
+  int precisionLower=1;
+  if( (minX-lowerBound) >= 10) precisionLower=2;  
+  int precisionUpper=1;
+  if( (upperBound-minX) >= 10) precisionUpper=2;  
+  std::stringstream massText; massText << "m_{best-fit} = " << minX << "^{+" << std::setprecision(precisionUpper) << upperBound-minX << "}" << "_{-" << std::setprecision(precisionLower) << minX-lowerBound << "}" << " GeV";
   mass->AddText(massText.str().c_str());
   mass->Draw("same"); 
   
