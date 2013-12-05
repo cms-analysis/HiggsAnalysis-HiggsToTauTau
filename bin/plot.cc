@@ -57,6 +57,8 @@ int main(int argc, char* argv[])
   types.push_back(std::string("--CLs"));
   // show limits in mA-tanb (from full CLs or from asymptotic)
   types.push_back(std::string("--tanb"));
+  // show SignalSeparation Power in mA-tanb (MSSM vs SM)
+  types.push_back(std::string("--hypothesis-test")); 
   // show bayesian cross section limits
   types.push_back(std::string("--bayesian"));
   // show asymptotic cross section limits with signal injected
@@ -436,6 +438,13 @@ int main(int argc, char* argv[])
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plot2DScan(*canv, directory);
+  }
+  // ----------------------------------------------------------------------------------------------------------------------- NEW
+  if( std::string(argv[1]) == std::string("--hypothesis-test") ){
+    // make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plotHypoTest(*canv, directory);
   }
   // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--HIG-11-020") ){
