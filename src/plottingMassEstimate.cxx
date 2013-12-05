@@ -50,6 +50,20 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   std::cout << "-------------------------------------------------" << std::endl;
   std::cout << "Mass estimate: " << minX << " + " << upperBound-minX << " - " << minX-lowerBound << std::endl;
   std::cout << "-------------------------------------------------" << std::endl;
+ 
+  TGraph *newobserved = new TGraph();  
+  for(int idx=0; idx<observed->GetN(); ++idx){
+    newobserved->SetPoint(idx,observed->GetX()[idx],observed->GetY()[idx]);
+  }
+  
+  //observed->Fit("pol2", "F", "" ,lowerBound, upperBound); 
+  observed->Fit("pol2", "F"); 
+
+  std::cout << "-------------------------------------------------" << std::endl;
+  //std::cout << "Mass estimate from smoothing: " << observed->GetHistogram()->GetBinWithContent()(observed->GetHistogram()->GetMinimum()) << std::endl;
+  std::cout << "Mass estimate from smoothing: " << crossed << std::endl;
+  std::cout << "-------------------------------------------------" << std::endl;
+
 
   // create sigma lines
   float quantile[] = {0.68, 0.95};
