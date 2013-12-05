@@ -29,6 +29,8 @@ layout = cms.PSet(
     temp = cms.bool(False),
     ## define physics-model
     model = cms.string("ggH-qqH"),
+    ## draw the SM expectation
+    drawSM = cms.bool(True),
     ## max for plotting (for fine tuning)
     xmaxs = cms.VPSet(
     cms.PSet(mass = cms.double( 125.), max = cms.double(-1.)),

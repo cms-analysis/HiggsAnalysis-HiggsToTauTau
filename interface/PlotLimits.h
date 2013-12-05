@@ -211,6 +211,8 @@ class PlotLimits {
   bool mssm_;
   /// indicate plot type as bestfit
   bool bestfit_;
+  /// indicate whether a marker for the SM should be draw
+  bool drawsm_;
   /// indicate whether this is with signal injected or not (used for limit plotting)
   bool injected_;
   /// indicate whether this is with SM 125GeV Higgs as Background  or not (used for limit plotting)

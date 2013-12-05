@@ -13,7 +13,7 @@ PlotLimits::plotPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmE
   plottingPValue(canv, innerBand, outerBand, expected, observed, xaxis_, yaxis_, min_, max_, log_, true);
   // setup the CMS Preliminary
   //CMSPrelim(dataset_.c_str(), "", 0.160, 0.835);
-  CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
+  CMSPrelim(dataset_.c_str(), "", 0.135, 0.835);
 
   /*
   TPaveText* ext0     = new TPaveText(0.18, 0.42, 0.38, 0.47, "NDC");

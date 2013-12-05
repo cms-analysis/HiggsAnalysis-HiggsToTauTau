@@ -5,6 +5,7 @@ from HiggsAnalysis.HiggsToTauTau.UncertAdaptor import UncertAdaptor
 from HiggsAnalysis.HiggsToTauTau.horizontal_morphing import Morph
 from HiggsAnalysis.HiggsToTauTau.AsimovDatacard import *
 from HiggsAnalysis.HiggsToTauTau.scale2SM import RescaleSamples
+from HiggsAnalysis.HiggsToTauTau.utils import is_number
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs 
 from HiggsAnalysis.HiggsToTauTau.utils import get_shape_systematics
 
@@ -26,6 +27,8 @@ parser.add_option("--hww-scale", dest="hww_scale", default='1.', type="string",
                   help="specify the scale factor for the hww contribution here. The scale factor should be relative to the SM expectation. [Default: 1.]")
 parser.add_option("--new-merging", dest="new_merging", default=False, action="store_true",
                   help="added to test the new merging introduced by Andrew. [Default: False]")
+parser.add_option("--mvis", dest="mvis", default=False, action="store_true",
+                  help="Use mvis inputs instead of svfit [Default: False]")
 parser.add_option("--new-merging-threshold", dest="new_merging_threshold", default="0.5", type="string",
                   help="Threshold for the new merging by Andrew. [Default: \"0.5\"]")
 parser.add_option("--drop-normalize-bbb", dest="drop_normalize_bbb", default=False, action="store_true",
@@ -91,6 +94,13 @@ patterns = {
     'no-bbb:hww-sig' : '',
     'bbb:hww-sig'    : '',
     }
+if options.mvis: 
+    patterns = {
+        'no-bbb'         : '-mvis',
+        'bbb'            : '-mvis',
+        'no-bbb:hww-sig' : '-mvis',
+        'bbb:hww-sig'    : '-mvis',
+        }
 
 if options.update_all :
     options.update_setup     = True
@@ -130,6 +140,48 @@ print "# Check option --help in case of doubt about the meaning of one or more o
 print "# guration parameters.                           "
 print "# --------------------------------------------------------------------------------------"
 
+## patch to allow mm/ee to point to the hww125 templates when running with option
+## hww-sig
+def simplistic_shift_bg_to_signal(path, procs):
+    """
+    open datacards located at path, search for the indices for the processes listed in procs.
+    For those processes switch the sign of the index to change the definition from BG to sig.
+    """
+    proc_old   = []
+    proc_names = []
+    file = open(path, 'r')
+    for line in file :
+        words = line.lstrip().split()
+        if words[0] == 'process' :
+            if is_number(words[1]) :
+                proc_old = words[1:]
+            else :
+                proc_names = words[1:]
+    file.close()
+    proc_line = 'process\t'+'\t'.join(proc_old)
+    for j in range(len(procs)) :
+        for i in range(len(proc_old)) :
+            if proc_names[i] == procs[j] :
+                proc_old[i] = str(int(proc_old[0])-j-1)
+    #print 'process\t'+'\t'.join(proc_old)
+    #print 'process\t'+'\t'.join(proc_names)
+    source = open(path, 'r')
+    target = open(path+'_tmp', 'w')
+    for line in source :
+        words = line.lstrip().split()
+        if words[0] == 'shapes' :
+            for sig in ['ggH','qqH'] :
+                if sig in line :
+                    line+='\n'+line.replace(sig,sig+'_hww').replace('$MASS','125')+'\n'        
+        if words[0] == 'process' :
+            if is_number(words[1]) :
+                line = 'process\t'+'\t'.join(proc_old)+'\n'
+            else :
+                line = ('process\t'+'\t'.join(proc_names)+'\n').replace('hww125','hww')
+        target.write(line)
+    os.system("mv {SOURCE} {TARGET}".format(SOURCE=path+'_tmp', TARGET=path))
+    return
+
 ## setup main directory 
 setup="{CMSSW_BASE}/src/.setup{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
 
@@ -162,11 +214,20 @@ if options.update_setup :
                     PATTERN=pattern
                     )
                 for file in glob.glob(source) :
-                    os.system("cp -v {SOURCE} {SETUP}/{CHN}/".format(
-                        SOURCE=file,
-                        SETUP=setup,
-                        CHN=chn
-                        ))
+                    if not chn == "vhtt" :
+                        os.system("cp -v {SOURCE} {SETUP}/{CHN}/{CHNNAME}.inputs-sm-{PER}.root".format(
+                            SOURCE=file,
+                            CHN=chn,
+                            CHNNAME='htt_'+chn,
+                            SETUP=setup,
+                            PER=per
+                            ))
+                    else : 
+                        os.system("cp -v {SOURCE} {SETUP}/{CHN}/".format(
+                            SOURCE=file,
+                            SETUP=setup,
+                            CHN=chn
+                            ))
                 if chn == 'mt' and options.add_mutau_soft:
                     os.system("cp -v {CMSSW_BASE}/src/auxiliaries/shapes/{DIR}/htt_mt.inputs-sm-8TeV-soft.root {SETUP}/mt/".format(
                         CMSSW_BASE=cmssw_base,
@@ -214,7 +275,7 @@ if options.update_setup :
             if not chn in do_not_scales :
                 if chn == 'vhtt':
                     ## vhtt is part of do_no_scale in the current configuration. So nothing will
-                    ## happen here fro the moment.
+                    ## happen here for the moment.
                     process = RescaleSamples(file, ['VH' , 'WH' , 'ZH'], masspoints)
                     process.rescale()
                 else:
@@ -272,14 +333,33 @@ if options.update_setup :
             for chn in config.channels:
                 for per in config.periods:
                     for cat in config.categories[chn][per]:
-                        for file in glob.glob("{SETUP}/{CHN}/htt_{CHN}.inputs-sm-{PER}*.root".format(SETUP=setup,CHN=chn, PER=per, CAT=cat)):
-                            for proc in ['ggH','qqH','VH']:
-                                template_morphing = Morph(file, get_channel_dirs(chn,"0"+cat,per)[0], proc+'{MASS}', ','.join(get_shape_systematics(setup,per,chn,"0"+cat,proc)), masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '') 
-                                template_morphing.run()
+                        if chn == 'vhtt':
+                            for file in glob.glob("{SETUP}/{CHN}/vhtt.inputs-sm-{PER}*.root".format(SETUP=setup,CHN=chn, PER=per, CAT=cat)):
+                                for proc in ['WH','ZH','VH']:
+                                    template_morphing = Morph(file, get_channel_dirs(chn,"0"+cat,per)[0], proc+'{MASS}', ','.join(get_shape_systematics(setup,per,chn,"0"+cat,proc)), masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '') 
+                                    template_morphing.run()
+                        else:
+                            for file in glob.glob("{SETUP}/{CHN}/htt_{CHN}.inputs-sm-{PER}*.root".format(SETUP=setup,CHN=chn, PER=per, CAT=cat)):
+                                for proc in ['ggH','qqH','VH']:
+                                    template_morphing = Morph(file, get_channel_dirs(chn,"0"+cat,per)[0], proc+'{MASS}', ','.join(get_shape_systematics(setup,per,chn,"0"+cat,proc)), masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '') 
+                                    template_morphing.run()
+                                if chn == 'em' :
+                                    ## needed to fudge in morphing for uncertainties for ggH_hww/qqH_hww for em
+                                    ## these are still treated as BG at this point even if they might turn  into
+                                    ## signal later on.
+                                    em_uncerts = {
+                                        '0' : 'CMS_scale_e_',
+                                        '1' : 'CMS_scale_e_highpt_', 
+                                        '2' : 'CMS_scale_e_',
+                                        '3' : 'CMS_scale_e_highpt_',
+                                        '4' : 'CMS_scale_e_',
+                                        '5' : 'CMS_scale_e_'}
+                                    if any('hww-sig' in ana for ana in analyses):
+                                        for proc in ['ggH_hww','qqH_hww']:
+                                            template_morphing = Morph(file, get_channel_dirs(chn,"0"+cat,per)[0], proc+'{MASS}', em_uncerts[cat]+per, masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '') 
+                                            template_morphing.run()
             ## add the new points to the masses array
             masses.append(masspoints[i]+'-'+masspoints[i+1]+':'+options.interpolate)
-        ## set the masspoint list to the new points
-        masspoints = [str(m) for m in range(int(masspoints[0]),int(masspoints[-1])+1,int(options.interpolate))]
     ## set up directory structure
     dir = "{CMSSW_BASE}/src/setups{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
     if os.path.exists(dir) :
@@ -342,7 +422,9 @@ if options.update_setup :
         if 'hww-sig' in ana :
             os.system("cp -r {DIR}/{SOURCE} {DIR}/{TARGET}".format(DIR=dir, SOURCE=ana[:ana.find(':')], TARGET=ana[ana.find(':')+1:]))
             cgs_adaptor = UncertAdaptor()
-            for chn in ['mm', 'ee', 'em']:
+            ## drop ggH_hww and qqH_hww template for ee and mm unless
+            ## templates for other masspoints but 125 GeV are provided            
+            for chn in ['em']:
                 if chn in config.channels:
                     for period in config.periods:
                         for category in config.categories[chn][period]:
@@ -350,12 +432,15 @@ if options.update_setup :
                             print 'processing file:', filename
                             cgs_adaptor.cgs_processes(filename,['ggH','qqH','VH','ggH_hww','qqH_hww'],None,None,['ggH_hww125','qqH_hww125'])
                     for file in glob.glob("{DIR}/{ANA}/{CHN}/unc-sm-*.vals".format(DIR=dir, ANA=ana[ana.find(':')+1:], CHN=chn)) :
-                        os.system("perl -pi -e 's/ggH_hww125/ggH_hww/g' {FILE}".format(FILE=file))
-                        os.system("perl -pi -e 's/qqH_hww125/qqH_hww/g' {FILE}".format(FILE=file))
+                        if chn in ['ee','mm'] :
+                            pass
+                        else:
+                            os.system("perl -pi -e 's/ggH_hww125/ggH_hww/g' {FILE}".format(FILE=file))
+                            os.system("perl -pi -e 's/qqH_hww125/qqH_hww/g' {FILE}".format(FILE=file))
             for chn in ['vhtt']:
                 if chn in config.channels:
                     for period in config.periods:
-                        for category in ['0', '1', '2']:
+                        for category in ['0', '1']:
                             filename="{DIR}/{TARGET}/{CHN}/cgs-sm-{PERIOD}-0{CATEGORY}.conf".format(DIR=dir, TARGET=ana[ana.find(':')+1:], CHN=chn, PERIOD=period, CATEGORY=category)
                             print 'processing file:', filename
                             cgs_adaptor.cgs_processes(filename,['WH','WH_hww'],None,None,['WH_hww125'])
@@ -387,7 +472,7 @@ if options.update_aux :
         prune = 'bbb' in ana 
         if ':' in ana :
             ana = ana[ana.find(':')+1:]
-        print "setup datacards for:", ana
+        print "setup datacards for:", ana, masses
         for chn in config.channels:
             for per in config.periods:
                 if config.categories[chn][per]:
@@ -410,6 +495,7 @@ if options.update_aux :
         ## an earlier level
         if ana == 'hww-sig' :
             if not options.hww_mass == '' :
+                print '... fixing mass for hww as background to mH={MASS}'.format(MASS=options.hww_mass)
                 for file in glob.glob("{DIR}/{ANA}/sm/htt_em/htt_em_*.txt".format(DIR=dir, ANA=ana)) :
                     os.system("perl -pi -e 's/ggH_hww/ggH_hww{MASS}/g' {FILE}".format(MASS=options.hww_mass, FILE=file))
                     os.system("perl -pi -e 's/qqH_hww/qqH_hww{MASS}/g' {FILE}".format(MASS=options.hww_mass, FILE=file))
@@ -420,8 +506,16 @@ if options.update_aux :
         if not options.hww_mass == '' :
             file = "{DIR}/{ANA}/sm/htt_{em,vhtt}/{htt_em,vhtt}_*.txt".format(DIR=dir, ANA=ana)
             os.system("sed -i -e '/_hww125/ s/$PROCESS$MASS/$PROCESS/g' {FILE}".format(MASS=options.hww_mass, FILE=file))
+        ## move ggH_hww125 and qqH_hww125 from BG to signal in a very simplistic way that keeps the process name pointing to
+        ## the only existing masspoint for these two channels, which is the one for 125 GeV.
+        if ana == 'hww-sig' :
+            for chn in ['ee','mm'] :
+                print '... simplistic switch of ggH_hww125 and qqH_hww125 from background to signal for channel', chn
+                for file in glob.glob("{DIR}/{ANA}/sm/htt_{CHN}/htt_{CHN}_*.txt".format(DIR=dir, ANA=ana, CHN=chn)) :
+                    simplistic_shift_bg_to_signal(file, ["ggH_hww125","qqH_hww125"])        
         ## blind datacards 
-        if options.blind_datacards : 
+        if options.blind_datacards :
+            print '... blinding datacards'
             for chn in channels :
                 cardMaker = AsimovDatacard('', True, -1, False, '125', '1.0',options.extra_templates)
                 for dir in '{DIR}/{ANA}/sm/{CHN}'.format(DIR=dir, ANA=ana, CHN=chn if chn == 'vhtt' else 'htt_'+chn):

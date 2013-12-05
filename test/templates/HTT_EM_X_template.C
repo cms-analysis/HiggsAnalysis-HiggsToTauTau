@@ -161,13 +161,13 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   // determine category tag
   const char* category = ""; const char* category_extra = ""; const char* category_extra2 = "";
   if(std::string(directory) == std::string("emu_0jet_low"             )){ category = "e#mu";          }
-  if(std::string(directory) == std::string("emu_0jet_low"             )){ category_extra = "0-jet low p_{T}(#mu)";          }
+  if(std::string(directory) == std::string("emu_0jet_low"             )){ category_extra = "0-jet low p_{T}^{#mu}";          }
   if(std::string(directory) == std::string("emu_0jet_high"            )){ category = "e#mu";          }
-  if(std::string(directory) == std::string("emu_0jet_high"            )){ category_extra = "0-jet high p_{T}(#mu)";         }
+  if(std::string(directory) == std::string("emu_0jet_high"            )){ category_extra = "0-jet high p_{T}^{#mu}";         }
   if(std::string(directory) == std::string("emu_1jet_low"          )){ category = "e#mu";          }
-  if(std::string(directory) == std::string("emu_1jet_low"          )){ category_extra = "1-jet low p_{T}(#mu)";       }
+  if(std::string(directory) == std::string("emu_1jet_low"          )){ category_extra = "1-jet low p_{T}^{#mu}";       }
   if(std::string(directory) == std::string("emu_1jet_high"          )){ category = "e#mu";          }
-  if(std::string(directory) == std::string("emu_1jet_high"          )){ category_extra = "1-jet high p_{T}(#mu)";       }
+  if(std::string(directory) == std::string("emu_1jet_high"          )){ category_extra = "1-jet high p_{T}^{#mu}";       }
   if(std::string(directory) == std::string("emu_vbf_loose"            )){ category = "e#mu";          }
   if(std::string(directory) == std::string("emu_vbf_loose"            )){ category_extra = "Loose VBF tag";              }
   if(std::string(directory) == std::string("emu_vbf_loose") 
@@ -262,7 +262,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 #endif
 
   if(scaled){
-    Fakes = refill(shape_histos(Fakes, datacard, "Fakes"), "Fakes"); 
+/*    Fakes = refill(shape_histos(Fakes, datacard, "Fakes"), "Fakes"); 
     EWK = refill(shape_histos(EWK, datacard, "EWK"), "EWK"); 
     ttbar = refill(shape_histos(ttbar, datacard, "ttbar"), "ttbar"); 
     Ztt = refill(shape_histos(Ztt, datacard, "Ztt"), "Ztt"); 
@@ -280,7 +280,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
     ggH_hww = refill(shape_histos(ggH_hww, datacard, "ggH_hww125"), "ggH_hww125");
     qqH_hww = refill(shape_histos(qqH_hww, datacard, "qqH_hww125"), "qqH_hww125");
 #endif
-    
+*/    
     rescale(Fakes, 4); 
     rescale(EWK,   3); 
     rescale(ttbar, 2); 
@@ -358,7 +358,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 #else
 #ifndef DROP_SIGNAL
 #ifdef HWW_BG
-    VH   ->Add(qqH_hww);
+    VH   ->Add(ggH_hww);
 #else
     VH   ->Add(Ztt);
 #endif
@@ -394,7 +394,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   TH1F* errorBand = (TH1F*)Ztt ->Clone("errorBand");
 #endif
   errorBand  ->SetMarkerSize(0);
-  errorBand  ->SetFillColor(1);
+  errorBand  ->SetFillColor(13);
   errorBand  ->SetFillStyle(3013);
   errorBand  ->SetLineWidth(1);
   for(int idx=0; idx<errorBand->GetNbinsX(); ++idx){
@@ -434,7 +434,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 
   //CMSPrelim(dataset, "#tau_{e}#tau_{#mu}", 0.17, 0.835);
   CMSPrelim(dataset, "", 0.16, 0.835);
-  TPaveText* chan     = new TPaveText(0.55, 0.35, 0.94, 0.55, "tlbrNDC");
+  TPaveText* chan     = new TPaveText(0.52, 0.35, 0.91, 0.55, "tlbrNDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
   chan->SetTextAlign(   12 );
@@ -473,7 +473,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   SetLegendStyle(leg);
   leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau" , "L" );
 #else
-  TLegend* leg = new TLegend(0.55, 0.60, 0.94, 0.89);
+  TLegend* leg = new TLegend(0.52, 0.58, 0.92, 0.89);
   SetLegendStyle(leg);
 #ifndef DROP_SIGNAL
   if(SIGNAL_SCALE!=1){
@@ -481,7 +481,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   }
   else{
 #ifdef HWW_BG
-    leg->AddEntry(ggH  , "H(125 GeV)#rightarrow#tau#tau" , "L" );
+    leg->AddEntry(ggH  , "SM H(125 GeV)#rightarrow#tau#tau" , "L" );
 #else
     leg->AddEntry(ggH  , "#splitline{H(125 GeV)#rightarrow#tau#tau}{H(125 GeV)#rightarrowWW}" , "L" );
     leg->AddEntry((TObject*)0, "", "");
@@ -492,15 +492,15 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 #ifdef ASIMOV
   leg->AddEntry(data , "sum(bkg) + H(125)"              , "LP");
 #else
-  leg->AddEntry(data , "observed"                       , "LP");
+  leg->AddEntry(data , "Observed"                       , "LP");
 #endif
 #ifdef HWW_BG
-  leg->AddEntry(ggH_hww  , "H(125 GeV)#rightarrowWW" , "F" );
+  leg->AddEntry(ggH_hww  , "SM H(125 GeV)#rightarrowWW" , "F" );
 #endif
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
   leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
-  leg->AddEntry(EWK  , "electroweak"                    , "F" );
-  leg->AddEntry(Fakes, "Fakes"                          , "F" );
+  leg->AddEntry(EWK  , "Electroweak"                    , "F" );
+  leg->AddEntry(Fakes, "Misidentified e/#mu"                   , "F" );
   $ERROR_LEGEND
   leg->Draw();
 

@@ -33,10 +33,10 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("vhtt"      )) title = std::string("VH#rightarrow#tau#tau");
   if(channel==std::string("htt"       )) title = std::string("H#rightarrow#tau#tau");
   if(channel==std::string("cmb"       )) title = std::string("H#rightarrow#tau#tau+VH#rightarrow#tau#tau");
-  if(channel==std::string("0jet"      )) title = std::string("0-Jet");
-  if(channel==std::string("1jet"      )) title = std::string("1-Jet");
-  if(channel==std::string("2jet"      )) title = std::string("2-Jet (VBF)");
-  if(channel==std::string("vbf"       )) title = std::string("2-Jet (VBF)");
+  if(channel==std::string("0jet"      )) title = std::string("0-jet");
+  if(channel==std::string("1jet"      )) title = std::string("1-jet");
+  if(channel==std::string("2jet"      )) title = std::string("2-jet (VBF tag)");
+  if(channel==std::string("vbf"       )) title = std::string("2-jet (VBF tag)");
   if(channel==std::string("boost"     )) title = std::string("1-Jet");
   if(channel==std::string("btag"      )) title = std::string("B-Tag");
   if(channel==std::string("nobtag"    )) title = std::string("No B-Tag");
@@ -87,7 +87,7 @@ void compareBestFit(const char* filename="test.root", const char* channelstr="bo
   TFile* inputFile = new TFile(filename); if(inputFile->IsZombie()){ std::cout << "ERROR:: file: " << filename << " does not exist.\n"; }
 
   if(std::string(type).find("sm")!=std::string::npos){
-    label="CMS,  4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV";
+    label="CMS, 4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV";
   }
 
   /// prepare input parameters
@@ -113,6 +113,7 @@ void compareBestFit(const char* filename="test.root", const char* channelstr="bo
   canv1->cd();
   canv1->SetGridx(0);
   canv1->SetGridy(0);
+  canv1->SetLeftMargin(0.05);
 
   TLine* SM   = new TLine(1, 0, 1, hexp.size());
   TLine* ZERO = new TLine(0, 0, 0, hexp.size());
@@ -168,7 +169,7 @@ void compareBestFit(const char* filename="test.root", const char* channelstr="bo
 	x_title = std::string("best fit for #sigma(#phi#rightarrow#tau#tau)");
       }
       else{
-	x_title = std::string("best fit for #sigma/#sigma_{SM}");
+	x_title = std::string("Best Fit for #sigma/#sigma_{SM}");
       }
       
       gr->GetXaxis()->SetTitle(x_title.c_str());
@@ -177,6 +178,7 @@ void compareBestFit(const char* filename="test.root", const char* channelstr="bo
       gr->GetXaxis()->SetTitleColor(1);
       gr->GetXaxis()->SetTitleOffset(1.05);
       gr->GetXaxis()->SetLimits(minimum, maximum);
+      gr->GetXaxis()->SetTickLength(0.02);
 
       BAND->GetXaxis()->SetTitle(x_title.c_str());
       BAND->GetXaxis()->SetLabelFont(62);
@@ -194,7 +196,7 @@ void compareBestFit(const char* filename="test.root", const char* channelstr="bo
         char bestfit_char[40];
         float central = hexp[j]->Eval(mass);
         float error = (hband[j]->GetErrorYhigh(massid)+hband[j]->GetErrorYlow(massid))/2;
-        sprintf(bestfit_char,"}}{#bf{#scale[0.5]{%.2f#pm%.2f}}}",central, error);
+        sprintf(bestfit_char,"}}{#bf{#scale[0.7]{%.2f#pm%.2f}}}",central, error);
         gr  ->GetYaxis()->SetBinLabel(hexp.size()-j, std::string("#splitline{#scale[0.9]{").append(legendEntry(channels[j])).append(bestfit_char).c_str());
       }
       gr->GetYaxis()->SetTickLength(0);
@@ -246,7 +248,7 @@ void compareBestFit(const char* filename="test.root", const char* channelstr="bo
   //ZERO->Draw("same");
   
   //TPaveText *pt = new TPaveText(2*(maximum+minimum)/3,hexp.size()-0.3,maximum,hexp.size()-0.02);
-  TPaveText *pt = new TPaveText(0.62, 0.85, 0.69, 0.88, "NDC");
+  TPaveText *pt = new TPaveText(0.56, 0.85, 0.63, 0.88, "NDC");
   if(std::string(type).find("mssm")!=std::string::npos) pt->AddText(TString::Format("m_{A} = %0.0f GeV" , mass));
   else pt->AddText(TString::Format("m_{H} = %0.0f GeV" , mass));
   pt->SetBorderSize(   0 );
@@ -257,7 +259,7 @@ void compareBestFit(const char* filename="test.root", const char* channelstr="bo
   pt->SetTextFont (   62 );
   pt->Draw("same");
   canv1->RedrawAxis();
-  CMSPrelim(label, "", 0.13, 0.835);
+  CMSPrelim(label, "", 0.035, 0.835);
   
   canv1->Print(std::string("BestFit").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.png" : "_sm.png").c_str());
   canv1->Print(std::string("BestFit").append(std::string(type).find("mssm")!=std::string::npos ? "_mssm.pdf" : "_sm.pdf").c_str());

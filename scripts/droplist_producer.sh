@@ -5,8 +5,7 @@ for i in em et mt tt vhtt
 do
     submit.py --max-likelihood --stable LIMITS_droplist/bbb/$i/125
 done
-
-for i in tt em et mt vhtt
+for i in em et mt tt vhtt
 do
     while true
     do

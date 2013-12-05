@@ -50,7 +50,7 @@ float blinding_SM(float mass){
 float blinding_MSSM(float mass){ return (100<mass); }
 float maximum(TH1F* h, bool LOG=false){
   if(LOG){
-    if(h->GetMaximum()>1000){ return 1000.*TMath::Nint(500*h->GetMaximum()/1000.); }
+    if(h->GetMaximum()>1000){ return 10000.*TMath::Nint(500*h->GetMaximum()/1000.); }
     if(h->GetMaximum()>  10){ return   10.*TMath::Nint( 50*h->GetMaximum()/  10.); }
     return 50*h->GetMaximum(); 
   }
@@ -138,13 +138,13 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   // determine category tag
   const char* category = ""; const char* category_extra = ""; const char* category_extra2 = "";
   if(std::string(directory) == std::string("ee_0jet_low"             )){ category = "ee";          }
-  if(std::string(directory) == std::string("ee_0jet_low"             )){ category_extra = "0-jet low p_{T}(e)";          }
+  if(std::string(directory) == std::string("ee_0jet_low"             )){ category_extra = "0-jet low p_{T}^{e}";          }
   if(std::string(directory) == std::string("ee_0jet_high"            )){ category = "ee";          }
-  if(std::string(directory) == std::string("ee_0jet_high"            )){ category_extra = "0-jet high p_{T}(e)";         }
+  if(std::string(directory) == std::string("ee_0jet_high"            )){ category_extra = "0-jet high p_{T}^{e}";         }
   if(std::string(directory) == std::string("ee_1jet_low"          )){ category = "ee";          }
-  if(std::string(directory) == std::string("ee_1jet_low"          )){ category_extra = "1-jet low p_{T}(e)";       }
+  if(std::string(directory) == std::string("ee_1jet_low"          )){ category_extra = "1-jet low p_{T}^{e}";       }
   if(std::string(directory) == std::string("ee_1jet_high"          )){ category = "ee";          }
-  if(std::string(directory) == std::string("ee_1jet_high"          )){ category_extra = "1-jet high p_{T}(e)";       }
+  if(std::string(directory) == std::string("ee_1jet_high"          )){ category_extra = "1-jet high p_{T}^{e}";       }
   if(std::string(directory) == std::string("ee_vbf"            )){ category = "ee";          }
   if(std::string(directory) == std::string("ee_vbf"            )){ category_extra = "2-jet";              }
   if(std::string(directory) == std::string("ee_nobtag"               )){ category = "ee";          }
@@ -319,7 +319,7 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 
   TH1F* errorBand = (TH1F*)ZEE ->Clone("errorBand");
   errorBand  ->SetMarkerSize(0);
-  errorBand  ->SetFillColor(1);
+  errorBand  ->SetFillColor(13);
   errorBand  ->SetFillStyle(3013);
   errorBand  ->SetLineWidth(1);
   for(int idx=0; idx<errorBand->GetNbinsX(); ++idx){
@@ -397,27 +397,27 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   SetLegendStyle(leg);
   leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau" , "L" );
 #else
-  TLegend* leg = new TLegend(0.55, 0.60, 0.94, 0.89);
+  TLegend* leg = new TLegend(0.52, 0.58, 0.92, 0.89);
   SetLegendStyle(leg);
 #ifndef DROP_SIGNAL
   if(SIGNAL_SCALE!=1){
     leg->AddEntry(ggH  , TString::Format("%.0f#timesH(125 GeV)#rightarrow#tau#tau", SIGNAL_SCALE) , "L" );
   }
   else{
-    leg->AddEntry(ggH  , "H(125 GeV)#rightarrow#tau#tau" , "L" );
+    leg->AddEntry(ggH  , "SM H(125 GeV)#rightarrow#tau#tau" , "L" );
   }
 #endif
 #endif
 #ifdef ASIMOV
   leg->AddEntry(data , "sum(bkg) + H(125)"           , "LP");
 #else
-  leg->AddEntry(data , "observed"                    , "LP");
+  leg->AddEntry(data , "Observed"                    , "LP");
 #endif
   leg->AddEntry(ZEE  , "Z#rightarrowee"              , "F" );
   leg->AddEntry(ZTT  , "Z#rightarrow#tau#tau"        , "F" );
   leg->AddEntry(TTJ  , "t#bar{t}"                    , "F" );
   leg->AddEntry(QCD  , "QCD"                         , "F" );
-  leg->AddEntry(WJets, "electroweak"                 , "F" );
+  leg->AddEntry(WJets, "Electroweak"                 , "F" );
   //leg->AddEntry(Dibosons  , "Dibosons"             , "F" );
   $ERROR_LEGEND
   leg->Draw();

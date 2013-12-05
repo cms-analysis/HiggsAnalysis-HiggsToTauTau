@@ -168,18 +168,18 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   // determine category tag
   const char* category = ""; const char* category_extra = ""; const char* category_extra2 = "";
   if(std::string(directory) == std::string("muTau_0jet_low"             )){ category = "#mu#tau_{h}";          }
-  if(std::string(directory) == std::string("muTau_0jet_low"             )){ category_extra = "0-jet low p_{T}(#tau_{h})";          }
+  if(std::string(directory) == std::string("muTau_0jet_low"             )){ category_extra = "0-jet low p_{T}^{#tau_{h}}";          }
   if(std::string(directory) == std::string("muTau_0jet_medium"          )){ category = "#mu#tau_{h}";          }
-  if(std::string(directory) == std::string("muTau_0jet_medium"          )){ category_extra = "0-jet low p_{T}(#tau_{h})";       }
+  if(std::string(directory) == std::string("muTau_0jet_medium"          )){ category_extra = "0-jet low p_{T}^{#tau_{h}}";       }
   if(std::string(directory) == std::string("muTau_0jet_high"            )){ category = "#mu#tau_{h}";          }
-  if(std::string(directory) == std::string("muTau_0jet_high"            )){ category_extra = "0-jet high p_{T}(#tau_{h})";         }
+  if(std::string(directory) == std::string("muTau_0jet_high"            )){ category_extra = "0-jet high p_{T}^{#tau_{h}}";         }
   if(std::string(directory) == std::string("muTau_1jet_medium"          )){ category = "#mu#tau_{h}";          }
-  if(std::string(directory) == std::string("muTau_1jet_medium"          )){ category_extra = "1-jet low p_{T}(#tau_{h})";       }
+  if(std::string(directory) == std::string("muTau_1jet_medium"          )){ category_extra = "1-jet low p_{T}^{#tau_{h}}";       }
   if(std::string(directory) == std::string("muTau_1jet_high_lowhiggs"   )){ category = "#mu#tau_{h}";                          }
-  if(std::string(directory) == std::string("muTau_1jet_high_lowhiggs"   )){ category_extra= "1-jet high p_{T}(#tau_{h})";  }
+  if(std::string(directory) == std::string("muTau_1jet_high_lowhiggs"   )){ category_extra= "1-jet high p_{T}^{#tau_{h}}";  }
   if(std::string(directory) == std::string("muTau_1jet_high_mediumhiggs")){ category = "#mu#tau_{h}";                          }
-  if(std::string(directory) == std::string("muTau_1jet_high_mediumhiggs")){ category_extra= "1-jet high p_{T}(#tau_{h})"; }
-  if(std::string(directory) == std::string("muTau_1jet_high_mediumhiggs")){ category_extra2= "boost"; }
+  if(std::string(directory) == std::string("muTau_1jet_high_mediumhiggs")){ category_extra= "1-jet high p_{T}^{#tau_{h}}"; }
+  if(std::string(directory) == std::string("muTau_1jet_high_mediumhiggs")){ category_extra2= "boosted"; }
   if(std::string(directory) == std::string("muTau_vbf"                  )){ category = "#mu#tau_{h}";          }
   if(std::string(directory) == std::string("muTau_vbf"                  )){ category_extra = "VBF tag";              }
   if(std::string(directory) == std::string("muTau_vbf_loose"            )){ category = "#mu#tau_{h}";          }
@@ -268,28 +268,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 
   if(scaled){
 
-//  TH1F* EWK1   = refill((TH1F*)input->Get(TString::Format("%s/W"       , directory)), "W"  ); InitHist(EWK1 , "", "", TColor::GetColor(222,90,106), 1001);
-//#ifdef EXTRA_SAMPLES
-//  TH1F* EWK2   = refill((TH1F*)input->Get(TString::Format("%s/ZJ"      , directory)), "ZJ" ); InitHist(EWK2 , "", "", TColor::GetColor(222,90,106), 1001);
-//  TH1F* EWK3   = refill((TH1F*)input->Get(TString::Format("%s/ZL"      , directory)), "ZL" ); InitHist(EWK3 , "", "", TColor::GetColor(222,90,106), 1001);
-//#else
-//  TH1F* EWK2   = refill((TH1F*)input->Get(TString::Format("%s/ZLL"     , directory)), "ZLL"); InitHist(EWK2 , "", "", TColor::GetColor(222,90,106), 1001);
-//#endif
-//  TH1F* EWK    = refill((TH1F*)input->Get(TString::Format("%s/VV"      , directory)), "VV" ); InitHist(EWK  , "", "", TColor::GetColor(222,90,106), 1001);
-//  TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/TT"      , directory)), "TT" ); InitHist(ttbar, "", "", TColor::GetColor(155,152,204), 1001);
-//  TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/ZTT"     , directory)), "ZTT"); InitHist(Ztt  , "", "", TColor::GetColor(248,206,104), 1001);
-//#ifdef MSSM
-//  TH1F* ggH    = refill((TH1F*)input2->Get(TString::Format("%s/ggH$MA" , directory)), "ggH"); InitSignal(ggH); ggH->Scale($TANB);
-//  TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA" , directory)), "bbH"); InitSignal(bbH); bbH->Scale($TANB);
-//#else
-//#ifndef DROP_SIGNAL
-//  TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125"  , directory)), "ggH"); InitSignal(ggH); ggH->Scale(SIGNAL_SCALE);
-//  TH1F* qqH    = refill((TH1F*)input->Get(TString::Format("%s/qqH125"  , directory)), "qqH"); InitSignal(qqH); qqH->Scale(SIGNAL_SCALE);
-//  TH1F* VH     = refill((TH1F*)input->Get(TString::Format("%s/VH125"   , directory)), "VH" ); InitSignal(VH ); VH ->Scale(SIGNAL_SCALE);
-//#endif
-
-
-  Fakes = refill(shape_histos(Fakes, datacard, "QCD"), "QCD");
+/*  Fakes = refill(shape_histos(Fakes, datacard, "QCD"), "QCD");
   EWK1 = refill(shape_histos(EWK1, datacard, "W"), "W"); 
 #ifdef EXTRA_SAMPLES
   EWK2 = refill(shape_histos(EWK2, datacard, "ZJ"), "ZJ");
@@ -310,7 +289,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
     VH = refill(shape_histos(VH, datacard, "VH"), "VH"); 
 #endif  
 #endif
-
+*/
     rescale(Fakes, 7); 
     rescale(EWK1 , 3); 
     rescale(EWK2 , 4); 
@@ -421,7 +400,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 
   TH1F* errorBand = (TH1F*)Ztt ->Clone("errorBand");
   errorBand  ->SetMarkerSize(0);
-  errorBand  ->SetFillColor(1);
+  errorBand  ->SetFillColor(13);
   errorBand  ->SetFillStyle(3013);
   errorBand  ->SetLineWidth(1);
   for(int idx=0; idx<errorBand->GetNbinsX(); ++idx){
@@ -455,7 +434,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 
   //CMSPrelim(dataset, "#tau_{#mu}#tau_{h}", 0.17, 0.835);
   CMSPrelim(dataset, "", 0.16, 0.835);
-  TPaveText* chan     = new TPaveText(0.55, 0.35, 0.94, 0.55, "tlbrNDC");
+  TPaveText* chan     = new TPaveText(0.52, 0.35, 0.91, 0.55, "tlbrNDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
   chan->SetTextAlign(   12 );
@@ -504,25 +483,25 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   SetLegendStyle(leg);
   leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau" , "L" );
 #else
-  TLegend* leg = new TLegend(0.55, 0.60, 0.94, 0.89);
+  TLegend* leg = new TLegend(0.52, 0.58, 0.92, 0.89);
   SetLegendStyle(leg);
 #ifndef DROP_SIGNAL
   if(SIGNAL_SCALE!=1){
     leg->AddEntry(ggH  , TString::Format("%.0f#timesH(125 GeV)#rightarrow#tau#tau", SIGNAL_SCALE) , "L" );
   }
   else{
-    leg->AddEntry(ggH  , "H(125 GeV)#rightarrow#tau#tau" , "L" );
+    leg->AddEntry(ggH  , "SM H(125 GeV)#rightarrow#tau#tau" , "L" );
   }
 #endif
 #endif
 #ifdef ASIMOV
   leg->AddEntry(data , "sum(bkg) + H(125)"              , "LP");
 #else
-  leg->AddEntry(data , "observed"                       , "LP");
+  leg->AddEntry(data , "Observed"                       , "LP");
 #endif
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
   leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
-  leg->AddEntry(EWK  , "electroweak"                    , "F" );
+  leg->AddEntry(EWK  , "Electroweak"                    , "F" );
   leg->AddEntry(Fakes, "QCD"                            , "F" );
   $ERROR_LEGEND
   leg->Draw();

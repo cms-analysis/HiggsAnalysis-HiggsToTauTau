@@ -8,7 +8,7 @@
 #include "TPaveText.h"
 
 void
-plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::vector<TGraph*> graph68, TGraph* bestfit, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp=false, bool log=false)
+plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::vector<TGraph*> graph68, TGraph* bestfit, TGraph* SMexpected, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp=false, bool log=false)
 {
   // set up styles
   canv.cd();
@@ -28,6 +28,8 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
   plot2D->GetXaxis()->SetLabelFont(62);
   plot2D->GetXaxis()->SetTitleColor(1);
   plot2D->GetXaxis()->SetTitleOffset(1.05);
+  plot2D->GetXaxis()->SetTitleFont(62);
+  plot2D->GetXaxis()->SetTitleSize(0.055);
   plot2D->SetYTitle(yaxis.c_str());
   if(ymax>0){
     plot2D->GetYaxis()->SetRange(plot2D->GetYaxis()->FindBin(ymin), plot2D->GetYaxis()->FindBin(ymax)-1);
@@ -35,6 +37,7 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
   plot2D->GetYaxis()->SetLabelFont(62);
   plot2D->GetYaxis()->SetTitleSize(0.055);
   plot2D->GetYaxis()->SetTitleOffset(1.4);
+  plot2D->GetYaxis()->SetTitleFont(62);
   plot2D->GetYaxis()->SetLabelSize(0.04);
   plot2D->SetZTitle("#bf{#Delta NLL}");
   plot2D->GetZaxis()->SetLabelFont(62);
@@ -60,7 +63,7 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
       else{
 	(*g)->SetFillColor(kWhite);
       }
-      (*g)->Draw("cfsame"); 
+      (*g)->Draw("fsame"); 
       (*g)->Draw("contsame");
     }
     else{
@@ -78,7 +81,7 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
       (*g)->SetLineColor(kBlack); 
       (*g)->SetLineWidth(3);
       (*g)->SetFillColor(kBlue-8);
-      (*g)->Draw("cfsame"); 
+      (*g)->Draw("fsame"); 
       (*g)->Draw("contsame");
     }
     else{
@@ -95,13 +98,30 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
     bestfit->SetMarkerColor(kBlack);
     bestfit->Draw("Psame");
   }
+  if(SMexpected){
+    SMexpected->SetMarkerStyle(34);
+    SMexpected->SetMarkerSize(3.0);
+    SMexpected->SetMarkerColor(kRed);
+    SMexpected->Draw("Psame");
+  }
   TLegend* leg = new TLegend(0.60, 0.70, 0.90, 0.90);
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
-  if(!graph95.empty()){ leg->AddEntry(graph95.back(), "95% CL", temp ? "L" : "FL"); }
-  if(!graph68.empty()){ leg->AddEntry(graph68.back(), "68% CL", temp ? "L" : "FL"); }
-  if(bestfit){ leg->AddEntry(bestfit, "Best fit", "P"); }
+  if(!graph95.empty()){
+    TGraph *graph95_copy = (TGraph*)graph95.back()->Clone();
+    graph95_copy->SetLineWidth(0);
+    graph95_copy->SetLineColor(0);
+    graph95_copy->SetLineStyle(1);
+    leg->AddEntry(graph95_copy, "95% CL", temp ? "L" : "F"); }
+  if(!graph68.empty()){
+    TGraph *graph68_copy = (TGraph*)graph68.back()->Clone();
+    graph68_copy->SetLineWidth(0);
+    graph68_copy->SetLineColor(0);
+    graph68_copy->SetLineStyle(1);
+    leg->AddEntry(graph68_copy, "68% CL", temp ? "L" : "F"); }
+  if(bestfit){ leg->AddEntry(bestfit, "best fit", "P"); }
+  if(SMexpected){ leg->AddEntry(SMexpected, "SM", "P"); }
   leg->Draw("same");
   
   TString label = TString::Format("%s = %d GeV", masslabel.c_str(), mass);

@@ -83,15 +83,19 @@ def parseArgs(args) :
                 max = float(elem[elem.find("-")+1:])
             while min <= max :
                 if is_integer(min):
-                    list.append(int(min))
+                    if not int(min) in list :
+                        list.append(int(min))
                 else:
-                    list.append(min)
+                    if not min in list :
+                        list.append(min)
                 min=min+step
         else :
             if is_integer(elem):
-                list.append(int(elem))
+                if not int(elem) in list :
+                    list.append(int(elem))
             else:
-                list.append(elem)
+                if not elem in list :
+                    list.append(elem)
     return list
 
 def get_channel_dirs(finalstate, category, period):
@@ -159,8 +163,8 @@ def get_channel_dirs(finalstate, category, period):
         'tt' : {
         },
         'vhtt' : {
-        '00' : ['mmtCatHigh', 'mmtCatLow'],
-        '01' : ['emtCatHigh', 'emtCatLow'],
+        '00' : ['mmt'],
+        '01' : ['emt'],
         '02' : ['eetCatHigh', 'eetCatLow'],
         '03' : ['mmme_zh', 'eeem_zh' ],
         '04' : ['mmmt_zh', 'eemt_zh' ],

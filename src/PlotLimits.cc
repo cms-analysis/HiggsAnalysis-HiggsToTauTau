@@ -64,6 +64,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   smooth_= cfg.existsAs<bool>("smooth") ? cfg.getParameter<bool>("smooth") : false;
   // specifics to plot signal strength
   bestfit_ = cfg.existsAs<bool>("bestfit") ? cfg.getParameter<bool>("bestfit") : false;
+  drawsm_ = cfg.existsAs<bool>("drawSM") ? cfg.getParameter<bool>("drawSM") : false;
   // specifics to plot xsec limits
   injectedMass_ = cfg.existsAs<std::string>("injectedMass") ? cfg.getParameter<std::string>("injectedMass") : std::string();
   extra_    = cfg.existsAs<std::string>("extra") ? cfg.getParameter<std::string>("extra") : std::string();

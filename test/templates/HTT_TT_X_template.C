@@ -170,9 +170,9 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   // determine category tag
   const char* category = ""; const char* category_extra = ""; const char* category_extra2 = "";
   if(std::string(directory) == std::string("tauTau_1jet_high_mediumhiggs")){ category = "#tau_{h}#tau_{h}";           }
-  if(std::string(directory) == std::string("tauTau_1jet_high_mediumhiggs")){ category_extra= "1-jet boost";           }
+  if(std::string(directory) == std::string("tauTau_1jet_high_mediumhiggs")){ category_extra= "1-jet boosted";           }
   if(std::string(directory) == std::string("tauTau_1jet_high_highhiggs"  )){ category = "#tau_{h}#tau_{h}";           }
-  if(std::string(directory) == std::string("tauTau_1jet_high_highhiggs"  )){ category_extra= "1-jet large boost";     }
+  if(std::string(directory) == std::string("tauTau_1jet_high_highhiggs"  )){ category_extra= "1-jet"; category_extra2= "highly boosted";     }
   if(std::string(directory) == std::string("tauTau_vbf"                  )){ category = "#tau_{h}#tau_{h}";           }
   if(std::string(directory) == std::string("tauTau_vbf"                  )){ category_extra = "VBF tag";              }
   if(std::string(directory) == std::string("tauTau_nobtag"               )){ category = "#tau_{h}#tau_{h}";           }
@@ -250,7 +250,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 
   if(scaled){
 
-    Fakes = refill(shape_histos(Fakes, datacard, "QCD"), "QCD");
+/*    Fakes = refill(shape_histos(Fakes, datacard, "QCD"), "QCD");
     EWK1  = refill(shape_histos(EWK1, datacard, "W"), "W");
     EWK2  = refill(shape_histos(EWK2, datacard, "ZJ"), "ZJ");
     EWK   = refill(shape_histos(EWK, datacard, "VV"), "VV");
@@ -264,7 +264,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
     qqH = refill(shape_histos(qqH, datacard, "qqH"), "qqH");
     VH  = refill(shape_histos(VH, datacard, "VH"), "VH"); 
 #endif
-
+*/
     rescale(Fakes, 7); 
     rescale(EWK1 , 3); 
     rescale(EWK2 , 4); 
@@ -356,7 +356,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 
   TH1F* errorBand = (TH1F*)Ztt ->Clone();
   errorBand  ->SetMarkerSize(0);
-  errorBand  ->SetFillColor(1);
+  errorBand  ->SetFillColor(13);
   errorBand  ->SetFillStyle(3013);
   errorBand  ->SetLineWidth(1);
   for(int idx=0; idx<errorBand->GetNbinsX(); ++idx){
@@ -386,7 +386,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 
   //CMSPrelim(dataset, "#tau_{h}#tau_{h}", 0.17, 0.835);
   CMSPrelim(dataset, "", 0.16, 0.835);  
-  TPaveText* chan     = new TPaveText(0.55, 0.35, 0.94, 0.55, "tlbrNDC");
+  TPaveText* chan     = new TPaveText(0.52, 0.35, 0.91, 0.55, "tlbrNDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
   chan->SetTextAlign(   12 );
@@ -435,23 +435,23 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   SetLegendStyle(leg);
   leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau" , "L" );
 #else
-  TLegend* leg = new TLegend(0.55, 0.60, 0.94, 0.89);
+  TLegend* leg = new TLegend(0.52, 0.58, 0.92, 0.89);
   SetLegendStyle(leg);
   if(SIGNAL_SCALE!=1){
     leg->AddEntry(ggH  , TString::Format("%.0f#timesH(125 GeV)#rightarrow#tau#tau", SIGNAL_SCALE) , "L" );
   }
   else{
-    leg->AddEntry(ggH  , "H(125 GeV)#rightarrow#tau#tau" , "L" );
+    leg->AddEntry(ggH  , "SM H(125 GeV)#rightarrow#tau#tau" , "L" );
   }
 #endif
 #ifdef ASIMOV
   leg->AddEntry(data , "sum(bkg) + H(125)"              , "LP");
 #else
-  leg->AddEntry(data , "observed"                       , "LP");
+  leg->AddEntry(data , "Observed"                       , "LP");
 #endif
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
   leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
-  leg->AddEntry(EWK  , "electroweak"                    , "F" );
+  leg->AddEntry(EWK  , "Electroweak"                    , "F" );
   leg->AddEntry(Fakes, "QCD"                            , "F" );
   $ERROR_LEGEND
   leg->Draw();

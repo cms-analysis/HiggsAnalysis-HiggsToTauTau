@@ -24,7 +24,7 @@ PlotLimits::plotMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraph
   // do the plotting
   plottingMassEstimate(canv, innerBand, outerBand, expected, modifiedobs, xaxis_, yaxis_, max, log_);    
   // add the CMS Preliminary stamp
-  CMSPrelim(dataset_.c_str(), "", 0.160, 0.835);
+  CMSPrelim(dataset_.c_str(), "", 0.135, 0.835);
   //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
   // write to file  
   if(png_){

@@ -29,6 +29,9 @@ emtCatHigh,emtCatLow wz QCDscale_VV_wz 1.04
 emtCatHigh,emtCatLow signal pdf_qqbar 1.023
 emtCatHigh,emtCatLow signal QCDscale_VH 1.01
 
+emtCatLow fakes CMS_vhtt_emtCatLow_fakeshape_8TeV 1.0
+emtCatHigh fakes CMS_vhtt_emtCatHigh_fakeshape_8TeV 1.0
+
 emtCatHigh  zz CMS_vhtt_zzNorm_emtCatHigh_8TeV 1.05
 emtCatLow   zz CMS_vhtt_zzNorm_emtCatHigh_8TeV 1.05
 emtCatHigh  wz CMS_vhtt_wzNorm_emtCatLow_8TeV  1.05

@@ -4,11 +4,11 @@ layout = cms.PSet(
     ## dataset
     #dataset = cms.string("CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV"),
     #dataset = cms.string("CMS Preliminary,  H#rightarrow#tau#tau,  19.4 fb^{-1} at 8 TeV"),
-    dataset = cms.string("CMS,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.4 fb^{-1} at 8 TeV"),
+    dataset = cms.string("CMS H#rightarrow#tau#tau, up to 4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV"),
     ## x-axis title
     xaxis = cms.string("m_{H} [GeV]"),
     ## x-axis title
-    yaxis = cms.string("Local p-value"),
+    yaxis = cms.string("Local p-Value"),
     ## indicate that this is bestfit
 #    bestfit = cms.bool(True),
     ## print to png

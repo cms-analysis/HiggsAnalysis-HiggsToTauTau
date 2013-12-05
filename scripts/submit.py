@@ -85,6 +85,8 @@ egroup.add_option("--stable", dest="stable", default=False, action="store_true",
                   help="Specify this option to run the max-likelihood fit calculation with option --stable. [Default: False]")
 egroup.add_option("--stable-old", dest="stable_old", default=False, action="store_true",
                   help="Specify this option to run the max-likelihood fit calculation with option --stable-old. [Default: False]")
+egroup.add_option("--stable-new", dest="stable_new", default=False, action="store_true",
+                  help="Specify this option to run the max-likelihood fit calculation with option --stable-new. [Default: False]")
 parser.add_option_group(egroup)
 ##
 ## MULTIDIM-FIT
@@ -103,6 +105,8 @@ fgroup.add_option("--seed", dest="seed", default="", type="string",
                   help="Per default toys are run with a random seed. In case you want to run on pseudo toys with a well defined seed add the seed here. If \"\" this option will have no effect. [Default: \"\"]")
 fgroup.add_option("--uncapped", dest="uncapped", default=False, action="store_true",
                   help="Use uncapped option, a la ATLAS, to allow for p-values larger than 0.5 and negatove significances in case of deficits in the data. [Default: False]")
+fgroup.add_option("--signal-strength", dest="signal_strength", default="1.", type="string",
+                  help="Choose the expected signal strength for significance or pvalue calculations. This option can be used for a postfit expected significance. [Default: '1.']")
 fgroup.add_option("--grid", dest="grid", default=False, action="store_true",
                   help="Use this option if you want to submit your jobs to the grid. Otherwise they will be submitted to lxb (lxq). [Default: False]")
 parser.add_option_group(fgroup)
@@ -296,6 +300,8 @@ if options.optMLFit :
         stable = '--stable'
     elif options.stable_old :
         stable = '--stable-old'
+    elif options.stable_new :
+        stable = '--stable-new'
     if options.interactive :
         for dir in args :
             mass = get_mass(dir)
@@ -428,19 +434,20 @@ if options.optSigFreq or options.optPValue :
     uncapped = ''
     if options.uncapped :
         uncapped = '--uncapped'
+    sig = '--signal-strength '+options.signal_strength        
     if options.interactive :
         for dir in args :
             mass = get_mass(dir)
             if mass == 'common' :
                 continue
             if options.printOnly :
-                print "limit.py {METHOD} {UNCAPPED} {USER} {DIR}".format(METHOD=method, UNCAPPED=uncapped, USER=options.opt, DIR=dir)
+                print "limit.py {METHOD} {SIG} {UNCAPPED} {USER} {DIR}".format(METHOD=method, SIG=sig, UNCAPPED=uncapped, USER=options.opt, DIR=dir)
             else :
-                os.system("limit.py {METHOD} {UNCAPPED} {USER} {DIR}".format(METHOD=method, UNCAPPED=uncapped, USER=options.opt, DIR=dir))
+                os.system("limit.py {METHOD} {SIG} {UNCAPPED} {USER} {DIR}".format(METHOD=method, SIG=sig, UNCAPPED=uncapped, USER=options.opt, DIR=dir))
     else :
         ## directories and mases per directory
         struct = directories(args)
-        lxb_submit(struct[0], struct[1], method, "{UNCAPPED} {USER}".format(UNCAPPED=uncapped, USER=options.opt))
+        lxb_submit(struct[0], struct[1], method, "{UNCAPPED} {SIG} {USER}".format(UNCAPPED=uncapped, SIG=sig, USER=options.opt))
 ##
 ## ASYMPTOTIC (with dedicated models)
 ##
