@@ -57,11 +57,10 @@ for i in range(tree.GetEntries()) :
         xlow = staff.q
     if xup<staff.q :
         xup = staff.q    
-    
 
-hSM   = ROOT.TH1F("hSM  ;S = -2 #times ln(L_{1}/L_{2});Number of Toys","",nbins,int(xlow)-int(xlow/100),int(xup)+int(xup/100))
-hMSSM = ROOT.TH1F("hMSSM;S = -2 #times ln(L_{1}/L_{2});Number of Toys","",nbins,int(xlow)-int(xlow/100),int(xup)+int(xup/100))
-hObs  = ROOT.TH1F("hObserved"                                         ,"",nbins,int(xlow)-int(xlow/100),int(xup)+int(xup/100));
+hSM   = ROOT.TH1F("hSM  ;S = -2 #times ln(L_{1}/L_{2});Number of Toys","",nbins,xlow-xlow/100,xup+xup/100)
+hMSSM = ROOT.TH1F("hMSSM;S = -2 #times ln(L_{1}/L_{2});Number of Toys","",nbins,xlow-xlow/100,xup+xup/100)
+hObs  = ROOT.TH1F("hObserved"                                         ,"",nbins,xlow-xlow/100,xup+xup/100);
 
 if options.verbosity :
     print "Start to loop on tree in file", options.filename
