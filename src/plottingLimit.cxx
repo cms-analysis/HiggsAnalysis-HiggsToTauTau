@@ -45,7 +45,7 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   // format y axis
   hr->SetYTitle(yaxis.c_str());
   hr->GetYaxis()->SetLabelFont(62);
-  hr->GetYaxis()->SetTitleSize(0.05);
+  hr->GetYaxis()->SetTitleFont(62);
   hr->GetYaxis()->SetTitleOffset(1.30);
   hr->GetYaxis()->SetLabelSize(0.045);
   hr->SetNdivisions(505, "X");

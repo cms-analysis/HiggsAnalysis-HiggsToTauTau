@@ -707,9 +707,9 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   output->cd();
   data ->Write("data_obs");
   Fakes->Write("Fakes"   );
-  //  EWK  ->Write("Zee"     );
-  //  EWK1 ->Write("EWK"    );
-  EWK  ->Write("EWK"     );
+    EWK  ->Write("Zee"     );
+    EWK1 ->Write("EWK"    );
+  //EWK  ->Write("EWK"     );
   EWK1 ->Write("EWK1"    );
   ttbar->Write("ttbar"   );
   Ztt  ->Write("Ztt"     );
