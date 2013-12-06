@@ -21,6 +21,8 @@ layout = cms.PSet(
     max = cms.double(10),
     ## log for plotting
     log = cms.int32(0),
+    ## include parabolic fit
+    parabolic = cms.bool(False),
     ## define verbosity level
     verbosity   = cms.uint32(0),
     ## define output label

@@ -204,6 +204,8 @@ class PlotLimits {
   std::string label_;
   /// define verbosity level
   unsigned int verbosity_;
+  /// parabolic fit for mass scan
+  bool parabolic_;
 
   /// indicate whether mssm or sm plots should be made (used fro several options)
   bool mssm_;

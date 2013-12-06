@@ -12,7 +12,7 @@
 #include "TPaveText.h"
 #include "Math/ProbFunc.h"
 
-void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, std::string& xaxis, std::string& yaxis, double max, bool log=false)
+void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, std::string& xaxis, std::string& yaxis, double max, bool log=false, bool parabolic=false)
 {
   // set up styles
   canv.cd();
@@ -51,36 +51,42 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
       crossed =!crossed;
     }
   }  
-  double fitLower = lowerBound-TMath::Max((minX-lowerBound),(upperBound-minX)); 
-  double fitUpper = upperBound+TMath::Max((minX-lowerBound),(upperBound-minX)); 
-  observed->Fit("pol2","R","",lowerBound-(minX-lowerBound),upperBound+(upperBound-minX));
-  int nStep = 1000;
-  double step = (fitUpper-fitLower)/nStep;
-  crossed = false;
-  for(int idx = 0; idx < nStep; idx++) {
-    double pNLL = observed->GetFunction("pol2")->Eval(idx*step + fitLower);
-    if(pNLL < fitMinY){
-      fitMinX = idx*step + fitLower;
-      fitMinY = pNLL;
-    } 
-   if((pNLL<TMath::ChisquareQuantile(0.68,1)/2 && !crossed) || (pNLL>TMath::ChisquareQuantile(0.68,1)/2 && crossed)) {
-      double y1 = pNLL;                double y2 = observed->GetFunction("pol2")->Eval((idx-1.)*step + fitLower);
-      double x1 = idx*step + fitLower; double x2 = (idx-1.)*step + fitLower;
-      double slope = (y2-y1)/(x2-x1);
-      if(!crossed) fitLowerBound = x1-(y1-0.5)/slope;
-      if( crossed) fitUpperBound = x1-(y1-0.5)/slope;
-      crossed =!crossed;
+  if(parabolic)
+  {
+    double fitLower = lowerBound-TMath::Max((minX-lowerBound),(upperBound-minX)); 
+    double fitUpper = upperBound+TMath::Max((minX-lowerBound),(upperBound-minX)); 
+    observed->Fit("pol2","R","",lowerBound-(minX-lowerBound),upperBound+(upperBound-minX));
+    int nStep = 1000;
+    double step = (fitUpper-fitLower)/nStep;
+    crossed = false;
+    for(int idx = 0; idx < nStep; idx++) {
+      double pNLL = observed->GetFunction("pol2")->Eval(idx*step + fitLower);
+      if(pNLL < fitMinY){
+        fitMinX = idx*step + fitLower;
+        fitMinY = pNLL;
+      } 
+     if((pNLL<TMath::ChisquareQuantile(0.68,1)/2 && !crossed) || (pNLL>TMath::ChisquareQuantile(0.68,1)/2 && crossed)) {
+        double y1 = pNLL;                double y2 = observed->GetFunction("pol2")->Eval((idx-1.)*step + fitLower);
+        double x1 = idx*step + fitLower; double x2 = (idx-1.)*step + fitLower;
+        double slope = (y2-y1)/(x2-x1);
+        if(!crossed) fitLowerBound = x1-(y1-0.5)/slope;
+        if( crossed) fitUpperBound = x1-(y1-0.5)/slope;
+        crossed =!crossed;
+      }
     }
   }
 
   std::cout << "-------------------------------------------------" << std::endl;
   std::cout << "Linear    Mass estimate: " << minX    << " + " << upperBound   -minX      << " - " << minX   -lowerBound    << std::endl;
-  std::cout << "Quadratic Mass estimate: " << fitMinX << " + " << fitUpperBound-fitMinX   << " - " << fitMinX-fitLowerBound << std::endl;
+ if(parabolic) { std::cout << "Quadratic Mass estimate: " << fitMinX << " + " << fitUpperBound-fitMinX   << " - " << fitMinX-fitLowerBound << std::endl;}
   std::cout << "-------------------------------------------------" << std::endl;
-  minX = fitMinX;
-  minY = fitMinY;
-  upperBound = fitUpperBound;
-  lowerBound = fitLowerBound;
+ if(parabolic)
+ {
+   minX = fitMinX;
+   minY = fitMinY;
+   upperBound = fitUpperBound;
+   lowerBound = fitLowerBound;
+ }
    // create sigma lines
   float quantile[] = {0.68, 0.95};
   std::vector<TGraph*> sigmas;
@@ -129,9 +135,12 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   observed->SetMarkerSize(1.0);
   observed->SetMarkerColor(kBlack);
   observed->SetLineWidth(3.);
-  observed->GetFunction("pol2")->SetRange(observed->GetX()[0],observed->GetX()[observed->GetN()-1]);
-  observed->GetFunction("pol2")->SetLineColor(kRed);
-  observed->GetFunction("pol2")->SetLineStyle(kDashed);
+  if(parabolic)
+  {
+    observed->GetFunction("pol2")->SetRange(observed->GetX()[0],observed->GetX()[observed->GetN()-1]);
+    observed->GetFunction("pol2")->SetLineColor(kRed);
+    observed->GetFunction("pol2")->SetLineStyle(kDashed);
+  }
   observed->Draw("PLsame");
 
   for(std::vector<TGraph*>::const_iterator sigma = sigmas.begin(); sigma!=sigmas.end(); ++sigma){
@@ -160,11 +169,7 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   //mass->SetTextFont (   62 );
 
   int precisionMedian=3;
-  int precisionLower=1;
-  if( (minX-lowerBound) >= 10) precisionLower=2;  
-  int precisionUpper=1;
-  if( (upperBound-minX) >= 10) precisionUpper=2;  
-  std::stringstream massText; massText << "m_{best-fit} = " << std::setprecision(precisionMedian)<< minX << "^{+" << std::setprecision(precisionUpper) << upperBound-minX << "}" << "_{-" << std::setprecision(precisionLower) << minX-lowerBound << "}" << " GeV";
+  std::stringstream massText; massText << "m_{best-fit} = " << std::setprecision(precisionMedian)<< minX << "^{+"  << std::round(upperBound-minX) << "}" << "_{-" << std::round( minX-lowerBound) << "}" << " GeV";
   mass->AddText(massText.str().c_str());
   mass->Draw("same"); 
   
