@@ -275,11 +275,16 @@ def lxb_submit(dirs, masses, cmd='--asymptotic', opts='', cycle='') :
             cmd_ext = '-pval'
         elif 'significance' in cmd :
             cmd_ext = '-sig'
+        elif 'feldman-cousins' in cmd :
+            cmd_ext = '-fc'
         else :
             cmd_ext = ''
         ana = dir[:dir.rfind('/')]
         limit = dir[len(ana)+1:]
-        jobname = dir.replace('/', '-').replace('LIMITS','scripts')+cmd_ext+cycle
+        jobname = dir.replace('/', '-').replace('LIMITS','scripts')+cmd_ext
+        folder = jobname
+        if not cycle == '' :
+            jobname = jobname+'-'+cycle
         ## add compliance with lxq or condor
         sys = ''
         if options.lxq :
@@ -292,18 +297,18 @@ def lxb_submit(dirs, masses, cmd='--asymptotic', opts='', cycle='') :
             inputs+= dir+'/'+mass+' '
         ## create submission scripts
         if options.printOnly :
-            print "lxb-limit.py --name {JOBNAME} {CONDOR} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" {SYS} {DIR}".format(
-                JOBNAME=jobname, DIR=inputs.rstrip(), QUEUE=options.queue, METHOD=cmd, OPTS=opts.rstrip(), SYS=sys, CONDOR="--condor" if options.condor else "")
+            print "lxb-limit.py --folder {FOLDER} --name {JOBNAME} {CONDOR} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" {SYS} {DIR}".format(
+                FOLDER=folder, JOBNAME=jobname, DIR=inputs.rstrip(), QUEUE=options.queue, METHOD=cmd, OPTS=opts.rstrip(), SYS=sys, CONDOR="--condor" if options.condor else "")
         else:
-            os.system("lxb-limit.py --name {JOBNAME} {CONDOR} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" {SYS} {DIR}".format(
-                JOBNAME=jobname, DIR=inputs.rstrip(), QUEUE=options.queue, METHOD=cmd, OPTS=opts.rstrip(), SYS=sys, CONDOR="--condor" if options.condor else ""))
+            os.system("lxb-limit.py --folder {FOLDER} --name {JOBNAME} {CONDOR} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" {SYS} {DIR}".format(
+                FOLDER=folder, JOBNAME=jobname, DIR=inputs.rstrip(), QUEUE=options.queue, METHOD=cmd, OPTS=opts.rstrip(), SYS=sys, CONDOR="--condor" if options.condor else ""))
             ## execute
             if not options.condor:
                 os.system("./{JOBNAME}_submit.sh".format(JOBNAME=jobname))
             else:
                 os.system("condor_submit {JOBNAME}_submit.sh".format(JOBNAME=jobname))
             ## store
-            os.system("mv {JOBNAME}_submit.sh {JOBNAME}".format(JOBNAME=jobname))
+            os.system("mv {JOBNAME}_submit.sh {FOLDER}".format(JOBNAME=jobname, FOLDER=folder))
 
 ##
 ## WORKSPACE
@@ -425,20 +430,22 @@ if options.optFeldmanCousins :
         for x in range(0,11) :
             for y in range(0,11) :
                 points.append(conf.format(X=0.+x*(2.-0.)/10, Y=0.+y*(2.-0.)/10))
-    if options.interactive :
-        for dir in args :
-            mass = get_mass(dir)
-            if mass == 'common' :
-                continue
-            for point in points :
+    idx=0
+    for point in points :
+        if options.interactive :
+            for dir in args :
+                mass = get_mass(dir)
+                if mass == 'common' :
+                    continue
                 if options.printOnly :
                     print"limit.py --feldman-cousins {POINT} {MODEL} {OPTS} {USER} {DIR}".format(POINT=point, MODEL=model, OPTS=opts, DIR=dir, USER=options.opt)
                 else :
                     os.system("limit.py --feldman-cousins {POINT} {MODEL} {OPTS} {USER} {DIR}".format(POINT=point, MODEL=model, OPTS=opts, DIR=dir, USER=options.opt))
-    else :
-        ## directories and mases per directory
-        struct = directories(args)
-        lxb_submit(struct[0], struct[1], "--feldman-cousins", "{POINT} {MODEL} {OPTS} {USER}".format(POINT=point, MODEL=model, OPTS=opts, USER=options.opt))
+        else :
+            ## directories and mases per directory
+            struct = directories(args)
+            lxb_submit(struct[0], struct[1], "--feldman-cousins", "{POINT} {MODEL} {OPTS} {USER}".format(POINT=point, MODEL=model, OPTS=opts, USER=options.opt), str(idx))
+            idx+=1
 ##
 ## MULTIDIM-FIT
 ##
