@@ -2,7 +2,7 @@
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, std::string& xaxis, std::string& yaxis, double max, bool log);
+void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, std::string& xaxis, std::string& yaxis, double max, bool log, bool parabolic);
 
 void
 PlotLimits::plotMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed)
@@ -22,7 +22,7 @@ PlotLimits::plotMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraph
   // set proper maximum
   float max = max_<0 ? maximum(expected) : max_;
   // do the plotting
-  plottingMassEstimate(canv, innerBand, outerBand, expected, modifiedobs, xaxis_, yaxis_, max, log_);    
+  plottingMassEstimate(canv, innerBand, outerBand, expected, modifiedobs, xaxis_, yaxis_, max, log_, parabolic_);    
   // add the CMS Preliminary stamp
   CMSPrelim(dataset_.c_str(), "", 0.135, 0.835);
   //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
