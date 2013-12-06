@@ -153,10 +153,10 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
-  leg->AddEntry(observed, "observed",  "PL");
+  leg->AddEntry(observed, "Observed",  "PL");
   leg->AddEntry( newexpected , "H (125 GeV) expected",  "L" );
-  leg->AddEntry( innerBand, "#pm 1#sigma expected",  "F" ); 
-  leg->AddEntry( outerBand, "#pm 2#sigma expected",  "F" ); 
+  leg->AddEntry( innerBand, "#pm 1#sigma Expected",  "F" ); 
+  leg->AddEntry( outerBand, "#pm 2#sigma Expected",  "F" ); 
   leg->Draw("same");
 
   /// Mass
