@@ -627,7 +627,7 @@ if options.optInject :
                 for mass in struct[1][dir] :
                     os.system("limit.py --max-likelihood --collect-injected-toys {DIR}/{MASS}".format(DIR=dir, MASS=mass))
             ## finally obtain the result on data 
-            lxb_submit(struct[0], struct[1], "--max-likelihood", "{USER}".format(USER=options.opt))
+            lxb_submit(struct[0], struct[1], "--max-likelihood --stable-new", "{USER}".format(USER=options.opt))
             ## obtain the expected results using an asimov dataset
             opts+=" --mass-scan"
             for path in paths:
