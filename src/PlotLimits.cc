@@ -12,6 +12,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   pdf_  (cfg.existsAs<bool  >("pdf" ) ? cfg.getParameter<bool  >("pdf" ) : false),
   txt_  (cfg.existsAs<bool  >("txt" ) ? cfg.getParameter<bool  >("txt" ) : false),
   root_ (cfg.existsAs<bool  >("root") ? cfg.getParameter<bool  >("root") : false),
+  parabolic_ (cfg.existsAs<bool  >("parabolic") ? cfg.getParameter<bool  >("parabolic") : false),
   mssm_ (cfg.existsAs<bool  >("mssm") ? cfg.getParameter<bool  >("mssm") : false)
 {
   // mass-points

@@ -21,11 +21,13 @@ layout = cms.PSet(
     max = cms.double(10),
     ## log for plotting
     log = cms.int32(0),
+    ## include parabolic fit
+    parabolic = cms.bool(False),
     ## define verbosity level
     verbosity   = cms.uint32(0),
     ## define output label
     outputLabel = cms.string("mass_scan"),
     ## define masspoints for limit plot
-    masspoints = cms.vdouble(range(110, 146, 5))
+    masspoints = cms.vdouble(range(90, 146, 5))
 #    masspoints = cms.vdouble(range(110, 146, 1))
 )

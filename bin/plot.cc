@@ -292,7 +292,7 @@ int main(int argc, char* argv[])
     }
     // expected limit (for --injected 'MEDIAN' and 'MEAN' are sensible parameters)
     TGraph* expected  = new TGraph();
-    plot.fillCentral(directory, expected, "higgsCombinePVAL-exp.ProfileLikelihood.mH$MASS");
+    plot.fillCentral(directory, expected, "MEDIAN");
     // 1-sigma uncertainty band
     TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
     plot.fillBand(directory, inner, "TOYBASED", true);

@@ -8,6 +8,8 @@ parser = OptionParser(usage="usage: %prog [options] ARGs", description="This is 
 ##
 parser.add_option("--name", dest="name", default="batch", type="string",
                   help="Add the job name here. [Default: \"batch\"]")
+parser.add_option("--folder", dest="folder", default="", type="string",
+                  help="Add an additional name for the folder in which to host the submission scripts here. If non-specified the folder name will have the name given by --name, which is the same as the name for the submission script. [Default: \"\"]")
 parser.add_option("--limit-options", dest="limit", default="", type="string",
                   help="Add all options you want to pass to limit.py encapsulated by quotation marks '\"'. [Default: \"\"]")
 parser.add_option("--batch-options", dest="batch", default="", type="string",
@@ -35,6 +37,9 @@ logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 #dirglob = args[0]
 name = options.name
+folder = name
+if not options.folder == '' :
+    folder = options.folder
 bsubargs = options.batch
 option_str = options.limit
 
@@ -90,7 +95,6 @@ requirements = HasAFS_OSG && TARGET.FilesystemDomain =!= UNDEFINED && TARGET.UWC
 
 '''
 
-
 if options.lxq :
     script_template = script_template.replace('#!/bin/bash', lxq_fragment)
 elif options.condor:
@@ -115,8 +119,8 @@ with open(submit_name, 'w') as submit_script:
     if options.lxq :
         submit_script.write('export scram_arch=$SCRAM_ARCH\n')
         submit_script.write('export cmssw_base=$CMSSW_BASE\n')
-    if not os.path.exists(name):
-        os.system("mkdir -p %s" % name)
+    if not os.path.exists(folder):
+        os.system("mkdir -p %s" % folder)
     for i, dir in enumerate(args):
         ## don't submit jobs on old LSF output
         if 'LSFJOB' in dir:
@@ -124,7 +128,7 @@ with open(submit_name, 'w') as submit_script:
         if 'common' in dir:
             continue
         log.info("Generating submission script for %s", dir)
-        script_file_name = '%s/%s_%i.sh' % (name, name, i)
+        script_file_name = '%s/%s_%i.sh' % (folder, name, i)
         ## create random directory in tmp. This allows to do more than one submission in parallel
         tmp_head = '/tmp/'+stamp
         if options.condor:

@@ -20,7 +20,7 @@ layout = cms.PSet(
     ## print to root
     root = cms.bool(True),
     ## min for plotting
-    min = cms.double(1e-8),
+    min = cms.double(1e-10),
     ## max for plotting
     max = cms.double(1.),
     ## min for plotting

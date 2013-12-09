@@ -8,6 +8,8 @@ parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...", descrip
 ## MAIN OPTIONS
 ##
 agroup = OptionGroup(parser, "MAIN OPTIONS", "These are the command line options that list all available processes that can be executed via this script. Each process is run with a default configuration that has been recently used for analysis. Depending on the process the execution of the script will result in the submission of a pre-defined set of batch jobs via lxb (lxq) or in a submission of a pre-defined set of jobs via crab. The options that will lead submission to lxb (lxq) are: --max-likelihood, --likelihood-scan, --multidim-fit, --asymptotic, --tanb+. The options that will lead to crab submission are: --significance, --CLs, --bayesian, --tanb. The latter requires the proper setup of a glite and a crab environment. Note that this is the case even if the submission would only take place via lxb (lxq), as the grid environment is used internally by crab. All options are explained in the following. All command line options in this section are exclusive. For the options --likelihood-scan, --asymptotic, --tanb+ it is possible to force interactive running. If run in batch mode the jobs will be split per mass.")
+agroup.add_option("--workspace", dest="optWorkspace", default=False, action="store_true",
+                  help="Just create a workspace for a given set of datacards and physics model with corresponding options. [Default: False]")
 agroup.add_option("--goodness-of-fit", dest="optGoodnessOfFit", default=False, action="store_true",
                   help="Determine the goodness of fit equivalent to a chisquared. For the vexpected goodness of fit this is a toys based procedure. The fit will be applied to the SM with single signal modifier. When submitting to lxb (lxq) you can configure the queue to which the jobs will be submitted as described in section BATCH OPTIONS of this parameter description. [Default: False]")
 agroup.add_option("--max-likelihood", dest="optMLFit", default=False, action="store_true",
@@ -25,6 +27,8 @@ agroup.add_option("--pvalue-frequentist", dest="optPValue", default=False, actio
                   help="Calculate the expected and observed frequentist p-value a la HCG. [Default: False]")
 agroup.add_option("--asymptotic", dest="optAsym", default=False, action="store_true",
                   help="Calculate asymptotic CLs limits from the datacards in the directory/ise corresponding to ARGs. The process will be executed via lxb (lxq), split by each single mass point that is part of ARGs or as a single interactive job when using the option --interactive. When submitting to lxb (lxq) you can configure the queue to which the jobs will be submitted as described in section BATCH OPTIONS of this parameter description. When running in batch mode you can go one level up in the expected directory structure as described in the head of this section. [Default: False]")
+agroup.add_option("--feldman-cousins", dest="optFeldmanCousins", default=False, action="store_true",
+                  help="Calculate a Feldman-Cousins limits with a given physics model. Check in the corresponding subsection what additional configurations are required fro thsi option. [Default: False]")
 agroup.add_option("--CLs", dest="optCLs", default=False, action="store_true",
                   help="Calculate the observed and expected full CLs limits. This method is completely toy based. This script will submit toys to the grid using crab. This action will require a grid certificate. As this operation is very computing intensive there is no pre-defined option to submit to lxb (lxq). You can monitor and receive the results of your jobs once finished using the script limit.py using the CRAB OPTIONS as explained in the parameter description, there. [Default: False]")
 agroup.add_option("--bayesian", dest="optBayes", default=False, action="store_true",
@@ -209,6 +213,51 @@ def directories(args) :
         masses[dir] = list(buffer)
     return (dirs, masses)
 
+def model_config(model_name) :
+    '''
+    Return the configuration strings for --physics-model and --physics-model-options
+    for a set of prefedined physics models, as a tuple. In case that model_name is 
+    not known None is returned. 
+    '''
+    ## MSSM ggH versus bbH
+    if "ggH-bbH" in model_name :
+        from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
+        model = "--physics-model 'ggH-bbH=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
+        opts  = "--physics-model-options 'modes=ggH,bbH;ggHRange=0:{GGH};bbHRange=0:{BBH}'".format(GGH=bounds["ggH-bbH",mass][0], BBH=bounds["ggH-bbH",mass][1])
+    ## MSSM cb versus ctau
+    elif "cb-ctau" in model_name :
+        from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
+        model = "--physics-model 'cb-ctau=HiggsAnalysis.HiggsToTauTau.BSMHiggsCouplings:CbCtauMSSMHiggs'"
+        opts  = "--physics-model-options 'cbRange=0:{CB};ctauRange=0:{CTAU}'".format(CB=bounds["cb-ctau",mass][0], CTAU=bounds["cb-ctau",mass][1])
+    ## MSSM cl versus cq
+    elif "cl-cq" in model_name :
+        from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
+        model = "--physics-model 'cl-cq=HiggsAnalysis.HiggsToTauTau.BSMHiggsCouplings:ClCqMSSMHiggs'"
+        opts  = "--physics-model-options 'clRange=0:{CL};cqRange=0:{CQ}'".format(CL=bounds["cl-cq",mass][0], CQ=bounds["cl-cq",mass][1])
+    ## SM ggH versus qqH (this configuration is optimized for mH=125)
+    elif "ggH-qqH" in model_name :
+        model = "--physics-model 'ggH-qqH=HiggsAnalysis.CombinedLimit.PhysicsModel:floatingXSHiggs'"
+        opts  = "--physics-model-options 'modes=ggH,qqH ggHRange=0:4 qqHRange=0:4'"
+    ## SM rV versus rF (this configuration is optimized for mH=125)
+    elif "rV-rF" in model_name :
+        model = "--physics-model 'rV-rF=HiggsAnalysis.CombinedLimit.PhysicsModel:rVrFXSHiggs'"
+        opts  = "--physics-model-options 'rVRange=-3:5 rFRange=-2:4'"
+    ## SM cV versus cF (this configuration is optimized for mH=125)
+    elif "cV-cF" in model_name :
+        model = "--physics-model 'cV-cF=HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcF'"
+        opts  = "--physics-model-options 'cVRange=0:3 cFRange=0:2'"   
+    ## MSSM ggH while bbH is profiled (GGH-BOUND will be resolved in limit.create_card_workspace_with_physics_model)
+    elif "ggH" in model_name :
+        model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
+        opts  = "--physics-model-options 'modes=ggH;ggHRange=0:GGH-BOUND'"
+    ## MSSM bbH while ggH is profiled (BBH-BOUND will be resolved in limit.create_card_workspace_with_physics_model)
+    elif "bbH" in model_name :
+        model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
+        opts  = "--physics-model-options 'modes=bbH;bbHRange=0:BBH-BOUND'"    
+    else:
+        return None
+    return (model,opts)
+
 def lxb_submit(dirs, masses, cmd='--asymptotic', opts='', cycle='') :
     '''
     do a lxb submission for jobs that can be executed via limit.py.
@@ -226,11 +275,16 @@ def lxb_submit(dirs, masses, cmd='--asymptotic', opts='', cycle='') :
             cmd_ext = '-pval'
         elif 'significance' in cmd :
             cmd_ext = '-sig'
+        elif 'feldman-cousins' in cmd :
+            cmd_ext = '-fc'
         else :
             cmd_ext = ''
         ana = dir[:dir.rfind('/')]
         limit = dir[len(ana)+1:]
-        jobname = dir.replace('/', '-').replace('LIMITS','scripts')+cmd_ext+cycle
+        jobname = dir.replace('/', '-').replace('LIMITS','scripts')+cmd_ext
+        folder = jobname
+        if not cycle == '' :
+            jobname = jobname+'-'+cycle
         ## add compliance with lxq or condor
         sys = ''
         if options.lxq :
@@ -243,19 +297,41 @@ def lxb_submit(dirs, masses, cmd='--asymptotic', opts='', cycle='') :
             inputs+= dir+'/'+mass+' '
         ## create submission scripts
         if options.printOnly :
-            print "lxb-limit.py --name {JOBNAME} {CONDOR} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" {SYS} {DIR}".format(
-                JOBNAME=jobname, DIR=inputs.rstrip(), QUEUE=options.queue, METHOD=cmd, OPTS=opts.rstrip(), SYS=sys, CONDOR="--condor" if options.condor else "")
+            print "lxb-limit.py --folder {FOLDER} --name {JOBNAME} {CONDOR} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" {SYS} {DIR}".format(
+                FOLDER=folder, JOBNAME=jobname, DIR=inputs.rstrip(), QUEUE=options.queue, METHOD=cmd, OPTS=opts.rstrip(), SYS=sys, CONDOR="--condor" if options.condor else "")
         else:
-            os.system("lxb-limit.py --name {JOBNAME} {CONDOR} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" {SYS} {DIR}".format(
-                JOBNAME=jobname, DIR=inputs.rstrip(), QUEUE=options.queue, METHOD=cmd, OPTS=opts.rstrip(), SYS=sys, CONDOR="--condor" if options.condor else ""))
+            os.system("lxb-limit.py --folder {FOLDER} --name {JOBNAME} {CONDOR} --batch-options \"{QUEUE}\" --limit-options \"{METHOD} {OPTS}\" {SYS} {DIR}".format(
+                FOLDER=folder, JOBNAME=jobname, DIR=inputs.rstrip(), QUEUE=options.queue, METHOD=cmd, OPTS=opts.rstrip(), SYS=sys, CONDOR="--condor" if options.condor else ""))
             ## execute
             if not options.condor:
                 os.system("./{JOBNAME}_submit.sh".format(JOBNAME=jobname))
             else:
                 os.system("condor_submit {JOBNAME}_submit.sh".format(JOBNAME=jobname))
             ## store
-            os.system("mv {JOBNAME}_submit.sh {JOBNAME}".format(JOBNAME=jobname))
+            os.system("mv {JOBNAME}_submit.sh {FOLDER}".format(JOBNAME=jobname, FOLDER=folder))
 
+##
+## WORKSPACE
+##
+if options.optWorkspace :
+    for dir in args :
+        mass = get_mass(dir)
+        if mass == 'common' :
+            continue
+        ## define command line, model and model options
+        cmd    = "--workspace"
+        model  = model_config(options.fitModel)[0]
+        opts   = model_config(options.fitModel)[1]
+        ## prepare calculation
+        if options.interactive :
+            if options.printOnly :
+                print "limit.py {CMD} {MODEL} {OPTS} {USER} {DIR}".format(CMD=cmd, MODEL=model, OPTS=opts, USER=options.opt, DIR=dir)
+            else :
+                os.system("limit.py {CMD} {MODEL} {OPTS} {USER} {DIR}".format(CMD=cmd, MODEL=model, OPTS=opts, USER=options.opt, DIR=dir))
+        else :
+            ## directories and mases per directory
+            struct = directories(args)
+            lxb_submit(struct[0], struct[1], cmd, "{MODEL} {OPTS} {USER}".format(MODEL=model, OPTS=opts, USER=options.opt))
 ##
 ## GOODNESS OF FIT
 ##
@@ -343,6 +419,34 @@ if options.optNLLScan :
         lxb_submit(struct[0], struct[1], "--likelihood-scan", "--points {POINTS} --rMin {RMIN} --rMax {RMAX} {USER}".format(
             POINTS=options.points, RMIN=options.rMin, RMAX=options.rMax, USER=options.opt))
 ##
+## FELDMAN COUSINS
+##
+if options.optFeldmanCousins :
+    model  = model_config(options.fitModel)[0]
+    opts   = model_config(options.fitModel)[1]
+    points = []
+    if "cV-cF" in options.fitModel :
+        conf  = "--feldman-cousins-toys=100 --feldman-cousins-points='CV={X},CF={Y}' --feldman-cousins-ranges='CV=0,2:CF=0,2'"
+        for x in range(0,11) :
+            for y in range(0,11) :
+                points.append(conf.format(X=0.+x*(2.-0.)/10, Y=0.+y*(2.-0.)/10))
+    idx=0
+    for point in points :
+        if options.interactive :
+            for dir in args :
+                mass = get_mass(dir)
+                if mass == 'common' :
+                    continue
+                if options.printOnly :
+                    print"limit.py --feldman-cousins {POINT} {MODEL} {OPTS} {USER} {DIR}".format(POINT=point, MODEL=model, OPTS=opts, DIR=dir, USER=options.opt)
+                else :
+                    os.system("limit.py --feldman-cousins {POINT} {MODEL} {OPTS} {USER} {DIR}".format(POINT=point, MODEL=model, OPTS=opts, DIR=dir, USER=options.opt))
+        else :
+            ## directories and mases per directory
+            struct = directories(args)
+            lxb_submit(struct[0], struct[1], "--feldman-cousins", "{POINT} {MODEL} {OPTS} {USER}".format(POINT=point, MODEL=model, OPTS=opts, USER=options.opt), str(idx))
+            idx+=1
+##
 ## MULTIDIM-FIT
 ##
 if options.optMDFit :
@@ -356,46 +460,29 @@ if options.optMDFit :
         prefix = prefix[head.rfind('/')+1:].replace('/', '-')
         ## define command line, model and model options
         cmd    = ""
-        model  = ""
-        opts   = ""
+        model  = model_config(options.fitModel)[0]
+        opts   = model_config(options.fitModel)[1]
         stable = ""
         if options.stable :
           stable = ' --limit-options=\"--userOpt=\\\" --minimizerStrategy=0 --minimizerTolerance=0.1 --cminPreScan --cminFallbackAlgo \\\\\\\"Minuit2,0:1.0\\\\\\\" --cminFallbackAlgo \\\\\\\"Minuit2,0:10.0\\\\\\\" --cminFallbackAlgo \\\\\\\"Minuit2,0:50.0\\\\\\\"\\\"\"'
         ## MSSM ggH versus bbH
         if "ggH-bbH" in options.fitModel :
-            from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
             cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-BBH-{MASS} --njob 50 --npoints 800".format(PRE=prefix, MASS=mass)
-            model = "--physics-model 'ggH-bbH=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
-            opts  = "--physics-model-options 'modes=ggH,bbH;ggHRange=0:{GGH};bbHRange=0:{BBH}'".format(GGH=bounds["ggH-bbH",mass][0], BBH=bounds["ggH-bbH",mass][1])
-            print mass, bounds["ggH-bbH",mass][0], bounds["ggH-bbH",mass][1]
         ## MSSM cb versus ctau
         if "cb-ctau" in options.fitModel :
-            from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
             cmd   = "lxb-multidim-fit.py --name {PRE}-CB-CTAU-{MASS} --njob 50 --npoints 800".format(PRE=prefix, MASS=mass)
-            model = "--physics-model 'cb-ctau=HiggsAnalysis.HiggsToTauTau.BSMHiggsCouplings:CbCtauMSSMHiggs'"
-            opts  = "--physics-model-options 'cbRange=0:{CB};ctauRange=0:{CTAU}'".format(CB=bounds["cb-ctau",mass][0], CTAU=bounds["cb-ctau",mass][1])
-        ## MSSM cb versus ctau
+        ## MSSM cl versus cq
         if "cl-cq" in options.fitModel :
-            from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
             cmd   = "lxb-multidim-fit.py --name {PRE}-CL-CQ-{MASS} --njob 50 --npoints 800".format(PRE=prefix, MASS=mass)
-            model = "--physics-model 'cl-cq=HiggsAnalysis.HiggsToTauTau.BSMHiggsCouplings:ClCqMSSMHiggs'"
-            opts  = "--physics-model-options 'clRange=0:{CL};cqRange=0:{CQ}'".format(CL=bounds["cl-cq",mass][0], CQ=bounds["cl-cq",mass][1])
         ## SM ggH versus qqH (this configuration is optimized for mH=125)
         elif "ggH-qqH" in options.fitModel :
             cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-QQH-{MASS} --njob 160 --npoints 40".format(PRE=prefix, MASS=mass)
-            model = "--physics-model 'ggH-qqH=HiggsAnalysis.CombinedLimit.PhysicsModel:floatingXSHiggs'"
-            opts  = "--physics-model-options 'modes=ggH,qqH ggHRange=0:4 qqHRange=0:4'"
         ## SM rV versus rF (this configuration is optimized for mH=125)
         elif "rV-rF" in options.fitModel :
             cmd   = "lxb-multidim-fit.py --name {PRE}-RV-RF-{MASS} --njob 160 --npoints 40".format(PRE=prefix, MASS=mass)
-            model = "--physics-model 'rV-rF=HiggsAnalysis.CombinedLimit.PhysicsModel:rVrFXSHiggs'"
-            #opts  = "--physics-model-options 'rVRange=0:5 rFRange=0:4'"
-            opts  = "--physics-model-options 'rVRange=-3:5 rFRange=-2:4'"
         ## SM cV versus cF (this configuration is optimized for mH=125)
         elif "cV-cF" in options.fitModel :
             cmd   = "lxb-multidim-fit.py --name {PRE}-CV-CF-{MASS} --njob 120 --npoints 30".format(PRE=prefix, MASS=mass)
-            model = "--physics-model 'cV-cF=HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcF'"
-            opts  = "--physics-model-options 'cVRange=0:3 cFRange=0:2'"            
         ## add lxq compliance
         sys = ""
         if options.lxq :
