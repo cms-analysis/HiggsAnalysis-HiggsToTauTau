@@ -1181,6 +1181,7 @@ for directory in args :
             if re.match(r"qmu.FixedMu_\d+(.\d\d)?.root", wsp) :
                 tanb_string = wsp[wsp.rfind("_")+1:]
                 os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/extractSignificanceStats.py --filename qmu.FixedMu_{TANB}".format(CMSSW_BASE=os.environ["CMSSW_BASE"], TANB=tanb_string))
+        os.system("em HypothesisTest.root") 
         os.system("hadd HypothesisTest.root HypothesisTest_*.root") 
         
     
