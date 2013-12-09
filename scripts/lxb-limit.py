@@ -71,6 +71,7 @@ $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} {tmphead}
 echo "Copy {tmphead}/{tail} --> {dirhead}{tail} (root output files only)"
 cp {tmphead}/{tail}/*.root {dirhead}{tail}
 cp {tmphead}/{tail}/.scan {dirhead}{tail}
+cp {tmphead}/{tail}/*.png {dirhead}{tail}
 if [ -d {tmphead}/{tail}/out ] ;
   then
     mkdir -p {dirhead}/{tail}/out ;
