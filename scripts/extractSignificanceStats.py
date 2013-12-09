@@ -74,8 +74,6 @@ for i in range(tree.GetEntries()) :
     if i==0 :
         if options.verbosity :
             print "MASS in the TREE =", staff.mh, staff.type
-    #if options.verbosity :
-        #print staff.mh, staff.q, staff.weight, staff.type
     if staff.type<0 : #SM Hypothesis ist eigentlicht <0 ?
         hSM.Fill(staff.q)
         v_SM.append(staff.q)
@@ -113,10 +111,38 @@ if options.verbosity :
 integralSM=hSM.Integral()
 integralMSSM=hMSSM.Integral()
 
-tailSMexp  =hSM.Integral  (1,hSM.FindBin(medianSM))
-tailMSSMexp=hMSSM.Integral(1,hMSSM.FindBin(medianSM))
-#tailSMexp  =hSM.Integral  (hSM.FindBin(medianSM),nbins)
-#tailMSSMexp=hMSSM.Integral(hMSSM.FindBin(medianSM),nbins)
+plus_one_sigma_bin=0
+minus_one_sigma_bin=0
+plus_two_sigma_bin=0
+minus_two_sigma_bin=0
+for i in range(nbins) :
+    print i
+    help= hSM.Integral(1, i)/hSM.Integral()
+    if help > 0.975 and plus_two_sigma_bin == 0 :
+        plus_two_sigma_bin=i
+    if help > 0.84 and plus_one_sigma_bin == 0 :
+        plus_one_sigma_bin=i
+    if help > 0.16 and minus_one_sigma_bin == 0 :
+        minus_one_sigma_bin=i
+    if help > 0.025 and minus_two_sigma_bin == 0 :
+        minus_two_sigma_bin=i
+if options.verbosity :
+    print "bins of -2 -1 median +1 +2 for hSM", minus_two_sigma_bin, minus_one_sigma_bin, hSM.FindBin(medianSM), plus_one_sigma_bin, plus_two_sigma_bin
+
+tailSMminus2sigma  =hSM.Integral  (1,minus_two_sigma_bin)
+tailMSSMminus2sigma=hMSSM.Integral(1,minus_two_sigma_bin)
+
+tailSMminus1sigma  =hSM.Integral  (1,minus_one_sigma_bin)
+tailMSSMminus1sigma=hMSSM.Integral(1,minus_one_sigma_bin)
+
+tailSMexp          =hSM.Integral  (1,hSM.FindBin(medianSM))
+tailMSSMexp        =hMSSM.Integral(1,hMSSM.FindBin(medianSM))
+
+tailSMplus1sigma   =hSM.Integral  (1,plus_one_sigma_bin)
+tailMSSMplus1sigma =hMSSM.Integral(1,plus_one_sigma_bin)
+
+tailSMplus2sigma   =hSM.Integral  (1,plus_two_sigma_bin)
+tailMSSMplus2sigma =hMSSM.Integral(1,plus_two_sigma_bin)
 
 tailSMobs  =hSM.Integral  (1,hObs.FindBin(medianObs))
 tailMSSMobs=hMSSM.Integral(1,hObs.FindBin(medianObs))
@@ -124,25 +150,38 @@ tailMSSMobs=hMSSM.Integral(1,hObs.FindBin(medianObs))
 #tailMSSMobs=hMSSM.Integral(hObs.FindBin(medianObs),nbins)
 
 if options.verbosity :
-    #print integralSM, integralMSSM
-    #print hSM.FindBin(medianSM), hMSSM.FindBin(medianSM), hObs.FindBin(medianObs)
-    #print hMSSM.GetBinContent(hMSSM.FindBin(medianSM))
     print "tailSMexp", tailSMexp, "  tailMSSMexp", tailMSSMexp, "  tailSMobs", tailSMobs, "  tailMSSMobs", tailMSSMobs
+    print "-2 sigma separation power", tailMSSMminus2sigma/tailSMminus2sigma
+    print "-1 sigma separation power", tailMSSMminus1sigma/tailSMminus1sigma
     print "Expected separation power", tailMSSMexp/tailSMexp
+    print "+1 sigma separation power", tailMSSMplus1sigma/tailSMplus1sigma
+    print "+2 sigma separation power", tailMSSMplus2sigma/tailSMplus2sigma
     print "Observed separation power", tailMSSMobs/tailSMobs
 
 #for mA-tanb plotting save everything in a root file
 f = ROOT.TFile("HypothesisTest_{TANB}.root".format(TANB=tanb), "recreate")
 t = ROOT.TTree("tree", "HypoTest")
-tanbeta = n.zeros(1, dtype=float)
-exp     = n.zeros(1, dtype=float)
-obs     = n.zeros(1, dtype=float)
-t.Branch('tanb', tanbeta, 'tanb/D')
-t.Branch('expected', exp, 'expected/D')
-t.Branch('observed', obs, 'observed/D')
+tanbeta    = n.zeros(1, dtype=float)
+minus2sigma= n.zeros(1, dtype=float)
+minus1sigma= n.zeros(1, dtype=float)
+exp        = n.zeros(1, dtype=float)
+plus1sigma = n.zeros(1, dtype=float)
+plus2sigma = n.zeros(1, dtype=float)
+obs        = n.zeros(1, dtype=float)
+t.Branch('tanb',        tanbeta,     'tanb/D')
+t.Branch('minus2sigma', minus2sigma, 'minus2sigma/D')
+t.Branch('minus1sigma', minus1sigma, 'minus1sigma/D')
+t.Branch('expected',    exp,         'expected/D')
+t.Branch('plus1sigma',  plus1sigma,  'plus1sigma/D')
+t.Branch('plus2sigma',  plus2sigma,  'plus2sigma/D')
+t.Branch('observed',    obs,         'observed/D')
 tanbeta[0]=float(tanb)
-exp[0]    =float(tailMSSMexp/tailSMexp)
-obs[0]    =float(tailMSSMobs/tailSMobs)
+minus2sigma[0]=float(tailMSSMminus2sigma/tailSMminus2sigma)
+minus1sigma[0]=float(tailMSSMminus1sigma/tailSMminus1sigma)
+exp[0]        =float(tailMSSMexp/tailSMexp)
+plus1sigma[0] =float(tailMSSMplus1sigma/tailSMplus1sigma)
+plus2sigma[0] =float(tailMSSMplus2sigma/tailSMplus2sigma)
+obs[0]        =float(tailMSSMobs/tailSMobs)
 t.Fill()
 f.Write()
 f.Close()
