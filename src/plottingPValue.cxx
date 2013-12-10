@@ -108,7 +108,7 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   }
 
   /// 5 sigma
-  TPaveText * sigma5 = new TPaveText(0.96, 0.38, 1.00, 0.43, "NDC");
+  TPaveText * sigma5 = new TPaveText(0.96, 0.25, 1.00, 0.30, "NDC");
   sigma5->SetBorderSize(   0 );
   sigma5->SetFillStyle(    0 );
   sigma5->SetTextAlign(   12 );
@@ -119,7 +119,7 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   sigma5->Draw("same");
 
   /// 4 sigma
-  TPaveText * sigma4 = new TPaveText(0.96, 0.54, 1.00, 0.59, "NDC");
+  TPaveText * sigma4 = new TPaveText(0.96, 0.45, 1.00, 0.50, "NDC");
   sigma4->SetBorderSize(   0 );
   sigma4->SetFillStyle(    0 );
   sigma4->SetTextAlign(   12 );
@@ -130,7 +130,7 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   sigma4->Draw("same");
 
   /// 3 sigma
-  TPaveText * sigma3 = new TPaveText(0.96, 0.67, 1.00, 0.72, "NDC");
+  TPaveText * sigma3 = new TPaveText(0.96, 0.61, 1.00, 0.66, "NDC");
   sigma3->SetBorderSize(   0 );
   sigma3->SetFillStyle(    0 );
   sigma3->SetTextAlign(   12 );
@@ -141,7 +141,7 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   sigma3->Draw("same");
 
   /// 2 sigma
-  TPaveText * sigma2 = new TPaveText(0.96, 0.76, 1.00, 0.81, "NDC");
+  TPaveText * sigma2 = new TPaveText(0.96, 0.73, 1.00, 0.78, "NDC");
   sigma2->SetBorderSize(   0 );
   sigma2->SetFillStyle(    0 );
   sigma2->SetTextAlign(   12 );
@@ -152,7 +152,7 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   sigma2->Draw("same"); 
 
   /// 1 sigma
-  TPaveText * sigma1 = new TPaveText(0.96, 0.84, 1.00, 0.88, "NDC");
+  TPaveText * sigma1 = new TPaveText(0.96, 0.82, 1.00, 0.87, "NDC");
   sigma1->SetBorderSize(   0 );
   sigma1->SetFillStyle(    0 );
   sigma1->SetTextAlign(   12 );
@@ -168,15 +168,15 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
     leg = new TLegend(0.18, 0.16, 0.75, 0.28);
     //leg->SetNColumns(2);
   }
-  else { leg = new TLegend(legendOnRight ? 0.45 : 0.18, 0.16, legendOnRight ? 0.90 : 0.45, 0.32); }
+  else { leg = new TLegend(legendOnRight ? 0.40 : 0.18, 0.28, legendOnRight ? 0.90 : 0.40, 0.47); }
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 1001 );
   leg->SetFillColor (kWhite);
   //leg->SetHeader("Local p-value");
-  leg->AddEntry( observed, "p-value observed",  "PL");
-  if(not(innerBand && outerBand)){ leg->AddEntry( expected, "expected for SM H(m_{H})",  "L" );}
-  if(innerBand){ leg->AddEntry( innerBand, "#pm 1#sigma expected for SM H(125 GeV)",  "F" ); }
-  if(outerBand){ leg->AddEntry( outerBand, "#pm 2#sigma expected for SM H(125 GeV)",  "F" ); }
+  leg->AddEntry( observed, "p-Value observed",  "PL");
+  if(not(innerBand && outerBand)){ leg->AddEntry( expected, "Expected for SM H(m_{H})",  "L" );}
+  if(innerBand){ leg->AddEntry( innerBand, "#pm 1#sigma Expected for SM H(125 GeV)",  "F" ); }
+  if(outerBand){ leg->AddEntry( outerBand, "#pm 2#sigma Expected for SM H(125 GeV)",  "F" ); }
   leg->Draw("same");
   //canv.RedrawAxis("g");
   canv.RedrawAxis();
