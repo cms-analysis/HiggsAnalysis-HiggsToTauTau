@@ -53,8 +53,21 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   }  
   if(parabolic)
   {
-    double fitLower = lowerBound-TMath::Max((minX-lowerBound),(upperBound-minX)); 
-    double fitUpper = upperBound+TMath::Max((minX-lowerBound),(upperBound-minX)); 
+    //double fitLower = lowerBound-TMath::Max((minX-lowerBound),(upperBound-minX)); 
+    //double fitUpper = upperBound+TMath::Max((minX-lowerBound),(upperBound-minX));
+    float min=-90000;
+    float max=90000;
+    for(int idx=0; idx<observed->GetN(); ++idx) {
+      if(observed->GetY()[idx]<2 && observed->GetX()[idx]>min) {
+        min=observed->GetX()[idx];
+      }
+      if(observed->GetY()[idx]<2 && observed->GetX()[idx]<max) {
+        max=observed->GetX()[idx];
+      }
+    }
+    double fitLower = max;
+    double fitUpper = min;
+
     observed->Fit("pol2","R","",lowerBound-(minX-lowerBound),upperBound+(upperBound-minX));
     int nStep = 1000;
     double step = (fitUpper-fitLower)/nStep;
@@ -88,7 +101,7 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
    lowerBound = fitLowerBound;
  }
    // create sigma lines
-  float quantile[] = {0.68, 0.95};
+  double quantile[] = {1-2*ROOT::Math::normal_cdf_c(1,1,0), 1-2*ROOT::Math::normal_cdf_c(2,1,0)};
   std::vector<TGraph*> sigmas;
   for(unsigned int isigma=0; isigma<2; ++isigma){
     TGraph* sigma = new TGraph();
@@ -118,12 +131,12 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   
   outerBand->SetLineWidth(1.);
   outerBand->SetLineColor(kBlack);
-  outerBand->SetFillColor(kYellow);
+  outerBand->SetFillColor(kAzure-9);
   outerBand->Draw("3");
 
   innerBand->SetLineWidth(1.);
   innerBand->SetLineColor(kBlack);
-  innerBand->SetFillColor(kGreen);
+  innerBand->SetFillColor(kAzure-4);
   innerBand->Draw("3same");
 
   newexpected->SetLineColor(kBlue);
