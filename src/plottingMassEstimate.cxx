@@ -181,13 +181,13 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   mass->SetTextColor( kBlue );
   //mass->SetTextFont (   62 );
 
-  int precisionMedian=3;
-  std::stringstream massText; massText << "m_{best-fit} = " << std::setprecision(precisionMedian)<< minX << "^{+"  << std::round(upperBound-minX) << "}" << "_{-" << std::round( minX-lowerBound) << "}" << " GeV";
-  mass->AddText(massText.str().c_str());
-  mass->Draw("same"); 
+  //int precisionMedian=3;
+  //std::stringstream massText; massText << "m_{best-fit} = " << std::setprecision(precisionMedian)<< minX << "^{+"  << std::round(upperBound-minX) << "}" << "_{-" << std::round( minX-lowerBound) << "}" << " GeV";
+  //mass->AddText(massText.str().c_str());
+  //mass->Draw("same"); 
   
   /// 1 sigma
-  TPaveText * sigma1 = new TPaveText(0.88, (0.6/(max*1.2))+0.08, 0.93, (0.6/max)+0.13, "NDC");
+  TPaveText * sigma1 = new TPaveText(0.88, (0.6/(max*1.2))+0.09, 0.93, (0.6/max)+0.14, "NDC");
   sigma1->SetBorderSize(   0 );
   sigma1->SetFillStyle(    0 );
   sigma1->SetTextAlign(   12 );
@@ -198,7 +198,7 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   sigma1->Draw("same");
 
   /// 2 sigma
-  TPaveText * sigma2 = new TPaveText(0.88, (1.8/(max*1.2))+0.08, 0.93, (1.8/max)+0.13, "NDC");
+  TPaveText * sigma2 = new TPaveText(0.88, (1.8/(max*1.2))+0.1, 0.93, (1.8/max)+0.15, "NDC");
   sigma2->SetBorderSize(   0 );
   sigma2->SetFillStyle(    0 );
   sigma2->SetTextAlign(   12 );
