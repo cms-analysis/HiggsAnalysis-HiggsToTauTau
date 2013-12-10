@@ -8,7 +8,7 @@ layout = cms.PSet(
     ## x-axis title
     xaxis = cms.string("m_{H} [GeV]"),
     ## x-axis title
-    yaxis = cms.string("Local p-Value"),
+    yaxis = cms.string("Local p-value"),
     ## indicate that this is bestfit
 #    bestfit = cms.bool(True),
     ## print to png
@@ -20,7 +20,7 @@ layout = cms.PSet(
     ## print to root
     root = cms.bool(True),
     ## min for plotting
-    min = cms.double(1e-10),
+    min = cms.double(1e-8),
     ## max for plotting
     max = cms.double(1.),
     ## min for plotting

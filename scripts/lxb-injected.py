@@ -19,6 +19,8 @@ parser.add_option("--mass-points-per-job", dest="per_job", type="int", default=1
                   help="Maximum number of mass points to run per batch job. If more mass points given as arguments the number of jobs will be increased. NOTE: this will be true for each toy. This will increase the number of jobs quadratically. [Default: \"10\"]")
 parser.add_option("--injected-mass", dest="injected_mass", type="string", default="125",
                   help="Mass of the signal that should be injected into the background only hypothesis from simulation. [Default: 125]")
+parser.add_option("--injected-mH", dest="injected_mH", default=False, action="store_true",
+                  help="Inject the signal at the given mH into the background only hypothesis from simulation. [Default: False]")
 parser.add_option("--lxq", dest="lxq", default=False, action="store_true",
                   help="Specify this option when running on lxq instead of lxb. [Default: False]")
 parser.add_option("--condor", dest="condor", default=False, action="store_true",
@@ -49,8 +51,7 @@ os.system("mkdir -p log")
 
 random.seed()
 
-script_template = '''
-#!/usr/bin/env python
+script_template = '''#!/usr/bin/env python
 
 import os
 
@@ -70,7 +71,10 @@ for m in masses :
 os.system("cp -r {PWD}/{PATH}/{DIR}/common {TMPDIR}/{USER}/{DIR}_{JOBID}/")
 for m in masses :
     if m :
-        os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/blindData.py --seed {RND} --injected-mass {INJECTEDMASS} --inject-signal --X-allow-no-signal {TMPDIR}/{USER}/{DIR}_{JOBID}/%s"%m)
+        if {INJECTEDMH}:
+            os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/blindData.py --seed {RND} --injected-mass %s --inject-signal --X-allow-no-signal {TMPDIR}/{USER}/{DIR}_{JOBID}/%s"%(m,m))
+        else:
+            os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/blindData.py --seed {RND} --injected-mass {INJECTEDMASS} --inject-signal --X-allow-no-signal {TMPDIR}/{USER}/{DIR}_{JOBID}/%s"%m)
         print "limit.py {METHOD} {OPTS} {TMPDIR}/{USER}/{DIR}_{JOBID}/%s" % m
         os.system("limit.py {METHOD} {OPTS} {TMPDIR}/{USER}/{DIR}_{JOBID}/%s" % m)
         os.system("cp -v {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/higgsCombine{EXTENSION}.mH%s.root {PWD}/{PATH}/{DIR}/%s/higgsCombine{EXTENSION}.mH%s-{OUTPUTLABEL}.root" % (m, m, m, m))
@@ -83,8 +87,7 @@ for m in masses :
 os.system("rm -r {TMPDIR}/{USER}/{DIR}_{JOBID}")
 '''
 
-lxq_fragment = '''
-#!/usr/bin/bash
+lxq_fragment = '''#!/usr/bin/env bash
 
 export SCRAM_ARCH=$scram_arch
 ini cmssw_cvmfs
@@ -167,7 +170,8 @@ with open(submit_name, 'w') as submit_script:
                     OUTPUTLABEL = "%s-%s" % (idx, options.injected_mass),
                     RND = rnd if not options.expected else '-1',
                     TMPDIR=tmpdir,
-                    EXPECTED='True' if options.expected else 'False'
+                    EXPECTED='True' if options.expected else 'False',
+                    INJECTEDMH='True' if options.injected_mH else 'False'
                     ))
             with open(script_file_name.replace('.py', '.sh'), 'w') as sh_file:
                 if options.lxq :
