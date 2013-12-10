@@ -160,7 +160,18 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   sigma1->SetTextColor( kRed );
   sigma1->SetTextFont (   62 );
   sigma1->AddText("1#sigma");
-  sigma1->Draw("same"); 
+  sigma1->Draw("same");
+
+  /// Channel label
+  TPaveText* channels  = new TPaveText(0.2, 0.1, 0.40, 0.25, "NDC");
+  channels->SetBorderSize(   0 );
+  channels->SetFillStyle(    0 );
+  channels->SetTextAlign(   12 );
+  channels->SetTextSize ( 0.035 );
+  channels->SetTextColor(    1 );
+  channels->SetTextFont (   62 );
+  channels->AddText("e#tau_{h}, #mu#tau_{h}, e#mu, #mu#mu, ee");
+  channels->Draw("same");
 
  /// add the proper legend
   TLegend* leg;
