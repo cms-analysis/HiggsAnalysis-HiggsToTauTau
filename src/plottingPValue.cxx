@@ -160,7 +160,18 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   sigma1->SetTextColor( kRed );
   sigma1->SetTextFont (   62 );
   sigma1->AddText("1#sigma");
-  sigma1->Draw("same"); 
+  sigma1->Draw("same");
+
+  /// Channel label
+  TPaveText* channels  = new TPaveText(0.2, 0.13, 0.40, 0.27, "NDC");
+  channels->SetBorderSize(   0 );
+  channels->SetFillStyle(    0 );
+  channels->SetTextAlign(   12 );
+  channels->SetTextSize ( 0.045 );
+  channels->SetTextColor(    1 );
+  channels->SetTextFont (   62 );
+//  channels->AddText("e#mu, e#tau_{h}, #mu#tau_{h}, #tau_{h}#tau_{h}, #mu#mu, ee");
+//  channels->Draw("same");
 
  /// add the proper legend
   TLegend* leg;
@@ -173,7 +184,7 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   leg->SetFillStyle ( 1001 );
   leg->SetFillColor (kWhite);
   //leg->SetHeader("Local p-value");
-  leg->AddEntry( observed, "p-Value observed",  "PL");
+  leg->AddEntry( observed, "p-value Observed",  "PL");
   if(not(innerBand && outerBand)){ leg->AddEntry( expected, "Expected for SM H(m_{H})",  "L" );}
   if(innerBand){ leg->AddEntry( innerBand, "#pm 1#sigma Expected for SM H(125 GeV)",  "F" ); }
   if(outerBand){ leg->AddEntry( outerBand, "#pm 2#sigma Expected for SM H(125 GeV)",  "F" ); }
