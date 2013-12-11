@@ -53,8 +53,6 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   }  
   if(parabolic)
   {
-    //double fitLower = lowerBound-TMath::Max((minX-lowerBound),(upperBound-minX)); 
-    //double fitUpper = upperBound+TMath::Max((minX-lowerBound),(upperBound-minX));
     float min=-90000;
     float max=90000;
     for(int idx=0; idx<observed->GetN(); ++idx) {
@@ -148,13 +146,13 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   observed->SetMarkerSize(1.0);
   observed->SetMarkerColor(kBlack);
   observed->SetLineWidth(3.);
+  observed->Draw("PLsame");
   if(parabolic)
   {
-    observed->GetFunction("pol2")->SetRange(observed->GetX()[0],observed->GetX()[observed->GetN()-1]);
+    observed->GetFunction("pol2")->SetRange(lowerBound-(minX-lowerBound),upperBound+(upperBound-minX));
     observed->GetFunction("pol2")->SetLineColor(kRed);
-    observed->GetFunction("pol2")->SetLineStyle(kDashed);
+    observed->GetFunction("pol2")->SetLineStyle(4);
   }
-  observed->Draw("PLsame");
 
   for(std::vector<TGraph*>::const_iterator sigma = sigmas.begin(); sigma!=sigmas.end(); ++sigma){
     (*sigma)->SetLineColor(kRed);
