@@ -80,7 +80,9 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   higgs125_ =cfg.existsAs<bool>("higgs125" ) ? cfg.getParameter<bool>("higgs125" ) : false;
   outerband_=cfg.existsAs<bool>("outerband") ? cfg.getParameter<bool>("outerband") : false;
   transparent_=cfg.existsAs<bool>("transparent") ? cfg.getParameter<bool>("transparent") : false;
+  expectedOnly_=cfg.existsAs<bool>("expectedOnly") ? cfg.getParameter<bool>("expectedOnly") : false;
 }
+
 
 TGraph*
 PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filename, const char* low_tanb /*=""*/)

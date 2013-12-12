@@ -12,7 +12,7 @@
 #include <iostream>
 
 void
-plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false)
+plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool plotOuterBand=true)
 {
   // set up styles
   canv.cd();
@@ -59,7 +59,8 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* inn
     hr->GetXaxis()->SetLabelSize(0.040);
   }
 
-  if(observed){
+  if(!expectedOnly){
+  //if(observed){
     plain->SetLineColor(ph->GetNumber());
     plain->SetFillStyle(1001.);
     plain->SetFillColor(obs->GetNumber());
@@ -70,7 +71,8 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* inn
     observed->SetLineWidth(3.);
   }
   
-  if(outerBand){
+  if(plotOuterBand){
+    //if(outerBand){
     outerBand->SetFillStyle(1001);
     outerBand->SetFillColor(twosigma->GetNumber()); //kGray
     outerBand->SetLineColor(twosigma->GetNumber());
@@ -87,7 +89,8 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* inn
   expected->SetLineStyle(1);
   expected->Draw("Lsame");
 
-  if(observed){;
+  if(!expectedOnly){
+    //if(observed){
     if(transparent) plain->Draw("Fsame");
     observed->Draw("Lsame");
   }
@@ -139,13 +142,15 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* inn
   leg->SetFillColor (kWhite);
   leg->SetLineColor (kBlack);
   leg->SetHeader("95% CL Excluded:");
-  if(observed){ 
+  if(!expectedOnly){ 
+    //if(observed){ 
     observed->SetFillColor(obs->GetNumber()); 
     leg->AddEntry(observed, "observed", "FL");
   }
   leg->AddEntry(expected, "expected", "L");
   leg->AddEntry(innerBand, "#pm 1#sigma expected","F");
-  if(outerBand){ 
+  if(plotOuterBand){ 
+  //if(outerBand){ 
     leg->AddEntry(outerBand, "#pm 2#sigma expected", "F"); 
   }
   leg->Draw("same");

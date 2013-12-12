@@ -2,7 +2,7 @@
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false);
+void plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool plotOuterBand=true);
 
 struct myclass {
   bool operator() (int i,int j) { return (i<j);}
@@ -276,7 +276,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
   }
    
   // do the plotting
-  plottingHypoTest(canv, plain, innerBand, outerBand, expected, observed, xaxis_, yaxis_, theory_, min_, max_, log_);
+  plottingHypoTest(canv, plain, innerBand, outerBand, expected, observed, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, expectedOnly_, outerband_);
   /// setup the CMS Preliminary
   //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
   TPaveText* cmsprel  = new TPaveText(0.145, 0.835+0.06, 0.145+0.30, 0.835+0.16, "NDC");
@@ -297,12 +297,10 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
     canv.Print(std::string(output_).append("_").append(extralabel_).append(label_).append(".pdf").c_str());
     canv.Print(std::string(output_).append("_").append(extralabel_).append(label_).append(".eps").c_str());
   }
-  /*
   if(txt_){
     print(std::string(output_).append("_").append(extralabel_).append(label_).c_str(), outerBand, innerBand, expected, observed, "txt");
     print(std::string(output_).append("_").append(extralabel_).append(label_).c_str(), outerBand, innerBand, expected, observed, "tex");
   }
-  */
   if(root_){
     TFile* output = new TFile(std::string("limits_").append(extralabel_).append(label_).append(".root").c_str(), "update");
     if(!output->cd(output_.c_str())){
