@@ -279,6 +279,6 @@ class ModelDatacard(DatacardAdaptor) :
                 self.adapt_shapes_lines(path, card, proc, self.model_label, '')
             else :
                 ## filename gets label self.model_label, histogram name remains as is
-                self.adapt_shapes_lines(path, card, proc, '', self.model_label)
-        self.adapt_rate_lines(path, card.list_of_signals(), model.save_float_conversion(model.mass))
+                self.adapt_shapes_lines(path, card, proc, '', self.model_label)      
+        self.adapt_rate_lines(path, card.list_of_signals(), model.save_float_conversion(model.mA))
         self.add_uncert_lines(path, model)

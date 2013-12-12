@@ -8,8 +8,8 @@ parser_opts = OptionGroup(parser, "DATACARD PARSER OPTIONS", "These are the opti
 addDatacardParserOptions(parser_opts)
 parser.add_option_group(parser_opts)
 model_opts = OptionGroup(parser, "MODEL OPTIONS", "These are the options that can be passed on to configure the creation of the model datacards.")
-model_opts.add_option("--mA", dest="mA", default="", type="string",
-                       help="The value of the free mass parameter in the model. Default: \"\"]")
+model_opts.add_option("--parameter1", dest="parameter1", default="", type="string",
+                       help="The value of the free parameter in the model. Mue (higgs/higgsino mass parameter) Default: \"\"]")
 model_opts.add_option("--tanb", dest="tanb", default="", type="string",
                        help="The value of tanb in the model. Default: \"\"]")
 model_opts.add_option("--model", dest="modelname", default="mhmax-mu+200", type="string",
@@ -52,9 +52,9 @@ class MODEL(object) :
     uncertainties should be available also for each of these configuring parameters. The model needs to be set up consistent
     to resemble the analysed set of datacards. 
     """
-    def __init__(self, mass, tanb, modelpath='mhmax-mu+200', modeltype='mssm_xsec') :
-        ## mass
-        self.mass = mass
+    def __init__(self, parameter1, tanb, modelpath='mhmax-mu+200', modeltype='mssm_xsec') :
+        ## parameter1 ; for lowmH this is mue (higgs/higgsino mass parameter) for all other scenarios this is mA
+        self.parameter1 = parameter1
         ## tanb
         self.tanb = tanb
         ## model path (as defined in ModelParams_BASE)
@@ -65,6 +65,8 @@ class MODEL(object) :
         self.central = {}
         ## shifts for uncertainties of type {'type' : {(period,decay,proc) : (MODEL_PARAMS,MODEL_PARAMS)}}
         self.uncerts = {}
+        ## mass of the pseudoscalar A 
+        self.mA = 0
 
     def missing_procs(self, decay, period, procs) :
         """
@@ -94,7 +96,7 @@ class MODEL(object) :
         shifts is a non-emty list also shifts in mu or pdf are returned. Other shifts are currently not supported.
         """
         ## create model
-        modelMaker = ModelParams_BASE(self.mass, self.tanb)
+        modelMaker = ModelParams_BASE(self.parameter1, self.tanb)
         modelMaker.setup_model(period, self.modelpath, self.modeltype)
         ## create central value
         for proc in procs :
@@ -109,14 +111,16 @@ class MODEL(object) :
                 self.uncerts[shift].update(buffer)
             else :
                 self.uncerts[shift] = buffer
+        ## create masses 
+        self.mA = modelMaker.create_model_params(period, proc, decay, '').masses['A']
             
 def main() :
     print "# --------------------------------------------------------------------------------------"
-    print "# tangb_grid_new.py "
+    print "# tanb_grid_new.py "
     print "# --------------------------------------------------------------------------------------"
     print "# You are using the following configuration: "
     print "# --tanb            :", options.tanb
-    print "# --mA              :", options.mA
+    print "# --parameter1      :", options.parameter1 #for the lowmH scenario this is the higgs/higgsino mass parameter; everywhere else its mass of A
     print "# --morphing-htt_ee : ", options.morphing_htt_ee
     print "# --morphing-htt_em : ", options.morphing_htt_em
     print "# --morphing-htt_mm : ", options.morphing_htt_mm
@@ -129,7 +133,7 @@ def main() :
 
     ## directory that contains all datacards in question
     path = args[0]
-    label = '_{MASS}_{TANB}'.format(MASS=options.mA, TANB=options.tanb)
+    label = '_{PARAMETER1}_{TANB}'.format(PARAMETER1=options.parameter1, TANB=options.tanb)
     ## mophing configuration
     morph = {
         'htt_ee' : options.morphing_htt_ee,
@@ -150,7 +154,7 @@ def main() :
     old_file.close()
     
     ## determine MODEL for given datacard.
-    model = MODEL(float(options.mA), float(options.tanb), options.modelname)
+    model = MODEL(float(options.parameter1), float(options.tanb), options.modelname)
     match = re.compile('(?P<CHN>\w*)_\w*_[0-9]?_(?P<PER>[0-9]*\w*)')
     for bin in card.list_of_bins() :
         ## a bin can be made up of different decay channels or different run periods. Pick decay channel (chn) and run period
