@@ -254,11 +254,11 @@ for directory in args :
                             mass=masspoint, tanb=tanb, model=options.model, interpolation=options.interpolation_mode))
                     else :
                         ## new
-                        os.system("python tanb_grid_new.py --mA {mass} --tanb {tanb} --model {model} {MSSMvsSM} tmp.txt".format(
+                        os.system("python tanb_grid_new.py --parameter1 {mass} --tanb {tanb} --model {model} {MSSMvsSM} tmp.txt".format(
                             mass=masspoint, tanb=tanb, model=options.model, MSSMvsSM='--MSSMvsSM' if options.MSSMvsSM else ""))
                 ## setup the batchjob creation for combine -M CLs with tanb grid points instead of cross section grid points
                 opts = "-o {out} -n {points} -m {mass} -O {options} -T {toysH} -t {toys} -j {jobs} -q {queue}".format(
-                    out=options.out, points=options.points, mass=masspoint, options=options.options, toysH=options.T,
+                    out=options.out, points=options.points, mass='110' if options.model=='lowmH' else masspoint, options=options.options, toysH=options.T,
                     toys=options.t, jobs=options.j, queue=options.queue
                     )
                 if options.v != 0 :
@@ -291,7 +291,7 @@ for directory in args :
                     for tanb in points :
                         print "translating tmp_{tanb}0.txt into workspace".format(tanb=tanb)
                         os.system("text2workspace.py -m {mass} tmp_{tanb}0.txt -P HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:twoHypothesisHiggs -o fixedMu_{tanb}0.root".format(
-                            mass=masspoint, tanb=tanb))
+                            mass='110' if options.model=='lowmH' else masspoint, tanb=tanb))
             if options.method == "Bayesian" :
                 ## -----------------------------------------------------------------------------------------
                 ## Option: combine Bayesian
