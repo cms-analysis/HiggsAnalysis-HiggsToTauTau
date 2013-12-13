@@ -116,7 +116,7 @@ minus_one_sigma_bin=0
 plus_two_sigma_bin=0
 minus_two_sigma_bin=0
 for i in range(nbins) :
-    print i
+    #print i
     help= hSM.Integral(1, i)/hSM.Integral()
     if help > 0.975 and plus_two_sigma_bin == 0 :
         plus_two_sigma_bin=i
