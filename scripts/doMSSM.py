@@ -3,6 +3,7 @@ from optparse import OptionParser, OptionGroup
 from HiggsAnalysis.HiggsToTauTau.LimitsConfig import configuration
 from HiggsAnalysis.HiggsToTauTau.UncertAdaptor import UncertAdaptor ###NEW
 from HiggsAnalysis.HiggsToTauTau.DatacardAdaptor import DatacardAdaptor
+from HiggsAnalysis.HiggsToTauTau.utils import parseArgs 
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options]",
@@ -38,6 +39,12 @@ parser.add_option("--update-LIMITS", dest="update_limits", default=False, action
                   help="update LIMITS directory for the indicated analyses. [Default: False]")
 parser.add_option("--drop-list", dest="drop_list", default="",  type="string",
                   help="The full path to the result file of the pruning if it exists already for pruning of bin-by-bin uncertainties. If empty the pruning will be performed including a mlfit within this script. ATTENTION: this can take a few hours depending on the number of additional bin-by-bin uncertainties. [Default: \"\"]")
+parser.add_option("--new-merging", dest="new_merging", default=False, action="store_true",
+                  help="added to test the new merging introduced by Andrew. [Default: False]")
+parser.add_option("--new-merging-threshold", dest="new_merging_threshold", default="0.5", type="string",
+                  help="Threshold for the new merging by Andrew. [Default: \"0.5\"]")
+parser.add_option("--drop-normalize-bbb", dest="drop_normalize_bbb", default=False, action="store_true",
+                  help="Normalize yield to stay constand when adding bbb shape uncertainties. [Default: False]")
 parser.add_option("-c", "--config", dest="config", default="",
                   help="Additional configuration file to be used for the setup [Default: \"\"]")
 
@@ -55,6 +62,7 @@ if len(args) < 1 :
 import os
 import glob 
 from HiggsAnalysis.HiggsToTauTau.utils import parseArgs
+from HiggsAnalysis.HiggsToTauTau.utils import get_channel_dirs
 
 ## masses
 masses = args
@@ -100,6 +108,9 @@ print "# --drop-list               :", options.drop_list
 print "# --tail-fitting            :", options.fit_tails
 print "# --fine-binning            :", options.fine_binning
 print "# --merge-bbb               :", options.merge_bbb
+print "# --new-merging             :", options.new_merging
+print "# --new-merging-threshold   :", options.new_merging_threshold
+print "# --drop-bbb-normalisation  :", options.drop_normalize_bbb
 print "# --fine-scan               :", options.fine_scan
 print "# --blind-datacards         :", options.blind_datacards
 print "# --extra-templates         :", options.extra_templates
@@ -400,16 +411,35 @@ if options.update_setup :
             print "##"
             print "## update bbb    directory in setup:"
             print "##"
-            for chn in config.channels :
-                for per in config.periods :
-                    for idx in range(len(config.bbbcat[chn][per])) :
-                        os.system("add_bbb_errors.py '{CHN}:{PER}:{CAT}:{PROC}' --normalize -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold {THR} --mssm".format(
-                            CHN=chn,
-                            PER=per,
-                            CAT=config.bbbcat[chn][per][idx],
-                            PROC=config.bbbproc[chn][idx],
+            for chn in config.channels:
+                for per in config.periods:
+                    for idx in range(len(config.bbbcat[chn][per])):
+                        if options.new_merging :
+                            filename='htt_'+chn+'.inputs-mssm-'+per+'-0.root'
+                            for cat in config.bbbcat[chn][per][idx].split(',') :
+                                ## loop all categories in question for index idx
+                                if len(config.bbbproc[chn][idx].replace('>',',').split(','))>1 :
+                                    ## only get into action if there is more than one sample to do the merging for
+                                    os.system("merge_bin_errors.py --folder {DIR} --processes {PROC} --bbb_threshold={BBBTHR} --merge_threshold={THRESH} --verbose {SOURCE} {TARGET}".format(
+                                        ## this list has only one entry by construction
+                                        DIR=get_channel_dirs(chn, cat,per)[0],
+                                        PROC=config.bbbproc[chn][idx].replace('>',','),
+                                        BBBTHR=config.bbbthreshold[chn],
+                                        THRESH=options.new_merging_threshold,
+                                        SOURCE=dir+'/'+ana+'/'+chn+'/'+filename,
+                                        TARGET=dir+'/'+ana+'/'+chn+'/'+filename,
+                                        ))
+                        normalize_bbb = ''
+                        if not options.drop_normalize_bbb :
+                            normalize_bbb = ' --normalize '
+                        os.system("add_bbb_errors.py '{CHN}:{PER}:{CAT}:{PROC}' {NORMALIZE} -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold {THR} --mssm".format(
                             DIR=dir,
                             ANA=ana,
+                            CHN=chn,
+                            PER=per,
+                            NORMALIZE=normalize_bbb,
+                            CAT=config.bbbcat[chn][per][idx],
+                            PROC=config.bbbproc[chn][idx].replace('>',',') if options.new_merging else config.bbbproc[chn][idx],
                             THR=config.bbbthreshold[chn]
                             ))                   
                         os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
@@ -428,7 +458,7 @@ if options.update_setup :
                                 cgs_adaptor.cgs_processes(filename,None,['ggH_SM125','qqH_SM125','VH_SM125'],None,None)
                 analysesv2.append(ana)                
                 analysesv2.append(ana+'-SMHbkg')
-        analyses=analysesv2
+            analyses=analysesv2
                                 
 if options.update_aux :
     print "##"
@@ -472,7 +502,7 @@ if options.update_aux :
                 analysesv2.append(ana)  
                 analysesv2.append(anav2+'-MSSMvsSM')
                 analysesv2.append(anav2)
-    analyses=analysesv2
+            analyses=analysesv2
     print "analyses", analyses  
     ## blind datacards
     if options.blind_datacards :
