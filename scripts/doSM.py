@@ -153,7 +153,7 @@ print "# --add-mutau-soft          :", options.add_mutau_soft
 print "# --blind-datacards         :", options.blind_datacards
 print "# --extra-templates         :", options.extra_templates
 print "# --interpolate             :", options.interpolate
-print "# --rebin-morph             :", options.rebin_morph
+print "# --finebin-morph             :", options.rebin_morph
 print "# --------------------------------------------------------------------------------------"
 for chn in config.channels:
     print "# --inputs-"+chn+"               :", config.inputs[chn]
