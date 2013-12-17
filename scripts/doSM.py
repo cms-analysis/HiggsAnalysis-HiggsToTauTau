@@ -103,6 +103,13 @@ if options.mvis:
         'no-bbb:hww-sig' : '-mvis',
         'bbb:hww-sig'    : '-mvis',
         }
+if options.rebin_morph:
+    patterns = {
+        'no-bbb'         : '-fbsig',
+        'bbb'            : '-fbsig',
+        'no-bbb:hww-sig' : '-fbsig',
+        'bbb:hww-sig'    : '-fbsig',
+        }
 
 if options.update_all :
     options.update_setup     = True
@@ -114,24 +121,24 @@ masspoints = [str(points) for points in masspoints]
 
 # options to run interpolation on fine binned templates for certain channels
 finebin_opt = {
-    'et'       : '0',
-    'em'       : '0',
-    'mt'       : '0',
-    'tt'       : '0',
-    'ee'       : '0',
-    'mm'       : '0',
-    'vhtt'     : '0',
+    'et'       : False,
+    'em'       : False,
+    'mt'       : False,
+    'tt'       : False,
+    'ee'       : False,
+    'mm'       : False,
+    'vhtt'     : False,
     }
 
-if options.rebin_morph :
+if options.rebin_morph:
     finebin_opt = {
-        'et'       : '1',
-        'em'       : '1',
-        'mt'       : '1',
-        'tt'       : '1',
-        'ee'       : '0',
-        'mm'       : '0',
-        'vhtt'     : '0',
+        'et'       : True,
+        'em'       : True,
+        'mt'       : True,
+        'tt'       : True,
+        'ee'       : False,
+        'mm'       : False,
+        'vhtt'     : False,
         }
 
 print "# --------------------------------------------------------------------------------------"
@@ -153,7 +160,7 @@ print "# --add-mutau-soft          :", options.add_mutau_soft
 print "# --blind-datacards         :", options.blind_datacards
 print "# --extra-templates         :", options.extra_templates
 print "# --interpolate             :", options.interpolate
-print "# --finebin-morph             :", options.rebin_morph
+print "# --finebin-morph           :", options.rebin_morph
 print "# --------------------------------------------------------------------------------------"
 for chn in config.channels:
     print "# --inputs-"+chn+"               :", config.inputs[chn]
@@ -230,7 +237,7 @@ if options.update_setup :
             for ana in analyses :
                 pattern = ''
                 if ana in patterns.keys() :
-                    pattern = patterns[ana]
+                    pattern = patterns[ana] if (options.rebin_morph and finebin_opt[chn]) else ''
                 source="{CMSSW_BASE}/src/auxiliaries/shapes/{DIR}/{CHN}.inputs-sm-{PER}{PATTERN}.root".format(
                     CMSSW_BASE=cmssw_base,
                     DIR=directories[chn][per],
@@ -266,7 +273,7 @@ if options.update_setup :
             if directories['vhtt'][per] == 'None' :
                 continue
             for ana in analyses :
-                pattern = patterns[ana]
+                pattern = patterns[ana] if (options.rebin_morph and finebin_opt['vhtt']) else ''
                 if not os.path.exists("{SETUP}/vhtt/vhtt.inputs-sm-{PER}{PATTERN}.root".format(SETUP=setup, PER=per, PATTERN=pattern)):
                     os.system("hadd {SETUP}/vhtt/vhtt.inputs-sm-{PER}{PATTERN}.root {SETUP}/vhtt/vhtt_*.inputs-sm-{PER}{PATTERN}.root".format(
                         SETUP=setup,
