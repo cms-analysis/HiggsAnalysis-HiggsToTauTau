@@ -262,7 +262,7 @@ def get_channel_dirs(finalstate, category, period):
             combined_names.append(fs_map[finalstate]+'_'+dir)
         return combined_names
 
-def get_shape_systematics(setup, period, channel, category, proc):
+def get_shape_systematics(setup, period, channel, category, proc, catname = None):
     """
     take a set of inputs corresponding to an uncertainty configuration
     and return a list of all shape uncertainties corresponding to the given process
@@ -287,8 +287,9 @@ def get_shape_systematics(setup, period, channel, category, proc):
     for line in vals:
         line = line.strip().split()
         if line and '#' not in line[0]:
-            if any(procs in [i.strip() for i in line[1].split(',')] for procs in proc_qualifier):
-                shape_systematics.append(line[2])
+            if not catname or line[0] == catname:
+                if any(procs in [i.strip() for i in line[1].split(',')] for procs in proc_qualifier):
+                    shape_systematics.append(line[2])
     vals.close()
     ## remove all non-shape uncertainties from the list of uncertainties
     config = open(setup+"/"+channel+"/unc"+card+".conf")

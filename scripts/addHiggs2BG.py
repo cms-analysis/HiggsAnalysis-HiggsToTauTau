@@ -5,6 +5,9 @@ import re
 import ROOT
 from optparse import OptionParser
 
+ROOT.PyConfig.IgnoreCommandLineOptions = True
+ROOT.gROOT.SetBatch()  
+
 parser = OptionParser(usage="usage: %prog [options] ARG",
                       description="This is a script to inject a SM Higgs as background. The mass of the Higgs Boson can be chosen freely, but has to be available in the root input files. ARG corresponds to the full path of the auxiliaries directory to which you want to apply this change. Note that this causes a change of the inputs datacards.")
 parser.add_option("--uncert-inputs", dest="cash_uncert", default="{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup".format(CMSSW_BASE=os.environ['CMSSW_BASE']), type="string",
@@ -17,6 +20,8 @@ parser.add_option("--scale-rate", dest="scale", default=1.0, type="float",
                   help="Scale the Higgs rate of the injected Higgs. [Default: 1.0]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true",
                   help="Run in verbose mode.")
+parser.add_option("--hcg", dest="hcg", default=False, action="store_true",
+                  help="Choose the naming of the background Higgs according to HCG requirements.")
 parser.add_option("--mssm", dest="mssm", default=False, action="store_true",
                   help="Inject SM higgs as BKG to MSSM datacards.")
 ## check number of arguments; in case print usage
@@ -57,7 +62,10 @@ class MakeDatacard :
         ## prepare mA hist
         hist = self.load_hist(file, help)
         new_hist = hist.Clone()
-        new_hist_name = hist_name.replace("{MASS}".format(MASS=options.mass), "{MASS}_SCALE{SCALE}".format(MASS=options.mass, SCALE=str(int(scale))), 1) + uncertainty
+        if options.hcg:
+            new_hist_name = hist_name.replace("{MASS}".format(MASS=options.mass), "_SM",1) + uncertainty
+        else:
+            new_hist_name = hist_name.replace("{MASS}".format(MASS=options.mass), "{MASS}_SCALE{SCALE}".format(MASS=options.mass, SCALE=str(int(scale))), 1) + uncertainty
         if options.mssm :
             new_hist_name = hist_name.replace("125".format(MASS=options.mass), "125_MSSM{LABEL}".format(LABEL=options.label), 1) + uncertainty
         new_hist.Scale(scale)
@@ -190,8 +198,12 @@ for dir in directoryList :
                         rootfile=word.replace("../common/", "")
                 for signal in signal_processes :
                     if not options.mssm :
-                        output_line = output_line +"""shapes {SIGNAL}_SM{LABEL} * {ROOTFILE} $CHANNEL/{SIGNAL}{MASS}_SCALE{SCALE} $CHANNEL/{SIGNAL}{MASS}_SCALE{SCALE}_$SYSTEMATIC 
-                        """.format(SIGNAL=signal, LABEL=options.label, ROOTFILE=rootfile, MASS=options.mass, SCALE=int(options.scale))
+                        if options.hcg:
+                            output_line = output_line +"""shapes {SIGNAL}_SM * {ROOTFILE} $CHANNEL/{SIGNAL}_SM $CHANNEL/{SIGNAL}_SM_$SYSTEMATIC 
+                            """.format(SIGNAL=signal, LABEL=options.label, ROOTFILE=rootfile, MASS=options.mass, SCALE=int(options.scale))
+                        else:
+                            output_line = output_line +"""shapes {SIGNAL}_SM{LABEL} * {ROOTFILE} $CHANNEL/{SIGNAL}{MASS}_SCALE{SCALE} $CHANNEL/{SIGNAL}{MASS}_SCALE{SCALE}_$SYSTEMATIC
+                            """.format(SIGNAL=signal, LABEL=options.label, ROOTFILE=rootfile, MASS=options.mass, SCALE=int(options.scale))
                     if options.mssm :
                         output_line = output_line +"""shapes {SIGNAL}_MSSM{LABEL} * {ROOTFILE} $CHANNEL/{SIGNAL}_MSSM{LABEL} $CHANNEL/{SIGNAL}_MSSM{LABEL}_$SYSTEMATIC 
                         """.format(SIGNAL=signal, LABEL=options.label, ROOTFILE=rootfile)
@@ -205,15 +217,15 @@ for dir in directoryList :
                             output_line = output_line + '\t' + category
                     output_line = output_line + '\n'
                 first_pass_on_bin = False                
-            if words[0] == "process" and words[-1].isdigit() :
+            if words[0] == "process" and words[-1].lstrip("-").isdigit() :
                 output_line = output_line.replace("\n", "")
                 for category in categories :
-                    final_elem = int(words[-1])
+                    final_elem = max(map(int,words[1:]))
                     for signal in signal_processes :
                         output_line = output_line + ("\t \t %s" % (final_elem+1))
                         final_elem = final_elem+1
                 output_line = output_line + '\n'     
-            if words[0] == "process" and words[-1].isdigit()==False :
+            if words[0] == "process" and words[-1].lstrip("-").isdigit()==False :
                  output_line = output_line.replace("\n", "")
                  for category in categories :
                      for signal in signal_processes :
