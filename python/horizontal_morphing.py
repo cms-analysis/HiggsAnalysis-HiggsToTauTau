@@ -182,18 +182,18 @@ class Morph:
                     print "Extrapolating [%0s, %0s] -> %0s" % masses_to_morph[-1]
 
                 for mass_low, mass_high, value in masses_to_morph:
-                    if int(self.fine_binning) == 0 :
+                    if not self.fine_binning:
                         self.morph_hist(file, dir, sample, mass_low, mass_high, value)
-                    else : 
+                    else: 
                         self.morph_hist(file, dir, sample+'_fine_binning', mass_low, mass_high, value)
 
                     for uncert in self.uncerts :
                         try:
                             if not uncert == '' :
-                                if int(self.fine_binning) == 0 :
+                                if not self.fine_binning:
                                     self.morph_hist(file, dir, sample+'_'+uncert+'Up', mass_low, mass_high, value)
                                     self.morph_hist(file, dir, sample+'_'+uncert+'Down', mass_low, mass_high, value)
-                                else : 
+                                else: 
                                     self.morph_hist(file, dir, sample+'_'+uncert+'Up_fine_binning', mass_low, mass_high, value)
                                     self.morph_hist(file, dir, sample+'_'+uncert+'Down_fine_binning', mass_low, mass_high, value)
                         except AttributeError:

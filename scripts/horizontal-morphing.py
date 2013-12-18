@@ -21,11 +21,13 @@ parser.add_option("--extrapolate", dest="extrapolate", default="", type="string"
                   help="A comma separated list of masses outside the pivot range to extrapolate to. The distributions will be taken from the endpoints of the pivotal masses, the efficiency will be extrapolated. WARNING: this method is less robust than the interpolation. [Default: '']")
 parser.add_option("--trivial", dest="trivial", default=False, action="store_true",
                   help="Apply trivial morphing, i.e. the templates closest to the given mass points will be copied to the corresponding mass point. The normalization will be determined by interpolation/extrapolation from the pivotal masses. [Default: False]")
+parser.add_option("--fine-binning", dest="fine_bin", default=False, action="store_true",
+                  help="Use the finer binned inputs to morph the masspoints. [Default: False]")
 (options, args) = parser.parse_args()
 ## check number of arguments; in case print usage
 if not len(args) == 1 :
     parser.print_usage()
     exit(1)
 
-template_morphing = Morph(args[0],options.categories,options.samples,options.uncerts,options.masses,options.step_size,options.verbose,options.extrapolate,options.trivial)
+template_morphing = Morph(args[0],options.categories,options.samples,options.uncerts,options.masses,options.step_size,options.verbose,options.extrapolate,options.trivial,options.fine_bin)
 template_morphing.run()
