@@ -149,8 +149,8 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   }
   if(injected){
     leg->AddEntry( expected , TString::Format("Expected for SM H(%s GeV)", injectedMass.c_str()),  "L" );
-    if(innerBand){ leg->AddEntry( innerBand, TString::Format("#pm 1#sigma Expected", injectedMass.c_str()),  "F" ); }
-    if(outerBand){ leg->AddEntry( outerBand, TString::Format("#pm 2#sigma Expected", injectedMass.c_str()),  "F" ); }
+    if(innerBand){ leg->AddEntry( innerBand, "#pm 1#sigma Expected",  "F" ); }
+    if(outerBand){ leg->AddEntry( outerBand, "#pm 2#sigma Expected",  "F" ); }
   }
   else if(BG_Higgs){
     leg->AddEntry( expected , TString::Format("Expected for H(%s GeV) as BG", injectedMass.c_str()),  "L" );
