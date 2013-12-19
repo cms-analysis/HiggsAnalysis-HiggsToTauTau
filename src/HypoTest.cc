@@ -80,7 +80,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
 	highplus1sigma =(plus1sigma+0.95 )*tanb;
 	highplus2sigma =(plus2sigma+0.95 )*tanb;
 	highobserved   =(obs+0.95        )*tanb;		  
-	std::cout<< tanb << " " << highminus2sigma << " " << highminus1sigma << " " << highexpected  << " " << highplus1sigma << " " << highplus2sigma << " " << highobserved << std::endl;	
+	//std::cout<< tanb << " " << highminus2sigma << " " << highminus1sigma << " " << highexpected  << " " << highplus1sigma << " " << highplus2sigma << " " << highobserved << std::endl;	
       }
 
       // -2sigma
@@ -174,7 +174,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
       excluded_exp=(0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up; 
     }   
     expected->SetPoint(ipoint, mass, excluded_exp);
-    std::cout<< "expected " << ipoint << " " << mass << " " << excluded_exp << std::endl;
+    //std::cout<< "expected " << ipoint << " " << mass << " " << excluded_exp << std::endl;
 
     //-----------------2sigma band
     double excluded_minus2sigma=0;
@@ -194,7 +194,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
       double y_down=minus2sigma;
       excluded_minus2sigma=(0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up; 
     }   
-    std::cout<< "minus2sigma " << ipoint << " " << mass << " " << excluded_minus2sigma << std::endl;
+    //std::cout<< "minus2sigma " << ipoint << " " << mass << " " << excluded_minus2sigma << std::endl;
     double excluded_plus2sigma=0;
     if(excluded_idx_plus2sigma == -999){                     //case nothing excluded
       excluded_plus2sigma=highplus2sigma;
@@ -215,7 +215,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
     outerBand->SetPoint      (ipoint, mass, excluded_exp);
     outerBand->SetPointEYhigh(ipoint, excluded_plus2sigma-excluded_exp);
     outerBand->SetPointEYlow (ipoint, excluded_exp-excluded_minus2sigma);
-    std::cout<< "plus2sigma " << ipoint << " " << mass << " " << excluded_plus2sigma << std::endl;
+    //std::cout<< "plus2sigma " << ipoint << " " << mass << " " << excluded_plus2sigma << std::endl;
 
     //-----------------1sigma band
     double excluded_minus1sigma=0;
@@ -235,7 +235,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
       double y_down=minus1sigma;
       excluded_minus1sigma=(0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up; 
     }   
-    std::cout<< "minus1sigma " << ipoint << " " << mass << " " << excluded_minus1sigma << std::endl;
+    //std::cout<< "minus1sigma " << ipoint << " " << mass << " " << excluded_minus1sigma << std::endl;
     double excluded_plus1sigma=0;
     if(excluded_idx_plus1sigma == -999){                     //case nothing excluded
       excluded_plus1sigma=highplus1sigma;
@@ -256,7 +256,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
     innerBand->SetPoint      (ipoint, mass, excluded_exp);
     innerBand->SetPointEYhigh(ipoint, excluded_plus1sigma-excluded_exp);
     innerBand->SetPointEYlow (ipoint, excluded_exp-excluded_minus1sigma);
-    std::cout<< "plus1sigma " << ipoint << " " << mass << " " << excluded_plus1sigma << std::endl;
+    //std::cout<< "plus1sigma " << ipoint << " " << mass << " " << excluded_plus1sigma << std::endl;
   
     //------------------observed
     double excluded_obs=0;
@@ -277,7 +277,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
       excluded_obs=(0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up; //tanb_ges=(exp_ges-exp_up)/(exp_down-exp_up)*(tanb_down-tanb_up)+tanb_up ; exp_ges = 0.05
     }  
     observed->SetPoint(ipoint, mass, excluded_obs);
-    std::cout<< "observed " << ipoint << " " << mass << " " << excluded_obs << std::endl;
+    //std::cout<< "observed " << ipoint << " " << mass << " " << excluded_obs << std::endl;
 
     ipoint++;
   }
