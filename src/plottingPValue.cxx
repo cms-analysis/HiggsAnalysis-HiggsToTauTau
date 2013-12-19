@@ -170,8 +170,8 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   channels->SetTextSize ( 0.045 );
   channels->SetTextColor(    1 );
   channels->SetTextFont (   62 );
-  channels->AddText("e#mu, e#tau_{h}, #mu#tau_{h}, #tau_{h}#tau_{h}, #mu#mu, ee");
-  channels->Draw("same");
+  //channels->AddText("e#mu, e#tau_{h}, #mu#tau_{h}, #tau_{h}#tau_{h}, #mu#mu, ee");
+  //channels->Draw("same");
 
  /// add the proper legend
   TLegend* leg;
