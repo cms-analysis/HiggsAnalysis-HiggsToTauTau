@@ -14,8 +14,9 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
   //different MSSM scenarios
   std::string extralabel_ = "";
   if(theory_=="MSSM m_{h}^{max} scenario") extralabel_= "mhmax-";
-  if(theory_=="MSSM m_{h}^{modm} scenario") extralabel_= "mhmodm-";
-  if(theory_=="MSSM m_{h}^{modp} scenario") extralabel_= "mhmodp-";
+  if(theory_=="MSSM m_{h}^{mod+} scenario") extralabel_= "mhmodm-";
+  if(theory_=="MSSM m_{h}^{mod-} scenario") extralabel_= "mhmodp-";
+  if(theory_=="MSSM low m_{H} scenario") extralabel_= "lowmH-";
   //lowmH
 
   // set up styles
@@ -144,7 +145,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
     }
     else if(excluded_idx_minus2sigma == notexcluded_idx_minus2sigma){ // case all excluded
       limit->GetEvent(excluded_idx_minus2sigma);
-      excluded_minus2sigma=tanb;
+      excluded_minus2sigma=2;//tanb;
     }
     else{                                             // case in between
       limit->GetEvent(excluded_idx_minus2sigma);
@@ -162,7 +163,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
     }
     else if(excluded_idx_plus2sigma == notexcluded_idx_plus2sigma){ // case all excluded
       limit->GetEvent(excluded_idx_plus2sigma);
-      excluded_plus2sigma=tanb;
+      excluded_plus2sigma=5;//tanb;
     }
     else{                                             // case in between
       limit->GetEvent(excluded_idx_plus2sigma);
@@ -185,7 +186,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
     }
     else if(excluded_idx_minus1sigma == notexcluded_idx_minus1sigma){ // case all excluded
       limit->GetEvent(excluded_idx_minus1sigma);
-      excluded_minus1sigma=tanb;
+      excluded_minus1sigma=2.5;//tanb;
     }
     else{                                             // case in between
       limit->GetEvent(excluded_idx_minus1sigma);
@@ -203,7 +204,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
     }
     else if(excluded_idx_plus1sigma == notexcluded_idx_plus1sigma){ // case all excluded
       limit->GetEvent(excluded_idx_plus1sigma);
-      excluded_plus1sigma=tanb;
+      excluded_plus1sigma=4;//tanb;
     }
     else{                                             // case in between
       limit->GetEvent(excluded_idx_plus1sigma);
@@ -226,7 +227,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
     }
     else if(excluded_idx_exp == notexcluded_idx_exp){ // case all excluded
       limit->GetEvent(excluded_idx_exp);
-      excluded_exp=tanb;
+      excluded_exp=3;//tanb;
     }
     else{                                             // case in between
       limit->GetEvent(excluded_idx_exp);
@@ -247,7 +248,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
     }
     else if(excluded_idx_obs == notexcluded_idx_obs){ // case all excluded
       limit->GetEvent(excluded_idx_exp);
-      excluded_exp=tanb;
+      excluded_exp=3;//tanb;
     }
     else{                                             // case in between
       limit->GetEvent(excluded_idx_obs);
