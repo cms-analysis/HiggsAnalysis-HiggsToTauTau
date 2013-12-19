@@ -7,6 +7,9 @@ import os
 import string
 import numpy as n
 
+ROOT.gROOT.SetBatch(True)
+ROOT.PyConfig.IgnoreCommandLineOptions = True
+
 from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
@@ -19,7 +22,6 @@ agroup.add_option("-v", "--verbosity", dest="verbosity", default=False, action="
                   help="Prints out information. [Default: False]")
 agroup.add_option("--filename", dest="filename", default=None, type="string",
                   help="Perform a test of the goodness of fit (equivalernt to a chisquared fit but suited for an arbitary abount of channels and for the use with nuisance parameters). The expected goodness of fit test is toy based. [Default: False]")
-
 parser.add_option_group(agroup)
 
 ## check number of arguments; in case print usage
@@ -98,6 +100,8 @@ ntoysMSSM=int(hMSSM.GetEntries());
 #    print "Swapped distributions!!! The alternative model should stay on the negative side of the significance."
 #    print "Please edit the code and change the sign of q when filling histos and vectors in the loop on tree entries"
 #    exit(1)
+
+### caculation of CLs with binned histo
 medianSM=v_SM[int(ntoysSM/2)]
 medianMSSM=v_MSSM[int(ntoysMSSM/2)]
 medianObs=v_Obs[int(hObs.GetEntries()/2)]
@@ -116,7 +120,6 @@ minus_one_sigma_bin=0
 plus_two_sigma_bin=0
 minus_two_sigma_bin=0
 for i in range(nbins) :
-    #print i
     help= hSM.Integral(1, i)/hSM.Integral()
     if help > 0.975 and plus_two_sigma_bin == 0 :
         plus_two_sigma_bin=i
@@ -144,12 +147,11 @@ tailMSSMplus1sigma =hMSSM.Integral(1,plus_one_sigma_bin)
 tailSMplus2sigma   =hSM.Integral  (1,plus_two_sigma_bin)
 tailMSSMplus2sigma =hMSSM.Integral(1,plus_two_sigma_bin)
 
-tailSMobs  =hSM.Integral  (1,hObs.FindBin(medianObs))
-tailMSSMobs=hMSSM.Integral(1,hObs.FindBin(medianObs))
-#tailSMobs  =hSM.Integral  (hObs.FindBin(medianObs),nbins)
-#tailMSSMobs=hMSSM.Integral(hObs.FindBin(medianObs),nbins)
+tailSMobs          =hSM.Integral  (1,hObs.FindBin(medianObs))
+tailMSSMobs        =hMSSM.Integral(1,hObs.FindBin(medianObs))
 
 if options.verbosity :
+    print "RESULT WITH BINNED HISTO"
     print "tailSMexp", tailSMexp, "  tailMSSMexp", tailMSSMexp, "  tailSMobs", tailSMobs, "  tailMSSMobs", tailMSSMobs
     print "-2 sigma separation power", tailMSSMminus2sigma/tailSMminus2sigma
     print "-1 sigma separation power", tailMSSMminus1sigma/tailSMminus1sigma
@@ -158,7 +160,54 @@ if options.verbosity :
     print "+2 sigma separation power", tailMSSMplus2sigma/tailSMplus2sigma
     print "Observed separation power", tailMSSMobs/tailSMobs
 
-#for mA-tanb plotting save everything in a root file
+
+### Rebinning needed for plotting and fitting
+hSM.Rebin(100)
+hMSSM.Rebin(100)
+
+### caculation of CLs with gaus fit to binned histo
+hSM.Fit("gaus")
+fitSM = ROOT.TF1(hSM.GetFunction("gaus"))
+chi2SM = fitSM.GetChisquare()
+if options.verbosity :
+    print "chi2 of hSM", chi2SM, "mean of fitSM", fitSM.GetParameter(1), "sigma of fitSM", fitSM.GetParameter(2)
+
+hMSSM.Fit("gaus")
+fitMSSM = ROOT.TF1(hMSSM.GetFunction("gaus"))
+chi2MSSM = fitMSSM.GetChisquare()
+if options.verbosity :
+    print "chi2 of hMSSM", chi2MSSM, "mean of fitMSSM", fitMSSM.GetParameter(1), "sigma of fitMSSM", fitMSSM.GetParameter(2)
+
+tailSMminus2sigma  =fitSM.Integral  (xlow-xlow/100,fitSM.GetParameter(1)-2*fitSM.GetParameter(2))
+tailMSSMminus2sigma=fitMSSM.Integral(xlow-xlow/100,fitSM.GetParameter(1)-2*fitSM.GetParameter(2))
+
+tailSMminus1sigma  =fitSM.Integral  (xlow-xlow/100,fitSM.GetParameter(1)-1*fitSM.GetParameter(2))
+tailMSSMminus1sigma=fitMSSM.Integral(xlow-xlow/100,fitSM.GetParameter(1)-1*fitSM.GetParameter(2))
+
+tailSMexp          =fitSM.Integral  (xlow-xlow/100,fitSM.GetParameter(1))
+tailMSSMexp        =fitMSSM.Integral(xlow-xlow/100,fitSM.GetParameter(1))
+
+tailSMplus1sigma   =fitSM.Integral  (xlow-xlow/100,fitSM.GetParameter(1)+1*fitSM.GetParameter(2))
+tailMSSMplus1sigma =fitMSSM.Integral(xlow-xlow/100,fitSM.GetParameter(1)+1*fitSM.GetParameter(2))
+
+tailSMplus2sigma   =fitSM.Integral  (xlow-xlow/100,fitSM.GetParameter(1)+2*fitSM.GetParameter(2))
+tailMSSMplus2sigma =fitMSSM.Integral(xlow-xlow/100,fitSM.GetParameter(1)+2*fitSM.GetParameter(2))
+
+tailSMobs          =fitSM.Integral  (xlow-xlow/100,medianObs)
+tailMSSMobs        =fitMSSM.Integral(xlow-xlow/100,medianObs)
+
+if options.verbosity :
+    print "RESULT WITH GAUS FITTED TO BINNED HISTO"
+    print "tailSMexp", tailSMexp, "  tailMSSMexp", tailMSSMexp, "  tailSMobs", tailSMobs, "  tailMSSMobs", tailMSSMobs
+    print "-2 sigma separation power", tailMSSMminus2sigma/tailSMminus2sigma
+    print "-1 sigma separation power", tailMSSMminus1sigma/tailSMminus1sigma
+    print "Expected separation power", tailMSSMexp/tailSMexp
+    print "+1 sigma separation power", tailMSSMplus1sigma/tailSMplus1sigma
+    print "+2 sigma separation power", tailMSSMplus2sigma/tailSMplus2sigma
+    print "Observed separation power", tailMSSMobs/tailSMobs
+
+
+###for mA-tanb plotting save everything in a root file
 f = ROOT.TFile("HypothesisTest_{TANB}.root".format(TANB=tanb), "recreate")
 t = ROOT.TTree("tree", "HypoTest")
 tanbeta    = n.zeros(1, dtype=float)
@@ -187,66 +236,64 @@ f.Write()
 f.Close()
 
 
-##Fancy plot
-gStyle.SetOptStat(0);
-c1 = ROOT.TCanvas("c1","c1",800,800);
-c1.cd();
-hSM.Rebin(100);
-hMSSM.Rebin(100);
-hSM.SetXTitle("S = -2 #times ln(L_{1}/L_{2})");
-hSM.SetYTitle("Generated experiments");
-hMSSM.SetXTitle("S = -2 #times ln(L_{1}/L_{2})");
-hMSSM.SetYTitle("Generated experiments");
-hSM.SetLineColor(kMagenta-3);
-hSM.SetFillColor(kMagenta-3);
-hSM.SetLineWidth(2);
-hSM.SetFillStyle(3605);
-hMSSM.SetLineColor(kBlue+1);
-hMSSM.SetFillColor(kBlue+1);
-hMSSM.SetLineWidth(2);
-hMSSM.SetFillStyle(3695);
-hObs.SetLineColor(kBlack);
-hObs.SetLineWidth(2);
-hSM.Draw();
-hMSSM.Draw("sames");
-hObs.Draw("sames"); 
+###Fancy plot
+gStyle.SetOptStat(0)
+c2 = ROOT.TCanvas("c2","c2",800,800)
+c2.cd()
+hSM.SetXTitle("S = -2 #times ln(L_{1}/L_{2})")
+hSM.SetYTitle("Generated experiments")
+hMSSM.SetXTitle("S = -2 #times ln(L_{1}/L_{2})")
+hMSSM.SetYTitle("Generated experiments")
+hSM.SetLineColor(kMagenta-3)
+hSM.SetFillColor(kMagenta-3)
+hSM.SetLineWidth(2)
+hSM.SetFillStyle(3605)
+hMSSM.SetLineColor(kBlue+1)
+hMSSM.SetFillColor(kBlue+1)
+hMSSM.SetLineWidth(2)
+hMSSM.SetFillStyle(3695)
+hObs.SetLineColor(kBlack)
+hObs.SetLineWidth(2)
+hSM.Draw()
+hMSSM.Draw("sames")
+hObs.Draw("sames")
 ##how to draw at the right position an arrow at the x-axis?
-##TArrow ar5(0.4,0.25,0.95,0.25,0.15,"|>");
-##ar5.SetAngle(60);
-##ar5.SetLineWidth(4);
-##ar5.SetLineColor(4);
-##ar5.SetFillColor(2);
+##TArrow ar5(0.4,0.25,0.95,0.25,0.15,"|>")
+##ar5.SetAngle(60)
+##ar5.SetLineWidth(4)
+##ar5.SetLineColor(4)
+##ar5.SetFillColor(2)
 ##ar5.Draw()
 
-
-leg = ROOT.TLegend(0.12,0.7,0.3,0.88);
-leg.SetFillColor(0);
-leg.SetBorderSize(0);
-leg.AddEntry(hSM,  "  SM","f");
-leg.AddEntry(hMSSM,"  MSSM","f");
-leg.Draw();
-
-
-pt = ROOT.TPaveText(0.16,0.95,0.45,0.99,"NDC");
-pt.SetFillColor(0);
-pt.AddText("CMS Expected");
-pt.SetBorderSize(0);
-pt2 = ROOT.TPaveText(0.45,0.95,0.89,0.99,"NDC");
-pt2.SetFillColor(0);
-pt2.AddText(" #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}; #sqrt{s} = 8 TeV, L = 19.7 fb^{-1}");
-pt2.SetBorderSize(0);
-pt3 = ROOT.TPaveText(0.45,0.90,0.74,0.94,"NDC");
-pt3.SetFillColor(0);
-pt3.AddText(" mA = {MASS} GeV,  tanb = {TANB}".format(MASS=staff.mh, TANB=tanb));
-pt3.SetBorderSize(0);
-pt.Draw();
-pt2.Draw();
-pt3.Draw();
-c1.SaveAs("sigsep_"+tanb+".png");
-c1.SaveAs("sigsep_"+tanb+".pdf");
-#c1.SaveAs("sigsep_"+tanb+".root");
+leg = ROOT.TLegend(0.12,0.7,0.3,0.88)
+leg.SetFillColor(0)
+leg.SetBorderSize(0)
+leg.AddEntry(hSM,  "  SM","f")
+leg.AddEntry(hMSSM,"  MSSM","f")
+leg.Draw()
 
 
+pt = ROOT.TPaveText(0.16,0.95,0.45,0.99,"NDC")
+pt.SetFillColor(0)
+pt.AddText("CMS Private")
+pt.SetBorderSize(0)
+pt2 = ROOT.TPaveText(0.45,0.95,0.89,0.99,"NDC")
+pt2.SetFillColor(0)
+pt2.AddText(" #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}; #sqrt{s} = 8 TeV, L = 19.7 fb^{-1}")
+pt2.SetBorderSize(0)
+pt3 = ROOT.TPaveText(0.45,0.90,0.74,0.94,"NDC")
+pt3.SetFillColor(0)
+pt3.AddText(" mA = {MASS} GeV,  tanb = {TANB}".format(MASS=staff.mh, TANB=tanb))
+pt3.SetBorderSize(0)
+pt.Draw()
+pt2.Draw()
+pt3.Draw()
+c2.SaveAs("sigsep_"+tanb+".png")
+c2.SaveAs("sigsep_"+tanb+".pdf")
+#c1.SaveAs("sigsep_"+tanb+".root")
+
+fitSM.Delete()
+fitMSSM.Delete()
 
 
 
