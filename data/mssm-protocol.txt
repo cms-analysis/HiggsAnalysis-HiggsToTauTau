@@ -57,7 +57,7 @@ lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --model [mhmodm,mhmodp
 lxb: submit.py --tanb+  LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
 lxq: submit.py --tanb+  LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_cpu=48:00:00 -j y -o /dev/null" --options='--multi-core=4'
 ## plotting
-plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb.py LIMITS-yymmdd-mssm/bbb[-asimov] [expectedOnly=1]
+plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-[mhmax,mhmodm,mhmodp,lowmH].py LIMITS-yymmdd-mssm/bbb[-asimov] [expectedOnly=1]
 ## comparison plots (per channel)
 .x HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C+("limits_mA-tanb.root", "mm,em,tt,et,mt,cmb", true, false, "mssm-tanb", 0., 60., false, "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV", true, false)
 ## comparison plots (per category)

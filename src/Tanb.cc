@@ -42,9 +42,9 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   //different MSSM scenarios
   std::string extralabel_ = "";
   if(theory_=="MSSM m_{h}^{max} scenario") extralabel_= "mhmax-";
-  if(theory_=="MSSM m_{h}^{modm} scenario") extralabel_= "mhmodm-";
-  if(theory_=="MSSM m_{h}^{modp} scenario") extralabel_= "mhmodp-";
-  if(theory_=="MSSM low m_{H} scenario") extralabel_= "mhmodp-";
+  if(theory_=="MSSM m_{h}^{mod-} scenario") extralabel_= "mhmodm-";
+  if(theory_=="MSSM m_{h}^{mod+} scenario") extralabel_= "mhmodp-";
+  if(theory_=="MSSM low m_{H} scenario") extralabel_= "lowmH-";
 
 
   // set up styles
