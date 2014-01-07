@@ -91,10 +91,10 @@ for chn in config.channels:
 
 ## postfix pattern for input files
 patterns = {
-    'no-bbb'         : '',
-    'bbb'            : '',
-    'no-bbb:hww-sig' : '',
-    'bbb:hww-sig'    : '',
+    'no-bbb'         : '-hcg',
+    'bbb'            : '-hcg',
+    'no-bbb:hww-sig' : '-hcg',
+    'bbb:hww-sig'    : '-hcg',
     }
 if options.mvis: 
     patterns = {
@@ -237,7 +237,7 @@ if options.update_setup :
             for ana in analyses :
                 pattern = ''
                 if ana in patterns.keys() :
-                    pattern = patterns[ana] if (options.rebin_morph and finebin_opt[chn]) else ''
+                    pattern = patterns[ana]
                 source="{CMSSW_BASE}/src/auxiliaries/shapes/{DIR}/{CHN}.inputs-sm-{PER}{PATTERN}.root".format(
                     CMSSW_BASE=cmssw_base,
                     DIR=directories[chn][per],
@@ -319,7 +319,7 @@ if options.update_setup :
                     process = RescaleSamples(file, ['VH' , 'WH' , 'ZH'], masspoints)
                     process.rescale()
                 else:
-                    process = RescaleSamples(file, ['ggH', 'qqH', 'VH'], masspoints)
+                    process = RescaleSamples(file, ['ggH', 'qqH', 'VH', 'WH', 'ZH'], masspoints)
                     process.rescale()
     if 'em' in config.channels :
         print "##"
@@ -437,7 +437,7 @@ if options.update_setup :
                         for category in config.categories[chn][period]:
                             filename="{DIR}/{TARGET}/{CHN}/cgs-sm-{PERIOD}-0{CATEGORY}.conf".format(DIR=dir, TARGET=ana[ana.find(':')+1:], CHN=chn, PERIOD=period, CATEGORY=category)
                             print 'processing file:', filename
-                            cgs_adaptor.cgs_processes(filename,['ggH','qqH','VH','ggH_hww','qqH_hww'],None,None,['ggH_hww125','qqH_hww125'])
+                            cgs_adaptor.cgs_processes(filename,['ggH','qqH','WH','ZH','ggH_hww','qqH_hww'],None,None,['ggH_hww125','qqH_hww125'])
                     for file in glob.glob("{DIR}/{ANA}/{CHN}/unc-sm-*.vals".format(DIR=dir, ANA=ana[ana.find(':')+1:], CHN=chn)) :
                         if chn in ['ee','mm'] :
                             pass
@@ -494,7 +494,7 @@ if options.update_setup :
                                                 template_morphing.run()
                             else:
                                 for file in glob.glob("{SETUP}/{CHN}/htt_{CHN}.inputs-sm-{PER}*.root".format(SETUP=setuppath,CHN=chn, PER=per, CAT=cat)):
-                                    for proc in ['ggH','qqH','VH']:
+                                    for proc in ['ggH','qqH','WH','ZH']:
                                         template_morphing = Morph(file, get_channel_dirs(chn,"0"+cat,per)[0], proc+'{MASS}', ','.join(get_shape_systematics(setuppath,per,chn,"0"+cat,proc)), masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '', finebin_opt[chn]) 
                                         template_morphing.run()
                                     if chn == 'em' and any('hww-sig' in ana for ana in analyses):
