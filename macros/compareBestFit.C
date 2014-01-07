@@ -31,7 +31,7 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("tt"        )) title = std::string("#tau_{h}#tau_{h}");
   if(channel==std::string("mm"        )) title = std::string("#mu#mu");
   if(channel==std::string("ee"        )) title = std::string("ee");
-  if(channel==std::string("vhtt"      )) title = std::string("ll+LL\' + l+LL\'");
+  if(channel==std::string("vhtt"      )) title = std::string("#it{ll}+#it{LL}\' + #it{l}+#it{L}#tau_{h}");
   if(channel==std::string("htt"       )) title = std::string("H#rightarrow#tau#tau");
   if(channel==std::string("cmb"       )) title = std::string("H#rightarrow#tau#tau");
   if(channel==std::string("0jet"      )) title = std::string("0-jet");
