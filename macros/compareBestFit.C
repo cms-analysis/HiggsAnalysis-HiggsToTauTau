@@ -88,7 +88,7 @@ void compareBestFit(const char* filename="test.root", const char* channelstr="bo
   TFile* inputFile = new TFile(filename); if(inputFile->IsZombie()){ std::cout << "ERROR:: file: " << filename << " does not exist.\n"; }
 
   if(std::string(type).find("sm")!=std::string::npos){
-    label="CMS, up to 4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV";
+    label="CMS, 4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV";
   }
 
   /// prepare input parameters
