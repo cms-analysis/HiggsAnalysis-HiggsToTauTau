@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string("CMS H#rightarrow#tau#tau, up to 4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV"),
+    dataset = cms.string("CMS H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV"),
     ## x-axis title
     xaxis = cms.string("#kappa_{V}"),
     ## x-axis title
@@ -35,6 +35,6 @@ layout = cms.PSet(
     drawSM = cms.bool(True),
     ## max for plotting (for fine tuning)
     xmaxs = cms.VPSet(
-    cms.PSet(mass = cms.double( 125.), max = cms.double(-1.)),
+    cms.PSet(mass = cms.double( 125.), max = cms.double(2.)),
     ),    
 )

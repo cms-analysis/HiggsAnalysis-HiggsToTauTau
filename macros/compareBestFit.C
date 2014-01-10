@@ -31,10 +31,11 @@ std::string legendEntry(const std::string& channel){
   if(channel==std::string("tt"        )) title = std::string("#tau_{h}#tau_{h}");
   if(channel==std::string("mm"        )) title = std::string("#mu#mu");
   if(channel==std::string("ee"        )) title = std::string("ee");
+  if(channel==std::string("vhtt"      )) title = std::string("#it{ll}+#it{LL}\' + #it{l}+#it{L}#tau_{h}");
   if(channel==std::string("vhtt"      )) title = std::string("ll+LL\' + l+LL\'");
-  if(channel==std::string("vhtt_zh"      )) title = std::string("ll + LL\'");
-  if(channel==std::string("vhtt_wh"      )) title = std::string("l + l\'#tau_{h}");
-  if(channel==std::string("vhtt_wh_had"      )) title = std::string("l + #tau_{h}#tau_{h}");
+  if(channel==std::string("vhtt_zh"      )) title = std::string("#it{ll} + #it{LL}\'");
+  if(channel==std::string("vhtt_wh"      )) title = std::string("#it{l} + #it{l}\'#tau_{h}");
+  if(channel==std::string("vhtt_wh_had"      )) title = std::string("#it{l} + #tau_{h}#tau_{h}");
   if(channel==std::string("htt"       )) title = std::string("H#rightarrow#tau#tau");
   if(channel==std::string("cmb"       )) title = std::string("H#rightarrow#tau#tau");
   if(channel==std::string("0jet"      )) title = std::string("0-jet");
@@ -91,7 +92,7 @@ void compareBestFit(const char* filename="test.root", const char* channelstr="bo
   TFile* inputFile = new TFile(filename); if(inputFile->IsZombie()){ std::cout << "ERROR:: file: " << filename << " does not exist.\n"; }
 
   if(std::string(type).find("sm")!=std::string::npos){
-    label="CMS, up to 4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV";
+    label="CMS, 4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV";
   }
 
   /// prepare input parameters
