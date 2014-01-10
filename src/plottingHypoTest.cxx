@@ -12,7 +12,7 @@
 #include <iostream>
 
 void
-plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false)
+plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool plotOuterBand=true)
 {
   // set up styles
   canv.cd();
@@ -24,10 +24,10 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* inn
   // setup the CMS colors
   TColor* obs = new TColor(1501, 0.463, 0.867, 0.957);
   if(transparent) obs->SetAlpha(0.5);
-  //TColor* twosigma = gROOT->GetColor(kGray);
-  //if(transparent) twosigma->SetAlpha(0.5);
-  //TColor* onesigma = gROOT->GetColor(kGray+1);
-  //if(transparent) onesigma->SetAlpha(0.5);
+  TColor* twosigma = gROOT->GetColor(kGray);
+  if(transparent) twosigma->SetAlpha(0.5);
+  TColor* onesigma = gROOT->GetColor(kGray+1);
+  if(transparent) onesigma->SetAlpha(0.5);
   TColor* ph = gROOT->GetColor(kYellow);
   ph->SetAlpha(0.0);
 
@@ -59,7 +59,8 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* inn
     hr->GetXaxis()->SetLabelSize(0.040);
   }
 
-  if(observed){
+  if(!expectedOnly){
+  //if(observed){
     plain->SetLineColor(ph->GetNumber());
     plain->SetFillStyle(1001.);
     plain->SetFillColor(obs->GetNumber());
@@ -69,25 +70,27 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* inn
     observed->SetMarkerColor(kBlack);
     observed->SetLineWidth(3.);
   }
-  /*
-  if(outerBand){
+  
+  if(plotOuterBand){
+    //if(outerBand){
     outerBand->SetFillStyle(1001);
     outerBand->SetFillColor(twosigma->GetNumber()); //kGray
     outerBand->SetLineColor(twosigma->GetNumber());
-    //outerBand->Draw("3same");
+    outerBand->Draw("3same");
   }
   
   innerBand->SetFillStyle(1001);
   innerBand->SetFillColor(onesigma->GetNumber()); //kGray+1
   innerBand->SetLineColor(onesigma->GetNumber());
   innerBand->Draw("3same");
-  */
+  
   expected->SetLineColor(kGray+2);
   expected->SetLineWidth(3);
   expected->SetLineStyle(1);
   expected->Draw("Lsame");
 
-  if(observed){;
+  if(!expectedOnly){
+    //if(observed){
     if(transparent) plain->Draw("Fsame");
     observed->Draw("Lsame");
   }
@@ -139,15 +142,17 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* inn
   leg->SetFillColor (kWhite);
   leg->SetLineColor (kBlack);
   leg->SetHeader("95% CL Excluded:");
-  if(observed){ 
+  if(!expectedOnly){ 
+    //if(observed){ 
     observed->SetFillColor(obs->GetNumber()); 
     leg->AddEntry(observed, "observed", "FL");
   }
   leg->AddEntry(expected, "expected", "L");
-  //leg->AddEntry(innerBand, "#pm 1#sigma expected","F");
+  leg->AddEntry(innerBand, "#pm 1#sigma expected","F");
+  if(plotOuterBand){ 
   //if(outerBand){ 
-  //  leg->AddEntry(outerBand, "#pm 2#sigma expected", "F"); 
-  //}
+    leg->AddEntry(outerBand, "#pm 2#sigma expected", "F"); 
+  }
   leg->Draw("same");
   //canv.RedrawAxis("g");
   canv.RedrawAxis();

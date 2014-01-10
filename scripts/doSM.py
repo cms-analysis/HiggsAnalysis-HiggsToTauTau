@@ -49,6 +49,8 @@ parser.add_option("-c", "--config", dest="config", default="",
                   help="Additional configuration file to be used for the setup [Default: \"\"]")
 parser.add_option("--interpolate", dest="interpolate", default="",
                   help="Step size for interpolation of masspoints between the given arguments. [Default: \"\"]")
+parser.add_option("--finebin-morph", dest="rebin_morph", default=False, action="store_true",
+                  help="Option to perform morphing for interpolation on fine binned templates. [Default: False]")
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -101,6 +103,13 @@ if options.mvis:
         'no-bbb:hww-sig' : '-mvis',
         'bbb:hww-sig'    : '-mvis',
         }
+if options.rebin_morph:
+    patterns = {
+        'no-bbb'         : '-fbsig',
+        'bbb'            : '-fbsig',
+        'no-bbb:hww-sig' : '-fbsig',
+        'bbb:hww-sig'    : '-fbsig',
+        }
 
 if options.update_all :
     options.update_setup     = True
@@ -109,6 +118,28 @@ if options.update_all :
 
 masspoints = parseArgs(args)
 masspoints = [str(points) for points in masspoints]
+
+# options to run interpolation on fine binned templates for certain channels
+finebin_opt = {
+    'et'       : False,
+    'em'       : False,
+    'mt'       : False,
+    'tt'       : False,
+    'ee'       : False,
+    'mm'       : False,
+    'vhtt'     : False,
+    }
+
+if options.rebin_morph:
+    finebin_opt = {
+        'et'       : True,
+        'em'       : True,
+        'mt'       : True,
+        'tt'       : True,
+        'ee'       : False,
+        'mm'       : False,
+        'vhtt'     : False,
+        }
 
 print "# --------------------------------------------------------------------------------------"
 print "# doSM.py "
@@ -129,6 +160,7 @@ print "# --add-mutau-soft          :", options.add_mutau_soft
 print "# --blind-datacards         :", options.blind_datacards
 print "# --extra-templates         :", options.extra_templates
 print "# --interpolate             :", options.interpolate
+print "# --finebin-morph           :", options.rebin_morph
 print "# --------------------------------------------------------------------------------------"
 for chn in config.channels:
     print "# --inputs-"+chn+"               :", config.inputs[chn]
@@ -205,7 +237,7 @@ if options.update_setup :
             for ana in analyses :
                 pattern = ''
                 if ana in patterns.keys() :
-                    pattern = patterns[ana]
+                    pattern = patterns[ana] if (options.rebin_morph and finebin_opt[chn]) else ''
                 source="{CMSSW_BASE}/src/auxiliaries/shapes/{DIR}/{CHN}.inputs-sm-{PER}{PATTERN}.root".format(
                     CMSSW_BASE=cmssw_base,
                     DIR=directories[chn][per],
@@ -241,7 +273,7 @@ if options.update_setup :
             if directories['vhtt'][per] == 'None' :
                 continue
             for ana in analyses :
-                pattern = patterns[ana]
+                pattern = patterns[ana] if (options.rebin_morph and finebin_opt['vhtt']) else ''
                 if not os.path.exists("{SETUP}/vhtt/vhtt.inputs-sm-{PER}{PATTERN}.root".format(SETUP=setup, PER=per, PATTERN=pattern)):
                     os.system("hadd {SETUP}/vhtt/vhtt.inputs-sm-{PER}{PATTERN}.root {SETUP}/vhtt/vhtt_*.inputs-sm-{PER}{PATTERN}.root".format(
                         SETUP=setup,
@@ -261,14 +293,22 @@ if options.update_setup :
     ## apply horizontal morphing for processes, which have not been simulated for 7TeV: ggH_hww145, qqH_hww145
     if any('hww-sig' in ana for ana in analyses):
         for file in glob.glob("{SETUP}/em/htt_em.inputs-sm-7TeV*.root".format(SETUP=setup)) :
-            template_morphing = Morph(file, 'emu_0jet_low,emu_1jet_low,emu_vbf_loose', 'ggH_hww{MASS}', 'QCDscale_ggH1in,CMS_scale_e_7TeV', '140,150', 5, True,'', '') 
+            template_morphing = Morph(file, 'emu_0jet_low,emu_1jet_low,emu_vbf_loose', 'ggH_hww{MASS}', 'QCDscale_ggH1in,CMS_scale_e_7TeV', '140,150', 5, True,'', '', False) 
             template_morphing.run()
-            template_morphing = Morph(file, 'emu_0jet_high,emu_1jet_high', 'ggH_hww{MASS}', 'QCDscale_ggH1in,CMS_scale_e_highpt_7TeV', '140,150', 5, True,'', '') 
+            template_morphing = Morph(file, 'emu_0jet_high,emu_1jet_high', 'ggH_hww{MASS}', 'QCDscale_ggH1in,CMS_scale_e_highpt_7TeV', '140,150', 5, True,'', '', False) 
             template_morphing.run()
-            template_morphing = Morph(file, 'emu_0jet_low,emu_1jet_low,emu_vbf_loose', 'qqH_hww{MASS}', 'CMS_scale_e_7TeV', '140,150', 5, True,'', '') 
+            template_morphing = Morph(file, 'emu_0jet_low,emu_1jet_low,emu_vbf_loose', 'qqH_hww{MASS}', 'CMS_scale_e_7TeV', '140,150', 5, True,'', '', False) 
             template_morphing.run()
-            template_morphing = Morph(file, 'emu_0jet_high,emu_1jet_high', 'qqH_hww{MASS}', 'CMS_scale_e_highpt_7TeV', '140,150', 5, True,'', '') 
+            template_morphing = Morph(file, 'emu_0jet_high,emu_1jet_high', 'qqH_hww{MASS}', 'CMS_scale_e_highpt_7TeV', '140,150', 5, True,'', '', False) 
             template_morphing.run()
+        for per in config.periods:
+            for cat in config.categories['vhtt'][per]:
+                for file in glob.glob("{SETUP}/{CHN}/vhtt.inputs-sm-{PER}*.root".format(SETUP=setup,CHN=chn, PER=per, CAT=cat)):
+                    if cat in ['0','1']:
+                        proc = 'WH_hww'
+                        for dir in get_channel_dirs(chn,"0"+cat,per):
+                            template_morphing = Morph(file, dir, proc+'{MASS}', ','.join(get_shape_systematics(setup,per,'vhtt',"0"+cat,proc,dir)), '135,140', 5, True,'145', '', False) 
+                            template_morphing.run()
     ## scale to SM cross section (main processes and all channels but those listed in do_not_scales)
     for chn in config.channels :
         for file in glob.glob("{SETUP}/{CHN}/*-sm-*.root".format(SETUP=setup, CHN=chn)) :
@@ -327,39 +367,6 @@ if options.update_setup :
                         INPUTFILE=file,
                         PROCESS=proc+'125'
                         ))
-    ## if requested apply horizontal morphing for processes to get templates for intermediate masses
-    if options.interpolate:
-        for i in range(len(masspoints)-1):
-            for chn in config.channels:
-                for per in config.periods:
-                    for cat in config.categories[chn][per]:
-                        if chn == 'vhtt':
-                            for file in glob.glob("{SETUP}/{CHN}/vhtt.inputs-sm-{PER}*.root".format(SETUP=setup,CHN=chn, PER=per, CAT=cat)):
-                                for proc in ['WH','ZH','VH']:
-                                    template_morphing = Morph(file, get_channel_dirs(chn,"0"+cat,per)[0], proc+'{MASS}', ','.join(get_shape_systematics(setup,per,chn,"0"+cat,proc)), masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '') 
-                                    template_morphing.run()
-                        else:
-                            for file in glob.glob("{SETUP}/{CHN}/htt_{CHN}.inputs-sm-{PER}*.root".format(SETUP=setup,CHN=chn, PER=per, CAT=cat)):
-                                for proc in ['ggH','qqH','VH']:
-                                    template_morphing = Morph(file, get_channel_dirs(chn,"0"+cat,per)[0], proc+'{MASS}', ','.join(get_shape_systematics(setup,per,chn,"0"+cat,proc)), masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '') 
-                                    template_morphing.run()
-                                if chn == 'em' :
-                                    ## needed to fudge in morphing for uncertainties for ggH_hww/qqH_hww for em
-                                    ## these are still treated as BG at this point even if they might turn  into
-                                    ## signal later on.
-                                    em_uncerts = {
-                                        '0' : 'CMS_scale_e_',
-                                        '1' : 'CMS_scale_e_highpt_', 
-                                        '2' : 'CMS_scale_e_',
-                                        '3' : 'CMS_scale_e_highpt_',
-                                        '4' : 'CMS_scale_e_',
-                                        '5' : 'CMS_scale_e_'}
-                                    if any('hww-sig' in ana for ana in analyses):
-                                        for proc in ['ggH_hww','qqH_hww']:
-                                            template_morphing = Morph(file, get_channel_dirs(chn,"0"+cat,per)[0], proc+'{MASS}', em_uncerts[cat]+per, masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '') 
-                                            template_morphing.run()
-            ## add the new points to the masses array
-            masses.append(masspoints[i]+'-'+masspoints[i+1]+':'+options.interpolate)
     ## set up directory structure
     dir = "{CMSSW_BASE}/src/setups{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
     if os.path.exists(dir) :
@@ -456,6 +463,46 @@ if options.update_setup :
                             cgs_adaptor.cgs_processes(filename,['ZH_htt','ZH_hww'],None,None,['ZH_hww125'])
                     for file in glob.glob("{DIR}/{ANA}/{CHN}/unc-sm-*.vals".format(DIR=dir, ANA=ana[ana.find(':')+1:], CHN=chn)) :
                         os.system("perl -pi -e 's/ZH_hww125/ZH_hww/g' {FILE}".format(FILE=file))
+        ## if requested apply horizontal morphing for processes to get templates for intermediate masses
+        if options.interpolate:
+            for i in range(len(masspoints)-1):
+                for chn in config.channels:
+                    for per in config.periods:
+                        for cat in config.categories[chn][per]:
+                            setuppath=dir+"/"+ana[ana.find(':')+1:]
+                            if chn == 'vhtt':
+                                for file in glob.glob("{SETUP}/{CHN}/vhtt.inputs-sm-{PER}*.root".format(SETUP=setuppath, CHN=chn, PER=per, CAT=cat)):
+                                    if cat in ['0','1']:
+                                        proc = 'WH'
+                                    if cat in ['3','4','5','6']:
+                                        proc = 'ZH_htt'
+                                    if cat in ['7','8']:
+                                        proc = 'WH_htt'
+                                    for channel_dir in get_channel_dirs(chn,"0"+cat,per):
+                                        template_morphing = Morph(file, channel_dir, proc+'{MASS}', ','.join(get_shape_systematics(setuppath,per,chn,"0"+cat,proc,channel_dir)), masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '', finebin_opt[chn]) 
+                                        template_morphing.run()
+                                    if any('hww-sig' in ana for ana in analyses):
+                                        if cat in ['0','1']:
+                                            proc = 'WH_hww'
+                                            for channel_dir in get_channel_dirs(chn,"0"+cat,per):
+                                                template_morphing = Morph(file, channel_dir, proc+'{MASS}', ','.join(get_shape_systematics(setuppath,per,chn,"0"+cat,proc,channel_dir)), masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '', False) 
+                                                template_morphing.run()
+                                        if cat in ['3','4','5','6']:
+                                            proc = 'ZH_hww'
+                                            for channel_dir in get_channel_dirs(chn,"0"+cat,per):
+                                                template_morphing = Morph(file, channel_dir, proc+'{MASS}', ','.join(get_shape_systematics(setuppath,per,chn,"0"+cat,proc,channel_dir)), masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '', False) 
+                                                template_morphing.run()
+                            else:
+                                for file in glob.glob("{SETUP}/{CHN}/htt_{CHN}.inputs-sm-{PER}*.root".format(SETUP=setuppath,CHN=chn, PER=per, CAT=cat)):
+                                    for proc in ['ggH','qqH','VH']:
+                                        template_morphing = Morph(file, get_channel_dirs(chn,"0"+cat,per)[0], proc+'{MASS}', ','.join(get_shape_systematics(setuppath,per,chn,"0"+cat,proc)), masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '', finebin_opt[chn]) 
+                                        template_morphing.run()
+                                    if chn == 'em' and any('hww-sig' in ana for ana in analyses):
+                                        for proc in ['ggH_hww','qqH_hww']:
+                                            template_morphing = Morph(file, get_channel_dirs(chn,"0"+cat,per)[0], proc+'{MASS}', ','.join(get_shape_systematics(setuppath,per,chn,"0"+cat,proc)), masspoints[i]+','+masspoints[i+1], options.interpolate, True,'', '', False) 
+                                            template_morphing.run()
+                ## add the new points to the masses array
+                masses.append(masspoints[i]+'-'+masspoints[i+1]+':'+options.interpolate)
 
 if options.update_aux :
     print "##"

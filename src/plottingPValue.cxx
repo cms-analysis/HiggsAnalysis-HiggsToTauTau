@@ -47,6 +47,7 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   // format y axis
   hr->SetYTitle(yaxis.c_str());
   hr->GetYaxis()->SetLabelFont(62);
+  hr->GetYaxis()->SetTitleFont(62);
   hr->GetYaxis()->SetTitleSize(0.05);
   hr->GetYaxis()->SetTitleOffset(1.30);
   hr->GetYaxis()->SetLabelSize(0.045);
@@ -55,7 +56,7 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   if(outerBand){
     outerBand->SetLineWidth(1.);
     outerBand->SetLineColor(kBlack);
-    outerBand->SetFillColor(kYellow);
+    outerBand->SetFillColor(kRed-10);
     if(FIRST){
       FIRST = false;
       outerBand->Draw("3");
@@ -68,7 +69,7 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   if(innerBand){
     innerBand->SetLineWidth(1.);
     innerBand->SetLineColor(kBlack);
-    innerBand->SetFillColor(kGreen);
+    innerBand->SetFillColor(kRed-9);
     if(FIRST){
       FIRST = false;
       innerBand->Draw("3");
@@ -81,12 +82,13 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   expected->SetLineColor(kBlue);
   expected->SetLineWidth(3.);
   expected->SetLineStyle(11);
-  if(FIRST){
+  if(not(innerBand && outerBand)){ if(FIRST){
     FIRST = false;
     expected->Draw("L");
   }
   else{
     expected->Draw("Lsame");
+  }
   }
 
   observed->SetMarkerStyle(20);
@@ -158,23 +160,34 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   sigma1->SetTextColor( kRed );
   sigma1->SetTextFont (   62 );
   sigma1->AddText("1#sigma");
-  sigma1->Draw("same"); 
+  sigma1->Draw("same");
+
+  /// Channel label
+  TPaveText* channels  = new TPaveText(0.2, 0.13, 0.40, 0.27, "NDC");
+  channels->SetBorderSize(   0 );
+  channels->SetFillStyle(    0 );
+  channels->SetTextAlign(   12 );
+  channels->SetTextSize ( 0.045 );
+  channels->SetTextColor(    1 );
+  channels->SetTextFont (   62 );
+//  channels->AddText("e#mu, e#tau_{h}, #mu#tau_{h}, #tau_{h}#tau_{h}, #mu#mu, ee");
+//  channels->Draw("same");
 
  /// add the proper legend
   TLegend* leg;
   if(innerBand && outerBand){
-    leg = new TLegend(0.18, 0.16, 0.95, 0.26);
-    leg->SetNColumns(2);
+    leg = new TLegend(0.18, 0.16, 0.75, 0.28);
+    //leg->SetNColumns(2);
   }
-  else { leg = new TLegend(legendOnRight ? 0.53 : 0.18, 0.30, legendOnRight ? 0.95 : 0.40, 0.45); }
+  else { leg = new TLegend(legendOnRight ? 0.40 : 0.18, 0.28, legendOnRight ? 0.90 : 0.40, 0.47); }
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 1001 );
   leg->SetFillColor (kWhite);
   //leg->SetHeader("Local p-value");
-  leg->AddEntry( observed, "p-value observed",  "PL");
-  if(innerBand){ leg->AddEntry( innerBand, "#pm 1#sigma expected",  "F" ); }
-  leg->AddEntry( expected, "expected for SM Higgs",  "L" );
-  if(outerBand){ leg->AddEntry( outerBand, "#pm 2#sigma expected",  "F" ); }
+  leg->AddEntry( observed, "p-value Observed",  "PL");
+  if(not(innerBand && outerBand)){ leg->AddEntry( expected, "Expected for SM H(m_{H})",  "L" );}
+  if(innerBand){ leg->AddEntry( innerBand, "#pm 1#sigma Expected for SM H(125 GeV)",  "F" ); }
+  if(outerBand){ leg->AddEntry( outerBand, "#pm 2#sigma Expected for SM H(125 GeV)",  "F" ); }
   leg->Draw("same");
   //canv.RedrawAxis("g");
   canv.RedrawAxis();

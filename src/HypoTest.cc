@@ -1,8 +1,8 @@
-#include "HiggsAnalysis/HiggsToTauTau/interface/PlotLimits.h"
+ #include "HiggsAnalysis/HiggsToTauTau/interface/PlotLimits.h"
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false);
+void plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool plotOuterBand=true);
 
 struct myclass {
   bool operator() (int i,int j) { return (i<j);}
@@ -14,8 +14,9 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
   //different MSSM scenarios
   std::string extralabel_ = "";
   if(theory_=="MSSM m_{h}^{max} scenario") extralabel_= "mhmax-";
-  if(theory_=="MSSM m_{h}^{modm} scenario") extralabel_= "mhmodm-";
-  if(theory_=="MSSM m_{h}^{modp} scenario") extralabel_= "mhmodp-";
+  if(theory_=="MSSM m_{h}^{mod+} scenario") extralabel_= "mhmodm-";
+  if(theory_=="MSSM m_{h}^{mod-} scenario") extralabel_= "mhmodp-";
+  if(theory_=="MSSM low m_{H} scenario") extralabel_= "lowmH-";
   //lowmH
 
   // set up styles
@@ -26,6 +27,8 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
   TGraphAsymmErrors* outerBand = 0;
   TGraph* observed = 0;
 
+  innerBand = new TGraphAsymmErrors();
+  outerBand = new TGraphAsymmErrors();
   expected = new TGraph();
   observed = new TGraph();
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
@@ -37,27 +40,75 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
 
     TFile* file_ = TFile::Open(fullpath); if(!file_){ std::cout << "--> TFile is corrupt: skipping masspoint." << std::endl; continue; }
     TTree* limit = (TTree*) file_->Get("tree"); if(!limit){ std::cout << "--> TTree is corrupt: skipping masspoint." << std::endl; continue; }
-    double tanb, exp, obs;
-    //TH2F* HT = new TH2F("", "", nbins, xmin, xmax, nbins, ymin, ymax);
+    double tanb, exp, obs, plus1sigma, minus1sigma, plus2sigma, minus2sigma;
     limit->SetBranchAddress("tanb", &tanb );  
-    limit->SetBranchAddress("expected", &exp);  
+    limit->SetBranchAddress("minus2sigma", &minus2sigma);
+    limit->SetBranchAddress("minus1sigma", &minus1sigma);
+    limit->SetBranchAddress("expected", &exp);
+    limit->SetBranchAddress("plus1sigma", &plus1sigma); 
+    limit->SetBranchAddress("plus2sigma", &plus2sigma);  
     limit->SetBranchAddress("observed", &obs);  
     int nevent = limit->GetEntries();   
-    //Drawing variable pz with no graphics option.
-    //variable pz stored in array fV1 (see TTree::Draw)
+    //Drawing variable tanb with no graphics option.
+    //variable tanb stored in array fV1 (see TTree::Draw)
     limit->Draw("tanb","","goff");
     Int_t *index = new Int_t[nevent];
     //sort array containing tanb in decreasing order
     //The array index contains the entry numbers in decreasing order in respect to tanb
     TMath::Sort(nevent,limit->GetV1(),index);
+    Int_t excluded_idx_minus2sigma=-999;
+    Int_t excluded_idx_minus1sigma=-999;
     Int_t excluded_idx_exp=-999; 
+    Int_t excluded_idx_plus1sigma=-999;
+    Int_t excluded_idx_plus2sigma=-999;
     Int_t excluded_idx_obs=-999;
+    Int_t notexcluded_idx_minus2sigma=-999;
+    Int_t notexcluded_idx_minus1sigma=-999;
     Int_t notexcluded_idx_exp=-999; 
+    Int_t notexcluded_idx_plus1sigma=-999;
+    Int_t notexcluded_idx_plus2sigma=-999;
     Int_t notexcluded_idx_obs=-999;
+    double highminus2sigma=0, highminus1sigma=0, highexpected=0, highplus1sigma=0, highplus2sigma=0, highobserved=0;
+    bool not_minus2sigma_excluded_bool=true, not_minus1sigma_excluded_bool=true, not_exp_excluded_bool=true, not_plus1sigma_excluded_bool=true, not_plus2sigma_excluded_bool=true, not_obs_excluded_bool=true;
     for(int i=0; i<nevent; ++i){
       limit->GetEvent(index[i]);
-      //std::cout<< index[i] << " " << tanb << " " << exp << " " << obs << " " << std::endl;
-      if(exp < 0.05) {
+      //std::cout<< index[i] << " " << tanb << " " << minus2sigma << " " << minus1sigma << " " << exp << " " << plus1sigma  << " " << plus2sigma << " " << obs << " " << std::endl;
+      if(i==0){
+	highminus2sigma=(minus2sigma+0.95)*tanb;
+	highminus1sigma=(minus1sigma+0.95)*tanb;
+	highexpected   =(exp+0.95        )*tanb;
+	highplus1sigma =(plus1sigma+0.95 )*tanb;
+	highplus2sigma =(plus2sigma+0.95 )*tanb;
+	highobserved   =(obs+0.95        )*tanb;		  
+	//std::cout<< tanb << " " << highminus2sigma << " " << highminus1sigma << " " << highexpected  << " " << highplus1sigma << " " << highplus2sigma << " " << highobserved << std::endl;	
+      }
+
+      // -2sigma
+      if(minus2sigma < 0.05 && not_minus2sigma_excluded_bool) {
+	excluded_idx_minus2sigma = index[i]; 
+	if(index[i+1]<nevent){
+	  notexcluded_idx_minus2sigma = index[i+1]; // case in between
+	}
+	else{
+	 notexcluded_idx_minus2sigma = index[i];  // case all excluded
+	}
+      }
+      else not_minus2sigma_excluded_bool=false;
+
+      // -1sigma
+      if(minus1sigma < 0.05 && not_minus1sigma_excluded_bool) {
+	excluded_idx_minus1sigma = index[i]; 
+	if(index[i+1]<nevent){
+	  notexcluded_idx_minus1sigma = index[i+1]; // case in between
+	}
+	else{
+	 notexcluded_idx_minus1sigma = index[i];  // case all excluded
+	}
+      }
+      else not_minus1sigma_excluded_bool=false;
+
+      // exp
+      if(exp < 0.05 && not_exp_excluded_bool) {
 	excluded_idx_exp = index[i]; 
 	if(index[i+1]<nevent){
 	  notexcluded_idx_exp = index[i+1]; // case in between
@@ -66,7 +117,34 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
 	 notexcluded_idx_exp = index[i];  // case all excluded
 	}
       }
-      if(obs < 0.05) {
+      else not_exp_excluded_bool=false;
+
+      // +1sigma
+      if(plus1sigma < 0.05 && not_plus1sigma_excluded_bool) {
+	excluded_idx_plus1sigma = index[i]; 
+	if(index[i+1]<nevent){
+	  notexcluded_idx_plus1sigma = index[i+1]; // case in between
+	}
+	else{
+	 notexcluded_idx_plus1sigma = index[i];  // case all excluded
+	}
+      }
+      else not_plus1sigma_excluded_bool=false;
+
+      // +2sigma
+      if(plus2sigma < 0.05 && not_plus2sigma_excluded_bool) {
+	excluded_idx_plus2sigma = index[i]; 
+	if(index[i+1]<nevent){
+	  notexcluded_idx_plus2sigma = index[i+1]; // case in between
+	}
+	else{
+	 notexcluded_idx_plus2sigma = index[i];  // case all excluded
+	}
+      }
+      else not_plus2sigma_excluded_bool=false;
+
+      // obs
+      if(obs < 0.05 && not_obs_excluded_bool) {
 	excluded_idx_obs = index[i]; 
 	if(index[i+1]<nevent){
 	 notexcluded_idx_obs = index[i+1]; // case in between
@@ -75,16 +153,16 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
 	  notexcluded_idx_obs = index[i];  // case all excluded
 	}    
       }
+      else not_obs_excluded_bool=false;
     }
-    //std::cout<< excluded_idx_exp << " " << notexcluded_idx_exp << " " << excluded_idx_obs << " " << notexcluded_idx_obs << std::endl;
-    
+    //------------------expected
     double excluded_exp=0;
     if(excluded_idx_exp == -999){                     //case nothing excluded
-      excluded_exp=70;
+      excluded_exp=highexpected;
     }
     else if(excluded_idx_exp == notexcluded_idx_exp){ // case all excluded
       limit->GetEvent(excluded_idx_exp);
-      excluded_exp=tanb;
+      excluded_exp=3;//tanb;
     }
     else{                                             // case in between
       limit->GetEvent(excluded_idx_exp);
@@ -93,18 +171,101 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
       limit->GetEvent(notexcluded_idx_exp);
       double x_down=tanb;
       double y_down=exp;
-      excluded_exp=(0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up; //tanb_ges=(exp_ges-exp_up)/(exp_down-exp_up)*(tanb_down-tanb_up)+tanb_up ; exp_ges = 0.05
+      excluded_exp=(0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up; 
     }   
     expected->SetPoint(ipoint, mass, excluded_exp);
     //std::cout<< "expected " << ipoint << " " << mass << " " << excluded_exp << std::endl;
+
+    //-----------------2sigma band
+    double excluded_minus2sigma=0;
+    if(excluded_idx_minus2sigma == -999){                     //case nothing excluded
+      excluded_minus2sigma=highminus2sigma;
+    }
+    else if(excluded_idx_minus2sigma == notexcluded_idx_minus2sigma){ // case all excluded
+      limit->GetEvent(excluded_idx_minus2sigma);
+      excluded_minus2sigma=2;//tanb;
+    }
+    else{                                             // case in between
+      limit->GetEvent(excluded_idx_minus2sigma);
+      double x_up=tanb;
+      double y_up=minus2sigma;
+      limit->GetEvent(notexcluded_idx_minus2sigma);
+      double x_down=tanb;
+      double y_down=minus2sigma;
+      excluded_minus2sigma=(0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up; 
+    }   
+    //std::cout<< "minus2sigma " << ipoint << " " << mass << " " << excluded_minus2sigma << std::endl;
+    double excluded_plus2sigma=0;
+    if(excluded_idx_plus2sigma == -999){                     //case nothing excluded
+      excluded_plus2sigma=highplus2sigma;
+    }
+    else if(excluded_idx_plus2sigma == notexcluded_idx_plus2sigma){ // case all excluded
+      limit->GetEvent(excluded_idx_plus2sigma);
+      excluded_plus2sigma=5;//tanb;
+    }
+    else{                                             // case in between
+      limit->GetEvent(excluded_idx_plus2sigma);
+      double x_up=tanb;
+      double y_up=plus2sigma;
+      limit->GetEvent(notexcluded_idx_plus2sigma);
+      double x_down=tanb;
+      double y_down=plus2sigma;
+      excluded_plus2sigma=(0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up; 
+    }   
+    outerBand->SetPoint      (ipoint, mass, excluded_exp);
+    outerBand->SetPointEYhigh(ipoint, excluded_plus2sigma-excluded_exp);
+    outerBand->SetPointEYlow (ipoint, excluded_exp-excluded_minus2sigma);
+    //std::cout<< "plus2sigma " << ipoint << " " << mass << " " << excluded_plus2sigma << std::endl;
+
+    //-----------------1sigma band
+    double excluded_minus1sigma=0;
+    if(excluded_idx_minus1sigma == -999){                     //case nothing excluded
+      excluded_minus1sigma=highminus1sigma;
+    }
+    else if(excluded_idx_minus1sigma == notexcluded_idx_minus1sigma){ // case all excluded
+      limit->GetEvent(excluded_idx_minus1sigma);
+      excluded_minus1sigma=2.5;//tanb;
+    }
+    else{                                             // case in between
+      limit->GetEvent(excluded_idx_minus1sigma);
+      double x_up=tanb;
+      double y_up=minus1sigma;
+      limit->GetEvent(notexcluded_idx_minus1sigma);
+      double x_down=tanb;
+      double y_down=minus1sigma;
+      excluded_minus1sigma=(0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up; 
+    }   
+    //std::cout<< "minus1sigma " << ipoint << " " << mass << " " << excluded_minus1sigma << std::endl;
+    double excluded_plus1sigma=0;
+    if(excluded_idx_plus1sigma == -999){                     //case nothing excluded
+      excluded_plus1sigma=highplus1sigma;
+    }
+    else if(excluded_idx_plus1sigma == notexcluded_idx_plus1sigma){ // case all excluded
+      limit->GetEvent(excluded_idx_plus1sigma);
+      excluded_plus1sigma=4;//tanb;
+    }
+    else{                                             // case in between
+      limit->GetEvent(excluded_idx_plus1sigma);
+      double x_up=tanb;
+      double y_up=plus1sigma;
+      limit->GetEvent(notexcluded_idx_plus1sigma);
+      double x_down=tanb;
+      double y_down=plus1sigma;
+      excluded_plus1sigma=(0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up; 
+    }   
+    innerBand->SetPoint      (ipoint, mass, excluded_exp);
+    innerBand->SetPointEYhigh(ipoint, excluded_plus1sigma-excluded_exp);
+    innerBand->SetPointEYlow (ipoint, excluded_exp-excluded_minus1sigma);
+    //std::cout<< "plus1sigma " << ipoint << " " << mass << " " << excluded_plus1sigma << std::endl;
   
+    //------------------observed
     double excluded_obs=0;
     if(excluded_idx_obs == -999){                     // case nothing excluded
-      excluded_obs=70;
+      excluded_obs=highobserved;
     }
     else if(excluded_idx_obs == notexcluded_idx_obs){ // case all excluded
       limit->GetEvent(excluded_idx_exp);
-      excluded_exp=tanb;
+      excluded_exp=3;//tanb;
     }
     else{                                             // case in between
       limit->GetEvent(excluded_idx_obs);
@@ -143,7 +304,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
   }
    
   // do the plotting
-  plottingHypoTest(canv, plain, innerBand, outerBand, expected, observed, xaxis_, yaxis_, theory_, min_, max_, log_);
+  plottingHypoTest(canv, plain, innerBand, outerBand, expected, observed, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, expectedOnly_, outerband_);
   /// setup the CMS Preliminary
   //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
   TPaveText* cmsprel  = new TPaveText(0.145, 0.835+0.06, 0.145+0.30, 0.835+0.16, "NDC");
@@ -164,12 +325,10 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
     canv.Print(std::string(output_).append("_").append(extralabel_).append(label_).append(".pdf").c_str());
     canv.Print(std::string(output_).append("_").append(extralabel_).append(label_).append(".eps").c_str());
   }
-  /*
   if(txt_){
     print(std::string(output_).append("_").append(extralabel_).append(label_).c_str(), outerBand, innerBand, expected, observed, "txt");
     print(std::string(output_).append("_").append(extralabel_).append(label_).c_str(), outerBand, innerBand, expected, observed, "tex");
   }
-  */
   if(root_){
     TFile* output = new TFile(std::string("limits_").append(extralabel_).append(label_).append(".root").c_str(), "update");
     if(!output->cd(output_.c_str())){

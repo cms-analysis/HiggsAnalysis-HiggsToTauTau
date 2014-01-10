@@ -225,7 +225,8 @@ class ModelTemplate():
                         scale = float(params.xsecs[higgs])*float(params.brs[higgs])*hist_scale
                         histo = self.single_template(dir, proc, self.save_float_conversion(params.masses[higgs]), label, scale, MODE)
                         if combined_template :
-                            combined_template.Add(histo)
+                            if not 'fine_binning' in histo.GetName() :
+                                combined_template.Add(histo)
                         else:
                             combined_template = histo
                     ## write combined template to output file

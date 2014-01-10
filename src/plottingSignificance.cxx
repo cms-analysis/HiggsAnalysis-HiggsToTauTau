@@ -39,7 +39,7 @@ plottingSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   if(outerBand){
     outerBand->SetLineWidth(1.);
     outerBand->SetLineColor(kBlack);
-    outerBand->SetFillColor(kYellow);
+    outerBand->SetFillColor(kRed-10);
     if(FIRST){
       FIRST = false;
       outerBand->Draw("3");
@@ -52,7 +52,7 @@ plottingSignificance(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   if(innerBand){
     innerBand->SetLineWidth(1.);
     innerBand->SetLineColor(kBlack);
-    innerBand->SetFillColor(kGreen);
+    innerBand->SetFillColor(kRed-9);
     if(FIRST){
       FIRST = false;
       innerBand->Draw("3");

@@ -113,7 +113,7 @@ class PlotLimits {
   void plot2DScan(TCanvas& canv, const char* directory="");
   /// plot 1d-scans for several masses on canvases, print out png, pdf, root formats if desired  
   void plot1DScan(TCanvas& canv, const char* directory="");
-  /// plot Hypothesis test for MSSM vs SM in mA-tanb for several masses on canvases, print out png, pdf, root formats if desired  
+  /// plot Hypothesis test for MSSM vs SM in mA-tanb for several masses on canvases, print out png, pdf, txt, tex, root formats if desired  
   void plotHypoTest(TCanvas& canv, const char* directory);
 
  private:
@@ -223,6 +223,8 @@ class PlotLimits {
   std::string injectedMass_;
   /// potential extra label meant to be located below the legend (at the moment only used for limit plotting in mssm case)
   std::string extra_;
+  /// print expected only  
+  bool expectedOnly_;
   /// print transparent? (used for option tanb)
   bool transparent_;
   /// indicate whether the +/- 2 sigma should be shown or not (used for option tanb)

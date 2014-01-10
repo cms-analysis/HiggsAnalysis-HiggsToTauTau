@@ -8,7 +8,7 @@ ROOT.gSystem.Load('$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so'
 from ROOT import th1fmorph
 
 class Morph:
-    def __init__(self,input,directories,samples,uncerts,masses,step_size,verbose,extrapolate,trivial):
+    def __init__(self,input,directories,samples,uncerts,masses,step_size,verbose,extrapolate,trivial,fine_binning):
         ## verbose
         self.verbose = verbose
         ## trivial
@@ -28,6 +28,8 @@ class Morph:
         self.directories = re.sub(r'\s', '', directories).split(',')
         ## list of mass points outside the range
         self.extrapolations = [x for x in re.sub(r'\s', '', extrapolate).split(',') if x != '']
+        ## use fine binned alternative histograms, before rebinning
+        self.fine_binning = fine_binning
 
     def load_hist(self, file, directory, name) :
         """
@@ -86,6 +88,12 @@ class Morph:
             norm = hist_lower.Integral()+(hist_upper.Integral()-hist_lower.Integral())/abs(upper-lower)*(value-lower)
         return norm
 
+    # function to rebin 'hist' into the binning of 'refhist'
+    def rebin_hist(self, hist, refhist) :
+        nbins = refhist.GetNbinsX()
+        hist.Rebin(nbins,hist.GetName().replace("_fine_binning",""),refhist.GetXaxis().GetXbins().GetArray())
+        return hist
+
     def morph_hist(self, file, directory, name, lower, upper, value) :
         """
         Load histograms with name NAME that correspond to upper and lower bound,
@@ -109,12 +117,21 @@ class Morph:
         if not hist_upper and upper == value:
             hist_upper = hist_morph
         if self.verbose :
-            print "writing morphed histogram to file: name =", hist_morph.GetName(), "integral =[ %.5f | %.5f | %.5f ]" % (hist_lower.Integral(), hist_morph.Integral(), hist_upper.Integral())
+            if not "_fine_binning" in name:
+                print "writing morphed histogram to file: name =", hist_morph.GetName(), "integral =[ %.5f | %.5f | %.5f ]" % (hist_lower.Integral(), hist_morph.Integral(), hist_upper.Integral())
+            else: 
+                print "writing morphed '_fine_binning' histogram to file: name =", hist_morph.GetName().replace("_fine_binning",""), "integral =[ %.5f | %.5f | %.5f ]" % (hist_lower.Integral(), hist_morph.Integral(), hist_upper.Integral())
         if directory == "" :
             file.cd()
         else :
             file.cd(directory)
-        hist_morph.Write(hist_morph.GetName())
+        if "_fine_binning" in name:
+            #rebin to the usual binning using the histogram without the '_fine_binning' label
+            self.rebin_hist(hist_morph,self.load_hist(file, directory, hist_lower.GetName().replace("_fine_binning","").format(MASS=lower)))
+            #save removing 'fine_binning' from the name
+            hist_morph.Write(hist_morph.GetName().replace("_fine_binning",""))
+        else : 
+            hist_morph.Write(hist_morph.GetName())
 
     def run(self) :
         """
@@ -165,12 +182,20 @@ class Morph:
                     print "Extrapolating [%0s, %0s] -> %0s" % masses_to_morph[-1]
 
                 for mass_low, mass_high, value in masses_to_morph:
-                    self.morph_hist(file, dir, sample, mass_low, mass_high, value)
+                    if not self.fine_binning:
+                        self.morph_hist(file, dir, sample, mass_low, mass_high, value)
+                    else: 
+                        self.morph_hist(file, dir, sample+'_fine_binning', mass_low, mass_high, value)
+
                     for uncert in self.uncerts :
                         try:
                             if not uncert == '' :
-                                self.morph_hist(file, dir, sample+'_'+uncert+'Up', mass_low, mass_high, value)
-                                self.morph_hist(file, dir, sample+'_'+uncert+'Down', mass_low, mass_high, value)
+                                if not self.fine_binning:
+                                    self.morph_hist(file, dir, sample+'_'+uncert+'Up', mass_low, mass_high, value)
+                                    self.morph_hist(file, dir, sample+'_'+uncert+'Down', mass_low, mass_high, value)
+                                else: 
+                                    self.morph_hist(file, dir, sample+'_'+uncert+'Up_fine_binning', mass_low, mass_high, value)
+                                    self.morph_hist(file, dir, sample+'_'+uncert+'Down_fine_binning', mass_low, mass_high, value)
                         except AttributeError:
                             print "Warning: could not find shape systematic %s, skipping"  % uncert
                     self.no_negative(file, dir, sample, value)

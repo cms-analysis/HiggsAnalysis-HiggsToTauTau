@@ -42,9 +42,9 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   //different MSSM scenarios
   std::string extralabel_ = "";
   if(theory_=="MSSM m_{h}^{max} scenario") extralabel_= "mhmax-";
-  if(theory_=="MSSM m_{h}^{modm} scenario") extralabel_= "mhmodm-";
-  if(theory_=="MSSM m_{h}^{modp} scenario") extralabel_= "mhmodp-";
-  //lowmH
+  if(theory_=="MSSM m_{h}^{mod-} scenario") extralabel_= "mhmodm-";
+  if(theory_=="MSSM m_{h}^{mod+} scenario") extralabel_= "mhmodp-";
+  if(theory_=="MSSM low m_{H} scenario") extralabel_= "lowmH-";
 
 
   // set up styles
@@ -104,7 +104,8 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   std::map<std::string, TGraph*> comparisons; TGraph* comp=0;
   if(arXiv_1211_6956_){ comp = new TGraph(), arXiv_1211_6956 (comp); comp->SetName("arXiv_1211_6956" ); comparisons[std::string("ATLAS H#rightarrow#tau#tau (4.8/fb)")] = comp;}
   if(arXiv_1204_2760_){ comp = new TGraph(); arXiv_1204_2760 (comp); comp->SetName("arXiv_1204_2760" ); comparisons[std::string("ATLAS H^{+} (4.6/fb)")               ] = comp;}
-  if(arXiv_1302_2892_){ comp = new TGraph(); arXiv_1302_2892 (comp); comp->SetName("arXiv_1302_2892" ); comparisons[std::string("CMS bbH#rightarrow 4b (4.8/fb)")     ] = comp;}
+  //if(arXiv_1302_2892_){ comp = new TGraph(); arXiv_1302_2892 (comp); comp->SetName("arXiv_1302_2892" ); comparisons[std::string("CMS bbH#rightarrow 3b (4.8/fb)")     ] = comp;}
+  if(arXiv_1302_2892_){ comp = new TGraph(); arXiv_1302_2892 (comp); comp->SetName("arXiv_1302_2892" ); comparisons[std::string("CMS #phi#rightarrowb#bar{b}")     ] = comp;}
   if(arXiv_1205_5736_){ comp = new TGraph(); arXiv_1205_5736 (comp); comp->SetName("arXiv_1205_5736" ); comparisons[std::string("CMS H^{+} (2/fb)")                   ] = comp;}
   if(HIG_12_052_     ){ comp = new TGraph(); HIG_12_052_lower(comp); comp->SetName("HIG_12_052_lower"); comparisons[std::string("CMS H^{+} (2-4.9/fb)")               ] = comp;}
   if(HIG_12_052_     ){ comp = new TGraph(); HIG_12_052_upper(comp); comp->SetName("HIG_12_052_upper"); comparisons[std::string("EMPTY")                              ] = comp;}
@@ -125,7 +126,17 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   // do the plotting 
   plottingTanb(canv, plain, plain_low, innerBand, innerBand_low, outerBand, outerBand_low, expected, expected_low, observed, observed_low, lowerLEP, upperLEP, higgsBands, comparisons, xaxis_, yaxis_, theory_, injected, min_, max_, log_, transparent_);
   /// setup the CMS Preliminary
-  CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
+  //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
+  TPaveText* cmsprel  = new TPaveText(0.145, 0.835+0.06, 0.145+0.30, 0.835+0.16, "NDC");
+  cmsprel->SetBorderSize(   0 );
+  cmsprel->SetFillStyle(    0 );
+  cmsprel->SetTextAlign(   12 );
+  cmsprel->SetTextSize ( 0.03 );
+  cmsprel->SetTextColor(    1 );
+  cmsprel->SetTextFont (   62 );
+  cmsprel->AddText(dataset_.c_str());
+  cmsprel->Draw();
+
   // write results to files
   if(png_){
     canv.Print(std::string(output_).append("_").append(extralabel_).append(label_).append(".png").c_str());

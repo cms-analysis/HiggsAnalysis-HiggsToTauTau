@@ -126,6 +126,8 @@ ggroup.add_option("--external-pulls", dest="nuisances", default="", type="string
                   help="Specify the full path to a root output file of limit.py with option --max-likelihood (e.g. mlfit.root) to enforce the use of pre-calculated central values of the nuisance parmeters involved in this fit. It is in the responsibility of the user that the nuisance parameter names in the output file and the nuisance parameter names in the current workspace fit together. The limit will be run w/ option --no-prefit. For more details have a look to the description of option --external-pulls of the script limit.py. [Default: \"\"]")
 ggroup.add_option("--injected-mass", dest="injected_mass", type="string", default="125",
                   help="Mass of the signal that should be injected into the background only hypothesis from simulation. [Default: 125]")
+ggroup.add_option("--injected-mH", dest="injected_mH", default=False, action="store_true",
+                  help="Inject the signal at the given mH into the background only hypothesis from simulation. [Default: False]")
 ggroup.add_option("--SplusB", dest="signal_plus_BG", default=True, action="store_true",
                   help="When using options --external-pulls, use the fit results with signal plus background. If 'False' the fit result of the background only hypothesis is used. [Default: False]")
 ggroup.add_option("--collect-injected-toys", dest="calculate_injected", default=False, action="store_true",
@@ -607,11 +609,11 @@ if options.optInject :
         for path in paths :
             jobname = "injected-"+path[path.rstrip('/').rfind('/')+1:]+folder_extension
             if options.printOnly :
-                print "lxb-injected.py --name {NAME} --method {METHOD} --input {PATH} {LXQ} {CONDOR} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" --injected-mass {INJECTEDMASS} {MASSES}".format(
-                    NAME=jobname, METHOD=options.injected_method, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else "")
+                print "lxb-injected.py --name {NAME} --method {METHOD} --input {PATH} {LXQ} {CONDOR} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" --injected-mass {INJECTEDMASS} {INJECTEDMH} {MASSES}".format(
+                    NAME=jobname, METHOD=options.injected_method, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else "", INJECTEDMH="--injected-mH" if options.injected_mH else "")
             else :
-                os.system("lxb-injected.py --name {NAME} --method {METHOD} --input {PATH} {LXQ} {CONDOR} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" --injected-mass {INJECTEDMASS} {MASSES}".format(
-                    NAME=jobname, METHOD=options.injected_method, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else ""))
+                os.system("lxb-injected.py --name {NAME} --method {METHOD} --input {PATH} {LXQ} {CONDOR} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" --injected-mass {INJECTEDMASS} {INJECTEDMH} {MASSES}".format(
+                    NAME=jobname, METHOD=options.injected_method, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else "", INJECTEDMH="--injected-mH" if options.injected_mH else ""))
     else :
         opts = options.opt
         ## directories and masses per directory
@@ -627,7 +629,7 @@ if options.optInject :
                 for mass in struct[1][dir] :
                     os.system("limit.py --max-likelihood --collect-injected-toys {DIR}/{MASS}".format(DIR=dir, MASS=mass))
             ## finally obtain the result on data 
-            lxb_submit(struct[0], struct[1], "--max-likelihood", "{USER}".format(USER=options.opt))
+            lxb_submit(struct[0], struct[1], "--max-likelihood --stable-new", "{USER}".format(USER=options.opt))
             ## obtain the expected results using an asimov dataset
             opts+=" --mass-scan"
             for path in paths:
@@ -700,48 +702,92 @@ if options.optTanb or options.optTanbPlus :
         if not cmd == "" :
             grid= []
             sub = "--interactive" if options.optTanbPlus else "--toysH 100 -t 200 -j 100 --random --server --priority"
-            if len(subvec(args,  90, 249))>0 :
-                dirs = vec2str(subvec(args,  90,  249))
-                grid = [
-                     "{CMD} -n  6 --min  0.5  --max  1.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                    ,"{CMD} -n  4 --min  2.0  --max  8.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs) 
-                    ,"{CMD} -n  3 --min  9.0  --max 15.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                    ,"{CMD} -n  3 --min 20.0  --max 30.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                    #,"{CMD} -n  2 --min 35.0  --max 40.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                    #,"{CMD} -n  2 --min 50.0  --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                ]
-            if len(subvec(args, 250, 299))>0 :
-                dirs = vec2str(subvec(args, 250,  299))
-                grid = [
-                     "{CMD} -n  2 --min  0.5  --max  1.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                    ,"{CMD} -n  5 --min  3.0  --max 15.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                    ,"{CMD} -n  5 --min 20.0  --max 40.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                    #,"{CMD} -n  2 --min 50.0  --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                ]                
-            if len(subvec(args, 300, 399))>0 :
-                dirs = vec2str(subvec(args, 300,  399))
-                grid = [
-                     "{CMD} -n  3 --min  2.0  --max 10.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                    ,"{CMD} -n  5 --min 13.0  --max 25.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                    ,"{CMD} -n  3 --min 30.0  --max 40.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                    ,"{CMD} -n  2 --min 50.0  --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                ]                                
-            if len(subvec(args, 400, 599))>0 :
-                dirs = vec2str(subvec(args, 400,  599))
-                grid = [
-                     "{CMD} -n  3 --min  2.0  --max 10.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                    ,"{CMD} -n  2 --min 15.0  --max 20.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                    ,"{CMD} -n  5 --min 25.0  --max 45.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                    ,"{CMD} -n  2 --min 50.0  --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                ]                                
-            if len(subvec(args, 600, 1000))>0 :
-                dirs = vec2str(subvec(args, 600, 1000))
-                grid = [
-                     "{CMD} -n  3 --min  2.0  --max 10.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                    ,"{CMD} -n  2 --min 15.0  --max 20.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                    ,"{CMD} -n  5 --min 30.0  --max 50.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                    ,"{CMD} -n  2 --min 55.0  --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
-                ]                                                
+            if not "lowmH" in options.opt :  #for all other MSSM scenarios except lowmH
+                if len(subvec(args,  90, 249))>0 :
+                    dirs = vec2str(subvec(args,  90,  249))
+                    grid = [
+                        "{CMD} -n  6 --min  0.5  --max  1.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ,"{CMD} -n  4 --min  2.0  --max  8.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs) 
+                        ,"{CMD} -n  3 --min  9.0  --max 15.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ,"{CMD} -n  3 --min 20.0  --max 30.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        #,"{CMD} -n  2 --min 35.0  --max 40.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        #,"{CMD} -n  2 --min 50.0  --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ]
+                if len(subvec(args, 250, 299))>0 :
+                    dirs = vec2str(subvec(args, 250,  299))
+                    grid = [
+                        "{CMD} -n  2 --min  0.5  --max  1.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ,"{CMD} -n  5 --min  3.0  --max 15.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ,"{CMD} -n  5 --min 20.0  --max 40.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        #,"{CMD} -n  2 --min 50.0  --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ]                
+                if len(subvec(args, 300, 399))>0 :
+                    dirs = vec2str(subvec(args, 300,  399))
+                    grid = [
+                        "{CMD} -n  3 --min  2.0  --max 10.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ,"{CMD} -n  5 --min 13.0  --max 25.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ,"{CMD} -n  3 --min 30.0  --max 40.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ,"{CMD} -n  2 --min 50.0  --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ]                                
+                if len(subvec(args, 400, 599))>0 :
+                    dirs = vec2str(subvec(args, 400,  599))
+                    grid = [
+                        "{CMD} -n  3 --min  2.0  --max 10.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ,"{CMD} -n  2 --min 15.0  --max 20.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ,"{CMD} -n  5 --min 25.0  --max 45.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ,"{CMD} -n  2 --min 50.0  --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ]                                
+                if len(subvec(args, 600, 1000))>0 :
+                    dirs = vec2str(subvec(args, 600, 1000))
+                    grid = [
+                        "{CMD} -n  3 --min  2.0  --max 10.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ,"{CMD} -n  2 --min 15.0  --max 20.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ,"{CMD} -n  5 --min 30.0  --max 50.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ,"{CMD} -n  2 --min 55.0  --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ]
+            else : #for lowmH MSSM scenario
+               ##  if len(subvec(args,  90, 249))>0 :
+##                     dirs = vec2str(subvec(args,  90,  249))
+##                     grid = [
+##                         "{CMD} -n  6 --min  0.5  --max  1.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+##                         ,"{CMD} -n  4 --min  2.0  --max  8.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs) 
+##                         ,"{CMD} -n  3 --min  9.0  --max 15.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+##                         ,"{CMD} -n  3 --min 20.0  --max 30.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+##                         #,"{CMD} -n  2 --min 35.0  --max 40.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+##                         #,"{CMD} -n  2 --min 50.0  --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+##                         ]
+##                 if len(subvec(args, 250, 299))>0 :
+##                     dirs = vec2str(subvec(args, 250,  299))
+##                     grid = [
+##                         "{CMD} -n  2 --min  0.5  --max  1.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+##                         ,"{CMD} -n  5 --min  3.0  --max 15.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+##                         ,"{CMD} -n  5 --min 20.0  --max 40.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+##                         #,"{CMD} -n  2 --min 50.0  --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+##                         ]                
+##                 if len(subvec(args, 300, 399))>0 :
+##                     dirs = vec2str(subvec(args, 300,  399))
+##                     grid = [
+##                         "{CMD} -n  3 --min  2.0  --max 10.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+##                         ,"{CMD} -n  5 --min 13.0  --max 25.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+##                         ,"{CMD} -n  3 --min 30.0  --max 40.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+##                         ,"{CMD} -n  2 --min 50.0  --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+##                         ]                                
+##                 if len(subvec(args, 400, 599))>0 :
+##                     dirs = vec2str(subvec(args, 400,  599))
+##                     grid = [
+##                         "{CMD} -n  3 --min  2.0  --max 10.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+##                         ,"{CMD} -n  2 --min 15.0  --max 20.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+##                         ,"{CMD} -n  5 --min 25.0  --max 45.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+##                         ,"{CMD} -n  2 --min 50.0  --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+##                         ]                                
+                if len(subvec(args, 300, 3100))>0 :
+                    dirs = vec2str(subvec(args, 300, 3100))
+                    grid = [
+                        "{CMD} -n  5 --min 1.5  --max 3.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ,"{CMD} -n  5 --min 4.0  --max 6.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ,"{CMD} -n  4 --min 6.5  --max 8.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ,"{CMD} -n  3 --min 8.5  --max 9.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
+                        ]
             for point in grid :
                 if options.printOnly :
                     print point

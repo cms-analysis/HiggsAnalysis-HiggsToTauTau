@@ -56,8 +56,12 @@ class mssm_xsec_tools():
         " Lookup the mass for a given higgs type "
         type, type_info = input
         if type == 'A':
-            type_info['mass'] = mA
-            return
+            if self.inputFileName_.find('lowmH')>-1 :
+                type_info['mass'] = self.lookup_value(mA, tan_beta, "h_m%s" % type)
+                return
+            else :
+                type_info['mass'] = mA
+                return
         type_info['mass'] = self.lookup_value(mA, tan_beta, "h_m%s" % type)
 
     def _add_xsec(self, mA, tan_beta, input):
