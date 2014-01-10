@@ -1,6 +1,6 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-eleTau_1jet_high_lowhiggs		signal		             	lumi_7TeV            					1.026
+eleTau_1jet_high_lowhiggs		signal		             	lumi_7TeV            					1.022
 eleTau_1jet_high_lowhiggs	   	ggH				pdf_gg    						1.097
 eleTau_1jet_high_lowhiggs	   	qqH				pdf_qqbar						1.036
 eleTau_1jet_high_lowhiggs		WH,ZH				pdf_qqbar						1.02

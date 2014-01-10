@@ -1,4 +1,4 @@
-mumu_vbf		  	qqH,ggH,WH,ZH,Dibosons,WJets				lumi_7TeV					1.026
+mumu_vbf		  	qqH,ggH,WH,ZH,Dibosons,WJets				lumi_7TeV					1.022
 mumu_vbf			qqH,ggH,WH,ZH,ZTT,TTJ,WJets,Dibosons,ggH_hww125,qqH_hww125 CMS_eff_m 					1.04
 mumu_vbf			qqH,ggH,WH,ZH,TTJ,Dibosons,ggH_hww125,qqH_hww125		CMS_scale_j_7TeV				0.5
 mumu_vbf			qqH,ggH,WH,ZH,Dibosons,ggH_hww125,qqH_hww125   		CMS_htt_scale_met_SignalDibosonWjets_7TeV	0.5
@@ -8,7 +8,7 @@ mumu_vbf			ggH,ggH_hww125						pdf_gg    					1.097
 mumu_vbf			ggH                                     		pdf_gg_Shape                            	1.00
 mumu_vbf			qqH,qqH_hww125						pdf_qqbar					1.036
 mumu_vbf			qqH                                     		pdf_qqbar_Shape                         	1.00
-mumu_vbf			WH,ZH							pdf_vh						1.01
+mumu_vbf			WH,ZH							pdf_qqbar						1.01
 mumu_vbf			ggH,ggH_hww125						QCDscale_ggH2in     				0.818
 mumu_vbf			ggH							QCDscale_ggH2in_Shape				1.00
 mumu_vbf			qqH,qqH_hww125						QCDscale_qqH					1.009

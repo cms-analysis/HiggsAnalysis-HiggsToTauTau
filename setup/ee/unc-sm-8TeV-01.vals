@@ -4,7 +4,7 @@ ee_0jet_high                    qqH,ggH,WH,ZH,TTJ,ZTT,Dibosons,ggH_hww125,qqH_hw
 ee_0jet_high			qqH,ggH,WH,ZH,TTJ,Dibosons,ggH_hww125,qqH_hww125			CMS_scale_j_8TeV				0.50
 ee_0jet_high			ggH,ggH_hww125							pdf_gg    					1.097
 ee_0jet_high			qqH,qqH_hww125							pdf_qqbar					1.036
-ee_0jet_high			WH,ZH								pdf_vh						1.01
+ee_0jet_high			WH,ZH								pdf_qqbar						1.01
 ee_0jet_high			ggH,ggH_hww125							QCDscale_ggH     				1.10
 ee_0jet_high			qqH,qqH_hww125							QCDscale_qqH					1.028
 ee_0jet_high			WH,ZH 	                        				QCDscale_VH					1.04
