@@ -170,8 +170,8 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   channels->SetTextSize ( 0.045 );
   channels->SetTextColor(    1 );
   channels->SetTextFont (   62 );
-//  channels->AddText("e#mu, e#tau_{h}, #mu#tau_{h}, #tau_{h}#tau_{h}, #mu#mu, ee");
-//  channels->Draw("same");
+  //channels->AddText("e#mu, e#tau_{h}, #mu#tau_{h}, #tau_{h}#tau_{h}, #mu#mu, ee");
+  //channels->Draw("same");
 
  /// add the proper legend
   TLegend* leg;
@@ -184,7 +184,7 @@ plottingPValue(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* o
   leg->SetFillStyle ( 1001 );
   leg->SetFillColor (kWhite);
   //leg->SetHeader("Local p-value");
-  leg->AddEntry( observed, "p-value Observed",  "PL");
+  leg->AddEntry( observed, "Observed p-value",  "PL");
   if(not(innerBand && outerBand)){ leg->AddEntry( expected, "Expected for SM H(m_{H})",  "L" );}
   if(innerBand){ leg->AddEntry( innerBand, "#pm 1#sigma Expected for SM H(125 GeV)",  "F" ); }
   if(outerBand){ leg->AddEntry( outerBand, "#pm 2#sigma Expected for SM H(125 GeV)",  "F" ); }

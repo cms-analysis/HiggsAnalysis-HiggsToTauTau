@@ -91,12 +91,15 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   std::cout << "Linear    Mass estimate: " << minX    << " + " << upperBound   -minX      << " - " << minX   -lowerBound    << std::endl;
  if(parabolic) { std::cout << "Quadratic Mass estimate: " << fitMinX << " + " << fitUpperBound-fitMinX   << " - " << fitMinX-fitLowerBound << std::endl;}
   std::cout << "-------------------------------------------------" << std::endl;
+ TF1 * fit_function = NULL;
  if(parabolic)
  {
    minX = fitMinX;
    minY = fitMinY;
    upperBound = fitUpperBound;
    lowerBound = fitLowerBound;
+   fit_function= observed->GetFunction("pol2");
+
  }
    // create sigma lines
   double quantile[] = {1-2*ROOT::Math::normal_cdf_c(1,1,0), 1-2*ROOT::Math::normal_cdf_c(2,1,0)};
@@ -124,6 +127,8 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   hr->GetYaxis()->SetLabelFont(62);
   hr->GetYaxis()->SetTitleSize(0.05);
   hr->GetYaxis()->SetTitleOffset(1.30);
+  hr->GetYaxis()->SetTitleFont(62);
+  hr->GetYaxis()->SetTitleColor(1);
   hr->GetYaxis()->SetLabelSize(0.045);
   hr->SetNdivisions(505);
   
@@ -137,6 +142,8 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   innerBand->SetFillColor(kAzure-4);
   innerBand->Draw("3same");
 
+  canv.RedrawAxis();
+  
   newexpected->SetLineColor(kBlue);
   newexpected->SetLineWidth(3.);
   newexpected->SetLineStyle(11);
@@ -149,29 +156,32 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   observed->Draw("PLsame");
   if(parabolic)
   {
-    observed->GetFunction("pol2")->SetRange(lowerBound-(minX-lowerBound),upperBound+(upperBound-minX));
-    observed->GetFunction("pol2")->SetLineColor(kRed);
-    observed->GetFunction("pol2")->SetLineStyle(4);
+    fit_function->SetRange(lowerBound-(minX-lowerBound),upperBound+(upperBound-minX));
+    fit_function->SetLineColor(kRed-4);
+    fit_function->SetLineStyle(7);
+    fit_function->SetLineWidth(3);
+    fit_function->Draw("Lsame");
   }
 
   for(std::vector<TGraph*>::const_iterator sigma = sigmas.begin(); sigma!=sigmas.end(); ++sigma){
-    (*sigma)->SetLineColor(kRed);
+    (*sigma)->SetLineColor(kGray+2);
     (*sigma)->SetLineWidth(3.);
     (*sigma)->Draw("Lsame");
   }
 
-  TLegend* leg = new TLegend(0.45, 0.75, 0.85, 0.90);
+  TLegend* leg = new TLegend(0.45, 0.73, 0.85, 0.90);
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
   leg->AddEntry(observed, "Observed",  "PL");
-  leg->AddEntry( newexpected , "H (125 GeV) expected",  "L" );
+  if(parabolic){ leg->AddEntry( fit_function, "Parabolic fit",  "L" ); }
+  leg->AddEntry( newexpected , "H (125 GeV) Expected",  "L" );
   leg->AddEntry( innerBand, "#pm 1#sigma Expected",  "F" ); 
   leg->AddEntry( outerBand, "#pm 2#sigma Expected",  "F" ); 
   leg->Draw("same");
 
   /// Mass
-  TPaveText * mass = new TPaveText(0.45, 0.69, 0.75, 0.75, "NDC");
+  TPaveText * mass = new TPaveText(0.45, 0.66, 0.75, 0.72, "NDC");
   mass->SetBorderSize( 0);
   mass->SetFillStyle ( 0);
   //mass->SetTextAlign ( 0);
@@ -190,7 +200,7 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   sigma1->SetFillStyle(    0 );
   sigma1->SetTextAlign(   12 );
   sigma1->SetTextSize ( 0.04 );
-  sigma1->SetTextColor( kRed );
+  sigma1->SetTextColor( kGray+2 );
   sigma1->SetTextFont (   62 );
   sigma1->AddText("1#sigma");
   sigma1->Draw("same");
@@ -201,11 +211,10 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   sigma2->SetFillStyle(    0 );
   sigma2->SetTextAlign(   12 );
   sigma2->SetTextSize ( 0.04 );
-  sigma2->SetTextColor( kRed );
+  sigma2->SetTextColor( kGray+2 );
   sigma2->SetTextFont (   62 );
   sigma2->AddText("2#sigma");
   sigma2->Draw("same"); 
 
-  canv.RedrawAxis();
   return;
 }
