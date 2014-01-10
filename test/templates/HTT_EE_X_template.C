@@ -358,7 +358,7 @@ HTT_EE_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 
   //CMSPrelim(dataset, "#tau_{e}#tau_{e}", 0.17, 0.835);
   CMSPrelim(dataset, "", 0.16, 0.835);
-  TPaveText* chan     = new TPaveText(0.20, (category_extra2 && category_extra2[0]=='\0') ? 0.65+0.061 : 0.65+0.061, 0.32, 0.75+0.161, "tlbrNDC");
+  TPaveText* chan     = new TPaveText(0.22, (category_extra2 && category_extra2[0]=='\0') ? 0.65+0.061 : 0.65+0.061, 0.34, 0.75+0.161, "tlbrNDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
   chan->SetTextAlign(   12 );
