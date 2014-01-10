@@ -35,6 +35,6 @@ layout = cms.PSet(
     drawSM = cms.bool(True),
     ## max for plotting (for fine tuning)
     xmaxs = cms.VPSet(
-    cms.PSet(mass = cms.double( 125.), max = cms.double(-1.)),
+    cms.PSet(mass = cms.double( 125.), max = cms.double(2.)),
     ),    
 )

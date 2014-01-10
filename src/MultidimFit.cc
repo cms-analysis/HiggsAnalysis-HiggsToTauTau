@@ -232,8 +232,10 @@ PlotLimits::convexGraph(TGraph* graph, double minX, double minY, double xLowerBo
   }
   
   // uncomment for debugging
-  for(int idx=0; idx<sorted->GetN(); ++idx){
-    std::cout << "idx:" << idx << " x:" << sorted->GetX()[idx] << " y:" << sorted->GetY()[idx] << std::endl;
+  if (verbosity_ > 0) {
+    for(int idx=0; idx<sorted->GetN(); ++idx){
+      std::cout << "idx:" << idx << " x:" << sorted->GetX()[idx] << " y:" << sorted->GetY()[idx] << std::endl;
+    }
   }
   
   return sorted;
@@ -352,22 +354,29 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     }
     // determine bestfit graph
     float bestFit=-1.; 
-    float buffer=0., bestX=-999., bestY=-999.;
+    float /*buffer=0.,*/ bestX=-999., bestY=-999.;
     for(int i=0; i<nevent; ++i){
       limit->GetEvent(i);
-      buffer=scan2D->GetBinContent(scan2D->FindBin(x,y));
-      if (bestFit<0 || bestFit>buffer){
-	//std::cout << "update bestFit coordinates: " << std::endl;
-	//std::cout << "-->old: x=" << bestX << " y=" << bestY << " value=" << bestFit << std::endl;
-	// adjust best fit to granularity of scan; we do this to prevent artefacts 
-	// when quoting the 1d uncertainties of the scan. For the plotting this 
-	// does not play a role. 
-	bestX=scan2D->GetXaxis()->GetBinCenter(scan2D->GetXaxis()->FindBin(x)); 
-	bestY=scan2D->GetYaxis()->GetBinCenter(scan2D->GetYaxis()->FindBin(y));
-	bestFit=buffer; 
-	//std::cout << "-->new: x=" << bestX << " y=" << bestY << " value=" << bestFit << std::endl;
+      // Best fit will be entry where DeltaNLL is exactly zero
+      if (nll == 0.0) {
+        bestX = x;
+        bestY = y;
+        bestFit = nll;
+        // buffer=scan2D->GetBinContent(scan2D->FindBin(x,y));
+        // if (bestFit<0 || bestFit>buffer){
+        //std::cout << "update bestFit coordinates: " << std::endl;
+        //std::cout << "-->old: x=" << bestX << " y=" << bestY << " value=" << bestFit << std::endl;
+        // adjust best fit to granularity of scan; we do this to prevent artefacts 
+        // when quoting the 1d uncertainties of the scan. For the plotting this 
+        // does not play a role. 
+        // bestX=scan2D->GetXaxis()->GetBinCenter(scan2D->GetXaxis()->FindBin(x)); 
+        // bestY=scan2D->GetYaxis()->GetBinCenter(scan2D->GetYaxis()->FindBin(y));
+        // bestFit=buffer; 
+        //std::cout << "-->new: x=" << bestX << " y=" << bestY << " value=" << bestFit << std::endl;
       }
-    }
+      // If for some reason no entry with nll == 0.0 is found leave the best
+      // fit as the default above
+      }
     if(verbosity_>0){
       std::cout << "Bestfit value from likelihood-scan:" << std::endl;
       std::cout << "x=" << bestX << " y=" << bestY << " value=" << bestFit << std::endl;
