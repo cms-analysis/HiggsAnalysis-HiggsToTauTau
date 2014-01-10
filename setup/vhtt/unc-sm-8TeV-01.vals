@@ -20,11 +20,11 @@ emtCatHigh,emtCatLow simulated CMS_scale_t_emt_8TeV 1.03
 emtCatHigh,emtCatLow simulated CMS_fake_b_8TeV 1.01
 
 # Background uncertainties - due to the theoretical unc. on the xsection
-emtCatHigh,emtCatLow zz pdf_qqbar_zz 1.033
-emtCatHigh,emtCatLow zz QCDscale_VV_zz 1.023
+emtCatHigh,emtCatLow zz pdf_qqbar 1.033
+emtCatHigh,emtCatLow zz QCDscale_VV 1.023
 
-emtCatHigh,emtCatLow wz pdf_qqbar_wz 1.04
-emtCatHigh,emtCatLow wz QCDscale_VV_wz 1.04
+emtCatHigh,emtCatLow wz pdf_qqbar 1.04
+emtCatHigh,emtCatLow wz QCDscale_VV 1.04
 
 emtCatHigh,emtCatLow signal pdf_qqbar 1.023
 emtCatHigh,emtCatLow signal QCDscale_VH 1.01
