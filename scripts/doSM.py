@@ -243,7 +243,7 @@ if options.update_setup :
                     DIR=directories[chn][per],
                     CHN=chn+'_*' if chn == 'vhtt' else 'htt_'+chn,
                     PER=per,
-                    PATTERN=pattern
+                    PATTERN=pattern if chn != 'vhtt' else ''
                     )
                 for file in glob.glob(source) :
                     if not chn == "vhtt" :
