@@ -1,8 +1,8 @@
 (1) setup limit structure (blinded + unblinded):
 ## datacards blinded (bbb-asimov)
 doMSSM.py -a bbb --label='-yymmdd-mssm' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-yymmdd-mssm.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-yymmdd" --update-all --SMHasBackground --SMHasSignal  --blind-datacards [--extra-templates='ggH_SM125,qqH_SM125,VH_SM125'] 
-## datacards unblinded (bbb)
-setup-htt.py -i aux-yymmdd-mssm/bbb -o LIMITS-yymmdd-mssm/bbb -a mssm -c 'mt et em mm tt' 90 130 100-200:20 250-500:50 600-1000:100
+## datacards unblinded (bbb) 
+setup-htt.py -i aux-yymmdd-mssm/bbb -o LIMITS-yymmdd-mssm/bbb-[mhmodm,mhmodp,mhmax-mu+200,lightstau1,tauphobic] -a mssm -c 'mt et em mm tt' 90 130 100-200:20 250-500:50 600-1000:100
 ## datacards unblinded (bbb) for lowmH
 setup-htt.py -i aux-yymmdd-mssm/bbb -o LIMITS-yymmdd-mssm/bbb-lowmH --lowmH -a mssm -c 'mt et em mm tt' 300-3100:20
 ## datacards for ML-fit (bbb-mlfit)
@@ -51,13 +51,13 @@ plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fi
 
 (4) launch/collect/plot mA-tanb 
 ## lauch final setup of datacards
-lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --model [mhmodm,mhmodp,mhmax-mu+200]
-lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --model [mhmodm,mhmodp,mhmax-mu+200] --lxq
+lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic]
+lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic] --lxq
 ## lauch limit calculation
 lxb: submit.py --tanb+  LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
 lxq: submit.py --tanb+  LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_cpu=48:00:00 -j y -o /dev/null" --options='--multi-core=4'
 ## plotting
-plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-[mhmax,mhmodm,mhmodp,lowmH].py LIMITS-yymmdd-mssm/bbb[-asimov] [expectedOnly=1]
+plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic].py LIMITS-yymmdd-mssm/bbb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic]-[-asimov] [expectedOnly=1]
 ## comparison plots (per channel)
 .x HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C+("limits_mA-tanb.root", "mm,em,tt,et,mt,cmb", true, false, "mssm-tanb", 0., 60., false, "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV", true, false)
 ## comparison plots (per category)
@@ -88,10 +88,13 @@ plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-
 
 (7) launch/collect/plot signal hypothesis test SM vs MSSM in mA-tanb plane 
 ## lauch final setup of datacards
-lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM --model [mhmodm,mhmodp,mhmax-mu+200]
-lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM --model [mhmodm,mhmodp,mhmax-mu+200] --lxq
-## lauch limit calculation
-lxb: submit.py --HypothesisTest  LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
-lxq: submit.py --HypothesisTest  LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_cpu=48:00:00 -j y -o /dev/null" --options=''
+lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic]
+lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic] --lxq
+## lauch HybridNew TEV teststatistic toy calculation
+lxb: submit.py --HypothesisTest --cycles=5 LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
+lxq: submit.py --HypothesisTest --cycles=5 LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_cpu=48:00:00 -j y -o /dev/null" --options=''
+## collect toys and calculate limits
+lxb: submit.py --HypothesisTest --collectToys LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
+lxq: submit.py --HypothesisTest --collectToys LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_cpu=48:00:00 -j y -o /dev/null" --options=''
 ## plotting
-plot --hypothesis-test HiggsAnalysis/HiggsToTauTau/python/layouts/hypo-test.py LIMITS-yymmdd-mssm/bbb[-asimov] [expectedOnly=1]
+plot --hypothesis-test HiggsAnalysis/HiggsToTauTau/python/layouts/hypo-test-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic].py LIMITS-yymmdd-mssm/bbb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic]-[-asimov] [expectedOnly=1]
