@@ -54,15 +54,16 @@ layout = cms.PSet(
    ,500.
    ,600.
    ,700.
-   ,800.
-   ,900.
-   ,1000.
+   #,800.
+   #,900.
+   #,1000.
      ),
     ## is this mssm?
     mssm = cms.bool(True),
+    ## print the 2-sigma band
+    outerband = cms.bool(True),
     ## plot expected only
-    expectedOnly = cms.bool(False),
+    expectedOnly = cms.bool(True),
     ## plot transparent?
     transparent = cms.bool(True),
-
 )
