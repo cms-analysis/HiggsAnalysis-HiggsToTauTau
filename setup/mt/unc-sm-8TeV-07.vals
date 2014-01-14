@@ -4,7 +4,7 @@ muTau_vbf_tight		signal		             	lumi_8TeV            				1.026
 muTau_vbf_tight   	ggH				pdf_gg    					1.097
 muTau_vbf_tight   	qqH				pdf_qqbar					1.036
 muTau_vbf_tight   	WH,ZH				pdf_qqbar					1.04
-muTau_vbf_tight		ggH				QCDscale_ggH2in 				0.693
+muTau_vbf_tight		ggH				QCDscale_ggH2in 				1.307
 muTau_vbf_tight		qqH				QCDscale_qqH					1.031
 muTau_vbf_tight		WH,ZH 	                        QCDscale_VH					1.04
 muTau_vbf_tight		ggH				UEPS						0.881

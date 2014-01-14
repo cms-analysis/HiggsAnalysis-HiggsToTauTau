@@ -4,7 +4,7 @@ eleTau_vbf		signal		             	lumi_7TeV            			1.022
 eleTau_vbf   		ggH				pdf_gg    				1.097
 eleTau_vbf   		qqH				pdf_qqbar				1.036
 eleTau_vbf   		WH,ZH				pdf_qqbar				1.02
-eleTau_vbf		ggH				QCDscale_ggH2in 			0.725
+eleTau_vbf		ggH				QCDscale_ggH2in 			1.275
 eleTau_vbf		qqH				QCDscale_qqH				0.981
 eleTau_vbf		WH,ZH				QCDscale_VH				1.04
 eleTau_vbf		qqH,WH,ZH				UEPS					0.987

@@ -2,7 +2,7 @@ tauTau_vbf			signal		            	lumi_8TeV            			1.026
 tauTau_vbf	   		ggH				pdf_gg    				1.097
 tauTau_vbf	   		qqH				pdf_qqbar				1.036
 tauTau_vbf  	 		WH,ZH				pdf_qqbar				1.02
-tauTau_vbf			ggH				QCDscale_ggH2in	 			0.59
+tauTau_vbf			ggH				QCDscale_ggH2in	 			1.41
 tauTau_vbf			qqH				QCDscale_qqH				1.013
 tauTau_vbf			WH,ZH				QCDscale_VH	 			1.04 
 tauTau_vbf		    	ggH				UEPS					0.90

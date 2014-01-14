@@ -4,7 +4,7 @@ muTau_1jet_medium		signal		             	lumi_8TeV            				1.026
 muTau_1jet_medium	   	ggH				pdf_gg    					1.097
 muTau_1jet_medium	   	qqH				pdf_qqbar					1.036
 muTau_1jet_medium	   	WH,ZH				pdf_qqbar					1.04
-muTau_1jet_medium		ggH				QCDscale_ggH 			        	1.105
+muTau_1jet_medium		ggH				QCDscale_ggH1in 			        	1.105
 muTau_1jet_medium		qqH				QCDscale_qqH					1.015
 muTau_1jet_medium		WH,ZH 	                        QCDscale_VH					1.04
 muTau_1jet_medium		qqH,WH,ZH				UEPS						1.007

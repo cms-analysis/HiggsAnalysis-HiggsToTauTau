@@ -4,7 +4,7 @@ muTau_vbf_loose		signal		             	lumi_8TeV            				1.026
 muTau_vbf_loose   	ggH				pdf_gg    					1.097
 muTau_vbf_loose   	qqH				pdf_qqbar					1.036
 muTau_vbf_loose   	WH,ZH				pdf_qqbar					1.04
-muTau_vbf_loose		ggH				QCDscale_ggH2in 				0.772
+muTau_vbf_loose		ggH				QCDscale_ggH2in 				1.228
 muTau_vbf_loose		qqH				QCDscale_qqH					1.018
 muTau_vbf_loose		WH,ZH 	                        QCDscale_VH					1.04
 muTau_vbf_loose		qqH,WH,ZH				UEPS						0.988

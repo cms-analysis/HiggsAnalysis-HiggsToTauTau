@@ -5,7 +5,7 @@ mumu_1jet_high			TTJ 							CMS_eff_b_8TeV					0.97
 mumu_1jet_high			ggH,ggH_hww125						pdf_gg						1.097
 mumu_1jet_high			qqH,qqH_hww125						pdf_qqbar					1.036
 mumu_1jet_high			WH,ZH							pdf_qqbar						1.01
-mumu_1jet_high			ggH,ggH_hww125						QCDscale_ggH					1.107
+mumu_1jet_high			ggH,ggH_hww125						QCDscale_ggH1in					1.107
 mumu_1jet_high			qqH,qqH_hww125						QCDscale_qqH					1.013
 mumu_1jet_high			WH,ZH 	                        			QCDscale_VH					1.04
 mumu_1jet_high			ggH,ggH_hww125						UEPS						0.978

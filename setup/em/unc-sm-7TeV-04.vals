@@ -12,7 +12,7 @@ emu_vbf_loose      	ttbar                		CMS_eff_b_7TeV                 		0.95
 emu_vbf_loose		ggH,ggH_hww125			pdf_gg    				1.097
 emu_vbf_loose		qqH,qqH_hww125			pdf_qqbar				1.036
 emu_vbf_loose		WH,ZH			pdf_qqbar				1.02
-emu_vbf_loose		ggH,ggH_hww125			QCDscale_ggH2in 			0.726
+emu_vbf_loose		ggH,ggH_hww125			QCDscale_ggH2in 			1.274
 emu_vbf_loose		qqH,qqH_hww125			QCDscale_qqH				1.019
 emu_vbf_loose		WH,ZH 	                QCDscale_VH				1.04
 emu_vbf_loose		ggH,ggH_hww125			UEPS					0.89
