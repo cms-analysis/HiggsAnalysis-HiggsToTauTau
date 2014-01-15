@@ -19,8 +19,8 @@ parser.add_option("--label", dest="label", default="", type="string",
 parser.add_option("--blind-datacards", dest="blind_datacards", default=False, action="store_true",
                   help="Option to blind datacards. Also needs to be turned on to inject SM to datacards. [Default: False]")
 parser.add_option("--extra-templates", dest="extra_templates", default="", type="string", help="List of extra background or signal templates which should be injected to the asimov dataset. Needs to be comma seperated list. Here used to inject SM signal into MSSM datacards. [Default: \"\"]")
-parser.add_option("--ignore-during-scaling", dest="do_not_scales", default="vhtt", type="string",
-                  help="List of channels, which the scaling by cross seciton times BR should not be applied. The list should be embraced by call-ons and separeted by whitespace or comma. [Default: \"vhtt\"]")
+parser.add_option("--ignore-during-scaling", dest="do_not_scales", default="mm vhtt", type="string",
+                  help="List of channels, which the scaling by cross seciton times BR should not be applied. The list should be embraced by call-ons and separeted by whitespace or comma. [Default: \"vhtt mm\"]")
 parser.add_option("--hww-mass", dest="hww_mass", default='', type="string",
                   help="specify this option if you want to fix the hww contributions for the channels em and vhtt to a given mass. This configuration applies to hww as part of the signal. When an empty string is given the mass will be scanned. For analysis hhw-bg, where hww signal contributions are defined as background in any case mH=125 GeV willbe chosenindependent from this configuration. [Default: '']")
 parser.add_option("--hww-scale", dest="hww_scale", default='1.', type="string",
@@ -91,10 +91,10 @@ for chn in config.channels:
 
 ## postfix pattern for input files
 patterns = {
-    'no-bbb'         : '-hcg',
-    'bbb'            : '-hcg',
-    'no-bbb:hww-sig' : '-hcg',
-    'bbb:hww-sig'    : '-hcg',
+    'no-bbb'         : '',
+    'bbb'            : '',
+    'no-bbb:hww-sig' : '',
+    'bbb:hww-sig'    : '',
     }
 if options.mvis: 
     patterns = {
@@ -105,10 +105,10 @@ if options.mvis:
         }
 if options.rebin_morph:
     patterns = {
-        'no-bbb'         : '-hcg',
-        'bbb'            : '-hcg',
-        'no-bbb:hww-sig' : '-hcg',
-        'bbb:hww-sig'    : '-hcg',
+        'no-bbb'         : '-fbsig',
+        'bbb'            : '-fbsig',
+        'no-bbb:hww-sig' : '-fbsig',
+        'bbb:hww-sig'    : '-fbsig',
         }
 
 if options.update_all :
@@ -237,13 +237,13 @@ if options.update_setup :
             for ana in analyses :
                 pattern = ''
                 if ana in patterns.keys() :
-                    pattern = patterns[ana]
+                    pattern = patterns[ana] if (options.rebin_morph and finebin_opt[chn]) else ''
                 source="{CMSSW_BASE}/src/auxiliaries/shapes/{DIR}/{CHN}.inputs-sm-{PER}{PATTERN}.root".format(
                     CMSSW_BASE=cmssw_base,
                     DIR=directories[chn][per],
                     CHN=chn+'_*' if chn == 'vhtt' else 'htt_'+chn,
                     PER=per,
-                    PATTERN=pattern if chn != 'vhtt' else ''
+                    PATTERN=pattern
                     )
                 for file in glob.glob(source) :
                     if not chn == "vhtt" :
