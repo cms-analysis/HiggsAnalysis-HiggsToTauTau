@@ -1,13 +1,13 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-muTau_1jet_medium		signal		             	lumi_7TeV            				1.026
+muTau_1jet_medium		signal		             	lumi_7TeV            				1.022
 muTau_1jet_medium	   	ggH				pdf_gg    					1.097
 muTau_1jet_medium	   	qqH				pdf_qqbar					1.036
-muTau_1jet_medium	   	VH				pdf_qqbar					1.02
-muTau_1jet_medium		ggH				QCDscale_ggH 		        		1.105
+muTau_1jet_medium	   	WH,ZH				pdf_qqbar					1.02
+muTau_1jet_medium		ggH				QCDscale_ggH1in 		        		1.105
 muTau_1jet_medium		qqH				QCDscale_qqH					1.015
-muTau_1jet_medium		VH 	                        QCDscale_VH					1.04
-muTau_1jet_medium		qqH,VH				UEPS						1.007
+muTau_1jet_medium		WH,ZH 	                        QCDscale_VH					1.04
+muTau_1jet_medium		qqH,WH,ZH				UEPS						1.007
 muTau_1jet_medium		ggH				UEPS						0.946
 muTau_1jet_medium 		signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_m 					1.02
 muTau_1jet_medium 		signal,ZTT,TT,VV 		CMS_eff_t_mutau_7TeV 				1.08
@@ -15,7 +15,7 @@ muTau_1jet_medium 		signal,ZTT,TT,VV 		CMS_eff_t_mutau_medium_7TeV 			1.08
 muTau_1jet_medium		signal,ZTT   			CMS_scale_t_mutau_7TeV 				1.00
 muTau_1jet_medium         	ggH				CMS_scale_j_7TeV				1.05
 muTau_1jet_medium         	qqH				CMS_scale_j_7TeV				1.01
-muTau_1jet_medium         	VH				CMS_scale_j_7TeV				1.05
+muTau_1jet_medium         	WH,ZH				CMS_scale_j_7TeV				1.05
 muTau_1jet_medium         	VV				CMS_scale_j_7TeV				1.02
 muTau_1jet_medium	   	signal,ZJ,ZL	    		CMS_htt_scale_met_7TeV				1.05
 muTau_1jet_medium	   	TT		    		CMS_htt_scale_met_7TeV				1.07

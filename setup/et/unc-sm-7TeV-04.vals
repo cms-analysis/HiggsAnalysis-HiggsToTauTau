@@ -1,21 +1,21 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-eleTau_1jet_high_lowhiggs		signal		             	lumi_7TeV            					1.026
+eleTau_1jet_high_lowhiggs		signal		             	lumi_7TeV            					1.022
 eleTau_1jet_high_lowhiggs	   	ggH				pdf_gg    						1.097
 eleTau_1jet_high_lowhiggs	   	qqH				pdf_qqbar						1.036
-eleTau_1jet_high_lowhiggs		VH				pdf_qqbar						1.02
-eleTau_1jet_high_lowhiggs		ggH				QCDscale_ggH 		        			1.125
+eleTau_1jet_high_lowhiggs		WH,ZH				pdf_qqbar						1.02
+eleTau_1jet_high_lowhiggs		ggH				QCDscale_ggH1in 		        			1.125
 eleTau_1jet_high_lowhiggs		qqH				QCDscale_qqH						1.013
-eleTau_1jet_high_lowhiggs		VH				QCDscale_VH						1.04
+eleTau_1jet_high_lowhiggs		WH,ZH				QCDscale_VH						1.04
 eleTau_1jet_high_lowhiggs		ggH				UEPS							0.954
-eleTau_1jet_high_lowhiggs		qqH,VH				UEPS							0.996
+eleTau_1jet_high_lowhiggs		qqH,WH,ZH				UEPS							0.996
 eleTau_1jet_high_lowhiggs 		signal,ZTT,ZJ,ZL,TT,VV 		CMS_eff_e 						1.02
 eleTau_1jet_high_lowhiggs 		signal,ZTT,TT,VV 		CMS_eff_t_etau_7TeV 					1.08
 eleTau_1jet_high_lowhiggs 		signal,ZTT,VV 			CMS_eff_t_etau_high_7TeV 				1.03
 eleTau_1jet_high_lowhiggs		signal,ZTT   			CMS_scale_t_etau_7TeV 					1.00
 eleTau_1jet_high_lowhiggs         	ggH				CMS_scale_j_7TeV					1.06
 eleTau_1jet_high_lowhiggs         	qqH				CMS_scale_j_7TeV					1.02
-eleTau_1jet_high_lowhiggs         	VH				CMS_scale_j_7TeV					1.06
+eleTau_1jet_high_lowhiggs         	WH,ZH				CMS_scale_j_7TeV					1.06
 eleTau_1jet_high_lowhiggs         	VV				CMS_scale_j_7TeV					1.02
 eleTau_1jet_high_lowhiggs		signal,ZJ,ZL	    		CMS_htt_scale_met_7TeV					1.05
 eleTau_1jet_high_lowhiggs		TT		    		CMS_htt_scale_met_7TeV					1.07

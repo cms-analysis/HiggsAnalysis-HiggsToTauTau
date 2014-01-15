@@ -1,13 +1,13 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-eleTau_vbf		signal		             	lumi_7TeV            			1.026
+eleTau_vbf		signal		             	lumi_7TeV            			1.022
 eleTau_vbf   		ggH				pdf_gg    				1.097
 eleTau_vbf   		qqH				pdf_qqbar				1.036
-eleTau_vbf   		VH				pdf_qqbar				1.02
-eleTau_vbf		ggH				QCDscale_ggH2in 			0.725
+eleTau_vbf   		WH,ZH				pdf_qqbar				1.02
+eleTau_vbf		ggH				QCDscale_ggH2in 			1.275
 eleTau_vbf		qqH				QCDscale_qqH				0.981
-eleTau_vbf		VH				QCDscale_VH				1.04
-eleTau_vbf		qqH,VH				UEPS					0.987
+eleTau_vbf		WH,ZH				QCDscale_VH				1.04
+eleTau_vbf		qqH,WH,ZH				UEPS					0.987
 eleTau_vbf		ggH				UEPS					0.90
 eleTau_vbf 		signal,ZTT,ZL,ZJ,TT,VV 		CMS_eff_e 				1.02
 eleTau_vbf 		signal,ZTT,TT,VV 		CMS_eff_t_etau_7TeV 			1.08
@@ -16,7 +16,7 @@ eleTau_vbf 		signal,ZTT,VV 			CMS_eff_t_etau_high_7TeV 		1.012
 eleTau_vbf		signal,ZTT			CMS_scale_t_etau_7TeV 			1.00
 eleTau_vbf         	ggH				CMS_scale_j_7TeV			1.20
 eleTau_vbf         	qqH				CMS_scale_j_7TeV			1.07
-eleTau_vbf         	VH				CMS_scale_j_7TeV			1.20
+eleTau_vbf         	WH,ZH				CMS_scale_j_7TeV			1.20
 eleTau_vbf         	TT				CMS_scale_j_7TeV			1.10
 eleTau_vbf         	VV				CMS_scale_j_7TeV			1.25
 eleTau_vbf   		signal,ZL,ZJ	    		CMS_htt_scale_met_7TeV			1.05

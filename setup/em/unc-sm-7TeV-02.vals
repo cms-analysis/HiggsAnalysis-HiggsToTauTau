@@ -1,5 +1,5 @@
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
-emu_1jet_low	signal,EWK              	lumi_7TeV            			1.026
+emu_1jet_low	signal,EWK              	lumi_7TeV            			1.022
 emu_1jet_low	signal,background 		CMS_eff_e 				1.02
 emu_1jet_low 	signal,Ztt	 		CMS_scale_e_7TeV			1.00
 emu_1jet_low	signal,background 		CMS_eff_m 				1.02
@@ -9,10 +9,10 @@ emu_1jet_low	signal,EWK,ttbar      		CMS_htt_scale_met_7TeV			1.05
 emu_1jet_low	ttbar	        		CMS_eff_b_7TeV		        	0.95
 emu_1jet_low	ggH,ggH_hww125			pdf_gg    				1.097
 emu_1jet_low	qqH,qqH_hww125			pdf_qqbar				1.036
-emu_1jet_low	VH,VH_hww125			pdf_qqbar				1.02
-emu_1jet_low	ggH,ggH_hww125			QCDscale_ggH 	        		1.105
+emu_1jet_low	WH,ZH			pdf_qqbar				1.02
+emu_1jet_low	ggH,ggH_hww125			QCDscale_ggH1in 	        		1.105
 emu_1jet_low	qqH,qqH_hww125			QCDscale_qqH				1.008
-emu_1jet_low	VH,VH_hww125 	                QCDscale_VH				1.04
+emu_1jet_low	WH,ZH 	                QCDscale_VH				1.04
 emu_1jet_low	ggH,ggH_hww125			UEPS					0.984
 emu_1jet_low	Ztt				CMS_htt_zttNorm_7TeV 			1.03
 emu_1jet_low	Ztt				CMS_htt_extrap_ztt_emu_1jet_low_7TeV	1.03
