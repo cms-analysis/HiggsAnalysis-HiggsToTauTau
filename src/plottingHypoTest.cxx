@@ -12,7 +12,7 @@
 #include <iostream>
 
 void
-plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool plotOuterBand=true)
+plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, td::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool plotOuterBand=true)
 {
   // set up styles
   canv.cd();
@@ -78,6 +78,15 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* inn
   background->SetLineColor(ph->GetNumber());
   background->Draw("3");
 
+  int idx=0;
+  //int coloredBands[] = {kRed, kRed-7, kRed-9};
+  int coloredBands[] = {kWhite, kWhite, kWhite}; 
+  for(std::map<double,TGraphAsymmErrors*>::reverse_iterator band = higgsBands.rbegin(); band!=higgsBands.rend(); ++band, ++idx){
+    //for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band, ++idx){
+    band->second->SetLineColor(coloredBands[idx]);
+    band->second->SetFillColor(coloredBands[idx]);
+    band->second->Draw("3same");
+  }
 
   if(!expectedOnly){
   //if(observed){
@@ -113,6 +122,28 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* inn
     //if(observed){
     if(transparent) plain->Draw("Fsame");
     observed->Draw("Lsame");
+  }
+
+  idx=0;
+  std::map<std::string,int> coloredComps;
+  coloredComps["arXiv_1211_6956" ] = kOrange+3;
+  coloredComps["arXiv_1204_2760" ] = kGreen+4;
+  coloredComps["arXiv_1302_2892" ] = kBlue;
+  coloredComps["arXiv_1205_5736" ] = kRed;
+  coloredComps["HIG_12_052_lower"] = kRed;
+  coloredComps["HIG_12_052_upper"] = kRed;
+  for(std::map<std::string,TGraph*>::const_iterator comp = comparisons.begin(); comp!=comparisons.end(); ++comp, ++idx){
+    comp->second->SetLineColor(coloredComps[comp->second->GetName()]);
+    comp->second->SetFillColor(coloredComps[comp->second->GetName()]);
+    if(std::string(comp->second->GetName())==std::string("HIG_12_052_upper")){
+      comp->second->SetFillStyle(3004);
+      comp->second->SetLineWidth(-702);
+    }
+    else{
+      comp->second->SetFillStyle(3005);
+      comp->second->SetLineWidth(+702);
+    }
+    comp->second->Draw("same");
   }
   
   TPaveText* theory1;
@@ -150,10 +181,10 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* inn
   /// add the proper legend
   TLegend* leg;
   if(log){
-    leg = new TLegend(0.68, 0.32, 0.935, 0.61);
+    leg = new TLegend(0.68, (!higgsBands.empty() || !comparisons.empty()) ? 0.15 : 0.32, (!higgsBands.empty() || !comparisons.empty()) ? 0.935: 0.935, 0.61);
   }
   else{
-    leg = new TLegend(0.18, 0.62, 0.50, 0.89);
+    leg = new TLegend(0.18, (!higgsBands.empty() || !comparisons.empty()) ? 0.53 : 0.62, (!higgsBands.empty() || !comparisons.empty()) ? 0.55: 0.50, 0.89);
   }
   leg->SetBorderSize(  1 );
   leg->SetFillStyle (1001);
@@ -174,6 +205,19 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* inn
     leg->AddEntry(outerBand, "#pm 2#sigma expected", "F"); 
   }
   leg->AddEntry(background, "excluded by m_{Higgs}", "F");
+  //for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band){
+  //  leg->AddEntry(band->second, TString::Format("m_{h,H}=125GeV #pm %.0fGeV", band->first), "F");
+  //}
+  //if(theory=="MSSM m_{h}^{max} scenario") leg->AddEntry(upperLEP, "LEP", "F");
+  for(std::map<std::string,TGraph*>::const_iterator comp = comparisons.begin(); comp!=comparisons.end(); ++comp){
+    if(std::string(comp->first) == std::string("EMPTY")) { continue; }
+    else if(std::string(comp->first) == std::string("HIG-12-050 exp")) {
+      leg->AddEntry(comp->second, (comp->first).c_str(), "L");
+    }
+    else{
+      leg->AddEntry(comp->second, (comp->first).c_str(), "FL");
+    }
+  }
   leg->Draw("same");
   //canv.RedrawAxis("g");
   canv.RedrawAxis();
