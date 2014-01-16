@@ -196,7 +196,6 @@ mgroup = OptionGroup(parser, "TANB+ COMMAND OPTIONS", "These are the command lin
 mgroup.add_option("--multi-core", dest="tanbMultiCore", type="int", default=-1, help="Run combine calls in parallel on several cores when running in more tanb+ (supply nTasks) when scanning in tanBeta")
 mgroup.add_option("--refit", dest="refit", default=False, action="store_true", help="Do not run the asymptotic limits again, but only run the last step, the fit for the limit determination. (Only valid for option --tanb+, for all other options will have no effect.)  [Default: False]")
 parser.add_option_group(mgroup)
-
 ##
 ## FELDMAN COUSINS COMMAND LINE OPTIONS
 ##
@@ -205,6 +204,15 @@ ngroup.add_option("--feldman-cousins-toys", dest="fcToys", type="int", default=5
 ngroup.add_option("--feldman-cousins-points", dest="fcPoints", type="string", default="CV=1.0,CF=1.0", help="The point that should be evaluated for the Feldman-Cousins construction. A point should be given by [parameter-name]=[value]. In case of more than one parameter the parameter name, value pairs should be comma separated. In case of a single parameter the name can be dropped from the string. Whitespace is not allowed [Default: 'CV=1.0,CF=1.0']")
 ngroup.add_option("--feldman-cousins-ranges", dest="fcRanges", type="string", default="CV=0.0,2.0,CF=0.0,2.0", help="The range that should be evaluated for the Feldman-Cousins construction. A range should be given by [parameter-name]=[lower-bound],[upper-bound]. Incase of more than one parameter the parameter name, lower-bound, upper-bound triples should be separated by a ':'. In case of a single parameter the name can be dropped from the string. Whitespace is not allowed [Default: CV=0.0,2.0:CF=0.0,2.0]")
 parser.add_option_group(ngroup)
+##
+## HYPOTHESIS TEST
+##
+ogroup = OptionGroup(parser, "HYPOTHESIS TEST OPTIONS", "These are the command line options that can be used to configure the submission of hypothesis test limits in the MSSM.")
+ogroup.add_option("--cycle", dest="cycle", default="", type="string",
+                  help="Name of the cycle, e.g. '1', '2', etc.. . [Defaul: \"\"]")
+ogroup.add_option("--collectToys", dest="collectToys", default=False, action="store_true",
+                  help="Collect toys and calculate hypothesis test limits using lxb (lxq). To run with this options the toys have to be produced beforehand. [Default: False]")
+parser.add_option_group(ogroup)
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -1149,40 +1157,45 @@ for directory in args :
         ## determine mass value from directory name
         mass  = get_mass(directory)
         ## fetch workspace for each tanb point
-        directoryList = os.listdir(".")
-        ## list of all tasks to do
-        tasks = []
-        for wsp in directoryList :
-            if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) :
-                tanb_string = wsp[wsp.rfind("_")+1:]
-                if not options.refit :
-                    tasks.append(
-                        ["combine -m {mass} -M HybridNew --testStat=TEV --generateExt=1 --generateNuis=0 {wsp} --singlePoint 1 --saveHybridResult --fork 4 -T 1000 -i 1 --clsAcc 0 --fullBToys".format(mass=mass, wsp=wsp), #fork down from 40
-                         "mv higgsCombineTest.HybridNew.mH{mass}.root point_{tanb}".format(mass=mass, tanb=tanb_string)
-                         ]
-                        )
-        if options.tanbMultiCore == -1:
-            for task in tasks:
-                for subtask in task:
-                    print subtask
-                    os.system(subtask)
-        else:
-            ## run in parallel using multiple cores
-            parallelize(tasks, options.tanbMultiCore)
-        directoryList = os.listdir(".")
-        for wsp in directoryList :
-            if re.match(r"point_\d+(.\d\d)?.root", wsp) :
-                tanb_string = wsp[wsp.rfind("_")+1:]
-                os.system(r'root -l -q -b point_{tanb} "{CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/test/plotting/hypoTestResultTree.cxx(\"qmu.FixedMu_{tanb}\",{mass},1,\"x\")"'.format(CMSSW_BASE=os.environ["CMSSW_BASE"], mass=mass, tanb=tanb_string)) 
-        directoryList = os.listdir(".")
-        if "HypothesisTest.root" in directoryList :
-            os.system("rm HypothesisTest.root")
-        for wsp in directoryList :
-            if re.match(r"qmu.FixedMu_\d+(.\d\d)?.root", wsp) :
-                tanb_string = wsp[wsp.rfind("_")+1:]
-                os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/extractSignificanceStats.py --filename qmu.FixedMu_{TANB}".format(CMSSW_BASE=os.environ["CMSSW_BASE"], TANB=tanb_string))
-        os.system("em HypothesisTest.root") 
-        os.system("hadd HypothesisTest.root HypothesisTest_*.root") 
+        directoryList = os.listdir(".")       
+        ## produce HybridNew TEV toys and save them
+        if not options.collectToys: 
+            ## list of all tasks to do
+            tasks = []
+            for wsp in directoryList :
+                if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) :
+                    tanb_string = wsp[wsp.rfind("_")+1:]
+                    if not options.refit :
+                        tasks.append(
+                            ["combine -m {mass} -M HybridNew -n Test{cycle} --testStat=TEV --generateExt=1 --generateNuis=0 {wsp} --singlePoint 1 --saveHybridResult --fork 4 -T 200 -i 1 --clsAcc 0 --fullBToys".format(mass=mass, cycle=options.cycle, wsp=wsp), #fork down from 40
+                             "mv higgsCombineTest{cycle}.HybridNew.mH{mass}.root point_{tanb}_{cycle}".format(mass=mass, tanb=tanb_string, cycle=options.cycle)
+                             ]
+                            )
+            if options.tanbMultiCore == -1:
+                for task in tasks:
+                    for subtask in task:
+                        print subtask
+                        os.system(subtask)
+            else:
+                ## run in parallel using multiple cores
+                parallelize(tasks, options.tanbMultiCore)
+        ## collect toys and produce CLs limits
+        else :
+            for wsp in directoryList :
+                if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) : 
+                    tanb_string = wsp[wsp.rfind("_")+1:]         
+                    os.system("hadd point_{tanb} point_{tanb}_*".format(tanb=tanb_string))
+                    os.system("rm point_{tanb}_*".format(tanb=tanb_string))
+                    os.system(r'root -l -q -b point_{tanb} "{CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/test/plotting/hypoTestResultTree.cxx(\"qmu.FixedMu_{tanb}\",{mass},1,\"x\")"'.format(CMSSW_BASE=os.environ["CMSSW_BASE"], mass=mass, tanb=tanb_string)) 
+            directoryList = os.listdir(".")
+            if "HypothesisTest.root" in directoryList :
+                os.system("rm HypothesisTest.root")
+            for wsp in directoryList :
+                if re.match(r"qmu.FixedMu_\d+(.\d\d)?.root", wsp) :
+                    tanb_string = wsp[wsp.rfind("_")+1:]
+                    os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/extractSignificanceStats.py --filename qmu.FixedMu_{TANB}".format(CMSSW_BASE=os.environ["CMSSW_BASE"], TANB=tanb_string))
+            os.system("em HypothesisTest.root") 
+            os.system("hadd HypothesisTest.root HypothesisTest_*.root") 
         
     
     ## always remove all tmp remainders from the parallelized harvesting
