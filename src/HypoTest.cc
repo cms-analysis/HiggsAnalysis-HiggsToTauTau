@@ -2,13 +2,13 @@
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, td::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool plotOuterBand=true);
+void plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool plotOuterBand=true);
 
 struct myclass {
   bool operator() (int i,int j) { return (i<j);}
 } myobject;
 
-TGraphAsymmErrors*  
+/*TGraphAsymmErrors*  
 PlotLimits::higgsConstraint(const char* directory, double mass, double deltaM)
 {
   TGraphAsymmErrors* graph = new TGraphAsymmErrors();
@@ -41,7 +41,7 @@ PlotLimits::higgsConstraint(const char* directory, double mass, double deltaM)
     higgs.close();
   }
   return graph;
-}
+  }*/
 
 void
 PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
