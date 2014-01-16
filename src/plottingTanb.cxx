@@ -9,8 +9,6 @@
 #include "TPaveText.h"
 #include "TGraphAsymmErrors.h"
 #include "TROOT.h"
-#include "TBox.h"
-#include <iostream>
 //#include "TRint.h"
 
 void
@@ -37,7 +35,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   TColor* ph = gROOT->GetColor(kYellow);
   ph->SetAlpha(0.0);  
   TColor* backgroundColor = gROOT->GetColor(kRed);
-  if(transparent) backgroundColor->SetAlpha(0.1);
+  backgroundColor->SetAlpha(0.1);
 
   // for logx the label for x axis values below 100 needs to be slightly shifted to prevent 
   // the label from being printed into the canvas
@@ -75,7 +73,6 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
     background->SetPoint(ipoint, outerBand->GetX()[ipoint], 50); 
     background->SetPointEYlow (ipoint, 50);
     background->SetPointEYhigh(ipoint, 50);
-    //std::cout << ipoint << " " << outerBand->GetN() << " " << outerBand->GetX()[ipoint] << std::endl;
   }
   background->SetPoint(observed->GetN(), outerBand->GetX()[outerBand->GetN()-1], 50);
   background->SetPointEYlow (outerBand->GetN(), 50);
