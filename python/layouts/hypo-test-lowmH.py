@@ -180,4 +180,16 @@ layout = cms.PSet(
     expectedOnly = cms.bool(True),
     ## plot transparent?
     transparent = cms.bool(True),
+    ## print constraints from mH=125GeV
+    higgs125 = cms.bool(True),
+    ## add arXiv-1211-6956 (ATLAS) to plot
+    arXiv_1211_6956 = cms.bool(False),
+    ## add arXiv-1204-2760 (ATLAS) to plot
+    arXiv_1204_2760 = cms.bool(False),
+    ## add arXiv-1302-2892
+    arXiv_1302_2892 = cms.bool(False),
+    ## add arXiv-1205-5736
+    arXiv_1205_5736 = cms.bool(False),
+    ## add HIG-12-052
+    HIG_12_052 = cms.bool(False),
 )
