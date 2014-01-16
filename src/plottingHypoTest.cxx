@@ -30,6 +30,8 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* inn
   if(transparent) onesigma->SetAlpha(0.5);
   TColor* ph = gROOT->GetColor(kYellow);
   ph->SetAlpha(0.0);
+  TColor* backgroundColor = gROOT->GetColor(kRed);
+  backgroundColor->SetAlpha(0.1);
 
   // for logx the label for x axis values below 100 needs to be slightly shifted to prevent 
   // the label from being printed into the canvas
@@ -58,6 +60,24 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* inn
     hr->GetXaxis()->SetNoExponent();
     hr->GetXaxis()->SetLabelSize(0.040);
   }
+
+  TGraphAsymmErrors* background = new TGraphAsymmErrors();
+  background->SetPoint(0, outerBand->GetX()[0], 50);
+  background->SetPointEYlow (0, 50);
+  background->SetPointEYhigh(0, 50); 
+  for(int ipoint=1; ipoint<observed->GetN(); ipoint++){
+    background->SetPoint(ipoint, outerBand->GetX()[ipoint], 50); 
+    background->SetPointEYlow (ipoint, 50);
+    background->SetPointEYhigh(ipoint, 50);
+  }
+  background->SetPoint(observed->GetN(), outerBand->GetX()[outerBand->GetN()-1], 50);
+  background->SetPointEYlow (outerBand->GetN(), 50);
+  background->SetPointEYhigh(outerBand->GetN(), 50); 
+  background->SetFillStyle(1001.);
+  background->SetFillColor(backgroundColor->GetNumber());
+  background->SetLineColor(ph->GetNumber());
+  background->Draw("3");
+
 
   if(!expectedOnly){
   //if(observed){
@@ -153,6 +173,7 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* inn
   //if(outerBand){ 
     leg->AddEntry(outerBand, "#pm 2#sigma expected", "F"); 
   }
+  leg->AddEntry(background, "excluded by m_{Higgs}", "F");
   leg->Draw("same");
   //canv.RedrawAxis("g");
   canv.RedrawAxis();

@@ -33,7 +33,9 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   TColor* onesigma = gROOT->GetColor(kGray+1);
   if(transparent) onesigma->SetAlpha(0.5);
   TColor* ph = gROOT->GetColor(kYellow);
-  ph->SetAlpha(0.0);
+  ph->SetAlpha(0.0);  
+  TColor* backgroundColor = gROOT->GetColor(kRed);
+  backgroundColor->SetAlpha(0.1);
 
   // for logx the label for x axis values below 100 needs to be slightly shifted to prevent 
   // the label from being printed into the canvas
@@ -62,19 +64,37 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
     hr->GetXaxis()->SetNoExponent();
     hr->GetXaxis()->SetLabelSize(0.040);
   }
+
+  TGraphAsymmErrors* background = new TGraphAsymmErrors();
+  background->SetPoint(0, outerBand->GetX()[0], 50);
+  background->SetPointEYlow (0, 50);
+  background->SetPointEYhigh(0, 50); 
+  for(int ipoint=1; ipoint<observed->GetN(); ipoint++){
+    background->SetPoint(ipoint, outerBand->GetX()[ipoint], 50); 
+    background->SetPointEYlow (ipoint, 50);
+    background->SetPointEYhigh(ipoint, 50);
+  }
+  background->SetPoint(observed->GetN(), outerBand->GetX()[outerBand->GetN()-1], 50);
+  background->SetPointEYlow (outerBand->GetN(), 50);
+  background->SetPointEYhigh(outerBand->GetN(), 50); 
+  background->SetFillStyle(1001.);
+  background->SetFillColor(backgroundColor->GetNumber());
+  background->SetLineColor(ph->GetNumber());
+  background->Draw("3");
+
   upperLEP->SetFillStyle(1001.);
   upperLEP->SetFillColor(lep->GetNumber());
   upperLEP->SetLineColor(ph->GetNumber());
   upperLEP->SetLineStyle(1.);
   upperLEP->SetLineWidth(4.);
-  if(theory=="MSSM m_{h}^{max} scenario") upperLEP->Draw("F");
+  //if(theory=="MSSM m_{h}^{max} scenario") upperLEP->Draw("F");
 
   lowerLEP->SetFillStyle(1001.);
   lowerLEP->SetFillColor(kWhite);
   lowerLEP->SetLineColor(kWhite);
   lowerLEP->SetLineStyle(1.);
   lowerLEP->SetLineWidth(4.);
-  if(theory=="MSSM m_{h}^{max} scenario") lowerLEP->Draw("F");
+  //if(theory=="MSSM m_{h}^{max} scenario") lowerLEP->Draw("F");
 
   if(observed){
     plain->SetLineColor(ph->GetNumber());
@@ -246,10 +266,11 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
       leg->AddEntry(outerBand, "#pm 2#sigma expected", "F"); 
       //  }
   }
+  leg->AddEntry(background, "excluded by m_{Higgs}", "F");
   for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band){
     leg->AddEntry(band->second, TString::Format("m_{h,H}=125GeV #pm %.0fGeV", band->first), "F");
   }
-  if(theory=="MSSM m_{h}^{max} scenario") leg->AddEntry(upperLEP, "LEP", "F");
+  //if(theory=="MSSM m_{h}^{max} scenario") leg->AddEntry(upperLEP, "LEP", "F");
   for(std::map<std::string,TGraph*>::const_iterator comp = comparisons.begin(); comp!=comparisons.end(); ++comp){
     if(std::string(comp->first) == std::string("EMPTY")) { continue; }
     else if(std::string(comp->first) == std::string("HIG-12-050 exp")) {
