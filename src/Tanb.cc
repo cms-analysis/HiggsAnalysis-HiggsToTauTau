@@ -5,6 +5,7 @@
 /// root macros. It is therefore not element of the PlotLimits class.
 void plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_low, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* innerBand_low, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* outerBand_low, TGraph* expected, TGraph* expected_low, TGraph* observed, TGraph* observed_low, TGraph* lowerLEP, TGraph* upperLEP, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, TGraph* injected=0, double min=0., double max=50., bool log=false, bool transparent=false);
 
+/*
 TGraphAsymmErrors*  
 PlotLimits::higgsConstraint(const char* directory, double mass, double deltaM)
 {
@@ -21,6 +22,42 @@ PlotLimits::higgsConstraint(const char* directory, double mass, double deltaM)
 	if(fabs(mh-mass)<deltaM){
 	  if(!filled){
 	    graph->SetPoint(ipoint, bins_[imass], tanb); graph->SetPointEYlow(ipoint, 0.);
+	    ipoint++; filled = true;
+	    lowerTanb=tanb;
+	  }
+	  upperTanb=tanb;
+	}
+      }
+      if(upperTanb>0){
+	graph->SetPointEYhigh(ipoint-1, upperTanb-lowerTanb);
+      }
+    }
+    higgs.close();
+  }
+  return graph;
+}
+*/
+
+TGraphAsymmErrors*  
+PlotLimits::higgsConstraint(const char* directory, double mass, double deltaM)
+{
+  TGraphAsymmErrors* graph = new TGraphAsymmErrors();
+  for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
+    std::string line;
+    bool filled = false;
+    float tanb_save=-99.0, tanb, mh, mA, mH, upperTanb=-1., lowerTanb=-1.;
+    //ifstream higgs (TString::Format("%s/%d/higgs_mass.dat", directory, (int)bins_[imass]));
+    ifstream higgs (TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/higgs_%d.dat", (int)bins_[imass]));
+    if(higgs.is_open()){
+      while(higgs.good()){
+	getline(higgs,line);
+	sscanf(line.c_str(),"%f %f %f %f", &tanb, &mh, &mA, &mH);
+	
+	if(fabs(mh-mass)<deltaM && tanb!=tanb_save){
+	  if(!filled){
+	    graph->SetPoint(ipoint, bins_[imass], tanb); 
+	    graph->SetPointEYlow(ipoint, 0.);
+	    tanb_save=tanb;
 	    ipoint++; filled = true;
 	    lowerTanb=tanb;
 	  }
@@ -113,9 +150,9 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   // setup contratins from Higgs mass
   std::map<double, TGraphAsymmErrors*> higgsBands;
   if(higgs125_){
-    //higgsBands[3] = higgsConstraint(directory, 125., 3.);
+    higgsBands[3] = higgsConstraint(directory, 125., 3.);
     //higgsBands[2] = higgsConstraint(directory, 125., 2.);
-    higgsBands[1] = higgsConstraint(directory, 125., 1.);
+    //higgsBands[1] = higgsConstraint(directory, 125., 1.);
     //for(unsigned int deltaM=0; deltaM<3; ++deltaM){
     //  higgsBands[3-deltaM] = higgsConstraint(directory, 125., 4-deltaM);
     //}

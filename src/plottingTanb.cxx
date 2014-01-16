@@ -35,7 +35,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   TColor* ph = gROOT->GetColor(kYellow);
   ph->SetAlpha(0.0);  
   TColor* backgroundColor = gROOT->GetColor(kRed);
-  backgroundColor->SetAlpha(0.1);
+  backgroundColor->SetAlpha(0.3);
 
   // for logx the label for x axis values below 100 needs to be slightly shifted to prevent 
   // the label from being printed into the canvas
@@ -81,6 +81,16 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   background->SetFillColor(backgroundColor->GetNumber());
   background->SetLineColor(ph->GetNumber());
   background->Draw("3");
+
+  int idx=0;
+  //int coloredBands[] = {kRed, kRed-7, kRed-9};
+  int coloredBands[] = {kWhite, kWhite, kWhite}; 
+  for(std::map<double,TGraphAsymmErrors*>::reverse_iterator band = higgsBands.rbegin(); band!=higgsBands.rend(); ++band, ++idx){
+    //for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band, ++idx){
+    band->second->SetLineColor(coloredBands[idx]);
+    band->second->SetFillColor(coloredBands[idx]);
+    band->second->Draw("3same");
+  }
 
   upperLEP->SetFillStyle(1001.);
   upperLEP->SetFillColor(lep->GetNumber());
@@ -169,14 +179,6 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
     injected->Draw("Lsame");
   }
   
-  int idx=0;
-  int coloredBands[] = {kRed, kRed-7, kRed-9}; 
-  for(std::map<double,TGraphAsymmErrors*>::reverse_iterator band = higgsBands.rbegin(); band!=higgsBands.rend(); ++band, ++idx){
-    //for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band, ++idx){
-    band->second->SetLineColor(coloredBands[idx]);
-    band->second->SetFillColor(coloredBands[idx]);
-    band->second->Draw("3same");
-  }
   idx=0;
   std::map<std::string,int> coloredComps;
   coloredComps["arXiv_1211_6956" ] = kOrange+3;
@@ -267,9 +269,9 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
       //  }
   }
   leg->AddEntry(background, "excluded by m_{Higgs}", "F");
-  for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band){
-    leg->AddEntry(band->second, TString::Format("m_{h,H}=125GeV #pm %.0fGeV", band->first), "F");
-  }
+  //for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band){
+  //  leg->AddEntry(band->second, TString::Format("m_{h,H}=125GeV #pm %.0fGeV", band->first), "F");
+  //}
   //if(theory=="MSSM m_{h}^{max} scenario") leg->AddEntry(upperLEP, "LEP", "F");
   for(std::map<std::string,TGraph*>::const_iterator comp = comparisons.begin(); comp!=comparisons.end(); ++comp){
     if(std::string(comp->first) == std::string("EMPTY")) { continue; }
