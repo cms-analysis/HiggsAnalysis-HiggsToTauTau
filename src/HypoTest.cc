@@ -13,13 +13,13 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
 {
   //different MSSM scenarios
   std::string extralabel_ = "";
-  std::string model = "";
-  if(theory_=="MSSM m_{h}^{max} scenario") extralabel_= "mhmax-"; model = "mhmax-mu+200";
-  if(theory_=="MSSM m_{h}^{mod-} scenario") extralabel_= "mhmodm-"; model = "mhmodm";
-  if(theory_=="MSSM m_{h}^{mod+} scenario") extralabel_= "mhmodp-"; model = "mhmodp";
-  if(theory_=="MSSM low m_{H} scenario") extralabel_= "lowmH-"; model = "lowmH";
-  if(theory_=="MSSM lightstau scenario") extralabel_= "lightstau1"; model = "lighstau1";
-  if(theory_=="MSSM tauphobic scenario") extralabel_= "tauphobic-"; model = "tauphobic";
+  const char* model;
+  if(theory_=="MSSM m_{h}^{max} scenario") {extralabel_= "mhmax-"; model = "mhmax-mu+200";}
+  if(theory_=="MSSM m_{h}^{mod-} scenario") {extralabel_= "mhmodm-"; model = "mhmodm";}
+  if(theory_=="MSSM m_{h}^{mod+} scenario") {extralabel_= "mhmodp-"; model = "mhmodp";}
+  if(theory_=="MSSM low m_{H} scenario") {extralabel_= "lowmH-"; model = "lowmH";}
+  if(theory_=="MSSM lightstau scenario") {extralabel_= "lightstau1"; model = "lighstau1";}
+  if(theory_=="MSSM tauphobic scenario") {extralabel_= "tauphobic-"; model = "tauphobic";}
 
   // set up styles
   SetStyle();
