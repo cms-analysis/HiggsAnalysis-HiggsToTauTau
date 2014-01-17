@@ -356,3 +356,36 @@ PlotLimits::minimum(TGraph* graph)
   std::cout << "M I N I M U M   I S : " << minimum << std::endl;
   return minimum;
 }
+
+TGraphAsymmErrors*  
+PlotLimits::higgsConstraint(const char* directory, double mass, double deltaM, const char* model)
+{
+  TGraphAsymmErrors* graph = new TGraphAsymmErrors();
+  for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
+    std::string line;
+    bool filled = false;
+    float tanb_save=-99.0, tanb, mh, mA, mH, upperTanb=-1., lowerTanb=-1.;
+    ifstream higgs (TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/%s/higgs_%d.dat", model, (int)bins_[imass])); 
+    if(higgs.is_open()){
+      while(higgs.good()){
+	getline(higgs,line);
+	sscanf(line.c_str(),"%f %f %f %f", &tanb, &mh, &mA, &mH);
+	if((fabs(mh-mass)<deltaM || fabs(mH-mass)<deltaM) && tanb!=tanb_save){
+	  if(!filled){
+	    graph->SetPoint(ipoint, bins_[imass], tanb); 
+	    graph->SetPointEYlow(ipoint, 0.);
+	    tanb_save=tanb;
+	    ipoint++; filled = true;
+	    lowerTanb=tanb;
+	  }
+	  upperTanb=tanb;
+	}
+      }
+      if(upperTanb>0){
+	graph->SetPointEYhigh(ipoint-1, upperTanb-lowerTanb);
+      }
+    }
+    higgs.close();
+  }
+  return graph;
+}
