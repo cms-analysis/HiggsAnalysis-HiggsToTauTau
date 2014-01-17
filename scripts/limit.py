@@ -1167,7 +1167,7 @@ for directory in args :
                     tanb_string = wsp[wsp.rfind("_")+1:]
                     if not options.refit :
                         tasks.append(
-                            ["combine -m {mass} -M HybridNew -n Test{cycle} --testStat=TEV --generateExt=1 --generateNuis=0 {wsp} --singlePoint 1 --saveHybridResult --fork 4 -T 200 -i 1 --clsAcc 0 --fullBToys".format(mass=mass, cycle=options.cycle, wsp=wsp), #fork down from 40
+                            ["combine -m {mass} -M HybridNew -n Test{cycle} --testStat=TEV --generateExt=1 --generateNuis=0 {wsp} --singlePoint 1 --saveHybridResult --fork 4 -T 200 -i 1 --clsAcc 0 --fullBToys -s {seed}".format(mass=mass, cycle=options.cycle, wsp=wsp, seed=random.randint(100000, 999999)), #fork down from 40
                              "mv higgsCombineTest{cycle}.HybridNew.mH{mass}.root point_{tanb}_{cycle}".format(mass=mass, tanb=tanb_string, cycle=options.cycle)
                              ]
                             )
