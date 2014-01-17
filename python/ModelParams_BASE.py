@@ -89,8 +89,7 @@ class ModelParams_BASE:
         Determine the mass of the higgs given as input. This function uses the
         mssm_xsec_tools.
         """
-        #if higgs == 'A': return self.mA #this is no longer correct for lowmH!
-        if higgs == 'h':         
+        #if higgs == 'A': return self.mA #this is no longer correct for lowmH!         
         return query['higgses'][higgs]['mass']
 
     def query_xsec(self, higgs, channel, query):
