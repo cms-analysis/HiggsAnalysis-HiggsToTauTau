@@ -52,12 +52,11 @@ echo "in directory {directory}"
 $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/submit.py --tanb+ --setup {OLD} {directory} --options "--model {MODEL} {MSSMvsSM}"
 '''
 
-lxq_fragment = '''
-#!/usr/bin/bash
-#$ -l h_cpu=1:00:00
+lxq_fragment = '''#!/bin/zsh
+#$ -l h_rt=01:00:00
 export SCRAM_ARCH=$scram_arch
+export CMSSW_BASE=$cmssw_base
 ini cmssw_cvmfs
-ini autoproxy
 '''
 
 condor_sub_template = '''#!/usr/bin/env condor_submit

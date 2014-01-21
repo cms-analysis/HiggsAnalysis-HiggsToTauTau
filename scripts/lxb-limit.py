@@ -80,10 +80,10 @@ fi
 rm -r {tmphead}
 '''
 
-lxq_fragment = '''#!/bin/bash
+lxq_fragment = '''#!/bin/zsh
 export SCRAM_ARCH=$scram_arch
+export CMSSW_BASE=$cmssw_base
 ini cmssw_cvmfs
-ini autoproxy
 '''
 
 condor_sub_template = '''
