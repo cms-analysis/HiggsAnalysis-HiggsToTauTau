@@ -87,11 +87,10 @@ for m in masses :
 os.system("rm -r {TMPDIR}/{USER}/{DIR}_{JOBID}")
 '''
 
-lxq_fragment = '''#!/usr/bin/env bash
-
+lxq_fragment = '''#!/bin/zsh 
+export CMSSW_BASE=$cmssw_base
 export SCRAM_ARCH=$scram_arch
 ini cmssw_cvmfs
-ini autoproxy
 '''
 
 condor_sub_template = '''

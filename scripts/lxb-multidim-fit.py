@@ -50,11 +50,10 @@ limit.py --multidim-fit --algo grid --points {POINTS} --firstPoint {FIRST} --las
 mv {DIRECTORY}/.done_{OUTPUT} {DIRECTORY}/.done_{IDX}
 '''
 
-lxq_fragment = '''
-#!/bin/bash
+lxq_fragment = '''#!/bin/zsh
 export SCRAM_ARCH=$scram_arch
+export CMSSW_BASE=$cmssw_base
 ini cmssw_cvmfs
-ini autoproxy
 '''
 
 ## arrange input parameters
