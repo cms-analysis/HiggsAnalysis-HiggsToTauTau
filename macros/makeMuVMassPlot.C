@@ -214,7 +214,7 @@ void makeMuVMassPlot(bool iUseWWType = true,double iMassStep=5,bool iDebug=false
   textlabel->AddText(label);
   //textlabel->Draw();
   //CMSPrelim("Preliminary, #sqrt{s}=7-8 TeV, L=24.3 fb^{-1}, H#rightarrow#tau#tau", "", 0.145, 0.835);
-  CMSPrelim("CMS Preliminary, H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV", "", 0.145, 0.835);
+  CMSPrelim("CMS (unpublished) H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV", "", 0.145, 0.835);
   gPad->RedrawAxis();
   lCan->Update();
 
