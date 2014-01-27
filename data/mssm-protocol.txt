@@ -41,10 +41,10 @@ python summary_plots.py -a mssm --mA [160,350,500] --tanb [8,20,40] --hww-signal
 (3) launch/collect/plot Goodness-of-fit
 ## launch
 lxb: submit.py --goodness-of-fit --toys 100 --cycles 10 LIMITS-yymmdd-mssm/bbb-gof/*/[160,350,500]
-lxq: submit.py --goodness-of-fit --toys 100 --cycles 10 LIMITS-yymmdd-mssm/bbb-gof/*/[160,350,500] --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
+lxq: submit.py --goodness-of-fit --toys 100 --cycles 10 LIMITS-yymmdd-mssm/bbb-gof/*/[160,350,500] --lxq --queue="-l h_vmem=4000M -l h_rt=12:00:00 -j y -o /dev/null"
 ## collect
 lxb: submit.py --goodness-of-fit --collect-injected-toys LIMITS-yymmdd-mssm/bbb-gof/*/[160,350,500]
-lxq: submit.py --goodness-of-fit --collect-injected-toys LIMITS-yymmdd-mssm/bbb-gof/*/[160,350,500] --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
+lxq: submit.py --goodness-of-fit --collect-injected-toys LIMITS-yymmdd-mssm/bbb-gof/*/[160,350,500] --lxq --queue="-l h_vmem=4000M -l h_rt=12:00:00 -j y -o /dev/null"
 ## plotting
 plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py LIMITS-yymmdd-mssm/bbb-mlfit masspoints='160 350'
 
@@ -55,7 +55,7 @@ lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --model [mhmodm,mhmodp
 lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic] --lxq
 ## lauch limit calculation
 lxb: submit.py --tanb+  LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
-lxq: submit.py --tanb+  LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_cpu=48:00:00 -j y -o /dev/null" --options='--multi-core=4'
+lxq: submit.py --tanb+  LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null" --options='--multi-core=4'
 ## plotting
 plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic].py LIMITS-yymmdd-mssm/bbb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic]-[-asimov] [expectedOnly=1]
 ## comparison plots (per channel)
@@ -66,12 +66,12 @@ plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-[mhmax,mhmodm,mhmodp
 (5) launch/plot 1d limits
 ## launch ggH 1d limit
 lxb: submit.py --asymptotic --physics-model='ggH' LIMITS-yymmdd-mssm/bbb-ggH/*/*
-lxq: submit.py --asymptotic --physics-model='ggH' LIMITS-yymmdd-mssm/bbb-ggH/*/* --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
+lxq: submit.py --asymptotic --physics-model='ggH' LIMITS-yymmdd-mssm/bbb-ggH/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=12:00:00 -j y -o /dev/null"
 ## plot ggH 1d limit
 plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-ggH.py LIMITS-yymmdd-mssm/bbb-ggH/*/* [expecteOnly=1]
 ## launch bbH 1d limit
 lxb: submit.py --asymptotic --physics-model='bbH' LIMITS-yymmdd-mssm/bbb-bbH/*/*
-lxq: submit.py --asymptotic --physics-model='bbH' LIMITS-yymmdd-mssm/bbb-bbH/*/* --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
+lxq: submit.py --asymptotic --physics-model='bbH' LIMITS-yymmdd-mssm/bbb-bbH/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=12:00:00 -j y -o /dev/null"
 ## plot bbH 1d limit
 plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-bbH.py LIMITS-yymmdd-mssm/bbb-bbH/*/* [expecteOnly=1]
 
@@ -79,7 +79,7 @@ plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-bbH.py L
 (6) launch/collect/plot 2d limits
 ## launch ggH-bbH 2d limits
 lxb: submit.py --multidim-fit --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-ggH-bbH/*
-lxq: submit.py --multidim-fit --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-ggH-bbH/* --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
+lxq: submit.py --multidim-fit --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-ggH-bbH/* --lxq --queue="-l h_vmem=4000M -l h_rt=12:00:00 -j y -o /dev/null"
 ## collect ggH-bbH 2d limits
 limit.py --collect --multidim-fit --physics-model="ggH-bbH" LIMITS-yymmdd-mssm/bbb-ggH-bbH/*
 ## plotting
@@ -92,9 +92,9 @@ lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM --model [mh
 lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic] --lxq
 ## lauch HybridNew TEV teststatistic toy calculation
 lxb: submit.py --HypothesisTest --cycles=5 LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
-lxq: submit.py --HypothesisTest --cycles=5 LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_cpu=48:00:00 -j y -o /dev/null" --options=''
+lxq: submit.py --HypothesisTest --cycles=5 LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null" --options=''
 ## collect toys and calculate limits
 lxb: submit.py --HypothesisTest --collectToys LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
-lxq: submit.py --HypothesisTest --collectToys LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_cpu=48:00:00 -j y -o /dev/null" --options=''
+lxq: submit.py --HypothesisTest --collectToys LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null" --options=''
 ## plotting
 plot --hypothesis-test HiggsAnalysis/HiggsToTauTau/python/layouts/hypo-test-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic].py LIMITS-yymmdd-mssm/bbb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic]-[-asimov] [expectedOnly=1]
