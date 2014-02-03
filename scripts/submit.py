@@ -680,7 +680,7 @@ if options.optBayes :
     cycle=int(cycle_end)
     while cycle>=int(cycles_begin) :
         print "***********************************************************"
-        print " %s cycle(s) to finish" % % (int(cycle_end)-int(cycle_begin)+1)
+        print " %s cycle(s) to finish" % (int(cycle_end)-int(cycle_begin)+1)
         print "***********************************************************"
         if len(subvec(args, 90, 150))>0 :
             cmd = "submit-slave.py --bin combine --method Bayesian"
