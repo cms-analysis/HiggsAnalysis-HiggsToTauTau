@@ -48,8 +48,8 @@ parser.add_option_group(agroup)
 bgroup = OptionGroup(parser, "COMMON OPTIONS", "These are command line options that are not specific to one or the other main option. Where such restrictions exist they are specified in the corresponding parameter description below.")
 bgroup.add_option("--printOnly", dest="printOnly", default=False, action="store_true",
                   help="Only print the command line option(s) to the screen. Do not execute them. This can be used if you only want to know the command line option to use it elsewhere in a slightly modified way. [Default: False]")
-bgroup.add_option("--cycles", dest="cycles", default=1, type="int",
-                  help="Number of submission cycles for crab job submission. This option only applies to the main options --CLs and --tanb. For all other main options it has no effect. One submission cycle consists of 50 crab jobs. [Default: 1]")
+bgroup.add_option("--cycles", dest="cycles", default="1-1", type="string",
+                  help="Number of submission cycles for crab job submission. The options constitutes of two integers seperated by a minus sign, e.g. '7-10'. This would mean the script would run cycles 10, 9, 8, and 7. It makes combining toys easier '--HypothesisTest'. in The option only applies to the main options --CLs, --tanb and --HypothesisTest. For all other main options it has no effect. One submission cycle consists of 50 crab jobs. [Default: 1]")
 bgroup.add_option("--options", dest="opt", default="", type="string",
                   help="You can use this string for additional options that can be passed on to the scripts that are executed within this script. NB: these options should be enclosed by \"...\". [Default: \"\"]")
 parser.add_option_group(bgroup)
@@ -649,10 +649,11 @@ if options.optInject :
 ## CLs
 ##
 if options.optCLs :
-    cycle = options.cycles
-    while cycle>0 :
+    cycle_begin, cycle_end = options.cycles.split("-")
+    cycle=int(cycle_end)
+    while cycle>=int(cycles_begin) :
         print "***********************************************************"
-        print " %s cycle(s) to finish" % cycle
+        print " %s cycle(s) to finish" % (int(cycle_end)-int(cycle_begin)+1)
         print "***********************************************************"
         cmd = "submit-slave.py --bin combine --method CLs"
         sub = "--toysH 50 -t 500 -j 500 --random"
@@ -675,10 +676,11 @@ if options.optCLs :
 ## BAYES
 ##
 if options.optBayes :
-    cycle = options.cycles
-    while cycle>0 :
+    cycle_begin, cycle_end = options.cycles.split("-")
+    cycle=int(cycle_end)
+    while cycle>=int(cycles_begin) :
         print "***********************************************************"
-        print " %s cycle(s) to finish" % cycle
+        print " %s cycle(s) to finish" % (int(cycle_end)-int(cycle_begin)+1)
         print "***********************************************************"
         if len(subvec(args, 90, 150))>0 :
             cmd = "submit-slave.py --bin combine --method Bayesian"
@@ -692,11 +694,12 @@ if options.optBayes :
 ## TANB
 ##
 if options.optTanb or options.optTanbPlus :
-    cycle = options.cycles
-    while cycle>0 :
+    cycle_begin, cycle_end = options.cycles.split("-")
+    cycle=int(cycle_end)
+    while cycle>=int(cycles_begin) :
         if options.optTanb :
             print "***********************************************************"
-            print " %s cycle(s) to finish" % cycle
+            print " %s cycle(s) to finish" % (int(cycle_end)-int(cycle_begin)+1)
             print "***********************************************************"
         cmd = ""
         if options.optTanb :
@@ -887,8 +890,9 @@ if options.optHypothesisTest :
     ## produce HybridNew TEV toys
     if not options.collectToys:   
         if options.interactive :
-            cycle = options.cycles
-            while cycle>0 :
+            cycle_begin, cycle_end = options.cycles.split("-")
+            cycle=int(cycle_end)
+            while cycle>=int(cycle_begin) :
                 for dir in args :
                     mass = get_mass(dir)
                     if mass == 'common' :
@@ -899,8 +903,9 @@ if options.optHypothesisTest :
                         os.system("limit.py --HypothesisTest --cycle={cycle} {OPTS} {DIR}".format(OPTS=options.opt, DIR=dir, cycle=cycle))
                 cycle = cycle-1
         else :
-            cycle = options.cycles
-            while cycle>0 :
+            cycle_begin, cycle_end = options.cycles.split("-")
+            cycle=int(cycle_end)
+            while cycle>=int(cycle_begin) :
                 for dir in args :
                     ## chop off masses directory if present as this will be added automatically by the submission script
                     if is_number(get_mass(dir)) or get_mass(dir) == "common" :
