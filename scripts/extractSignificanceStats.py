@@ -166,11 +166,11 @@ hSM.Rebin(100)
 hMSSM.Rebin(100)
 
 ### caculation of CLs with gaus fit to binned histo
-hSM.Fit("gaus")
-fitSM = ROOT.TF1(hSM.GetFunction("gaus"))
-chi2SM = fitSM.GetChisquare()
-if options.verbosity :
-    print "chi2 of hSM", chi2SM, "mean of fitSM", fitSM.GetParameter(1), "sigma of fitSM", fitSM.GetParameter(2)
+## hSM.Fit("gaus")
+## fitSM = ROOT.TF1(hSM.GetFunction("gaus"))
+## chi2SM = fitSM.GetChisquare()
+## if options.verbosity :
+##     print "chi2 of hSM", chi2SM, "mean of fitSM", fitSM.GetParameter(1), "sigma of fitSM", fitSM.GetParameter(2)
 
 #par= n.zeros(6, dtype=float)
 #g1    = ROOT.TF1("g1","gaus",(xlow-xlow/100)/100,(xup+xup/100)/100);
@@ -188,12 +188,12 @@ if options.verbosity :
 #DoubleGauss.SetLineColor(2)
 #hMSSM.Fit(DoubleGauss, "R")
 
-hMSSM.Fit("gaus")
-fitMSSM = ROOT.TF1(hMSSM.GetFunction("gaus"))
-#fitMSSM = ROOT.TF1(hMSSM.GetFunction("[0]*exp(-0.5*((x-[1])/[2])**2)+[3]*exp(-0.5*((x-[4])/[5])**2)"))
-chi2MSSM = fitMSSM.GetChisquare()
-if options.verbosity :
-    print "chi2 of hMSSM", chi2MSSM, "mean of fitMSSM", fitMSSM.GetParameter(1), "sigma of fitMSSM", fitMSSM.GetParameter(2)
+#hMSSM.Fit("gaus")
+#fitMSSM = ROOT.TF1(hMSSM.GetFunction("gaus"))
+##fitMSSM = ROOT.TF1(hMSSM.GetFunction("[0]*exp(-0.5*((x-[1])/[2])**2)+[3]*exp(-0.5*((x-[4])/[5])**2)")) 
+#chi2MSSM = fitMSSM.GetChisquare()
+#if options.verbosity :
+#    print "chi2 of hMSSM", chi2MSSM, "mean of fitMSSM", fitMSSM.GetParameter(1), "sigma of fitMSSM", fitMSSM.GetParameter(2)
 
 ## tailSMminus2sigma  =fitSM.Integral  (xlow-xlow/100,fitSM.GetParameter(1)-2*fitSM.GetParameter(2))
 ## tailMSSMminus2sigma=fitMSSM.Integral(xlow-xlow/100,fitSM.GetParameter(1)-2*fitSM.GetParameter(2))
@@ -302,15 +302,20 @@ pt3 = ROOT.TPaveText(0.45,0.90,0.74,0.94,"NDC")
 pt3.SetFillColor(0)
 pt3.AddText(" mA = {MASS} GeV,  tanb = {TANB}".format(MASS=staff.mh, TANB=tanb))
 pt3.SetBorderSize(0)
+pt4 = ROOT.TPaveText(0.45,0.90,0.74,0.94,"NDC")
+pt4.SetFillColor(0)
+pt4.AddText(" ntoys = {NTOYS}".format(NTOYS=ntoysMSSM))
+pt4.SetBorderSize(0)
 pt.Draw()
 pt2.Draw()
 pt3.Draw()
+pt4.Draw()
 c2.SaveAs("sigsep_"+tanb+".png")
 c2.SaveAs("sigsep_"+tanb+".pdf")
-#c1.SaveAs("sigsep_"+tanb+".root")
+#c2.SaveAs("sigsep_"+tanb+".root")
 
-fitSM.Delete()
-fitMSSM.Delete()
+#fitSM.Delete()
+#fitMSSM.Delete()
 
 
 
