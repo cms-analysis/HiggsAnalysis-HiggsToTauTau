@@ -166,45 +166,62 @@ hSM.Rebin(100)
 hMSSM.Rebin(100)
 
 ### caculation of CLs with gaus fit to binned histo
-hSM.Fit("gaus")
-fitSM = ROOT.TF1(hSM.GetFunction("gaus"))
-chi2SM = fitSM.GetChisquare()
-if options.verbosity :
-    print "chi2 of hSM", chi2SM, "mean of fitSM", fitSM.GetParameter(1), "sigma of fitSM", fitSM.GetParameter(2)
+## hSM.Fit("gaus")
+## fitSM = ROOT.TF1(hSM.GetFunction("gaus"))
+## chi2SM = fitSM.GetChisquare()
+## if options.verbosity :
+##     print "chi2 of hSM", chi2SM, "mean of fitSM", fitSM.GetParameter(1), "sigma of fitSM", fitSM.GetParameter(2)
 
-hMSSM.Fit("gaus")
-fitMSSM = ROOT.TF1(hMSSM.GetFunction("gaus"))
-chi2MSSM = fitMSSM.GetChisquare()
-if options.verbosity :
-    print "chi2 of hMSSM", chi2MSSM, "mean of fitMSSM", fitMSSM.GetParameter(1), "sigma of fitMSSM", fitMSSM.GetParameter(2)
+#par= n.zeros(6, dtype=float)
+#g1    = ROOT.TF1("g1","gaus",(xlow-xlow/100)/100,(xup+xup/100)/100);
+#g2    = ROOT.TF1("g2","gaus",(xlow-xlow/100)/100,(xup+xup/100)/100);
+#total = ROOT.TF1("total","gaus(0)+gaus(3)",(xlow-xlow/100)/100,(xup+xup/100)/100);
+#total.SetLineColor(2);
+#hMSSM.Fit(g1,"R");
+#hMSSM.Fit(g2,"R+");
+#g1.GetParameters(par[0]);
+#g2.GetParameters(par[3]);
+#total.SetParameters(par);
+#hMSSM.Fit(total,"R+");
 
-tailSMminus2sigma  =fitSM.Integral  (xlow-xlow/100,fitSM.GetParameter(1)-2*fitSM.GetParameter(2))
-tailMSSMminus2sigma=fitMSSM.Integral(xlow-xlow/100,fitSM.GetParameter(1)-2*fitSM.GetParameter(2))
+#DoubleGauss = ROOT.TF1("DG","[0]*exp(-0.5*((x-[1])/[2])**2)+[3]*exp(-0.5*((x-[4])/[5])**2)",(xlow-xlow/100)/100,(xup+xup/100)/100)
+#DoubleGauss.SetLineColor(2)
+#hMSSM.Fit(DoubleGauss, "R")
 
-tailSMminus1sigma  =fitSM.Integral  (xlow-xlow/100,fitSM.GetParameter(1)-1*fitSM.GetParameter(2))
-tailMSSMminus1sigma=fitMSSM.Integral(xlow-xlow/100,fitSM.GetParameter(1)-1*fitSM.GetParameter(2))
+#hMSSM.Fit("gaus")
+#fitMSSM = ROOT.TF1(hMSSM.GetFunction("gaus"))
+##fitMSSM = ROOT.TF1(hMSSM.GetFunction("[0]*exp(-0.5*((x-[1])/[2])**2)+[3]*exp(-0.5*((x-[4])/[5])**2)")) 
+#chi2MSSM = fitMSSM.GetChisquare()
+#if options.verbosity :
+#    print "chi2 of hMSSM", chi2MSSM, "mean of fitMSSM", fitMSSM.GetParameter(1), "sigma of fitMSSM", fitMSSM.GetParameter(2)
 
-tailSMexp          =fitSM.Integral  (xlow-xlow/100,fitSM.GetParameter(1))
-tailMSSMexp        =fitMSSM.Integral(xlow-xlow/100,fitSM.GetParameter(1))
+## tailSMminus2sigma  =fitSM.Integral  (xlow-xlow/100,fitSM.GetParameter(1)-2*fitSM.GetParameter(2))
+## tailMSSMminus2sigma=fitMSSM.Integral(xlow-xlow/100,fitSM.GetParameter(1)-2*fitSM.GetParameter(2))
 
-tailSMplus1sigma   =fitSM.Integral  (xlow-xlow/100,fitSM.GetParameter(1)+1*fitSM.GetParameter(2))
-tailMSSMplus1sigma =fitMSSM.Integral(xlow-xlow/100,fitSM.GetParameter(1)+1*fitSM.GetParameter(2))
+## tailSMminus1sigma  =fitSM.Integral  (xlow-xlow/100,fitSM.GetParameter(1)-1*fitSM.GetParameter(2))
+## tailMSSMminus1sigma=fitMSSM.Integral(xlow-xlow/100,fitSM.GetParameter(1)-1*fitSM.GetParameter(2))
 
-tailSMplus2sigma   =fitSM.Integral  (xlow-xlow/100,fitSM.GetParameter(1)+2*fitSM.GetParameter(2))
-tailMSSMplus2sigma =fitMSSM.Integral(xlow-xlow/100,fitSM.GetParameter(1)+2*fitSM.GetParameter(2))
+## tailSMexp          =fitSM.Integral  (xlow-xlow/100,fitSM.GetParameter(1))
+## tailMSSMexp        =fitMSSM.Integral(xlow-xlow/100,fitSM.GetParameter(1))
 
-tailSMobs          =fitSM.Integral  (xlow-xlow/100,medianObs)
-tailMSSMobs        =fitMSSM.Integral(xlow-xlow/100,medianObs)
+## tailSMplus1sigma   =fitSM.Integral  (xlow-xlow/100,fitSM.GetParameter(1)+1*fitSM.GetParameter(2))
+## tailMSSMplus1sigma =fitMSSM.Integral(xlow-xlow/100,fitSM.GetParameter(1)+1*fitSM.GetParameter(2))
 
-if options.verbosity :
-    print "RESULT WITH GAUS FITTED TO BINNED HISTO"
-    print "tailSMexp", tailSMexp, "  tailMSSMexp", tailMSSMexp, "  tailSMobs", tailSMobs, "  tailMSSMobs", tailMSSMobs
-    print "-2 sigma separation power", tailMSSMminus2sigma/tailSMminus2sigma
-    print "-1 sigma separation power", tailMSSMminus1sigma/tailSMminus1sigma
-    print "Expected separation power", tailMSSMexp/tailSMexp
-    print "+1 sigma separation power", tailMSSMplus1sigma/tailSMplus1sigma
-    print "+2 sigma separation power", tailMSSMplus2sigma/tailSMplus2sigma
-    print "Observed separation power", tailMSSMobs/tailSMobs
+## tailSMplus2sigma   =fitSM.Integral  (xlow-xlow/100,fitSM.GetParameter(1)+2*fitSM.GetParameter(2))
+## tailMSSMplus2sigma =fitMSSM.Integral(xlow-xlow/100,fitSM.GetParameter(1)+2*fitSM.GetParameter(2))
+
+## tailSMobs          =fitSM.Integral  (xlow-xlow/100,medianObs)
+## tailMSSMobs        =fitMSSM.Integral(xlow-xlow/100,medianObs)
+
+## if options.verbosity :
+##     print "RESULT WITH GAUS FITTED TO BINNED HISTO"
+##     print "tailSMexp", tailSMexp, "  tailMSSMexp", tailMSSMexp, "  tailSMobs", tailSMobs, "  tailMSSMobs", tailMSSMobs
+##     print "-2 sigma separation power", tailMSSMminus2sigma/tailSMminus2sigma
+##     print "-1 sigma separation power", tailMSSMminus1sigma/tailSMminus1sigma
+##     print "Expected separation power", tailMSSMexp/tailSMexp
+##     print "+1 sigma separation power", tailMSSMplus1sigma/tailSMplus1sigma
+##     print "+2 sigma separation power", tailMSSMplus2sigma/tailSMplus2sigma
+##     print "Observed separation power", tailMSSMobs/tailSMobs
 
 
 ###for mA-tanb plotting save everything in a root file
@@ -283,17 +300,17 @@ pt2.AddText(" #sqrt{s} = 7 TeV, L = 4.9 fb^{-1}; #sqrt{s} = 8 TeV, L = 19.7 fb^{
 pt2.SetBorderSize(0)
 pt3 = ROOT.TPaveText(0.45,0.90,0.74,0.94,"NDC")
 pt3.SetFillColor(0)
-pt3.AddText(" mA = {MASS} GeV,  tanb = {TANB}".format(MASS=staff.mh, TANB=tanb))
+pt3.AddText(" mA = {MASS} GeV,  tanb = {TANB},   ntoys = {NTOYS}".format(MASS=staff.mh, TANB=tanb, NTOYS=ntoysMSSM))
 pt3.SetBorderSize(0)
 pt.Draw()
 pt2.Draw()
 pt3.Draw()
 c2.SaveAs("sigsep_"+tanb+".png")
 c2.SaveAs("sigsep_"+tanb+".pdf")
-#c1.SaveAs("sigsep_"+tanb+".root")
+#c2.SaveAs("sigsep_"+tanb+".root")
 
-fitSM.Delete()
-fitMSSM.Delete()
+#fitSM.Delete()
+#fitMSSM.Delete()
 
 
 
