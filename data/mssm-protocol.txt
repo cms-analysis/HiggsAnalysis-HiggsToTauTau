@@ -85,7 +85,7 @@ lxq: submit.py --injected --injected-method="--asymptotic" --physics-model='ggH'
 lxb: submit.py --injected --injected-method "--asymptotic" --collect-injected-toys LIMITS-yymmdd-mssm/bbb-ggH/*/*
 lxq: submit.py --injected --injected-method "--asymptotic" --collect-injected-toys LIMITS-yymmdd-mssm/bbb-ggH/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=12:00:00 -j y -o /dev/null"
 ## plot ggH 1d limit
-plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-ggH.py LIMITS-yymmdd-mssm/bbb-ggH/*/* [expecteOnly=1]
+plot --injected HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-ggH.py LIMITS-yymmdd-mssm/bbb-ggH/*/* [expecteOnly=1] injected=1 outputLabel="limit"
 
 (6b) launch/collect/plot ggH 1d limits (expected = SMHiggs+b -> blue band plot)
 ## launch 1d limit 
@@ -95,7 +95,7 @@ lxq: submit.py --physics-model='ggH' --MSSM 1 --injected --injected-method="--as
 lxb: submit.py --injected --injected-method "--asymptotic" --collect-injected-toys LIMITS-yymmdd-mssm/bbb-bbH/*/*
 lxq: submit.py --injected --injected-method "--asymptotic" --collect-injected-toys LIMITS-yymmdd-mssm/bbb-bH/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=12:00:00 -j y -o /dev/null"
 ## plot bbH 1d limit
-plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-bbH.py LIMITS-yymmdd-mssm/bbb-bbH/*/* [expecteOnly=1]
+plot --injected HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-bbH.py LIMITS-yymmdd-mssm/bbb-bbH/*/* [expecteOnly=1] injected=1 outputLabel="limit"
 
 
 (7) launch/collect/plot 2d limits
