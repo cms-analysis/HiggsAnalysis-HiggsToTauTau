@@ -63,6 +63,7 @@ plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-[mhmax,mhmodm,mhmodp
 ## comparison plots (per category)
 .x HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C+("limits_mA-tanb.root", "btag,nobtag,cmb", true, false, "mssm-tanb", 0., 60., false, "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV", true, false)
 
+
 (5) launch/plot 1d limits
 ## launch ggH 1d limit
 lxb: submit.py --asymptotic --physics-model='ggH' LIMITS-yymmdd-mssm/bbb-ggH/*/*
@@ -76,7 +77,28 @@ lxq: submit.py --asymptotic --physics-model='bbH' LIMITS-yymmdd-mssm/bbb-bbH/*/*
 plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-bbH.py LIMITS-yymmdd-mssm/bbb-bbH/*/* [expecteOnly=1]
 
 
-(6) launch/collect/plot 2d limits
+(6a) launch/collect/plot ggH 1d limits (expected = SMHiggs+b -> blue band plot)
+## launch ggH 1d limit
+lxb: submit.py --injected --injected-method="--asymptotic" --physics-model='ggH' --MSSM 1 --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-ggH/*/*
+lxq: submit.py --injected --injected-method="--asymptotic" --physics-model='ggH' --MSSM 1 --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-ggH/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=12:00:00 -j y -o /dev/null"
+## collect toys
+lxb: submit.py --injected --injected-method "--asymptotic" --collect-injected-toys LIMITS-yymmdd-mssm/bbb-ggH/*/*
+lxq: submit.py --injected --injected-method "--asymptotic" --collect-injected-toys LIMITS-yymmdd-mssm/bbb-ggH/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=12:00:00 -j y -o /dev/null"
+## plot ggH 1d limit
+plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-ggH.py LIMITS-yymmdd-mssm/bbb-ggH/*/* [expecteOnly=1]
+
+(6b) launch/collect/plot ggH 1d limits (expected = SMHiggs+b -> blue band plot)
+## launch 1d limit 
+lxb: submit.py --physics-model='ggH' --MSSM 1 --injected --injected-method="--asymptotic" --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-bbH/*/*
+lxq: submit.py --physics-model='ggH' --MSSM 1 --injected --injected-method="--asymptotic" --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-bbH/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=12:00:00 -j y -o /dev/null"
+## collect toys
+lxb: submit.py --injected --injected-method "--asymptotic" --collect-injected-toys LIMITS-yymmdd-mssm/bbb-bbH/*/*
+lxq: submit.py --injected --injected-method "--asymptotic" --collect-injected-toys LIMITS-yymmdd-mssm/bbb-bH/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=12:00:00 -j y -o /dev/null"
+## plot bbH 1d limit
+plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-bbH.py LIMITS-yymmdd-mssm/bbb-bbH/*/* [expecteOnly=1]
+
+
+(7) launch/collect/plot 2d limits
 ## launch ggH-bbH 2d limits
 lxb: submit.py --multidim-fit --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-ggH-bbH/*
 lxq: submit.py --multidim-fit --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-ggH-bbH/* --lxq --queue="-l h_vmem=4000M -l h_rt=12:00:00 -j y -o /dev/null"
@@ -86,7 +108,7 @@ limit.py --collect --multidim-fit --physics-model="ggH-bbH" LIMITS-yymmdd-mssm/b
 plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-bbH.py
 
 
-(7) launch/collect/plot signal hypothesis test SM vs MSSM in mA-tanb plane 
+(8) launch/collect/plot signal hypothesis test SM vs MSSM in mA-tanb plane 
 ## lauch final setup of datacards
 lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic]
 lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic] --lxq
