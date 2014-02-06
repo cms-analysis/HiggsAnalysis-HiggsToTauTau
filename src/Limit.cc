@@ -32,6 +32,7 @@ PlotLimits::plotLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmEr
   if(BG_Higgs_){ PLOT=std::string("BG_HIGGS"); }	  
   if(bestfit_ ){ PLOT=std::string("BESTFIT" ); }
   if(mssm_    ){ PLOT=std::string("MSSM-LOG"); }
+  if(mssm_ && injected_){ PLOT=std::string("MSSM-LOG_INJECTED"); }
   plottingLimit(canv, innerBand, outerBand, expected, observed, unit, xaxis_, yaxis_, 0, min, max, log_, PLOT, injectedMass_, mssm_, extra_);
   // setup CMS Preliminary
   //CMSPrelim(dataset_.c_str(), "", 0.160, 0.835);
