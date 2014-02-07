@@ -157,7 +157,7 @@ with open(submit_name, 'w') as submit_script:
                 % (os.getcwd(), script_file_name.replace('.sh', '.stderr')))
             submit_script.write("queue\n")
         elif options.lxq :
-            submit_script.write('qsub -l distro=sld5 -l site=hh -l h_vmem=4000M %s -v scram_arch -v cmssw_base %s\n'
+            submit_script.write('qsub -l distro=sld5 -l site=hh %s -v scram_arch -v cmssw_base %s\n'
                                 % (bsubargs, script_file_name))
         else :
             os.system('touch {PWD}/log/{LOG}'.format(
