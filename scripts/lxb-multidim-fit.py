@@ -36,8 +36,7 @@ log = logging.getLogger("lxb-multidim-fit")
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 ## template for grid submission
-script_template = '''
-#!/bin/bash
+script_template = '''#!/bin/bash
 
 cd {WORKING_DIR}
 eval `scram runtime -sh`

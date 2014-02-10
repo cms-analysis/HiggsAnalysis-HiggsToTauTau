@@ -671,7 +671,7 @@ if options.optInject :
 if options.optCLs :
     cycle_begin, cycle_end = options.cycles.split("-")
     cycle=int(cycle_end)
-    while cycle>=int(cycles_begin) :
+    while cycle>=int(cycle_begin) :
         print "***********************************************************"
         print " %s cycle(s) to finish" % (int(cycle_end)-int(cycle_begin)+1)
         print "***********************************************************"
@@ -698,7 +698,7 @@ if options.optCLs :
 if options.optBayes :
     cycle_begin, cycle_end = options.cycles.split("-")
     cycle=int(cycle_end)
-    while cycle>=int(cycles_begin) :
+    while cycle>=int(cycle_begin) :
         print "***********************************************************"
         print " %s cycle(s) to finish" % (int(cycle_end)-int(cycle_begin)+1)
         print "***********************************************************"
@@ -716,7 +716,7 @@ if options.optBayes :
 if options.optTanb or options.optTanbPlus :
     cycle_begin, cycle_end = options.cycles.split("-")
     cycle=int(cycle_end)
-    while cycle>=int(cycles_begin) :
+    while cycle>=int(cycle_begin) :
         if options.optTanb :
             print "***********************************************************"
             print " %s cycle(s) to finish" % (int(cycle_end)-int(cycle_begin)+1)
