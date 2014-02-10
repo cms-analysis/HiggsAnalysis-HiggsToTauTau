@@ -716,7 +716,6 @@ if options.optBayes :
 if options.optTanb or options.optTanbPlus :
     cycle_begin, cycle_end = options.cycles.split("-")
     cycle=int(cycle_end)
-    print cycle_begin, cycle_end, cycle
     while cycle>=int(cycle_begin) :
         if options.optTanb :
             print "***********************************************************"
