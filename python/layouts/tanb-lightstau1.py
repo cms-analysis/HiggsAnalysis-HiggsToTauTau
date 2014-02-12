@@ -2,14 +2,15 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string("CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV"),
-    #dataset = cms.string("CMS Preliminary,  H#rightarrow#tau#tau,  18.3 fb^{-1} at 8 TeV"),
+    #dataset = cms.string(""),
+    dataset = cms.string("CMS,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV"),
+    #dataset = cms.string("CMS,  H#rightarrow#tau#tau,  18.3 fb^{-1} at 8 TeV"),
     ## x-axis title
     xaxis = cms.string("m_{A} [GeV]"),
     ## x-axis title
     yaxis = cms.string("#bf{tan#beta}"),
     ## theory label 
-    theory = cms.string("MSSM lightstau scenario"),
+    theory = cms.string("MSSM light stau scenario"),
     ## min for plotting
     min = cms.double(0),
     ## max for plotting
@@ -65,9 +66,9 @@ layout = cms.PSet(
     ## print the 2-sigma band
     outerband = cms.bool(True),
     ## plot expected only
-    expectedOnly = cms.bool(False),
+    expectedOnly = cms.bool(True),
     ## print constraints from mH=125GeV
-    higgs125 = cms.bool(False),
+    higgs125 = cms.bool(True),
     ## add arXiv-1211-6956 (ATLAS) to plot
     arXiv_1211_6956 = cms.bool(False),
     ## add arXiv-1204-2760 (ATLAS) to plot
