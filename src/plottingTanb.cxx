@@ -206,7 +206,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
     theory1= new TPaveText(0.14, 0.85, 0.9, 0.90, "NDC");
   }
   else{
-    theory1= new TPaveText(0.55, 0.20, 0.9, 0.26, "NDC");
+    theory1= new TPaveText(0.45, 0.20, 0.9, 0.26, "NDC");
   }
   theory1->SetBorderSize(   0 );
   theory1->SetFillStyle(    0 );
@@ -222,7 +222,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
     theory2 = new TPaveText(0.53, 0.85, 0.9, 0.90, "NDC");
   }
   else{
-    theory2 = new TPaveText(0.55, 0.14, 0.9, 0.20, "NDC");
+    theory2 = new TPaveText(0.45, 0.14, 0.9, 0.20, "NDC");
   }
   theory2->SetBorderSize(   0 );
   theory2->SetFillStyle(    0 );
