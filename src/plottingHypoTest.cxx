@@ -178,7 +178,7 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* inn
   theory2->SetTextColor(    1 );
   theory2->SetTextFont (   62 );
   theory2->AddText("M_{SUSY} = 1 TeV");
-  if(theory=="MSSM m_{h}^{max} scenario") theory2->Draw();
+  //if(theory=="MSSM m_{h}^{max} scenario") theory2->Draw();
 
   /// add the proper legend
   TLegend* leg;
@@ -194,7 +194,7 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* inn
   leg->SetTextFont  ( 62 ); 
   leg->SetFillColor (kWhite);
   leg->SetLineColor (kBlack);
-  leg->SetHeader("95% CL Excluded:");
+  leg->SetHeader("CL_{S}(MSSM, SM) < 0.05:");
   if(!expectedOnly){ 
     //if(observed){ 
     observed->SetFillColor(obs->GetNumber()); 
@@ -206,7 +206,8 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* inn
   //if(outerBand){ 
     leg->AddEntry(outerBand, "#pm 2#sigma expected", "F"); 
   }
-  leg->AddEntry(background, "excluded by m_{Higgs}", "F");
+  //leg->AddEntry(background, "excluded by m_{Higgs}", "F");
+  leg->AddEntry(background, "m_{h,H}#neq(125.5#pm3.0)GeV", "F");
   //for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band){
   //  leg->AddEntry(band->second, TString::Format("m_{h,H}=125GeV #pm %.0fGeV", band->first), "F");
   //}
