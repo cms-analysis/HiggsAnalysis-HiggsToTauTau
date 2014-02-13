@@ -125,7 +125,7 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   
   TPaveText* extra;
   if(!extra_label.empty()){
-    extra = new TPaveText(legendOnRight ? 0.5 : 0.18, 0.60, legendOnRight ? 0.90 : 0.605, 0.70, "NDC");
+    extra = new TPaveText(legendOnRight ? 0.45 : 0.18, 0.60, legendOnRight ? 0.90 : 0.605, 0.70, "NDC");
     extra->SetBorderSize(   0 );
     extra->SetFillStyle (   0 );
     extra->SetTextAlign (  12 );
@@ -136,7 +136,7 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
     extra->Draw();
   }
   // add proper legend
-  TLegend* leg = new TLegend(legendOnRight ? 0.5 : 0.18, 0.70, legendOnRight ? 0.90 : (injected ? 0.75 :0.605), 0.90);
+  TLegend* leg = new TLegend(legendOnRight ? 0.45 : 0.18, 0.70, legendOnRight ? 0.95 : (injected ? 0.80 :0.655), 0.90);
   leg->SetBorderSize( 0 );
   leg->SetFillStyle( 1001 );
   leg->SetFillColor(kWhite);
@@ -146,7 +146,7 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   }
   if(expected_injected){
     if(!mssm_log) leg->AddEntry( expected_injected , TString::Format("SM H(%s GeV) injected", injectedMass.c_str()),  "L" );
-    else leg->AddEntry( expected_injected , "SM H injected",  "L" );
+    else leg->AddEntry( expected_injected , TString::Format("SM H(%s GeV) injected", injectedMass.c_str()),  "L" );
   }
   if(injected){
     leg->AddEntry( expected , TString::Format("Expected for SM H(%s GeV)", injectedMass.c_str()),  "L" );
