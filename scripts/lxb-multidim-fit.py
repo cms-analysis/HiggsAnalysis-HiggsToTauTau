@@ -36,8 +36,7 @@ log = logging.getLogger("lxb-multidim-fit")
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 ## template for grid submission
-script_template = '''
-#!/bin/bash
+script_template = '''#!/bin/bash
 
 cd {WORKING_DIR}
 eval `scram runtime -sh`
@@ -132,7 +131,7 @@ with open(submit_name, 'w') as submit_script:
                 ))
             os.system('chmod a+x %s' % script_file_name)
             if options.lxq :
-                submit_script.write('qsub -l distro=sld5 -l site=hh %s -v scram_arch -v cmssw_base %s/%s\n'
+                submit_script.write('qsub -l distro=sld5 %s -v scram_arch -v cmssw_base %s/%s\n'
                                     % (options.bsub, os.getcwd(), script_file_name))
             else:
                 os.system('touch {PWD}/log/{LOG}'.format(

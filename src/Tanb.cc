@@ -15,7 +15,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   if(theory_=="MSSM m_{h}^{mod-} scenario") {extralabel_= "mhmodm-"; model = "mhmodm";}
   if(theory_=="MSSM m_{h}^{mod+} scenario") {extralabel_= "mhmodp-"; model = "mhmodp";}
   if(theory_=="MSSM low m_{H} scenario") {extralabel_= "lowmH-"; model = "lowmH";}
-  if(theory_=="MSSM lightstau scenario") {extralabel_= "lightstau1"; model = "lighstau1";}
+  if(theory_=="MSSM light stau scenario") {extralabel_= "lightstau1-"; model = "lightstau1";}
   if(theory_=="MSSM tauphobic scenario") {extralabel_= "tauphobic-"; model = "tauphobic";}
 
   // set up styles
@@ -84,9 +84,9 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   // setup contratins from Higgs mass
   std::map<double, TGraphAsymmErrors*> higgsBands;
   if(higgs125_){
-    higgsBands[3] = higgsConstraint(directory, 125., 3., model);
-    //higgsBands[2] = higgsConstraint(directory, 125., 2., model);
-    //higgsBands[1] = higgsConstraint(directory, 125., 1., model);
+    higgsBands[3] = higgsConstraint(directory, 125.5, 3., model); //3.
+    //higgsBands[2] = higgsConstraint(directory, 125.5, 2., model);
+    //higgsBands[1] = higgsConstraint(directory, 125.5, 1., model);
     //for(unsigned int deltaM=0; deltaM<3; ++deltaM){
     //  higgsBands[3-deltaM] = higgsConstraint(directory, 125., 4-deltaM, model);
     //}
@@ -97,16 +97,16 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
   // do the plotting 
   plottingTanb(canv, plain, plain_low, innerBand, innerBand_low, outerBand, outerBand_low, expected, expected_low, observed, observed_low, lowerLEP, upperLEP, higgsBands, comparisons, xaxis_, yaxis_, theory_, injected, min_, max_, log_, transparent_);
   /// setup the CMS Preliminary
-  //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
-  TPaveText* cmsprel  = new TPaveText(0.145, 0.835+0.06, 0.145+0.30, 0.835+0.16, "NDC");
-  cmsprel->SetBorderSize(   0 );
-  cmsprel->SetFillStyle(    0 );
-  cmsprel->SetTextAlign(   12 );
-  cmsprel->SetTextSize ( 0.03 );
-  cmsprel->SetTextColor(    1 );
-  cmsprel->SetTextFont (   62 );
-  cmsprel->AddText(dataset_.c_str());
-  cmsprel->Draw();
+  CMSPrelim(dataset_.c_str(), "", 0.145, 0.840); // 0.835->0.840
+  // TPaveText* cmsprel  = new TPaveText(0.145, 0.835+0.06, 0.145+0.30, 0.835+0.16, "NDC");
+//   cmsprel->SetBorderSize(   0 );
+//   cmsprel->SetFillStyle(    0 );
+//   cmsprel->SetTextAlign(   12 );
+//   cmsprel->SetTextSize ( 0.03 );
+//   cmsprel->SetTextColor(    1 );
+//   cmsprel->SetTextFont (   62 );
+//   cmsprel->AddText(dataset_.c_str());
+//   cmsprel->Draw();
 
   // write results to files
   if(png_){
