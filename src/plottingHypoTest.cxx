@@ -67,12 +67,12 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* inn
   background->SetPoint(0, outerBand->GetX()[0], 50);
   background->SetPointEYlow (0, 50);
   background->SetPointEYhigh(0, 50); 
-  for(int ipoint=1; ipoint<observed->GetN(); ipoint++){
+  for(int ipoint=1; ipoint<expected->GetN(); ipoint++){
     background->SetPoint(ipoint, outerBand->GetX()[ipoint], 50); 
     background->SetPointEYlow (ipoint, 50);
     background->SetPointEYhigh(ipoint, 50);
   }
-  background->SetPoint(observed->GetN(), outerBand->GetX()[outerBand->GetN()-1], 50);
+  background->SetPoint(expected->GetN(), outerBand->GetX()[outerBand->GetN()-1], 50);
   background->SetPointEYlow (outerBand->GetN(), 50);
   background->SetPointEYhigh(outerBand->GetN(), 50); 
   background->SetFillStyle(1001.);
