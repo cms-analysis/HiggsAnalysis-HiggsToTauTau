@@ -934,7 +934,7 @@ if options.optHypothesisTest :
                         dirs.append(dir)
                 ## directories and masses per directory
                 struct = directories(args)
-                lxb_submit(struct[0], struct[1], "--HypothesisTest --cycle={cycle}".format(cycle=cycle), options.opt)
+                lxb_submit(struct[0], struct[1], "--HypothesisTest --cycle={cycle}".format(cycle=cycle), options.opt, cycle)
                 cycle = cycle-1       
     ## collect Toys and calculate CLs limit
     else:
