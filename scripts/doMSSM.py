@@ -55,7 +55,7 @@ if len(args) < 1 :
     if not options.fine_scan:
         args.append("90 130 100-200:20 250-500:50 600-1000:100")
     else :
-        args.append("90-250:10 300-500:50 600-1000:100")
+        args.append("90-250:10 275-500:25 550-1000:50")
         #args.append("90 100-180:5 200 250-500:50 600-1000:100")
     #exit(1)
 
@@ -220,25 +220,38 @@ if options.update_setup :
                 ))
     ## apply horizontal template morphing for finer step sizes for limit calculation
     if options.fine_scan :
-        #os.system("horizontal-morphing.py --categories='emu_btag,emu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_e_7TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/em/htt_em.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
-        #os.system("horizontal-morphing.py --categories='emu_btag,emu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_e_8TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/em/htt_em.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
-        #os.system("horizontal-morphing.py --categories='eleTau_btag,eleTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_etau_7TeV,CMS_eff_t_mssmHigh_etau_7TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/et/htt_et.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
-        #os.system("horizontal-morphing.py --categories='eleTau_btag,eleTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_etau_8TeV,CMS_eff_t_mssmHigh_etau_8TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/et/htt_et.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
-        #os.system("horizontal-morphing.py --categories='muTau_btag,muTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_mutau_7TeV,CMS_eff_t_mssmHigh_mutau_7TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/mt/htt_mt.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
-        #os.system("horizontal-morphing.py --categories='muTau_btag,muTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_mutau_8TeV,CMS_eff_t_mssmHigh_mutau_8TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/mt/htt_mt.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
-        #os.system("horizontal-morphing.py --categories='tauTau_btag,tauTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_tautau_8TeV,CMS_eff_t_mssmHigh_tautau_8TeV' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/tt/htt_tt.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
-        #os.system("horizontal-morphing.py --trivial --categories='mumu_btag,mumu_nobtag' --samples='ggH{MASS},bbH{MASS}' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/mm/htt_mm.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
-        #os.system("horizontal-morphing.py --trivial --categories='mumu_btag,mumu_nobtag' --samples='ggH{MASS},bbH{MASS}' --masses='90,100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/mm/htt_mm.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
-
-        os.system("horizontal-morphing.py --categories='emu_btag,emu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_e_7TeV' --masses='100,120,130,140,160,180' --step-size 5. -v {SETUP}/em/htt_em.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
-        os.system("horizontal-morphing.py --categories='emu_btag,emu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_e_8TeV' --masses='100,120,130,140,160,180' --step-size 5. -v {SETUP}/em/htt_em.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
-        os.system("horizontal-morphing.py --categories='eleTau_btag,eleTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_etau_7TeV,CMS_eff_t_mssmHigh_etau_7TeV' --masses='100,120,130,140,160,180' --step-size 5. -v {SETUP}/et/htt_et.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
-        os.system("horizontal-morphing.py --categories='eleTau_btag,eleTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_etau_8TeV,CMS_eff_t_mssmHigh_etau_8TeV' --masses='100,120,130,140,160,180' --step-size 5. -v {SETUP}/et/htt_et.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
-        os.system("horizontal-morphing.py --categories='muTau_btag,muTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_mutau_7TeV,CMS_eff_t_mssmHigh_mutau_7TeV' --masses='100,120,130,140,160,180' --step-size 5. -v {SETUP}/mt/htt_mt.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
-        os.system("horizontal-morphing.py --categories='muTau_btag,muTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_mutau_8TeV,CMS_eff_t_mssmHigh_mutau_8TeV' --masses='100,120,130,140,160,180' --step-size 5. -v {SETUP}/mt/htt_mt.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
-        os.system("horizontal-morphing.py --categories='tauTau_btag,tauTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_tautau_8TeV,CMS_eff_t_mssmHigh_tautau_8TeV' --masses='100,120,130,140,160,180' --step-size 5. -v {SETUP}/tt/htt_tt.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
-        os.system("horizontal-morphing.py --trivial --categories='mumu_btag,mumu_nobtag' --samples='ggH{MASS},bbH{MASS}' --masses='100,120,130,140,160,180' --step-size 5. -v {SETUP}/mm/htt_mm.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
-        os.system("horizontal-morphing.py --trivial --categories='mumu_btag,mumu_nobtag' --samples='ggH{MASS},bbH{MASS}' --masses='100,120,130,140,160,180' --step-size 5. -v {SETUP}/mm/htt_mm.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}")) 
+        ##em
+        os.system("horizontal-morphing.py --categories='emu_btag,emu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_e_7TeV' --masses='100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/em/htt_em.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='emu_btag,emu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_e_8TeV' --masses='100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/em/htt_em.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))        
+        os.system("horizontal-morphing.py --categories='emu_btag,emu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_e_7TeV' --masses='250,300,350,400,450,500' --step-size 25. -v {SETUP}/em/htt_em.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='emu_btag,emu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_e_8TeV' --masses='250,300,350,400,450,500' --step-size 25. -v {SETUP}/em/htt_em.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='emu_btag,emu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_e_7TeV' --masses='500,600,700,800,900,1000' --step-size 50. -v {SETUP}/em/htt_em.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='emu_btag,emu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_e_8TeV' --masses='500,600,700,800,900,1000' --step-size 50. -v {SETUP}/em/htt_em.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        ##et
+        os.system("horizontal-morphing.py --categories='eleTau_btag,eleTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_etau_7TeV,CMS_eff_t_mssmHigh_etau_7TeV' --masses='100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/et/htt_et.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='eleTau_btag,eleTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_etau_8TeV,CMS_eff_t_mssmHigh_etau_8TeV' --masses='100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/et/htt_et.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='eleTau_btag,eleTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_etau_7TeV,CMS_eff_t_mssmHigh_etau_7TeV' --masses='250,300,350,400,450,500' --step-size 25. -v {SETUP}/et/htt_et.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='eleTau_btag,eleTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_etau_8TeV,CMS_eff_t_mssmHigh_etau_8TeV' --masses='250,300,350,400,450,500' --step-size 25. -v {SETUP}/et/htt_et.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='eleTau_btag,eleTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_etau_7TeV,CMS_eff_t_mssmHigh_etau_7TeV' --masses='500,600,700,800,900,1000' --step-size 50. -v {SETUP}/et/htt_et.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='eleTau_btag,eleTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_etau_8TeV,CMS_eff_t_mssmHigh_etau_8TeV' --masses='500,600,700,800,900,1000' --step-size 50. -v {SETUP}/et/htt_et.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        ##mt
+        os.system("horizontal-morphing.py --categories='muTau_btag,muTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_mutau_7TeV,CMS_eff_t_mssmHigh_mutau_7TeV' --masses='100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/mt/htt_mt.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='muTau_btag,muTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_mutau_8TeV,CMS_eff_t_mssmHigh_mutau_8TeV' --masses='100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/mt/htt_mt.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='muTau_btag,muTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_mutau_7TeV,CMS_eff_t_mssmHigh_mutau_7TeV' --masses='250,300,350,400,450,500' --step-size 25. -v {SETUP}/mt/htt_mt.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='muTau_btag,muTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_mutau_8TeV,CMS_eff_t_mssmHigh_mutau_8TeV' --masses='250,300,350,400,450,500' --step-size 25. -v {SETUP}/mt/htt_mt.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='muTau_btag,muTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_mutau_7TeV,CMS_eff_t_mssmHigh_mutau_7TeV' --masses='500,600,700,800,900,1000' --step-size 50. -v {SETUP}/mt/htt_mt.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='muTau_btag,muTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_mutau_8TeV,CMS_eff_t_mssmHigh_mutau_8TeV' --masses='500,600,700,800,900,1000' --step-size 50. -v {SETUP}/mt/htt_mt.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        ##tt
+        os.system("horizontal-morphing.py --categories='tauTau_btag,tauTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_tautau_8TeV,CMS_eff_t_mssmHigh_tautau_8TeV' --masses='100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/tt/htt_tt.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='tauTau_btag,tauTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_tautau_8TeV,CMS_eff_t_mssmHigh_tautau_8TeV' --masses='250,300,350,400,450,500' --step-size 25. -v {SETUP}/tt/htt_tt.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='tauTau_btag,tauTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_tautau_8TeV,CMS_eff_t_mssmHigh_tautau_8TeV' --masses='500,600,700,800,900,1000' --step-size 50. -v {SETUP}/tt/htt_tt.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        ##mm
+        os.system("horizontal-morphing.py --trivial --categories='mumu_btag,mumu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='' --masses='100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/mm/htt_mm.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --trivial --categories='mumu_btag,mumu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='' --masses='100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/mm/htt_mm.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --trivial --categories='mumu_btag,mumu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='' --masses='250,300,350,400,450,500' --step-size 25. -v {SETUP}/mm/htt_mm.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --trivial --categories='mumu_btag,mumu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='' --masses='250,300,350,400,450,500' --step-size 25. -v {SETUP}/mm/htt_mm.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --trivial --categories='mumu_btag,mumu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='' --masses='500,600,700,800,900,1000' --step-size 50. -v {SETUP}/mm/htt_mm.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --trivial --categories='mumu_btag,mumu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='' --masses='500,600,700,800,900,1000' --step-size 50. -v {SETUP}/mm/htt_mm.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
     ## setup directory structure
     dir = "{CMSSW_BASE}/src/setups{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
     if os.path.exists(dir) :
@@ -488,7 +501,7 @@ if options.update_aux :
             if options.drop_list != '' :
                 for subdir in glob.glob("{DIR}/{ANA}/mssm/*".format(DIR=dir, ANA=ana)) :
                     print '...comment bbb uncertainties for', subdir
-                    os.system("commentUncerts.py --drop-list={DROP} {SUB}".format(DROP=options.drop_list, SUB=subdir))
+                    os.system("python HiggsAnalysis/CombinedLimit/scripts/commentUncerts.py --drop-list={DROP} {SUB}".format(DROP=options.drop_list, SUB=subdir))
         if options.SMHasBackground and options.SMHasSignal:
             analysesv2 = []
             if '-SMHbkg' in ana :
