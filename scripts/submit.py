@@ -939,7 +939,7 @@ if options.optHypothesisTest :
                 ## directories and masses per directory
                 struct = directories(args)
                 lxb_submit(struct[0], struct[1], "--HypothesisTest --cycle={cycle} --toys {toys} {smartscan}".format(
-                    cycle=cycle, toys=options.toys), options.opt, cycle, smartscan="--smartScan" if options.smartScan else "")
+                    cycle=cycle, toys=options.toys, smartscan="--smartScan" if options.smartScan else ""), options.opt, cycle)
                 cycle = cycle-1       
     ## collect Toys and calculate CLs limit
     else:
