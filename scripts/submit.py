@@ -161,6 +161,8 @@ parser.add_option_group(igroup)
 jgroup = OptionGroup(parser, "HYPOTHESIS TEST OPTIONS", "These are the command line options that can be used to configure the submission of hypothesis test limits in the MSSM.")
 jgroup.add_option("--collectToys", dest="collectToys", default=False, action="store_true",
                   help="Collect toys and calculate hypothesis test limits using lxb (lxq). To run with this options the toys have to be produced beforehand. [Default: False]")
+jgroup.add_option("--smartScan", dest="smartScan", default=False, action="store_true",
+                  help="Run toy production only for the tanb points which are near the exclusion limit. ATTENTION: Before using this option you should have already produced a reasonable number of toys and plotted the results once. [Default: False]")
 parser.add_option_group(jgroup)
 
 ## check number of arguments; in case print usage
@@ -918,9 +920,11 @@ if options.optHypothesisTest :
                     if mass == 'common' :
                         continue
                     if options.printOnly :
-                        print "limit.py --HypothesisTest --cycle={cycle} {OPTS} {DIR}".format(OPTS=options.opt, DIR=dir, cycle=cycle)
+                        print "limit.py --HypothesisTest --cycle={cycle} --toys {toys} {smartscan} {OPTS} {DIR}".format(
+                            OPTS=options.opt, DIR=dir, cycle=cycle, toys=options.toys, smartscan="--smartScan" if options.smartScan else "")
                     else :
-                        os.system("limit.py --HypothesisTest --cycle={cycle} {OPTS} {DIR}".format(OPTS=options.opt, DIR=dir, cycle=cycle))
+                        os.system("limit.py --HypothesisTest --cycle={cycle} --toys {toys} {smartscan} {OPTS} {DIR}".format(
+                            OPTS=options.opt, DIR=dir, cycle=cycle, toys=options.toys, smartscan="--smartScan" if options.smartScan else ""))
                 cycle = cycle-1
         else :
             cycle_begin, cycle_end = options.cycles.split("-")
@@ -934,7 +938,8 @@ if options.optHypothesisTest :
                         dirs.append(dir)
                 ## directories and masses per directory
                 struct = directories(args)
-                lxb_submit(struct[0], struct[1], "--HypothesisTest --cycle={cycle}".format(cycle=cycle), options.opt, cycle)
+                lxb_submit(struct[0], struct[1], "--HypothesisTest --cycle={cycle} --toys {toys} {smartscan}".format(
+                    cycle=cycle, toys=options.toys), options.opt, cycle, smartscan="--smartScan" if options.smartScan else "")
                 cycle = cycle-1       
     ## collect Toys and calculate CLs limit
     else:

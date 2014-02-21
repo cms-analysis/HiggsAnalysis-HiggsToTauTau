@@ -78,6 +78,8 @@ bgroup.add_option("--userOpt", dest="userOpt", default="", type="string",
                   help="With this option you can specify any kind of user option that is not covered by limit.py and that you would like to be passed on to the combine tool. [Defaul: \"\"]")
 bgroup.add_option("--working-dir", dest="workingdir", default=".",
                   help="Optionally specify where the temporary combined datacard tmp.txt should be produced. [Default '.']")
+bgroup.add_option("--toys", dest="toys", default="100", type="string",
+                  help="Set number of toys of the median and quantiles for expected calculation. This is used in goodness of fit, significance, maximum likelihoood and hypothesis test.[Default: \"100\"]")
 parser.add_option_group(bgroup)
 ##
 ## CRAB OPTIONS
@@ -156,8 +158,6 @@ parser.add_option_group(hgroup)
 igroup = OptionGroup(parser, "SIGNIFICANCE OPTIONS", "these are the command line options for the use of limit.py with the option --significance. Running limit.py --significance ARGs will result in a calculation of the observed and expected significance based on the datacards in the directory/ies corresponding to ARGs. As the median and quantiles of the expected significance are obtained from toys it is recommended to run the expected significance via batch jobs using the script submit.py with option --significance. You can specify the strength of the signal in multiples of the expected SM cross section as iven in the datacards and the number of toys to be run for the expected significance.")
 igroup.add_option("--signal-strength", dest="signal_strength", default="1", type="string",
                   help="Set the signal strength for the calculation the expected significance. [Default: \"1\"]")
-igroup.add_option("--toys", dest="toys", default="100", type="string",
-                  help="Set number of toys of the median and quantiles for expected significance calculation. [Default: \"100\"]")
 igroup.add_option("--uncapped", dest="uncapped", default=False, action="store_true",
                   help="Use uncapped option, a la ATLAS, to allow for p-values larger than 0.5 and negative significances in case of deficits in the data. [Default: False]")
 parser.add_option_group(igroup)
@@ -212,6 +212,8 @@ ogroup.add_option("--cycle", dest="cycle", default="", type="string",
                   help="Name of the cycle, e.g. '1', '2', etc.. . [Defaul: \"\"]")
 ogroup.add_option("--collectToys", dest="collectToys", default=False, action="store_true",
                   help="Collect toys and calculate hypothesis test limits using lxb (lxq). To run with this options the toys have to be produced beforehand. [Default: False]")
+ogroup.add_option("--smartScan", dest="smartScan", default=False, action="store_true",
+                  help="Run toy production only for the tanb points which are near the exclusion limit. ATTENTION: Before using this option you should have already produced a reasonable number of toys and plotted the results once. [Default: False]")
 parser.add_option_group(ogroup)
 
 ## check number of arguments; in case print usage
@@ -728,7 +730,10 @@ for directory in args :
                     gridpoints+= " --fastScan"
             fitresults=  ""
             if options.saveResults :
-                fitresults = " | grep -A 10 -E '\s*--- MultiDimFit ---\s*' > signal-strength.output"
+                #fitresults = " | grep -A 10 -E '\s*--- MultiDimFit ---\s*' > signal-strength.output"
+                if not os.path.exists("signal-strength.output"):
+                    os.system("touch signal-strength.output")             
+                fitresults = " | grep '(i,j)' >> signal-strength.output"
             ## do the fit/scan
             print "combine -M MultiDimFit -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} {wdir}/{input}.root {result}".format(
                 mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt,
@@ -1163,12 +1168,49 @@ for directory in args :
             ## list of all tasks to do
             tasks = []
             seedNR=random.randint(100000, 999999)
+            tanb_list = []
+            for wsp in directoryList :
+                if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) :
+                    tanb_list.append(wsp[wsp.rfind("_")+1:].rstrip(".root"))
+                    tanb_list.sort(key=float)
+            tanb_low_idx = -999
+            tanb_low = 0.0
+            tanb_high_idx = -999
+            tanb_high = 0.0
+            if options.smartScan :
+                exclusion = open("exclusion_{MASS}.out".format(MASS=mass), 'r')
+                line = exclusion.readlines()
+                limits = line[0].rstrip("\n").split(" ")
+                exclusion.close()
+                limits.pop(0)
+                limits.sort(key=float)
+                for idx, point in enumerate(tanb_list) :
+                    if float(point) > float(limits[0]) and tanb_low_idx==-999:
+                        tanb_low_idx = idx-2
+                    if float(point) > float(limits[-1]) and tanb_high_idx==-999:
+                        tanb_high_idx = idx+1
+                    if tanb_low_idx<0 :
+                        tanb_low = tanb_list[0]
+                    else :
+                        tanb_low = tanb_list[tanb_low_idx]
+                    if tanb_high_idx<0 or  tanb_high_idx>len(tanb_list)-1 :
+                        tanb_high = tanb_list[-1]
+                    else :
+                        tanb_high = tanb_list[tanb_high_idx]                       
+                print "Tanb range. For all points inbetween toys will be produced:", tanb_low, "to", tanb_high
             for wsp in directoryList :
                 if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) :
                     tanb_string = wsp[wsp.rfind("_")+1:]
+                    if os.path.exists("point_{tanb}_{cycle}".format(tanb=tanb_string, cycle=options.cycle)) :
+                        print "point_{tanb}_{cycle}".format(tanb=tanb_string, cycle=options.cycle), "already exists - skipping"
+                        continue
+                    if options.smartScan :
+                        if float(tanb_string.rstrip(".root"))<float(tanb_low) or float(tanb_string.rstrip(".root"))>float(tanb_high) :
+                            print "skip point"
+                            continue
                     if not options.refit :
                         tasks.append(
-                            ["combine -m {mass} -M HybridNew -n Test{cycle} --testStat=TEV --generateExt=1 --generateNuis=0 {wsp} --singlePoint 1 --saveHybridResult --fork 4 -T 200 -i 1 --clsAcc 0 --fullBToys -s {seed}".format(mass=mass, cycle=options.cycle, wsp=wsp, seed=seedNR), #fork down from 40
+                            ["combine -m {mass} -M HybridNew -n Test{cycle} --testStat=TEV --generateExt=1 --generateNuis=0 {wsp} --singlePoint 1 --saveHybridResult --fork 4 -T {toys} -i 1 --clsAcc 0 --fullBToys -s {seed}".format(mass=mass, cycle=options.cycle, wsp=wsp, toys=options.toys, seed=seedNR), #fork down from 40
                              "mv higgsCombineTest{cycle}.HybridNew.mH{mass}.{seed}.root point_{tanb}_{cycle}".format(mass=mass, seed=seedNR, tanb=tanb_string, cycle=options.cycle)
                              ]
                             )
