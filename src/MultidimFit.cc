@@ -339,11 +339,14 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     limit->SetBranchAddress((CVCF || RVRF || CBCTAU || CLCQ) ? xval.c_str() : (std::string("r_")+xval).c_str() , &x);  
     limit->SetBranchAddress((CVCF || RVRF || CBCTAU || CLCQ) ? yval.c_str() : (std::string("r_")+yval).c_str() , &y);
     int nevent = limit->GetEntries();
+    ofstream database;  
+    database.open(TString::Format("%s/%d/database_%d.out", directory, (int)mass, (int)mass)); 
     for(int i=0; i<nevent; ++i){
       limit->GetEvent(i);
       if(scan2D->GetBinContent(scan2D->FindBin(x,y))==0){
 	// catch small negative values that might occure due to rounding
 	scan2D->Fill(x, y, fabs(nll));
+	database << x << " " << y << " " << fabs(nll) << std::endl; 
       }
     }
     // first argument determines order of smoothing. Algorithms k5a (default), k5b, k3a can be chosen by second argument. 
