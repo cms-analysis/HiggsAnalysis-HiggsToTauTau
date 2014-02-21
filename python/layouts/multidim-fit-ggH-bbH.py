@@ -2,11 +2,11 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string(" CMS Preliminary, H#rightarrow#tau#tau, L = 19.7 fb^{-1} at 8 TeV"),
+    dataset = cms.string("CMS, H#rightarrow#tau#tau, L = 19.7 fb^{-1} at 8 TeV"),
     ## x-axis title
     xaxis = cms.string("#sigma(gg#rightarrow#phi)#timesBR(#tau#tau) [pb]"),
     ## x-axis title
-    yaxis = cms.string("#sigma(gg#rightarrowbb#phi)#timesBR(#tau#tau) [pb]"),
+    yaxis = cms.string("#sigma(gg#rightarrowb#bar{b}#phi)#timesBR(#tau#tau) [pb]"),
     ## min for plotting (for fine tuning)
     min = cms.double(0.),
     ## min for plotting
@@ -42,15 +42,25 @@ layout = cms.PSet(
    ,230
    ,240
    ,250
+   ,275
    ,300
+   ,325
    ,350
+   ,375
    ,400
+   ,425
    ,450
+   ,475
    ,500
+   ,550
    ,600
+   ,650
    ,700
+   ,750
    ,800
+   ,850
    ,900
+   ,950
    ,1000
     ),
     #masspoints = cms.vdouble(140),
