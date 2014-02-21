@@ -114,10 +114,13 @@ plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-
 lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic]
 lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic] --lxq
 ## lauch HybridNew TEV teststatistic toy calculation
-lxb: submit.py --HypothesisTest --cycles 1-5 LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
-lxq: submit.py --HypothesisTest --cycles 1-5 LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null" --options=''
+lxb: submit.py --HypothesisTest --cycles 1-5 --toys 200 (--smartScan) LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
+lxq: submit.py --HypothesisTest --cycles 1-5 --toys 200 (--smartScan) LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null" --options=''
 ## collect toys and calculate limits
 lxb: submit.py --HypothesisTest --collectToys LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
 lxq: submit.py --HypothesisTest --collectToys LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null" --options=''
 ## plotting
 plot --hypothesis-test HiggsAnalysis/HiggsToTauTau/python/layouts/hypo-test-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic].py LIMITS-yymmdd-mssm/bbb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic]-[-asimov] [expectedOnly=1]
+## ATTENTION
+Before using the option (--smartScan) you must have already produced a reasonable number of toys and plotted the results once!!!
+
