@@ -1,4 +1,4 @@
- #include "HiggsAnalysis/HiggsToTauTau/interface/PlotLimits.h"
+#include "HiggsAnalysis/HiggsToTauTau/interface/PlotLimits.h"
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
@@ -33,9 +33,13 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
   outerBand = new TGraphAsymmErrors();
   expected = new TGraph();
   observed = new TGraph();
+
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
     // buffer mass value
     float mass = bins_[imass];
+   
+    ofstream exclusion;  // saves the exclusion limits within the directory so it can be used to throw toys only in regions near the exclusion limit
+    exclusion.open(TString::Format("%s/%d/exclusion_%d.out", directory, (int)mass, (int)mass)); 
 
     TString fullpath = TString::Format("%s/%d/HypothesisTest.root", directory, (int)mass);
     std::cout << "open file: " << fullpath << std::endl;
@@ -281,6 +285,8 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
     observed->SetPoint(ipoint, mass, excluded_obs);
     //std::cout<< "observed " << ipoint << " " << mass << " " << excluded_obs << std::endl;
 
+    exclusion << int(mass) << " " << excluded_minus2sigma << " " << excluded_minus1sigma << " " << excluded_exp << " " << excluded_plus1sigma << " " << excluded_plus2sigma << " " << excluded_obs << std::endl; 
+    exclusion.close();
     ipoint++;
   }
 
