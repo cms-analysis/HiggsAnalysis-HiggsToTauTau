@@ -1227,10 +1227,10 @@ for directory in args :
             for wsp in directoryList :
                 if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) : 
                     tanb_string = wsp[wsp.rfind("_")+1:]
-                    if "point_{tanb}".format(tanb=tanb_string) in directoryList :
-                        os.system("rm point_{tanb}".format(tanb=tanb_string))
-                    os.system("hadd -k point_{tanb} point_{tanb}_*".format(tanb=tanb_string))
-                    os.system(r'root -l -q -b point_{tanb} "{CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/test/plotting/hypoTestResultTree.cxx(\"qmu.FixedMu_{tanb}\",{mass},1,\"x\")"'.format(CMSSW_BASE=os.environ["CMSSW_BASE"], mass=mass, tanb=tanb_string)) 
+                    if "point_{mass}_{tanb}".format(mass=mass, tanb=tanb_string) in directoryList :
+                        os.system("rm point_{mass}_{tanb}".format(mass=mass, tanb=tanb_string))
+                    os.system("hadd -k point_{mass}_{tanb} point_{tanb}_*".format(mass=mass, tanb=tanb_string))
+                    os.system(r'root -l -q -b point_{mass}_{tanb} "{CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/test/plotting/hypoTestResultTree.cxx(\"qmu.FixedMu_{tanb}\",{mass},1,\"x\")"'.format(CMSSW_BASE=os.environ["CMSSW_BASE"], mass=mass, tanb=tanb_string)) 
             directoryList = os.listdir(".")
             if "HypothesisTest.root" in directoryList :
                 os.system("rm HypothesisTest*")
