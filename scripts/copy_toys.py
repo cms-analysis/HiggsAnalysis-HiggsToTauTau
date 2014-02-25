@@ -4,7 +4,7 @@ from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARG",
-                      description="This is a tool to crab toys stored in one direction and copy them to another directory. ARG corresponds to the path to the directory containing the toy files.")
+                      description="This is a tool to crab toys stored in one direction and copy them to another directory. ARG corresponds to the path to the directory containing the toy files. This tool is needed for MSSMvsSM hypotheses testing, since more than one person will produce toys")
 parser.add_option("-o", "--output", dest="output", default="LIMITS-ddmmyy-mssm/bbb-hypo/cmb", type="string",
                   help="Path to the directories in which the mass dirs containing the toy files are. [Default: \"LIMITS-ddmmyy-mssm/bbb-hypo/cmb\"]")
 parser.add_option("-n", "--name", dest="name", default="test", type="string",
