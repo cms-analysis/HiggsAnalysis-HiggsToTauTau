@@ -19,6 +19,6 @@ from operator import itemgetter, attrgetter
 
 for mass in ['90', '100', '120', '130', '140', '160', '180', '200', '250', '300', '350', '400', '450', '500', '600', '700', '800', '900', '1000'] :
     directoryList = os.listdir("{DIR}".format(DIR=args[0]))
-    print "cp {DIR}/point_{MASS}_* {OUTPUT}/{MASS}".format(DIR=args[0], MASS=mass, OUTPUT=options.output)
-    for file in directoryList :       
+    for file in directoryList :    
+        print "cp {DIR}/{FILE} {OUTPUT}/{MASS}/{FILE}_{NAME}".format(DIR=args[0], FILE=file, MASS=mass, OUTPUT=options.output, NAME=options.name)   
         os.system("cp {DIR}/{FILE} {OUTPUT}/{MASS}/{FILE}_{NAME}".format(DIR=args[0], FILE=file, MASS=mass, OUTPUT=options.output, NAME=options.name))
