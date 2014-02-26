@@ -253,6 +253,12 @@ f.Write()
 f.Close()
 
 
+### Output file containing number of toys so one does not have to look up all the plots
+numberToys = open("numberToys_{MASS}_{TANB}.out".format(MASS=staff.mh, TANB=tanb), 'w')
+numberToys.write("{MASS} {TANB} {NTOYS}".format(MASS=staff.mh, TANB=tanb, NTOYS=ntoysMSSM))
+numberToys.close()
+
+
 ###Fancy plot
 gStyle.SetOptStat(0)
 c2 = ROOT.TCanvas("c2","c2",800,800)
