@@ -38,7 +38,9 @@ def contained(elem, list) :
     """
     return true if the element is contained in the list
     """
-    if elem in "\n".join(list) :
+    #if elem in "\n".join(list) :
+    #    return True
+    if elem in list :
         return True
     return False
 
