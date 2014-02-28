@@ -792,7 +792,7 @@ if options.optTanb or options.optTanbPlus :
                         ,"{CMD} -n  3 --min 6.5  --max 7.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
                         ]
                 if len(subvec(args, 400, 449))>0 :
-                    dirs = vec2str(subvec(args, 500, 449))
+                    dirs = vec2str(subvec(args, 400, 449))
                     grid = [
                         "{CMD} -n  5 --min 1.5  --max 3.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
                         ,"{CMD} -n  5 --min 4.0  --max 6.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=dirs)
