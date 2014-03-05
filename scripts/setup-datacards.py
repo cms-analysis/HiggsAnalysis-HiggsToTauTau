@@ -12,7 +12,7 @@ parser.add_option("-o", "--out", dest="out", default="auxiliaries/datacards", ty
                   help="Name of the output directory to which the datacards should be copied. [Default: auxiliaries/datacards]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
                   help="Choose between run periods [Default: \"7TeV 8TeV\"]")
-parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
+parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm or Hhh). Lower case is required. [Default: sm]", choices=["sm", "mssm" ,"Hhh"])
 parser.add_option("-c", "--channels", dest="channels", default="ee mm em mt et tt", type="string",
                   help="List of channels, for which datacards should be created. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are ee, mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"ee mm em mt et tt\"]")
 parser.add_option("-m", "--merge-no-signal", dest="merge", default=False, action="store_true",
@@ -59,6 +59,20 @@ cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="8 9
 cats2.add_option("--mssm-categories-hbb", dest="hbb_mssm_categories", default="0 1 2 3 4 5 6", type="string",
                  help="List of hbb event categories. [Default: \"0 1 2 3 4 5 6\"]")
 parser.add_option_group(cats2)
+cats3 = OptionGroup(parser, "Hhh EVENT CATEGORIES", "Event categories to be used for the Hhh analysis.")
+cats3.add_option("--Hhh-categories-ee", dest="ee_Hhh_categories", default="0 1 2", type="string",
+                 help="List ee of event categories. [Default: \"0 1 2\"]")
+cats3.add_option("--Hhh-categories-mm", dest="mm_Hhh_categories", default="0 1 2", type="string",
+                 help="List mm of event categories. [Default: \"0 1 2\"]")
+cats3.add_option("--Hhh-categories-em", dest="em_Hhh_categories", default="0 1 2", type="string",
+                 help="List em of event categories. [Default: \"0 1 2\"]")
+cats3.add_option("--Hhh-categories-mt", dest="mt_Hhh_categories", default="0 1 2", type="string",
+                 help="List mt of event categories. [Default: \"0 1 2\"]")
+cats3.add_option("--Hhh-categories-et", dest="et_Hhh_categories", default="0 1 2", type="string",
+                 help="List et of event categories. [Default: \"0 1 2\"]")
+cats3.add_option("--Hhh-categories-tt", dest="tt_Hhh_categories", default="0 1 2", type="string",
+                 help="List of tt event categories. [Default: \"0 1 2\"]")
+parser.add_option_group(cats3)
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -115,6 +129,16 @@ if options.analysis == "mssm" :
         "tt"   : (90, 1000),
         "hbb"  : (90,  350),
     }
+if options.analysis == "Hhh" :
+    valid_masses = {
+        "ee"   : (250, 350),
+        "mm"   : (250, 350),
+        "em"   : (250, 350),
+        "mt"   : (250, 350),
+        "et"   : (250, 350),
+        "tt"   : (250, 350),
+    }
+
 
 print "------------------------------------------------------"
 print " Valid mass ranges per channel:"
@@ -136,6 +160,15 @@ if options.analysis == "sm" :
         "vhbb" : "7TeV 8TeV 13TeV 14TeV",
         }
 if options.analysis == "mssm" :
+    valid_periods = {
+        "ee"   : "7TeV 8TeV",
+        "mm"   : "7TeV 8TeV",
+        "em"   : "7TeV 8TeV",
+        "mt"   : "7TeV 8TeV",
+        "et"   : "7TeV 8TeV",
+        "tt"   :      "8TeV",
+        }
+if options.analysis == "Hhh" :
     valid_periods = {
         "ee"   : "7TeV 8TeV",
         "mm"   : "7TeV 8TeV",
@@ -175,6 +208,17 @@ if options.analysis == "mssm" :
         "mt"   : options.mt_mssm_categories.split(),
         "et"   : options.et_mssm_categories.split(),
         "tt"   : options.tt_mssm_categories.split(),
+        }
+
+if options.analysis == "Hhh" :
+    os.chdir("Hhh")
+    categories = {
+        "ee"   : options.ee_Hhh_categories.split(),
+        "mm"   : options.mm_Hhh_categories.split(),
+        "em"   : options.em_Hhh_categories.split(),
+        "mt"   : options.mt_Hhh_categories.split(),
+        "et"   : options.et_Hhh_categories.split(),
+        "tt"   : options.tt_Hhh_categories.split(),
         }
 
 ## return closest simulated masspoint to value
@@ -222,6 +266,15 @@ for channel in channels :
                     #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass
                     continue
                 print "creating datacard for:", options.analysis, period, channel, cat, fudge_mass
+                if options.analysis == "Hhh" :
+                    os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{PER}.root -o {CHN}_{CAT}_{PER}-{LABEL}.txt {MASS}".format(
+                        CHN=prefix+channel,
+                        ANA=options.analysis,
+                        PER=period,
+                        CAT=cat,
+                        MASS='' if options.ignore_mass_argument else mass,
+                        LABEL='125' if options.ignore_mass_argument else mass
+                        ))
                 if options.analysis == "mssm" :
                     os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{PER}-{MASSCAT}.root -o {CHN}_{CAT}_{PER}-{LABEL}.txt {MASS}".format(
                         CHN=prefix+channel,
