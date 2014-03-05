@@ -133,12 +133,12 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
     outerBand->SetFillColor(twosigma->GetNumber()); //kGray
     outerBand->SetLineColor(twosigma->GetNumber());
     outerBand->Draw("3same");
-  }
-  if(outerBand_low){   
-    outerBand_low->SetFillStyle(1001);
-    outerBand_low->SetFillColor(twosigma->GetNumber());
-    outerBand_low->SetLineColor(twosigma->GetNumber());
-    //outerBand_low->Draw("3same"); 
+    if(outerBand_low){   
+      outerBand_low->SetFillStyle(1001);
+      outerBand_low->SetFillColor(twosigma->GetNumber());
+      outerBand_low->SetLineColor(twosigma->GetNumber());
+      //outerBand_low->Draw("3same"); //for old style comment that one out
+    }
   }
 
   innerBand->SetFillStyle(1001);
@@ -149,7 +149,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
     innerBand_low->SetFillStyle(1001);
     innerBand_low->SetFillColor(onesigma->GetNumber());
     innerBand_low->SetLineColor(onesigma->GetNumber());
-    //innerBand_low->Draw("3same");
+    //innerBand_low->Draw("3same"); //for old style comment that one out
   }
 
   expected->SetLineColor(kGray+2);
@@ -160,7 +160,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
     expected_low->SetLineColor(kGray+2);
     expected_low->SetLineWidth(3);
     expected_low->SetLineStyle(1);
-    //expected_low->Draw("Lsame");
+    //expected_low->Draw("Lsame"); //for old style comment that one out
   }
 
   if(observed){;
@@ -169,7 +169,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   }
   if(observed_low){  
     //if(transparent) plain_low->Draw("Fsame"); //for old style comment that one out
-    //observed_low->Draw("Lsame");
+    //observed_low->Draw("Lsame"); //for old style comment that one out
   }
 
   if(injected){

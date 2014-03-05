@@ -1,8 +1,9 @@
 #include "HiggsAnalysis/HiggsToTauTau/interface/PlotLimits.h"
+#include "vector"
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool plotOuterBand=true);
+void plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain_2, TGraphAsymmErrors* innerBand_1, TGraphAsymmErrors* innerBand_2, TGraphAsymmErrors* innerBand_3, TGraphAsymmErrors* outerBand_1, TGraphAsymmErrors* outerBand_2, TGraphAsymmErrors* outerBand_3, TGraph* expected_1, TGraph* expected_2, TGraph* expected_3, TGraph* observed_1, TGraph* observed_2, TGraph* observed_3, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool plotOuterBand=true);
 
 struct myclass {
   bool operator() (int i,int j) { return (i<j);}
@@ -14,26 +15,51 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
   //different MSSM scenarios
   std::string extralabel_ = "";
   const char* model;
-  if(theory_=="MSSM m_{h}^{max} scenario") {extralabel_= "mhmax-"; model = "mhmax-mu+200";}
-  if(theory_=="MSSM m_{h}^{mod-} scenario") {extralabel_= "mhmodm-"; model = "mhmodm";}
-  if(theory_=="MSSM m_{h}^{mod+} scenario") {extralabel_= "mhmodp-"; model = "mhmodp";}
-  if(theory_=="MSSM low m_{H} scenario") {extralabel_= "lowmH-"; model = "lowmH";}
-  if(theory_=="MSSM light stau scenario") {extralabel_= "lightstau1-"; model = "lightstau1";}
-  if(theory_=="MSSM tauphobic scenario") {extralabel_= "tauphobic-"; model = "tauphobic";}
+  double tanbHigh, tanbLow, tanbLowHigh;
+  if(theory_=="MSSM m_{h}^{max} scenario") {extralabel_= "mhmax-"; model = "mhmax-mu+200"; tanbHigh=60; tanbLow=0.5; tanbLowHigh=2;}
+  if(theory_=="MSSM m_{h}^{mod-} scenario") {extralabel_= "mhmodm-"; model = "mhmodm"; tanbHigh=60; tanbLow=0.5; tanbLowHigh=2;}
+  if(theory_=="MSSM m_{h}^{mod+} scenario") {extralabel_= "mhmodp-"; model = "mhmodp"; tanbHigh=60; tanbLow=0.5; tanbLowHigh=2;}
+  if(theory_=="MSSM low m_{H} scenario") {extralabel_= "lowmH-"; model = "lowmH"; tanbHigh=9.5; tanbLow=1.5; tanbLowHigh=2;}
+  if(theory_=="MSSM light stau scenario") {extralabel_= "lightstau1-"; model = "lightstau1"; tanbHigh=60; tanbLow=0.5; tanbLowHigh=3;}
+  if(theory_=="MSSM tauphobic scenario") {extralabel_= "tauphobic-"; model = "tauphobic"; tanbHigh=50; tanbLow=0.5; tanbLowHigh=2;}
 
   // set up styles
   SetStyle();
  
-  TGraph* expected = 0;
-  TGraphAsymmErrors* innerBand = 0;
-  TGraphAsymmErrors* outerBand = 0;
-  TGraph* observed = 0;
+  TGraphAsymmErrors* plain_1=0;
+  TGraphAsymmErrors* plain_2=0;
+  plain_1 = new TGraphAsymmErrors();
+  plain_2 = new TGraphAsymmErrors();
 
-  innerBand = new TGraphAsymmErrors();
-  outerBand = new TGraphAsymmErrors();
-  expected = new TGraph();
-  observed = new TGraph();
+  TGraph* expected_1 = 0;
+  TGraphAsymmErrors* innerBand_1 = 0;
+  TGraphAsymmErrors* outerBand_1 = 0;
+  TGraph* observed_1 = 0;
+  expected_1 = new TGraph();
+  innerBand_1 = new TGraphAsymmErrors();
+  outerBand_1 = new TGraphAsymmErrors();
+  observed_1 = new TGraph();
 
+  TGraph* expected_2 = 0;
+  TGraphAsymmErrors* innerBand_2 = 0;
+  TGraphAsymmErrors* outerBand_2 = 0;
+  TGraph* observed_2 = 0;
+  expected_2 = new TGraph();
+  innerBand_2 = new TGraphAsymmErrors();
+  outerBand_2 = new TGraphAsymmErrors();
+  observed_2 = new TGraph();
+
+  TGraph* expected_3 = 0;
+  TGraphAsymmErrors* innerBand_3 = 0;
+  TGraphAsymmErrors* outerBand_3 = 0;
+  TGraph* observed_3 = 0;
+  expected_3 = new TGraph();
+  innerBand_3 = new TGraphAsymmErrors();
+  outerBand_3 = new TGraphAsymmErrors();
+  observed_3 = new TGraph();
+
+
+  int ipoint_exp=0, ipoint_obs=0;
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
     // buffer mass value
     float mass = bins_[imass];
@@ -62,255 +88,239 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
     //sort array containing tanb in decreasing order
     //The array index contains the entry numbers in decreasing order in respect to tanb
     TMath::Sort(nevent,limit->GetV1(),index);
-    Int_t excluded_idx_minus2sigma=-999;
-    Int_t excluded_idx_minus1sigma=-999;
-    Int_t excluded_idx_exp=-999; 
-    Int_t excluded_idx_plus1sigma=-999;
-    Int_t excluded_idx_plus2sigma=-999;
-    Int_t excluded_idx_obs=-999;
-    Int_t notexcluded_idx_minus2sigma=-999;
-    Int_t notexcluded_idx_minus1sigma=-999;
-    Int_t notexcluded_idx_exp=-999; 
-    Int_t notexcluded_idx_plus1sigma=-999;
-    Int_t notexcluded_idx_plus2sigma=-999;
-    Int_t notexcluded_idx_obs=-999;
-    double highminus2sigma=0, highminus1sigma=0, highexpected=0, highplus1sigma=0, highplus2sigma=0, highobserved=0;
-    bool not_minus2sigma_excluded_bool=true, not_minus1sigma_excluded_bool=true, not_exp_excluded_bool=true, not_plus1sigma_excluded_bool=true, not_plus2sigma_excluded_bool=true, not_obs_excluded_bool=true;
+    std::vector<double> v_minus2sigma;
+    std::vector<double> v_minus1sigma;
+    std::vector<double> v_exp;
+    std::vector<double> v_plus1sigma;
+    std::vector<double> v_plus2sigma;
+    std::vector<double> v_obs;
+    double minus2sigma_a, minus1sigma_a, exp_a, plus1sigma_a, plus2sigma_a, obs_a, tanb_a; //to determine the crosspoints
+    double minus2sigma_b, minus1sigma_b, exp_b, plus1sigma_b, plus2sigma_b, obs_b, tanb_b; //to determine the crosspoints
+    int np_minus2sigma=0, np_minus1sigma=0, np_exp=0, np_plus1sigma=0, np_plus2sigma=0, np_obs=0; //to count up to 4 points for each. This points are used to create the asymmetric error graphs. Since at some masses there are cases for which scanning from top tanb to bottom tanb leads to exclusion cases like: excluded - not-excluded - excluded - notexcluded. So first point is always on top. Between first and second point there is a excluded region. Between second and third the region is not excluded and between third and fourth the region is once again excluded. If we just have a top exclusion we simple fix the points to tanb=0.5 (depending on the model), so that the graph is not visible. 
     for(int i=0; i<nevent; ++i){
+      limit->GetEntry(index[i]);
+      if (i==0) {
+	v_minus2sigma.push_back(tanbHigh);
+	if( minus2sigma>0.05 ) v_minus2sigma.push_back((minus2sigma+0.95)*tanb);
+	np_minus2sigma++;
+	v_minus1sigma.push_back(tanbHigh);
+        if( minus1sigma>0.05 ) v_minus1sigma.push_back((minus1sigma+0.95)*tanb);
+	np_minus1sigma++;
+	v_exp.push_back(tanbHigh);
+        if( exp>0.05 ) v_exp.push_back((exp+0.95        )*tanb);
+	np_exp++;
+	v_plus1sigma.push_back(tanbHigh);
+	if( plus1sigma>0.05 ) v_plus1sigma.push_back((plus1sigma+0.95 )*tanb);
+	np_plus1sigma++;
+	v_plus2sigma.push_back(tanbHigh);
+	if( plus2sigma>0.05 ) v_plus2sigma.push_back((plus2sigma+0.95 )*tanb);
+	np_plus2sigma++;
+	v_obs.push_back(tanbHigh);
+	if( obs>0.05 ) v_obs.push_back((obs+0.95        )*tanb);
+	np_obs++;
+      }
+      //std::cout<< "event i   " << tanb << ' ' << minus2sigma << ' ' << minus1sigma << ' ' << exp << ' ' << plus1sigma<< ' ' << plus2sigma<< ' ' << obs << std::endl;
+      minus2sigma_a = minus2sigma;
+      minus1sigma_a = minus1sigma;
+      exp_a = exp;
+      plus1sigma_a = plus1sigma;
+      plus2sigma_a = plus2sigma;
+      obs_a = obs;
+      tanb_a = tanb;
+      if(i+1<nevent){
+	limit->GetEntry(index[i+1]);
+	//std::cout<<"event i+1 "<< tanb << ' ' << minus2sigma << ' ' << minus1sigma << ' ' << exp << ' ' << plus1sigma<< ' ' << plus2sigma<< ' ' << obs << std::endl;
+	minus2sigma_b = minus2sigma;
+	minus1sigma_b = minus1sigma;
+	exp_b = exp;
+	plus1sigma_b = plus1sigma;
+	plus2sigma_b = plus2sigma;
+	obs_b = obs;
+	tanb_b = tanb;
+      }
+      else { // for excluded at last tanb point we need a point at bottom
+	minus2sigma_b = 999;
+	minus1sigma_b = 999;
+	exp_b = 999;
+	plus1sigma_b = 999;
+	plus2sigma_b = 999;
+	obs_b = 999;	
+	tanb_b = tanbLow;
+      }
       limit->GetEvent(index[i]);
-      //std::cout<< index[i] << " " << tanb << " " << minus2sigma << " " << minus1sigma << " " << exp << " " << plus1sigma  << " " << plus2sigma << " " << obs << " " << std::endl;
-      if(i==0){
-	highminus2sigma=(minus2sigma+0.95)*tanb;
-	highminus1sigma=(minus1sigma+0.95)*tanb;
-	highexpected   =(exp+0.95        )*tanb;
-	highplus1sigma =(plus1sigma+0.95 )*tanb;
-	highplus2sigma =(plus2sigma+0.95 )*tanb;
-	highobserved   =(obs+0.95        )*tanb;		  
-	//std::cout<< tanb << " " << highminus2sigma << " " << highminus1sigma << " " << highexpected  << " " << highplus1sigma << " " << highplus2sigma << " " << highobserved << std::endl;	
-      }
-
       // -2sigma
-      if(minus2sigma < 0.05 && not_minus2sigma_excluded_bool) {
-	excluded_idx_minus2sigma = index[i]; 
-	if(index[i+1]<nevent){
-	  notexcluded_idx_minus2sigma = index[i+1]; // case in between
-	}
-	else{
-	 notexcluded_idx_minus2sigma = index[i];  // case all excluded
-	}
+      if((minus2sigma_a < 0.05 && minus2sigma_b > 0.05) || (minus2sigma_a > 0.05 && minus2sigma_b < 0.05)) {
+	double x_up=tanb_a;
+	double y_up=minus2sigma_a;
+	double x_down=tanb_b;
+	double y_down=minus2sigma_b;
+	v_minus2sigma.push_back( (0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up ); 	
+	//std::cout<< tanb << " -2sigma " << (0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up << std::endl;  
+	np_minus2sigma++;
       }
-      else not_minus2sigma_excluded_bool=false;
-
       // -1sigma
-      if(minus1sigma < 0.05 && not_minus1sigma_excluded_bool) {
-	excluded_idx_minus1sigma = index[i]; 
-	if(index[i+1]<nevent){
-	  notexcluded_idx_minus1sigma = index[i+1]; // case in between
-	}
-	else{
-	 notexcluded_idx_minus1sigma = index[i];  // case all excluded
-	}
+      if((minus1sigma_a < 0.05 && minus1sigma_b > 0.05) || (minus1sigma_a > 0.05 && minus1sigma_b < 0.05)) {
+	double x_up=tanb_a;
+	double y_up=minus1sigma_a;
+	double x_down=tanb_b;
+	double y_down=minus1sigma_b;
+	v_minus1sigma.push_back( (0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up ); 	
+	//std::cout<< tanb << " -1sigma " << (0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up << std::endl;  
+	np_minus1sigma++;
       }
-      else not_minus1sigma_excluded_bool=false;
-
-      // exp
-      if(exp < 0.05 && not_exp_excluded_bool) {
-	excluded_idx_exp = index[i]; 
-	if(index[i+1]<nevent){
-	  notexcluded_idx_exp = index[i+1]; // case in between
-	}
-	else{
-	 notexcluded_idx_exp = index[i];  // case all excluded
-	}
+      // expected
+      if((exp_a < 0.05 && exp_b > 0.05) || (exp_a > 0.05 && exp_b < 0.05)) {
+	double x_up=tanb_a;
+	double y_up=exp_a;
+	double x_down=tanb_b;
+	double y_down=exp_b;
+	v_exp.push_back( (0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up ); 	
+	//std::cout<< tanb << " expected " << (0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up << std::endl;  
+	np_exp++;
       }
-      else not_exp_excluded_bool=false;
-
       // +1sigma
-      if(plus1sigma < 0.05 && not_plus1sigma_excluded_bool) {
-	excluded_idx_plus1sigma = index[i]; 
-	if(index[i+1]<nevent){
-	  notexcluded_idx_plus1sigma = index[i+1]; // case in between
-	}
-	else{
-	 notexcluded_idx_plus1sigma = index[i];  // case all excluded
-	}
+      if((plus1sigma_a < 0.05 && plus1sigma_b > 0.05) || (plus1sigma_a > 0.05 && plus1sigma_b < 0.05)) {
+	double x_up=tanb_a;
+	double y_up=plus1sigma_a;
+	double x_down=tanb_b;
+	double y_down=plus1sigma_b;
+	v_plus1sigma.push_back( (0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up ); 	
+	//std::cout<< tanb << " +1sigma " << (0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up << std::endl;  
+	np_plus1sigma++;
       }
-      else not_plus1sigma_excluded_bool=false;
-
       // +2sigma
-      if(plus2sigma < 0.05 && not_plus2sigma_excluded_bool) {
-	excluded_idx_plus2sigma = index[i]; 
-	if(index[i+1]<nevent){
-	  notexcluded_idx_plus2sigma = index[i+1]; // case in between
-	}
-	else{
-	 notexcluded_idx_plus2sigma = index[i];  // case all excluded
-	}
+      if((plus2sigma_a < 0.05 && plus2sigma_b > 0.05) || (plus2sigma_a > 0.05 && plus2sigma_b < 0.05)) {
+	double x_up=tanb_a;
+	double y_up=plus2sigma_a;
+	double x_down=tanb_b;
+	double y_down=plus2sigma_b;
+	v_plus2sigma.push_back( (0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up ); 	
+	//std::cout<< tanb << " +2sigma " << (0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up << std::endl;  
+	np_plus2sigma++;
       }
-      else not_plus2sigma_excluded_bool=false;
-
-      // obs
-      if(obs < 0.05 && not_obs_excluded_bool) {
-	excluded_idx_obs = index[i]; 
-	if(index[i+1]<nevent){
-	 notexcluded_idx_obs = index[i+1]; // case in between
-	} 
-	else{
-	  notexcluded_idx_obs = index[i];  // case all excluded
-	}    
+      // observed
+      if((obs_a < 0.05 && obs_b > 0.05) || (obs_a > 0.05 && obs_b < 0.05)) {
+	double x_up=tanb_a;
+	double y_up=obs_a;
+	double x_down=tanb_b;
+	double y_down=obs_b;
+	v_obs.push_back( (0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up ); 	
+	//std::cout<< tanb << " observed " << (0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up << std::endl;  
+	np_obs++;
       }
-      else not_obs_excluded_bool=false;
     }
-    //------------------expected
-    double excluded_exp=0;
-    if(excluded_idx_exp == -999){                     //case nothing excluded
-      excluded_exp=highexpected;
+    //number of points must be 4
+    while(np_minus2sigma<4){
+      if(v_minus2sigma[1]<2) {
+	v_minus2sigma.insert(v_minus2sigma.begin()+1, 2, tanbLowHigh );
+	np_minus2sigma++;
+	np_minus2sigma++;
+      }
+      else{
+	v_minus2sigma.push_back( tanbLow );
+	np_minus2sigma++;
+      }
+    }    
+    while(np_minus1sigma<4){
+      if(v_minus1sigma[1]<2) {
+	v_minus1sigma.insert(v_minus1sigma.begin()+1, 2, tanbLowHigh );
+	np_minus1sigma++;
+	np_minus1sigma++;
+      }
+      else{
+	v_minus1sigma.push_back( tanbLow );
+	np_minus1sigma++;
+      }
+    }    
+    while(np_exp<4){
+      v_exp.push_back( tanbLow );
+      np_exp++;
+    }    
+    while(np_plus1sigma<4){
+      if(v_plus1sigma[1]<2) {
+	v_plus1sigma.insert(v_plus1sigma.begin()+1, 2, tanbLowHigh );
+	np_plus1sigma++;
+	np_plus1sigma++;
+      }
+      else{
+	v_plus1sigma.push_back( tanbLow );
+	np_plus1sigma++;
+      }
+    } 
+    while(np_plus2sigma<4){
+      if(v_plus2sigma[1]<2) {
+	v_plus2sigma.insert(v_plus2sigma.begin()+1, 2, tanbLowHigh );
+	np_plus2sigma++;
+	np_plus2sigma++;
+      }
+      else{
+	v_plus2sigma.push_back( tanbLow );
+	np_plus2sigma++;
+      }
+    } 
+    while(np_obs<4){
+      v_obs.push_back( tanbLow );
+      np_obs++;
     }
-    else if(excluded_idx_exp == notexcluded_idx_exp){ // case all excluded
-      limit->GetEvent(excluded_idx_exp);
-      excluded_exp=3;//tanb;
+    
+    /*for(unsigned int i=0; i<v_minus2sigma.size(); i++){
+      std::cout << i << " -2sigma " << v_minus2sigma[i] <<std::endl;
     }
-    else{                                             // case in between
-      limit->GetEvent(excluded_idx_exp);
-      double x_up=tanb;
-      double y_up=exp;
-      limit->GetEvent(notexcluded_idx_exp);
-      double x_down=tanb;
-      double y_down=exp;
-      excluded_exp=(0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up; 
-    }   
-    expected->SetPoint(ipoint, mass, excluded_exp);
-    //std::cout<< "expected " << ipoint << " " << mass << " " << excluded_exp << std::endl;
-
-    //-----------------2sigma band
-    double excluded_minus2sigma=0;
-    if(excluded_idx_minus2sigma == -999){                     //case nothing excluded
-      excluded_minus2sigma=highminus2sigma;
+    for(unsigned int i=0; i<v_minus1sigma.size(); i++){
+      std::cout << i << " -1sigma " << v_minus1sigma[i] <<std::endl;
     }
-    else if(excluded_idx_minus2sigma == notexcluded_idx_minus2sigma){ // case all excluded
-      limit->GetEvent(excluded_idx_minus2sigma);
-      excluded_minus2sigma=2;//tanb;
-    }
-    else{                                             // case in between
-      limit->GetEvent(excluded_idx_minus2sigma);
-      double x_up=tanb;
-      double y_up=minus2sigma;
-      limit->GetEvent(notexcluded_idx_minus2sigma);
-      double x_down=tanb;
-      double y_down=minus2sigma;
-      excluded_minus2sigma=(0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up; 
-    }   
-    //std::cout<< "minus2sigma " << ipoint << " " << mass << " " << excluded_minus2sigma << std::endl;
-    double excluded_plus2sigma=0;
-    if(excluded_idx_plus2sigma == -999){                     //case nothing excluded
-      excluded_plus2sigma=highplus2sigma;
-    }
-    else if(excluded_idx_plus2sigma == notexcluded_idx_plus2sigma){ // case all excluded
-      limit->GetEvent(excluded_idx_plus2sigma);
-      excluded_plus2sigma=5;//tanb;
-    }
-    else{                                             // case in between
-      limit->GetEvent(excluded_idx_plus2sigma);
-      double x_up=tanb;
-      double y_up=plus2sigma;
-      limit->GetEvent(notexcluded_idx_plus2sigma);
-      double x_down=tanb;
-      double y_down=plus2sigma;
-      excluded_plus2sigma=(0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up; 
-    }   
-    outerBand->SetPoint      (ipoint, mass, excluded_exp);
-    outerBand->SetPointEYhigh(ipoint, excluded_plus2sigma-excluded_exp);
-    outerBand->SetPointEYlow (ipoint, excluded_exp-excluded_minus2sigma);
-    //std::cout<< "plus2sigma " << ipoint << " " << mass << " " << excluded_plus2sigma << std::endl;
-
-    //-----------------1sigma band
-    double excluded_minus1sigma=0;
-    if(excluded_idx_minus1sigma == -999){                     //case nothing excluded
-      excluded_minus1sigma=highminus1sigma;
-    }
-    else if(excluded_idx_minus1sigma == notexcluded_idx_minus1sigma){ // case all excluded
-      limit->GetEvent(excluded_idx_minus1sigma);
-      excluded_minus1sigma=2.5;//tanb;
-    }
-    else{                                             // case in between
-      limit->GetEvent(excluded_idx_minus1sigma);
-      double x_up=tanb;
-      double y_up=minus1sigma;
-      limit->GetEvent(notexcluded_idx_minus1sigma);
-      double x_down=tanb;
-      double y_down=minus1sigma;
-      excluded_minus1sigma=(0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up; 
-    }   
-    //std::cout<< "minus1sigma " << ipoint << " " << mass << " " << excluded_minus1sigma << std::endl;
-    double excluded_plus1sigma=0;
-    if(excluded_idx_plus1sigma == -999){                     //case nothing excluded
-      excluded_plus1sigma=highplus1sigma;
-    }
-    else if(excluded_idx_plus1sigma == notexcluded_idx_plus1sigma){ // case all excluded
-      limit->GetEvent(excluded_idx_plus1sigma);
-      excluded_plus1sigma=4;//tanb;
-    }
-    else{                                             // case in between
-      limit->GetEvent(excluded_idx_plus1sigma);
-      double x_up=tanb;
-      double y_up=plus1sigma;
-      limit->GetEvent(notexcluded_idx_plus1sigma);
-      double x_down=tanb;
-      double y_down=plus1sigma;
-      excluded_plus1sigma=(0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up; 
-    }   
-    innerBand->SetPoint      (ipoint, mass, excluded_exp);
-    innerBand->SetPointEYhigh(ipoint, excluded_plus1sigma-excluded_exp);
-    innerBand->SetPointEYlow (ipoint, excluded_exp-excluded_minus1sigma);
-    //std::cout<< "plus1sigma " << ipoint << " " << mass << " " << excluded_plus1sigma << std::endl;
-  
-    //------------------observed
-    double excluded_obs=0;
-    if(excluded_idx_obs == -999){                     // case nothing excluded
-      excluded_obs=highobserved;
-    }
-    else if(excluded_idx_obs == notexcluded_idx_obs){ // case all excluded
-      limit->GetEvent(excluded_idx_exp);
-      excluded_exp=3;//tanb;
-    }
-    else{                                             // case in between
-      limit->GetEvent(excluded_idx_obs);
-      double x_up=tanb;
-      double y_up=obs;
-      limit->GetEvent(notexcluded_idx_obs);
-      double x_down=tanb;
-      double y_down=obs;
-      excluded_obs=(0.05-y_up)/(y_down-y_up)*(x_down-x_up)+x_up; //tanb_ges=(exp_ges-exp_up)/(exp_down-exp_up)*(tanb_down-tanb_up)+tanb_up ; exp_ges = 0.05
+    for(unsigned int i=0; i<v_exp.size(); i++){
+      std::cout << i << " exp " << v_exp[i] <<std::endl;
+    }    
+    for(unsigned int i=0; i<v_plus1sigma.size(); i++){
+      std::cout << i << " +1sigma " << v_plus1sigma[i] <<std::endl;
     }  
-    observed->SetPoint(ipoint, mass, excluded_obs);
-    //std::cout<< "observed " << ipoint << " " << mass << " " << excluded_obs << std::endl;
+    for(unsigned int i=0; i<v_plus2sigma.size(); i++){
+      std::cout << i << " +2sigma " << v_plus2sigma[i] <<std::endl;
+    }  
+    for(unsigned int i=0; i<v_obs.size(); i++){
+      std::cout << i << " obs " << v_obs[i] <<std::endl;
+      }*/
 
-    exclusion << int(mass) << " " << excluded_minus2sigma << " " << excluded_minus1sigma << " " << excluded_exp << " " << excluded_plus1sigma << " " << excluded_plus2sigma << " " << excluded_obs << std::endl; 
-    exclusion.close();
+    //fill the graphs
+    //expected - excluded region is by definition between cross point 1 and 2 and between 3 and 4
+    expected_1->SetPoint(ipoint, mass, v_exp[1]);    
+    if(np_exp>2){     
+      expected_2->SetPoint(ipoint_exp, mass, v_exp[2]); 
+      expected_3->SetPoint(ipoint_exp, mass, v_exp[3]);    
+      ipoint_exp++;
+    }
+    //observed - excluded region is by definition between cross point 1 and 2 and between 3 and 4
+    observed_1->SetPoint(ipoint, mass, v_obs[1]);  
+    plain_1->SetPoint(ipoint, mass, v_obs[1]);
+    plain_1->SetPointEYhigh(ipoint, v_obs[0]-v_obs[1]);
+    plain_1->SetPointEYlow (ipoint, 0); 
+    if(np_obs>2){
+      observed_2->SetPoint(ipoint_obs, mass, v_obs[2]);
+      observed_3->SetPoint(ipoint_obs, mass, v_obs[3]);        
+      plain_2->SetPoint(ipoint_obs, mass, v_obs[3]);
+      plain_2->SetPointEYhigh(ipoint_obs, v_obs[2]-v_obs[3]);
+      plain_2->SetPointEYlow (ipoint_obs, 0); 
+      ipoint_obs++;
+    }
+    //innerBand - around expected line at crosspoint 2, 3 and 4 we need the band => 3 points
+    innerBand_1->SetPoint(ipoint, mass, v_exp[1]);
+    innerBand_1->SetPointEYhigh(ipoint, v_plus1sigma[1]-v_exp[1]);
+    innerBand_1->SetPointEYlow (ipoint, v_exp[1]-v_minus1sigma[1]); 
+    innerBand_2->SetPoint(ipoint, mass, v_exp[2]);
+    innerBand_2->SetPointEYhigh(ipoint, v_plus1sigma[2]-v_exp[2]);
+    innerBand_2->SetPointEYlow (ipoint, v_exp[2]-v_minus1sigma[2]); 
+    //outerBand - around expected line at crosspoint 2, 3 and 4 we need the band => 3 points
+    outerBand_1->SetPoint(ipoint, mass, v_exp[1]);
+    outerBand_1->SetPointEYhigh(ipoint, v_plus2sigma[1]-v_exp[1]);
+    outerBand_1->SetPointEYlow (ipoint, v_exp[1]-v_minus2sigma[1]); 
+    outerBand_2->SetPoint(ipoint, mass, v_exp[2]);
+    outerBand_2->SetPointEYhigh(ipoint, v_plus2sigma[2]-v_exp[2]);
+    outerBand_2->SetPointEYlow (ipoint, v_exp[2]-v_minus2sigma[2]);
+ 
     ipoint++;
   }
 
-  // create plain background
-  TGraphAsymmErrors* plain=0;
-  if(observed){
-    plain=new TGraphAsymmErrors();
-    plain->SetPoint(0, observed->GetX()[0], 100.);
-    plain->SetPointEYlow (0, 0);
-    plain->SetPointEYhigh(0, 100); 
-    for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
-      if(valid_[imass] && observed->GetX()[ipoint]>10){
-	plain->SetPoint(ipoint+1, observed->GetX()[ipoint], observed->GetY()[ipoint]); 
-	plain->SetPointEYlow (ipoint+1, 0);
- 	plain->SetPointEYhigh(ipoint+1, 100);
-	//std::cout << ipoint << " " << observed->GetN() << " " << observed->GetX()[ipoint] << std::endl;
-	++ipoint;
-      }
-    }
-    plain->SetPoint(observed->GetN(), observed->GetX()[observed->GetN()-1], 100.);
-    plain->SetPointEYlow (observed->GetN(), 0);
-    plain->SetPointEYhigh(observed->GetN(), 100); 
-  }
-   
    // create plots for additional comparisons
   std::map<std::string, TGraph*> comparisons; TGraph* comp=0;
   if(arXiv_1211_6956_){ comp = new TGraph(), arXiv_1211_6956 (comp); comp->SetName("arXiv_1211_6956" ); comparisons[std::string("ATLAS H#rightarrow#tau#tau (4.8/fb)")] = comp;}
@@ -333,7 +343,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
   }
 
   // do the plotting
-  plottingHypoTest(canv, plain, innerBand, outerBand, expected, observed, higgsBands, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, expectedOnly_, outerband_); 
+  plottingHypoTest(canv, plain_1, plain_2, innerBand_1, innerBand_2, innerBand_3, outerBand_1, outerBand_2, outerBand_3, expected_1, expected_2, expected_3, observed_1, observed_2, observed_3, higgsBands, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, expectedOnly_, outerband_); 
   /// setup the CMS Preliminary
   //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
   TPaveText* cmsprel  = new TPaveText(0.145, 0.835+0.06, 0.145+0.30, 0.835+0.16, "NDC");
@@ -355,8 +365,8 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
     canv.Print(std::string(output_).append("_").append(extralabel_).append(label_).append(".eps").c_str());
   }
   if(txt_){
-    print(std::string(output_).append("_").append(extralabel_).append(label_).c_str(), outerBand, innerBand, expected, observed, "txt");
-    print(std::string(output_).append("_").append(extralabel_).append(label_).c_str(), outerBand, innerBand, expected, observed, "tex");
+    print(std::string(output_).append("_").append(extralabel_).append(label_).c_str(), outerBand_1, innerBand_1, expected_1, observed_1, "txt");
+    print(std::string(output_).append("_").append(extralabel_).append(label_).c_str(), outerBand_1, innerBand_1, expected_1, observed_1, "tex");
   }
   if(root_){
     TFile* output = new TFile(std::string("limits_").append(extralabel_).append(label_).append(".root").c_str(), "update");
@@ -364,10 +374,10 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
       output->mkdir(output_.c_str());
       output->cd(output_.c_str());
     }
-    if(observed){ 
-      observed ->Write("observed" );
+    if(observed_1){ 
+      observed_1 ->Write("observed" );
     }
-    expected ->Write("expected" );
+    expected_1 ->Write("expected" );
     //innerBand->Write("innerBand");
     //outerBand->Write("outerBand");
     // auxiliary graphs
