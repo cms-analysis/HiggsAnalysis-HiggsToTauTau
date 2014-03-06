@@ -72,7 +72,7 @@ parser.add_option_group(cgroup)
 ## MODEL OPTIONS
 ##
 dgroup = OptionGroup(parser, "MODEL OPTIONS", "These are the command line options that can be used to configure the submission of multi-dimensional fits or asymptotic limits that do require specific models. Specific models can be used for option --multidim-fit and for option --asymptotic. Possible model options for option --multidim-fit are: ggH-bbH (MSSM), ggH-qqH (SM), rV-rF (SM) and cV-cF (SM). Possible model options for option --asymptotic are: \"\" (SM), ggH (MSSM) and bbH (MSSM).")
-dgroup.add_option("--physics-model", dest="fitModel", default="", type="choice", choices=["cb-ctau", "cl-cq", "ggH-bbH", "ggH-qqH", "rV-rF", "cV-cF", "ggH", "bbH", ""],
+dgroup.add_option("--physics-model", dest="fitModel", default="", type="choice", choices=["cb-ctau", "cl-cq", "ggH-bbH", "ggH-qqH", "rV-rF", "cV-cF", "ggH", "bbH", "", "Hhh"],
                   help="Define the model for which you want to submit the process with option --multidim-fit ('ggH-bbH' (MSSM), 'ggH-qqH' (SM) and 'cV-cF' (SM)) or option --asymptotic ('ggH' (MSSM), 'bbH' (MSSM) and '' (SM)). [Default: \"\"]")
 parser.add_option_group(dgroup)
 ##
@@ -266,6 +266,9 @@ def model_config(model_name) :
     elif "bbH" in model_name :
         model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
         opts  = "--physics-model-options 'modes=bbH;bbHRange=0:BBH-BOUND'"    
+    elif "Hhh" in options.fitModel:
+        model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:multiSignalModel'"
+        opts  = "--physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohh$:r[1,-5,5];map=^.*/ggHTohh_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZh(\d+\.*\d*)*$:AZh=AZh[1,-500,500] \'"
     else:
         return None
     return (model,opts)
@@ -563,6 +566,10 @@ if options.optAsym :
     elif "bbH" in options.fitModel :
         model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
         opts  = "--physics-model-options 'modes=bbH;bbHRange=0:BBH-BOUND'"
+    elif "Hhh" in options.fitModel:
+        model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:multiSignalModel'"
+        opts  = "--physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohh$:r[1,-5,5];map=^.*/ggHTohh_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZh(\d+\.*\d*)*$:AZh=AZh[1,-500,500] \'"
+
     ## prepare calculation
     if options.interactive :
         for dir in args :
