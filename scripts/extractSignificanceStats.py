@@ -254,8 +254,8 @@ f.Close()
 
 
 ### Output file containing number of toys so one does not have to look up all the plots
-numberToys = open("numberToys_{MASS}_{TANB}.out".format(MASS=staff.mh, TANB=tanb), 'w')
-numberToys.write("{MASS} {TANB} {NTOYS}".format(MASS=staff.mh, TANB=tanb, NTOYS=ntoysMSSM))
+numberToys = open("numberToys_{MASS}_{TANB}.out".format(MASS=int(staff.mh), TANB=tanb), 'w')
+numberToys.write("{MASS} {TANB} {NTOYS}".format(MASS=int(staff.mh), TANB=tanb, NTOYS=ntoysMSSM))
 numberToys.close()
 
 
