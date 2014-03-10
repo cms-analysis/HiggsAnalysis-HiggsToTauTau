@@ -15,6 +15,8 @@ parser.add_option("--model", dest="modelname", default="mhmax-mu+200", type="str
                   help="The model which should be used (choices are: mhmax-mu+200, mhmodp, mhmodm). Default: \"mhmax-mu+200\"]")
 parser.add_option("--MSSMvsSM", dest="MSSMvsSM", default=False, action="store_true",
                   help="Do a signal hypothesis separation test MSSM vs SM. [Default: False]")
+parser.add_option("--smartGrid", dest="smartGrid", default=False, action="store_true",
+                  help="Produce grid points depending on the exclusion limits. This option is only valid for hypothesis tests. Note that all grid points will be deleted before producing the new clever grid. [Default: False]")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 if len(args) < 1 :
@@ -49,7 +51,7 @@ eval `scram runtime -sh`
 echo "Running submit.py:"
 echo "in directory {directory}"
 
-$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/submit.py --tanb+ --setup {OLD} {directory} --options "--model {MODEL} {MSSMvsSM}"
+$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/submit.py --tanb+ --setup {OLD} {SMARTGRID} {directory} --options "--model {MODEL} {MSSMvsSM}"
 '''
 
 lxq_fragment = '''#!/bin/zsh
@@ -100,7 +102,8 @@ def submit(name, key, masses) :
                     directory = dir,
                     OLD = "--old" if options.old else "",
                     MODEL = options.modelname,
-                    MSSMvsSM = "--MSSMvsSM" if options.MSSMvsSM else ""
+                    MSSMvsSM = "--MSSMvsSM" if options.MSSMvsSM else "",
+                    SMARTGRID= "--smartGrid" if options.smartGrid else ""
                     ))
             os.system('chmod a+x %s' % script_file_name)
             if options.condor :
