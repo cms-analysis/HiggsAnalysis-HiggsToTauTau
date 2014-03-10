@@ -1,6 +1,7 @@
 from HiggsAnalysis.HiggsToTauTau.utils import subvec
 from HiggsAnalysis.HiggsToTauTau.utils import vec2str
 
+import os
 
 def tanb_grid(args, cmd, sub, opt, smartGrid=False) :
 
@@ -12,6 +13,8 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False) :
     grid = []
     mass=(args[0].split("/"))[-1]
     if smartGrid :
+        os.system("rm "+str(args[0])+"/fixedMu_*.root")
+        #os.system("rm "+str(args[0])+"/batch_*.root")
         exclusion = open(str(args[0])+"/exclusion_{MASS}.out".format(MASS=mass), 'r')
         line = exclusion.readlines()
         highlimits = line[0].rstrip("\n").split(" ")
