@@ -211,7 +211,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
     }
     //number of points must be 4
     while(np_minus2sigma<4){
-      if(v_minus2sigma[1]<2) {
+      if(v_minus2sigma[1]<tanbLowHigh) {
 	v_minus2sigma.insert(v_minus2sigma.begin()+1, 2, tanbLowHigh );
 	np_minus2sigma++;
 	np_minus2sigma++;
@@ -222,7 +222,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
       }
     }    
     while(np_minus1sigma<4){
-      if(v_minus1sigma[1]<2) {
+      if(v_minus1sigma[1]<tanbLowHigh) {
 	v_minus1sigma.insert(v_minus1sigma.begin()+1, 2, tanbLowHigh );
 	np_minus1sigma++;
 	np_minus1sigma++;
@@ -237,7 +237,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
       np_exp++;
     }    
     while(np_plus1sigma<4){
-      if(v_plus1sigma[1]<2) {
+      if(v_plus1sigma[1]<tanbLowHigh) {
 	v_plus1sigma.insert(v_plus1sigma.begin()+1, 2, tanbLowHigh );
 	np_plus1sigma++;
 	np_plus1sigma++;
@@ -248,7 +248,7 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
       }
     } 
     while(np_plus2sigma<4){
-      if(v_plus2sigma[1]<2) {
+      if(v_plus2sigma[1]<tanbLowHigh) {
 	v_plus2sigma.insert(v_plus2sigma.begin()+1, 2, tanbLowHigh );
 	np_plus2sigma++;
 	np_plus2sigma++;
@@ -318,6 +318,27 @@ PlotLimits::plotHypoTest(TCanvas& canv, const char* directory)
     outerBand_2->SetPointEYhigh(ipoint, v_plus2sigma[2]-v_exp[2]);
     outerBand_2->SetPointEYlow (ipoint, v_exp[2]-v_minus2sigma[2]);
  
+    exclusion << int(mass) << " " << v_minus2sigma[1] << " " << v_minus1sigma[1] << " " << v_exp[1] << " " << v_plus1sigma[1] << " " << v_plus2sigma[1] << " " << v_obs[1] << std::endl; 
+    double help_minus2sigma, help_minus1sigma, help_exp, help_plus1sigma, help_plus2sigma, help_obs;
+    if (v_minus2sigma[2]>tanbLowHigh) help_minus2sigma=v_minus2sigma[2];
+    else if (v_minus2sigma[2]==tanbLowHigh) help_minus2sigma=v_minus2sigma[3];
+    else help_minus2sigma=v_minus2sigma[1];
+    if (v_minus1sigma[2]>tanbLowHigh) help_minus1sigma=v_minus1sigma[2];
+    else if (v_minus1sigma[2]==tanbLowHigh) help_minus1sigma=v_minus1sigma[3];
+    else help_minus1sigma=v_minus1sigma[1];
+    if (v_exp[2]!=tanbLow) help_exp=v_exp[2];
+    else help_exp=v_exp[1];
+    if (v_plus1sigma[2]>tanbLowHigh) help_plus1sigma=v_plus1sigma[2];
+    else if (v_plus1sigma[2]==tanbLowHigh) help_plus1sigma=v_plus1sigma[3];
+    else help_plus1sigma=v_plus1sigma[1];
+    if (v_plus2sigma[2]>tanbLowHigh) help_plus2sigma=v_plus2sigma[2];
+    else if (v_plus2sigma[2]==tanbLowHigh) help_plus2sigma=v_plus2sigma[3];
+    else help_plus2sigma=v_plus2sigma[1];
+    if (v_obs[2]!=tanbLow) help_obs=v_obs[2];
+    else help_obs=v_obs[1];
+    exclusion << int(mass) << " " << help_minus2sigma << " " << help_minus1sigma << " " << help_exp << " " << help_plus1sigma << " " << help_plus2sigma << " " << help_obs << std::endl; 
+    exclusion.close();
+
     ipoint++;
   }
 
