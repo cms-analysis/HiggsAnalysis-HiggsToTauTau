@@ -27,7 +27,7 @@ layout = cms.PSet(
     ## define verbosity level
     verbosity = cms.uint32(3),
     ## define output label
-    outputLabel = cms.string("tanb-lowmH") ,
+    outputLabel = cms.string("mA-tanb") ,
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
      300.
