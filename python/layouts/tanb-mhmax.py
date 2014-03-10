@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string("CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV"),
+    dataset = cms.string("CMS,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV"),
     #dataset = cms.string("CMS Preliminary,  H#rightarrow#tau#tau,  18.3 fb^{-1} at 8 TeV"),
     ## x-axis title
     xaxis = cms.string("m_{A} [GeV]"),
@@ -11,7 +11,7 @@ layout = cms.PSet(
     ## theory label 
     theory = cms.string("MSSM m_{h}^{max} scenario"),
     ## min for plotting
-    min = cms.double(0),
+    min = cms.double(0.5),
     ## max for plotting
     max = cms.double(60),
     ## min for plotting
@@ -27,7 +27,7 @@ layout = cms.PSet(
     ## define verbosity level
     verbosity = cms.uint32(3),
     ## define output label
-    outputLabel = cms.string("mA-tanb") ,
+    outputLabel = cms.string("tanb-mhmax") ,
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
      90.
@@ -67,7 +67,7 @@ layout = cms.PSet(
     ## plot expected only
     expectedOnly = cms.bool(False),
     ## print constraints from mH=125GeV
-    higgs125 = cms.bool(False),
+    higgs125 = cms.bool(True),
     ## add arXiv-1211-6956 (ATLAS) to plot
     arXiv_1211_6956 = cms.bool(False),
     ## add arXiv-1204-2760 (ATLAS) to plot

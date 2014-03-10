@@ -12,7 +12,7 @@ layout = cms.PSet(
     ## theory label 
     theory = cms.string("MSSM light stau scenario"),
     ## min for plotting
-    min = cms.double(0),
+    min = cms.double(0.5),
     ## max for plotting
     max = cms.double(60),
     ## min for plotting
@@ -28,7 +28,7 @@ layout = cms.PSet(
     ## define verbosity level
     verbosity = cms.uint32(3),
     ## define output label
-    outputLabel = cms.string("mA-tanb") ,
+    outputLabel = cms.string("tanb-lightstau1") ,
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
      90.
