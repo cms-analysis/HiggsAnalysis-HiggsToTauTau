@@ -1180,9 +1180,13 @@ for directory in args :
             if options.smartScan :
                 exclusion = open("exclusion_{MASS}.out".format(MASS=mass), 'r')
                 line = exclusion.readlines()
-                limits = line[0].rstrip("\n").split(" ")
+                highlimits = line[0].rstrip("\n").split(" ")
                 exclusion.close()
-                limits.pop(0)
+                highlimits.pop(0)
+                lowlimits = line[1].rstrip("\n").split(" ")
+                exclusion.close()
+                lowlimits.pop(0)
+                limits = highlimits+lowlimits #maybe add an option to do the smartScan only for high or low exclusion
                 limits.sort(key=float)
                 for idx, point in enumerate(tanb_list) :
                     if float(point) > float(limits[0]) and tanb_low_idx==-999:
