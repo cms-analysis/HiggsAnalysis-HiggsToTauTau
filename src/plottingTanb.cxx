@@ -285,7 +285,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
       leg->AddEntry(comp->second, (comp->first).c_str(), "FL");
     }
   }
-  //leg->Draw("same");
+  leg->Draw("same");
   //canv.RedrawAxis("g");
   canv.RedrawAxis();
   return;
