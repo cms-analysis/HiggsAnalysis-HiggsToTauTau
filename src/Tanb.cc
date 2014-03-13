@@ -41,14 +41,13 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
     plain->SetPointEYlow (observed->GetN(), 0);
     plain->SetPointEYhigh(observed->GetN(), 100); 
   }
-
-  TGraphAsymmErrors* plain_low=0;
-  if(observed_low){
-    plain_low=new TGraphAsymmErrors();
+  
+  TGraphAsymmErrors* plain_low=new TGraphAsymmErrors();
+  if(observed_low and extralabel_!="lowmH-"){
+    //plain_low=new TGraphAsymmErrors();
     plain_low->SetPoint(0, observed_low->GetX()[0], 0.5);
     plain_low->SetPointEYlow (0, 0);
     plain_low->SetPointEYhigh(0, 0); 
-    //std::cout << observed_low->GetX()[0] << " " << observed_low->GetN() << std::endl;
     for(int imass=0, ipoint=0; imass<observed_low->GetN(); ++imass){
       if(valid_[imass]){
 	plain_low->SetPoint(ipoint+1, observed_low->GetX()[ipoint], observed_low->GetY()[ipoint]); 
@@ -63,6 +62,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
     plain_low->SetPointEYhigh(observed_low->GetN(), 0); 
     //std::cout << observed_low->GetX()[observed_low->GetN()-1] << std::endl;
   }
+  
 
   // create LEP exclusion plot
   TGraph* upperLEP = new TGraph();
@@ -92,6 +92,7 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
     //}
   }
   
+  
   // this one is not supported here (see in macros/plotTanb.C to use this option - requires some manual work)
   TGraph* injected=0;
   // do the plotting 
@@ -107,7 +108,6 @@ PlotLimits::plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErr
 //   cmsprel->SetTextFont (   62 );
 //   cmsprel->AddText(dataset_.c_str());
 //   cmsprel->Draw();
-
   // write results to files
   if(png_){
     canv.Print(std::string(output_).append("_").append(extralabel_).append(label_).append(".png").c_str());

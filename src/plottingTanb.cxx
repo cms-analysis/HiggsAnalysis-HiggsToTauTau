@@ -11,6 +11,8 @@
 #include "TROOT.h"
 //#include "TRint.h"
 
+#include <iostream>
+using namespace std;
 void
 plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_low, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* innerBand_low, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* outerBand_low, TGraph* expected, TGraph* expected_low, TGraph* observed, TGraph* observed_low, TGraph* lowerLEP, TGraph* upperLEP, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, TGraph* injected=0, double min=0., double max=60., bool log=false, bool transparent=false)
 {
@@ -35,7 +37,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   TColor* ph = gROOT->GetColor(kYellow);
   ph->SetAlpha(0.0);  
   TColor* backgroundColor = gROOT->GetColor(kRed);
-  backgroundColor->SetAlpha(0.3);
+  backgroundColor->SetAlpha(0.2);
 
   // for logx the label for x axis values below 100 needs to be slightly shifted to prevent 
   // the label from being printed into the canvas
@@ -64,7 +66,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
     hr->GetXaxis()->SetNoExponent();
     hr->GetXaxis()->SetLabelSize(0.040);
   }
-
+  
   TGraphAsymmErrors* background = new TGraphAsymmErrors();
   background->SetPoint(0, outerBand->GetX()[0], 50);
   background->SetPointEYlow (0, 50);
@@ -81,7 +83,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   background->SetFillColor(backgroundColor->GetNumber());
   background->SetLineColor(ph->GetNumber());
   background->Draw("3");
-
+  
   int idx=0;
   //int coloredBands[] = {kRed, kRed-7, kRed-9};
   int coloredBands[] = {kWhite, kWhite, kWhite}; 
@@ -91,7 +93,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
     band->second->SetFillColor(coloredBands[idx]);
     band->second->Draw("3same");
   }
-
+  
   upperLEP->SetFillStyle(1001.);
   upperLEP->SetFillColor(lep->GetNumber());
   upperLEP->SetLineColor(ph->GetNumber());
@@ -116,7 +118,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
     observed->SetMarkerColor(kBlack);
     observed->SetLineWidth(3.);
   }
-
+  
   if(observed_low){  
     plain_low->SetLineColor(ph->GetNumber());
     plain_low->SetFillStyle(1001.);
@@ -127,7 +129,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
     observed_low->SetMarkerColor(kBlack);
     observed_low->SetLineWidth(3.);  
   }
-
+  
   if(outerBand){
     outerBand->SetFillStyle(1001);
     outerBand->SetFillColor(twosigma->GetNumber()); //kGray
@@ -283,7 +285,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
       leg->AddEntry(comp->second, (comp->first).c_str(), "FL");
     }
   }
-  leg->Draw("same");
+  //leg->Draw("same");
   //canv.RedrawAxis("g");
   canv.RedrawAxis();
   return;

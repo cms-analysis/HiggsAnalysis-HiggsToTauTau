@@ -33,7 +33,7 @@ plottingHypoTest(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* p
   TColor* ph = gROOT->GetColor(kYellow);
   ph->SetAlpha(0.0);
   TColor* backgroundColor = gROOT->GetColor(kRed);
-  backgroundColor->SetAlpha(0.1);
+  backgroundColor->SetAlpha(0.2);
 
   // for logx the label for x axis values below 100 needs to be slightly shifted to prevent 
   // the label from being printed into the canvas
