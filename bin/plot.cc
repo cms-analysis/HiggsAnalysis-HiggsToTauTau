@@ -55,10 +55,8 @@ int main(int argc, char* argv[])
   std::vector<std::string> types;
   // show full CLs cross section limits 
   types.push_back(std::string("--CLs"));
-  // show limits in mA-tanb (from full CLs or from asymptotic)
+  // show limits in mA-tanb (from full CLs or from asymptotic) in MSSM vs BG or MSSM vs SM
   types.push_back(std::string("--tanb"));
-  // show SignalSeparation Power in mA-tanb (MSSM vs SM)
-  types.push_back(std::string("--hypothesis-test")); 
   // show bayesian cross section limits
   types.push_back(std::string("--bayesian"));
   // show asymptotic cross section limits with signal injected
@@ -177,7 +175,7 @@ int main(int argc, char* argv[])
     plot.plotLimit(*canv, inner, outer, expected, observed);
   }
   // -----------------------------------------------------------------------------------------------------------------------
-  if( std::string(argv[1]) == std::string("--tanb") ){
+  /*if( std::string(argv[1]) == std::string("--tanb") ){
     // observed limit
     TGraph* observed  = 0;
     if(!expectedOnly){
@@ -214,6 +212,13 @@ int main(int argc, char* argv[])
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plotTanb(*canv, inner, inner_low, outer, outer_low, expected, expected_low, observed, observed_low, directory);
+  }*/
+   // ----------------------------------------------------------------------------------------------------------------------- NEW
+  if( std::string(argv[1]) == std::string("--tanb") ){
+    // make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plotTanb(*canv, directory, std::string(""));
   }
   // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--bayesian") ){
@@ -439,13 +444,6 @@ int main(int argc, char* argv[])
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plot2DScan(*canv, directory);
   }
-  // ----------------------------------------------------------------------------------------------------------------------- NEW
-  if( std::string(argv[1]) == std::string("--hypothesis-test") ){
-    // make the plot
-    SetStyle();
-    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
-    plot.plotHypoTest(*canv, directory);
-  }
   // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--HIG-11-020") ){
     // observed limit
@@ -465,11 +463,11 @@ int main(int argc, char* argv[])
     plot.fillBand("HIG-11-020", outer, "HIG-11-020", false);
     // make the plot
     SetStyle();
-    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    //TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     // plots the layout corresponding to cross section limits
     //plot.plot(*canv, inner, outer, expected, observed);
     // plots the layout corresponding to the direct tanb limits
-    plot.plotTanb(*canv, inner, 0, outer, 0, expected, 0, observed, 0);
+    //plot.plotTanb(*canv, inner, 0, outer, 0, expected, 0, observed, 0);
   }
   // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--HIG-11-029") ){
@@ -490,13 +488,14 @@ int main(int argc, char* argv[])
     plot.fillBand("HIG-11-029", outer, "HIG-11-029", false);
     // make the plot
     SetStyle();
-    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    /*TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     if(mssm){
       plot.plotTanb(*canv, inner, 0, outer, 0, expected, 0, observed, 0);
     }
     else{
       plot.plotLimit(*canv, inner, outer, expected, observed);
-    }
+      }*/
+    if(mssm) std::cout << ' ' << std::endl;
   }
   // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--HIG-12-018") ){
@@ -566,25 +565,11 @@ int main(int argc, char* argv[])
   }
   // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--HIG-12-050") ){
-    // observed limit
-    TGraph* observed  = 0;
-    if(!expectedOnly){
-      observed = new TGraph();
-      plot.fillCentral("HIG-12-050", observed, "HIG-12-050-obs");
-    }
-    // expected limit
-    TGraph* expected  = new TGraph();
-    plot.fillCentral("HIG-12-050", expected, "HIG-12-050-exp");
-    // 1-sigma uncertainty band
-    TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
-    plot.fillBand("HIG-12-050", inner, "HIG-12-050", true);
-    // 2-sigma uncertainty band
-    TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
-    plot.fillBand("HIG-12-050", outer, "HIG-12-050", false);
     // make the plot
+    std::string HIG = "HIG-12-050",
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
-    plot.plotTanb(*canv, inner, 0, outer, 0, expected, 0, observed, 0);
+    plot.plotTanb(*canv, directory, std::string("HIG-12-050"));
   }
   // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--HIG-13-004") ){
