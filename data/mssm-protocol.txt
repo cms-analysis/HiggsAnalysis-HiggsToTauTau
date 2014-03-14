@@ -49,15 +49,15 @@ lxq: submit.py --goodness-of-fit --collect-injected-toys LIMITS-yymmdd-mssm/bbb-
 plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py LIMITS-yymmdd-mssm/bbb-mlfit masspoints='160 350'
 
 
-(4) launch/collect/plot mA-tanb 
+(4) launch/collect/plot MSSMvsBG tanb
 ## lauch final setup of datacards
-lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic]
-lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic] --lxq
+lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic,lightstopmod]
+lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic,lightstopmod] --lxq
 ## lauch limit calculation
 lxb: submit.py --tanb+  LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
 lxq: submit.py --tanb+  LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null" --options='--multi-core=4'
 ## plotting
-plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic].py LIMITS-yymmdd-mssm/bbb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic]-[-asimov] [expectedOnly=1]
+plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic].py LIMITS-yymmdd-mssm/bbb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic,lightstopmod]-[-asimov] [expectedOnly=1]
 ## comparison plots (per channel)
 .x HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C+("limits_mA-tanb.root", "mm,em,tt,et,mt,cmb", true, false, "mssm-tanb", 0., 60., false, "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV", true, false)
 ## comparison plots (per category)
@@ -111,8 +111,8 @@ plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-
 
 (8) launch/collect/plot signal hypothesis test SM vs MSSM in mA-tanb plane 
 ## lauch final setup of datacards
-lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM (--smartGrid) --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic]
-lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM (--smartGrid) --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic] --lxq
+lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM (--smartGrid) --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic,lightstopmod]
+lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM (--smartGrid) --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic,lightstopmod] --lxq
 ## lauch HybridNew TEV teststatistic toy calculation
 lxb: submit.py --HypothesisTest --cycles 1-5 --toys 200 (--smartScan) LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
 lxq: submit.py --HypothesisTest --cycles 1-5 --toys 200 (--smartScan) LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null" --options=''
@@ -120,7 +120,7 @@ lxq: submit.py --HypothesisTest --cycles 1-5 --toys 200 (--smartScan) LIMITS-yym
 lxb: submit.py --HypothesisTest --collectToys LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
 lxq: submit.py --HypothesisTest --collectToys LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null" --options=''
 ## plotting
-plot --hypothesis-test HiggsAnalysis/HiggsToTauTau/python/layouts/hypo-test-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic].py LIMITS-yymmdd-mssm/bbb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic]-[-asimov] [expectedOnly=1]
+plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/hypo-test-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic,lightstopmod].py LIMITS-yymmdd-mssm/bbb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic,lightstopmod]-[-asimov] [expectedOnly=1]
 ## ATTENTION
 Before using the options "--smartScan" and "--smartGrid" you must have already produced a reasonable number of toys and plotted the results once!!!
 
