@@ -11,7 +11,7 @@ layout = cms.PSet(
     ## theory label 
     theory = cms.string("MSSM m_{h}^{mod+} scenario"),
     ## min for plotting
-    min = cms.double(0),
+    min = cms.double(0.5),
     ## max for plotting
     max = cms.double(60),
     ## min for plotting
@@ -60,6 +60,8 @@ layout = cms.PSet(
      ),
     ## is this mssm?
     mssm = cms.bool(True),
+    ## is this MSSMvsSM?
+    MSSMvsSM = cms.bool(True),
     ## print the 2-sigma band
     outerband = cms.bool(True),
     ## plot expected only

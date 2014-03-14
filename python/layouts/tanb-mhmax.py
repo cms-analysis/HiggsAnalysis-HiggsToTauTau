@@ -60,6 +60,8 @@ layout = cms.PSet(
      ),
     ## is this mssm?
     mssm = cms.bool(True),
+    ## is this MSSMvsSM?
+    MSSMvsSM = cms.bool(False),
     ## plot transparent?
     transparent = cms.bool(True),
     ## print the 2-sigma band
