@@ -96,7 +96,7 @@ class PlotLimits {
   /// plot limits on canvas, print out png, pdf, txt, root formats if desired
   void plotLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0);
   /// plot limits for tanb on canvas, print out png, pdf, txt, root formats if desired
-  void plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* innerBand_low, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* outerBand_low, TGraph* expected, TGraph* expected_low, TGraph* observed=0, TGraph* observed_low=0, const char* directory="");
+  void plotTanb(TCanvas& canv, const char* directory="", std::string HIG="");
   /// plot bestfit values for different parameters dependend on mass on canvas, print out png, pdf, txt, root formats if desired 
   void plotSignalStrength(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraph* central, const char* directory="");
   /// plot significance on canvas, print out png, pdf, txt, root formats if desired  
@@ -113,8 +113,6 @@ class PlotLimits {
   void plot2DScan(TCanvas& canv, const char* directory="");
   /// plot 1d-scans for several masses on canvases, print out png, pdf, root formats if desired  
   void plot1DScan(TCanvas& canv, const char* directory="");
-  /// plot Hypothesis test for MSSM vs SM in mA-tanb for several masses on canvases, print out png, pdf, txt, tex, root formats if desired  
-  void plotHypoTest(TCanvas& canv, const char* directory);
 
  private:
   /// fill a single vector of values from toys. Values are obtained from the mean and/or the quantiles of the 
@@ -211,6 +209,8 @@ class PlotLimits {
 
   /// indicate whether mssm or sm plots should be made (used fro several options)
   bool mssm_;
+  /// indicate whether MSSMvsSM or MSSMvsBG plots should be made (used for MSSMvsSM and MSSMvsBG)
+  bool MSSMvsSM_;
   /// indicate plot type as bestfit
   bool bestfit_;
   /// indicate whether a marker for the SM should be draw

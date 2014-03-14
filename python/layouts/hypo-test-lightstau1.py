@@ -11,7 +11,7 @@ layout = cms.PSet(
     ## theory label 
     theory = cms.string("MSSM light stau scenario"),
     ## min for plotting
-    min = cms.double(0),
+    min = cms.double(0.5),
     ## max for plotting
     max = cms.double(60),
     ## min for plotting

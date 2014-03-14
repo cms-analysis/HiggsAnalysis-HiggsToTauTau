@@ -11,41 +11,39 @@
 #include "TROOT.h"
 //#include "TRint.h"
 
+#include <iostream>
+
 void
-plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_low, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* innerBand_low, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* outerBand_low, TGraph* expected, TGraph* expected_low, TGraph* observed, TGraph* observed_low, TGraph* lowerLEP, TGraph* upperLEP, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, TGraph* injected=0, double min=0., double max=60., bool log=false, bool transparent=false)
+plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain_2, TGraphAsymmErrors* innerBand_1, TGraphAsymmErrors* innerBand_2, TGraphAsymmErrors* innerBand_3, TGraphAsymmErrors* outerBand_1, TGraphAsymmErrors* outerBand_2, TGraphAsymmErrors* outerBand_3, TGraph* expected_1, TGraph* expected_2, TGraph* expected_3, TGraph* observed_1, TGraph* observed_2, TGraph* observed_3, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool plotOuterBand=true, bool MSSMvsSM=true, std::string HIG="")
 {
   // set up styles
   canv.cd();
-  //canv.SetGridx(1);
-  //canv.SetGridy(1);
   if(log){ 
     canv.SetLogy(1); 
     canv.SetLogx(1); 
   }
-
+  
   // setup the CMS colors
   TColor* obs = new TColor(1501, 0.463, 0.867, 0.957);
   if(transparent) obs->SetAlpha(0.5);
-  TColor* lep = new TColor(1502, 0.494, 0.694, 0.298);
-  if(transparent) lep->SetAlpha(1);
   TColor* twosigma = gROOT->GetColor(kGray);
   if(transparent) twosigma->SetAlpha(0.5);
   TColor* onesigma = gROOT->GetColor(kGray+1);
   if(transparent) onesigma->SetAlpha(0.5);
   TColor* ph = gROOT->GetColor(kYellow);
-  ph->SetAlpha(0.0);  
+  ph->SetAlpha(0.0);
   TColor* backgroundColor = gROOT->GetColor(kRed);
-  backgroundColor->SetAlpha(0.3);
+  backgroundColor->SetAlpha(0.2);
 
   // for logx the label for x axis values below 100 needs to be slightly shifted to prevent 
   // the label from being printed into the canvas
   int shift_label = 1.;
   if(log){
-    if(observed){ observed->GetX()[0] = observed->GetX()[0]+0.01; }
-    if(expected->GetX()[0]<100.){ shift_label = -1.; }
+    if(observed_1){ observed_1->GetX()[0] = observed_1->GetX()[0]+0.01; }
+    if(expected_1->GetX()[0]<100.){ shift_label = -1.; }
   }
   // draw a frame to define the range
-  TH1F* hr = canv.DrawFrame(outerBand->GetX()[0]-shift_label*.01, min, outerBand->GetX()[outerBand->GetN()-1]+.01, max);
+  TH1F* hr = canv.DrawFrame(expected_1->GetX()[0]-shift_label*.01, min, expected_1->GetX()[expected_1->GetN()-1]+.01, max);
   // format x axis
   hr->SetXTitle(xaxis.c_str());
   hr->GetXaxis()->SetLabelFont(62);
@@ -66,17 +64,17 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   }
 
   TGraphAsymmErrors* background = new TGraphAsymmErrors();
-  background->SetPoint(0, outerBand->GetX()[0], 50);
+  background->SetPoint(0, expected_1->GetX()[0], 50);
   background->SetPointEYlow (0, 50);
   background->SetPointEYhigh(0, 50); 
-  for(int ipoint=1; ipoint<expected->GetN(); ipoint++){
-    background->SetPoint(ipoint, outerBand->GetX()[ipoint], 50); 
+  for(int ipoint=1; ipoint<expected_1->GetN(); ipoint++){
+    background->SetPoint(ipoint, expected_1->GetX()[ipoint], 50); 
     background->SetPointEYlow (ipoint, 50);
     background->SetPointEYhigh(ipoint, 50);
   }
-  background->SetPoint(expected->GetN(), outerBand->GetX()[outerBand->GetN()-1], 50);
-  background->SetPointEYlow (outerBand->GetN(), 50);
-  background->SetPointEYhigh(outerBand->GetN(), 50); 
+  background->SetPoint(expected_1->GetN(), expected_1->GetX()[expected_1->GetN()-1], 50);
+  background->SetPointEYlow (expected_1->GetN(), 50);
+  background->SetPointEYhigh(expected_1->GetN(), 50); 
   background->SetFillStyle(1001.);
   background->SetFillColor(backgroundColor->GetNumber());
   background->SetLineColor(ph->GetNumber());
@@ -92,91 +90,83 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
     band->second->Draw("3same");
   }
 
-  upperLEP->SetFillStyle(1001.);
-  upperLEP->SetFillColor(lep->GetNumber());
-  upperLEP->SetLineColor(ph->GetNumber());
-  upperLEP->SetLineStyle(1.);
-  upperLEP->SetLineWidth(4.);
-  //if(theory=="MSSM m_{h}^{max} scenario") upperLEP->Draw("F");
-
-  lowerLEP->SetFillStyle(1001.);
-  lowerLEP->SetFillColor(kWhite);
-  lowerLEP->SetLineColor(kWhite);
-  lowerLEP->SetLineStyle(1.);
-  lowerLEP->SetLineWidth(4.);
-  //if(theory=="MSSM m_{h}^{max} scenario") lowerLEP->Draw("F");
-
-  if(observed){
-    plain->SetLineColor(ph->GetNumber());
-    plain->SetFillStyle(1001.);
-    plain->SetFillColor(obs->GetNumber());
-    if (!transparent) plain->Draw("Fsame");
-    observed->SetMarkerStyle(20);
-    observed->SetMarkerSize(1.0);
-    observed->SetMarkerColor(kBlack);
-    observed->SetLineWidth(3.);
-  }
-
-  if(observed_low){  
-    plain_low->SetLineColor(ph->GetNumber());
-    plain_low->SetFillStyle(1001.);
-    plain_low->SetFillColor(obs->GetNumber());
-    //if (!transparent) plain_low->Draw("Fsame"); //for old style comment that one out
-    observed_low->SetMarkerStyle(20);
-    observed_low->SetMarkerSize(1.0);
-    observed_low->SetMarkerColor(kBlack);
-    observed_low->SetLineWidth(3.);  
-  }
-
-  if(outerBand){
-    outerBand->SetFillStyle(1001);
-    outerBand->SetFillColor(twosigma->GetNumber()); //kGray
-    outerBand->SetLineColor(twosigma->GetNumber());
-    outerBand->Draw("3same");
-    if(outerBand_low){   
-      outerBand_low->SetFillStyle(1001);
-      outerBand_low->SetFillColor(twosigma->GetNumber());
-      outerBand_low->SetLineColor(twosigma->GetNumber());
-      //outerBand_low->Draw("3same"); //for old style comment that one out
+  if(!expectedOnly){
+    plain_1->SetLineColor(ph->GetNumber());
+    plain_1->SetFillStyle(1001.);
+    plain_1->SetFillColor(obs->GetNumber());
+    if (!transparent) plain_1->Draw("3same");
+    observed_1->SetMarkerStyle(20);
+    observed_1->SetMarkerSize(1.0);
+    observed_1->SetMarkerColor(kBlack);
+    observed_1->SetLineWidth(3.);
+    
+    plain_2->SetLineColor(ph->GetNumber());
+    plain_2->SetFillStyle(1001.);
+    plain_2->SetFillColor(obs->GetNumber());
+    if (HIG=="") {
+      if (!transparent) plain_2->Draw("3same");
     }
-  }
+    observed_2->SetMarkerStyle(20);
+    observed_2->SetMarkerSize(1.0);
+    observed_2->SetMarkerColor(kBlack);
+    observed_2->SetLineWidth(3.);
+    observed_3->SetMarkerStyle(20);
+    observed_3->SetMarkerSize(1.0);
+    observed_3->SetMarkerColor(kBlack);
+    observed_3->SetLineWidth(3.);
 
-  innerBand->SetFillStyle(1001);
-  innerBand->SetFillColor(onesigma->GetNumber()); //kGray+1
-  innerBand->SetLineColor(onesigma->GetNumber());
-  innerBand->Draw("3same");
-  if(innerBand_low){
-    innerBand_low->SetFillStyle(1001);
-    innerBand_low->SetFillColor(onesigma->GetNumber());
-    innerBand_low->SetLineColor(onesigma->GetNumber());
-    //innerBand_low->Draw("3same"); //for old style comment that one out
   }
+  
+  if(plotOuterBand){
+    outerBand_1->SetFillStyle(1001);
+    outerBand_1->SetFillColor(twosigma->GetNumber()); //kGray
+    outerBand_1->SetLineColor(twosigma->GetNumber());
+    outerBand_1->Draw("3same");    
+    outerBand_2->SetFillStyle(1001);
+    outerBand_2->SetFillColor(twosigma->GetNumber()); //kGray
+    outerBand_2->SetLineColor(twosigma->GetNumber());
+    if (HIG=="") outerBand_2->Draw("3same");    
+    outerBand_3->SetFillStyle(1001);
+    outerBand_3->SetFillColor(twosigma->GetNumber()); //kGray
+    outerBand_3->SetLineColor(twosigma->GetNumber());
+    //outerBand_3->Draw("3same");
+  }
+  
+  innerBand_1->SetFillStyle(1001);
+  innerBand_1->SetFillColor(onesigma->GetNumber()); //kGray+1
+  innerBand_1->SetLineColor(onesigma->GetNumber());
+  innerBand_1->Draw("3same"); 
+  innerBand_2->SetFillStyle(1001);
+  innerBand_2->SetFillColor(onesigma->GetNumber()); //kGray+1
+  innerBand_2->SetLineColor(onesigma->GetNumber());
+  if (HIG=="") innerBand_2->Draw("3same"); 
+  innerBand_3->SetFillStyle(1001);
+  innerBand_3->SetFillColor(onesigma->GetNumber()); //kGray+1
+  innerBand_3->SetLineColor(onesigma->GetNumber());
+  //innerBand_3->Draw("3same"); 
+  
+  expected_1->SetLineColor(kGray+2);
+  expected_1->SetLineWidth(3);
+  expected_1->SetLineStyle(1);
+  expected_1->Draw("Lsame");
+  expected_2->SetLineColor(kGray+2);
+  expected_2->SetLineWidth(3);
+  expected_2->SetLineStyle(1);
+  if (HIG=="") expected_2->Draw("Lsame");
+  expected_3->SetLineColor(kGray+2);
+  expected_3->SetLineWidth(3);
+  expected_3->SetLineStyle(1);
+  //expected_3->Draw("Lsame");
+  
 
-  expected->SetLineColor(kGray+2);
-  expected->SetLineWidth(3);
-  expected->SetLineStyle(1);
-  expected->Draw("Lsame");
-  if(expected_low){ 
-    expected_low->SetLineColor(kGray+2);
-    expected_low->SetLineWidth(3);
-    expected_low->SetLineStyle(1);
-    //expected_low->Draw("Lsame"); //for old style comment that one out
-  }
-
-  if(observed){;
-    if(transparent) plain->Draw("Fsame");
-    observed->Draw("Lsame");
-  }
-  if(observed_low){  
-    //if(transparent) plain_low->Draw("Fsame"); //for old style comment that one out
-    //observed_low->Draw("Lsame"); //for old style comment that one out
-  }
-
-  if(injected){
-    injected->SetLineColor(kRed+2);
-    injected->SetLineWidth(3);
-    injected->SetLineStyle(1);
-    injected->Draw("Lsame");
+  if(!expectedOnly){
+    if(transparent) plain_1->Draw("3same");
+    observed_1->Draw("Lsame");
+    if (HIG=="") {
+      if(transparent) plain_2->Draw("3same"); 
+      observed_2->Draw("Lsame");
+    }
+    //observed_3->Draw("Lsame"); 
   }
   
   idx=0;
@@ -200,7 +190,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
     }
     comp->second->Draw("same");
   }
-
+  
   TPaveText* theory1;
   if(log){
     theory1= new TPaveText(0.14, 0.85, 0.9, 0.90, "NDC");
@@ -247,28 +237,18 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain, TGraphAsymmErrors* plain_l
   leg->SetTextFont  ( 62 ); 
   leg->SetFillColor (kWhite);
   leg->SetLineColor (kBlack);
-  leg->SetHeader("95% CL Excluded:");
-  if(observed){ 
-    observed->SetFillColor(obs->GetNumber()); 
-    leg->AddEntry(observed, "observed", "FL");
-    //leg->AddEntry(observed, "SM Higgs injected", "FL");
+  if(MSSMvsSM) leg->SetHeader("CL_{S}(MSSM, SM) < 0.05:");
+  else leg->SetHeader("95% CL Excluded:");
+  if(!expectedOnly){ 
+    //if(observed){ 
+    observed_1->SetFillColor(obs->GetNumber()); 
+    leg->AddEntry(observed_1, "observed", "FL");
   }
-  if(injected){
-    leg->AddEntry(injected , "SM H injected",  "L" );
-    //leg->AddEntry((TObject*)0 , "injected",  "" );
-    //leg->AddEntry(innerBand, "#pm 1#sigma Asimov","F");
-    //if(outerBand){ 
-    //  leg->AddEntry(outerBand, "#pm 2#sigma Asimov", "F"); 
-    //}
+  leg->AddEntry(expected_1, "expected", "L");
+  leg->AddEntry(innerBand_1, "#pm 1#sigma expected","F");
+  if(plotOuterBand){ 
+    leg->AddEntry(outerBand_1, "#pm 2#sigma expected", "F"); 
   }
-  leg->AddEntry(expected, "expected", "L");
-  //if(!injected){
-    leg->AddEntry(innerBand, "#pm 1#sigma expected","F");
-    if(outerBand){ 
-      leg->AddEntry(outerBand, "#pm 2#sigma expected", "F"); 
-      //  }
-  }
-  //leg->AddEntry(background, "excluded by m_{Higgs}", "F");
   leg->AddEntry(background, "m_{h,H}#neq(125.5#pm3.0)GeV", "F");
   //for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band){
   //  leg->AddEntry(band->second, TString::Format("m_{h,H}=125GeV #pm %.0fGeV", band->first), "F");

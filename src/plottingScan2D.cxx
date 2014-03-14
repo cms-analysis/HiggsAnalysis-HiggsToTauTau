@@ -64,6 +64,7 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
 	(*g)->SetFillColor(kWhite);
       }
       (*g)->Draw("fsame"); 
+      //(*g)->Draw("contfsame");
       (*g)->Draw("contsame");
     }
     else{
@@ -81,7 +82,8 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
       (*g)->SetLineColor(kBlack); 
       (*g)->SetLineWidth(3);
       (*g)->SetFillColor(kBlue-8);
-      (*g)->Draw("fsame"); 
+      //(*g)->Draw("fsame");
+      (*g)->Draw("contfsame"); 
       (*g)->Draw("contsame");
     }
     else{

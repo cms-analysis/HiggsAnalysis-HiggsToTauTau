@@ -1140,21 +1140,11 @@ for directory in args :
         else:
             ## run in parallel using multiple cores
             parallelize(tasks, options.tanbMultiCore)
-        tanb_inputfiles = tanb_inputfiles.rstrip(",")
-        ## combine limits of individual tanb point to a single file equivalent to the standard output of --optCLs
-        ## to be compatible with the output of the option --optTanb for further processing
-        cmssw_base = os.environ["CMSSW_BASE"]
-        cmd = cmssw_base+"/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+"
-        ## clean up directory from former run
-        os.system("rm higgsCombineTest.HybridNew*")
-        if not options.expectedOnly :
-            os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
-        if not options.observedOnly :
-            os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.quant0.027.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
-            os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.quant0.160.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
-            os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.quant0.500.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
-            os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.quant0.840.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
-            os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.quant0.975.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
+        for wsp in directoryList :
+            if re.match(r"point_\d+(.\d\d)?.root", wsp) :
+                tanb_string = wsp[wsp.rfind("_")+1:]
+                os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/extractSignificanceStats.py --MSSMvsBG --filename point_{TANB}".format(CMSSW_BASE=os.environ["CMSSW_BASE"], TANB=tanb_string))
+        os.system("hadd HypothesisTest.root HypothesisTest_*.root") 
     ##
     ## HYPO-TEST
     ##
