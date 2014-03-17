@@ -26,6 +26,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   if(theory_=="MSSM low m_{H} scenario") {extralabel_= "lowmH-"; model = "lowmH"; tanbHigh=9.5; tanbLow=1.5; tanbLowHigh=2;}
   if(theory_=="MSSM light stau scenario") {extralabel_= "lightstau1-"; model = "lightstau1"; tanbHigh=60; tanbLow=0.5; tanbLowHigh=3;}
   if(theory_=="MSSM tauphobic scenario") {extralabel_= "tauphobic-"; model = "tauphobic"; tanbHigh=50; tanbLow=0.5; tanbLowHigh=2;}
+  if(theory_=="MSSM light stop scenario") {extralabel_= "lightstop-"; model = "lightstop"; tanbHigh=50; tanbLow=0.7; tanbLowHigh=2;}
 
   // set up styles
   SetStyle();
@@ -343,18 +344,18 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
  
     exclusion << int(mass) << " " << v_minus2sigma[1] << " " << v_minus1sigma[1] << " " << v_exp[1] << " " << v_plus1sigma[1] << " " << v_plus2sigma[1] << " " << v_obs[1] << std::endl; 
     double help_minus2sigma, help_minus1sigma, help_exp, help_plus1sigma, help_plus2sigma, help_obs;
-    if (v_minus2sigma[2]>tanbLowHigh) help_minus2sigma=v_minus2sigma[2];
+    if (v_minus2sigma[2]<tanbLowHigh && v_minus2sigma[2]>tanbLow) help_minus2sigma=v_minus2sigma[2];
     else if (v_minus2sigma[2]==tanbLowHigh) help_minus2sigma=v_minus2sigma[3];
     else help_minus2sigma=v_minus2sigma[1];
-    if (v_minus1sigma[2]>tanbLowHigh) help_minus1sigma=v_minus1sigma[2];
+    if (v_minus1sigma[2]<tanbLowHigh && v_minus1sigma[2]>tanbLow) help_minus1sigma=v_minus1sigma[2];
     else if (v_minus1sigma[2]==tanbLowHigh) help_minus1sigma=v_minus1sigma[3];
     else help_minus1sigma=v_minus1sigma[1];
     if (v_exp[2]!=tanbLow) help_exp=v_exp[2];
     else help_exp=v_exp[1];
-    if (v_plus1sigma[2]>tanbLowHigh) help_plus1sigma=v_plus1sigma[2];
+    if (v_plus1sigma[2]<tanbLowHigh && v_plus1sigma[2]>tanbLow) help_plus1sigma=v_plus1sigma[2];
     else if (v_plus1sigma[2]==tanbLowHigh) help_plus1sigma=v_plus1sigma[3];
     else help_plus1sigma=v_plus1sigma[1];
-    if (v_plus2sigma[2]>tanbLowHigh) help_plus2sigma=v_plus2sigma[2];
+    if (v_plus2sigma[2]<tanbLowHigh && v_plus2sigma[2]>tanbLow) help_plus2sigma=v_plus2sigma[2];
     else if (v_plus2sigma[2]==tanbLowHigh) help_plus2sigma=v_plus2sigma[3];
     else help_plus2sigma=v_plus2sigma[1];
     if (v_obs[2]!=tanbLow) help_obs=v_obs[2];
