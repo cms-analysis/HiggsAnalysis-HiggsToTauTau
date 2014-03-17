@@ -60,6 +60,8 @@ layout = cms.PSet(
      ),
     ## is this mssm?
     mssm = cms.bool(True),
+    ## is this MSSMvsSM?
+    MSSMvsSM = cms.bool(True),
     ## print the 2-sigma band
     outerband = cms.bool(True),
     ## plot expected only
