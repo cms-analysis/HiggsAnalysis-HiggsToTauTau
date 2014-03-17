@@ -56,9 +56,17 @@ $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/submit.py --tanb+ --setup {O
 
 lxq_fragment = '''#!/bin/zsh
 #$ -l h_rt=01:00:00
-export SCRAM_ARCH=$scram_arch
 export CMSSW_BASE=$cmssw_base
-ini cmssw_cvmfs
+linux_ver=`lsb_release -s -r`
+echo $linux_ver
+if [[ $linux_ver < 6.0 ]];
+then
+     ini cmssw_cvmfs
+     export SCRAM_ARCH=slc5_amd64_gcc472
+else
+     source /cvmfs/cms.cern.ch/cmsset_default.sh
+     export SCRAM_ARCH=slc6_amd64_gcc472
+fi
 '''
 
 condor_sub_template = '''#!/usr/bin/env condor_submit
@@ -82,7 +90,6 @@ def submit(name, key, masses) :
         if options.condor:
             submit_script.write(condor_sub_template)
         if options.lxq :
-            submit_script.write('export scram_arch=$SCRAM_ARCH\n')
             submit_script.write('export cmssw_base=$CMSSW_BASE\n')
         if not os.path.exists(name):
             os.system("mkdir -p %s" % name)
@@ -118,7 +125,7 @@ def submit(name, key, masses) :
                     % (os.getcwd(), script_file_name.replace('.sh', '.stderr')))
                 submit_script.write("queue\n")
             elif options.lxq :
-                submit_script.write('qsub  -l distro=sld5 -j y -o /dev/null -l h_vmem=2000M -v scram_arch -v cmssw_base %s\n' % script_file_name) 
+                submit_script.write('qsub -j y -o /dev/null -l h_vmem=2000M -v cmssw_base %s\n' % script_file_name) 
             else :
                 os.system('touch {PWD}/log/{LOG}'.format(
                     PWD=os.getcwd(), LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log')))
