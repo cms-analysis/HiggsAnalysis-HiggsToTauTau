@@ -25,7 +25,7 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False) :
         lowlimits.pop(0)
         limits = highlimits+lowlimits
         limits.sort(key=float)
-        full_grid_mA = [ 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 2.0, 4.0, 7.0, 10.0, 13.0, 17.0, 20.0, 23.0, 27.0, 30.0, 33.0, 37.0, 40.0, 43.0, 47.0, 50.0, 53.0, 57.0, 60.0 ] ##define the maximum grid for all scenarios expect the lowmH
+        full_grid_mA = [ 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 2.0, 4.0, 7.0, 10.0, 13.0, 15.0, 17.0, 20.0, 23.0, 25.0, 27.0, 30.0, 33.0, 35.0, 37.0, 40.0, 43.0, 45.0, 47.0, 50.0, 53.0, 55.0, 57.0, 60.0 ] ##define the maximum grid for all scenarios expect the lowmH
         ##build up a reduced grid 
         for limit in limits :
             tanb_low_idx = -999
