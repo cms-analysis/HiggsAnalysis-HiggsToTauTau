@@ -26,7 +26,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   if(theory_=="MSSM low m_{H} scenario") {extralabel_= "lowmH-"; model = "lowmH"; tanbHigh=9.5; tanbLow=1.5; tanbLowHigh=2;}
   if(theory_=="MSSM light stau scenario") {extralabel_= "lightstau1-"; model = "lightstau1"; tanbHigh=60; tanbLow=0.5; tanbLowHigh=3;}
   if(theory_=="MSSM tauphobic scenario") {extralabel_= "tauphobic-"; model = "tauphobic"; tanbHigh=50; tanbLow=0.5; tanbLowHigh=2;}
-  if(theory_=="MSSM light stop scenario") {extralabel_= "lightstop-"; model = "lightstop"; tanbHigh=50; tanbLow=0.7; tanbLowHigh=2;}
+  if(theory_=="MSSM light stop scenario") {extralabel_= "lightstopmod-"; model = "lightstopmod"; tanbHigh=60; tanbLow=0.7; tanbLowHigh=2;}
 
   // set up styles
   SetStyle();
