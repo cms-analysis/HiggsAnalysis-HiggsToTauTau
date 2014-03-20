@@ -1140,6 +1140,8 @@ for directory in args :
         else:
             ## run in parallel using multiple cores
             parallelize(tasks, options.tanbMultiCore)
+        if "HypothesisTest.root" in directoryList :
+            os.system("rm HypothesisTest*")
         for wsp in directoryList :
             if re.match(r"point_\d+(.\d\d)?.root", wsp) :
                 tanb_string = wsp[wsp.rfind("_")+1:]
