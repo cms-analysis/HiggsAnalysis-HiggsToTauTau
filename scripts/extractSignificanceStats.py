@@ -13,17 +13,17 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 from optparse import OptionParser, OptionGroup
 
 ## set up the option parser
-parser = OptionParser(usage="usage: %prog [options] ARG1", description="This script extracts all the necessary information needed fo the tanb-mA plot of the signal hypothesis separation test. Also it plots the signal separation for each point in \n")
+parser = OptionParser(usage="usage: %prog [options]", description="This script extracts all the necessary information needed for the tanb-mA(mu) plot of the MSSMvsSM and for MSSMvsBG. For MSSMvsSM it also plots the toy distributions for the MSSM and the SM hypothesis as well as the observed value of the test statistic. \n")
 ##
 ## MAIN OPTIONS
 ##
 agroup = OptionGroup(parser, "OPTIONS", "These are the possible options")
 agroup.add_option("-v", "--verbosity", dest="verbosity", default=False, action="store_true",
                   help="Prints out information. [Default: False]")
-agroup.add_option("--filename", dest="filename", default=None, type="string",
-                  help="Perform a test of the goodness of fit (equivalernt to a chisquared fit but suited for an arbitary abount of channels and for the use with nuisance parameters). The expected goodness of fit test is toy based. [Default: False]")
+agroup.add_option("--filename", dest="filename", default="", type="string",
+                  help="Name of the file to be inspected. [Default: ""] ")
 agroup.add_option("--MSSMvsBG", dest="MSSMvsBG", default=False, action="store_true",
-                  help="caculations for MSSMvsBG. Default is MSSMvsSM [Default: False]")
+                  help="Caculations for MSSMvsBG. Default is MSSMvsSM [Default: false")
 parser.add_option_group(agroup)
 
 ## check number of arguments; in case print usage
