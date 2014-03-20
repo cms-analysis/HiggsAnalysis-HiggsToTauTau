@@ -411,8 +411,8 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     canv.Print(std::string(output_).append("_").append(extralabel_).append(label_).append(".eps").c_str());
   }
   if(txt_){
-    print(std::string(output_).append("_").append(extralabel_).append(label_).c_str(), outerBand_1, innerBand_1, expected_1, observed_1, "txt");
-    print(std::string(output_).append("_").append(extralabel_).append(label_).c_str(), outerBand_1, innerBand_1, expected_1, observed_1, "tex");
+    print(std::string(output_).append("_").append(extralabel_).append(label_).c_str(), outerBand_1, innerBand_1, expected_1, observed_1, outerBand_2, innerBand_2, expected_2, observed_2, tanbLow, tanbHigh, tanbLowHigh, "txt");
+    print(std::string(output_).append("_").append(extralabel_).append(label_).c_str(), outerBand_1, innerBand_1, expected_1, observed_1, outerBand_2, innerBand_2, expected_2, observed_2, tanbLow, tanbHigh, tanbLowHigh, "tex");
   }
   if(root_){
     TFile* output = new TFile(std::string("limits_").append(extralabel_).append(label_).append(".root").c_str(), "update");
