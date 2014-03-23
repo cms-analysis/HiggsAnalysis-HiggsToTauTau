@@ -38,12 +38,17 @@ channelName = {
     "et" : "eleTau",
     "mt" : "muTau",
     "tt" : "tauTau"
-    }
+}
 
 categoryName = {
-    "8" : "nobtag",
-    "9" : "btag"
-    }
+    "8"  : "nobtag",
+    "9"  : "btag",
+    "10" : "nobtag_lowtau",
+    "11" : "nobtag_mediumtau",
+    "12" : "nobtag_hightau",
+    "13" : "btag_lowtau",
+    "14" : "btag_hightau"
+}
 
 
 print " You are running with configuration: "
