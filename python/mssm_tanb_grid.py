@@ -109,107 +109,12 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False) :
                     ,"{CMD} -n  2 --min 55.0  --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     ]
         else : #for lowmH MSSM scenario
-            if len(subvec(args, 300, 349))>0 :
-                dirs = vec2str(subvec(args, 300, 349))
-                grid = [
-                    "{CMD} -n  5 --min 1.5  --max 3.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  5 --min 4.0  --max 6.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  5 --min 6.5  --max 8.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ]
-            if len(subvec(args, 350, 399))>0 :
-                dirs = vec2str(subvec(args, 350, 399))
-                grid = [
-                    "{CMD} -n  5 --min 1.5  --max 3.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  5 --min 4.0  --max 6.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  3 --min 6.5  --max 7.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ]
-            if len(subvec(args, 400, 449))>0 :
-                dirs = vec2str(subvec(args, 500, 449))
-                grid = [
-                    "{CMD} -n  5 --min 1.5  --max 3.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  5 --min 4.0  --max 6.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  2 --min 6.5  --max 7.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ]
-            if len(subvec(args, 450, 499))>0 :
-                dirs = vec2str(subvec(args, 450, 499))
-                grid = [
-                    "{CMD} -n  5 --min 1.5  --max 3.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  5 --min 4.0  --max 6.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ]
-            if len(subvec(args, 500, 599))>0 :
-                dirs = vec2str(subvec(args, 500, 599))
-                grid = [
-                    "{CMD} -n  5 --min 1.5  --max 3.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  2 --min 4.0  --max 5.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  2 --min 9.0  --max 9.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ]
-            if len(subvec(args, 600, 699))>0 :
-                dirs = vec2str(subvec(args, 600, 699))
-                grid = [
-                    "{CMD} -n  5 --min 1.5  --max 3.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  2 --min 4.0  --max 4.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  2 --min 7.5  --max 8.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  3 --min 8.5  --max 9.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ]
-            if len(subvec(args, 700, 799))>0 :
-                dirs = vec2str(subvec(args, 700, 799))
-                grid = [
-                    "{CMD} -n  6 --min 1.5  --max 4.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  4 --min 6.5  --max 8.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  3 --min 8.5  --max 9.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ]
-            if len(subvec(args, 800, 899))>0 :
-                dirs = vec2str(subvec(args, 800, 899))
-                grid = [
-                    "{CMD} -n  5 --min 1.5  --max 3.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  5 --min 6.0  --max 8.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  3 --min 8.5  --max 9.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ]
-            if len(subvec(args, 900, 999))>0 :
-                dirs = vec2str(subvec(args, 900, 999))
+            if len(subvec(args, 300, 3100))>0 :
+                dirs = vec2str(subvec(args, 300, 3100))
                 grid = [
                     "{CMD} -n  4 --min 1.5  --max 3.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  3 --min 5.0  --max 6.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  4 --min 6.5  --max 8.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  3 --min 8.5  --max 9.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ]
-            if len(subvec(args, 1000, 1199))>0 :
-                dirs = vec2str(subvec(args, 1000, 1199))
-                grid = [
-                    "{CMD} -n  4 --min 1.5  --max 3.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  4 --min 4.5  --max 6.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  4 --min 6.5  --max 8.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  3 --min 8.5  --max 9.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ]
-            if len(subvec(args, 1200, 1499))>0 :
-                dirs = vec2str(subvec(args, 1200, 1499))
-                grid = [
-                    "{CMD} -n  3 --min 1.5  --max 2.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  5 --min 4.0  --max 6.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  4 --min 6.5  --max 8.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  3 --min 8.5  --max 9.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ]
-            if len(subvec(args, 1500, 1799))>0 :
-                dirs = vec2str(subvec(args, 1500, 1799))
-                grid = [
-                    "{CMD} -n  2 --min 1.5  --max 2.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  6 --min 3.5  --max 6.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  4 --min 6.5  --max 8.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  3 --min 8.5  --max 9.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ]
-            if len(subvec(args, 1800, 1999))>0 :
-                dirs = vec2str(subvec(args, 1800, 1999))
-                grid = [
-                    "{CMD} -n  2 --min 1.5  --max 2.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  7 --min 3.0  --max 6.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  4 --min 6.5  --max 8.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  3 --min 8.5  --max 9.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ]
-            if len(subvec(args, 2000, 3100))>0 :
-                dirs = vec2str(subvec(args, 2000, 3100))
-                grid = [
-                    "{CMD} -n  7 --min 3.0  --max 6.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  4 --min 6.5  --max 8.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  3 --min 8.5  --max 9.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ,"{CMD} -n  4 --min 3.5  --max 5.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ,"{CMD} -n  4 --min 5.5  --max 7.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ,"{CMD} -n  5 --min 7.5  --max 9.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     ]
     return grid
