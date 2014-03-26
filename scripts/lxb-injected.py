@@ -1,14 +1,4 @@
-
-linux_ver=`lsb_release -s -r`
-echo $linux_ver
-if [[ $linux_ver < 6.0 ]];
-then
-     ini cmssw_cvmfs
-     export SCRAM_ARCH=slc5_amd64_gcc472
-else
-     source /cvmfs/cms.cern.ch/cmsset_default.sh
-     export SCRAM_ARCH=slc6_amd64_gcc472
-fi#!/usr/bin/env python
+#!/usr/bin/env python
 from optparse import OptionParser, OptionGroup
 ## set up the option parser
 parser = OptionParser(usage="usage: %prog [options] ARGS",
