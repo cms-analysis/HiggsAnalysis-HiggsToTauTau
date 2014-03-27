@@ -4,9 +4,9 @@ layout = cms.PSet(
     ## dataset
     dataset = cms.string("CMS, H#rightarrow#tau#tau, L = 19.7 fb^{-1} at 8 TeV"),
     ## x-axis title
-    xaxis = cms.string("#sigma(gg#rightarrow#phi)#timesBR(#tau#tau) [pb]"),
+    xaxis = cms.string("#sigma(gg#phi)#timesBR(#tau#tau) [pb]"),
     ## x-axis title
-    yaxis = cms.string("#sigma(gg#rightarrowb#bar{b}#phi)#timesBR(#tau#tau) [pb]"),
+    yaxis = cms.string("#sigma(bb#phi)#timesBR(#tau#tau) [pb]"),
     ## min for plotting (for fine tuning)
     min = cms.double(0.),
     ## min for plotting
