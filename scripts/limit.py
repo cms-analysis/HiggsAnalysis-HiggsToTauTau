@@ -1143,7 +1143,7 @@ for directory in args :
         if "HypothesisTest.root" in directoryList :
             os.system("rm HypothesisTest*")
         for wsp in directoryList :
-            if re.match(r"point_\d+(.\d\d)?.root", wsp) :
+            if re.match(r"batch_\d+(.\d\d)?.root", wsp) :
                 tanb_string = wsp[wsp.rfind("_")+1:]
                 os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/extractSignificanceStats.py --MSSMvsBG --filename point_{TANB}".format(CMSSW_BASE=os.environ["CMSSW_BASE"], TANB=tanb_string))
         os.system("hadd HypothesisTest.root HypothesisTest_*.root") 
