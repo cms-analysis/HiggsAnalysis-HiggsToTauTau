@@ -5,12 +5,12 @@ layout = cms.PSet(
     dataset = cms.string("CMS, H#rightarrow#tau#tau, 19.7 fb^{-1} at 8 TeV"),
     #dataset = cms.string("CMS Preliminary, H #rightarrow #tau #tau, 18.3 fb^{-1} at 8 TeV"),
     ## extra labels (below legend)
-    extra = cms.string("gg#rightarrow#phi profiled"),
-    #extra = cms.string("gg#rightarrow#phi set to zero"),
+    extra = cms.string("gg#phi profiled"),
+    #extra = cms.string("gg#phi set to zero"),
     ## x-axis title
     xaxis = cms.string("m_{#phi} [GeV]"),
     ## x-axis title
-    yaxis = cms.string("95% CL limit on #sigma(gg#rightarrow#phib#bar{b})#timesBR [pb]"),
+    yaxis = cms.string("95% CL limit on #sigma(bb#phi)#timesBR(#tau#tau) [pb]"),
     ## min for plotting
     min = cms.double(0.01),
     ## max for plotting
