@@ -65,7 +65,7 @@ PlotLimits::print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsym
       << " & " << std::setw(15) << std::right << "Obs. Limit"
       << std::right << "  \\\\"
       << std::endl << "\\hline" << std::endl;
-    unsigned int precision = 3;
+    unsigned int precision = 2;
     for(int imass=0; imass<expected->GetN(); ++imass){
       file
 	<< "   " << std::setw(15) << std::setprecision(4) << std::resetiosflags(std::ios_base::fixed) << std::right << expected->GetX()[imass] << "~\\GeV";
@@ -285,7 +285,7 @@ PlotLimits::print(const char* filename, TGraphAsymmErrors* outerBand_1, TGraphAs
       << " & " << std::setw(25) << std::right << "Obs. Limit"
       << std::right << "  \\\\"
       << std::endl << "\\hline" << std::endl;
-    unsigned int precision = 3;
+    unsigned int precision = 2;
     for(int imass=0; imass<expected_1->GetN(); ++imass){
       file
 	<< "   " << std::setw(25) << std::setprecision(4) << std::resetiosflags(std::ios_base::fixed) << std::right << expected_1->GetX()[imass] << "~\\GeV";
