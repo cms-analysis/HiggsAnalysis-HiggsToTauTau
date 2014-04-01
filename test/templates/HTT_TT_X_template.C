@@ -185,10 +185,10 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV";}
   if(std::string(inputfile).find("8TeV")!=std::string::npos){
     if(std::string(directory).find("btag")!=std::string::npos){
-      dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  18.3 fb^{-1} at 8 TeV";
+      dataset = "CMS, H#rightarrow#tau#tau, 18.3 fb^{-1} at 8 TeV";
     }
     else{
-      dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  19.8 fb^{-1} at 8 TeV";
+      dataset = "CMS, H#rightarrow#tau#tau, 19.8 fb^{-1} at 8 TeV";
     }
   }
 #else
@@ -345,7 +345,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   canv->cd();
   if(log){ canv->SetLogy(1); }
 #if defined MSSM
-  if(!log){ data->GetXaxis()->SetRange(0, data->FindBin(345)); } else{ data->GetXaxis()->SetRange(0, data->FindBin(UPPER_EDGE)); };
+  if(!log){ data->GetXaxis()->SetRange(0, data->FindBin(495)); } else{ data->GetXaxis()->SetRange(0, data->FindBin(UPPER_EDGE)); };
 #else
   data->GetXaxis()->SetRange(0, data->FindBin(345));
 #endif
@@ -386,7 +386,11 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 
   //CMSPrelim(dataset, "#tau_{h}#tau_{h}", 0.17, 0.835);
   CMSPrelim(dataset, "", 0.16, 0.835);  
+#if defined MSSM
+  TPaveText* chan     = new TPaveText(0.20, 0.74+0.061, 0.32, 0.74+0.161, "tlbrNDC");
+#else
   TPaveText* chan     = new TPaveText(0.52, 0.35, 0.91, 0.55, "tlbrNDC");
+#endif
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
   chan->SetTextAlign(   12 );
@@ -395,7 +399,10 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   chan->SetTextFont (   62 );
   chan->AddText(category);
   chan->AddText(category_extra);
+#if defined MSSM
+#else
   chan->AddText(category_extra2);
+#endif
   chan->Draw();
 /*
   TPaveText* cat      = new TPaveText(0.20, 0.71+0.061, 0.32, 0.71+0.161, "NDC");
@@ -418,7 +425,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   cat2->AddText(category_extra2);
   cat2->Draw();
 */  
-#ifdef MSSM
+#ifdef MSSSM
   TPaveText* massA      = new TPaveText(0.53, 0.50+0.061, 0.95, 0.50+0.161, "NDC");
   massA->SetBorderSize(   0 );
   massA->SetFillStyle(    0 );
