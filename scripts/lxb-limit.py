@@ -54,7 +54,7 @@ os.system("mkdir -p log")
 script_template = '''#!/bin/bash
 
 cd {working_dir}
-eval `scram runtime -sh
+eval `scram runtime -sh`
 
 echo "Running limit.py:"
 echo "with options {options}"
