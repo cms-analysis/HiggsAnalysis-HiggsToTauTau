@@ -161,7 +161,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     if(log){
       Ztt  ->Draw("same");
       ttbar->Draw("same");
-      EWK ->SetFillColor(TColor::GetColor(222,90,106));
+      EWK  ->SetFillColor(TColor::GetColor(100,182,232));
       EWK  ->Draw("same");
       EWK1 ->SetFillColor(TColor::GetColor(222,90,106));
       EWK1 ->Draw("same");
@@ -172,8 +172,9 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       if(ggH) ggH  ->Draw("histsame");
       Ztt  ->Draw("same");
       ttbar->Draw("same");
-      EWK ->SetFillColor(TColor::GetColor(222,90,106));
+      EWK  ->SetFillColor(TColor::GetColor(100,182,232));
       EWK  ->Draw("same");
+      EWK1 ->SetFillColor(TColor::GetColor(222,90,106));
       EWK1 ->Draw("same");
       Fakes->Draw("same");
     } 
