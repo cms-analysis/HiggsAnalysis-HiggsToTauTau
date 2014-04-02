@@ -79,8 +79,8 @@ plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-bbH.py L
 
 (6a) launch/collect/plot ggH 1d limits (expected = SMHiggs+b -> blue band plot)
 ## launch ggH 1d limit
-lxb: submit.py --injected --injected-method="--asymptotic" --physics-model='ggH' --MSSM 1 --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-ggH/*/*
-lxq: submit.py --injected --injected-method="--asymptotic" --physics-model='ggH' --MSSM 1 --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-ggH/*/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
+lxb: submit.py --injected --injected-method="--asymptotic" --physics-model='ggH' --MSSM --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-ggH/*/*
+lxq: submit.py --injected --injected-method="--asymptotic" --physics-model='ggH' --MSSM --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-ggH/*/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
 ## collect toys
 lxb: submit.py --injected --injected-method "--asymptotic" --collect-injected-toys --physics-model='ggH' LIMITS-yymmdd-mssm/bbb-ggH/*/*
 lxq: submit.py --injected --injected-method "--asymptotic" --collect-injected-toys --physics-model='ggH' LIMITS-yymmdd-mssm/bbb-ggH/*/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
@@ -89,8 +89,8 @@ plot --injected HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-ggH.py LIM
 
 (6b) launch/collect/plot bbH 1d limits (expected = SMHiggs+b -> blue band plot)
 ## launch 1d limit 
-lxb: submit.py --injected --injected-method="--asymptotic" --physics-model='bbH' --MSSM 1 --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-bbH/*/*
-lxq: submit.py --injected --injected-method="--asymptotic" --physics-model='bbH' --MSSM 1 --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-bbH/*/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o 
+lxb: submit.py --injected --injected-method="--asymptotic" --physics-model='bbH' --MSSM --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-bbH/*/*
+lxq: submit.py --injected --injected-method="--asymptotic" --physics-model='bbH' --MSSM --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-bbH/*/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o 
 /dev/null"
 ## collect toys
 lxb: submit.py --injected --injected-method "--asymptotic" --collect-injected-toys --physics-model='bbH' LIMITS-yymmdd-mssm/bbb-bbH/*/*

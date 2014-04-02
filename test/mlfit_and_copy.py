@@ -70,7 +70,7 @@ if options.analysis == "mssm" :
     system("combineCards.py -S %s > datacards/tmp.txt" % optcards)
     system("perl -pi -e 's/datacards//g' datacards/{DATACARD}".format(DATACARD="tmp.txt"))
     system("perl -pi -e 's/common/root/g' datacards/{DATACARD}".format(DATACARD="tmp.txt"))
-    system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/python/tanb_grid_new.py --mA {MA} --tanb {TANB} datacards/{PATH}".format(
+    system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/python/tanb_grid_new.py --parameter1 {MA} --tanb {TANB} datacards/{PATH}".format(
         CMSSW_BASE=os.environ['CMSSW_BASE'],
         MA=options.mA,
         TANB=options.tanb,
