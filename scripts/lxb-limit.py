@@ -54,7 +54,7 @@ os.system("mkdir -p log")
 script_template = '''#!/bin/bash
 
 cd {working_dir}
-eval `scram runtime -sh`
+eval `scram runtime -sh
 
 echo "Running limit.py:"
 echo "with options {options}"
@@ -138,7 +138,9 @@ with open(submit_name, 'w') as submit_script:
         log.info("Generating submission script for %s", dir)
         script_file_name = '%s/%s_%i.sh' % (folder, name, i)
         ## create random directory in tmp. This allows to do more than one submission in parallel
-        tmp_head = '/tmp/'+stamp
+        tmp_head = ''
+        if options.lxq : tmp_head='$TMPDIR/'+stamp
+        else : tmp_head='/tmp/'+stamp
         if options.condor:
             tmp_head = "${_CONDOR_SCRATCH_DIR}/" + stamp
         dir_head = dir.rstrip('/')[:dir.rstrip('/').rfind('/')+1]

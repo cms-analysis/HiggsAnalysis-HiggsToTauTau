@@ -166,6 +166,7 @@ with open(submit_name, 'w') as submit_script:
         tmpdir='${_CONDOR_SCRATCH_DIR}'
         submit_script.write(condor_sub_template)
     if options.lxq :
+        tmpdir = '$TMPDIR'
         submit_script.write('export cmssw_base=$CMSSW_BASE\n')
     for idx in range(int(njob)):
         rnd = random.randint(1, 999999)
