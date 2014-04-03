@@ -253,15 +253,16 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   cat->Draw();
   */
   if(MSSM){
-    float lower_bound = EWK1 ? 0.45 : 0.50;
-    TPaveText* massA      = new TPaveText(0.53, lower_bound+0.061, 0.95, lower_bound+0.161, "NDC");
+    float lower_bound = EWK1 ? 0.44 : 0.49;
+    TPaveText* massA      = new TPaveText(0.53, lower_bound+0.061, 0.95, lower_bound+0.151, "NDC");
     massA->SetBorderSize(   0 );
     massA->SetFillStyle(    0 );
     massA->SetTextAlign(   12 );
     massA->SetTextSize ( 0.03 );
     massA->SetTextColor(    1 );
     massA->SetTextFont (   62 );
-    massA->AddText("m^{h}_{max} (m_{A}=$MA GeV, tan#beta=$TANB)");
+    massA->AddText("MSSM m^{h}_{max} scenario");
+    massA->AddText("m_{A}=$MA GeV, tan#beta=$TANB");
     massA->Draw();
   }    
   float lower_bound = EWK1 ? 0.60 : 0.65;
