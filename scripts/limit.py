@@ -1206,7 +1206,7 @@ for directory in args :
                             continue
                     if not options.refit :
                         tasks.append(
-                            ["combine -m {mass} -M HybridNew -n Test{cycle} --testStat=TEV --generateExt=1 --generateNuis=0 {wsp} --singlePoint 1 --saveHybridResult --fork 4 -T {toys} -i 1 --clsAcc 0 --fullBToys -s {seed}".format(mass=mass, cycle=options.cycle, wsp=wsp, toys=options.toys, seed=seedNR), #fork down from 40
+                            ["combine -m {mass} -M HybridNew -n Test{cycle} --testStat=TEV --generateExt=1 --generateNuis=0 {wsp} --singlePoint 1 --saveHybridResult --fork 4 -T {toys} -i 1 --clsAcc 0 --fullBToys -s {seed} {user}".format(mass=mass, cycle=options.cycle, wsp=wsp, toys=options.toys, seed=seedNR, user=options.userOpt), #fork down from 40
                              "mv higgsCombineTest{cycle}.HybridNew.mH{mass}.{seed}.root point_{tanb}_{cycle}".format(mass=mass, seed=seedNR, tanb=tanb_string, cycle=options.cycle)
                              ]
                             )
