@@ -61,7 +61,7 @@ linux_ver=`lsb_release -s -r`
 echo $linux_ver
 if [[ $linux_ver < 6.0 ]];
 then
-     ini cmssw_cvmfs
+     eval "`/afs/desy.de/common/etc/local/ini/ini.pl cmssw_cvmfs`"
      export SCRAM_ARCH=slc5_amd64_gcc472
 else
      source /cvmfs/cms.cern.ch/cmsset_default.sh
@@ -159,7 +159,9 @@ masses = directories(args)[1]
 for dir in dirs :
     ana = dir[:dir.rfind('/')]
     limit = dir[len(ana)+1:]
-    jobname = ana[ana.rfind('/')+1:]+'-'+limit+'-'+options.name
+    #jobname = ana[ana.rfind('/')+1:]+'-'+limit+'-'+options.name #old naming. this was problematic, as it would overwrite scripts relative to different limits
+    cmd_ext = '-xsec2tanb'
+    jobname = dir.replace('/', '-').replace('LIMITS','scripts')+cmd_ext
     ## create submission scripts
     submit(jobname, dir, masses)
     ## execute
