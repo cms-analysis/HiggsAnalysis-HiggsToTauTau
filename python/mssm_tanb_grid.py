@@ -74,10 +74,18 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False) :
         
     else :       
         if "lowmH" in opt : #for lowmH MSSM scenario
-            if len(subvec(args, 300, 3100))>0 :
-                dirs = vec2str(subvec(args, 300, 3100))
+            if len(subvec(args, 300, 2999))>0 :
+                dirs = vec2str(subvec(args, 300, 2999))
                 grid = [
                     "{CMD} -n  4 --min 1.5  --max 3.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ,"{CMD} -n  4 --min 3.5  --max 5.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ,"{CMD} -n  4 --min 5.5  --max 7.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ,"{CMD} -n  5 --min 7.5  --max 9.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ]
+            if len(subvec(args, 3000, 3100))>0 :
+                dirs = vec2str(subvec(args, 3000, 3100))
+                grid = [
+                    "{CMD} -n  2 --min 2.5  --max 3.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     ,"{CMD} -n  4 --min 3.5  --max 5.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     ,"{CMD} -n  4 --min 5.5  --max 7.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     ,"{CMD} -n  5 --min 7.5  --max 9.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
