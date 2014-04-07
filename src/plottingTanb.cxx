@@ -229,8 +229,10 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
     leg = new TLegend(0.68, (!higgsBands.empty() || !comparisons.empty()) ? 0.15 : 0.32, (!higgsBands.empty() || !comparisons.empty()) ? 0.935: 0.935, 0.61);
   }
   else{
-    leg = new TLegend(0.18, (!higgsBands.empty() || !comparisons.empty()) ? 0.53 : 0.62, (!higgsBands.empty() || !comparisons.empty()) ? 0.55: 0.50, 0.89);
-  }
+    if(theory=="MSSM low m_{H} scenario") leg = new TLegend(0.18, (!higgsBands.empty() || !comparisons.empty()) ? 0.74 : 0.83, (!higgsBands.empty() || !comparisons.empty()) ? 0.85: 0.85, 0.89);
+    else leg = new TLegend(0.18, (!higgsBands.empty() || !comparisons.empty()) ? 0.53 : 0.62, (!higgsBands.empty() || !comparisons.empty()) ? 0.55: 0.50, 0.89);
+  }  
+  if(theory=="MSSM low m_{H} scenario") leg-> SetNColumns(2);
   leg->SetBorderSize(  1 );
   leg->SetFillStyle (1001);
   leg->SetTextSize  (0.03);
