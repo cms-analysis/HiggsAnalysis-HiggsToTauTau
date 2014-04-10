@@ -43,11 +43,11 @@ channelName = {
 categoryName = {
     "8"  : "nobtag",
     "9"  : "btag",
-    "10" : "nobtag_lowtau",
-    "11" : "nobtag_mediumtau",
-    "12" : "nobtag_hightau",
-    "13" : "btag_lowtau",
-    "14" : "btag_hightau"
+    "10" : "nobtaglow",
+    "11" : "nobtagmedium",
+    "12" : "nobtaghigh",
+    "13" : "btaglow",
+    "14" : "btaghigh"
 }
 
 

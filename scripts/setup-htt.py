@@ -156,10 +156,20 @@ directories_mssm = {
     'et' : {
     '8'  : ['nobtag', 'nobtag-et'],
     '9'  : ['btag'  , 'btag-et'  ],
+    '10' : ['nobtaglow'          ],
+    '11' : ['nobtagmedium'       ],
+    '12' : ['nobtaghigh'         ],
+    '13' : ['btaglow'            ],
+    '14' : ['btaghigh'           ],
     },
     'mt' : {
     '8'  : ['nobtag', 'nobtag-mt'],
     '9'  : ['btag'  , 'btag-mt'  ],
+    '10' : ['nobtaglow'          ],
+    '11' : ['nobtagmedium'       ],
+    '12' : ['nobtaghigh'         ],
+    '13' : ['btaglow'            ],
+    '14' : ['btaghigh'           ],
     },
     'tt' : {
     '8'  : ['nobtag', 'nobtag-tt'],
