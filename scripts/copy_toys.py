@@ -15,10 +15,14 @@ parser.add_option("-v", "--verbose", dest="verbose", default=False, action="stor
 (options, args) = parser.parse_args()
 
 import os
+import re
 from operator import itemgetter, attrgetter
 
 for mass in ['90', '100', '120', '130', '140', '160', '180', '200', '250', '300', '350', '400', '450', '500', '600', '700', '800', '900', '1000'] :
-    directoryList = os.listdir("{DIR}".format(DIR=args[0]))
-    for file in directoryList :    
-        print "cp {DIR}/{FILE} {OUTPUT}/{MASS}/{FILE}_{NAME}".format(DIR=args[0], FILE=file, MASS=mass, OUTPUT=options.output, NAME=options.name)   
-        os.system("cp {DIR}/{FILE} {OUTPUT}/{MASS}/{FILE}_{NAME}".format(DIR=args[0], FILE=file, MASS=mass, OUTPUT=options.output, NAME=options.name))
+    directoryList = os.listdir("{DIR}/{MASS}".format(DIR=args[0], MASS=mass))
+    os.system("mkdir {OUTPUT}/{MASS}".format(MASS=mass, OUTPUT=options.output))
+    for file in directoryList :
+        if re.match(r"point_\d+?_\d+(.\d\d)?.root$", file) : 
+            #tanb_string = file[file.rfind("_")+1:]
+            print "cp {DIR}/{MASS}/{FILE} {OUTPUT}/{MASS}/{FILE}_{NAME}".format(DIR=args[0], FILE=file, MASS=mass, OUTPUT=options.output, NAME=options.name)   
+            os.system("cp {DIR}/{MASS}/{FILE} {OUTPUT}/{MASS}/{FILE}_{NAME}".format(DIR=args[0], FILE=file, MASS=mass, OUTPUT=options.output, NAME=options.name))
