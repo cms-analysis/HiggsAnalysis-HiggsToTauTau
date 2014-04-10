@@ -93,9 +93,14 @@ TH1F * merge(std::string iName,double iMergePoint,TH1F *iH,TH1F *iFunc) {
   int lMergeBin = iH->GetXaxis()->FindBin(iMergePoint);
   //double lVal  = iH->GetBinContent(lMergeBin);
   //iFunc->Scale(lVal/iFunc->GetBinContent(lMergeBin));
+  std::cout << "iH->Integral(lMergeBin, iH->GetXaxis()->FindBin(1500)) = " << iH->Integral(lMergeBin, iH->GetXaxis()->FindBin(1500)) << std::endl;
+  std::cout << "iFunc->Integral(lMergeBin, iFunc->GetXaxis()->FindBin(1500)) = " << iFunc->Integral(lMergeBin, iFunc->GetXaxis()->FindBin(1500)) << std::endl;
   iFunc->Scale( (iH->Integral(lMergeBin, iH->GetXaxis()->FindBin(1500))) / (iFunc->Integral(lMergeBin, iFunc->GetXaxis()->FindBin(1500)) )); // felix - last fit bin = 1500; this approach seems to work much better
   for(int i0 = 0;         i0 < lMergeBin;         i0++) lH->SetBinContent(i0,iH->GetBinContent(i0));
   for(int i0 = lMergeBin; i0 < iH->GetNbinsX()+1; i0++) lH->SetBinContent(i0,iFunc->GetBinContent(iFunc->GetXaxis()->FindBin(lH->GetXaxis()->GetBinCenter(i0))));
+  for(int i0 = 0;         i0 < iH->GetNbinsX()+1; i0++) {
+    std::cout << "bin #" << i0 << " (x = " << lH->GetBinCenter(i0) << ") = " << lH->GetBinContent(i0) << std::endl;
+  }
   lH->SetName(iName.c_str());
   return lH;
 }
@@ -181,7 +186,11 @@ double * getAxis(TH1F *iH) {
 }
 //Make a histogram from a TF1
 TH1F* makeHist(TF1 *iFit,TH1F *iH,std::string iName) { 
+  cout << "====> makeHist " << iName << endl;
   TH1F *lH = (TH1F*) iH->Clone(iName.c_str());
+  for(int i0 = 0; i0 < lH->GetNbinsX()+1; i0++) {
+    std::cout << "bin #" << i0 << " (x = " << lH->GetBinCenter(i0) << ") = " << iFit->Eval(lH->GetXaxis()->GetBinCenter(i0)) << std::endl;
+  }
   for(int i0 = 0; i0 < lH->GetNbinsX()+1; i0++) lH->SetBinContent(i0,iFit->Eval(lH->GetXaxis()->GetBinCenter(i0)));
   for(int i0 = 0; i0 < lH->GetNbinsX()+1; i0++) lH->SetBinContent(i0,lH->GetBinContent(i0)*lH->GetXaxis()->GetBinWidth(i0));
   for(int i0 = 0; i0 < lH->GetNbinsX()+1; i0++) lH->SetBinError (i0,lH->GetBinError   (i0)*lH->GetXaxis()->GetBinWidth(i0));
@@ -275,7 +284,7 @@ void addVarBinNuisance(std::string iFileName,std::string iChannel,std::string iB
   lHDown ->SetLineColor(kRed);
   lHUp1  ->SetLineColor(kBlue);
   lHDown1->SetLineColor(kBlue);
-  TCanvas *lC0 = new TCanvas("Can","Can",800,600);
+  TCanvas *lC0 = new TCanvas("Can","Can",800,750);
   lC0->Divide(1,2); lC0->cd();  lC0->cd(1)->SetPad(0,0.2,1.0,1.0); gPad->SetLeftMargin(0.2) ;  
   lH0->Draw();
   lH     ->Draw("hist sames");
@@ -289,6 +298,58 @@ void addVarBinNuisance(std::string iFileName,std::string iChannel,std::string iB
   lC0->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+".png").c_str());
   //lFile->Close();
   return;
+}
+TH1F* makeHist2(const std::string& iName, TH1F* lH, RooRealVar& lA, RooRealVar& lB, int iFitModel, double lFirst, double lLast, double& sf, double* sfCentral = 0)
+{
+  TF1* tempFit = 0;
+  if ( iFitModel == 0 ) {
+    tempFit = new TF1("tempFit", "TMath::Exp(-(x-[2])/([0]+0.001*[1]*(x-[2])))", lFirst, lLast);
+    tempFit->SetParameter(0, lA.getVal());
+    tempFit->SetParameter(1, lB.getVal());
+    tempFit->SetParameter(2, lFirst);
+  } else if ( iFitModel == 1 ) {
+    tempFit = new TF1("tempFit", "TMath::Exp(-a*TMath::Power(x,b))", lFirst, lLast);
+    tempFit->SetParameter(0, lA.getVal());
+    tempFit->SetParameter(1, lB.getVal());
+  } else if ( iFitModel == 2 ) {
+    tempFit = new TF1("tempFit", "a*TMath::Exp(b*x)", lFirst, lLast);
+    tempFit->SetParameter(0, lA.getVal());
+    tempFit->SetParameter(1, lB.getVal());
+  } else if ( iFitModel == 3 ) {
+    tempFit = new TF1("tempFit","a/TMath::Power(x,b)", lFirst, lLast);
+    tempFit->SetParameter(0, lA.getVal());
+    tempFit->SetParameter(1, lB.getVal());
+  } else if ( iFitModel == 4 ) {
+    tempFit = new TF1("tempFit", "a*TMath::Power(x,b)", lFirst, lLast);
+    tempFit->SetParameter(0, lA.getVal());
+    tempFit->SetParameter(1, lB.getVal());
+  } else if ( iFitModel == 5 ) {
+    tempFit = new TF1("tempFit", "a*TMath::Exp(TMath::Power(x,b))", lFirst, lLast);
+    tempFit->SetParameter(0, lA.getVal());
+    tempFit->SetParameter(1, lB.getVal());
+  }
+  
+  TH1F* lH_fitted = (TH1F*)lH->Clone(iName.c_str());
+  double lH_integral = lH->Integral(lH->FindBin(lFirst), lH->FindBin(lLast));
+  double tempFit_integral = tempFit->Integral(lFirst, lLast);
+  sf = lH_integral/tempFit_integral;
+  if ( sfCentral ) sf = (*sfCentral); // CV: if this line is enabled the fit parameter uncertainties will affect not only the shape, but also the yield 
+  TAxis* lH_xAxis = lH->GetXaxis();
+  for ( int iBin = 1; iBin <= lH->GetNbinsX(); ++iBin ) {
+    double binCenter   = lH_xAxis->GetBinCenter(iBin);
+    double binEdgeLow  = lH_xAxis->GetBinLowEdge(iBin);
+    double binEdgeHigh = lH_xAxis->GetBinUpEdge(iBin);
+    if ( binCenter > lFirst ) {
+      if ( binCenter < lLast ) lH_fitted->SetBinContent(iBin, sf*tempFit->Integral(binEdgeLow, binEdgeHigh));
+      else lH_fitted->SetBinContent(iBin, 0.);
+    } else {
+      lH_fitted->SetBinContent(iBin, lH->GetBinContent(iBin));
+    }
+  }
+  lH_fitted->SetBinContent(0, lH->GetBinContent(0));
+  lH_fitted->SetBinContent(lH->GetNbinsX() + 1, lH->GetBinContent(lH->GetNbinsX() + 1));
+  
+  return lH_fitted;
 }
 int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std::string iEnergy,std::string iName,std::string iDir,bool iVerbose=false,bool iVarBin=false,int iFitModel=1,double iFirst=150,double iLast=1500,bool addUncerts=true,bool iTestMode=false) {
   if (!iVerbose) {
@@ -312,7 +373,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   TString iStr = TString::Format("%.0f",iFirst);
   //std::cout << iStr << std::endl;
   TString fn = "exp(-(m-"+iStr+")/(a+0.001*b*(m-"+iStr+")))";
-  //std::cout << fn << std::endl;
+  std::cout << "fn = " << fn << std::endl;
   RooGenericPdf *lFit  = 0; lFit = new RooGenericPdf("genPdf",fn,RooArgList(lM,lA,lB));
   if(iFitModel == 1) lFit = new RooGenericPdf("genPdf","exp(-a*pow(m,b))",RooArgList(lM,lA,lB));
   if(iFitModel == 1) {lA.setVal(0.3); lB.setVal(0.5);}
@@ -364,6 +425,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   lM.setRange(0,2000);
   
   double mcentral=(-1 * lA.getVal() / lB.getVal() );
+  std::cout << "mcentral = " << mcentral << std::endl;
   if(iFitModel==0 && lFirst < mcentral && mcentral < 2000)
   {
       flagcentral=true;
@@ -385,7 +447,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   lM.setRange(0,2000);
   
   double mshift1up=(-1 * lA.getVal() / lB.getVal() );
-  
+  std::cout << "mshift1up = " << mshift1up << std::endl;
   if(iFitModel == 0 && lFirst < mshift1up && mshift1up < 2000)
   {
       flag1up=true;
@@ -397,6 +459,13 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   TH1F* lHUp=0, *lHUptemp=0;
   if(!flag1up) lHUp= (TH1F*) lFit->createHistogram("Up"  ,lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
   else lHUptemp=(TH1F*) lFit->createHistogram("Up" ,lM,RooFit::Binning((lH0->FindBin(mshift1up))-1,lH0->GetXaxis()->GetXmin(),lH0->GetBinLowEdge(lH0->FindBin(mshift1up))));
+  TF1* tempFit = new TF1("tempFit","TMath::Exp(-(x-[0])/([1]+0.001*[2]*(x-[0])))",0.,2000.);
+  tempFit->SetParameter(0, iFirst);
+  tempFit->SetParameter(1, lA.getVal());
+  tempFit->SetParameter(2, lB.getVal());
+  for(int i0 = 1; i0 <= lH0->GetNbinsX()+1; i0++) {
+    std::cout << "bin #" << i0 << " (x = " << lH0->GetBinCenter(i0) << ") = " << tempFit->Eval(lH0->GetXaxis()->GetBinCenter(i0)) << std::endl;
+  }
 
   lA.setVal(lACentral - lEigVals(0)*lEigVecs(0,0));
   lB.setVal(lBCentral - lEigVals(0)*lEigVecs(1,0));
@@ -407,7 +476,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   lM.setRange(0,2000);
   
   double mshift1down=(-1 * lA.getVal() / lB.getVal() );
-  
+  std::cout << "mshift1down = " << mshift1down << std::endl;
   if(iFitModel == 0 && lFirst < mshift1down && mshift1down < 2000)
   {
       flag1down=true;
@@ -530,7 +599,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   double I2=lHDown->Integral(lHDown->FindBin(lFirst), lHDown->FindBin(2000));  
   double I3=lHUp1->Integral(lHUp1->FindBin(lFirst), lHUp1->FindBin(2000));  
   double I4=lHDown1->Integral(lHDown1->FindBin(lFirst), lHDown1->FindBin(2000)); 
-  
+  std::cout << "I1 = " << I1 << ", I2 = " << I2 << ", I3 = " << I3 << ", I4 = " << I4 << std::endl;
 
   //If verbosity is set make plot showing the shift up/down/central functions prior to rebinning
   if(iVerbose)
@@ -561,7 +630,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
     lH0->GetYaxis()->SetTitleOffset(1.2);
     lH0->GetYaxis()->SetLabelSize(0.0275);
 
-    TCanvas *lC0Fine = new TCanvas("CanFine","CanFine",800,600);
+    TCanvas *lC0Fine = new TCanvas("CanFine","CanFine",800,750);
     lC0Fine->Divide(1,2); lC0Fine->cd();  lC0Fine->cd(1)->SetPad(0,0.2,1.0,1.0); gPad->SetLeftMargin(0.2) ; 
     lH0    ->Scale(1.0,"width");
     lH     ->Scale(1.0,"width");
@@ -579,7 +648,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   
     TLegend* leg2;
     /// setup the CMS Preliminary
-    leg2 = new TLegend(0.6, 0.65, 0.9, 0.89); 
+    leg2 = new TLegend(0.7, 0.64, 0.89, 0.88); 
     leg2->SetBorderSize( 0 );
     leg2->SetFillStyle ( 1001 );
     leg2->SetFillColor (kWhite);
@@ -704,7 +773,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   lH0->GetYaxis()->SetTitleOffset(1.2);
   lH0->GetYaxis()->SetLabelSize(0.0275);
 
-  TCanvas *lC0 = new TCanvas("Can","Can",800,600);
+  TCanvas *lC0 = new TCanvas("Can","Can",800,750);
   lC0->Divide(1,2); lC0->cd();  lC0->cd(1)->SetPad(0,0.2,1.0,1.0); gPad->SetLeftMargin(0.2) ; 
   lH0    ->Scale(1.0,"width");
   lH     ->Scale(1.0,"width");
@@ -722,7 +791,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   
   TLegend* leg1;
   /// setup the CMS Preliminary
-  leg1 = new TLegend(0.6, 0.65, 0.9, 0.89); 
+  leg1 = new TLegend(0.7, 0.64, 0.89, 0.88); 
   leg1->SetBorderSize( 0 );
   leg1->SetFillStyle ( 1001 );
   leg1->SetFillColor (kWhite);
@@ -786,7 +855,494 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   lB.setVal(lBCentral);  
 
   lM.setRange(lFirst,2000); 
-  TCanvas* c1 = new TCanvas("c1","c1",600,600);
+  TCanvas* c1 = new TCanvas("c1","c1",800,750);
+  RooPlot* mframe = lM.frame(RooFit::Name("mframe"),RooFit::Title("Tail fit in fit range"));
+  pH0->plotOn(mframe, RooFit::Name("data"), RooFit::MarkerColor(kBlack));
+  lFit->plotOn(mframe, RooFit::Name("model"), RooFit::DrawOption("L"), RooFit::Range(lFirst,2000));
+  lFit->plotOn(mframe, RooFit::Components(*lFit), RooFit::LineColor(kRed), RooFit::Range(lFirst,2000));
+  mframe->GetYaxis()->SetRangeUser(0,lH0->GetBinContent(lH0->FindBin(lFirst)));
+  mframe->Draw();
+  Double_t chi2 = mframe->chiSquare();
+  Double_t ndoff = mframe->GetNbinsX();
+  std::cout << "==========================================================================================================" << std::endl;
+  std::cout << "Goodness of fit: " << chi2/ndoff << " with statistics in fit range: " << lH0->Integral(lH0->FindBin(lFirst),lH0->FindBin(2000)) << std::endl;
+  std::cout << "==========================================================================================================" << std::endl;
+ 
+ //If verbosity is set also output the fit function just in the tail fit range, no log scale 
+ if(iVerbose) c1->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Function.png").c_str());
+ if(iVerbose) c1->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Function.pdf").c_str());
+
+ if(iTestMode)
+ {
+     std::cout << "Running in test mode. Script will exit now without altering datacard or uncertainty files." << std::endl;
+     return 1;
+ }
+
+  return 0;
+}
+int addNuisance2(std::string iFileName,std::string iChannel,std::string iBkg,std::string iEnergy,std::string iName,std::string iDir,bool iVerbose=false,bool iVarBin=false,int iFitModel=1,double iFirst=150,double iLast=1500,bool addUncerts=true,bool iTestMode=false) {
+  std::cout << "<addNuisance2>:" << std::endl;
+  std::cout << " range = " << iFirst << ".." << iLast << " (iVarBin = " << iVarBin << ")" << std::endl;
+  if (!iVerbose) {
+    RooMsgService::instance().setStreamStatus(0,false);
+    RooMsgService::instance().setStreamStatus(1,false);
+    RooMsgService::instance().setSilentMode(true);
+  }
+  std::cout << "======> " << iDir << "/" << iBkg << " -- " << iFileName << std::endl;  
+  if(iVarBin) addVarBinNuisance(iFileName,iChannel,iBkg,iEnergy,iName,iDir,true,iFitModel,iFirst,iLast);
+  if(iVarBin) return 1;
+
+  TFile *lFile = new TFile(iFileName.c_str());
+  std::cout << " lFile = " << lFile << std::endl;
+  TH1F  *lH0   = (TH1F*) lFile->Get((iDir+"/"+iBkg).c_str());
+  std::cout << " lH0 = " << lH0 << std::endl;
+  TH1F  *lData = (TH1F*) lFile->Get((iDir+"/data_obs").c_str());
+  std::cout << " lData = " << lData << std::endl;
+
+  //Define the fit function
+  RooRealVar lM("m","m" ,0,5000);   //lM.setBinning(lBinning);
+  RooRealVar lA("a","a" ,50,  0.1,200);
+  RooRealVar lB("b","b" ,50 , -10500,10500); //lB.setConstant(kTRUE);
+  RooDataHist *pH0  =  new RooDataHist("Data","Data" ,RooArgList(lM),lH0);
+  //double m0 = 0.;
+  //double norm = 0.;
+  //int numBins = lH0->GetNbinsX();
+  //for ( int iBin = 1; iBin <= numBins; ++iBin ) {
+  //  double binCenter = lH0->GetBinCenter(iBin);
+  //  if ( binCenter > iFirst && binCenter < iLast ) {
+  //    double binContent = lH0->GetBinContent(iBin);
+  //    m0 += (binContent*binCenter);
+  //    norm += binContent;
+  //  }
+  //}
+  //if ( norm > 0. ) {
+  //  m0 /= norm;
+  //}
+  double m0 = iFirst;
+  std::cout << "m0 = " << m0 << std::endl;  
+  TString iStr = TString::Format("%.0f",m0);
+  TString fn = "exp(-(m-"+iStr+")/(a+0.001*b*(m-"+iStr+")))";
+  std::cout << "fn = " << fn << std::endl;
+  RooGenericPdf *lFit  = 0; lFit = new RooGenericPdf("genPdf",fn,RooArgList(lM,lA,lB));
+  if(iFitModel == 1) lFit = new RooGenericPdf("genPdf","exp(-a*pow(m,b))",RooArgList(lM,lA,lB));
+  if(iFitModel == 1) {lA.setVal(0.3); lB.setVal(0.5);}
+  if(iFitModel == 2) lFit = new RooGenericPdf("genPdf","a*exp(b*m)",RooArgList(lM,lA,lB));
+  if(iFitModel == 3) lFit = new RooGenericPdf("genPdf","a/pow(m,b)",RooArgList(lM,lA,lB));
+  if(iFitModel == 4) lFit = new RooGenericPdf("genPdf","a*pow(m,b)",RooArgList(lM,lA,lB));
+  if(iFitModel == 5) lFit = new RooGenericPdf("genPdf","a*exp(pow(m,b))",RooArgList(lM,lA,lB));
+  RooFitResult  *lRFit = 0;
+  double lFirst = iFirst;
+  double lLast  = iLast;
+  //lRFit = lFit->chi2FitTo(*pH0,RooFit::Save(kTRUE),RooFit::Range(lFirst,lLast));
+  lRFit = lFit->fitTo(*pH0,RooFit::Save(kTRUE),RooFit::Range(lFirst,lLast),RooFit::Strategy(0)); 
+  
+  //std::cout << lRFit->status() << " " <<  lRFit->covQual() << std::endl;
+  if(!(lRFit->status()==0 && lRFit->covQual()==3))
+  {
+      std::cerr << "===============================================================================" << std::endl;
+      std::cerr << "Tail fit has not succeeded. Datacard and uncertainty files will not be altered." << std::endl;
+      std::cerr << "===============================================================================" << std::endl;
+      return 1;
+  }
+
+  TMatrixDSym lCovMatrix   = lRFit->covarianceMatrix(); 
+  TMatrixD  lEigVecs(2,2);    lEigVecs = TMatrixDSymEigen(lCovMatrix).GetEigenVectors();
+  TVectorD  lEigVals(2);      lEigVals = TMatrixDSymEigen(lCovMatrix).GetEigenValues();
+  cout << " Eigenvectors ---> " << lEigVecs(0,0) << " -- " << lEigVecs(1,0) << " -- " << lEigVecs(0,1) << " -- " << lEigVecs(1,1) << endl;
+  cout << " Covariance matrix ---> " << lCovMatrix(0,0) << " -- " << lCovMatrix(1,0) << " -- " << lCovMatrix(0,1) << " -- " << lCovMatrix(1,1) << endl;
+  double lACentral = lA.getVal();
+  double lBCentral = lB.getVal();
+  lEigVals(0) = sqrt(lEigVals(0));
+  lEigVals(1) = sqrt(lEigVals(1));
+  cout << "Eigenvalues ===> " << lEigVals(0) << " -- " << lEigVals(1) << endl;
+    
+  lLast = 2000.;
+  lM.setRange(lFirst, 2000.);
+  lA.removeRange();
+  lB.removeRange();
+
+  //GENERATION OF SHIFT UP/DOWN HISTOGRAMS
+
+  //Add some flags for possible infinite points in the histograms. 
+  bool flagcentral=false;  
+  bool flag1up=false;  
+  bool flag1down=false;  
+  bool flag2up=false;  
+  bool flag2down=false; 
+    
+  std::string lNuisance1 =  iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy + "_" + iBkg;
+  std::string lNuisance2 =  iBkg+"_"+"CMS_"+iName+"2_" + iDir + "_" + iEnergy + "_" + iBkg;
+
+  lM.setRange(0, 2000); 
+
+  //CENTRAL HISTOGRAM   
+  cout << "Values for central hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
+  double mcentral = iFirst - lA.getVal()/(0.001*lB.getVal());
+  double lLast_central = lLast;
+  if ( iFitModel == 0 && mcentral > lFirst && mcentral < 2000. ) {
+    flagcentral = true;
+    std::cout << "===============================================================================" << std::endl;
+    std::cout << "Infinite point found in central histogram at mass of " << mcentral << "." << std::endl;
+    std::cout << "Truncating the histogram before that point, setting all bins after to zero." << std::endl;
+    std::cout << "===============================================================================" << std::endl;
+    lLast_central = lH0->GetBinLowEdge(lH0->FindBin(mcentral));
+    lM.setRange(0, lLast_central);
+  }
+  double sfCentral;
+  TH1F* lH = makeHist2(lH0->GetName(), lH0, lA, lB, iFitModel, lFirst, lLast_central, sfCentral);
+
+  //SHIFT1UP HISTOGRAM   
+  lA.setVal(lACentral + lEigVals(0)*lEigVecs(0,0));
+  lB.setVal(lBCentral + lEigVals(0)*lEigVecs(1,0));
+  cout << "Values for shift 1 up hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
+  double mshift1up = iFirst - lA.getVal()/(0.001*lB.getVal());
+  double lLast_shift1up = lLast;
+  if ( iFitModel == 0 && mshift1up > lFirst && mshift1up < 2000. ) {
+    flag1up = true;
+    std::cout << "===============================================================================" << std::endl;
+    std::cout << "Infinite point found in shift 1 up histogram at mass of " << mshift1up << "." << std::endl; 
+    std::cout << "Truncating the histogram before that point, setting all bins after to zero." << std::endl;
+    std::cout << "===============================================================================" << std::endl;
+    lLast_shift1up = lH0->GetBinLowEdge(lH0->FindBin(mshift1up));
+    lM.setRange(0, lLast_shift1up);
+  }
+  double sfUp;
+  TH1F* lHUp = makeHist2(lNuisance1 + "Up", lH0, lA, lB, iFitModel, lFirst, lLast_shift1up, sfUp, &sfCentral);
+
+  //SHIFT1DOWN HISTOGRAM   
+  lA.setVal(lACentral - lEigVals(0)*lEigVecs(0,0));
+  lB.setVal(lBCentral - lEigVals(0)*lEigVecs(1,0));
+  cout << "Values for shift 1 down hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
+  double mshift1down = iFirst - lA.getVal()/(0.001*lB.getVal());
+  double lLast_shift1down = lLast;
+  if ( iFitModel == 0 && mshift1down > lFirst && mshift1down < 2000. ) {
+    flag1down = true;
+    std::cout << "===============================================================================" << std::endl;
+    std::cout << "Infinite point found in shift 1 down histogram at mass of " << mshift1down << "." << std::endl; 
+    std::cout << "Truncating the histogram before that point, setting all bins after to zero." << std::endl;
+    std::cout << "===============================================================================" << std::endl;
+    lLast_shift1down = lH0->GetBinLowEdge(lH0->FindBin(mshift1down));
+    lM.setRange(0, lLast_shift1down);
+  }
+  double sfDown;
+  TH1F* lHDown = makeHist2(lNuisance1 + "Down", lH0, lA, lB, iFitModel, lFirst, lLast_shift1down, sfDown, &sfCentral);
+
+  //if ( lLast_shift1up < lLast_central || lLast_shift1down < lLast_central ) {
+  //  std::cout << "===============================================================================" << std::endl;
+  //  std::cout << "Estimation of systematic uncertainties failed for shift 1." << std::endl; 
+  //  std::cout << "Setting histograms for shift 1 up and shift 1 down to central value." << std::endl; 
+  //  std::cout << "===============================================================================" << std::endl;
+  //  lHUp = (TH1F*)lH->Clone(std::string(lNuisance1 + "Up").c_str());
+  //  lHDown = (TH1F*)lH->Clone(std::string(lNuisance1 + "Down").c_str());
+  //}
+
+  //SHIFT2UP HISTOGRAM   
+  lA.setVal(lACentral + lEigVals(1)*lEigVecs(0,1));
+  lB.setVal(lBCentral + lEigVals(1)*lEigVecs(1,1));
+  cout << "Values for shift 2 up hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
+  double mshift2up = iFirst - lA.getVal()/(0.001*lB.getVal());
+  double lLast_shift2up = lLast;
+  if ( iFitModel == 0 && mshift2up > lFirst && mshift2up < 2000. ) {
+    flag2up = true;
+    std::cout << "===============================================================================" << std::endl;
+    std::cout << "Infinite point found in shift 2 up histogram at mass of " << mshift2up << "." << std::endl;
+    std::cout << "Truncating the histogram before that point, setting all bins after to zero." << std::endl;
+    std::cout << "===============================================================================" << std::endl;
+    lLast_shift2up = lH0->GetBinLowEdge(lH0->FindBin(mshift2up));
+    lM.setRange(0, lLast_shift2up);
+  }
+  double sfUp1;
+  TH1F* lHUp1 = makeHist2(lNuisance2 + "Up", lH0, lA, lB, iFitModel, lFirst, lLast_shift2up, sfUp1, &sfCentral);
+
+  //SHIFT2DOWN HISTOGRAM  
+  lA.setVal(lACentral - lEigVals(1)*lEigVecs(0,1));
+  lB.setVal(lBCentral - lEigVals(1)*lEigVecs(1,1));
+  cout << "Values for shift 2 down hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
+  double mshift2down = iFirst - lA.getVal()/(0.001*lB.getVal());
+  double lLast_shift2down = lLast;
+  if ( iFitModel == 0 && mshift2down > lFirst && mshift2down < 2000. ) {
+    flag2down = true;
+    std::cout << "===============================================================================" << std::endl;
+    std::cout << "Infinite point found in shift 2 down histogram at mass of " << mshift2down << "." << std::endl; 
+    std::cout << "Truncating the histogram before that point, setting all bins after to zero." << std::endl;
+    std::cout << "===============================================================================" << std::endl;
+    lLast_shift2down = lH0->GetBinLowEdge(lH0->FindBin(mshift2down));
+    lM.setRange(0, lLast_shift2down);
+  }
+  double sfDown1;
+  TH1F* lHDown1 = makeHist2(lNuisance2 + "Down", lH0, lA, lB, iFitModel, lFirst, lLast_shift2down, sfDown1, &sfCentral);
+ 
+  //if ( lLast_shift2up < lLast_central || lLast_shift2down < lLast_central ) {
+  //  std::cout << "===============================================================================" << std::endl;
+  //  std::cout << "Estimation of systematic uncertainties failed for shift 2." << std::endl; 
+  //  std::cout << "Setting histograms for shift 1 up and shift 2 down to central value." << std::endl; 
+  //  std::cout << "===============================================================================" << std::endl;
+  //  lHUp1 = (TH1F*)lH->Clone(std::string(lNuisance2 + "Up").c_str());
+  //  lHDown1 = (TH1F*)lH->Clone(std::string(lNuisance2 + "Down").c_str());
+  //}
+  
+  double I1=lHUp->Integral(lHUp->FindBin(lFirst), lHUp->FindBin(2000));  
+  double I2=lHDown->Integral(lHDown->FindBin(lFirst), lHDown->FindBin(2000));  
+  double I3=lHUp1->Integral(lHUp1->FindBin(lFirst), lHUp1->FindBin(2000));  
+  double I4=lHDown1->Integral(lHDown1->FindBin(lFirst), lHDown1->FindBin(2000)); 
+  std::cout << "I1 = " << I1 << ", I2 = " << I2 << ", I3 = " << I3 << ", I4 = " << I4 << std::endl;
+
+
+  //If verbosity is set make plot showing the shift up/down/central functions prior to rebinning
+  if(iVerbose)
+  {
+    lH0->SetStats(0);
+    lH->SetStats(0);
+    lHUp->SetStats(0);
+    lHDown->SetStats(0);
+    lHUp1->SetStats(0);
+    lHDown1->SetStats(0);
+    lH0    ->SetLineWidth(1); lH0->SetMarkerStyle(kFullCircle);
+    lH     ->SetLineColor(kGreen+2);
+    lHUp   ->SetLineColor(kRed);
+    lHUp   ->SetLineStyle(9);
+    lHDown ->SetLineColor(kRed+2);
+    lHDown ->SetLineStyle(3);
+    lHDown ->SetLineWidth(2);
+    lHUp1  ->SetLineColor(kBlue);
+    lHUp1  ->SetLineStyle(9);
+    lHDown1->SetLineColor(kBlue+2);
+    lHDown1->SetLineStyle(3);
+    lHDown1->SetLineWidth(2);
+    lH0->SetTitle(0);
+    lH0->GetXaxis()->SetTitle("m_{#tau#tau} [GeV]");
+    lH0->GetXaxis()->SetTitleSize(0.05);
+    lH0->GetYaxis()->SetTitle("dN/dm_{#tau#tau} [1/GeV]");
+    lH0->GetYaxis()->SetTitleSize(0.05);
+    lH0->GetYaxis()->SetTitleOffset(1.2);
+    lH0->GetYaxis()->SetLabelSize(0.0275);
+
+    TCanvas *lC0Fine = new TCanvas("CanFine","CanFine",800,750);
+    lC0Fine->Divide(1,2); lC0Fine->cd();  lC0Fine->cd(1)->SetPad(0,0.2,1.0,1.0); gPad->SetLeftMargin(0.2) ; 
+    lH0    ->Scale(1.0,"width");
+    lH     ->Scale(1.0,"width");
+    lHUp   ->Scale(1.0,"width");
+    lHDown ->Scale(1.0,"width");
+    lHUp1  ->Scale(1.0,"width");
+    lHDown1->Scale(1.0,"width");
+    lH0->Draw();
+    lH     ->Draw("hist sames");
+    lHUp   ->Draw("hist sames");
+    lHDown ->Draw("hist sames");
+    lHUp1  ->Draw("hist sames");
+    lHDown1->Draw("hist sames");
+    gPad->SetLogy();
+  
+    TLegend* leg2;
+    /// setup the CMS Preliminary
+    leg2 = new TLegend(0.7, 0.64, 0.89, 0.88); 
+    leg2->SetBorderSize( 0 );
+    leg2->SetFillStyle ( 1001 );
+    leg2->SetFillColor (kWhite);
+    leg2->AddEntry( lH0 , "original",  "PL" );
+    leg2->AddEntry( lH , "central fit",  "L" );
+    leg2->AddEntry( lHUp , "shift1 up",  "L" );
+    leg2->AddEntry( lHDown , "shift1 down",  "L" );
+    leg2->AddEntry( lHUp1 , "shift2 up",  "L" );
+    leg2->AddEntry( lHDown1 , "shift2 down",  "L" );
+    leg2->Draw("same");
+  
+    lC0Fine->cd(2)->SetPad(0,0,1.0,0.2); gPad->SetLeftMargin(0.2) ;
+    drawDifference(lH0,lH,lHUp,lHDown,lHUp1,lHDown1);
+    lH0->SetStats(0);
+    lC0Fine->Update();
+    lC0Fine->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Finebin.png").c_str());
+    lC0Fine->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Finebin.pdf").c_str());
+
+  }
+  
+  //Check if the shift up/down histograms are integrable. If not terminate the script here.
+  if(addUncerts && (I1 != I1 || I2 != I2 || I3 != I3 || I4 != I4))
+  {
+      std::cerr << "===============================================================================" << std::endl;
+      std::cerr << "Tail fit has succeeded, but 1 or more of the shift up/down histograms is not integrable." << std::endl;
+      std::cerr << "Script will terminate here without altering datacard. Turn on --verbose option to see the problem histogram." << std::endl; 
+      std::cerr << "===============================================================================" << std::endl;
+      return 1;
+  }
+
+    
+  //Rebin the histograms   
+  const int lNBins = lData->GetNbinsX();
+  double *lAxis    = getAxis(lData);
+  lH0     = rebin(lH0    ,lNBins,lAxis);
+  lH      = rebin(lH     ,lNBins,lAxis);
+  lHUp    = rebin(lHUp   ,lNBins,lAxis);
+  lHDown  = rebin(lHDown ,lNBins,lAxis);
+  lHUp1   = rebin(lHUp1  ,lNBins,lAxis);
+  lHDown1 = rebin(lHDown1,lNBins,lAxis);
+ 
+  //Clone the fit result and original template for computing the chi2 and KS probability of the fit
+  TH1F *lHclone = (TH1F*) lH->Clone(); 
+  TH1F *lH0clone =(TH1F*) lH0->Clone(); 
+  for(unsigned i=1; i<lData->FindBin(lFirst); i++)
+  {
+       lHclone->SetBinContent(i, 0.0);
+       lH0clone->SetBinContent(i, 0.0);
+       lHclone->SetBinError(i, 0.0);
+       lH0clone->SetBinError(i, 0.0);
+  }
+  //Compute the KS probability
+ double kstest=lHclone->KolmogorovTest(lH0clone);
+ //For the chi2 probability, remove bins with no entry in the original template as this screws up the chi2 calculation
+  for(unsigned i=lData->FindBin(lFirst); i<=lData->FindBin(2000); i++)
+  {
+       if(lH0clone->GetBinContent(i)==0)
+       {
+            lHclone->SetBinContent(i, 0.0);
+            //lH0clone->SetBinContent(i, 0.0);
+            lHclone->SetBinError(i, 0.0);
+            lH0clone->SetBinError(i, 0.0);
+       }
+  }
+ double chi2test= lHclone->Chi2Test(lH0clone, "WW");
+
+ if(iVerbose)
+ {
+    std::cout << "==========================================================================================================" << std::endl;
+    std::cout << "Result of chi2 probability test: " <<  chi2test << ", KS probability test: " << kstest << std::endl;
+    std::cout << "==========================================================================================================" << std::endl;
+ }
+  
+  // we dont need this bin errors since we do not use them (fit tails replaces bin-by-bin error!), therefore i set all errors to 0, this also saves us from modifying the add_bbb_error.py script in which I otherwise would have to include a option for adding bbb only in specific ranges
+  int lMergeBin = lH->GetXaxis()->FindBin(iFirst);
+  for(int i0 = lMergeBin; i0 < lH->GetNbinsX()+1; i0++){
+    lH->SetBinError  (i0,0);
+    lHUp->SetBinError  (i0,0);
+    lHDown->SetBinError  (i0,0);
+    lHUp1->SetBinError  (i0,0);
+    lHDown1->SetBinError  (i0,0);
+  }
+    
+  //Save the rebinned templates to the datacard root file
+
+  TFile *lOutFile =new TFile("Output.root","RECREATE");
+  cloneFile(lOutFile,lFile,iDir+"/"+iBkg);
+  lOutFile->cd(iDir.c_str());
+  lH->Write();
+  if(addUncerts){
+    lHUp   ->Write(); 
+    lHDown ->Write(); 
+    lHUp1  ->Write(); 
+    lHDown1->Write(); 
+  }
+
+  // Make the plot showing shift up/down/central templates, rebinned as in datacard
+
+  lH0->SetStats(0);
+  lH->SetStats(0);
+  lHUp->SetStats(0);
+  lHDown->SetStats(0);
+  lHUp1->SetStats(0);
+  lHDown1->SetStats(0);
+  lH0    ->SetLineWidth(1); lH0->SetMarkerStyle(kFullCircle);
+  lH     ->SetLineColor(kGreen+2);
+  lHUp   ->SetLineColor(kRed);
+  lHUp   ->SetLineStyle(9);
+  lHDown ->SetLineColor(kRed+2);
+  lHDown ->SetLineStyle(3);
+  lHDown ->SetLineWidth(2);
+  lHUp1  ->SetLineColor(kBlue);
+  lHUp1  ->SetLineStyle(9);
+  lHDown1->SetLineColor(kBlue+2);
+  lHDown1->SetLineStyle(3);
+  lHDown1->SetLineWidth(2);
+  lH0->SetTitle(0);
+  lH0->GetXaxis()->SetTitle("m_{#tau#tau} [GeV]");
+  lH0->GetXaxis()->SetTitleSize(0.05);
+  lH0->GetYaxis()->SetTitle("dN/dm_{#tau#tau} [1/GeV]");
+  lH0->GetYaxis()->SetTitleSize(0.05);
+  lH0->GetYaxis()->SetTitleOffset(1.2);
+  lH0->GetYaxis()->SetLabelSize(0.0275);
+
+  TCanvas *lC0 = new TCanvas("Can","Can",800,750);
+  lC0->Divide(1,2); lC0->cd();  lC0->cd(1)->SetPad(0,0.2,1.0,1.0); gPad->SetLeftMargin(0.2) ; 
+  lH0    ->Scale(1.0,"width");
+  lH     ->Scale(1.0,"width");
+  lHUp   ->Scale(1.0,"width");
+  lHDown ->Scale(1.0,"width");
+  lHUp1  ->Scale(1.0,"width");
+  lHDown1->Scale(1.0,"width");
+  lH0->Draw();
+  lH     ->Draw("hist sames");
+  lHUp   ->Draw("hist sames");
+  lHDown ->Draw("hist sames");
+  lHUp1  ->Draw("hist sames");
+  lHDown1->Draw("hist sames");
+  gPad->SetLogy();
+  
+  TLegend* leg1;
+  /// setup the CMS Preliminary
+  leg1 = new TLegend(0.7, 0.64, 0.89, 0.88); 
+  leg1->SetBorderSize( 0 );
+  leg1->SetFillStyle ( 1001 );
+  leg1->SetFillColor (kWhite);
+  leg1->AddEntry( lH0 , "original",  "PL" );
+  leg1->AddEntry( lH , "central fit",  "L" );
+  leg1->AddEntry( lHUp , "shift1 up",  "L" );
+  leg1->AddEntry( lHDown , "shift1 down",  "L" );
+  leg1->AddEntry( lHUp1 , "shift2 up",  "L" );
+  leg1->AddEntry( lHDown1 , "shift2 down",  "L" );
+  leg1->Draw("same");
+  
+  TPaveText* stat1 = new TPaveText(0.20, 0.90, 0.50, 0.99, "NDC");
+  stat1->SetBorderSize(   0 );
+  stat1->SetFillStyle(    0 );
+  stat1->SetTextAlign(   12 );
+  stat1->SetTextSize ( 0.05 );
+  stat1->SetTextColor(    1 );
+  stat1->SetTextFont (   62 );
+  stat1->AddText(TString::Format("P(#chi^{2})=%.5f, P(KS)=%.5f", chi2test, kstest));
+  stat1->Draw();
+  
+  lC0->cd(2)->SetPad(0,0,1.0,0.2); gPad->SetLeftMargin(0.2) ;
+  drawDifference(lH0,lH,lHUp,lHDown,lHUp1,lHDown1);
+  lH0->SetStats(0);
+  lC0->Update();
+  lC0->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Rebin.png").c_str());
+  lC0->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Rebin.pdf").c_str());
+
+  //Make additional output plots of shift up and down histos if verbosity is set  
+
+  if(iVerbose)
+  {
+ 
+    TCanvas *lC1 = new TCanvas("Can1","Can1",800,600);
+    lHUp->Draw();
+    //gPad->SetLogy();
+    lC1->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift1Up.png").c_str());
+    lC1->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift1Up.pdf").c_str());
+      
+    TCanvas *lC2 = new TCanvas("Can2","Can2",800,600);
+    lHDown->Draw();
+    // gPad->SetLogy();
+    lC2->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift1Down.png").c_str());
+    lC2->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift1Down.pdf").c_str());
+      
+    TCanvas *lC3 = new TCanvas("Can3","Can3",800,600);
+    lHUp1->Draw();
+    // gPad->SetLogy();
+    lC3->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift2Up.png").c_str());
+    lC3->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift2Up.pdf").c_str());
+      
+    TCanvas *lC4 = new TCanvas("Can4","Can4",800,600);
+    lHDown1->Draw();
+    // gPad->SetLogy();
+    lC4->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift2Down.png").c_str());
+    lC4->SaveAs((iBkg+"_"+"CMS_"+iName+"1_" + iDir + "_" + iEnergy+"_Shift2Down.pdf").c_str());
+ }
+  
+
+  lA.setVal(lACentral);  
+  lB.setVal(lBCentral);  
+
+  lM.setRange(lFirst,2000); 
+  TCanvas* c1 = new TCanvas("c1","c1",800,750);
   RooPlot* mframe = lM.frame(RooFit::Name("mframe"),RooFit::Title("Tail fit in fit range"));
   pH0->plotOn(mframe, RooFit::Name("data"), RooFit::MarkerColor(kBlack));
   lFit->plotOn(mframe, RooFit::Name("model"), RooFit::DrawOption("L"), RooFit::Range(lFirst,2000));
@@ -814,13 +1370,18 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
 
 int addFitNuisance(std::string iFileName="test.root",std::string iChannel="muTau",std::string iBkg="W",std::string iEnergy="8TeV",std::string iName="shift",std::string iCategory="9",double iFirst=150,double iLast=1500,int iFitModel=1,bool iVerbose=true,bool iVarBin=false,bool addUncerts=true,bool iTestMode=false) { 
   // Also possible old MSSM categorization (for testing)
-  if(iCategory=="0") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet_low"  ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
-  if(iCategory=="1") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet_high" ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
-  if(iCategory=="2") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_boost_low" ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
-  if(iCategory=="3") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_boost_high",iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
-  if(iCategory=="6") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_low"  ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
-  if(iCategory=="7") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_high" ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
-  if(iCategory=="8") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtag"    ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
-  if(iCategory=="9") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag"      ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory== "0") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet_low"        ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory== "1") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet_high"       ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory== "2") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_boost_low"       ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory== "3") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_boost_high"      ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory== "6") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_low"        ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory== "7") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_high"       ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory== "8") return addNuisance2         (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtag"          ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory== "9") return addNuisance2         (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag"            ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory=="10") return addNuisance2         (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtag_lowtau"   ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory=="11") return addNuisance2         (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtag_mediumtau",iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory=="12") return addNuisance2         (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtag_hightau"  ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory=="13") return addNuisance2         (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_lowtau"     ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory=="14") return addNuisance2         (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_hightau"    ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
   return 0;
 }
