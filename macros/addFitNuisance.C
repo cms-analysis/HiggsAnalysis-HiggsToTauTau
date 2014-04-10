@@ -1378,10 +1378,10 @@ int addFitNuisance(std::string iFileName="test.root",std::string iChannel="muTau
   if(iCategory== "7") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_high"       ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
   if(iCategory== "8") return addNuisance2         (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtag"          ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
   if(iCategory== "9") return addNuisance2         (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag"            ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
-  if(iCategory=="10") return addNuisance2         (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtag_lowtau"   ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
-  if(iCategory=="11") return addNuisance2         (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtag_mediumtau",iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
-  if(iCategory=="12") return addNuisance2         (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtag_hightau"  ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
-  if(iCategory=="13") return addNuisance2         (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_lowtau"     ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
-  if(iCategory=="14") return addNuisance2         (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_hightau"    ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory=="10") return addNuisance2         (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtaglow"   ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory=="11") return addNuisance2         (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtagmedium",iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory=="12") return addNuisance2         (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtaghigh"  ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory=="13") return addNuisance2         (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btaglow"     ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if(iCategory=="14") return addNuisance2         (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btaghigh"    ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
   return 0;
 }
