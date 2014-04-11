@@ -84,10 +84,6 @@ from HiggsAnalysis.HiggsToTauTau.summer13_analyses_cfg import htt_mm, htt_em, ht
 for chn in config.channels :
     directories[chn] = locals()['htt_'+chn](config.inputs[chn])
 
-## define tau Pt bins
-tauPtBins_nobtag = [ "lowtau", "mediumtau", "hightau" ]
-tauPtBins_btag = [ "lowtau", "hightau" ]
-
 ## postfix pattern for input files
 patterns = {
     'plain'        : {'em': '', 'et' : '', 'mt' : '', 'tt' : '', 'mm' : ''},
