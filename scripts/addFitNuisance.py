@@ -43,11 +43,11 @@ channelName = {
 categoryName = {
     "8"  : "nobtag",
     "9"  : "btag",
-    "10" : "nobtaglow",
-    "11" : "nobtagmedium",
-    "12" : "nobtaghigh",
-    "13" : "btaglow",
-    "14" : "btaghigh"
+    "10" : "nobtag_low",
+    "11" : "nobtag_medium",
+    "12" : "nobtag_high",
+    "13" : "btag_low",
+    "14" : "btag_high"
 }
 
 
@@ -80,7 +80,7 @@ for cat in options.categories.split() :
         continue
 ## add Nuisance to the vals
     if not options.no_uncerts : 
-        datacard=options.setup+'/'+options.channel+'/unc-mssm-'+options.energy+'-0'+cat+'.vals'
+        datacard=options.setup+'/'+options.channel+'/unc-mssm-'+options.energy+('-%02i'% int(cat))+'.vals'
         print "datacard: ",datacard
         old = open(datacard, 'r')
         new = open("%s-tmp.txt" % datacard[0:datacard.rfind('.txt')], 'w')
@@ -106,7 +106,7 @@ for cat in options.categories.split() :
         os.system("mv %s-tmp.txt %s" % (datacard[0:datacard.rfind('.txt')], datacard))           
 
 ## add Nuisance to the conf
-        datacard=options.setup+'/'+options.channel+'/unc-mssm-'+options.energy+'-0'+cat+'.conf'
+        datacard=options.setup+'/'+options.channel+'/unc-mssm-'+options.energy+('-%02i'% int(cat))+'.conf'
         print "datacard: ",datacard
         old = open(datacard, 'r')
         new = open("%s-tmp.txt" % datacard[0:datacard.rfind('.txt')], 'w')
