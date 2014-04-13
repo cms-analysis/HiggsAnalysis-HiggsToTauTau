@@ -57,9 +57,9 @@ if __name__ == "__main__":
 
     def get_unc_conf_val(channel, category):
         if channel == 'vhtt':
-            return ('vhtt/unc-sm-8TeV-0%i.conf' % category, 'vhtt/unc-sm-8TeV-0%i.vals' % category)
-        return (os.path.join(channel, 'unc-sm-8TeV-0%i.conf' % category),
-                os.path.join(channel, 'unc-sm-8TeV-0%i.vals' % category))
+            return ('vhtt/unc-sm-8TeV-%02i.conf' % category, 'vhtt/unc-sm-8TeV-%02i.vals' % category)
+        return (os.path.join(channel, 'unc-sm-8TeV-%02i.conf' % category),
+                os.path.join(channel, 'unc-sm-8TeV-%02i.vals' % category))
 
     # Scale each channel up
     for channel in args.channels:

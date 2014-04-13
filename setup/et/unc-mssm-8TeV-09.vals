@@ -32,7 +32,7 @@ eleTau_btag         	QCD	          		CMS_htt_QCDShape_etau_btag_8TeV		1.00
 eleTau_btag         	ZL	          		CMS_htt_ZLeptonFakeTau_etau_8TeV	1.20
 eleTau_btag         	ZJ	          		CMS_htt_ZJetFakeTau_etau_btag_8TeV	1.20
 eleTau_btag		ZL				CMS_htt_ZLScale_etau_8TeV		1.00
-eleTau_btag		W				CMS_htt_WShape_etau_btag_8TeV		1.00
+eleTau_btag		W				CMS_htt_WShape_8TeV			1.00
 #[tail]eleTau_btag	W				tailShape				1.00
 eleTau_btag      	ggH_SM125               	pdf_gg                                  1.097
 eleTau_btag      	qqH_SM125               	pdf_qqbar                               1.036

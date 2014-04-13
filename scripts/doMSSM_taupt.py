@@ -131,8 +131,10 @@ print "# -----------------------------------------------------------------------
 ## setup main directory
 setup = "{CMSSW_BASE}/src/.setup{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
 
+import time
 def runCommand(command):
     print "Executing '%s'" % command
+    print " It is now: %s" % time.strftime("%c")
     os.system(command)
 
 if options.reload :
