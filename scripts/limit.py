@@ -214,6 +214,8 @@ ogroup.add_option("--collectToys", dest="collectToys", default=False, action="st
                   help="Collect toys and calculate hypothesis test limits using lxb (lxq). To run with this options the toys have to be produced beforehand. [Default: False]")
 ogroup.add_option("--smartScan", dest="smartScan", default=False, action="store_true",
                   help="Run toy production only for the tanb points which are near the exclusion limit. ATTENTION: Before using this option you should have already produced a reasonable number of toys and plotted the results once. [Default: False]")
+ogroup.add_option("--customTanb", dest="customTanb", default="", type="string",
+                  help="Run toy production only for specific tanb points. These tanb points should already be present in the tanb grid. Points should be in form e.g. '40,45,50'")
 parser.add_option_group(ogroup)
 
 ## check number of arguments; in case print usage
@@ -1161,10 +1163,21 @@ for directory in args :
             tasks = []
             seedNR=random.randint(100000, 999999)
             tanb_list = []
+            custom_tanb = []
             for wsp in directoryList :
-                if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) :
-                    tanb_list.append(wsp[wsp.rfind("_")+1:].rstrip(".root"))
-                    tanb_list.sort(key=float)
+                if options.customTanb=="" :
+                    if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) :
+                        tanb_list.append(wsp[wsp.rfind("_")+1:].rstrip(".root"))
+                        tanb_list.sort(key=float)
+                else :
+                    custom_tanb = [float(k) for k in options.customTanb.split(',')]
+                    if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) :
+                        if float(wsp[wsp.rfind("_")+1:].rstrip(".root")) in custom_tanb :
+                            tanb_list.append(wsp[wsp.rfind("_")+1:].rstrip(".root"))
+                            tanb_list.sort(key=float)
+            print "Running toys for tanb points: ", tanb_list
+            if not options.customTanb=="" and not len(custom_tanb)  == len(tanb_list):
+                print "Warning: one or more of supplied custom tanb points not in grid"
             tanb_low_idx = -999
             tanb_low = 0.0
             tanb_high_idx = -999
@@ -1203,6 +1216,10 @@ for directory in args :
                     if options.smartScan :
                         if float(tanb_string.rstrip(".root"))<float(tanb_low) or float(tanb_string.rstrip(".root"))>float(tanb_high) :
                             print "skip point"
+                            continue
+                    if not options.customTanb=="":
+                        if not tanb_string.rstrip(".root") in tanb_list :
+                            print "skipping point not in custom list: " , float(tanb_string.rstrip(".root"))
                             continue
                     if not options.refit :
                         tasks.append(
