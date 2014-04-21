@@ -695,7 +695,7 @@ if options.optTanb or options.optTanbPlus :
         if not cmd == "" :
             grid= []
             sub = "--interactive" if options.optTanbPlus else "--toysH 100 -t 200 -j 100 --random --server --priority"
-            grid = tanb_grid(args, cmd, sub, options.opt, options.smartGrid)
+            grid = tanb_grid(args, cmd, sub, options.opt, options.smartGrid, options.customTanb)
             for point in grid :
                 if options.printOnly :
                     print point
