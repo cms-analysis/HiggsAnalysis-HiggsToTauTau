@@ -24,5 +24,5 @@ for mass in ['90', '100', '120', '130', '140', '160', '180', '200', '250', '300'
     for file in directoryList :
         if re.match(r"point_\d+?_\d+(.\d\d)?.root$", file) : 
             #tanb_string = file[file.rfind("_")+1:]
-            print "cp {DIR}/{MASS}/{FILE} {OUTPUT}/{MASS}/{FILE}_{NAME}".format(DIR=args[0], FILE=file, MASS=mass, OUTPUT=options.output, NAME=options.name)   
-            os.system("cp {DIR}/{MASS}/{FILE} {OUTPUT}/{MASS}/{FILE}_{NAME}".format(DIR=args[0], FILE=file, MASS=mass, OUTPUT=options.output, NAME=options.name))
+            print "cp {DIR}/{MASS}/{FILE} {OUTPUT}/{MASS}/{FILECORR}_{NAME}".format(DIR=args[0], FILE=file, FILECORR=file.replace(mass+"_",""), MASS=mass, OUTPUT=options.output, NAME=options.name)   
+            os.system("cp {DIR}/{MASS}/{FILE} {OUTPUT}/{MASS}/{FILECORR}_{NAME}".format(DIR=args[0], FILE=file, FILECORR=file.replace(mass+"_",""), MASS=mass, OUTPUT=options.output, NAME=options.name))
