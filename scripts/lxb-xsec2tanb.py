@@ -113,7 +113,7 @@ def submit(name, key, masses) :
                     MODEL = options.modelname,
                     MSSMvsSM = "--MSSMvsSM" if options.MSSMvsSM else "",
                     SMARTGRID= "--smartGrid" if options.smartGrid else "",
-                    customTanb = "--customTanb " + options.customTanb
+                    customTanb = ("--customTanb " + options.customTanb) if not options.customTanb == "" else "" 
                     ))
             os.system('chmod a+x %s' % script_file_name)
             if options.condor :
