@@ -946,7 +946,7 @@ void refitShift(const std::string& fitFunction_formula, double par0, double dpar
   RooConstVar constraint_mean("constraint_mean", "constraint_mean", 0.);
   RooConstVar constraint_width("constraint_width", "constraint_width", 3.);
   RooGaussian constraint_gaussian("constraint_gaussian", "constraint_gaussian", alpha, constraint_mean, constraint_width);
-  RooFitResult* tempFitResult = tempFitFunction->fitTo(fitData, RooFit::Save(kTRUE), RooFit::SumW2Error(true), RooFit::Strategy(0), RooFit::ExternalConstraints(constraint_gaussian));
+  RooFitResult* tempFitResult = tempFitFunction->fitTo(fitData, RooFit::Save(true), RooFit::SumW2Error(true), RooFit::Strategy(0), RooFit::Minos(true), RooFit::ExternalConstraints(constraint_gaussian));
   std::cout << "alpha = " << alpha.getVal() << std::endl;
   par0_refitted = par0 + alpha.getVal()*dpar0;
   par1_refitted = par1 + alpha.getVal()*dpar1;
@@ -990,7 +990,9 @@ void scaleHistogramToMaxChi2Difference(const TH1* histogram, const TH1* template
   zeroBinsForChi2("", histogram_cloned, "", template_shift_cloned, xMin_fit, xMax_fit, true);
   double pChi2_shift = histogram_cloned->Chi2Test(template_shift_cloned, "WW");
   std::cout << "sf_difference_shift = " << sf_difference_shift << ": pChi2_central = " << pChi2_central << ", pChi2_shift = " << pChi2_shift << std::endl;
-  while ( pChi2_shift < (maxChi2_relative*pChi2_central) ) {
+  int numIterations = 0;
+  const int maxIterations = 100;
+  while ( pChi2_shift < (maxChi2_relative*pChi2_central) && numIterations < maxIterations ) {
     sf_difference_shift *= 0.9;    
     for ( int iBin = histogram_cloned->FindBin(xMin_fit); iBin <= histogram_cloned->GetNbinsX(); ++iBin ) {
       double binContent_central = template_central->GetBinContent(iBin);
@@ -1000,6 +1002,7 @@ void scaleHistogramToMaxChi2Difference(const TH1* histogram, const TH1* template
     zeroBinsForChi2("", histogram_cloned, "", template_shift_cloned, xMin_fit, xMax_fit, true);
     pChi2_shift = histogram_cloned->Chi2Test(template_shift_cloned, "WW");
     std::cout << "sf_difference_shift = " << sf_difference_shift << ": pChi2_central = " << pChi2_central << ", pChi2_shift = " << pChi2_shift << std::endl;
+    ++numIterations;
   }
   if ( sf_difference_shift != 1. ) {
      for ( int iBin = histogram_cloned->FindBin(xMin_fit + epsilon); iBin <= histogram_cloned->GetNbinsX(); ++iBin ) {
@@ -1024,11 +1027,11 @@ int addNuisance2(const std::string& inputFileName,
     return 1;
   }
 
-  if ( !verbosity ) {
-    RooMsgService::instance().setStreamStatus(0,false);
-    RooMsgService::instance().setStreamStatus(1,false);
-    RooMsgService::instance().setSilentMode(true);
-  }
+  //if ( !verbosity ) {
+  //  RooMsgService::instance().setStreamStatus(0, false);
+  //  RooMsgService::instance().setStreamStatus(1, false);
+  //  RooMsgService::instance().setSilentMode(true);
+  //}
 
   // Load histogram that is to be fitted
   TFile* inputFile = new TFile(inputFileName.c_str());
@@ -1141,7 +1144,7 @@ int addNuisance2(const std::string& inputFileName,
   RooRealVar par0("par0", "par0", 1.e+2, 0., 1.e+3);
   RooRealVar par1("par1", "par1", 1., -1.e+4, 1.e+4);
   RooGenericPdf* fitFunction = new RooGenericPdf("genPdf", fitFunction_formula.data(), RooArgList(x, par0, par1));
-  RooFitResult* fitResult = fitFunction->fitTo(fitData, RooFit::Save(kTRUE), RooFit::SumW2Error(true), RooFit::Strategy(0)); 
+  RooFitResult* fitResult = fitFunction->fitTo(fitData, RooFit::Save(true), RooFit::SumW2Error(true), RooFit::Strategy(0), RooFit::Minos(true)); 
   std::cout << "fit has finished:" << std::endl;
   std::cout << " status = " << fitResult->status() << ", qual(cov) " <<  fitResult->covQual() << ":" << std::endl;
   std::cout << " par0 = " << par0.getVal() << ", par1 = " << par1.getVal() << std::endl;
@@ -1151,9 +1154,9 @@ int addNuisance2(const std::string& inputFileName,
     std::cout << " correlation:" << std::endl; 
     fitResult->correlationMatrix().Print();
   //}
-
-  //if( !(fitResult->status() == 0 && fitResult->covQual() >= 2) ) {
-    if( !(fitResult->status() == 0) ) { 
+  
+  //if ( !(fitResult->status() == 0 && fitResult->covQual() >= 2) ) {
+  if ( !(fitResult->status() == 0) ) {
     std::cerr << "=================================================================================" << std::endl;
     std::cerr << "Tail fit has not succeeded. Datacard and uncertainty files will *not* be altered." << std::endl;
     std::cerr << "=================================================================================" << std::endl;
