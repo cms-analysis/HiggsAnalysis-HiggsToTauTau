@@ -155,7 +155,7 @@ def main() :
     
     ## determine MODEL for given datacard.
     model = MODEL(float(options.parameter1), float(options.tanb), options.modelname)
-    match = re.compile('(?P<CHN>\w*)_\w*_[0-9]?_(?P<PER>[0-9]*\w*)')
+    match = re.compile('(?P<CHN>[a-zA-Z0-9]+)_[a-zA-Z0-9]+_[0-9]+_(?P<PER>[a-zA-Z0-9]+)')
     for bin in card.list_of_bins() :
         ## a bin can be made up of different decay channels or different run periods. Pick decay channel (chn) and run period
         ## (per) either from bin or from from datacards name in case it is not accessible from bin.
