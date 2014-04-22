@@ -165,6 +165,8 @@ jgroup.add_option("--smartScan", dest="smartScan", default=False, action="store_
                   help="Run toy production only for the tanb points which are near the exclusion limit. ATTENTION: Before using this option you should have already produced a reasonable number of toys and plotted the results once. [Default: False]")
 jgroup.add_option("--smartGrid", dest="smartGrid", default=False, action="store_true",
                   help="Produce grid points depending on the exclusion limits. This option is only valid for hypothesis tests. Note that all grid points will be deleted before producing the new clever grid. [Default: False]")
+jgroup.add_option("--customTanb", dest="customTanb", default="", type="string",
+                  help="Run toy production only for specific tanb points. These tanb points should already be present in the tanb grid. Points should be in form e.g. '40,45,50'")
 parser.add_option_group(jgroup)
 
 ## check number of arguments; in case print usage
@@ -693,7 +695,7 @@ if options.optTanb or options.optTanbPlus :
         if not cmd == "" :
             grid= []
             sub = "--interactive" if options.optTanbPlus else "--toysH 100 -t 200 -j 100 --random --server --priority"
-            grid = tanb_grid(args, cmd, sub, options.opt, options.smartGrid)
+            grid = tanb_grid(args, cmd, sub, options.opt, options.smartGrid, options.customTanb)
             for point in grid :
                 if options.printOnly :
                     print point
@@ -734,11 +736,11 @@ if options.optHypothesisTest :
                     if mass == 'common' :
                         continue
                     if options.printOnly :
-                        print "limit.py --HypothesisTest --cycle={cycle} --toys {toys} {smartscan} {OPTS} {DIR}".format(
-                            OPTS=options.opt, DIR=dir, cycle=cycle, toys=options.toys, smartscan="--smartScan" if options.smartScan else "")
+                        print "limit.py --HypothesisTest --cycle={cycle} --toys {toys} {smartscan} --customTanb {customTanb} {OPTS} {DIR}".format(
+                            OPTS=options.opt, DIR=dir, cycle=cycle, toys=options.toys, smartscan="--smartScan" if options.smartScan else "", customTanb=options.customTanb )
                     else :
-                        os.system("limit.py --HypothesisTest --cycle={cycle} --toys {toys} {smartscan} {OPTS} {DIR}".format(
-                            OPTS=options.opt, DIR=dir, cycle=cycle, toys=options.toys, smartscan="--smartScan" if options.smartScan else ""))
+                        os.system("limit.py --HypothesisTest --cycle={cycle} --toys {toys} {smartscan} --customTanb {customTanb} {OPTS} {DIR}".format(
+                            OPTS=options.opt, DIR=dir, cycle=cycle, toys=options.toys, smartscan="--smartScan" if options.smartScan else "", customTanb=options.customTanb ))
                 cycle = cycle-1
         else :
             cycle_begin, cycle_end = options.cycles.split("-")
@@ -752,8 +754,8 @@ if options.optHypothesisTest :
                         dirs.append(dir)
                 ## directories and masses per directory
                 struct = directories(args)
-                lxb_submit(struct[0], struct[1], "--HypothesisTest --cycle={cycle} --toys {toys} {smartscan}".format(
-                    cycle=cycle, toys=options.toys, smartscan="--smartScan" if options.smartScan else ""), options.opt, cycle)
+                lxb_submit(struct[0], struct[1], "--HypothesisTest --cycle={cycle} --toys {toys} {smartscan} --customTanb {customTanb}".format(
+                    cycle=cycle, toys=options.toys, smartscan="--smartScan" if options.smartScan else "", customTanb=options.customTanb), options.opt, cycle)
                 cycle = cycle-1       
     ## collect Toys and calculate CLs limit
     else:

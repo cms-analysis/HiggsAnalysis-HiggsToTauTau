@@ -3,7 +3,7 @@ from HiggsAnalysis.HiggsToTauTau.utils import vec2str
 
 import os
 
-def tanb_grid(args, cmd, sub, opt, smartGrid=False) :
+def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
 
     if "lowmH" in opt :  #smartGrid can't be used for lowmH since some parameter regions are corrupted and shall not be touched
         smartGrid=False
@@ -13,7 +13,24 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False) :
     grid = []
     full_grid_mA = []
     mass=(args[0].split("/"))[-1]
-    if smartGrid :
+    
+    if not customTanb == "" :
+        custom_tanb = [float(k) for k in customTanb.split(',')]
+        idx=0
+        while idx < len(custom_tanb) :
+            dirs = vec2str(subvec(args,  90,  1000))
+            if idx < len(custom_tanb)-1 :
+                grid_save = [
+                    "{CMD} -n 2 --min {START} --max {END} {SUB} {OPTS} {USER} {DIRS}".format(START=custom_tanb[idx], END=custom_tanb[idx+1], CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ]
+            else :
+                grid_save = [
+                    "{CMD} -n 1 --min {START} --max {END} {SUB} {OPTS} {USER} {DIRS}".format(START=custom_tanb[idx], END=custom_tanb[idx], CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ]
+            grid = grid+grid_save
+            idx=idx+2
+    
+    elif smartGrid :
         os.system("rm "+str(args[0])+"/fixedMu_*.root")
         #os.system("rm "+str(args[0])+"/batch_*.root")
         exclusion = open(str(args[0])+"/exclusion_{MASS}.out".format(MASS=mass), 'r')
