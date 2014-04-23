@@ -1,28 +1,31 @@
 #include <iostream>
-#include "TROOT.h"
-#include "TFile.h"
-#include "TKey.h"
-#include "TF1.h"
-#include "TFitResult.h"
-#include "TFitResultPtr.h"
-#include "TH1F.h"
-#include "TMath.h"
-#include "TPaveText.h"
-#include "TCanvas.h"
-#include "TLegend.h"
-#include "RooBinning.h"                                                                                                                                                               
-#include "RooPlot.h"                                                                                                                                                               
-#include "RooRealVar.h"   
-#include "RooConstVar.h"  
-#include "RooDataHist.h"   
-#include "RooDataSet.h"    
-#include "RooHistPdf.h"     
-#include "RooGenericPdf.h"
-#include "RooGaussian.h"
-#include "RooFitResult.h"
-#include "TMatrixDSym.h"
-#include "TMatrixDSymEigen.h"
-#include "TGraphAsymmErrors.h"
+#include <TROOT.h>
+#include <TFile.h>
+#include <TKey.h>
+#include <TF1.h>
+#include <TFitResult.h>
+#include <TFitResultPtr.h>
+#include <TH1F.h>
+#include <TMath.h>
+#include <TPaveText.h>
+#include <TCanvas.h>
+#include <TLegend.h>
+#include <RooBinning.h>                                                                                                                                                               
+#include <RooPlot.h>                                                                                                                                                               
+#include <RooRealVar.h>   
+#include <RooConstVar.h>  
+#include <RooDataHist.h>   
+#include <RooDataSet.h>    
+#include <RooHistPdf.h>     
+#include <RooGenericPdf.h>
+#include <RooGaussian.h>
+#include <RooFitResult.h>
+#include <RooCmdArg.h>
+#include <TMatrixDSym.h>
+#include <TMatrixDSymEigen.h>
+#include <TGraphAsymmErrors.h>
+
+using namespace RooFit;
 
 //Clone the file excluding the histogram (code stolen from Rene Brun)
 void copyDir(TDirectory *source,std::string iSkipHist,bool iFirst=true) { 
@@ -406,8 +409,8 @@ int addNuisance(const std::string& iFileName,
   RooFitResult  *lRFit = 0;
   double lFirst = iFirst;
   double lLast  = iLast;
-  //lRFit = lFit->chi2FitTo(*pH0,RooFit::Save(kTRUE),RooFit::Range(lFirst,lLast));
-  lRFit = lFit->fitTo(*pH0,RooFit::Save(kTRUE),RooFit::Range(lFirst,lLast),RooFit::Strategy(0)); 
+  //lRFit = lFit->chi2FitTo(*pH0,Save(kTRUE),Range(lFirst,lLast));
+  lRFit = lFit->fitTo(*pH0,Save(kTRUE),Range(lFirst,lLast),Strategy(0)); 
   
   //std::cout << lRFit->status() << " " <<  lRFit->covQual() << std::endl;
   if(!(lRFit->status()==0 && lRFit->covQual()==3))
@@ -946,7 +949,7 @@ void refitShift(const std::string& fitFunction_formula, double par0, double dpar
   RooConstVar constraint_mean("constraint_mean", "constraint_mean", 0.);
   RooConstVar constraint_width("constraint_width", "constraint_width", 3.);
   RooGaussian constraint_gaussian("constraint_gaussian", "constraint_gaussian", alpha, constraint_mean, constraint_width);
-  RooFitResult* tempFitResult = tempFitFunction->fitTo(fitData, RooFit::Save(true), RooFit::SumW2Error(true), RooFit::Strategy(0), RooFit::Minos(true), RooFit::ExternalConstraints(constraint_gaussian));
+  RooFitResult* tempFitResult = tempFitFunction->fitTo(fitData, Save(kTRUE), SumW2Error(kTRUE), Strategy(0), ExternalConstraints(constraint_gaussian));
   std::cout << "alpha = " << alpha.getVal() << std::endl;
   par0_refitted = par0 + alpha.getVal()*dpar0;
   par1_refitted = par1 + alpha.getVal()*dpar1;
@@ -1027,11 +1030,11 @@ int addNuisance2(const std::string& inputFileName,
     return 1;
   }
 
-  //if ( !verbosity ) {
-  //  RooMsgService::instance().setStreamStatus(0, false);
-  //  RooMsgService::instance().setStreamStatus(1, false);
-  //  RooMsgService::instance().setSilentMode(true);
-  //}
+  if ( !verbosity ) {
+    RooMsgService::instance().setStreamStatus(0, false);
+    RooMsgService::instance().setStreamStatus(1, false);
+    RooMsgService::instance().setSilentMode(true);
+  }
 
   // Load histogram that is to be fitted
   TFile* inputFile = new TFile(inputFileName.c_str());
@@ -1144,7 +1147,7 @@ int addNuisance2(const std::string& inputFileName,
   RooRealVar par0("par0", "par0", 1.e+2, 0., 1.e+3);
   RooRealVar par1("par1", "par1", 1., -1.e+4, 1.e+4);
   RooGenericPdf* fitFunction = new RooGenericPdf("genPdf", fitFunction_formula.data(), RooArgList(x, par0, par1));
-  RooFitResult* fitResult = fitFunction->fitTo(fitData, RooFit::Save(true), RooFit::SumW2Error(true), RooFit::Strategy(0), RooFit::Minos(true)); 
+  RooFitResult* fitResult = fitFunction->fitTo(fitData, Save(kTRUE), SumW2Error(kTRUE), Strategy(0)); 
   std::cout << "fit has finished:" << std::endl;
   std::cout << " status = " << fitResult->status() << ", qual(cov) " <<  fitResult->covQual() << ":" << std::endl;
   std::cout << " par0 = " << par0.getVal() << ", par1 = " << par1.getVal() << std::endl;

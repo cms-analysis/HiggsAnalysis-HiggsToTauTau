@@ -43,4 +43,4 @@ eleTau_btag_high      		qqH_SM125               	QCDscale_qqH                   
 eleTau_btag_high      		VH_SM125                	QCDscale_VH                             	1.04
 eleTau_btag_high      		qqH_SM125,VH_SM125      	UEPS                                    	1.007
 eleTau_btag_high      		ggH_SM125               	UEPS                                    	0.946
-eleTau_btag_high		signal                       	CMS_htt_higgsPtReweight_8TeV			1.00
+eleTau_btag_high		ggH                       	CMS_htt_higgsPtReweight_8TeV			1.00
