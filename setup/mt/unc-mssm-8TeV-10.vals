@@ -34,5 +34,5 @@ muTau_nobtag_low                    	qqH_SM125                       QCDscale_qq
 muTau_nobtag_low                    	VH_SM125                        QCDscale_VH                                     	1.01
 muTau_nobtag_low                    	qqH_SM125,VH_SM125              UEPS                                            	1.05
 muTau_nobtag_low                    	ggH_SM125                       UEPS                                            	1.013
-muTau_nobtag_low			signal                       	CMS_htt_higgsPtReweight_8TeV				1.00
+muTau_nobtag_low			ggH                       	CMS_htt_higgsPtReweight_8TeV				1.00
 
