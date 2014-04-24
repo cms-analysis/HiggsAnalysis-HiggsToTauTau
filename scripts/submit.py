@@ -754,8 +754,8 @@ if options.optHypothesisTest :
                         dirs.append(dir)
                 ## directories and masses per directory
                 struct = directories(args)
-                lxb_submit(struct[0], struct[1], "--HypothesisTest --cycle={cycle} --toys {toys} {smartscan} --customTanb \"{customTanb}\" ".format(
-                    cycle=cycle, toys=options.toys, smartscan="--smartScan" if options.smartScan else "", customTanb=options.customTanb), options.opt, cycle)
+                lxb_submit(struct[0], struct[1], "--HypothesisTest --cycle={cycle} --toys {toys} {smartscan} {customTanb}".format(
+                    cycle=cycle, toys=options.toys, smartscan="--smartScan" if options.smartScan else "", customTanb="--customTanb=\"{cT}\"".Format(cT=options.customTanb) if options.customTanb!="" else ""), options.opt, cycle)
                 cycle = cycle-1       
     ## collect Toys and calculate CLs limit
     else:
