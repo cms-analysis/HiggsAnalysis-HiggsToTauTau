@@ -1284,7 +1284,7 @@ int addNuisance2(const std::string& inputFileName,
   }
   double sf_shift2Up;
   TH1F* template_shift2Up = makeHist2(
-          nuisance1Name + "Up", histogram_fine_binning, par0_shift2Up, par1_shift2Up, fitModel, 
+          nuisance2Name + "Up", histogram_fine_binning, par0_shift2Up, par1_shift2Up, fitModel, 
 	  xMin_fit, TMath::Min(xMax, xInfinitePoint_shift2Up), x0, sf_shift2Up, k, template_central, &sf_central);
   double integral_shift2Up = template_shift2Up->Integral(template_shift2Up->FindBin(xMin_fit), template_shift2Up->FindBin(xMax));
 
@@ -1313,7 +1313,7 @@ int addNuisance2(const std::string& inputFileName,
   }
   double sf_shift2Down;
   TH1F* template_shift2Down = makeHist2(
-	  nuisance1Name + "Down", histogram_fine_binning, par0_shift2Down, par1_shift2Down, fitModel, 
+	  nuisance2Name + "Down", histogram_fine_binning, par0_shift2Down, par1_shift2Down, fitModel, 
 	  xMin_fit, TMath::Min(xMax, xInfinitePoint_shift2Down), x0, sf_shift2Down, k, template_central, &sf_central);
   double integral_shift2Down = template_shift2Down->Integral(template_shift2Down->FindBin(xMin_fit), template_shift2Down->FindBin(xMax));
 
