@@ -736,10 +736,10 @@ if options.optHypothesisTest :
                     if mass == 'common' :
                         continue
                     if options.printOnly :
-                        print "limit.py --HypothesisTest --cycle={cycle} --toys {toys} {smartscan} --customTanb {customTanb} {OPTS} {DIR}".format(
+                        print "limit.py --HypothesisTest --cycle={cycle} --toys {toys} {smartscan} --customTanb \"{customTanb}\" {OPTS} {DIR}".format(
                             OPTS=options.opt, DIR=dir, cycle=cycle, toys=options.toys, smartscan="--smartScan" if options.smartScan else "", customTanb=options.customTanb )
                     else :
-                        os.system("limit.py --HypothesisTest --cycle={cycle} --toys {toys} {smartscan} --customTanb {customTanb} {OPTS} {DIR}".format(
+                        os.system("limit.py --HypothesisTest --cycle={cycle} --toys {toys} {smartscan} --customTanb \"{customTanb}\" {OPTS} {DIR}".format(
                             OPTS=options.opt, DIR=dir, cycle=cycle, toys=options.toys, smartscan="--smartScan" if options.smartScan else "", customTanb=options.customTanb ))
                 cycle = cycle-1
         else :
