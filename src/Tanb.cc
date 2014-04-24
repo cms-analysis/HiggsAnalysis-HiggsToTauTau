@@ -81,7 +81,15 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
     // buffer mass value
     float mass = bins_[imass];
-   
+    
+    //control plots
+    TGraph* graph_minus2sigma = new TGraph();
+    TGraph* graph_minus1sigma = new TGraph();
+    TGraph* graph_expected = new TGraph();
+    TGraph* graph_plus1sigma = new TGraph();
+    TGraph* graph_plus2sigma = new TGraph();
+    TGraph* graph_observed = new TGraph();
+
     ofstream exclusion;  // saves the exclusion limits within the directory so it can be used to throw toys only in regions near the exclusion limit
     exclusion.open(TString::Format("%s/%d/exclusion_%d.out", directory, (int)mass, (int)mass)); 
 
@@ -115,6 +123,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     double minus2sigma_a, minus1sigma_a, exp_a, plus1sigma_a, plus2sigma_a, obs_a, tanb_a; //to determine the crosspoints
     double minus2sigma_b, minus1sigma_b, exp_b, plus1sigma_b, plus2sigma_b, obs_b, tanb_b; //to determine the crosspoints
     int np_minus2sigma=0, np_minus1sigma=0, np_exp=0, np_plus1sigma=0, np_plus2sigma=0, np_obs=0; //to count up to 4 points for each. This points are used to create the asymmetric error graphs. Since at some masses there are cases for which scanning from top tanb to bottom tanb leads to exclusion cases like: excluded - not-excluded - excluded - notexcluded. So first point is always on top. Between first and second point there is a excluded region. Between second and third the region is not excluded and between third and fourth the region is once again excluded. If we just have a top exclusion we simple fix the points to tanb=0.5 (depending on the model), so that the graph is not visible. 
+    int k=0;
     for(int i=0; i<nevent; ++i){
       limit->GetEntry(index[i]);
       if (i==0) {
@@ -137,6 +146,15 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 	if( obs>exclusion_ ) v_obs.push_back((obs+(1-exclusion_))*tanb);
 	np_obs++;
       }
+      //filling control plots
+      graph_minus2sigma->SetPoint(k, tanb, minus2sigma);
+      graph_minus1sigma->SetPoint(k, tanb, minus1sigma);
+      graph_expected   ->SetPoint(k, tanb, exp);
+      graph_plus1sigma ->SetPoint(k, tanb, plus1sigma);
+      graph_plus2sigma ->SetPoint(k, tanb, plus2sigma);
+      graph_observed   ->SetPoint(k, tanb, obs);
+      k++;
+
       //std::cout<< "event i   " << tanb << ' ' << minus2sigma << ' ' << minus1sigma << ' ' << exp << ' ' << plus1sigma<< ' ' << plus2sigma<< ' ' << obs << std::endl;
       minus2sigma_a = minus2sigma;
       minus1sigma_a = minus1sigma;
@@ -305,6 +323,122 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     for(unsigned int i=0; i<v_obs.size(); i++){
       std::cout << i << " obs " << v_obs[i] <<std::endl;
       }*/
+
+    //control plots showing the CLs value over tanb for each mass
+    //minus2sigma
+    TCanvas* canv_minus2sigma = new TCanvas(TString::Format("tanb-CLs_025_%d", (int)mass), "", 600, 600);
+    canv_minus2sigma->cd();
+    canv_minus2sigma->SetGridx(1);
+    canv_minus2sigma->SetGridy(1);
+    graph_minus2sigma->GetXaxis()->SetTitle("tan#beta");
+    graph_minus2sigma->GetXaxis()->SetLabelFont(62);
+    graph_minus2sigma->GetXaxis()->SetTitleFont(62);
+    graph_minus2sigma->GetXaxis()->SetTitleColor(1);
+    graph_minus2sigma->GetXaxis()->SetTitleOffset(1.05);
+    graph_minus2sigma->GetYaxis()->SetTitle("CL_{s}");
+    graph_minus2sigma->GetYaxis()->SetLabelFont(62);
+    graph_minus2sigma->GetYaxis()->SetTitleFont(62);
+    graph_minus2sigma->GetYaxis()->SetTitleOffset(1.05);
+    graph_minus2sigma->GetYaxis()->SetLabelSize(0.03);
+    graph_minus2sigma->SetMarkerStyle(20);
+    graph_minus2sigma->SetMarkerSize(1.3);
+    graph_minus2sigma->Draw("ACP");
+    canv_minus2sigma->Print(TString::Format("%s/%d/tanb-CLs_025_%dGeV.png", directory, (int)mass, (int)mass));
+    //minus1sigma
+    TCanvas* canv_minus1sigma = new TCanvas(TString::Format("tanb-CLs_160_%d", (int)mass), "", 600, 600);
+    canv_minus1sigma->cd();
+    canv_minus1sigma->SetGridx(1);
+    canv_minus1sigma->SetGridy(1);
+    graph_minus1sigma->GetXaxis()->SetTitle("tan#beta");
+    graph_minus1sigma->GetXaxis()->SetLabelFont(62);
+    graph_minus1sigma->GetXaxis()->SetTitleFont(62);
+    graph_minus1sigma->GetXaxis()->SetTitleColor(1);
+    graph_minus1sigma->GetXaxis()->SetTitleOffset(1.05);
+    graph_minus1sigma->GetYaxis()->SetTitle("CL_{s}");
+    graph_minus1sigma->GetYaxis()->SetLabelFont(62);
+    graph_minus1sigma->GetYaxis()->SetTitleFont(62);
+    graph_minus1sigma->GetYaxis()->SetTitleOffset(1.05);
+    graph_minus1sigma->GetYaxis()->SetLabelSize(0.03);
+    graph_minus1sigma->SetMarkerStyle(20);
+    graph_minus1sigma->SetMarkerSize(1.3);
+    graph_minus1sigma->Draw("ACP");
+    canv_minus1sigma->Print(TString::Format("%s/%d/tanb-CLs_160_%dGeV.png", directory, (int)mass, (int)mass));
+    //expected
+    TCanvas* canv_expected = new TCanvas(TString::Format("tanb-CLs_EXP_%d", (int)mass), "", 600, 600);
+    canv_expected->cd();
+    canv_expected->SetGridx(1);
+    canv_expected->SetGridy(1);
+    graph_expected->GetXaxis()->SetTitle("tan#beta");
+    graph_expected->GetXaxis()->SetLabelFont(62);
+    graph_expected->GetXaxis()->SetTitleFont(62);
+    graph_expected->GetXaxis()->SetTitleColor(1);
+    graph_expected->GetXaxis()->SetTitleOffset(1.05);
+    graph_expected->GetYaxis()->SetTitle("CL_{s}");
+    graph_expected->GetYaxis()->SetLabelFont(62);
+    graph_expected->GetYaxis()->SetTitleFont(62);
+    graph_expected->GetYaxis()->SetTitleOffset(1.05);
+    graph_expected->GetYaxis()->SetLabelSize(0.03);
+    graph_expected->SetMarkerStyle(20);
+    graph_expected->SetMarkerSize(1.3);
+    graph_expected->Draw("ACP");
+    canv_expected->Print(TString::Format("%s/%d/tanb-CLs_EXP_%dGeV.png", directory, (int)mass, (int)mass));
+    //plus1sigma
+    TCanvas* canv_plus1sigma = new TCanvas(TString::Format("tanb-CLs_860_%d", (int)mass), "", 600, 600);
+    canv_plus1sigma->cd();
+    canv_plus1sigma->SetGridx(1);
+    canv_plus1sigma->SetGridy(1);
+    graph_plus1sigma->GetXaxis()->SetTitle("tan#beta");
+    graph_plus1sigma->GetXaxis()->SetLabelFont(62);
+    graph_plus1sigma->GetXaxis()->SetTitleFont(62);
+    graph_plus1sigma->GetXaxis()->SetTitleColor(1);
+    graph_plus1sigma->GetXaxis()->SetTitleOffset(1.05);
+    graph_plus1sigma->GetYaxis()->SetTitle("CL_{s}");
+    graph_plus1sigma->GetYaxis()->SetLabelFont(62);
+    graph_plus1sigma->GetYaxis()->SetTitleFont(62);
+    graph_plus1sigma->GetYaxis()->SetTitleOffset(1.05);
+    graph_plus1sigma->GetYaxis()->SetLabelSize(0.03);
+    graph_plus1sigma->SetMarkerStyle(20);
+    graph_plus1sigma->SetMarkerSize(1.3);
+    graph_plus1sigma->Draw("ACP");
+    canv_plus1sigma->Print(TString::Format("%s/%d/tanb-CLs_860_%dGeV.png", directory, (int)mass, (int)mass));
+    //plus2sigma
+    TCanvas* canv_plus2sigma = new TCanvas(TString::Format("tanb-CLs_975_%d", (int)mass), "", 600, 600);
+    canv_plus2sigma->cd();
+    canv_plus2sigma->SetGridx(1);
+    canv_plus2sigma->SetGridy(1);
+    graph_plus2sigma->GetXaxis()->SetTitle("tan#beta");
+    graph_plus2sigma->GetXaxis()->SetLabelFont(62);
+    graph_plus2sigma->GetXaxis()->SetTitleFont(62);
+    graph_plus2sigma->GetXaxis()->SetTitleColor(1);
+    graph_plus2sigma->GetXaxis()->SetTitleOffset(1.05);
+    graph_plus2sigma->GetYaxis()->SetTitle("CL_{s}");
+    graph_plus2sigma->GetYaxis()->SetLabelFont(62);
+    graph_plus2sigma->GetYaxis()->SetTitleFont(62);
+    graph_plus2sigma->GetYaxis()->SetTitleOffset(1.05);
+    graph_plus2sigma->GetYaxis()->SetLabelSize(0.03);
+    graph_plus2sigma->SetMarkerStyle(20);
+    graph_plus2sigma->SetMarkerSize(1.3);
+    graph_plus2sigma->Draw("ACP");
+    canv_plus2sigma->Print(TString::Format("%s/%d/tanb-CLs_975_%dGeV.png", directory, (int)mass, (int)mass));
+    //observed
+    TCanvas* canv_observed = new TCanvas(TString::Format("tanb-CLs_OBS_%d", (int)mass), "", 600, 600);
+    canv_observed->cd();
+    canv_observed->SetGridx(1);
+    canv_observed->SetGridy(1);
+    graph_observed->GetXaxis()->SetTitle("tan#beta");
+    graph_observed->GetXaxis()->SetLabelFont(62);
+    graph_observed->GetXaxis()->SetTitleFont(62);
+    graph_observed->GetXaxis()->SetTitleColor(1);
+    graph_observed->GetXaxis()->SetTitleOffset(1.05);
+    graph_observed->GetYaxis()->SetTitle("CL_{s}");
+    graph_observed->GetYaxis()->SetLabelFont(62);
+    graph_observed->GetYaxis()->SetTitleFont(62);
+    graph_observed->GetYaxis()->SetTitleOffset(1.05);
+    graph_observed->GetYaxis()->SetLabelSize(0.03);
+    graph_observed->SetMarkerStyle(20);
+    graph_observed->SetMarkerSize(1.3);
+    graph_observed->Draw("ACP");
+    canv_observed->Print(TString::Format("%s/%d/tanb-CLs_OBS_%dGeV.png", directory, (int)mass, (int)mass));
     
     //fill the graphs 
     //expected - excluded region is by definition between cross point 1 and 2 and between 3 and 4

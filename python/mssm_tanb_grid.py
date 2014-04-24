@@ -74,9 +74,11 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
                     reduced_grid.append(full_grid_mA[tanb_low_idx])
                 tanb_low_idx=tanb_low_idx+1
             reduced_grid.sort(key=float)
-        ##if the reduced_grid is empty add last element otherwise other scripts do not work
+        ##if the reduced_grid is empty add last three element otherwise other scripts do not work
         if not reduced_grid :
-            reduced_grid.append(full_grid_mA[-1])  
+            reduced_grid.append(full_grid_mA[-1]) 
+            reduced_grid.append(full_grid_mA[-2]) 
+            reduced_grid.append(full_grid_mA[-3])    
         ##build up the grid for the reduced_grid
         idx=0    
         while idx < len(reduced_grid) :
