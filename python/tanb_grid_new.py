@@ -133,6 +133,7 @@ def main() :
 
     ## directory that contains all datacards in question
     path = args[0]
+    print "path = %s" % path
     label = '_{PARAMETER1}_{TANB}'.format(PARAMETER1=options.parameter1, TANB=options.tanb)
     ## mophing configuration
     morph = {
@@ -157,6 +158,7 @@ def main() :
     model = MODEL(float(options.parameter1), float(options.tanb), options.modelname)
     match = re.compile('(?P<CHN>[a-zA-Z0-9]+)_[a-zA-Z0-9]+_[0-9]+_(?P<PER>[a-zA-Z0-9]+)')
     for bin in card.list_of_bins() :
+        print "processing bin = %s:" % bin 
         ## a bin can be made up of different decay channels or different run periods. Pick decay channel (chn) and run period
         ## (per) either from bin or from from datacards name in case it is not accessible from bin.
         if match.match(bin) :

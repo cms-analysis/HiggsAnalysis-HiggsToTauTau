@@ -393,25 +393,25 @@ if options.update_setup :
                         DIR=dir, ANA=ana))
                     runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'QCD_CMS_htt_QCDShape_etau_btag_high_8TeVUp_fine_binning'   -k '14' --range 180 --fitoption 1 --fitmodel 1 --erroroption 1 --rangelast 800 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))                    
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_nobtag_low_8TeVDown_fine_binning' -k '10' --range 240 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_nobtag_8TeVDown_fine_binning' -k '10' --range 240 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_nobtag_low_8TeVUp_fine_binning'   -k '10' --range 240 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_nobtag_8TeVUp_fine_binning'   -k '10' --range 240 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_nobtag_medium_8TeVDown_fine_binning' -k '11' --range 240 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_nobtag_8TeVDown_fine_binning' -k '11' --range 240 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_nobtag_medium_8TeVUp_fine_binning'   -k '11' --range 240 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_nobtag_8TeVUp_fine_binning'   -k '11' --range 240 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_nobtag_high_8TeVDown_fine_binning' -k '12' --range 325 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_nobtag_8TeVDown_fine_binning' -k '12' --range 325 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_nobtag_high_8TeVUp_fine_binning'   -k '12' --range 325 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_nobtag_8TeVUp_fine_binning'   -k '12' --range 325 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_btag_low_8TeVDown_fine_binning' -k '13' --range 200 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_btag_8TeVDown_fine_binning' -k '13' --range 200 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_btag_low_8TeVUp_fine_binning'   -k '13' --range 200 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_btag_8TeVUp_fine_binning'   -k '13' --range 200 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_btag_high_8TeVDown_fine_binning' -k '14' --range 250 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_btag_8TeVDown_fine_binning' -k '14' --range 250 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_btag_high_8TeVUp_fine_binning'   -k '14' --range 250 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_et.inputs-mssm-8TeV-0.root -c et -e 8TeV -b 'W_CMS_htt_WShape_etau_btag_8TeVUp_fine_binning'   -k '14' --range 250 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
                 if 'mt' in config.channels : 
                     runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'QCD_fine_binning' -k '13' --range 140 --rangelast 800 --fitoption 1 --fitmodel 1 --erroroption 1".format(
@@ -455,25 +455,25 @@ if options.update_setup :
                         DIR=dir, ANA=ana))
                     runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'QCD_CMS_htt_QCDShape_mutau_btag_high_8TeVUp_fine_binning'   -k '14' --range 200 --rangelast 800 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))                    
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_nobtag_low_8TeVDown_fine_binning' -k '10' --range 240 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_nobtag_8TeVDown_fine_binning' -k '10' --range 240 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_nobtag_low_8TeVUp_fine_binning'   -k '10' --range 240 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_nobtag_8TeVUp_fine_binning'   -k '10' --range 240 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_nobtag_medium_8TeVDown_fine_binning' -k '11' --range 240 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_nobtag_8TeVDown_fine_binning' -k '11' --range 240 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_nobtag_medium_8TeVUp_fine_binning'   -k '11' --range 240 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_nobtag_8TeVUp_fine_binning'   -k '11' --range 240 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_nobtag_high_8TeVDown_fine_binning' -k '12' --range 325 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_nobtag_8TeVDown_fine_binning' -k '12' --range 325 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_nobtag_high_8TeVUp_fine_binning'   -k '12' --range 325 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_nobtag_8TeVUp_fine_binning'   -k '12' --range 325 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_btag_low_8TeVDown_fine_binning' -k '13' --range 200 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_btag_8TeVDown_fine_binning' -k '13' --range 200 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_btag_low_8TeVUp_fine_binning'   -k '13' --range 200 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_btag_8TeVUp_fine_binning'   -k '13' --range 200 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_btag_high_8TeVDown_fine_binning' -k '14' --range 250 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_btag_8TeVDown_fine_binning' -k '14' --range 250 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
-                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_btag_high_8TeVUp_fine_binning'   -k '14' --range 250 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
+                    runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_mt.inputs-mssm-8TeV-0.root -c mt -e 8TeV -b 'W_CMS_htt_WShape_mutau_btag_8TeVUp_fine_binning'   -k '14' --range 250 --fitoption 1 --fitmodel 1 --erroroption 1 --no-uncerts".format(
                         DIR=dir, ANA=ana))
                 if 'tt' in config.channels :
                     runCommand("addFitNuisance.py -s {DIR}/{ANA} -i htt_tt.inputs-mssm-8TeV-0.root -c tt -e 8TeV -b 'QCD_fine_binning' -k '13' --range 300 --rangelast 700 --fitoption 1 --fitmodel 1 --erroroption 1".format(
