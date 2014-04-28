@@ -159,8 +159,8 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
             if len(subvec(args,  90, 249))>0 :
                 dirs = vec2str(subvec(args,  90,  249))
                 grid = [
-                    "{CMD} -n  6 --min  0.5  --max  1.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  4 --min  2.0  --max  8.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs) 
+                    "{CMD} -n  2 --min  1.0  --max  2.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ,"{CMD} -n  3 --min  4.0  --max  8.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs) 
                     ,"{CMD} -n  3 --min  9.0  --max 15.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     ,"{CMD} -n  3 --min 20.0  --max 30.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     #,"{CMD} -n  2 --min 35.0  --max 40.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
@@ -168,8 +168,8 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
             if len(subvec(args, 250, 299))>0 :
                 dirs = vec2str(subvec(args, 250,  299))
                 grid = [
-                    "{CMD} -n  2 --min  0.5  --max  1.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  5 --min  3.0  --max 15.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    "{CMD} -n  2 --min  1.0  --max  3.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ,"{CMD} -n  4 --min  6.0  --max 15.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     ,"{CMD} -n  5 --min 20.0  --max 40.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     ]                
             if len(subvec(args, 300, 399))>0 :

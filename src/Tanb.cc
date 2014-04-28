@@ -27,7 +27,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   if(theory_=="MSSM m_{h}^{mod+} scenario") {extralabel_= "mhmodp-"; model = "mhmodp"; tanbHigh=60; tanbLow=0.5; tanbLowHigh=2;}
   if(theory_=="MSSM low m_{H} scenario") {extralabel_= "lowmH-"; model = "lowmH"; tanbHigh=9.5; tanbLow=1.5; tanbLowHigh=2;}
   if(theory_=="MSSM light stau scenario") {extralabel_= "lightstau1-"; model = "lightstau1"; tanbHigh=60; tanbLow=0.5; tanbLowHigh=3;}
-  if(theory_=="MSSM tauphobic scenario") {extralabel_= "tauphobic-"; model = "tauphobic"; tanbHigh=50; tanbLow=0.5; tanbLowHigh=2;}
+  if(theory_=="MSSM tauphobic scenario") {extralabel_= "tauphobic-"; model = "tauphobic"; tanbHigh=50; tanbLow=1.0; tanbLowHigh=2;}
   if(theory_=="MSSM light stop scenario") {extralabel_= "lightstopmod-"; model = "lightstopmod"; tanbHigh=60; tanbLow=0.7; tanbLowHigh=2;}
 
   // set up styles
@@ -267,7 +267,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 	double x_down=tanb_b;
 	double y_down=plus2sigma_b;
 	v_plus2sigma.push_back( (exclusion_-y_up)/(y_down-y_up)*(x_down-x_up)+x_up ); 	
-	//std::cout<< tanb << " +2sigma " << (exclusion_-y_up)/(y_down-y_up)*(x_down-x_up)+x_up << std::endl;  
+	std::cout<< tanb << " +2sigma " << (exclusion_-y_up)/(y_down-y_up)*(x_down-x_up)+x_up << std::endl;  
 	np_plus2sigma++;
 	if(plus2sigma_a < exclusion_ && plus2sigma_b > exclusion_ ) highExcluded_plus2sigma = true; 
 	if(plus2sigma_a > exclusion_ && plus2sigma_b < exclusion_) lowExcluded_plus2sigma = true;

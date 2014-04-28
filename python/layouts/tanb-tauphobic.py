@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
+    #dataset = cms.string(""),
     dataset = cms.string("CMS,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV"),
     #dataset = cms.string("CMS Preliminary,  H#rightarrow#tau#tau,  18.3 fb^{-1} at 8 TeV"),
     ## x-axis title
@@ -11,7 +12,7 @@ layout = cms.PSet(
     ## theory label 
     theory = cms.string("MSSM tauphobic scenario"),
     ## min for plotting
-    min = cms.double(0.5),
+    min = cms.double(1.0),
     ## max for plotting
     max = cms.double(50),
     ## min for plotting
@@ -27,7 +28,7 @@ layout = cms.PSet(
     ## define verbosity level
     verbosity = cms.uint32(3),
     ## define output label
-    outputLabel = cms.string("tanb-tauphobic") ,
+    outputLabel = cms.string("mA-tanb") ,
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
      90.
