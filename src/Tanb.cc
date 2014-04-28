@@ -267,7 +267,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 	double x_down=tanb_b;
 	double y_down=plus2sigma_b;
 	v_plus2sigma.push_back( (exclusion_-y_up)/(y_down-y_up)*(x_down-x_up)+x_up ); 	
-	std::cout<< tanb << " +2sigma " << (exclusion_-y_up)/(y_down-y_up)*(x_down-x_up)+x_up << std::endl;  
+	//std::cout<< tanb << " +2sigma " << (exclusion_-y_up)/(y_down-y_up)*(x_down-x_up)+x_up << std::endl;  
 	np_plus2sigma++;
 	if(plus2sigma_a < exclusion_ && plus2sigma_b > exclusion_ ) highExcluded_plus2sigma = true; 
 	if(plus2sigma_a > exclusion_ && plus2sigma_b < exclusion_) lowExcluded_plus2sigma = true;
