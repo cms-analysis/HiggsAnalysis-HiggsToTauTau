@@ -1,5 +1,7 @@
 #include "HiggsAnalysis/HiggsToTauTau/interface/PlotLimits.h"
 #include "vector"
+#include <TF1.h>
+#include <TFitResult.h>
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
@@ -123,7 +125,24 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     double minus2sigma_a, minus1sigma_a, exp_a, plus1sigma_a, plus2sigma_a, obs_a, tanb_a; //to determine the crosspoints
     double minus2sigma_b, minus1sigma_b, exp_b, plus1sigma_b, plus2sigma_b, obs_b, tanb_b; //to determine the crosspoints
     int np_minus2sigma=0, np_minus1sigma=0, np_exp=0, np_plus1sigma=0, np_plus2sigma=0, np_obs=0; //to count up to 4 points for each. This points are used to create the asymmetric error graphs. Since at some masses there are cases for which scanning from top tanb to bottom tanb leads to exclusion cases like: excluded - not-excluded - excluded - notexcluded. So first point is always on top. Between first and second point there is a excluded region. Between second and third the region is not excluded and between third and fourth the region is once again excluded. If we just have a top exclusion we simple fix the points to tanb=0.5 (depending on the model), so that the graph is not visible. 
-    int k=0;
+    int k=0; double xmax=0; double ymax=0; //stuff needed for fitting;
+    // loop to find the crosspoint between low and high exclusion (tanbLowHigh)
+    for(int i=0; i<nevent; ++i){
+      limit->GetEntry(index[i]);
+      //filling control plots
+      graph_minus2sigma->SetPoint(k, tanb, minus2sigma);
+      graph_minus1sigma->SetPoint(k, tanb, minus1sigma);
+      graph_expected   ->SetPoint(k, tanb, exp);
+      graph_plus1sigma ->SetPoint(k, tanb, plus1sigma);
+      graph_plus2sigma ->SetPoint(k, tanb, plus2sigma);
+      graph_observed   ->SetPoint(k, tanb, obs);
+      k++;      
+      for(int j=0; j<graph_minus2sigma->GetN(); j++){ 
+	if(graph_minus2sigma->GetY()[j]>ymax) {ymax=graph_minus2sigma->GetY()[j]; xmax=graph_minus2sigma->GetX()[j]; tanbLowHigh=xmax;}
+      }
+    }
+    //std::cout << "max " << tanbLowHigh << std::endl;
+    // main loop to set the find the crosspoints
     for(int i=0; i<nevent; ++i){
       limit->GetEntry(index[i]);
       if (i==0) {
@@ -146,14 +165,6 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 	if( obs>exclusion_ ) v_obs.push_back((obs+(1-exclusion_))*tanb);
 	np_obs++;
       }
-      //filling control plots
-      graph_minus2sigma->SetPoint(k, tanb, minus2sigma);
-      graph_minus1sigma->SetPoint(k, tanb, minus1sigma);
-      graph_expected   ->SetPoint(k, tanb, exp);
-      graph_plus1sigma ->SetPoint(k, tanb, plus1sigma);
-      graph_plus2sigma ->SetPoint(k, tanb, plus2sigma);
-      graph_observed   ->SetPoint(k, tanb, obs);
-      k++;
 
       //std::cout<< "event i   " << tanb << ' ' << minus2sigma << ' ' << minus1sigma << ' ' << exp << ' ' << plus1sigma<< ' ' << plus2sigma<< ' ' << obs << std::endl;
       minus2sigma_a = minus2sigma;
@@ -186,7 +197,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       limit->GetEvent(index[i]);
       // -2sigma
       if(minus2sigma_a == exclusion_) {v_minus2sigma.push_back(tanb_a);}
-      if((minus2sigma_a < exclusion_ && minus2sigma_b > exclusion_) || (minus2sigma_a > exclusion_ && minus2sigma_b < exclusion_)) {
+      if((minus2sigma_a < exclusion_ && minus2sigma_b > exclusion_ && tanb_b>=tanbLowHigh) || (minus2sigma_a > exclusion_ && minus2sigma_b < exclusion_ && tanb_b<=tanbLowHigh )) {
 	double x_up=tanb_a;
 	double y_up=minus2sigma_a;
 	double x_down=tanb_b;
@@ -197,7 +208,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       }
       // -1sigma
       if(minus1sigma_a == exclusion_) {v_minus1sigma.push_back(tanb_a);}
-      if((minus1sigma_a < exclusion_ && minus1sigma_b > exclusion_) || (minus1sigma_a > exclusion_ && minus1sigma_b < exclusion_)) {
+      if((minus1sigma_a < exclusion_ && minus1sigma_b > exclusion_ && tanb_b>=tanbLowHigh) || (minus1sigma_a > exclusion_ && minus1sigma_b < exclusion_ && tanb_b<=tanbLowHigh)) {
 	double x_up=tanb_a;
 	double y_up=minus1sigma_a;
 	double x_down=tanb_b;
@@ -208,7 +219,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       }
       // expected
       if(exp_a == exclusion_) {v_exp.push_back(tanb_a);}
-      if((exp_a < exclusion_ && exp_b > exclusion_) || (exp_a > exclusion_ && exp_b < exclusion_)) {
+      if((exp_a < exclusion_ && exp_b > exclusion_ && tanb_b>=tanbLowHigh) || (exp_a > exclusion_ && exp_b < exclusion_ && tanb_b<=tanbLowHigh)) {
 	double x_up=tanb_a;
 	double y_up=exp_a;
 	double x_down=tanb_b;
@@ -219,7 +230,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       }
       // +1sigma
       if(plus1sigma_a == exclusion_) {v_plus1sigma.push_back(tanb_a);}
-      if((plus1sigma_a < exclusion_ && plus1sigma_b > exclusion_) || (plus1sigma_a > exclusion_ && plus1sigma_b < exclusion_)) {
+      if((plus1sigma_a < exclusion_ && plus1sigma_b > exclusion_ && tanb_b>=tanbLowHigh) || (plus1sigma_a > exclusion_ && plus1sigma_b < exclusion_ && tanb_b<=tanbLowHigh)) {
 	double x_up=tanb_a;
 	double y_up=plus1sigma_a;
 	double x_down=tanb_b;
@@ -230,7 +241,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       }
       // +2sigma
       if(plus2sigma_a == exclusion_) {v_plus2sigma.push_back(tanb_a);}
-      if((plus2sigma_a < exclusion_ && plus2sigma_b > exclusion_) || (plus2sigma_a > exclusion_ && plus2sigma_b < exclusion_)) {
+      if((plus2sigma_a < exclusion_ && plus2sigma_b > exclusion_ && tanb_b>=tanbLowHigh) || (plus2sigma_a > exclusion_ && plus2sigma_b < exclusion_ && tanb_b<=tanbLowHigh)) {
 	double x_up=tanb_a;
 	double y_up=plus2sigma_a;
 	double x_down=tanb_b;
@@ -241,7 +252,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       }
       // observed
       if(obs_a == exclusion_) {v_obs.push_back(tanb_a);}
-      if((obs_a < exclusion_ && obs_b > exclusion_) || (obs_a > exclusion_ && obs_b < exclusion_)) {
+      if((obs_a < exclusion_ && obs_b > exclusion_ && tanb_b>=tanbLowHigh) || (obs_a > exclusion_ && obs_b < exclusion_ && tanb_b<=tanbLowHigh)) {
 	double x_up=tanb_a;
 	double y_up=obs_a;
 	double x_down=tanb_b;
@@ -342,7 +353,14 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     graph_minus2sigma->GetYaxis()->SetLabelSize(0.03);
     graph_minus2sigma->SetMarkerStyle(20);
     graph_minus2sigma->SetMarkerSize(1.3);
-    graph_minus2sigma->Draw("ACP");
+    ymax=0; ymax=0;
+    for(int j=0; j<graph_minus2sigma->GetN(); j++){ 
+      if(graph_minus2sigma->GetY()[j]>ymax) {ymax=graph_minus2sigma->GetY()[j]; xmax=graph_minus2sigma->GetX()[j];}
+    }
+    //TF1 *f1_minus2sigma = new TF1(TString::Format("fit_025_%d", (int)mass), "[0]*exp([1]+x*[2])", xmax, graph_minus2sigma->GetX()[0]);
+    //TFitResultPtr r_minus2sigma = graph_minus2sigma->Fit(f1_minus2sigma, "SQR");
+    //if (f1_minus2sigma->GetX(0.05, xmax, 200>=xmax) v_minus2sigma[1]=f1_minus2sigma->GetX(0.05, xmax, 200;
+    graph_minus2sigma->Draw("AP");
     canv_minus2sigma->Print(TString::Format("%s/%d/tanb-CLs_025_%dGeV.png", directory, (int)mass, (int)mass));
     //minus1sigma
     TCanvas* canv_minus1sigma = new TCanvas(TString::Format("tanb-CLs_160_%d", (int)mass), "", 600, 600);
@@ -361,7 +379,14 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     graph_minus1sigma->GetYaxis()->SetLabelSize(0.03);
     graph_minus1sigma->SetMarkerStyle(20);
     graph_minus1sigma->SetMarkerSize(1.3);
-    graph_minus1sigma->Draw("ACP");
+    ymax=0; ymax=0;
+    for(int j=0; j<graph_minus1sigma->GetN(); j++){ 
+      if(graph_minus1sigma->GetY()[j]>ymax) {ymax=graph_minus1sigma->GetY()[j]; xmax=graph_minus1sigma->GetX()[j];}
+    }
+    //TF1 *f1_minus1sigma = new TF1(TString::Format("fit_025_%d", (int)mass), "[0]*exp([1]+x*[2])", xmax, graph_minus1sigma->GetX()[0]);
+    //TFitResultPtr r_minus1sigma = graph_minus1sigma->Fit(f1_minus1sigma, "SQR");
+    //if (f1_minus1sigma->GetX(0.05, xmax, 200)>=xmax) v_minus1sigma[1]=f1_minus1sigma->GetX(0.05, xmax, 200);
+    graph_minus1sigma->Draw("AP");
     canv_minus1sigma->Print(TString::Format("%s/%d/tanb-CLs_160_%dGeV.png", directory, (int)mass, (int)mass));
     //expected
     TCanvas* canv_expected = new TCanvas(TString::Format("tanb-CLs_EXP_%d", (int)mass), "", 600, 600);
@@ -380,7 +405,14 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     graph_expected->GetYaxis()->SetLabelSize(0.03);
     graph_expected->SetMarkerStyle(20);
     graph_expected->SetMarkerSize(1.3);
-    graph_expected->Draw("ACP");
+    ymax=0; ymax=0;
+    for(int j=0; j<graph_expected->GetN(); j++){ 
+      if(graph_expected->GetY()[j]>ymax) {ymax=graph_expected->GetY()[j]; xmax=graph_expected->GetX()[j];}
+    }
+    //TF1 *f1_expected = new TF1(TString::Format("fit_025_%d", (int)mass), "[0]*exp([1]+x*[2])", xmax, graph_expected->GetX()[0]);
+    //TFitResultPtr r_expected = graph_expected->Fit(f1_expected, "SQR");
+    //if (f1_expected->GetX(0.05, xmax, 200)>=xmax) v_exp[1]=f1_expected->GetX(0.05, xmax, 200);
+    graph_expected->Draw("AP");
     canv_expected->Print(TString::Format("%s/%d/tanb-CLs_EXP_%dGeV.png", directory, (int)mass, (int)mass));
     //plus1sigma
     TCanvas* canv_plus1sigma = new TCanvas(TString::Format("tanb-CLs_860_%d", (int)mass), "", 600, 600);
@@ -399,7 +431,14 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     graph_plus1sigma->GetYaxis()->SetLabelSize(0.03);
     graph_plus1sigma->SetMarkerStyle(20);
     graph_plus1sigma->SetMarkerSize(1.3);
-    graph_plus1sigma->Draw("ACP");
+    ymax=0; ymax=0;
+    for(int j=0; j<graph_plus1sigma->GetN(); j++){ 
+      if(graph_plus1sigma->GetY()[j]>ymax) {ymax=graph_plus1sigma->GetY()[j]; xmax=graph_plus1sigma->GetX()[j];}
+    }
+    //TF1 *f1_plus1sigma = new TF1(TString::Format("fit_025_%d", (int)mass), "[0]*exp([1]+x*[2])", xmax, graph_plus1sigma->GetX()[0]);
+    //TFitResultPtr r_plus1sigma = graph_plus1sigma->Fit(f1_plus1sigma, "SQR");
+    //if (f1_plus1sigma->GetX(0.05, xmax, 200)>=xmax) v_plus1sigma[1]=f1_plus1sigma->GetX(0.05, xmax, 200);
+    graph_plus1sigma->Draw("AP");
     canv_plus1sigma->Print(TString::Format("%s/%d/tanb-CLs_860_%dGeV.png", directory, (int)mass, (int)mass));
     //plus2sigma
     TCanvas* canv_plus2sigma = new TCanvas(TString::Format("tanb-CLs_975_%d", (int)mass), "", 600, 600);
@@ -418,7 +457,14 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     graph_plus2sigma->GetYaxis()->SetLabelSize(0.03);
     graph_plus2sigma->SetMarkerStyle(20);
     graph_plus2sigma->SetMarkerSize(1.3);
-    graph_plus2sigma->Draw("ACP");
+    ymax=0; ymax=0;
+    for(int j=0; j<graph_plus2sigma->GetN(); j++){ 
+      if(graph_plus2sigma->GetY()[j]>ymax) {ymax=graph_plus2sigma->GetY()[j]; xmax=graph_plus2sigma->GetX()[j];}
+    }
+    //TF1 *f1_plus2sigma = new TF1(TString::Format("fit_025_%d", (int)mass), "[0]*exp([1]+x*[2])", xmax, graph_plus2sigma->GetX()[0]);
+    //TFitResultPtr r_plus2sigma = graph_plus2sigma->Fit(f1_plus2sigma, "SQR");
+    //if (f1_plus2sigma->GetX(0.05, xmax, 200)>=xmax) v_plus2sigma[1]=f1_plus2sigma->GetX(0.05, xmax, 200);
+    graph_plus2sigma->Draw("AP");
     canv_plus2sigma->Print(TString::Format("%s/%d/tanb-CLs_975_%dGeV.png", directory, (int)mass, (int)mass));
     //observed
     TCanvas* canv_observed = new TCanvas(TString::Format("tanb-CLs_OBS_%d", (int)mass), "", 600, 600);
@@ -437,7 +483,14 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     graph_observed->GetYaxis()->SetLabelSize(0.03);
     graph_observed->SetMarkerStyle(20);
     graph_observed->SetMarkerSize(1.3);
-    graph_observed->Draw("ACP");
+    ymax=0; ymax=0;
+    for(int j=0; j<graph_observed->GetN(); j++){ 
+      if(graph_observed->GetY()[j]>ymax) {ymax=graph_observed->GetY()[j]; xmax=graph_observed->GetX()[j];}
+    }
+    //TF1 *f1_observed = new TF1(TString::Format("fit_025_%d", (int)mass), "[0]*exp([1]+x*[2])", xmax, graph_observed->GetX()[0]);
+    //TFitResultPtr r_observed = graph_observed->Fit(f1_observed, "SQR");
+    //if (f1_observed->GetX(0.05, xmax, 200)>=xmax) v_obs[1]=f1_observed->GetX(0.05, xmax, 200);
+    graph_observed->Draw("AP");
     canv_observed->Print(TString::Format("%s/%d/tanb-CLs_OBS_%dGeV.png", directory, (int)mass, (int)mass));
     
     //fill the graphs 
