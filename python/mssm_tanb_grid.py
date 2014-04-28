@@ -46,7 +46,7 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
         if "lowmH" in opt :
             full_grid_mA = [ 1.5, 2.0, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5 ] ##define the maximum grid for lowmH
         elif "tauphobic" in opt :
-            full_grid_mA = [ 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 2.0, 4.0, 7.0, 10.0, 13.0, 15.0, 17.0, 20.0, 23.0, 25.0, 27.0, 30.0, 33.0, 35.0, 37.0, 40.0, 43.0, 45.0, 47.0, 50.0 ] ##define the maximum grid for tauphobic
+            full_grid_mA = [ 1.0, 2.0, 4.0, 7.0, 10.0, 13.0, 15.0, 17.0, 20.0, 23.0, 25.0, 27.0, 30.0, 33.0, 35.0, 37.0, 40.0, 43.0, 45.0, 47.0, 50.0 ] ##define the maximum grid for tauphobic
         elif "lightstopmod" in opt :
             full_grid_mA = [ 0.7, 0.8, 0.9, 1.0, 2.0, 4.0, 7.0, 10.0, 13.0, 15.0, 17.0, 20.0, 23.0, 25.0, 27.0, 30.0, 33.0, 35.0, 37.0, 40.0, 43.0, 45.0, 47.0, 50.0, 53.0, 55.0, 57.0, 60.0 ] ##define the maximum grid for lightstopmod
         else :
@@ -159,8 +159,8 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
             if len(subvec(args,  90, 249))>0 :
                 dirs = vec2str(subvec(args,  90,  249))
                 grid = [
-                    "{CMD} -n  6 --min  0.5  --max  1.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  4 --min  2.0  --max  8.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs) 
+                    "{CMD} -n  2 --min  1.0  --max  2.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ,"{CMD} -n  3 --min  4.0  --max  8.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs) 
                     ,"{CMD} -n  3 --min  9.0  --max 15.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     ,"{CMD} -n  3 --min 20.0  --max 30.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     #,"{CMD} -n  2 --min 35.0  --max 40.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
@@ -168,8 +168,8 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
             if len(subvec(args, 250, 299))>0 :
                 dirs = vec2str(subvec(args, 250,  299))
                 grid = [
-                    "{CMD} -n  2 --min  0.5  --max  1.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
-                    ,"{CMD} -n  5 --min  3.0  --max 15.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    "{CMD} -n  2 --min  1.0  --max  3.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ,"{CMD} -n  4 --min  6.0  --max 15.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     ,"{CMD} -n  5 --min 20.0  --max 40.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     ]                
             if len(subvec(args, 300, 399))>0 :
