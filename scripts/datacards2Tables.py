@@ -102,8 +102,8 @@ How to treat uncertainties that are or are not correlated across channels and ev
    and category)
  - when summing up categories: keep two uncerts for correlated and uncorrelated. If cat/chn found
    in list for correlated uncertainties for a given uncertainty than add linear to uncert(linear),
-   otherwise add in quadratire to undert(correlated). At the end add the two uncerts linear and
-   all uncerts in quasradture. 
+   otherwise add in quadrature to uncert(correlated). At the end add the two uncerts linear and
+   all uncerts in quadrature. 
 """
 
 def extractor(path, period):
@@ -116,7 +116,7 @@ def extractor(path, period):
     one decay-channel, event-category and run period.
     """
     tmp  = '/dev/null'
-    #print path
+    print "<extractor>: path = %s, period = %s" % (path, period)
     ## determine luminosity per channel
     lumi = {}
     if period == "7TeV" :
@@ -1091,7 +1091,11 @@ for chn in channels :
     print "creating table for decay channel ", chn, "..."
     for period in periods :
         for cat in categories :
-            path = options.input+"/htt_"+chn+"_"+cat+"_"+period+".txt"
+            path = None
+            if options.analysis == "mssm" or options.analysis == "mssm_taupt":
+                path = options.input+"/htt_"+chn+"_"+cat+"_"+period+"-"+options.mass[:options.mass.find(":")]+".txt"   
+            else :
+                path = options.input+"/htt_"+chn+"_"+cat+"_"+period+".txt"            
             ## extract all relevant information from datacards
             extractor(path, period)
     ## merge run periods and subsets of event categories (for yields)
