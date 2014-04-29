@@ -179,6 +179,16 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   if(std::string(directory) == std::string("tauTau_nobtag"               )){ category_extra = "No B-Tag";             }
   if(std::string(directory) == std::string("tauTau_btag"                 )){ category = "#tau_{h}#tau_{h}";           }
   if(std::string(directory) == std::string("tauTau_btag"                 )){ category_extra = "B-Tag";                }
+  if(std::string(directory) == std::string("tauTau_nobtag_low"           )){ category = "#tau_{h}#tau_{h}";           }
+  if(std::string(directory) == std::string("tauTau_nobtag_low"           )){ category_extra = "No B-Tag low p_{T}^{#tau_{h}}"; }
+  if(std::string(directory) == std::string("tauTau_nobtag_medium"        )){ category = "#tau_{h}#tau_{h}";           }
+  if(std::string(directory) == std::string("tauTau_nobtag_medium"        )){ category_extra = "No B-Tag medium p_{T}^{#tau_{h}}"; }
+  if(std::string(directory) == std::string("tauTau_nobtag_high"          )){ category = "#tau_{h}#tau_{h}";           }
+  if(std::string(directory) == std::string("tauTau_nobtag_high"          )){ category_extra = "No B-Tag high p_{T}^{#tau_{h}}"; }
+  if(std::string(directory) == std::string("tauTau_btag_low"             )){ category = "#tau_{h}#tau_{h}";           }
+  if(std::string(directory) == std::string("tauTau_btag_low"             )){ category_extra = "B-Tag low p_{T}^{#tau_{h}}"; }
+  if(std::string(directory) == std::string("tauTau_btag_high"            )){ category = "#tau_{h}#tau_{h}";           }
+  if(std::string(directory) == std::string("tauTau_btag_high"            )){ category_extra = "B-Tag high p_{T}^{#tau_{h}}"; }
 
   const char* dataset;
 #ifdef MSSM

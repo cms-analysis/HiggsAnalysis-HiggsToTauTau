@@ -87,15 +87,20 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   if (std::string(dataset) == std::string("2011+2012")){ dataset = "CMS, H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV"; }
   // determine category tag
   const char* category_extra = "";
-  if(std::string(extra2) == std::string("0jet_low"  )){ category_extra = "0 jet, low p_{T}";  }
-  if(std::string(extra2) == std::string("0jet_high" )){ category_extra = "0 jet, high p_{T}"; }
-  if(std::string(extra2) == std::string("0jet"      )){ category_extra = "0 jet";             }
-  if(std::string(extra2) == std::string("1jet_low"  )){ category_extra = "1 jet, low p_{T}";  }
-  if(std::string(extra2) == std::string("1jet_high" )){ category_extra = "1 jet, high p_{T}"; }
-  if(std::string(extra2) == std::string("1jet"      )){ category_extra = "1 jet";             }
-  if(std::string(extra2) == std::string("vbf"       )){ category_extra = "2 jet (VBF)";       }
-  if(std::string(extra2) == std::string("nobtag"    )){ category_extra = "No B-Tag";          }
-  if(std::string(extra2) == std::string("btag"      )){ category_extra = "B-Tag";             }
+  if(std::string(extra2) == std::string("0jet_low"     )){ category_extra = "0 jet, low p_{T}";       }
+  if(std::string(extra2) == std::string("0jet_high"    )){ category_extra = "0 jet, high p_{T}";      }
+  if(std::string(extra2) == std::string("0jet"         )){ category_extra = "0 jet";                  }
+  if(std::string(extra2) == std::string("1jet_low"     )){ category_extra = "1 jet, low p_{T}";       }
+  if(std::string(extra2) == std::string("1jet_high"    )){ category_extra = "1 jet, high p_{T}";      }
+  if(std::string(extra2) == std::string("1jet"         )){ category_extra = "1 jet";                  }
+  if(std::string(extra2) == std::string("vbf"          )){ category_extra = "2 jet (VBF)";            }
+  if(std::string(extra2) == std::string("nobtag"       )){ category_extra = "No B-Tag";               }
+  if(std::string(extra2) == std::string("btag"         )){ category_extra = "B-Tag";                  }
+  if(std::string(extra2) == std::string("nobtag_low"   )){ category_extra = "No B-Tag, low p_{T}";    }
+  if(std::string(extra2) == std::string("nobtag_medium")){ category_extra = "No B-Tag, medium p_{T}"; }
+  if(std::string(extra2) == std::string("nobtag_high"  )){ category_extra = "No B-Tag, high p_{T}";   }
+  if(std::string(extra2) == std::string("btag_low"     )){ category_extra = "B-Tag, low p_{T}";       }
+  if(std::string(extra2) == std::string("btag_high"    )){ category_extra = "B-Tag, high p_{T}";      }
 
   TFile* input = new TFile(inputfile);
   TH1F* Fakes  = refill((TH1F*)input->Get("Fakes"   ), "Fakes/QCD"); 
