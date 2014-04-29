@@ -192,6 +192,16 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   if(std::string(directory) == std::string("eleTau_nobtag"               )){ category_extra = "No B-Tag";                        }
   if(std::string(directory) == std::string("eleTau_btag"                 )){ category = "e#tau_{h}";          }
   if(std::string(directory) == std::string("eleTau_btag"                 )){ category_extra = "B-Tag";                           }
+  if(std::string(directory) == std::string("eleTau_nobtag_low"           )){ category = "e#tau_{h}";          }
+  if(std::string(directory) == std::string("eleTau_nobtag_low"           )){ category_extra = "No B-Tag low p_{T}^{#tau_{h}}"; }
+  if(std::string(directory) == std::string("eleTau_nobtag_medium"        )){ category = "e#tau_{h}";          }
+  if(std::string(directory) == std::string("eleTau_nobtag_medium"        )){ category_extra = "No B-Tag medium p_{T}^{#tau_{h}}"; }
+  if(std::string(directory) == std::string("eleTau_nobtag_high"          )){ category = "e#tau_{h}";          }
+  if(std::string(directory) == std::string("eleTau_nobtag_high"          )){ category_extra = "No B-Tag high p_{T}^{#tau_{h}}"; }
+  if(std::string(directory) == std::string("eleTau_btag_low"             )){ category = "e#tau_{h}";          }
+  if(std::string(directory) == std::string("eleTau_btag_low"             )){ category_extra = "B-Tag low p_{T}^{#tau_{h}}"; }
+  if(std::string(directory) == std::string("eleTau_btag_high"            )){ category = "e#tau_{h}";          }
+  if(std::string(directory) == std::string("eleTau_btag_high"            )){ category_extra = "B-Tag high p_{T}^{#tau_{h}}"; }
 
   const char* dataset;
 #ifdef MSSM
