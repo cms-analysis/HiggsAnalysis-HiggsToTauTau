@@ -226,7 +226,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   /// add the proper legend
   TLegend* leg;
   if(log){
-    leg = new TLegend(0.68, (!higgsBands.empty() || !comparisons.empty()) ? 0.15 : 0.32, (!higgsBands.empty() || !comparisons.empty()) ? 0.935: 0.935, 0.61);
+    leg = new TLegend(0.62, (!higgsBands.empty() || !comparisons.empty()) ? 0.15 : 0.32, (!higgsBands.empty() || !comparisons.empty()) ? 0.925: 0.925, 0.60);
   }
   else{
     if(theory=="MSSM low m_{H} scenario") leg = new TLegend(0.18, (!higgsBands.empty() || !comparisons.empty()) ? 0.74 : 0.83, (!higgsBands.empty() || !comparisons.empty()) ? 0.85: 0.85, 0.89);
@@ -251,7 +251,13 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   if(plotOuterBand){ 
     leg->AddEntry(outerBand_1, "#pm 2#sigma expected", "F"); 
   }
-  leg->AddEntry(background, "m_{h,H}#neq(125.5#pm3.0)GeV", "F");
+  if(log) {
+    leg->AddEntry((TObject*)0, "", "");
+    leg->AddEntry(background, "m_{h,H} #neq", "F");
+    leg->AddEntry((TObject*)0, "(125.5 #pm 3.0) GeV", "");
+  }
+  else leg->AddEntry(background, "m_{h,H}#neq(125.5#pm3.0)GeV", "F");
+  
   //for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band){
   //  leg->AddEntry(band->second, TString::Format("m_{h,H}=125GeV #pm %.0fGeV", band->first), "F");
   //}
