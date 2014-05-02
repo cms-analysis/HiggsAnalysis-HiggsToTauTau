@@ -5,8 +5,8 @@ import os
 
 def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
 
-    if "lowmH" in opt :  #smartGrid can't be used for lowmH since some parameter regions are corrupted and shall not be touched
-        smartGrid=False
+    #if "lowmH" in opt :  #smartGrid can't be used for lowmH since some parameter regions are corrupted and shall not be touched
+    #    smartGrid=False
         
     limits = []
     reduced_grid = [] 
@@ -46,11 +46,11 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
         if "lowmH" in opt :
             full_grid_mA = [ 1.5, 2.0, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5 ] ##define the maximum grid for lowmH
         elif "tauphobic" in opt :
-            full_grid_mA = [ 1.0, 2.0, 4.0, 7.0, 10.0, 13.0, 15.0, 17.0, 20.0, 23.0, 25.0, 27.0, 30.0, 33.0, 35.0, 37.0, 40.0, 43.0, 45.0, 47.0, 50.0 ] ##define the maximum grid for tauphobic
+            full_grid_mA = [ 1.0, 2.0, 4.0, 6.0, 7.0, 8.0, 10.0, 13.0, 15.0, 17.0, 20.0, 23.0, 25.0, 27.0, 30.0, 33.0, 35.0, 37.0, 40.0, 43.0, 45.0, 47.0, 50.0 ] ##define the maximum grid for tauphobic
         elif "lightstopmod" in opt :
-            full_grid_mA = [ 0.7, 0.8, 0.9, 1.0, 2.0, 4.0, 7.0, 10.0, 13.0, 15.0, 17.0, 20.0, 23.0, 25.0, 27.0, 30.0, 33.0, 35.0, 37.0, 40.0, 43.0, 45.0, 47.0, 50.0, 53.0, 55.0, 57.0, 60.0 ] ##define the maximum grid for lightstopmod
+            full_grid_mA = [ 0.7, 0.8, 0.9, 1.0, 2.0, 4.0, 6.0, 7.0, 8.0, 10.0, 13.0, 15.0, 17.0, 20.0, 23.0, 25.0, 27.0, 30.0, 33.0, 35.0, 37.0, 40.0, 43.0, 45.0, 47.0, 50.0, 53.0, 55.0, 57.0, 60.0 ] ##define the maximum grid for lightstopmod
         else :
-            full_grid_mA = [ 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 2.0, 4.0, 7.0, 10.0, 13.0, 15.0, 17.0, 20.0, 23.0, 25.0, 27.0, 30.0, 33.0, 35.0, 37.0, 40.0, 43.0, 45.0, 47.0, 50.0, 53.0, 55.0, 57.0, 60.0 ] ##define the maximum grid for all scenarios except lowmH, lightstopmod and tauphobic
+            full_grid_mA = [ 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 2.0, 4.0, 6.0, 7.0, 8.0, 10.0, 13.0, 15.0, 17.0, 20.0, 23.0, 25.0, 27.0, 30.0, 33.0, 35.0, 37.0, 40.0, 43.0, 45.0, 47.0, 50.0, 53.0, 55.0, 57.0, 60.0 ] ##define the maximum grid for all scenarios except lowmH, lightstopmod and tauphobic
         ##build up a reduced grid 
         for limit in limits :
             tanb_low_idx = -999
@@ -64,8 +64,8 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
                         tanb_low_idx = idx-3
                     else :
                         tanb_low_idx = 0
-                    if idx+1 <= len(full_grid_mA)-1 :
-                        tanb_high_idx = idx+2
+                    if idx+2 <= len(full_grid_mA)-2 :
+                        tanb_high_idx = idx+3
                     else :
                         tanb_high_idx = len(full_grid_mA)
                     helper = False 
@@ -78,7 +78,8 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
         if not reduced_grid :
             reduced_grid.append(full_grid_mA[-1]) 
             reduced_grid.append(full_grid_mA[-2]) 
-            reduced_grid.append(full_grid_mA[-3])    
+            reduced_grid.append(full_grid_mA[-3])
+        #print 'reducded_grid:', reduced_grid 
         ##build up the grid for the reduced_grid
         idx=0    
         while idx < len(reduced_grid) :
@@ -92,8 +93,8 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
                     "{CMD} -n 1 --min {START} --max {END} {SUB} {OPTS} {USER} {DIRS}".format(START=reduced_grid[idx], END=reduced_grid[idx], CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     ]
             grid = grid+grid_save
-            idx=idx+2
-        
+            idx=idx+2   
+            
     else :       
         if "lowmH" in opt : #for lowmH MSSM scenario
             if len(subvec(args, 300, 2999))>0 :
