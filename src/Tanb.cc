@@ -130,12 +130,12 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     for(int i=0; i<nevent; ++i){
       limit->GetEntry(index[i]);
       //filling control plots
-      graph_minus2sigma->SetPoint(k, tanb, minus2sigma);
-      graph_minus1sigma->SetPoint(k, tanb, minus1sigma);
-      graph_expected   ->SetPoint(k, tanb, exp);
-      graph_plus1sigma ->SetPoint(k, tanb, plus1sigma);
-      graph_plus2sigma ->SetPoint(k, tanb, plus2sigma);
-      graph_observed   ->SetPoint(k, tanb, obs);
+      graph_minus2sigma->SetPoint(k, tanb, minus2sigma/exclusion_);
+      graph_minus1sigma->SetPoint(k, tanb, minus1sigma/exclusion_);
+      graph_expected   ->SetPoint(k, tanb, exp/exclusion_);
+      graph_plus1sigma ->SetPoint(k, tanb, plus1sigma/exclusion_);
+      graph_plus2sigma ->SetPoint(k, tanb, plus2sigma/exclusion_);
+      graph_observed   ->SetPoint(k, tanb, obs/exclusion_);
       k++;      
       for(int j=0; j<graph_minus2sigma->GetN(); j++){ 
 	if(graph_minus2sigma->GetY()[j]>ymax) {ymax=graph_minus2sigma->GetY()[j]; xmax=graph_minus2sigma->GetX()[j]; tanbLowHigh=xmax;}
@@ -340,10 +340,9 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       np_obs++;
     }
     
-    for(unsigned int i=0; i<v_minus2sigma.size(); i++){
+    /*for(unsigned int i=0; i<v_minus2sigma.size(); i++){
       std::cout << i << " -2sigma " << v_minus2sigma[i] <<std::endl;
     }
-    /*
     for(unsigned int i=0; i<v_minus1sigma.size(); i++){
       std::cout << i << " -1sigma " << v_minus1sigma[i] <<std::endl;
     }
@@ -560,15 +559,15 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     else if (v_minus2sigma[2]==tanbLowHigh && tanbLowHigh!=tanbLow) help_minus2sigma=v_minus2sigma[3];
     else help_minus2sigma=v_minus2sigma[1]; 
     if (v_minus1sigma[2]<tanbLowHigh && v_minus1sigma[2]>tanbLow) help_minus1sigma=v_minus1sigma[2];
-    else if (v_minus1sigma[2]==tanbLowHigh) help_minus1sigma=v_minus1sigma[3];
+    else if (v_minus1sigma[2]==tanbLowHigh && tanbLowHigh!=tanbLow) help_minus1sigma=v_minus1sigma[3];
     else help_minus1sigma=v_minus1sigma[1];
     if (v_exp[2]!=tanbLow) help_exp=v_exp[2];
     else help_exp=v_exp[1];
     if (v_plus1sigma[2]<tanbLowHigh && v_plus1sigma[2]>tanbLow) help_plus1sigma=v_plus1sigma[2];
-    else if (v_plus1sigma[2]==tanbLowHigh) help_plus1sigma=v_plus1sigma[3];
+    else if (v_plus1sigma[2]==tanbLowHigh && tanbLowHigh!=tanbLow) help_plus1sigma=v_plus1sigma[3];
     else help_plus1sigma=v_plus1sigma[1];
     if (v_plus2sigma[2]<tanbLowHigh && v_plus2sigma[2]>tanbLow) help_plus2sigma=v_plus2sigma[2];
-    else if (v_plus2sigma[2]==tanbLowHigh) help_plus2sigma=v_plus2sigma[3];
+    else if (v_plus2sigma[2]==tanbLowHigh && tanbLowHigh!=tanbLow) help_plus2sigma=v_plus2sigma[3];
     else help_plus2sigma=v_plus2sigma[1];
     if (v_obs[2]!=tanbLow) help_obs=v_obs[2];
     else help_obs=v_obs[1];
