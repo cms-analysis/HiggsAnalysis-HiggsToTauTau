@@ -79,11 +79,11 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
             reduced_grid.append(full_grid_mA[-1]) 
             reduced_grid.append(full_grid_mA[-2]) 
             reduced_grid.append(full_grid_mA[-3])
-        #print 'reducded_grid:', reduced_grid 
+        print 'reducded_grid:', reduced_grid 
         ##build up the grid for the reduced_grid
         idx=0    
         while idx < len(reduced_grid) :
-            dirs = vec2str(subvec(args,  90,  1000))
+            dirs = vec2str(subvec(args,  90,  3100))
             if idx < len(reduced_grid)-1 :
                 grid_save = [
                     "{CMD} -n 2 --min {START} --max {END} {SUB} {OPTS} {USER} {DIRS}".format(START=reduced_grid[idx], END=reduced_grid[idx+1], CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
