@@ -46,7 +46,7 @@ void compareShapesMSSM(std::string path, std::string category, std::string chann
 
   std::cout << " *******************************************************************************************************\n"
 	    << " * Usage     : root -l                                                                                  \n"
-	    << " *             .x compareSignalShapesMSSM.C+(file, category, shape1, shape2, max, min)                  \n"
+	    << " *             .x compareShapesMSSM.C+(file, category, shape1, shape2, max, min)                        \n"
 	    << " *                                                                                                      \n"
 	    << " * Arguments :  + path     string           path to directory where files are stored                    \n"
 	    << " *                                          must be 'common' directory                                  \n"
