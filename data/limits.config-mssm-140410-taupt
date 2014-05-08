@@ -87,7 +87,7 @@ mt_soft_processes = ZL,ZJ,W>QCD
 unblind
 
 periods = 7TeV 8TeV
-channels = mt et em mm tt
+channels = mt et mm em tt
 
 em_categories_7TeV = 8 9
 et_categories_7TeV = 8 9
@@ -104,11 +104,11 @@ ee_categories_8TeV = 8 9
 tt_categories_8TeV = 10 11 12 13 14
 
 em_names = nobtag btag
-et_names = nobtag btag nobtag_lowtau nobtag_mediumtau nobtag_hightau btag_lowtau btag_hightau  
-mt_names = nobtag btag nobtag_lowtau nobtag_mediumtau nobtag_hightau btag_lowtau btag_hightau  
+et_names = nobtag btag nobtag_low nobtag_medium nobtag_high btag_low btag_high  
+mt_names = nobtag btag nobtag_low nobtag_medium nobtag_high btag_low btag_high  
 mm_names = nobtag btag
 ee_names = nobtag btag
-tt_names = nobtag btag nobtag_lowtau nobtag_mediumtau nobtag_hightau btag_lowtau btag_hightau  
+tt_names = nobtag btag nobtag_low nobtag_medium nobtag_high btag_low btag_high  
 
 
 [bbb-mssm]
