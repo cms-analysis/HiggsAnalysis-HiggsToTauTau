@@ -231,7 +231,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   }
   else{ 
     if(theory=="MSSM low m_{H} scenario") leg = new TLegend(0.27, 0.16, 0.92, 0.33);
-    else leg = new TLegend(0.18, (!higgsBands.empty() || !comparisons.empty()) ? 0.74 : 0.81, (!higgsBands.empty() || !comparisons.empty()) ? 0.85: 0.90, 0.89);
+    else leg = new TLegend(0.18, (!higgsBands.empty() || !comparisons.empty()) ? 0.53 : 0.62, (!higgsBands.empty() || !comparisons.empty()) ? 0.55: 0.50, 0.89);
   }  
   if(theory=="MSSM low m_{H} scenario") leg-> SetNColumns(2);
   leg->SetBorderSize(  1 );
