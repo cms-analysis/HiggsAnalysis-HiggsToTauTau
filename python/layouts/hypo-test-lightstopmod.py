@@ -13,7 +13,7 @@ layout = cms.PSet(
     ## min for plotting
     min = cms.double(0.7),
     ## max for plotting
-    max = cms.double(60),
+    max = cms.double(30),
     ## min for plotting
     log = cms.int32(0),
     ## print to png
@@ -53,10 +53,10 @@ layout = cms.PSet(
    ,450.
    ,500.
    ,600.
-   ,700.
-   ,800.
-   ,900.
-   ,1000.
+   #,700.
+   #,800.
+   #,900.
+   #,1000.
      ),
     ## is this mssm?
     mssm = cms.bool(True),

@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
+    #dataset = cms.string(""),
     dataset = cms.string("CMS,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV"),
     #dataset = cms.string("CMS Preliminary,  H#rightarrow#tau#tau,  18.3 fb^{-1} at 8 TeV"),
     ## x-axis title
@@ -13,7 +14,7 @@ layout = cms.PSet(
     ## min for plotting
     min = cms.double(0.7),
     ## max for plotting
-    max = cms.double(60),
+    max = cms.double(30),
     ## min for plotting
     log = cms.int32(0),
     ## print to png
@@ -53,10 +54,10 @@ layout = cms.PSet(
    ,450.
    ,500.
    ,600.
-   ,700.
-   ,800.
-   ,900.
-   ,1000.
+   #,700.
+   #,800.
+   #,900.
+   #,1000.
      ),
     ## is this mssm?
     mssm = cms.bool(True),

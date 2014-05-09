@@ -26,6 +26,7 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
     plot2D->GetXaxis()->SetRange(plot2D->GetXaxis()->FindBin(xmin), plot2D->GetXaxis()->FindBin(xmax)-1);
   }
   plot2D->GetXaxis()->SetLabelFont(62);
+  plot2D->GetXaxis()->SetLabelOffset(0.018);
   plot2D->GetXaxis()->SetTitleColor(1);
   plot2D->GetXaxis()->SetTitleOffset(1.05);
   plot2D->GetXaxis()->SetTitleFont(62);
@@ -35,6 +36,7 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
     plot2D->GetYaxis()->SetRange(plot2D->GetYaxis()->FindBin(ymin), plot2D->GetYaxis()->FindBin(ymax)-1);
   }
   plot2D->GetYaxis()->SetLabelFont(62);
+  plot2D->GetYaxis()->SetLabelOffset(0.023);
   plot2D->GetYaxis()->SetTitleSize(0.055);
   plot2D->GetYaxis()->SetTitleOffset(1.4);
   plot2D->GetYaxis()->SetTitleFont(62);
