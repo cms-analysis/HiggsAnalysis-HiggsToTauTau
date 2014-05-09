@@ -128,6 +128,7 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
   TGraph *ggh = new TGraph();
   TGraph *bbh = new TGraph();
   TGraph *bb = new TGraph();
+  TGraph *signi = new TGraph();
 
   double xs_eff_ggH[4];
   double xs_eff_bbH[4];
@@ -153,15 +154,29 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
   masses[17]= 900;
   masses[18]=1000;
 
-  TFile* inputFile = new TFile(std::string(filepath+"/"+"htt_tt.inputs-mssm-8TeV-0.root").c_str()); 
-  TH1F* h_ggH = new TH1F();
-  TH1F* h_bbH = new TH1F();
+  TFile* inputFile = new TFile(std::string(filepath+"/"+"htt_mt.inputs-mssm-8TeV-0.root").c_str()); 
+  TH1F* h_background = new TH1F();
   double ggH_value, bbH_value, ggA_value, bbA_value, ggh_value, bbh_value;;
   
   double mA;
 
-  for(unsigned int idx=0; idx<19; idx++){
+  h_background=get<TH1F>(inputFile, std::string("muTau_"+category+"/ZTT").c_str());
+  h_background->Add(get<TH1F>(inputFile, std::string("muTau_"+category+"/QCD").c_str()));
+  h_background->Add(get<TH1F>(inputFile, std::string("muTau_"+category+"/W").c_str()));
+  h_background->Add(get<TH1F>(inputFile, std::string("muTau_"+category+"/ZL").c_str()));
+  h_background->Add(get<TH1F>(inputFile, std::string("muTau_"+category+"/ZJ").c_str()));
+  h_background->Add(get<TH1F>(inputFile, std::string("muTau_"+category+"/TT").c_str()));
+  h_background->Add(get<TH1F>(inputFile, std::string("muTau_"+category+"/VV").c_str()));
+   
+ TH1F* h_ggH = new TH1F();
+ TH1F* h_bbH = new TH1F();
+ TH1F* h_ggh = new TH1F();
+ TH1F* h_bbh = new TH1F();
+ TH1F* h_ggA = new TH1F();
+ TH1F* h_bbA = new TH1F();
 
+  for(unsigned int idx=0; idx<19; idx++){
+  
     mA=masses[idx];
     std::cout << "mh = " << xs.Give_Mass_h(mA, tanb) << "   mA = " << mA << "   mH = " << xs.Give_Mass_H(mA, tanb) << std::endl;
     std::cout << "mh = " << closest_mass(xs.Give_Mass_h(mA, tanb)) << "   mA = " << mA << "   mH = " << closest_mass(xs.Give_Mass_H(mA, tanb)) << std::endl;
@@ -180,23 +195,25 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
   
     char mass_help[50];
     sprintf (mass_help, "%0.0f", mA); 
-    h_ggH = get<TH1F>(inputFile, std::string("tauTau_"+category+"/ggH"+mass_help).c_str());
-    ggA_value=h_ggH->Integral();
-    std::cout << "acc of ggA " << h_ggH->Integral() << std::endl;
+    h_ggA = get<TH1F>(inputFile, std::string("muTau_"+category+"/ggH"+mass_help).c_str());
+    ggA_value=h_ggA->Integral();
+    std::cout << "acc of ggA " << h_ggA->Integral() << std::endl;
     ggA->SetPoint(idx, mA, xs_eff_ggH[0]*ggA_value);
 
     sprintf (mass_help, "%0.0f", closest_mass(xs.Give_Mass_H(mA, tanb))); 
-    h_ggH = get<TH1F>(inputFile, std::string("tauTau_"+category+"/ggH"+mass_help).c_str());
+    h_ggH = get<TH1F>(inputFile, std::string("muTau_"+category+"/ggH"+mass_help).c_str());
     ggH_value=h_ggH->Integral();
     std::cout << "acc of ggH " << h_ggH->Integral() << std::endl;
     ggH->SetPoint(idx, mA, xs_eff_ggH[1]*ggH_value);
 
     sprintf (mass_help, "%0.0f", closest_mass(xs.Give_Mass_h(mA, tanb))); 
-    h_ggH = get<TH1F>(inputFile, std::string("tauTau_"+category+"/ggH"+mass_help).c_str());
-    ggh_value=h_ggH->Integral();
-    std::cout << "acc of ggh " << h_ggH->Integral() << std::endl;
+    h_ggh = get<TH1F>(inputFile, std::string("muTau_"+category+"/ggH"+mass_help).c_str());
+    ggh_value=h_ggh->Integral();
+    std::cout << "acc of ggh " << h_ggh->Integral() << std::endl;
     ggh->SetPoint(idx, mA, xs_eff_ggH[2]*ggh_value);
-
+    //std::cout << xs_eff_ggH[0] << " " << xs_eff_ggH[1] << " " << xs_eff_ggH[2] << " " << std::endl;
+    //std::cout << ggA_value << " " << ggH_value << " " << ggh_value << " " << std::endl;
+    //std::cout << mA << " " << xs_eff_ggH[2]*ggh_value+xs_eff_ggH[1]*ggH_value+xs_eff_ggH[0]*ggA_value << std::endl; 
     gg->SetPoint(idx, mA, xs_eff_ggH[2]*ggh_value+xs_eff_ggH[1]*ggH_value+xs_eff_ggH[0]*ggA_value);
     // if(mA<130) gg->SetPoint(idx, mA, xs_eff_ggH[2]*ggh_value+xs_eff_ggH[0]*ggA_value);
     // else if(mA==130) gg->SetPoint(idx, mA, xs_eff_ggH[2]*ggh_value+xs_eff_ggH[1]*ggH_value+xs_eff_ggH[0]*ggA_value);
@@ -216,31 +233,69 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
     std::cout << "mA: "<< mA << "  tanb: "<<tanb<<"  -> bbH_xsec(cmb):\t" << xs_eff_bbH[3] << std::endl;
 
     sprintf (mass_help, "%0.0f", mA); 
-    h_bbH = get<TH1F>(inputFile, std::string("tauTau_"+category+"/bbH"+mass_help).c_str());
-    bbA_value=h_bbH->Integral();
-    std::cout << "acc of bbA " << h_bbH->Integral() << std::endl;
+    h_bbA = get<TH1F>(inputFile, std::string("muTau_"+category+"/bbH"+mass_help).c_str());
+    bbA_value=h_bbA->Integral();
+    std::cout << "acc of bbA " << h_bbA->Integral() << std::endl;
     bbA->SetPoint(idx, mA, xs_eff_bbH[0]*bbA_value);
 
     sprintf (mass_help, "%0.0f", closest_mass(xs.Give_Mass_H(mA, tanb))); 
-    h_bbH = get<TH1F>(inputFile, std::string("tauTau_"+category+"/bbH"+mass_help).c_str());
+    h_bbH = get<TH1F>(inputFile, std::string("muTau_"+category+"/bbH"+mass_help).c_str());
     bbH_value=h_bbH->Integral();
     std::cout << "acc of bbH " << h_bbH->Integral() << std::endl;
     bbH->SetPoint(idx, mA, xs_eff_bbH[1]*bbH_value);
 
     sprintf (mass_help, "%0.0f", closest_mass(xs.Give_Mass_h(mA, tanb))); 
-    h_bbH = get<TH1F>(inputFile, std::string("tauTau_"+category+"/bbH"+mass_help).c_str());
-    bbh_value=h_bbH->Integral();
-    std::cout << "acc of bbh " << h_ggH->Integral() << std::endl;
+    h_bbh = get<TH1F>(inputFile, std::string("muTau_"+category+"/bbH"+mass_help).c_str());
+    bbh_value=h_bbh->Integral();
+    std::cout << "acc of bbh " << h_bbh->Integral() << std::endl;
     bbh->SetPoint(idx, mA, xs_eff_bbH[2]*bbh_value);
-
+    //std::cout << xs_eff_bbH[0] << " " << xs_eff_bbH[1] << " " << xs_eff_bbH[2] << " " << std::endl;
+    //std::cout << bbA_value << " " << bbH_value << " " << bbh_value << " " << std::endl;
+    //std::cout << mA << " " << xs_eff_bbH[2]*bbh_value+xs_eff_bbH[1]*bbH_value+xs_eff_bbH[0]*bbA_value << std::endl;
     bb->SetPoint(idx, mA, xs_eff_bbH[2]*bbh_value+xs_eff_bbH[1]*bbH_value+xs_eff_bbH[0]*bbA_value);
     // if(mA<130) bb->SetPoint(idx, mA, xs_eff_bbH[2]*bbh_value+xs_eff_bbH[0]*bbA_value);
     //else if(mA==130) bb->SetPoint(idx, mA, xs_eff_bbH[2]*bbh_value+xs_eff_bbH[1]*bbH_value+xs_eff_bbH[0]*bbA_value);
     //else bb->SetPoint(idx, mA, xs_eff_bbH[1]*bbH_value+xs_eff_bbH[0]*bbA_value); 
     std::cout << std::endl;
     std::cout << std::endl;
-    
+
+    h_ggA->Scale(xs_eff_ggH[0]);
+    h_ggH->Scale(xs_eff_ggH[1]); 
+    h_ggh->Scale(xs_eff_ggH[2]);
+    h_bbA->Scale(xs_eff_bbH[0]);
+    h_bbH->Scale(xs_eff_bbH[1]); 
+    h_bbh->Scale(xs_eff_bbH[2]);
+
+    h_ggA->Add(h_ggH);
+    h_ggA->Add(h_ggh);    
+    h_bbA->Add(h_bbH);
+    h_bbA->Add(h_bbh);   
+    h_bbA->Add(h_ggA);
+
+    double significance=0;
+    double significance_help=0;
+    for(int nbin=0; nbin<h_bbA->GetNbinsX()+1; nbin++){     
+      significance=h_bbA->GetBinContent(nbin)/sqrt(h_background->GetBinContent(nbin)+h_bbA->GetBinContent(nbin));
+      std::cout << h_bbA->GetBinContent(nbin)  << " " <<  h_background->GetBinContent(nbin) << " " << significance << std::endl;
+      if(significance>significance_help){
+	significance_help=significance;
+      }
+    }
+    std::cout << "significance " << significance_help << std::endl;
+    signi->SetPoint(idx, mA, significance_help);
+
+    //destruct TH1Fs
+    h_ggA->~TH1F();
+    h_ggH->~TH1F(); 
+    h_ggh->~TH1F();
+    h_bbA->~TH1F();
+    h_bbH->~TH1F(); 
+    h_bbh->~TH1F();
+
+    std::cout << std::endl;
+    std::cout << std::endl;
   }
+
   /// do the drawing
   TCanvas* canv1 = new TCanvas("canv1", "xs*BR", 600, 600);
   canv1->cd();
@@ -317,10 +372,10 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
   gg->Draw("PLsame");
   gg->SetLineStyle(1.);
   gg->SetLineWidth(2.); 
-  gg->SetLineColor(kBlack);
+  gg->SetLineColor(kMagenta);
   gg->SetMarkerStyle(20);
   gg->SetMarkerSize(0);
-  gg->SetMarkerColor(kBlack);
+  gg->SetMarkerColor(kMagenta);
 
   bb->Draw("PLsame");
   bb->SetLineStyle(1.);
@@ -337,6 +392,14 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
   SM->SetMarkerStyle(20);
   SM->SetMarkerSize(0);
   SM->SetMarkerColor(kGreen+1);*/
+
+  signi->Draw("PLsame");
+  signi->SetLineStyle(1.);
+  signi->SetLineWidth(2.); 
+  signi->SetLineColor(kBlack);
+  signi->SetMarkerStyle(20);
+  signi->SetMarkerSize(0);
+  signi->SetMarkerColor(kBlack);
 
   TLegend* leg0;
   /// setup the CMS Preliminary
@@ -359,6 +422,7 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
   leg0->AddEntry( bbA, "bbA #rightarrow #tau#tau",  "PL" );
   leg0->AddEntry( bbH, "bbH #rightarrow #tau#tau",  "PL" );
   leg0->AddEntry( bb,  "bb  #rightarrow #tau#tau",  "PL" );
+  leg0->AddEntry( signi,  "bin with highest s/sqrt(s+b)",  "PL" );
   leg0->Draw("same");
   
   canv1->Print("xsBRtimesacc.png");
