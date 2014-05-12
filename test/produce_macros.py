@@ -278,13 +278,13 @@ for chn in config.channels :
             if chn == "hbb" :
                 process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties = parse_dcard("datacards/{CHN}_{CAT}_{PER}.txt".format(CHN=chn, CAT=cat, PER=per), fitresults, "ANYBIN")
                 if cat=="6" :
-                    plots = Analysis(options.analysis, histfile, config.categoryname[chn][config.categories[chn][per].index(cat)],
+                    plots = Analysis(options.analysis, histfile, config.categoryname[chn][per][config.categories[chn][per].index(cat)],
                                  process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
                                  "templates/{CHN}_LEP_X_template.C".format(CHN=chn.upper()),
                                  "{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per)
                                  )
                 else :
-                    plots = Analysis(options.analysis, histfile, config.categoryname[chn][config.categories[chn][per].index(cat)],
+                    plots = Analysis(options.analysis, histfile, config.categoryname[chn][per][config.categories[chn][per].index(cat)],
                                  process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
                                  "templates/{CHN}_HAD_X_template.C".format(CHN=chn.upper()),
                                  "{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per)
@@ -293,13 +293,13 @@ for chn in config.channels :
                 process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties = parse_dcard("datacards/htt_{CHN}_{CAT}_{PER}.txt".format(CHN=chn, CAT=cat, PER=per), fitresults, "ANYBIN")
                 ## the work around for the naming is needed to account for vbf in 7TeV in et and mt
                 if per == '7TeV' and cat == '6' and chn in ['mt','et']:
-                   plots = Analysis(options.analysis, histfile, config.categoryname[chn][config.categories[chn][per].index(cat)][:3],
+                   plots = Analysis(options.analysis, histfile, config.categoryname[chn][per][config.categories[chn][per].index(cat)][:3],
                                     process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
                                     "templates/HTT_{CHN}_X_template.C".format(CHN=chn.upper()),
                                     "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per)
                                     )
                 else:
-                   plots = Analysis(options.analysis, histfile, config.categoryname[chn][config.categories[chn][per].index(cat)],
+                   plots = Analysis(options.analysis, histfile, config.categoryname[chn][per][config.categories[chn][per].index(cat)],
                                     process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
                                     "templates/HTT_{CHN}_X_template.C".format(CHN=chn.upper()),
                                     "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per)
