@@ -16,7 +16,7 @@ layout = cms.PSet(
     ## max for plotting
     max = cms.double(60),
     ## min for plotting
-    log = cms.int32(1),
+    log = cms.int32(0),
     ## print to png
     png = cms.bool(True),
     ## print to pdf
