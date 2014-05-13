@@ -10,7 +10,7 @@ layout = cms.PSet(
     ## x-axis title
     yaxis = cms.string("#bf{tan#beta}"),
     ## theory label 
-    theory = cms.string("MSSM low m_{H} scenario"),
+    theory = cms.string("MSSM low-m_{H} scenario"),
     ## min for plotting
     min = cms.double(1.5),
     ## max for plotting

@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
+    #dataset = cms.string("CMS,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV"), 
     dataset = cms.string("CMS,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV"),
     #dataset = cms.string("CMS Preliminary,  H#rightarrow#tau#tau,  18.3 fb^{-1} at 8 TeV"),
     ## x-axis title
@@ -9,7 +10,7 @@ layout = cms.PSet(
     ## x-axis title
     yaxis = cms.string("#bf{tan#beta}"),
     ## theory label 
-    theory = cms.string("MSSM low m_{H} scenario"),
+    theory = cms.string("MSSM low-m_{H} scenario"),
     ## min for plotting
     min = cms.double(1.5),
     ## max for plotting
@@ -60,12 +61,12 @@ layout = cms.PSet(
      #,840.
      #,860.
      #,880.
-     ,900.
+     #,900.
      #,920.
      #,940.
      #,960.
      #,980.
-     ,1000.
+     #,1000.
      #,1020.
      #,1040.
      #,1060.
@@ -75,7 +76,7 @@ layout = cms.PSet(
      #,1140.
      #,1160.
      #,1180.
-     ,1200.
+     #,1200.
      #,1220.
      #,1240.
      #,1260.
