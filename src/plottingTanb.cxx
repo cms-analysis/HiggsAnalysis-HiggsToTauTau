@@ -196,8 +196,8 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
     theory1= new TPaveText(0.14, 0.85, 0.9, 0.90, "NDC");
   }
   else{
-    if(theory=="MSSM low m_{H} scenario") theory1= new TPaveText(0.25, 0.81, 0.7, 0.87, "NDC");
-    else theory1= new TPaveText(0.45, 0.20, 0.9, 0.26, "NDC");
+    if(theory=="MSSM low-m_{H} scenario") theory1= new TPaveText(0.14, 0.85, 0.9, 0.90, "NDC");
+    else theory1= new TPaveText(0.48, 0.17, 0.92, 0.23, "NDC");
   }
   theory1->SetBorderSize(   0 );
   theory1->SetFillStyle(    0 );
@@ -208,7 +208,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   theory1->AddText(theory.c_str());
   theory1->Draw();
 
-  TPaveText* theory2;
+  /*TPaveText* theory2;
   if(log){
     theory2 = new TPaveText(0.53, 0.85, 0.9, 0.90, "NDC");
   }
@@ -222,25 +222,27 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   theory2->SetTextColor(    1 );
   theory2->SetTextFont (   62 );
   theory2->AddText("M_{SUSY} = 1 TeV");
-  //if(theory=="MSSM m_{h}^{max} scenario") theory2->Draw();
+  //if(theory=="MSSM m_{h}^{max} scenario") theory2->Draw();*/
 
   /// add the proper legend
   TLegend* leg;
   if(log){
-    leg = new TLegend(0.62, (!higgsBands.empty() || !comparisons.empty()) ? 0.15 : 0.32, (!higgsBands.empty() || !comparisons.empty()) ? 0.925: 0.925, 0.60);
+    if(theory=="MSSM light-stop scenario") leg = new TLegend(0.19, 0.67, 0.72, 0.84);
+    else leg = new TLegend(0.635, (!higgsBands.empty() || !comparisons.empty()) ? 0.15 : 0.32, (!higgsBands.empty() || !comparisons.empty()) ? 0.92: 0.92, 0.52);
   }
   else{ 
-    if(theory=="MSSM low m_{H} scenario") leg = new TLegend(0.27, 0.16, 0.92, 0.33);
-    else leg = new TLegend(0.18, (!higgsBands.empty() || !comparisons.empty()) ? 0.53 : 0.62, (!higgsBands.empty() || !comparisons.empty()) ? 0.55: 0.50, 0.89);
+    if(theory=="MSSM low-m_{H} scenario") leg = new TLegend(0.35, 0.16, 0.92, 0.31);
+    else leg = new TLegend(0.18, (!higgsBands.empty() || !comparisons.empty()) ? 0.53 : 0.65, (!higgsBands.empty() || !comparisons.empty()) ? 0.47: 0.50, 0.89);
   }  
-  if(theory=="MSSM low m_{H} scenario") leg-> SetNColumns(2);
+  if(theory=="MSSM low-m_{H} scenario") leg->SetNColumns(2);
+  if(theory=="MSSM light-stop scenario" && log)  leg->SetNColumns(2);
   leg->SetBorderSize(  1 );
   leg->SetFillStyle (1001);
   leg->SetTextSize  (0.03);
   leg->SetTextFont  ( 62 ); 
   leg->SetFillColor (kWhite);
   leg->SetLineColor (kBlack);
-  if(MSSMvsSM) leg->SetHeader("CL_{S}(MSSM, SM) < 0.05:");
+  if(MSSMvsSM) leg->SetHeader("CL_{S}(MSSM,SM)<0.05:");
   else leg->SetHeader("95% CL Excluded:");
   if(!expectedOnly){ 
     //if(observed){ 
@@ -252,13 +254,6 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   if(plotOuterBand){ 
     leg->AddEntry(outerBand_1, "#pm 2#sigma expected", "F"); 
   }
-  if(log) {
-    leg->AddEntry((TObject*)0, "", "");
-    leg->AddEntry(background, "m_{h,H} #neq", "F");
-    leg->AddEntry((TObject*)0, "(125.5 #pm 3.0) GeV", "");
-  }
-  else leg->AddEntry(background, "m_{h,H}#neq(125.5#pm3.0)GeV", "F");
-  
   //for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band){
   //  leg->AddEntry(band->second, TString::Format("m_{h,H}=125GeV #pm %.0fGeV", band->first), "F");
   //}
@@ -273,6 +268,29 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
     }
   }
   leg->Draw("same");
+
+  TLegend* leg2;
+  if(log){
+    if(theory=="MSSM light-stop scenario") leg2 = new TLegend(0.58, 0.15, 0.92, 0.20);
+    else leg2 = new TLegend(0.18, 0.79, 0.52, 0.84);
+  }
+  else{ 
+    if(theory=="MSSM low-m_{H} scenario") leg2 = new TLegend(0.19, 0.78, 0.52, 0.84);
+    else leg2 = new TLegend(0.58, 0.24, 0.91, 0.30);
+  }  
+  leg2->SetBorderSize( 1  );
+  leg2->SetFillStyle (1001);
+  leg2->SetTextSize  (0.03);
+  leg2->SetTextFont  ( 62 ); 
+  leg2->SetFillColor (kWhite);
+  leg2->SetLineWidth (2);
+  leg2->SetLineColor (kBlack);
+  if(log) {
+    leg2->AddEntry(background, "m_{h,H}#neq(125#pm3.0)GeV", "F");
+  }
+  else leg2->AddEntry(background, "m_{h,H}#neq(125#pm3.0)GeV", "F");
+  leg2->Draw("same");
+  
   //canv.RedrawAxis("g");
   canv.RedrawAxis();
   return;
