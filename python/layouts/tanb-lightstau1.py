@@ -10,13 +10,13 @@ layout = cms.PSet(
     ## x-axis title
     yaxis = cms.string("#bf{tan#beta}"),
     ## theory label 
-    theory = cms.string("MSSM light stau scenario"),
+    theory = cms.string("MSSM light-stau scenario"),
     ## min for plotting
     min = cms.double(0.5),
     ## max for plotting
     max = cms.double(60),
     ## min for plotting
-    log = cms.int32(0),
+    log = cms.int32(1),
     ## print to png
     png = cms.bool(True),
     ## print to pdf
