@@ -221,7 +221,8 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       }
       // -1sigma
       if(minus1sigma_a == exclusion_) {v_minus1sigma.push_back(tanb_a); np_minus1sigma++;}
-      if((minus1sigma_a < exclusion_ && minus1sigma_b > exclusion_ && !highExcluded_minus1sigma) || (minus1sigma_a > exclusion_ && minus1sigma_b < exclusion_ && !lowExcluded_minus1sigma && tanb_b<tanbLowHigh)) {
+      if((minus1sigma_a < exclusion_ && minus1sigma_b > exclusion_ && !highExcluded_minus1sigma) || (minus1sigma_a > exclusion_ && minus1sigma_b < exclusion_ && tanb_b<tanbLowHigh)) {
+	if(minus1sigma_a > exclusion_ && minus1sigma_b < exclusion_ && lowExcluded_minus1sigma) {v_minus1sigma.pop_back(); np_minus1sigma--;}
 	double x_up=tanb_a;
 	double y_up=minus1sigma_a;
 	double x_down=tanb_b;
@@ -234,7 +235,8 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       }
       // expected
       if(exp_a == exclusion_) {v_exp.push_back(tanb_a); np_exp++;}
-      if((exp_a < exclusion_ && exp_b > exclusion_ && !highExcluded_expected) || (exp_a > exclusion_ && exp_b < exclusion_ && !lowExcluded_expected && tanb_b<tanbLowHigh)) {
+      if((exp_a < exclusion_ && exp_b > exclusion_ && !highExcluded_expected) || (exp_a > exclusion_ && exp_b < exclusion_ && tanb_b<tanbLowHigh)) {
+	if(exp_a > exclusion_ && exp_b < exclusion_ && lowExcluded_expected) {v_exp.pop_back(); np_exp--;}
 	double x_up=tanb_a;
 	double y_up=exp_a;
 	double x_down=tanb_b;
@@ -247,7 +249,8 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       }
       // +1sigma
       if(plus1sigma_a == exclusion_) {v_plus1sigma.push_back(tanb_a); np_plus1sigma++;}
-      if((plus1sigma_a < exclusion_ && plus1sigma_b > exclusion_ && !highExcluded_plus1sigma) || (plus1sigma_a > exclusion_ && plus1sigma_b < exclusion_ && !lowExcluded_plus1sigma && tanb_b<tanbLowHigh)) {
+      if((plus1sigma_a < exclusion_ && plus1sigma_b > exclusion_ && !highExcluded_plus1sigma) || (plus1sigma_a > exclusion_ && plus1sigma_b < exclusion_ && tanb_b<tanbLowHigh)) {
+	if(plus1sigma_a > exclusion_ && plus1sigma_b < exclusion_ && lowExcluded_plus1sigma) {v_plus1sigma.pop_back(); np_plus1sigma--;}
 	double x_up=tanb_a;
 	double y_up=plus1sigma_a;
 	double x_down=tanb_b;
@@ -260,7 +263,8 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       }
       // +2sigma
       if(plus2sigma_a == exclusion_) {v_plus2sigma.push_back(tanb_a); np_plus2sigma++;}
-      if((plus2sigma_a < exclusion_ && plus2sigma_b > exclusion_ && !highExcluded_plus2sigma) || (plus2sigma_a > exclusion_ && plus2sigma_b < exclusion_ && !lowExcluded_plus2sigma && tanb_b<tanbLowHigh)) {
+      if((plus2sigma_a < exclusion_ && plus2sigma_b > exclusion_ && !highExcluded_plus2sigma) || (plus2sigma_a > exclusion_ && plus2sigma_b < exclusion_ && tanb_b<tanbLowHigh)) {
+	if(plus2sigma_a > exclusion_ && plus2sigma_b < exclusion_ && lowExcluded_plus2sigma) {v_plus2sigma.pop_back(); np_plus2sigma--;}
 	double x_up=tanb_a;
 	double y_up=plus2sigma_a;
 	double x_down=tanb_b;
@@ -273,7 +277,8 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       }
       // observed
       if(obs_a == exclusion_) {v_obs.push_back(tanb_a); np_obs++;}
-      if((obs_a < exclusion_ && obs_b > exclusion_ && !highExcluded_observed) || (obs_a > exclusion_ && obs_b < exclusion_ && !lowExcluded_observed && tanb_b<tanbLowHigh)) {
+      if((obs_a < exclusion_ && obs_b > exclusion_ && !highExcluded_observed) || (obs_a > exclusion_ && obs_b < exclusion_ && tanb_b<tanbLowHigh)) {
+	if(obs_a > exclusion_ && obs_b < exclusion_ && lowExcluded_observed) {v_obs.pop_back(); np_obs--;}
 	double x_up=tanb_a;
 	double y_up=obs_a;
 	double x_down=tanb_b;
