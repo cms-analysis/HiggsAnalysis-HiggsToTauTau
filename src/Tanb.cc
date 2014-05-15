@@ -138,17 +138,17 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       graph_observed   ->SetPoint(k, tanb, obs/exclusion_);
       k++;      
       for(int j=0; j<graph_minus2sigma->GetN(); j++){ 
-	if(graph_minus2sigma->GetY()[j]>ymax) {ymax=graph_minus2sigma->GetY()[j]; xmax=graph_minus2sigma->GetX()[j]; tanbLowHigh=xmax;}
+	if(graph_minus2sigma->GetY()[j]>ymax && graph_minus2sigma->GetX()[j]>=1) {ymax=graph_minus2sigma->GetY()[j]; xmax=graph_minus2sigma->GetX()[j]; tanbLowHigh=xmax;} //tanb>=1 hardcoded to fix that point 	
       }
     }
-    //std::cout << "max " << tanbLowHigh << std::endl;
     // main loop to set the find the crosspoints
-    bool highExcluded_minus2sigma=false, lowExcluded_minus2sigma=false;
-    bool highExcluded_minus1sigma=false, lowExcluded_minus1sigma=false;
-    bool highExcluded_expected=false, lowExcluded_expected=false;
-    bool highExcluded_plus1sigma=false, lowExcluded_plus1sigma=false;
-    bool highExcluded_plus2sigma=false, lowExcluded_plus2sigma=false;
-    bool highExcluded_observed=false, lowExcluded_observed=false;
+    //limit->GetEntry(index[nevent-1]); 
+    bool highExcluded_minus2sigma=false, lowExcluded_minus2sigma=false; //double last_minus2sigma=minus2sigma;
+    bool highExcluded_minus1sigma=false, lowExcluded_minus1sigma=false; //double last_minus1sigma=minus1sigma;
+    bool highExcluded_expected=false, lowExcluded_expected=false; //double last_exp=exp; 
+    bool highExcluded_plus1sigma=false, lowExcluded_plus1sigma=false; //double last_plus1sigma=plus1sigma;
+    bool highExcluded_plus2sigma=false, lowExcluded_plus2sigma=false; //double last_plus2sigma=plus2sigma;
+    bool highExcluded_observed=false, lowExcluded_observed=false; //double last_obs=obs;
     for(int i=0; i<nevent; ++i){
       limit->GetEntry(index[i]);
       if (i==0) {
@@ -178,7 +178,6 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 	np_obs++;
       }
 
-      //std::cout<< "event i   " << tanb << ' ' << minus2sigma << ' ' << minus1sigma << ' ' << exp << ' ' << plus1sigma<< ' ' << plus2sigma<< ' ' << obs << std::endl;
       minus2sigma_a = minus2sigma;
       minus1sigma_a = minus1sigma;
       exp_a = exp;
@@ -188,7 +187,6 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       tanb_a = tanb;
       if(i+1<nevent){
 	limit->GetEntry(index[i+1]);
-	//std::cout<<"event i+1 "<< tanb << ' ' << minus2sigma << ' ' << minus1sigma << ' ' << exp << ' ' << plus1sigma<< ' ' << plus2sigma<< ' ' << obs << std::endl;
 	minus2sigma_b = minus2sigma;
 	minus1sigma_b = minus1sigma;
 	exp_b = exp;
@@ -209,7 +207,8 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       limit->GetEvent(index[i]);
       // -2sigma
       if(minus2sigma_a == exclusion_) {v_minus2sigma.push_back(tanb_a); np_minus2sigma++;}
-      if((minus2sigma_a < exclusion_ && minus2sigma_b > exclusion_ && !highExcluded_minus2sigma) || (minus2sigma_a > exclusion_ && minus2sigma_b < exclusion_ && !lowExcluded_minus2sigma && tanb_b<tanbLowHigh)) {
+      if((minus2sigma_a < exclusion_ && minus2sigma_b > exclusion_ && !highExcluded_minus2sigma) || (minus2sigma_a > exclusion_ && minus2sigma_b < exclusion_ && tanb_b<tanbLowHigh)) {	
+	if(minus2sigma_a > exclusion_ && minus2sigma_b < exclusion_ && lowExcluded_minus2sigma) {v_minus2sigma.pop_back(); np_minus2sigma--;}
 	double x_up=tanb_a;
 	double y_up=minus2sigma_a;
 	double x_down=tanb_b;
@@ -286,6 +285,8 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 	if(obs_a > exclusion_ && obs_b < exclusion_) lowExcluded_observed = true;
       }
     }
+    //check if last element is excluded or not - if not excluded be conservative and drop low exclusion - this is not yet implemented (region in interest is already excluded by mh)
+    //if(lowExcluded_minus2sigma && last_minus2sigma>exclusion_) {v_minus2sigma.pop_back(); np_minus2sigma--;}
     //number of points must be 4
     while(np_minus2sigma<4){
       if(v_minus2sigma[1]<tanbLowHigh) {
