@@ -130,6 +130,15 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
   TGraph *bb = new TGraph();
   TGraph *signi = new TGraph();
 
+  TGraph *ggHacc = new TGraph();
+  TGraph *bbHacc = new TGraph();
+  TGraph *ggAacc = new TGraph();
+  TGraph *ggacc = new TGraph();
+  TGraph *bbAacc = new TGraph();
+  TGraph *gghacc = new TGraph();
+  TGraph *bbhacc = new TGraph();
+  TGraph *bbacc = new TGraph();
+
   double xs_eff_ggH[4];
   double xs_eff_bbH[4];
 
@@ -198,26 +207,31 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
     h_ggA = get<TH1F>(inputFile, std::string("muTau_"+category+"/ggH"+mass_help).c_str());
     ggA_value=h_ggA->Integral();
     std::cout << "acc of ggA " << h_ggA->Integral() << std::endl;
-    ggA->SetPoint(idx, mA, xs_eff_ggH[0]*ggA_value);
+    ggA->SetPoint(idx, mA, xs_eff_ggH[0]);
+    ggAacc->SetPoint(idx, mA, ggA_value);
 
     sprintf (mass_help, "%0.0f", closest_mass(xs.Give_Mass_H(mA, tanb))); 
     h_ggH = get<TH1F>(inputFile, std::string("muTau_"+category+"/ggH"+mass_help).c_str());
     ggH_value=h_ggH->Integral();
     std::cout << "acc of ggH " << h_ggH->Integral() << std::endl;
-    ggH->SetPoint(idx, mA, xs_eff_ggH[1]*ggH_value);
+    ggH->SetPoint(idx, mA, xs_eff_ggH[1]);
+    ggHacc->SetPoint(idx, mA, ggH_value);
 
     sprintf (mass_help, "%0.0f", closest_mass(xs.Give_Mass_h(mA, tanb))); 
     h_ggh = get<TH1F>(inputFile, std::string("muTau_"+category+"/ggH"+mass_help).c_str());
     ggh_value=h_ggh->Integral();
     std::cout << "acc of ggh " << h_ggh->Integral() << std::endl;
-    ggh->SetPoint(idx, mA, xs_eff_ggH[2]*ggh_value);
-    //std::cout << xs_eff_ggH[0] << " " << xs_eff_ggH[1] << " " << xs_eff_ggH[2] << " " << std::endl;
-    //std::cout << ggA_value << " " << ggH_value << " " << ggh_value << " " << std::endl;
-    //std::cout << mA << " " << xs_eff_ggH[2]*ggh_value+xs_eff_ggH[1]*ggH_value+xs_eff_ggH[0]*ggA_value << std::endl; 
-    gg->SetPoint(idx, mA, xs_eff_ggH[2]*ggh_value+xs_eff_ggH[1]*ggH_value+xs_eff_ggH[0]*ggA_value);
-    // if(mA<130) gg->SetPoint(idx, mA, xs_eff_ggH[2]*ggh_value+xs_eff_ggH[0]*ggA_value);
-    // else if(mA==130) gg->SetPoint(idx, mA, xs_eff_ggH[2]*ggh_value+xs_eff_ggH[1]*ggH_value+xs_eff_ggH[0]*ggA_value);
-    //else gg->SetPoint(idx, mA, xs_eff_ggH[1]*ggH_value+xs_eff_ggH[0]*ggA_value);
+    ggh->SetPoint(idx, mA, xs_eff_ggH[2]);
+    gghacc->SetPoint(idx, mA, ggh_value);
+
+    //gg->SetPoint(idx, mA, xs_eff_ggH[2]+xs_eff_ggH[1]+xs_eff_ggH[0]);
+    if(mA<130) gg->SetPoint(idx, mA, xs_eff_ggH[2]+xs_eff_ggH[0]);
+    else if(mA==130) gg->SetPoint(idx, mA, xs_eff_ggH[2]+xs_eff_ggH[1]+xs_eff_ggH[0]);
+    else gg->SetPoint(idx, mA, xs_eff_ggH[1]+xs_eff_ggH[0]);
+    //ggacc->SetPoint(idx, mA, ggh_value+ggH_value+ggA_value);
+    if(mA<130) ggacc->SetPoint(idx, mA, ggh_value+ggA_value);
+    else if(mA==130) ggacc->SetPoint(idx, mA, ggh_value+ggH_value+ggA_value);
+    else ggacc->SetPoint(idx, mA, ggH_value+ggA_value);
     std::cout << std::endl;
 
 
@@ -236,26 +250,31 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
     h_bbA = get<TH1F>(inputFile, std::string("muTau_"+category+"/bbH"+mass_help).c_str());
     bbA_value=h_bbA->Integral();
     std::cout << "acc of bbA " << h_bbA->Integral() << std::endl;
-    bbA->SetPoint(idx, mA, xs_eff_bbH[0]*bbA_value);
+    bbA->SetPoint(idx, mA, xs_eff_bbH[0]);
+    bbAacc->SetPoint(idx, mA, bbA_value);
 
     sprintf (mass_help, "%0.0f", closest_mass(xs.Give_Mass_H(mA, tanb))); 
     h_bbH = get<TH1F>(inputFile, std::string("muTau_"+category+"/bbH"+mass_help).c_str());
     bbH_value=h_bbH->Integral();
     std::cout << "acc of bbH " << h_bbH->Integral() << std::endl;
-    bbH->SetPoint(idx, mA, xs_eff_bbH[1]*bbH_value);
+    bbH->SetPoint(idx, mA, xs_eff_bbH[1]);
+    bbHacc->SetPoint(idx, mA, bbH_value);
 
     sprintf (mass_help, "%0.0f", closest_mass(xs.Give_Mass_h(mA, tanb))); 
     h_bbh = get<TH1F>(inputFile, std::string("muTau_"+category+"/bbH"+mass_help).c_str());
     bbh_value=h_bbh->Integral();
     std::cout << "acc of bbh " << h_bbh->Integral() << std::endl;
-    bbh->SetPoint(idx, mA, xs_eff_bbH[2]*bbh_value);
-    //std::cout << xs_eff_bbH[0] << " " << xs_eff_bbH[1] << " " << xs_eff_bbH[2] << " " << std::endl;
-    //std::cout << bbA_value << " " << bbH_value << " " << bbh_value << " " << std::endl;
-    //std::cout << mA << " " << xs_eff_bbH[2]*bbh_value+xs_eff_bbH[1]*bbH_value+xs_eff_bbH[0]*bbA_value << std::endl;
-    bb->SetPoint(idx, mA, xs_eff_bbH[2]*bbh_value+xs_eff_bbH[1]*bbH_value+xs_eff_bbH[0]*bbA_value);
-    // if(mA<130) bb->SetPoint(idx, mA, xs_eff_bbH[2]*bbh_value+xs_eff_bbH[0]*bbA_value);
-    //else if(mA==130) bb->SetPoint(idx, mA, xs_eff_bbH[2]*bbh_value+xs_eff_bbH[1]*bbH_value+xs_eff_bbH[0]*bbA_value);
-    //else bb->SetPoint(idx, mA, xs_eff_bbH[1]*bbH_value+xs_eff_bbH[0]*bbA_value); 
+    bbh->SetPoint(idx, mA, xs_eff_bbH[2]);
+    bbhacc->SetPoint(idx, mA, bbh_value);
+
+    //bb->SetPoint(idx, mA, xs_eff_bbH[2]+xs_eff_bbH[1]+xs_eff_bbH[0]);
+    if(mA<130) bb->SetPoint(idx, mA, xs_eff_bbH[2]+xs_eff_bbH[0]);
+    else if(mA==130) bb->SetPoint(idx, mA, xs_eff_bbH[2]+xs_eff_bbH[1]+xs_eff_bbH[0]);
+    else bb->SetPoint(idx, mA, xs_eff_bbH[1]+xs_eff_bbH[0]); 
+    //bbacc->SetPoint(idx, mA, bbh_value+bbH_value+bbA_value);
+    if(mA<130) bbacc->SetPoint(idx, mA, bbh_value+bbA_value);
+    else if(mA==130) bbacc->SetPoint(idx, mA, bbh_value+bbH_value+bbA_value);
+    else bbacc->SetPoint(idx, mA, bbH_value+bbA_value); 		  
     std::cout << std::endl;
     std::cout << std::endl;
 
@@ -274,12 +293,12 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
 
     double significance=0;
     double significance_help=0;
-    for(int nbin=0; nbin<h_bbA->GetNbinsX()+1; nbin++){     
-      significance=h_bbA->GetBinContent(nbin)/sqrt(h_background->GetBinContent(nbin)+h_bbA->GetBinContent(nbin));
-      std::cout << h_bbA->GetBinContent(nbin)  << " " <<  h_background->GetBinContent(nbin) << " " << significance << std::endl;
-      if(significance>significance_help){
-	significance_help=significance;
-      }
+    for(int nbin=0; nbin<h_bbA->GetNbinsX()+1; nbin++){ 
+      if(h_background->GetBinContent(nbin)+h_bbA->GetBinContent(nbin)!=0) significance=h_bbA->GetBinContent(nbin)/sqrt(h_background->GetBinContent(nbin)+h_bbA->GetBinContent(nbin));
+      else significance=0;
+      //if(significance>significance_help){
+      significance_help+=significance;
+      //}
     }
     std::cout << "significance " << significance_help << std::endl;
     signi->SetPoint(idx, mA, significance_help);
@@ -294,13 +313,14 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
 
     std::cout << std::endl;
     std::cout << std::endl;
-  }
+  }			    
 
   /// do the drawing
   TCanvas* canv1 = new TCanvas("canv1", "xs*BR", 600, 600);
   canv1->cd();
   //canv1->SetGridx(1);
   //canv1->SetGridy(1);
+  canv1->SetLeftMargin(0.15);
   canv1->SetLogy(1);
 
   // draw a frame to define the range
@@ -313,15 +333,15 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
   hr->GetXaxis()->SetTitleColor(1);
   hr->GetXaxis()->SetTitleOffset(1.08);
   // format y axis
-  hr->SetYTitle("#events");
+  hr->SetYTitle("#sigma*BR and acc*signal_{eff}*lumi");
   hr->GetXaxis()->SetTitleFont(62);
   hr->GetYaxis()->SetLabelFont(62);
   hr->GetYaxis()->SetLabelSize(0.045);
-  hr->GetYaxis()->SetTitleOffset(1.3);
+  hr->GetYaxis()->SetTitleOffset(1.6);
   hr->GetXaxis()->SetTitleColor(1);
   hr->SetNdivisions(505, "X");
 
-  ggA->Draw("PLsame");
+  //ggA->Draw("PLsame");
   ggA->SetLineStyle(3.);
   ggA->SetLineWidth(2.); 
   ggA->SetLineColor(kBlue);
@@ -329,7 +349,7 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
   ggA->SetMarkerSize(0);
   ggA->SetMarkerColor(kBlue);
 
-  ggH->Draw("PLsame");
+  //ggH->Draw("PLsame");
   ggH->SetLineStyle(2.);
   ggH->SetLineWidth(2.); 
   ggH->SetLineColor(kBlue);
@@ -337,7 +357,7 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
   ggH->SetMarkerSize(0);
   ggH->SetMarkerColor(kBlue);
 
-  ggh->Draw("PLsame");
+  //ggh->Draw("PLsame");
   ggh->SetLineStyle(1.);
   ggh->SetLineWidth(2.); 
   ggh->SetLineColor(kBlue);
@@ -345,7 +365,31 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
   ggh->SetMarkerSize(0);
   ggh->SetMarkerColor(kBlue);
 
-  bbA->Draw("PLsame");
+   //ggAacc->Draw("PLsame");
+  ggAacc->SetLineStyle(3.);
+  ggAacc->SetLineWidth(2.); 
+  ggAacc->SetLineColor(kMagenta);
+  ggAacc->SetMarkerStyle(23);
+  ggAacc->SetMarkerSize(0);
+  ggAacc->SetMarkerColor(kMagenta);
+
+  //ggHacc->Draw("PLsame");
+  ggHacc->SetLineStyle(2.);
+  ggHacc->SetLineWidth(2.); 
+  ggHacc->SetLineColor(kMagenta);
+  ggHacc->SetMarkerStyle(22);
+  ggHacc->SetMarkerSize(0);
+  ggHacc->SetMarkerColor(kMagenta);
+
+  //gghacc->Draw("PLsame");
+  gghacc->SetLineStyle(1.);
+  gghacc->SetLineWidth(2.); 
+  gghacc->SetLineColor(kMagenta);
+  gghacc->SetMarkerStyle(20);
+  gghacc->SetMarkerSize(0);
+  gghacc->SetMarkerColor(kMagenta);
+
+  //bbA->Draw("PLsame");
   bbA->SetLineStyle(3.);
   bbA->SetLineWidth(2.); 
   bbA->SetLineColor(kRed);
@@ -353,7 +397,7 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
   bbA->SetMarkerSize(0);
   bbA->SetMarkerColor(kRed);
 
-  bbH->Draw("PLsame");
+  //bbH->Draw("PLsame");
   bbH->SetLineStyle(2.);
   bbH->SetLineWidth(2.); 
   bbH->SetLineColor(kRed);
@@ -361,29 +405,69 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
   bbH->SetMarkerSize(0);
   bbH->SetMarkerColor(kRed);
 
-  bbh->Draw("PLsame");
+  //bbh->Draw("PLsame");
   bbh->SetLineStyle(1.);
   bbh->SetLineWidth(2.); 
   bbh->SetLineColor(kRed);
   bbh->SetMarkerStyle(20);
   bbh->SetMarkerSize(0);
   bbh->SetMarkerColor(kRed);
+
+   //bbAacc->Draw("PLsame");
+  bbAacc->SetLineStyle(3.);
+  bbAacc->SetLineWidth(2.); 
+  bbAacc->SetLineColor(kOrange);
+  bbAacc->SetMarkerStyle(23);
+  bbAacc->SetMarkerSize(0);
+  bbAacc->SetMarkerColor(kOrange);
+
+  //bbHacc->Draw("PLsame");
+  bbHacc->SetLineStyle(2.);
+  bbHacc->SetLineWidth(2.); 
+  bbHacc->SetLineColor(kOrange);
+  bbHacc->SetMarkerStyle(22);
+  bbHacc->SetMarkerSize(0);
+  bbHacc->SetMarkerColor(kOrange);
+
+  //bbhacc->Draw("PLsame");
+  bbhacc->SetLineStyle(1.);
+  bbhacc->SetLineWidth(2.); 
+  bbhacc->SetLineColor(kOrange);
+  bbhacc->SetMarkerStyle(20);
+  bbhacc->SetMarkerSize(0);
+  bbhacc->SetMarkerColor(kOrange);
   
   gg->Draw("PLsame");
   gg->SetLineStyle(1.);
-  gg->SetLineWidth(2.); 
-  gg->SetLineColor(kMagenta);
+  gg->SetLineWidth(3.); 
+  gg->SetLineColor(kBlue+2);
   gg->SetMarkerStyle(20);
   gg->SetMarkerSize(0);
-  gg->SetMarkerColor(kMagenta);
+  gg->SetMarkerColor(kBlue+2);
+
+  ggacc->Draw("PLsame");
+  ggacc->SetLineStyle(1.);
+  ggacc->SetLineWidth(3.); 
+  ggacc->SetLineColor(kMagenta);
+  ggacc->SetMarkerStyle(20);
+  ggacc->SetMarkerSize(0);
+  ggacc->SetMarkerColor(kMagenta);
 
   bb->Draw("PLsame");
   bb->SetLineStyle(1.);
-  bb->SetLineWidth(2.); 
-  bb->SetLineColor(kGreen);
+  bb->SetLineWidth(3.); 
+  bb->SetLineColor(kRed+2);
   bb->SetMarkerStyle(20);
   bb->SetMarkerSize(0);
-  bb->SetMarkerColor(kGreen);
+  bb->SetMarkerColor(kRed+2);
+
+  bbacc->Draw("PLsame");
+  bbacc->SetLineStyle(1.);
+  bbacc->SetLineWidth(3.); 
+  bbacc->SetLineColor(kOrange);
+  bbacc->SetMarkerStyle(20);
+  bbacc->SetMarkerSize(0);
+  bbacc->SetMarkerColor(kOrange);
 
   /*SM->Draw("PLsame");
   SM->SetLineStyle(8.);
@@ -393,7 +477,7 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
   SM->SetMarkerSize(0);
   SM->SetMarkerColor(kGreen+1);*/
 
-  signi->Draw("PLsame");
+  // signi->Draw("PLsame");
   signi->SetLineStyle(1.);
   signi->SetLineWidth(2.); 
   signi->SetLineColor(kBlack);
@@ -408,21 +492,34 @@ mssm_xs_times_acc_scan(char* path, std::string filepath, double tanb, std::strin
   //std::string s(ss.str());
   std::string tanb_string = std::to_string((int)tanb);
   CMSPrelim(std::string("#events,   m^{h}_{max} scenario,  tan#beta = " + tanb_string).c_str(), "", 0.15, 0.835);
-  leg0 = new TLegend(0.68, 0.12, 0.90, 0.32); 
+  leg0 = new TLegend(0.58, 0.12, 0.90, 0.32); 
   leg0->SetBorderSize( 0 );
   leg0->SetFillStyle ( 1001 );
   leg0->SetFillColor (kWhite);
-  //leg0->SetHeader( "#sigma #times BR" );
+  //leg0->SetHeader( "#sigma * BR" );
   //leg0->AddEntry( SM,  "ggH_{SM} #rightarrow #tau#tau",  "PL" );
-  leg0->AddEntry( ggh, "ggh #rightarrow #tau#tau",  "PL" );
-  leg0->AddEntry( ggA, "ggA #rightarrow #tau#tau",  "PL" );
-  leg0->AddEntry( ggH, "ggH #rightarrow #tau#tau",  "PL" );
-  leg0->AddEntry( gg,  "gg  #rightarrow #tau#tau",  "PL" );
-  leg0->AddEntry( bbh, "bbh #rightarrow #tau#tau",  "PL" );
-  leg0->AddEntry( bbA, "bbA #rightarrow #tau#tau",  "PL" );
-  leg0->AddEntry( bbH, "bbH #rightarrow #tau#tau",  "PL" );
-  leg0->AddEntry( bb,  "bb  #rightarrow #tau#tau",  "PL" );
-  leg0->AddEntry( signi,  "bin with highest s/sqrt(s+b)",  "PL" );
+
+  //leg0->AddEntry( gghacc, "ggh #sigma*BR",  "PL" );
+  //leg0->AddEntry( ggAacc, "ggA #sigma*BR",  "PL" );
+  //leg0->AddEntry( ggHacc, "ggH #sigma*BR",  "PL" );
+  leg0->AddEntry( gg,  "gg #sigma*BR",  "PL" );
+
+  //leg0->AddEntry( ggh, "ggh acc*s_{eff}*lumi",  "PL" );
+  //leg0->AddEntry( ggA, "ggA acc*s_{eff}*lumi",  "PL" );
+  //leg0->AddEntry( ggH, "ggH acc*sl_{eff}*lumi",  "PL" );
+  leg0->AddEntry( ggacc,  "gg acc*s_{eff}*lumi",  "PL" );
+
+  //leg0->AddEntry( bbh, "bbh #sigma*BR",  "PL" );
+  //leg0->AddEntry( bbA, "bbA #sigma*BR",  "PL" );
+  //leg0->AddEntry( bbH, "bbH #sigma*BR",  "PL" );
+  leg0->AddEntry( bb,  "bb #sigma*BR",  "PL" );
+
+  //leg0->AddEntry( bbhacc, "bbh acc*s_{eff}*lumi",  "PL" );
+  //leg0->AddEntry( bbAacc, "bbA acc*s_{eff}*lumi",  "PL" );
+  //leg0->AddEntry( bbHacc, "bbH acc*s_{eff}*lumi",  "PL" );
+  leg0->AddEntry( bbacc,  "bb acc*s_{eff}*lumi",  "PL" );
+
+  //leg0->AddEntry( signi,  "sum of all bins: s/sqrt(s+b)",  "PL" );
   leg0->Draw("same");
   
   canv1->Print("xsBRtimesacc.png");
