@@ -14,7 +14,7 @@
 #include <iostream>
 
 void
-plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain_2, TGraphAsymmErrors* innerBand_1, TGraphAsymmErrors* innerBand_2, TGraphAsymmErrors* innerBand_3, TGraphAsymmErrors* outerBand_1, TGraphAsymmErrors* outerBand_2, TGraphAsymmErrors* outerBand_3, TGraph* expected_1, TGraph* expected_2, TGraph* expected_3, TGraph* observed_1, TGraph* observed_2, TGraph* observed_3, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool plotOuterBand=true, bool MSSMvsSM=true, std::string HIG="")
+plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain_2, TGraphAsymmErrors* innerBand_1, TGraphAsymmErrors* innerBand_2, TGraphAsymmErrors* innerBand_3, TGraphAsymmErrors* outerBand_1, TGraphAsymmErrors* outerBand_2, TGraphAsymmErrors* outerBand_3, TGraph* expected_1, TGraph* expected_2, TGraph* expected_3, TGraph* observed_1, TGraph* observed_2, TGraph* observed_3, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool plotOuterBand=true, bool MSSMvsSM=true, std::string HIG="", bool BlackWhite=false)
 {
   // set up styles
   canv.cd();
@@ -27,9 +27,9 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   TColor* obs = new TColor(1501, 0.463, 0.867, 0.957);
   if(transparent) obs->SetAlpha(0.5);
   TColor* twosigma = gROOT->GetColor(kGray);
-  if(transparent) twosigma->SetAlpha(0.5);
+  if(transparent && !BlackWhite) twosigma->SetAlpha(0.5);
   TColor* onesigma = gROOT->GetColor(kGray+1);
-  if(transparent) onesigma->SetAlpha(0.5);
+  if(transparent && !BlackWhite) onesigma->SetAlpha(0.5);
   TColor* ph = gROOT->GetColor(kYellow);
   ph->SetAlpha(0.0);
   TColor* backgroundColor = gROOT->GetColor(kRed);
@@ -78,7 +78,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   background->SetFillStyle(1001.);
   background->SetFillColor(backgroundColor->GetNumber());
   background->SetLineColor(ph->GetNumber());
-  background->Draw("3");
+  background->Draw("3"); //felix
 
   int idx=0;
   //int coloredBands[] = {kRed, kRed-7, kRed-9};
@@ -114,37 +114,102 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
     observed_3->SetMarkerSize(1.0);
     observed_3->SetMarkerColor(kBlack);
     observed_3->SetLineWidth(3.);
-
   }
-  
+
+  //Get data points from TGraphAsymmErrors
+  int npoints = expected_1->GetN();
+  double outerband_1_ymin[npoints], outerband_1_ymax[npoints], outerband_2_ymin[npoints], outerband_2_ymax[npoints];
+  double innerband_1_ymin[npoints], innerband_1_ymax[npoints], innerband_2_ymin[npoints], innerband_2_ymax[npoints];
+  double expected_1_X[npoints], expected_1_Y[npoints], expected_2_X[npoints], expected_2_Y[npoints];
+  for(int i=0; i<npoints; i++){ 
+    expected_1->GetPoint(i, expected_1_X[i], expected_1_Y[i]);
+    expected_1->GetPoint(i, expected_2_X[i], expected_2_Y[i]);
+    outerband_1_ymax[i]=expected_1_Y[i] - outerBand_1->GetErrorYlow(i);
+    outerband_1_ymin[i]=expected_1_Y[i] + outerBand_1->GetErrorYhigh(i);
+    outerband_2_ymax[i]=expected_2_Y[i] - outerBand_2->GetErrorYlow(i);
+    outerband_2_ymin[i]=expected_2_Y[i] + outerBand_2->GetErrorYhigh(i);
+    innerband_1_ymax[i]=expected_1_Y[i] - innerBand_1->GetErrorYlow(i);
+    innerband_1_ymin[i]=expected_1_Y[i] + innerBand_1->GetErrorYhigh(i);
+    innerband_2_ymax[i]=expected_2_Y[i] - innerBand_2->GetErrorYlow(i);
+    innerband_2_ymin[i]=expected_2_Y[i] + innerBand_2->GetErrorYhigh(i);
+  }
+  //Fill central, min and max graphs
+  TGraph *outerband_1_min=new TGraph(), *outerband_1_max=new TGraph(), *outerband_2_min=new TGraph(), *outerband_2_max=new TGraph();
+  TGraph *innerband_1_min=new TGraph(), *innerband_1_max=new TGraph(), *innerband_2_min=new TGraph(), *innerband_2_max=new TGraph();
+  for(int i=0; i<npoints; i++){ 
+    outerband_1_min->SetPoint(i, expected_1_X[i], outerband_1_ymin[i]);
+    outerband_1_max->SetPoint(i, expected_1_X[i], outerband_1_ymax[i]);
+    outerband_2_min->SetPoint(i, expected_2_X[i], outerband_2_ymin[i]);
+    outerband_2_max->SetPoint(i, expected_2_X[i], outerband_2_ymax[i]);
+    innerband_1_min->SetPoint(i, expected_1_X[i], innerband_1_ymin[i]);
+    innerband_1_max->SetPoint(i, expected_1_X[i], innerband_1_ymax[i]);
+    innerband_2_min->SetPoint(i, expected_2_X[i], innerband_2_ymin[i]);
+    innerband_2_max->SetPoint(i, expected_2_X[i], innerband_2_ymax[i]);
+  }
+
   if(plotOuterBand){
     outerBand_1->SetFillStyle(1001);
     outerBand_1->SetFillColor(twosigma->GetNumber()); //kGray
     outerBand_1->SetLineColor(twosigma->GetNumber());
-    outerBand_1->Draw("3same");    
+    if(!BlackWhite) outerBand_1->Draw("3same");    
     outerBand_2->SetFillStyle(1001);
     outerBand_2->SetFillColor(twosigma->GetNumber()); //kGray
     outerBand_2->SetLineColor(twosigma->GetNumber());
-    if (HIG=="") outerBand_2->Draw("3same");    
+    if(HIG=="" && !BlackWhite) outerBand_2->Draw("3same");  
     outerBand_3->SetFillStyle(1001);
     outerBand_3->SetFillColor(twosigma->GetNumber()); //kGray
     outerBand_3->SetLineColor(twosigma->GetNumber());
     //outerBand_3->Draw("3same");
+
+    outerband_1_min->SetLineColor(twosigma->GetNumber());
+    outerband_1_max->SetLineColor(twosigma->GetNumber());
+    outerband_2_min->SetLineColor(twosigma->GetNumber());
+    outerband_2_max->SetLineColor(twosigma->GetNumber());
+    outerband_1_min->SetLineStyle(2);
+    outerband_1_max->SetLineStyle(2);
+    outerband_2_min->SetLineStyle(2);
+    outerband_2_max->SetLineStyle(2);
+    outerband_1_min->SetLineWidth(3);
+    outerband_1_max->SetLineWidth(3);
+    outerband_2_min->SetLineWidth(3);
+    outerband_2_max->SetLineWidth(3);
+    if(BlackWhite && HIG==""){
+      outerband_1_min->Draw("Lsame");
+      outerband_1_max->Draw("Lsame");
+      outerband_2_min->Draw("Lsame");
+      outerband_2_max->Draw("Lsame");
+    }
   }
   
   innerBand_1->SetFillStyle(1001);
   innerBand_1->SetFillColor(onesigma->GetNumber()); //kGray+1
   innerBand_1->SetLineColor(onesigma->GetNumber());
-  innerBand_1->Draw("3same"); 
-  innerBand_2->SetFillStyle(1001);
+  if(!BlackWhite) innerBand_1->Draw("3same"); 
   innerBand_2->SetFillColor(onesigma->GetNumber()); //kGray+1
   innerBand_2->SetLineColor(onesigma->GetNumber());
-  if (HIG=="") innerBand_2->Draw("3same"); 
+  if(HIG=="" && !BlackWhite) innerBand_2->Draw("3same"); 
   innerBand_3->SetFillStyle(1001);
   innerBand_3->SetFillColor(onesigma->GetNumber()); //kGray+1
   innerBand_3->SetLineColor(onesigma->GetNumber());
   //innerBand_3->Draw("3same"); 
-  
+ 
+  innerband_1_min->SetLineColor(twosigma->GetNumber());
+  innerband_1_max->SetLineColor(twosigma->GetNumber());
+  innerband_2_min->SetLineColor(twosigma->GetNumber());
+  innerband_2_max->SetLineColor(twosigma->GetNumber());
+  innerband_1_min->SetLineStyle(1);
+  innerband_1_max->SetLineStyle(1);
+  innerband_2_min->SetLineStyle(1);
+  innerband_2_max->SetLineStyle(1);
+  innerband_1_min->SetLineWidth(3);
+  innerband_1_max->SetLineWidth(3);
+  innerband_2_min->SetLineWidth(3);
+  innerband_2_max->SetLineWidth(3);
+  if(BlackWhite && HIG=="") innerband_1_min->Draw("Lsame");
+  if(BlackWhite && HIG=="") innerband_1_max->Draw("Lsame");
+  if(BlackWhite && HIG=="") innerband_2_min->Draw("Lsame");
+  if(BlackWhite && HIG=="") innerband_2_max->Draw("Lsame"); 
+    
   expected_1->SetLineColor(kGray+2);
   expected_1->SetLineWidth(3);
   expected_1->SetLineStyle(1);
@@ -152,13 +217,12 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   expected_2->SetLineColor(kGray+2);
   expected_2->SetLineWidth(3);
   expected_2->SetLineStyle(1);
-  if (HIG=="") expected_2->Draw("Lsame");
+  if(HIG=="") expected_2->Draw("Lsame");
   expected_3->SetLineColor(kGray+2);
   expected_3->SetLineWidth(3);
   expected_3->SetLineStyle(1);
   //expected_3->Draw("Lsame");
   
-
   if(!expectedOnly){
     if(transparent) plain_1->Draw("3same");
     observed_1->Draw("Lsame");
@@ -168,7 +232,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
     }
     //observed_3->Draw("Lsame"); 
   }
-  
+ 
   idx=0;
   std::map<std::string,int> coloredComps;
   coloredComps["arXiv_1211_6956" ] = kOrange+3;
@@ -250,9 +314,11 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
     leg->AddEntry(observed_1, "observed", "FL");
   }
   leg->AddEntry(expected_1, "expected", "L");
-  leg->AddEntry(innerBand_1, "#pm 1#sigma expected","F");
+  if(!BlackWhite) leg->AddEntry(innerBand_1, "#pm 1#sigma expected","F");
+  if(BlackWhite && HIG=="") leg->AddEntry(innerband_1_max, "#pm 1#sigma expected","L"); 
   if(plotOuterBand){ 
-    leg->AddEntry(outerBand_1, "#pm 2#sigma expected", "F"); 
+    if(!BlackWhite) leg->AddEntry(outerBand_1, "#pm 2#sigma expected", "F"); 
+    if(BlackWhite && HIG=="") leg->AddEntry(outerband_1_max, "#pm 2#sigma expected","L"); 
   }
   //for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band){
   //  leg->AddEntry(band->second, TString::Format("m_{h,H}=125GeV #pm %.0fGeV", band->first), "F");
