@@ -177,6 +177,8 @@ layout = cms.PSet(
     mssm = cms.bool(True),
     ## is this MSSMvsSM?
     MSSMvsSM = cms.bool(True),
+    ## plot black and white friendly?
+    BlackWhite = cms.bool(False),
     ## plot transparent?
     transparent = cms.bool(True),
     ## print the 2-sigma band
