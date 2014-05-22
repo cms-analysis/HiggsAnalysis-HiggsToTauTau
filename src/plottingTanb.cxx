@@ -27,9 +27,9 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   TColor* obs = new TColor(1501, 0.463, 0.867, 0.957);
   if(transparent) obs->SetAlpha(0.5);
   TColor* twosigma = gROOT->GetColor(kGray);
-  if(transparent && !BlackWhite) twosigma->SetAlpha(0.5);
+  if(transparent) twosigma->SetAlpha(0.5);
   TColor* onesigma = gROOT->GetColor(kGray+1);
-  if(transparent && !BlackWhite) onesigma->SetAlpha(0.5);
+  if(transparent) onesigma->SetAlpha(0.5);
   TColor* ph = gROOT->GetColor(kYellow);
   ph->SetAlpha(0.0);
   TColor* backgroundColor = gROOT->GetColor(kRed);
@@ -161,10 +161,10 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
     outerBand_3->SetLineColor(twosigma->GetNumber());
     //outerBand_3->Draw("3same");
 
-    outerband_1_min->SetLineColor(twosigma->GetNumber());
-    outerband_1_max->SetLineColor(twosigma->GetNumber());
-    outerband_2_min->SetLineColor(twosigma->GetNumber());
-    outerband_2_max->SetLineColor(twosigma->GetNumber());
+    outerband_1_min->SetLineColor(kGray+1);
+    outerband_1_max->SetLineColor(kGray+1);
+    outerband_2_min->SetLineColor(kGray+1);
+    outerband_2_max->SetLineColor(kGray+1);
     outerband_1_min->SetLineStyle(2);
     outerband_1_max->SetLineStyle(2);
     outerband_2_min->SetLineStyle(2);
@@ -193,14 +193,14 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   innerBand_3->SetLineColor(onesigma->GetNumber());
   //innerBand_3->Draw("3same"); 
  
-  innerband_1_min->SetLineColor(twosigma->GetNumber());
-  innerband_1_max->SetLineColor(twosigma->GetNumber());
-  innerband_2_min->SetLineColor(twosigma->GetNumber());
-  innerband_2_max->SetLineColor(twosigma->GetNumber());
-  innerband_1_min->SetLineStyle(1);
-  innerband_1_max->SetLineStyle(1);
-  innerband_2_min->SetLineStyle(1);
-  innerband_2_max->SetLineStyle(1);
+  innerband_1_min->SetLineColor(kGray+1);
+  innerband_1_max->SetLineColor(kGray+1);
+  innerband_2_min->SetLineColor(kGray+1);
+  innerband_2_max->SetLineColor(kGray+1);
+  innerband_1_min->SetLineStyle(9);
+  innerband_1_max->SetLineStyle(9);
+  innerband_2_min->SetLineStyle(9);
+  innerband_2_max->SetLineStyle(9);
   innerband_1_min->SetLineWidth(3);
   innerband_1_max->SetLineWidth(3);
   innerband_2_min->SetLineWidth(3);
