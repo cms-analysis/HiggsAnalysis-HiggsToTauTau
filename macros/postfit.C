@@ -106,11 +106,11 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   TH1F* Zee    = refill((TH1F*)input->Get("Zee"     ), "Zee"      ); 
   TH1F* ggH    = refill((TH1F*)input->Get("ggH"     ), "ggH"      ); 
   TH1F* data   = (TH1F*)input->Get("data_obs"); 
-  // determine channel for etau Z->ee (EWK) will be shown separated from the rest (EWK1)
+  /*// determine channel for etau Z->ee (EWK) will be shown separated from the rest (EWK1)
   TH1F* EWK1   = 0;
   if(std::string(extra) == std::string("e#tau_{h}")){
     EWK1 = refill((TH1F*)input->Get("EWK1"),  "EWK1");
-  }
+    }*/
   TH1F* ggH_hww = 0;
   if(std::string(extra) == std::string("e#mu") and HWWBG){
     ggH_hww= refill((TH1F*)input->Get("ggH_hww" ), "ggH_hww"  ); 
@@ -161,10 +161,10 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     if(log){
       Ztt  ->Draw("same");
       ttbar->Draw("same");
-      EWK  ->SetFillColor(TColor::GetColor(100,182,232));
+      Zee  ->SetFillColor(TColor::GetColor(100,182,232));
+      Zee  ->Draw("same");
+      EWK  ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
-      EWK1 ->SetFillColor(TColor::GetColor(222,90,106));
-      EWK1 ->Draw("same");
       Fakes->Draw("same");
       if(ggH) ggH  ->Draw("histsame");
     }
@@ -172,10 +172,10 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       if(ggH) ggH  ->Draw("histsame");
       Ztt  ->Draw("same");
       ttbar->Draw("same");
-      EWK  ->SetFillColor(TColor::GetColor(100,182,232));
+      Zee  ->SetFillColor(TColor::GetColor(100,182,232));
+      Zee  ->Draw("same");
+      EWK  ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
-      EWK1 ->SetFillColor(TColor::GetColor(222,90,106));
-      EWK1 ->Draw("same");
       Fakes->Draw("same");
     } 
   }
@@ -253,7 +253,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   cat->Draw();
   */
   if(MSSM){
-    float lower_bound = EWK1 ? 0.44 : 0.49;
+    float lower_bound = 0.49;
     TPaveText* massA      = new TPaveText(0.53, lower_bound+0.061, 0.95, lower_bound+0.151, "NDC");
     massA->SetBorderSize(   0 );
     massA->SetFillStyle(    0 );
@@ -265,7 +265,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     massA->AddText("m_{A}=$MA GeV, tan#beta=$TANB");
     massA->Draw();
   }    
-  float lower_bound = EWK1 ? 0.60 : 0.65;
+  float lower_bound = 0.65;
   TLegend* leg = new TLegend(MSSM ? 0.53 : 0.50, lower_bound, 0.93, 0.90);
   SetLegendStyle(leg);
   if(MSSM){
@@ -299,8 +299,8 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   }
   else if(std::string(extra) == std::string("e#tau_{h}")){
     leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
-    leg->AddEntry(EWK  , "Z#rightarrow ee"              , "F" );
-    leg->AddEntry(EWK1 , "Electroweak"                  , "F" );
+    leg->AddEntry(Zee  , "Z#rightarrow ee"              , "F" );
+    leg->AddEntry(EWK  , "Electroweak"                  , "F" );
     leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
     leg->AddEntry(Fakes, "QCD"                 , "F" );
   }
