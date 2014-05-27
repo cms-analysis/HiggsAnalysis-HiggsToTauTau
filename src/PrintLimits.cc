@@ -517,78 +517,78 @@ PlotLimits::print(const char* filename, TGraphAsymmErrors* outerBand_1, TGraphAs
       char observed[50], expected[50], minus2sigma[50], minus1sigma[50], plus1sigma[50], plus2sigma[50];
       //-2sigma
       if(expected_1->GetY()[imass]-outerBand_1->GetEYlow()[imass]==tanbLowHigh && expected_2->GetY()[imass]-outerBand_2->GetEYlow()[imass]==tanbLowHigh){ //all exluded
-	sprintf(minus2sigma, ">%0.2f", tanbLow);
+	sprintf(minus2sigma, ">%0.1f", tanbLow);
       }
       else if(expected_1->GetY()[imass]-outerBand_1->GetEYlow()[imass]!=expected_2->GetY()[imass]-outerBand_2->GetEYlow()[imass] && expected_2->GetY()[imass]-outerBand_2->GetEYlow()[imass]!=tanbLow){ //high and low limits
-	sprintf(minus2sigma, ">%0.2f, <%0.2f", expected_1->GetY()[imass] - outerBand_1->GetEYlow()[imass], expected_2->GetY()[imass] - outerBand_2->GetEYlow()[imass]);
+	sprintf(minus2sigma, ">%0.1f, <%0.1f", expected_1->GetY()[imass] - outerBand_1->GetEYlow()[imass], expected_2->GetY()[imass] - outerBand_2->GetEYlow()[imass]);
       }
       else if(expected_2->GetY()[imass]-outerBand_2->GetEYlow()[imass]==tanbLow && expected_1->GetY()[imass]-outerBand_1->GetEYlow()[imass]<=tanbHigh){ //only high limits
-	sprintf(minus2sigma, ">%0.2f", expected_1->GetY()[imass] - outerBand_1->GetEYlow()[imass]);
+	sprintf(minus2sigma, ">%0.1f", expected_1->GetY()[imass] - outerBand_1->GetEYlow()[imass]);
       }
       else if(expected_1->GetY()[imass]-outerBand_1->GetEYlow()[imass]>tanbHigh){ //nothing excluded
 	sprintf(minus2sigma, "-");
       }
       //-1sigma
       if(expected_1->GetY()[imass]-innerBand_1->GetEYlow()[imass]==tanbLowHigh && expected_2->GetY()[imass]-innerBand_2->GetEYlow()[imass]==tanbLowHigh){ //all exluded
-	sprintf(minus1sigma, ">%0.2f", tanbLow);
+	sprintf(minus1sigma, ">%0.1f", tanbLow);
       }
       else if(expected_1->GetY()[imass]-innerBand_1->GetEYlow()[imass]!=expected_2->GetY()[imass]-innerBand_2->GetEYlow()[imass] && expected_2->GetY()[imass]-innerBand_2->GetEYlow()[imass]!=tanbLow){ //high and low limits
-	sprintf(minus1sigma, ">%0.2f, <%0.2f", expected_1->GetY()[imass] - innerBand_1->GetEYlow()[imass], expected_2->GetY()[imass] - innerBand_2->GetEYlow()[imass]);
+	sprintf(minus1sigma, ">%0.1f, <%0.1f", expected_1->GetY()[imass] - innerBand_1->GetEYlow()[imass], expected_2->GetY()[imass] - innerBand_2->GetEYlow()[imass]);
       }
       else if(expected_2->GetY()[imass]-innerBand_2->GetEYlow()[imass]==tanbLow && expected_1->GetY()[imass]-innerBand_1->GetEYlow()[imass]<=tanbHigh){ //only high limits
-	sprintf(minus1sigma, ">%0.2f", expected_1->GetY()[imass] - innerBand_1->GetEYlow()[imass]);
+	sprintf(minus1sigma, ">%0.1f", expected_1->GetY()[imass] - innerBand_1->GetEYlow()[imass]);
       }
       else if(expected_1->GetY()[imass]-innerBand_1->GetEYlow()[imass]>tanbHigh){ //nothing excluded
 	sprintf(minus1sigma, "-");
       }
       //expected
       if(expected_1->GetY()[imass]==expected_2->GetY()[imass]){ //all exluded
-	sprintf(expected, ">%0.2f", tanbLow);
+	sprintf(expected, ">%0.1f", tanbLow);
       }
       else if(expected_1->GetY()[imass]!=expected_2->GetY()[imass] && expected_2->GetY()[imass]!=tanbLow){ //high and low limits
-	sprintf(expected, ">%0.2f, <%0.2f", expected_1->GetY()[imass], expected_2->GetY()[imass]);
+	sprintf(expected, ">%0.1f, <%0.1f", expected_1->GetY()[imass], expected_2->GetY()[imass]);
       }
       else if(expected_2->GetY()[imass]==tanbLow && expected_1->GetY()[imass]<=tanbHigh){ //only high limits
-	sprintf(expected, ">%0.2f", expected_1->GetY()[imass]);
+	sprintf(expected, ">%0.1f", expected_1->GetY()[imass]);
       }
       else if(expected_1->GetY()[imass]>tanbHigh){ //nothing excluded
 	sprintf(expected, "-");
       }
       //+1sigma
       if(expected_1->GetY()[imass]+innerBand_1->GetEYhigh()[imass]==tanbLowHigh && expected_2->GetY()[imass]+innerBand_2->GetEYhigh()[imass]==tanbLowHigh){ //all exluded
-	sprintf(plus1sigma, ">%0.2f", tanbLow);
+	sprintf(plus1sigma, ">%0.1f", tanbLow);
       }
       else if(expected_1->GetY()[imass]+innerBand_1->GetEYhigh()[imass]!=expected_2->GetY()[imass]+innerBand_2->GetEYhigh()[imass] && expected_2->GetY()[imass]+innerBand_2->GetEYhigh()[imass]!=tanbLow){ //high and low limits
-	sprintf(plus1sigma, ">%0.2f, <%0.2f", expected_1->GetY()[imass] + innerBand_1->GetEYhigh()[imass], expected_2->GetY()[imass] + innerBand_2->GetEYhigh()[imass]);
+	sprintf(plus1sigma, ">%0.1f, <%0.1f", expected_1->GetY()[imass] + innerBand_1->GetEYhigh()[imass], expected_2->GetY()[imass] + innerBand_2->GetEYhigh()[imass]);
       }
       else if(expected_2->GetY()[imass]+innerBand_2->GetEYhigh()[imass]==tanbLow && expected_1->GetY()[imass]+innerBand_1->GetEYhigh()[imass]<=tanbHigh){ //only high limits
-	sprintf(plus1sigma, ">%0.2f", expected_1->GetY()[imass] + innerBand_1->GetEYhigh()[imass]);
+	sprintf(plus1sigma, ">%0.1f", expected_1->GetY()[imass] + innerBand_1->GetEYhigh()[imass]);
       }
       else if(expected_1->GetY()[imass]+innerBand_1->GetEYhigh()[imass]>tanbHigh){ //nothing excluded
 	sprintf(plus1sigma, "-");
       }
       //+2sigma
       if(expected_1->GetY()[imass]+outerBand_1->GetEYhigh()[imass]==tanbLowHigh && expected_2->GetY()[imass]+outerBand_2->GetEYhigh()[imass]==tanbLowHigh){ //all exluded
-	sprintf(plus2sigma, ">%0.2f", tanbLow);
+	sprintf(plus2sigma, ">%0.1f", tanbLow);
       }
       else if(expected_1->GetY()[imass]+outerBand_1->GetEYhigh()[imass]!=expected_2->GetY()[imass]+outerBand_2->GetEYhigh()[imass] && expected_2->GetY()[imass]+outerBand_2->GetEYhigh()[imass]!=tanbLow){ //high and low limits
-	sprintf(plus2sigma, ">%0.2f, <%0.2f", expected_1->GetY()[imass] + outerBand_1->GetEYhigh()[imass], expected_2->GetY()[imass] + outerBand_2->GetEYhigh()[imass]);
+	sprintf(plus2sigma, ">%0.1f, <%0.1f", expected_1->GetY()[imass] + outerBand_1->GetEYhigh()[imass], expected_2->GetY()[imass] + outerBand_2->GetEYhigh()[imass]);
       }
       else if(expected_2->GetY()[imass]+outerBand_2->GetEYhigh()[imass]==tanbLow && expected_1->GetY()[imass]+outerBand_1->GetEYhigh()[imass]<=tanbHigh){ //only high limits
-	sprintf(plus2sigma, ">%0.2f", expected_1->GetY()[imass] + outerBand_1->GetEYlow()[imass]);
+	sprintf(plus2sigma, ">%0.1f", expected_1->GetY()[imass] + outerBand_1->GetEYlow()[imass]);
       }
       else if(expected_1->GetY()[imass]+outerBand_1->GetEYhigh()[imass]>tanbHigh){ //nothing excluded
 	sprintf(plus2sigma, "-");
       }
       //observed
       if(observed_1->GetY()[imass]==observed_2->GetY()[imass]){ //all exluded
-	sprintf(observed, ">%0.2f", tanbLow);
+	sprintf(observed, ">%0.1f", tanbLow);
       }
       else if(observed_1->GetY()[imass]!=observed_2->GetY()[imass] && observed_2->GetY()[imass]!=tanbLow){ //high and low limits
-	sprintf(observed, ">%0.2f, <%0.2f", observed_1->GetY()[imass], observed_2->GetY()[imass]);
+	sprintf(observed, ">%0.1f, <%0.1f", observed_1->GetY()[imass], observed_2->GetY()[imass]);
       }
       else if(observed_2->GetY()[imass]==tanbLow && observed_1->GetY()[imass]<=tanbHigh){ //only high limits
-	sprintf(observed, ">%0.2f", observed_1->GetY()[imass]);
+	sprintf(observed, ">%0.1f", observed_1->GetY()[imass]);
       }
       else if(observed_1->GetY()[imass]>tanbHigh){ //nothing excluded
 	sprintf(observed, "-");
