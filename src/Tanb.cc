@@ -5,7 +5,7 @@
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain_2, TGraphAsymmErrors* innerBand_1, TGraphAsymmErrors* innerBand_2, TGraphAsymmErrors* innerBand_3, TGraphAsymmErrors* outerBand_1, TGraphAsymmErrors* outerBand_2, TGraphAsymmErrors* outerBand_3, TGraph* expected_1, TGraph* expected_2, TGraph* expected_3, TGraph* observed_1, TGraph* observed_2, TGraph* observed_3, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool plotOuterBand=true, bool MSSMvsSM=true, std::string HIG="", bool BlackWhite=false);
+void plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain_2, TGraphAsymmErrors* innerBand_1, TGraphAsymmErrors* innerBand_2, TGraphAsymmErrors* innerBand_3, TGraphAsymmErrors* outerBand_1, TGraphAsymmErrors* outerBand_2, TGraphAsymmErrors* outerBand_3, TGraph* expected_1, TGraph* expected_2, TGraph* expected_3, TGraph* observed_1, TGraph* observed_2, TGraph* observed_3, TGraph* injected, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool plotOuterBand=true, bool MSSMvsSM=true, std::string HIG="", bool BlackWhite=false);
 
 struct myclass {
   bool operator() (int i,int j) { return (i<j);}
@@ -64,6 +64,8 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   innerBand_3 = new TGraphAsymmErrors();
   outerBand_3 = new TGraphAsymmErrors();
   observed_3 = new TGraph();
+  
+  TGraph* injected = 0;//new TGraphAsymmErrors();
 
   if(HIG != ""){
     std::string HIG_save = HIG;
@@ -606,7 +608,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   }  
   
   // do the plotting
-  plottingTanb(canv, plain_1, plain_2, innerBand_1, innerBand_2, innerBand_3, outerBand_1, outerBand_2, outerBand_3, expected_1, expected_2, expected_3, observed_1, observed_2, observed_3, higgsBands, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, expectedOnly_, outerband_, MSSMvsSM_, HIG, BlackWhite_); 
+  plottingTanb(canv, plain_1, plain_2, innerBand_1, innerBand_2, innerBand_3, outerBand_1, outerBand_2, outerBand_3, expected_1, expected_2, expected_3, observed_1, observed_2, observed_3, injected, higgsBands, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, expectedOnly_, outerband_, MSSMvsSM_, HIG, BlackWhite_); 
   /// setup the CMS Preliminary
   //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
   TPaveText* cmsprel  = new TPaveText(0.145, 0.835+0.06, 0.145+0.30, 0.835+0.16, "NDC");
@@ -638,13 +640,21 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       output->cd(output_.c_str());
     }
     if(observed_1){ 
-      observed_1 ->Write("observed" );
+      observed_1 ->Write("observed_1" );
+      observed_2 ->Write("observed_2" );
+      observed_3 ->Write("observed_3" );
+      plain_1 ->Write("plain_1" );
+      plain_2 ->Write("plain_2" );
     }
-    expected_1 ->Write("expected" );
-    //innerBand->Write("innerBand");
-    //outerBand->Write("outerBand");
-    // auxiliary graphs
-    //if(plain) plain->Write("plain");
+    expected_1 ->Write("expected_1" );
+    expected_2 ->Write("expected_2" );
+    expected_3 ->Write("expected_3" );
+    innerBand_1->Write("innerBand_1");
+    innerBand_2->Write("innerBand_2");
+    innerBand_3->Write("innerBand_3");
+    outerBand_1->Write("outerBand_1");
+    outerBand_2->Write("outerBand_2");
+    outerBand_3->Write("outerBand_3");
     output->Close();
   }
   return;
