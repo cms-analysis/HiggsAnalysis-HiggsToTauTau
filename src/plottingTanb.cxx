@@ -14,7 +14,7 @@
 #include <iostream>
 
 void
-plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain_2, TGraphAsymmErrors* innerBand_1, TGraphAsymmErrors* innerBand_2, TGraphAsymmErrors* innerBand_3, TGraphAsymmErrors* outerBand_1, TGraphAsymmErrors* outerBand_2, TGraphAsymmErrors* outerBand_3, TGraph* expected_1, TGraph* expected_2, TGraph* expected_3, TGraph* observed_1, TGraph* observed_2, TGraph* observed_3, TGraph* injected, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool plotOuterBand=true, bool MSSMvsSM=true, std::string HIG="", bool BlackWhite=false)
+plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain_2, TGraphAsymmErrors* innerBand_1, TGraphAsymmErrors* innerBand_2, TGraphAsymmErrors* innerBand_3, TGraphAsymmErrors* outerBand_1, TGraphAsymmErrors* outerBand_2, TGraphAsymmErrors* outerBand_3, TGraph* expected_1, TGraph* expected_2, TGraph* expected_3, TGraph* observed_1, TGraph* observed_2, TGraph* observed_3, TGraph* injected_1, TGraph* injected_2, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool plotOuterBand=true, bool MSSMvsSM=true, std::string HIG="", bool BlackWhite=false)
 {
   // set up styles
   canv.cd();
@@ -222,7 +222,18 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   expected_3->SetLineWidth(3);
   expected_3->SetLineStyle(1);
   //expected_3->Draw("Lsame");
-  
+   
+  if(injected_1){
+    injected_1->SetLineColor(kBlue);
+    injected_1->SetLineWidth(3);
+    injected_1->SetLineStyle(1);
+    injected_1->Draw("Lsame");
+    injected_2->SetLineColor(kBlue);
+    injected_2->SetLineWidth(3);
+    injected_2->SetLineStyle(1);
+    injected_2->Draw("Lsame");
+  }
+
   if(!expectedOnly){
     if(transparent) plain_1->Draw("3same");
     observed_1->Draw("Lsame");
@@ -231,13 +242,6 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
       observed_2->Draw("Lsame");
     }
     //observed_3->Draw("Lsame"); 
-  }
-
-  if(injected){
-    injected->SetLineColor(kBlue);
-    injected->SetLineWidth(3);
-    injected->SetLineStyle(1);
-    injected->Draw("Lsame");
   }
  
   idx=0;
@@ -320,7 +324,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
     observed_1->SetFillColor(obs->GetNumber()); 
     leg->AddEntry(observed_1, "observed", "FL");
   }
-  if(injected) leg->AddEntry(injected, "SM H injected", "L");
+  if(injected_1) leg->AddEntry(injected_1, "SM H injected", "L");
   leg->AddEntry(expected_1, "expected", "L");
   if(!BlackWhite) leg->AddEntry(innerBand_1, "#pm 1#sigma expected","F");
   if(BlackWhite && HIG=="") leg->AddEntry(innerband_1_max, "#pm 1#sigma expected","L"); 
@@ -360,9 +364,9 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   leg2->SetLineWidth (2);
   leg2->SetLineColor (kBlack);
   if(log) {
-    leg2->AddEntry(background, "m_{h,H}#neq(125#pm3.0)GeV", "F");
+    leg2->AddEntry(background, "m_{h,H}#neq(125#pm3)GeV", "F");
   }
-  else leg2->AddEntry(background, "m_{h,H}#neq(125#pm3.0)GeV", "F");
+  else leg2->AddEntry(background, "m_{h,H}#neq(125#pm3)GeV", "F");
   leg2->Draw("same");
   
   //canv.RedrawAxis("g");

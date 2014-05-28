@@ -70,8 +70,13 @@ plotTanb(const char* filename, const char* channel, bool draw_injected_=false, d
   TGraphAsymmErrors* plain_2 = (TGraphAsymmErrors*)file->Get(std::string(channel).append("/plain_2").c_str());
 
   // this is new for injected plot together with observed
-  TGraph* injected = 0;
-  if(draw_injected_) {injected = (TGraph*)file->Get("injected/observed_1");}
+  TGraph* injected_1 = 0;
+  TGraph* injected_2 = 0;
+  if(draw_injected_) {
+    injected_1 = (TGraph*)file->Get("injected/observed_1");
+    injected_2 = (TGraph*)file->Get("injected/observed_2");
+
+  }
 
   //if(draw_injected_){
   //  for( int i=0; i<expected->GetN(); i++){
@@ -102,7 +107,7 @@ plotTanb(const char* filename, const char* channel, bool draw_injected_=false, d
   // do the plotting 
   TCanvas canv = TCanvas("canv", "Limits", 600, 600);
   // do the plotting 
-  plottingTanb(canv, plain_1, plain_2, innerBand_1, innerBand_2, innerBand_3, outerBand_1, outerBand_2, outerBand_3, expected_1, expected_2, expected_3, observed_1, observed_2, observed_3, injected, higgsBands, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, false, true, MSSMvsSM_, "", false);
+  plottingTanb(canv, plain_1, plain_2, innerBand_1, innerBand_2, innerBand_3, outerBand_1, outerBand_2, outerBand_3, expected_1, expected_2, expected_3, observed_1, observed_2, observed_3, injected_1, injected_2, higgsBands, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, false, true, MSSMvsSM_, "", false);
 
   /// setup the CMS Preliminary
   CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
