@@ -211,6 +211,8 @@ class PlotLimits {
 
   /// indicate whether mssm or sm plots should be made (used fro several options)
   bool mssm_;
+  /// Option to produce mssm-like plots but with linear scale for xaxis
+  bool mssm_nolog_;
   /// indicate plot type as bestfit
   bool bestfit_;
   /// indicate whether a marker for the SM should be draw

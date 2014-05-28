@@ -11,7 +11,7 @@ PlotLimits::plotLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmEr
   SetStyle();
   // create the unit line
   TGraph* unit = 0;
-  if(!mssm_){
+  if(!mssm_ && !mssm_nolog_){
     unit = new TGraph();
     for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
       if(valid_[imass]){
@@ -32,6 +32,7 @@ PlotLimits::plotLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmEr
   if(BG_Higgs_){ PLOT=std::string("BG_HIGGS"); }	  
   if(bestfit_ ){ PLOT=std::string("BESTFIT" ); }
   if(mssm_    ){ PLOT=std::string("MSSM-LOG"); }
+  if(mssm_nolog_    ){ PLOT=std::string("MSSM-NOLOG"); }
   if(mssm_ && injected_){ PLOT=std::string("MSSM-LOG_INJECTED"); }
   plottingLimit(canv, innerBand, outerBand, expected, observed, unit, xaxis_, yaxis_, 0, min, max, log_, PLOT, injectedMass_, mssm_, extra_);
   // setup CMS Preliminary

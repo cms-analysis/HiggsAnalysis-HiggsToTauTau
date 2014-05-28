@@ -35,8 +35,8 @@ layout = cms.PSet(
    ,300.
    ,350.
     ),
-    ## is this mssm?
-    mssm = cms.bool(True),
+    ## SM like limit without the line at sigma=1
+    mssm_nolog = cms.bool(True),
     ## plot expected only
     expectedOnly = cms.bool(True),
     ## mass label for the injected signal print band in different layout for signal injected
