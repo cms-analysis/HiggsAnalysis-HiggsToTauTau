@@ -1,4 +1,4 @@
- #include "HiggsAnalysis/HiggsToTauTau/interface/PlotLimits.h"
+#include "HiggsAnalysis/HiggsToTauTau/interface/PlotLimits.h"
 
 void 
 PlotLimits::print(const char* filename, std::string& xval, std::string& yval, std::vector<TGraph*> contour, const char* type)
@@ -475,8 +475,8 @@ PlotLimits::print(const char* filename, TGraphAsymmErrors* outerBand_1, TGraphAs
 	  << " & " << std::setw(25) << std::fixed << std::right << "$" << minus2sigma << "$" ;
       }
       file
-	<< " & " << std::setw(25) << std::fixed << std::right << "$" << minus2sigma << "$" 
 	<< " & " << std::setw(25) << std::fixed << std::right << "$" << minus1sigma << "$" 
+	<< " & " << std::setw(25) << std::fixed << std::right << "$" << expected << "$" 
         << " & " << std::setw(25) << std::fixed << std::right << "$" << plus1sigma << "$" ;
       if(outerBand_1){
 	file
@@ -601,8 +601,8 @@ PlotLimits::print(const char* filename, TGraphAsymmErrors* outerBand_1, TGraphAs
 	  << " & " << std::setw(25) << std::fixed << std::right << "$" << minus2sigma << "$" ;
       }
       file_v2
-	<< " & " << std::setw(25) << std::fixed << std::right << "$" << minus2sigma << "$" 
 	<< " & " << std::setw(25) << std::fixed << std::right << "$" << minus1sigma << "$" 
+	<< " & " << std::setw(25) << std::fixed << std::right << "$" << expected << "$" 
         << " & " << std::setw(25) << std::fixed << std::right << "$" << plus1sigma << "$" ;
       if(outerBand_1){
 	file_v2
