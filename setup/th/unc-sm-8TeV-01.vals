@@ -15,21 +15,18 @@ mmt     signal,simulated		CMS_th_scale_t_8TeV     1.03
 
 ## eff: average out from MSSM. fake: from WH. A bit slippery, FIXME!
 mmt     signal,ttH,tt1l,tt2l,ttW,ttZ	CMS_th_eff_b_8TeV       1.05
-mmt     WZ,ZZ				CMS_th_fake_b_8TeV      0.99
+mmt     WW,WZ,ZZ			CMS_th_fake_b_8TeV      0.99
 
 ## utterly arbitrary
-mmt     reducible			CMS_th_reducible_8TeV   1.50
+mmt     DY				CMS_th_dy_8TeV   	1.50
+mmt     W				CMS_th_w_8TeV   	1.50
 
 ## from ttH analysis https://svnweb.cern.ch/cern/wsvn/cmshcg/trunk/summer2013/couplings/tth/125/ttH_hbb_8TeV.txt
 mmt     signal				QCDscale_ttH            1.067
 mmt     tt1l,tt2l			QCDscale_ttbar          1.03
-mmt     ttW				QCDscale_ttW            1.105
-mmt     ttZ				QCDscale_ttZ            1.116
 
-mmt     WZ,ZZ				QCDscale_VV             1.036
+mmt     WW,WZ,ZZ			QCDscale_VV             1.036
 
-mmt     signal,ttH			pdf_gg                  0.923
+mmt     signal				pdf_gg                  0.923
 mmt     tt1l,tt2l			pdf_gg                  0.974
-mmt     ttZ				pdf_gg                  0.914
-mmt     ttW				pdf_qqbar               1.072
 
