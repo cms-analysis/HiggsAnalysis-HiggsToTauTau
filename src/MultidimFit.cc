@@ -393,8 +393,8 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     }
     // determine new contours for 68% CL and 95% CL limits
     double contours[2];
-    contours[0] = TMath::ChisquareQuantile(0.68,2)/2; //0.5;     //68% CL
-    contours[1] = TMath::ChisquareQuantile(0.95,2)/2; //1.92;    //95% CL
+    contours[0] = TMath::ChisquareQuantile(0.68,2)/2; // 2.28/2;     //68% CL
+    contours[1] = TMath::ChisquareQuantile(0.95,2)/2; // 5.99/2;    //95% CL
     scan2D->SetContour(2, contours);
     scan2D->Draw("CONT Z LIST");  // draw contours as filled regions, and save points
     canv.Update();                // needed to force the plotting and retrieve the contours in TGraph
