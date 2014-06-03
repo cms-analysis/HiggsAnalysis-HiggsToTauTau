@@ -57,6 +57,8 @@ print " drop uncerts : ", options.no_uncerts
 print " channel      : ",  channelName[options.channel]
 
 ## add shift Nuisance (ignore the VBF Option right now)
+os.system(r"rm -f {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/addFitNuisance_C.so".format(CMSSW_BASE=os.environ.get("CMSSW_BASE")))
+os.system(r"rm -f {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/addFitNuisance_C.d".format(CMSSW_BASE=os.environ.get("CMSSW_BASE")))
 os.system(r"root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/compileAddFitNuisance.C".format(CMSSW_BASE=os.environ.get("CMSSW_BASE")))
 os.system(r"cp {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rootlogon.C .".format(CMSSW_BASE=os.environ.get("CMSSW_BASE")))
 
