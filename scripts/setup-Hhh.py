@@ -81,34 +81,34 @@ directories_mssm = {
 
 directories_Hhh = {
     'ee' : {
-    '0'  : ['0tag', '0tag-ee'],
-    '1'  : ['1tag'  , '1tag-ee'  ],
-    '2'  : ['2tag'  , '2tag-ee'  ],
+    '0'  : ['2jet0tag', '2jet0tag-ee'],
+    '1'  : ['2jet1tag'  , '2jet1tag-ee'  ],
+    '2'  : ['2jet2tag'  , '2jet2tag-ee'  ],
     },
     'mm' : {
-    '0'  : ['0tag', '0tag-mm'],
-    '1'  : ['1tag'  , '1tag-mm'  ],
-    '2'  : ['2tag'  , '2tag-mm'  ],
+    '0'  : ['2jet0tag', '2jet0tag-mm'],
+    '1'  : ['2jet1tag'  , '2jet1tag-mm'  ],
+    '2'  : ['2jet2tag'  , '2jet2tag-mm'  ],
     },
     'em' : {
-    '0'  : ['0tag', '0tag-em'],
-    '1'  : ['1tag'  , '1tag-em'  ],
-    '2'  : ['2tag'  , '2tag-em'  ],
+    '0'  : ['2jet0tag', '2jet0tag-em'],
+    '1'  : ['2jet1tag'  , '2jet1tag-em'  ],
+    '2'  : ['2jet2tag'  , '2jet2tag-em'  ],
     },    
     'et' : {
-    '0'  : ['0tag', '0tag-et'],
-    '1'  : ['1tag'  , '1tag-et'  ],
-    '2'  : ['2tag'  , '2tag-et'  ],
+    '0'  : ['2jet0tag', '2jet0tag-et'],
+    '1'  : ['2jet1tag'  , '2jet1tag-et'  ],
+    '2'  : ['2jet2tag'  , '2jet2tag-et'  ],
     },
     'mt' : {
-    '0'  : ['0tag', '0tag-mt'],
-    '1'  : ['1tag'  , '1tag-mt'  ],
-    '2'  : ['2tag'  , '2tag-mt'  ],
+    '0'  : ['2jet0tag', '2jet0tag-mt'],
+    '1'  : ['2jet1tag'  , '2jet1tag-mt'  ],
+    '2'  : ['2jet2tag'  , '2jet2tag-mt'  ],
     },
     'tt' : {
-    '0'  : ['0tag', '0tag-tt'],
-    '1'  : ['1tag'  , '1tag-tt'  ],
-    '2'  : ['2tag'  , '2tag-tt'  ],
+    '0'  : ['2jet0tag', '2jet0tag-tt'],
+    '1'  : ['2jet1tag'  , '2jet1tag-tt'  ],
+    '2'  : ['2jet2tag'  , '2jet2tag-tt'  ],
     },
 }
 
