@@ -60,18 +60,18 @@ cats2.add_option("--mssm-categories-hbb", dest="hbb_mssm_categories", default="0
                  help="List of hbb event categories. [Default: \"0 1 2 3 4 5 6\"]")
 parser.add_option_group(cats2)
 cats3 = OptionGroup(parser, "Hhh EVENT CATEGORIES", "Event categories to be used for the Hhh analysis.")
-cats3.add_option("--Hhh-categories-ee", dest="ee_Hhh_categories", default="0 1 2", type="string",
-                 help="List ee of event categories. [Default: \"0 1 2\"]")
-cats3.add_option("--Hhh-categories-mm", dest="mm_Hhh_categories", default="0 1 2", type="string",
-                 help="List mm of event categories. [Default: \"0 1 2\"]")
-cats3.add_option("--Hhh-categories-em", dest="em_Hhh_categories", default="0 1 2", type="string",
-                 help="List em of event categories. [Default: \"0 1 2\"]")
-cats3.add_option("--Hhh-categories-mt", dest="mt_Hhh_categories", default="0 1 2", type="string",
-                 help="List mt of event categories. [Default: \"0 1 2\"]")
-cats3.add_option("--Hhh-categories-et", dest="et_Hhh_categories", default="0 1 2", type="string",
-                 help="List et of event categories. [Default: \"0 1 2\"]")
-cats3.add_option("--Hhh-categories-tt", dest="tt_Hhh_categories", default="0 1 2", type="string",
-                 help="List of tt event categories. [Default: \"0 1 2\"]")
+cats3.add_option("--Hhh-categories-ee", dest="ee_Hhh_categories", default="0 1 2 3 4", type="string",
+                 help="List ee of event categories. [Default: \"0 1 2 3 4\"]")
+cats3.add_option("--Hhh-categories-mm", dest="mm_Hhh_categories", default="0 1 2 3 4", type="string",
+                 help="List mm of event categories. [Default: \"0 1 2 3 4\"]")
+cats3.add_option("--Hhh-categories-em", dest="em_Hhh_categories", default="0 1 2 3 4", type="string",
+                 help="List em of event categories. [Default: \"0 1 2 3 4\"]")
+cats3.add_option("--Hhh-categories-mt", dest="mt_Hhh_categories", default="0 1 2 3 4", type="string",
+                 help="List mt of event categories. [Default: \"0 1 2 3 4\"]")
+cats3.add_option("--Hhh-categories-et", dest="et_Hhh_categories", default="0 1 2 3 4", type="string",
+                 help="List et of event categories. [Default: \"0 1 2 3 4\"]")
+cats3.add_option("--Hhh-categories-tt", dest="tt_Hhh_categories", default="0 1 2 3 4", type="string",
+                 help="List of tt event categories. [Default: \"0 1 2 3 4\"]")
 parser.add_option_group(cats3)
 
 ## check number of arguments; in case print usage

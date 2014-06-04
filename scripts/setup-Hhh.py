@@ -15,12 +15,12 @@ parser.add_option("-v", "--verbose", dest="verbose", default=False, action="stor
 parser.add_option("--lowmH", dest="lowmH", default=False, action="store_true", help="Setup of directory structure for lowmH MSSM scenario. [Default: False]")
 parser.add_option("--SM4", dest="SM4", default=False, action="store_true", help="Copy datacards for SM4 (for SM only). [Default: False]")
 cats1 = OptionGroup(parser, "Hhh EVENT CATEGORIES", "Event categories to be picked up for the Hhh analysis.")
-cats1.add_option("--Hhh-categories-ee", dest="ee_Hhh_categories", default="0 1 2", type="string", help="List of ee event categories. [Default: \"0 1 2\"]")
-cats1.add_option("--Hhh-categories-mm", dest="mm_Hhh_categories", default="0 1 2", type="string", help="List of mm event categories. [Default: \"0 1 2\"]")
-cats1.add_option("--Hhh-categories-em", dest="em_Hhh_categories", default="0 1 2", type="string", help="List of em event categories. [Default: \"0 1 2\"]")
-cats1.add_option("--Hhh-categories-mt", dest="mt_Hhh_categories", default="0 1 2", type="string", help="List of mt event categories. [Default: \"0 1 2\"]")
-cats1.add_option("--Hhh-categories-et", dest="et_Hhh_categories", default="0 1 2", type="string", help="List of et event categories. [Default: \"0 1 2\"]")
-cats1.add_option("--Hhh-categories-tt", dest="tt_Hhh_categories", default="0 1 2", type="string", help="List of tt event categories. [Default: \"0 1 2\"]")
+cats1.add_option("--Hhh-categories-ee", dest="ee_Hhh_categories", default="0 1 2 3 4", type="string", help="List of ee event categories. [Default: \"0 1 2 3 4\"]")
+cats1.add_option("--Hhh-categories-mm", dest="mm_Hhh_categories", default="0 1 2 3 4", type="string", help="List of mm event categories. [Default: \"0 1 2 3 4\"]")
+cats1.add_option("--Hhh-categories-em", dest="em_Hhh_categories", default="0 1 2 3 4", type="string", help="List of em event categories. [Default: \"0 1 2 3 4\"]")
+cats1.add_option("--Hhh-categories-mt", dest="mt_Hhh_categories", default="0 1 2 3 4", type="string", help="List of mt event categories. [Default: \"0 1 2 3 4\"]")
+cats1.add_option("--Hhh-categories-et", dest="et_Hhh_categories", default="0 1 2 3 4", type="string", help="List of et event categories. [Default: \"0 1 2 3 4\"]")
+cats1.add_option("--Hhh-categories-tt", dest="tt_Hhh_categories", default="0 1 2 3 4", type="string", help="List of tt event categories. [Default: \"0 1 2 3 4\"]")
 parser.add_option_group(cats1)
 
 ## check number of arguments; in case print usage
@@ -84,31 +84,43 @@ directories_Hhh = {
     '0'  : ['2jet0tag', '2jet0tag-ee'],
     '1'  : ['2jet1tag'  , '2jet1tag-ee'  ],
     '2'  : ['2jet2tag'  , '2jet2tag-ee'  ],
+    '3'  : ['1jet2tag'  , '1jet2tag-ee'  ],
+    '4'  : ['1jet2tag'  , '1jet2tag-ee'  ],
     },
     'mm' : {
     '0'  : ['2jet0tag', '2jet0tag-mm'],
     '1'  : ['2jet1tag'  , '2jet1tag-mm'  ],
     '2'  : ['2jet2tag'  , '2jet2tag-mm'  ],
+    '3'  : ['1jet2tag'  , '1jet2tag-mm'  ],
+    '4'  : ['1jet2tag'  , '1jet2tag-mm'  ],
     },
     'em' : {
     '0'  : ['2jet0tag', '2jet0tag-em'],
     '1'  : ['2jet1tag'  , '2jet1tag-em'  ],
     '2'  : ['2jet2tag'  , '2jet2tag-em'  ],
+    '3'  : ['1jet2tag'  , '1jet2tag-em'  ],
+    '4'  : ['1jet2tag'  , '1jet2tag-em'  ],
     },    
     'et' : {
     '0'  : ['2jet0tag', '2jet0tag-et'],
     '1'  : ['2jet1tag'  , '2jet1tag-et'  ],
     '2'  : ['2jet2tag'  , '2jet2tag-et'  ],
+    '3'  : ['1jet2tag'  , '1jet2tag-et'  ],
+    '4'  : ['1jet2tag'  , '1jet2tag-et'  ],
     },
     'mt' : {
     '0'  : ['2jet0tag', '2jet0tag-mt'],
     '1'  : ['2jet1tag'  , '2jet1tag-mt'  ],
     '2'  : ['2jet2tag'  , '2jet2tag-mt'  ],
+    '3'  : ['1jet2tag'  , '1jet2tag-mt'  ],
+    '4'  : ['1jet2tag'  , '1jet2tag-mt'  ],
     },
     'tt' : {
     '0'  : ['2jet0tag', '2jet0tag-tt'],
     '1'  : ['2jet1tag'  , '2jet1tag-tt'  ],
     '2'  : ['2jet2tag'  , '2jet2tag-tt'  ],
+    '3'  : ['1jet2tag'  , '1jet2tag-tt'  ],
+    '4'  : ['1jet2tag'  , '1jet2tag-tt'  ],
     },
 }
 
