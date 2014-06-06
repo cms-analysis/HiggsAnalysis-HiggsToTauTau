@@ -26,14 +26,14 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   // setup the CMS colors
   TColor* obs = new TColor(1501, 0.463, 0.867, 0.957);
   if(transparent) obs->SetAlpha(0.5);
-  TColor* twosigma = gROOT->GetColor(kGray);
+  TColor* twosigma = gROOT->GetColor(kGray+1);
   if(transparent) twosigma->SetAlpha(0.5);
-  TColor* onesigma = gROOT->GetColor(kGray+1);
+  TColor* onesigma = gROOT->GetColor(kGray+2);
   if(transparent) onesigma->SetAlpha(0.5);
   TColor* ph = gROOT->GetColor(kYellow);
   ph->SetAlpha(0.0);
   TColor* backgroundColor = gROOT->GetColor(kRed);
-  backgroundColor->SetAlpha(0.2);
+  //backgroundColor->SetAlpha(0.2);
 
   // for logx the label for x axis values below 100 needs to be slightly shifted to prevent 
   // the label from being printed into the canvas
@@ -75,10 +75,12 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   background->SetPoint(expected_1->GetN(), expected_1->GetX()[expected_1->GetN()-1], 50);
   background->SetPointEYlow (expected_1->GetN(), 50);
   background->SetPointEYhigh(expected_1->GetN(), 50); 
-  background->SetFillStyle(1001.);
+  background->SetFillStyle(3004.); //1001  
   background->SetFillColor(backgroundColor->GetNumber());
-  background->SetLineColor(ph->GetNumber());
-  background->Draw("3"); //felix
+  //background->SetLineColor(ph->GetNumber());
+  background->SetLineWidth(3);
+  background->SetLineColor(backgroundColor->GetNumber());
+  background->Draw("3"); 
 
   int idx=0;
   //int coloredBands[] = {kRed, kRed-7, kRed-9};
@@ -88,6 +90,43 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
     band->second->SetLineColor(coloredBands[idx]);
     band->second->SetFillColor(coloredBands[idx]);
     band->second->Draw("3same");
+  
+    if(idx==0){
+      int np=band->second->GetN();
+      double band_ymin[np], band_ymax[np];
+      double band_x[np];
+      for(int i=0; i<np; i++){ 
+	band->second->GetPoint(i, band_x[i], band_ymin[i]);
+	band_ymax[i]=band_ymin[i] + band->second->GetErrorYhigh(i);
+      }
+      //Fill in and max graphs
+      TGraph *band_min=new TGraph(), *band_max=new TGraph(), *connection_min=new TGraph(), *connection_max=new TGraph();
+      for(int i=0; i<np; i++){ 
+	band_min->SetPoint(i, band_x[i], band_ymin[i]);
+	band_max->SetPoint(i, band_x[i], band_ymax[i]);
+	if(i==0){
+	  std::cout << band_ymin[i] << " " << band_ymax[i] << std::endl;
+	  connection_min->SetPoint(i, band_x[i], band_ymin[i]);
+	  connection_min->SetPoint(i+1, band_x[i], band_ymax[i]);
+	}
+	if(i==np-1){
+	  connection_max->SetPoint(0, band_x[i], band_ymin[i]);
+	  connection_max->SetPoint(1, band_x[i], band_ymax[i]);
+	}
+      }
+      connection_min->SetLineWidth(2);
+      connection_min->SetLineColor(backgroundColor->GetNumber());
+      connection_min->Draw("Lsame");
+      band_min->SetLineWidth(2);
+      band_min->SetLineColor(backgroundColor->GetNumber());
+      band_min->Draw("Lsame");
+      connection_max->SetLineWidth(2);
+      connection_max->SetLineColor(backgroundColor->GetNumber());
+      connection_max->Draw("Lsame");
+      band_max->SetLineWidth(2);
+      band_max->SetLineColor(backgroundColor->GetNumber());
+      band_max->Draw("Lsame");
+    }
   }
 
   if(!expectedOnly){
@@ -193,10 +232,10 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   innerBand_3->SetLineColor(onesigma->GetNumber());
   //innerBand_3->Draw("3same"); 
  
-  innerband_1_min->SetLineColor(kGray+1);
-  innerband_1_max->SetLineColor(kGray+1);
-  innerband_2_min->SetLineColor(kGray+1);
-  innerband_2_max->SetLineColor(kGray+1);
+  innerband_1_min->SetLineColor(kGray+2);
+  innerband_1_max->SetLineColor(kGray+2);
+  innerband_2_min->SetLineColor(kGray+2);
+  innerband_2_max->SetLineColor(kGray+2);
   innerband_1_min->SetLineStyle(9);
   innerband_1_max->SetLineStyle(9);
   innerband_2_min->SetLineStyle(9);
@@ -210,15 +249,15 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   if(BlackWhite && HIG=="") innerband_2_min->Draw("Lsame");
   if(BlackWhite && HIG=="") innerband_2_max->Draw("Lsame"); 
     
-  expected_1->SetLineColor(kGray+2);
+  expected_1->SetLineColor(kGray+3);
   expected_1->SetLineWidth(3);
   expected_1->SetLineStyle(1);
   expected_1->Draw("Lsame");
-  expected_2->SetLineColor(kGray+2);
+  expected_2->SetLineColor(kGray+3);
   expected_2->SetLineWidth(3);
   expected_2->SetLineStyle(1);
   if(HIG=="") expected_2->Draw("Lsame");
-  expected_3->SetLineColor(kGray+2);
+  expected_3->SetLineColor(kGray+3);
   expected_3->SetLineWidth(3);
   expected_3->SetLineStyle(1);
   //expected_3->Draw("Lsame");
@@ -350,11 +389,11 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   TLegend* leg2;
   if(log){
     if(theory=="MSSM light-stop scenario") leg2 = new TLegend(0.58, 0.15, 0.92, 0.20);
-    else leg2 = new TLegend(0.18, 0.79, 0.52, 0.84);
+    else leg2 = new TLegend(0.18, 0.79, 0.60, 0.84);
   }
   else{ 
-    if(theory=="MSSM low-m_{H} scenario") leg2 = new TLegend(0.19, 0.78, 0.52, 0.84);
-    else leg2 = new TLegend(0.58, 0.24, 0.91, 0.30);
+    if(theory=="MSSM low-m_{H} scenario") leg2 = new TLegend(0.19, 0.78, 0.60, 0.84);
+    else leg2 = new TLegend(0.51, 0.23, 0.92, 0.29);
   }  
   leg2->SetBorderSize( 1  );
   leg2->SetFillStyle (1001);
@@ -364,9 +403,9 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   leg2->SetLineWidth (2);
   leg2->SetLineColor (kBlack);
   if(log) {
-    leg2->AddEntry(background, "m_{h,H}#neq(125#pm3)GeV", "F");
+    leg2->AddEntry(background, "MSSM m_{h,H}#neq(125#pm3)GeV", "F");
   }
-  else leg2->AddEntry(background, "m_{h,H}#neq(125#pm3)GeV", "F");
+  else leg2->AddEntry(background, "MSSM m_{h,H}#neq(125#pm3)GeV", "F");
   leg2->Draw("same");
   
   //canv.RedrawAxis("g");
