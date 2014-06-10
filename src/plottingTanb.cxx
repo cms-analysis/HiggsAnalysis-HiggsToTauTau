@@ -200,15 +200,17 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
 
   if(plotOuterBand){
     outerBand_1->SetFillStyle(1001);
-    outerBand_1->SetFillColor(twosigma->GetNumber()); //kGray
-    outerBand_1->SetLineColor(twosigma->GetNumber());
+    outerBand_1->SetFillColor(twosigma->GetNumber()); 
+    outerBand_1->SetLineColor(kWhite);
+    outerBand_1->SetLineWidth(1);
+    //outerBand_1->SetLineColor(twosigma->GetNumber());
     if(!BlackWhite) outerBand_1->Draw("3same");    
     outerBand_2->SetFillStyle(1001);
-    outerBand_2->SetFillColor(twosigma->GetNumber()); //kGray
+    outerBand_2->SetFillColor(twosigma->GetNumber()); 
     outerBand_2->SetLineColor(twosigma->GetNumber());
     if(HIG=="" && !BlackWhite) outerBand_2->Draw("3same");  
     outerBand_3->SetFillStyle(1001);
-    outerBand_3->SetFillColor(twosigma->GetNumber()); //kGray
+    outerBand_3->SetFillColor(twosigma->GetNumber()); 
     outerBand_3->SetLineColor(twosigma->GetNumber());
     //outerBand_3->Draw("3same");
 
@@ -233,14 +235,16 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   }
   
   innerBand_1->SetFillStyle(1001);
-  innerBand_1->SetFillColor(onesigma->GetNumber()); //kGray+1
-  innerBand_1->SetLineColor(onesigma->GetNumber());
+  innerBand_1->SetFillColor(onesigma->GetNumber()); 
+  innerBand_1->SetLineColor(kWhite);
+  innerBand_1->SetLineWidth(1);
+  //innerBand_1->SetLineColor(onesigma->GetNumber());
   if(!BlackWhite) innerBand_1->Draw("3same"); 
-  innerBand_2->SetFillColor(onesigma->GetNumber()); //kGray+1
+  innerBand_2->SetFillColor(onesigma->GetNumber()); 
   innerBand_2->SetLineColor(onesigma->GetNumber());
   if(HIG=="" && !BlackWhite) innerBand_2->Draw("3same"); 
   innerBand_3->SetFillStyle(1001);
-  innerBand_3->SetFillColor(onesigma->GetNumber()); //kGray+1
+  innerBand_3->SetFillColor(onesigma->GetNumber()); 
   innerBand_3->SetLineColor(onesigma->GetNumber());
   //innerBand_3->Draw("3same"); 
  
@@ -340,22 +344,6 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   theory1->SetTextFont (   62 );
   theory1->AddText(theory.c_str());
   theory1->Draw();
-
-  /*TPaveText* theory2;
-  if(log){
-    theory2 = new TPaveText(0.53, 0.85, 0.9, 0.90, "NDC");
-  }
-  else{
-    theory2 = new TPaveText(0.45, 0.14, 0.9, 0.20, "NDC");
-  }
-  theory2->SetBorderSize(   0 );
-  theory2->SetFillStyle(    0 );
-  theory2->SetTextAlign(   12 );
-  theory2->SetTextSize ( 0.04 );
-  theory2->SetTextColor(    1 );
-  theory2->SetTextFont (   62 );
-  theory2->AddText("M_{SUSY} = 1 TeV");
-  //if(theory=="MSSM m_{h}^{max} scenario") theory2->Draw();*/
 
   /// add the proper legend
   TLegend* leg;
