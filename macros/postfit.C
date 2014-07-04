@@ -82,9 +82,9 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   // switch for MSSM/SM
   bool MSSM = std::string(analysis) == std::string("MSSM");
   // determine label
-  if (std::string(dataset) == std::string("2011"     )){ dataset = "CMS, H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV"; }
-  if (std::string(dataset) == std::string("2012"     )){ dataset = "CMS, H#rightarrow#tau#tau, 19.7 fb^{-1} at 8 TeV"; }
-  if (std::string(dataset) == std::string("2011+2012")){ dataset = "CMS, H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV"; }
+  if (std::string(dataset) == std::string("2011"     )){ dataset = "#scale[1.5]{CMS}   H#rightarrow#tau#tau                                       4.9 fb^{-1} (7 TeV)"; }
+  if (std::string(dataset) == std::string("2012"     )){ dataset = "#scale[1.5]{CMS}   H#rightarrow#tau#tau                                      19.7 fb^{-1} (8 TeV)"; }
+  if (std::string(dataset) == std::string("2011+2012")){ dataset = "#scale[1.5]{CMS}   H#rightarrow#tau#tau          19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"; }
   // determine category tag
   const char* category_extra = "";
   if(std::string(extra2) == std::string("0jet_low"  )){ category_extra = "0 jet, low p_{T}";  }
@@ -230,7 +230,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
 
 
   //CMSPrelim(dataset, extra, 0.17, 0.835);
-  CMSPrelim(dataset, "", 0.18, 0.835);  
+  CMSPrelim(dataset, "", 0.16, 0.835);  
   TPaveText* chan     = new TPaveText(0.20, 0.74+0.061, 0.32, 0.74+0.161, "tlbrNDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );

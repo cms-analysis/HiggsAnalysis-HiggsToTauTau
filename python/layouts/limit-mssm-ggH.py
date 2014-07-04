@@ -2,15 +2,15 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string("CMS, H#rightarrow#tau#tau, 19.7 fb^{-1} at 8 TeV"),	
-    #dataset = cms.string("CMS Preliminary, H #rightarrow #tau #tau, 18.3 fb^{-1} at 8 TeV"),
+    dataset = cms.string("#scale[1.5]{CMS}   H#rightarrow#tau#tau                                         19.7 fb^{-1} (8 TeV)"),	
+    #dataset = cms.string("#scale[1.5]{CMS}   H#rightarrow#tau#tau                                         18.3 fb^{-1} (8 TeV)"),
     ## extra labels (below legend)
     extra = cms.string("bb#phi profiled"),	
     #extra = cms.string("bb#phi set to zero"),
     ## x-axis title
     xaxis = cms.string("m_{#phi} [GeV]"),
     ## x-axis title
-    yaxis = cms.string("95% CL limit on #sigma(gg#phi)#timesBR(#tau#tau) [pb]"),
+    yaxis = cms.string("95% CL limit on #sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#tau#tau)} [pb]"),
     ## min for plotting
     min = cms.double(0.01),
     ## max for plotting

@@ -1,3 +1,4 @@
+
 #include <map>
 #include <string>
 #include <iostream>
@@ -50,7 +51,7 @@ TGraphAsymmErrors* higgsConstraint(TGraph* expected_1, double mass, double delta
 
 
 void
-plotTanb(const char* filename, const char* channel, bool draw_injected_=false, double min_=0.5, double max_=60., bool MSSMvsSM_=false, bool log_=false, bool transparent_=false,  std::string dataset_="CMS Preliminary, H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV", std::string xaxis_="m_{A} [GeV]", std::string yaxis_="#bf{tan#beta}", std::string theory_="MSSM m_{h}^{max} scenario")
+plotTanb(const char* filename, const char* channel, bool draw_injected_=false, double min_=0.5, double max_=60., bool MSSMvsSM_=false, bool log_=false, bool transparent_=false,  std::string dataset_="#scale[1.5]{CMS}   H#rightarrow#tau#tau                            19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)", std::string xaxis_="m_{A} [GeV]", std::string yaxis_="#bf{tan#beta}", std::string theory_="MSSM m_{h}^{max} scenario")
 {
   TFile* file = TFile::Open(filename);
   // retrieve TGraphs from file
@@ -110,7 +111,16 @@ plotTanb(const char* filename, const char* channel, bool draw_injected_=false, d
   plottingTanb(canv, plain_1, plain_2, innerBand_1, innerBand_2, innerBand_3, outerBand_1, outerBand_2, outerBand_3, expected_1, expected_2, expected_3, observed_1, observed_2, observed_3, injected_1, injected_2, higgsBands, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, false, true, MSSMvsSM_, "", false);
 
   /// setup the CMS Preliminary
-  CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
+  //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
+  TPaveText* cmsprel  = new TPaveText(0.145, 0.835+0.06, 0.145+0.30, 0.835+0.16, "NDC");
+  cmsprel->SetBorderSize(   0 );
+  cmsprel->SetFillStyle(    0 );
+  cmsprel->SetTextAlign(   12 );
+  cmsprel->SetTextSize ( 0.03 );
+  cmsprel->SetTextColor(    1 );
+  cmsprel->SetTextFont (   62 );
+  cmsprel->AddText(dataset_.c_str());
+  cmsprel->Draw();
   // write results to files
   canv.Print(std::string(channel).append("_tanb").append(".png").c_str());
   canv.Print(std::string(channel).append("_tanb").append(".pdf").c_str()); 

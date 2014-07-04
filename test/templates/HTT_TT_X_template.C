@@ -182,13 +182,13 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 
   const char* dataset;
 #ifdef MSSM
-  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV";}
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "#scale[1.5]{CMS}   H#rightarrow#tau#tau                                       4.9 fb^{-1} (7 TeV)";}
   if(std::string(inputfile).find("8TeV")!=std::string::npos){
     if(std::string(directory).find("btag")!=std::string::npos){
-      dataset = "CMS, H#rightarrow#tau#tau, 18.3 fb^{-1} at 8 TeV";
+      dataset = "#scale[1.5]{CMS}   H#rightarrow#tau#tau                                      18.3 fb^{-1} (8 TeV)";
     }
     else{
-      dataset = "CMS, H#rightarrow#tau#tau, 19.8 fb^{-1} at 8 TeV";
+      dataset = "#scale[1.5]{CMS}   H#rightarrow#tau#tau                                      19.7 fb^{-1} (8 TeV)";
     }
   }
 #else
