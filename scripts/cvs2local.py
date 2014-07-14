@@ -12,7 +12,7 @@ parser.add_option("-o", "--out", dest="out", default="ichep2012", type="string",
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
                   help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice",
-                  help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
+                  help="Type of analysis (sm or mssm or Hhh). Lower case is required. [Default: sm]", choices=["sm", "mssm", "Hhh"])
 parser.add_option("-c", "--channels", dest="channels", default="mm em mt et tt", type="string",
                   help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are ee, mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et tt\"]")
 parser.add_option("-u", "--no-update", dest="no_update", default=False, action="store_true",
@@ -51,6 +51,20 @@ cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="8 9
 cats2.add_option("--mssm-categories-hbb", dest="hbb_mssm_categories", default="0 1 2 3 4 5 6", type="string",
                  help="List of hbb event categories. [Default: \"0 1 2 3 4 5 6\"]")
 parser.add_option_group(cats2)
+cats3 = OptionGroup(parser, "Hhh EVENT CATEGORIES", "Event categories to be used for the Hhh analysis.")
+cats3.add_option("--Hhh-categories-ee", dest="ee_Hhh_categories", default="0 1 2", type="string",
+                 help="List ee of event categories. [Default: \"0 1 2\"]")
+cats3.add_option("--Hhh-categories-mm", dest="mm_Hhh_categories", default="0 1 2", type="string",
+                 help="List mm of event categories. [Default: \"0 1 2\"]")
+cats3.add_option("--Hhh-categories-em", dest="em_Hhh_categories", default="0 1 2", type="string",
+                 help="List em of event categories. [Default: \"0 1 2\"]")
+cats3.add_option("--Hhh-categories-mt", dest="mt_Hhh_categories", default="0 1 2", type="string",
+                 help="List mt of event categories. [Default: \"0 1 2\"]")
+cats3.add_option("--Hhh-categories-et", dest="et_Hhh_categories", default="0 1 2", type="string",
+                 help="List et of event categories. [Default: \"0 1 2\"]")
+cats3.add_option("--Hhh-categories-tt", dest="tt_Hhh_categories", default="0 1 2", type="string",
+                 help="List of tt event categories. [Default: \"0 1 2\"]")
+parser.add_option_group(cats3)
 parser.add_option("-4", "--SM4", dest="sm4", default=False, action="store_true",
                   help="Copy SM4 datacards (will add a prefix SM4_ to each file). [Default: False]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true",
@@ -145,6 +159,16 @@ if options.analysis == "mssm" :
         #"hmm"  : options.hmm_mssm_categories.split(),
         "hbb"  : options.hbb_mssm_categories.split(),
         }
+if options.analysis == "Hhh" :
+    categories = {
+        "ee"   : options.ee_Hhh_categories.split(),
+        "mm"   : options.mm_Hhh_categories.split(),
+        "em"   : options.em_Hhh_categories.split(),
+        "mt"   : options.mt_Hhh_categories.split(),
+        "et"   : options.et_Hhh_categories.split(),
+        "tt"   : options.tt_Hhh_categories.split(),
+        }
+
 
 ## valid mass range per category
 if options.analysis == "sm" :
@@ -169,6 +193,16 @@ if options.analysis == "mssm" :
         #"hmm"  : (120,  300),
         "hbb"  : ( 90,  350),
     }
+if options.analysis == "Hhh" :
+    valid_masses = {
+        "ee"   : (250, 350),
+        "mm"   : (250, 350),
+        "em"   : (250, 350),
+        "mt"   : (250, 350),
+        "et"   : (250, 350),
+        "tt"   : (250, 350),
+    }
+
 if options.verbose :
     print "------------------------------------------------------"
     print " Valid mass ranges per channel:"
@@ -200,6 +234,16 @@ if options.analysis == "mssm" :
         #"hmm"  : "7TeV"     ,
         "hbb"  : "7TeV"     ,
         }
+if options.analysis == "Hhh" :
+    valid_periods = {
+        "ee"   : "7TeV 8TeV",
+        "mm"   : "7TeV 8TeV",
+        "em"   : "7TeV 8TeV",
+        "mt"   : "7TeV 8TeV",
+        "et"   : "7TeV 8TeV",
+        "tt"   :      "8TeV",
+        }
+
 if options.verbose :
     print "------------------------------------------------------"
     print " Valid mass run periods per channel:"
