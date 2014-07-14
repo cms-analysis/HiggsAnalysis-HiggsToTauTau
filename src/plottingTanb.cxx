@@ -326,8 +326,6 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
     theory1= new TPaveText(0.14, 0.85, 0.9, 0.90, "NDC");
   }
   else{
-    //if(theory=="MSSM low-m_{H} scenario") theory1= new TPaveText(0.14, 0.85, 0.9, 0.90, "NDC");
-    //else theory1= new TPaveText(0.48, 0.17, 0.92, 0.23, "NDC");
     if(theory=="MSSM low-m_{H} scenario") theory1= new TPaveText(0.55, 0.84, 0.91, 0.90, "NDC");
     else if(theory=="MSSM m_{h}^{max} scenario") theory1= new TPaveText(0.59, 0.165, 0.91, 0.225, "NDC");
     else if(theory=="MSSM m_{h}^{mod-} scenario") theory1= new TPaveText(0.59, 0.20, 0.91, 0.26, "NDC");
@@ -352,11 +350,19 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
     else leg = new TLegend(0.635, (!higgsBands.empty() || !comparisons.empty()) ? 0.15 : 0.32, (!higgsBands.empty() || !comparisons.empty()) ? 0.92: 0.92, 0.52);
   }
   else{ 
-    if(theory=="MSSM low-m_{H} scenario") leg = new TLegend(0.35, 0.16, 0.92, 0.31);
-    else leg = new TLegend(0.18, (!higgsBands.empty() || !comparisons.empty()) ? 0.53 : 0.65, (!higgsBands.empty() || !comparisons.empty()) ? 0.47: 0.50, 0.89);
-  }  
+    if(MSSMvsSM){
+      if(theory=="MSSM low-m_{H} scenario") leg = new TLegend(0.175, 0.155, 0.58, 0.295);
+      else if(theory=="MSSM light-stop scenario") leg = new TLegend(0.28, (!higgsBands.empty() || !comparisons.empty()) ? 0.57 :0.69, (!higgsBands.empty() || !comparisons.empty()) ? 0.57: 0.60, 0.89);
+      else leg = new TLegend(0.21, (!higgsBands.empty() || !comparisons.empty()) ? 0.59 : 0.71, (!higgsBands.empty() || !comparisons.empty()) ? 0.49: 0.52, 0.89);
+    }
+    else{
+      if(theory=="MSSM low-m_{H} scenario") leg = new TLegend(0.175, 0.155, 0.62, 0.30);
+      else if(theory=="MSSM light-stop scenario") leg = new TLegend(0.28, (!higgsBands.empty() || !comparisons.empty()) ? 0.57 :0.69, (!higgsBands.empty() || !comparisons.empty()) ? 0.53: 0.56, 0.89);
+      else leg = new TLegend(0.23, (!higgsBands.empty() || !comparisons.empty()) ? 0.57 : 0.69, (!higgsBands.empty() || !comparisons.empty()) ? 0.47: 0.50, 0.89);
+    }
+  }
   if(theory=="MSSM low-m_{H} scenario") leg->SetNColumns(2);
-  if(theory=="MSSM light-stop scenario" && log)  leg->SetNColumns(2);
+  if(theory=="MSSM light-stop scenario" && log) leg->SetNColumns(2);
   leg->SetBorderSize(  1 );
   leg->SetFillStyle (1001);
   leg->SetTextSize  (0.03);
@@ -370,13 +376,21 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
     observed_1->SetFillColor(obs->GetNumber()); 
     leg->AddEntry(observed_1, "observed", "FL");
   }
-  if(injected_1) leg->AddEntry(injected_1, "SM H injected", "L");
-  leg->AddEntry(expected_1, "expected", "L");
-  if(!BlackWhite) leg->AddEntry(innerBand_1, "#pm 1#sigma expected","F");
-  if(BlackWhite && HIG=="") leg->AddEntry(innerband_1_max, "#pm 1#sigma expected","L"); 
+  if(theory=="MSSM low-m_{H} scenario") {
+    if(!BlackWhite) leg->AddEntry(innerBand_1, "#pm 1#sigma expected","F");
+    if(BlackWhite && HIG=="") leg->AddEntry(innerband_1_max, "#pm 1#sigma expected","L"); 
+    leg->AddEntry(expected_1, "expected", "L");
+  }
+  else{
+    if(injected_1) leg->AddEntry(injected_1, "SM H injected", "L");
+    leg->AddEntry(expected_1, "expected", "L");
+    if(!BlackWhite) leg->AddEntry(innerBand_1, "#pm 1#sigma expected","F");
+    if(BlackWhite && HIG=="") leg->AddEntry(innerband_1_max, "#pm 1#sigma expected","L");
+  }
   if(plotOuterBand){ 
     if(!BlackWhite) leg->AddEntry(outerBand_1, "#pm 2#sigma expected", "F"); 
     if(BlackWhite && HIG=="") leg->AddEntry(outerband_1_max, "#pm 2#sigma expected","L"); 
+    if(theory=="MSSM low-m_{H} scenario" && injected_1) leg->AddEntry(injected_1, "h_{SM} injected", "L");
   }
   //for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band){
   //  leg->AddEntry(band->second, TString::Format("m_{h,H}=125GeV #pm %.0fGeV", band->first), "F");
