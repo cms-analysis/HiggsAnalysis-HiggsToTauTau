@@ -244,7 +244,9 @@ for directory in args :
                     ## new
                     os.system("cp $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/python/tanb_grid_new.py .")
                 ## determine grid of tanb values from min and max
-                dx = (float(options.max)-float(options.min))/(options.points-1)
+                dx = 0
+                if options.points > 1 :
+                    dx = (float(options.max)-float(options.min))/(options.points-1)
                 points = [ float(options.min) + dx*i for i in range(options.points) ]
                 ## create additional workspaces
                 for tanb in points :

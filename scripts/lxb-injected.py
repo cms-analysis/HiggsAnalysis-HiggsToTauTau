@@ -77,7 +77,7 @@ for m in masses :
     os.system("cp {PWD}/{PATH}/{DIR}/%s/{{vhtt,htt}}_* {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/"%(m,m))
 os.system("cp -r {PWD}/{PATH}/{DIR}/common {TMPDIR}/{USER}/{DIR}_{JOBID}/")
 for m in masses :
-    if m and {MSSM}:
+    if m and not {MSSM}:
         if {INJECTEDMH}:
             os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/blindData.py --seed {RND} --injected-mass %s --inject-signal --X-allow-no-signal {TMPDIR}/{USER}/{DIR}_{JOBID}/%s"%(m,m))
         else:
@@ -101,8 +101,16 @@ os.system("rm -r {TMPDIR}/{USER}/{DIR}_{JOBID}")
 
 lxq_fragment = '''#!/bin/zsh 
 export CMSSW_BASE=$cmssw_base
-export SCRAM_ARCH=$scram_arch
-ini cmssw_cvmfs
+linux_ver=`lsb_release -s -r`
+echo $linux_ver
+if [[ $linux_ver < 6.0 ]];
+then
+     ini cmssw_cvmfs
+     export SCRAM_ARCH=slc5_amd64_gcc472
+else
+     source /cvmfs/cms.cern.ch/cmsset_default.sh
+     export SCRAM_ARCH=slc6_amd64_gcc472
+fi
 '''
 
 condor_sub_template = '''
@@ -158,7 +166,7 @@ with open(submit_name, 'w') as submit_script:
         tmpdir='${_CONDOR_SCRATCH_DIR}'
         submit_script.write(condor_sub_template)
     if options.lxq :
-        submit_script.write('export scram_arch=$SCRAM_ARCH\n')
+        tmpdir = '$TMPDIR'
         submit_script.write('export cmssw_base=$CMSSW_BASE\n')
     for idx in range(int(njob)):
         rnd = random.randint(1, 999999)
@@ -204,7 +212,7 @@ with open(submit_name, 'w') as submit_script:
                 submit_script.write("error = %s/%s\n" % (os.getcwd(), script_file_name.replace('.py', '.stderr')))
                 submit_script.write("queue\n")
             elif options.lxq :
-                submit_script.write('qsub -l distro=sld5 -v scram_arch -v cmssw_base %s/%s\n'
+                submit_script.write('qsub -v cmssw_base %s %s/%s\n'
                                     % (bsubargs, os.getcwd(), script_file_name.replace('.py', '.sh')))
             else:
                 os.system('touch /{PWD}/log/{LOG}'.format(

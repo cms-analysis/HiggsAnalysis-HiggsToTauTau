@@ -193,8 +193,8 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 
   const char* dataset;
 #ifdef MSSM
-  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV";}
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 19.7 fb^{-1} at 8 TeV";}
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "#scale[1.5]{CMS}   H#rightarrow#tau#tau                                       4.9 fb^{-1} (7 TeV)";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "#scale[1.5]{CMS}   H#rightarrow#tau#tau                                      19.7 fb^{-1} (8 TeV)";}
 #else
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS, 4.9 fb^{-1} at 7 TeV";}
   if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS, 19.7 fb^{-1} at 8 TeV";}
@@ -434,7 +434,11 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 
   //CMSPrelim(dataset, "#tau_{#mu}#tau_{h}", 0.17, 0.835);
   CMSPrelim(dataset, "", 0.16, 0.835);
+#if defined MSSM
+  TPaveText* chan     = new TPaveText(0.20, 0.74+0.061, 0.32, 0.74+0.161, "tlbrNDC");
+#else
   TPaveText* chan     = new TPaveText(0.52, 0.35, 0.91, 0.55, "tlbrNDC");
+#endif
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
   chan->SetTextAlign(   12 );
@@ -443,7 +447,10 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   chan->SetTextFont (   62 );
   chan->AddText(category);
   chan->AddText(category_extra);
+#if defined MSSM
+#else
   chan->AddText(category_extra2);
+#endif
   chan->Draw();
 
 /*  TPaveText* cat      = new TPaveText(0.20, 0.71+0.061, 0.32, 0.71+0.161, "NDC");
@@ -467,14 +474,15 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   cat2->Draw();
 */
 #ifdef MSSM
-  TPaveText* massA      = new TPaveText(0.53, 0.50+0.061, 0.95, 0.50+0.161, "NDC");
+  TPaveText* massA      = new TPaveText(0.53, 0.49+0.061, 0.95, 0.49+0.151, "NDC");
   massA->SetBorderSize(   0 );
   massA->SetFillStyle(    0 );
   massA->SetTextAlign(   12 );
   massA->SetTextSize ( 0.03 );
   massA->SetTextColor(    1 );
   massA->SetTextFont (   62 );
-  massA->AddText("m^{h}_{max} (m_{A}=$MA GeV, tan#beta=$TANB)");
+  massA->AddText("MSSM m^{h}_{max} scenario");
+  massA->AddText("m_{A}=$MA GeV, tan#beta=$TANB");
   massA->Draw();
 #endif
 
@@ -696,7 +704,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
     canv2->Print(TString::Format("%s_sample_%sfit_%s_%s.pdf", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN"));
     canv2->Print(TString::Format("%s_sample_%sfit_%s_%s.eps", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN"));
   }
-
+ 
   TFile* output = new TFile(TString::Format("%s_%sfit_%s_%s.root", directory, scaled ? "post" : "pre", isSevenTeV ? "7TeV" : "8TeV", log ? "LOG" : "LIN"), "update");
   output->cd();
   data ->Write("data_obs");

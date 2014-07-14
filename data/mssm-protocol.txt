@@ -2,9 +2,9 @@
 ## datacards blinded (bbb-asimov)
 doMSSM.py -a bbb --label='-yymmdd-mssm' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-yymmdd-mssm.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-yymmdd" --update-all --SMHasBackground --SMHasSignal  --blind-datacards [--extra-templates='ggH_SM125,qqH_SM125,VH_SM125'] 
 ## datacards unblinded (bbb) 
-setup-htt.py -i aux-yymmdd-mssm/bbb -o LIMITS-yymmdd-mssm/bbb-[mhmodm,mhmodp,mhmax-mu+200,lightstau1,tauphobic] -a mssm -c 'mt et em mm tt' 90 130 100-200:20 250-500:50 600-1000:100
+setup-htt.py -i aux-yymmdd-mssm/bbb -o LIMITS-yymmdd-mssm/bbb-[mhmodm,mhmodp,mhmax-mu+200,lightstau1,tauphobic,lightstopmod] -a mssm -c 'mt et em mm tt' 90 130 100-200:20 250-500:50 600-1000:100
 ## datacards unblinded (bbb) for lowmH
-setup-htt.py -i aux-yymmdd-mssm/bbb -o LIMITS-yymmdd-mssm/bbb-lowmH --lowmH -a mssm -c 'mt et em mm tt' 300-3100:20
+setup-htt.py -i aux-yymmdd-mssm/bbb -o LIMITS-yymmdd-mssm/bbb-lowmH --lowmH -a mssm -c 'mt et em mm tt' 300-3100:100
 ## datacards for ML-fit (bbb-mlfit)
 setup-htt.py -i aux-yymmdd-mssm/bbb -o LIMITS-yymmdd-mssm/bbb-mlfit -a mssm -c 'mt et em mm tt' 160 350 500
 ## datacards for goodness of fit 
@@ -49,15 +49,15 @@ lxq: submit.py --goodness-of-fit --collect-injected-toys LIMITS-yymmdd-mssm/bbb-
 plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py LIMITS-yymmdd-mssm/bbb-mlfit masspoints='160 350'
 
 
-(4) launch/collect/plot mA-tanb 
+(4) launch/collect/plot MSSMvsBG tanb
 ## lauch final setup of datacards
-lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic]
-lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic] --lxq
+lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic,lightstopmod]
+lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic,lightstopmod] --lxq
 ## lauch limit calculation
 lxb: submit.py --tanb+  LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
 lxq: submit.py --tanb+  LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null" --options='--multi-core=4'
 ## plotting
-plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic].py LIMITS-yymmdd-mssm/bbb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic]-[-asimov] [expectedOnly=1]
+plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic].py LIMITS-yymmdd-mssm/bbb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic,lightstopmod]-[-asimov] [expectedOnly=1]
 ## comparison plots (per channel)
 .x HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C+("limits_mA-tanb.root", "mm,em,tt,et,mt,cmb", true, false, "mssm-tanb", 0., 60., false, "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV", true, false)
 ## comparison plots (per category)
@@ -79,8 +79,8 @@ plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-bbH.py L
 
 (6a) launch/collect/plot ggH 1d limits (expected = SMHiggs+b -> blue band plot)
 ## launch ggH 1d limit
-lxb: submit.py --injected --injected-method="--asymptotic" --physics-model='ggH' --MSSM 1 --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-ggH/*/*
-lxq: submit.py --injected --injected-method="--asymptotic" --physics-model='ggH' --MSSM 1 --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-ggH/*/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
+lxb: submit.py --injected --injected-method="--asymptotic" --physics-model='ggH' --MSSM --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-ggH/*/*
+lxq: submit.py --injected --injected-method="--asymptotic" --physics-model='ggH' --MSSM --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-ggH/*/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
 ## collect toys
 lxb: submit.py --injected --injected-method "--asymptotic" --collect-injected-toys --physics-model='ggH' LIMITS-yymmdd-mssm/bbb-ggH/*/*
 lxq: submit.py --injected --injected-method "--asymptotic" --collect-injected-toys --physics-model='ggH' LIMITS-yymmdd-mssm/bbb-ggH/*/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
@@ -89,8 +89,8 @@ plot --injected HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-ggH.py LIM
 
 (6b) launch/collect/plot bbH 1d limits (expected = SMHiggs+b -> blue band plot)
 ## launch 1d limit 
-lxb: submit.py --injected --injected-method="--asymptotic" --physics-model='bbH' --MSSM 1 --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-bbH/*/*
-lxq: submit.py --injected --injected-method="--asymptotic" --physics-model='bbH' --MSSM 1 --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-bbH/*/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o 
+lxb: submit.py --injected --injected-method="--asymptotic" --physics-model='bbH' --MSSM --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-bbH/*/*
+lxq: submit.py --injected --injected-method="--asymptotic" --physics-model='bbH' --MSSM --toys 1000 --bunch-masses=1 LIMITS-yymmdd-mssm/bbb-bbH/*/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o 
 /dev/null"
 ## collect toys
 lxb: submit.py --injected --injected-method "--asymptotic" --collect-injected-toys --physics-model='bbH' LIMITS-yymmdd-mssm/bbb-bbH/*/*
@@ -111,16 +111,16 @@ plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-
 
 (8) launch/collect/plot signal hypothesis test SM vs MSSM in mA-tanb plane 
 ## lauch final setup of datacards
-lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic]
-lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic] --lxq
+lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM (--smartGrid --customTanb="10,13") --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic,lightstopmod]
+lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM (--smartGrid --customTanb="10,13") --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic,lightstopmod] --lxq
 ## lauch HybridNew TEV teststatistic toy calculation
-lxb: submit.py --HypothesisTest --cycles 1-5 --toys 200 (--smartScan) LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
-lxq: submit.py --HypothesisTest --cycles 1-5 --toys 200 (--smartScan) LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null" --options=''
+lxb: submit.py --HypothesisTest --cycles 1-5 --toys 200 (--smartScan --customTanb="10,13") LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
+lxq: submit.py --HypothesisTest --cycles 1-5 --toys 200 (--smartScan --customTanb="10,13") LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null" --options="--userOpt '-v -1  > /dev/null'"
 ## collect toys and calculate limits
 lxb: submit.py --HypothesisTest --collectToys LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
 lxq: submit.py --HypothesisTest --collectToys LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null" --options=''
 ## plotting
-plot --hypothesis-test HiggsAnalysis/HiggsToTauTau/python/layouts/hypo-test-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic].py LIMITS-yymmdd-mssm/bbb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic]-[-asimov] [expectedOnly=1]
+plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/hypo-test-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic,lightstopmod].py LIMITS-yymmdd-mssm/bbb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic,lightstopmod]-[-asimov] [expectedOnly=1]
 ## ATTENTION
-Before using the option (--smartScan) you must have already produced a reasonable number of toys and plotted the results once!!!
+Before using the options "--smartScan" and "--smartGrid" you must have already produced a reasonable number of toys and plotted the results once!!!
 

@@ -214,6 +214,8 @@ ogroup.add_option("--collectToys", dest="collectToys", default=False, action="st
                   help="Collect toys and calculate hypothesis test limits using lxb (lxq). To run with this options the toys have to be produced beforehand. [Default: False]")
 ogroup.add_option("--smartScan", dest="smartScan", default=False, action="store_true",
                   help="Run toy production only for the tanb points which are near the exclusion limit. ATTENTION: Before using this option you should have already produced a reasonable number of toys and plotted the results once. [Default: False]")
+ogroup.add_option("--customTanb", dest="customTanb", default="", type="string",
+                  help="Run toy production only for specific tanb points. These tanb points should already be present in the tanb grid. Points should be in form e.g. '40,45,50'")
 parser.add_option_group(ogroup)
 
 ## check number of arguments; in case print usage
@@ -1140,21 +1142,13 @@ for directory in args :
         else:
             ## run in parallel using multiple cores
             parallelize(tasks, options.tanbMultiCore)
-        tanb_inputfiles = tanb_inputfiles.rstrip(",")
-        ## combine limits of individual tanb point to a single file equivalent to the standard output of --optCLs
-        ## to be compatible with the output of the option --optTanb for further processing
-        cmssw_base = os.environ["CMSSW_BASE"]
-        cmd = cmssw_base+"/src/HiggsAnalysis/HiggsToTauTau/macros/asymptoticLimit.C+"
-        ## clean up directory from former run
-        os.system("rm higgsCombineTest.HybridNew*")
-        if not options.expectedOnly :
-            os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
-        if not options.observedOnly :
-            os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.quant0.027.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
-            os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.quant0.160.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
-            os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.quant0.500.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
-            os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.quant0.840.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
-            os.system(r"root -l -b -q {CMD}\(\"higgsCombineTest.HybridNew.mH{MASS}.quant0.975.root\",\"{FILES}\",2\)".format(CMD=cmd, MASS=mass, FILES=tanb_inputfiles))
+        if "HypothesisTest.root" in directoryList :
+            os.system("rm HypothesisTest*")
+        for wsp in directoryList :
+            if re.match(r"batch_\d+(.\d\d)?.root", wsp) :
+                tanb_string = wsp[wsp.rfind("_")+1:]
+                os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/extractSignificanceStats.py --MSSMvsBG --filename point_{TANB}".format(CMSSW_BASE=os.environ["CMSSW_BASE"], TANB=tanb_string))
+        os.system("hadd HypothesisTest.root HypothesisTest_*.root") 
     ##
     ## HYPO-TEST
     ##
@@ -1169,10 +1163,21 @@ for directory in args :
             tasks = []
             seedNR=random.randint(100000, 999999)
             tanb_list = []
+            custom_tanb = []
             for wsp in directoryList :
-                if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) :
-                    tanb_list.append(wsp[wsp.rfind("_")+1:].rstrip(".root"))
-                    tanb_list.sort(key=float)
+                if options.customTanb=="" :
+                    if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) :
+                        tanb_list.append(wsp[wsp.rfind("_")+1:].rstrip(".root"))
+                        tanb_list.sort(key=float)
+                else :
+                    custom_tanb = [float(k) for k in options.customTanb.split(',')]
+                    if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) :
+                        if float(wsp[wsp.rfind("_")+1:].rstrip(".root")) in custom_tanb :
+                            tanb_list.append(wsp[wsp.rfind("_")+1:].rstrip(".root"))
+                            tanb_list.sort(key=float)
+            print "Running toys for tanb points: ", tanb_list
+            if not options.customTanb=="" and not len(custom_tanb)  == len(tanb_list):
+                print "Warning: one or more of supplied custom tanb points not in grid"
             tanb_low_idx = -999
             tanb_low = 0.0
             tanb_high_idx = -999
@@ -1180,9 +1185,13 @@ for directory in args :
             if options.smartScan :
                 exclusion = open("exclusion_{MASS}.out".format(MASS=mass), 'r')
                 line = exclusion.readlines()
-                limits = line[0].rstrip("\n").split(" ")
+                highlimits = line[0].rstrip("\n").split(" ")
                 exclusion.close()
-                limits.pop(0)
+                highlimits.pop(0)
+                lowlimits = line[1].rstrip("\n").split(" ")
+                exclusion.close()
+                lowlimits.pop(0)
+                limits = highlimits+lowlimits #maybe add an option to do the smartScan only for high or low exclusion
                 limits.sort(key=float)
                 for idx, point in enumerate(tanb_list) :
                     if float(point) > float(limits[0]) and tanb_low_idx==-999:
@@ -1208,9 +1217,13 @@ for directory in args :
                         if float(tanb_string.rstrip(".root"))<float(tanb_low) or float(tanb_string.rstrip(".root"))>float(tanb_high) :
                             print "skip point"
                             continue
+                    if not options.customTanb=="":
+                        if not tanb_string.rstrip(".root") in tanb_list :
+                            print "skipping point not in custom list: " , float(tanb_string.rstrip(".root"))
+                            continue
                     if not options.refit :
                         tasks.append(
-                            ["combine -m {mass} -M HybridNew -n Test{cycle} --testStat=TEV --generateExt=1 --generateNuis=0 {wsp} --singlePoint 1 --saveHybridResult --fork 4 -T {toys} -i 1 --clsAcc 0 --fullBToys -s {seed}".format(mass=mass, cycle=options.cycle, wsp=wsp, toys=options.toys, seed=seedNR), #fork down from 40
+                            ["combine -m {mass} -M HybridNew -n Test{cycle} --testStat=TEV --generateExt=1 --generateNuis=0 {wsp} --singlePoint 1 --saveHybridResult --fork 4 -T {toys} -i 1 --clsAcc 0 --fullBToys -s {seed} {user}".format(mass=mass, cycle=options.cycle, wsp=wsp, toys=options.toys, seed=seedNR, user=options.userOpt), #fork down from 40
                              "mv higgsCombineTest{cycle}.HybridNew.mH{mass}.{seed}.root point_{tanb}_{cycle}".format(mass=mass, seed=seedNR, tanb=tanb_string, cycle=options.cycle)
                              ]
                             )
@@ -1230,12 +1243,13 @@ for directory in args :
                     if "point_{mass}_{tanb}".format(mass=mass, tanb=tanb_string) in directoryList :
                         os.system("rm point_{mass}_{tanb}".format(mass=mass, tanb=tanb_string))
                     os.system("hadd -k point_{mass}_{tanb} point_{tanb}_*".format(mass=mass, tanb=tanb_string))
-                    os.system(r'root -l -q -b point_{mass}_{tanb} "{CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/test/plotting/hypoTestResultTree.cxx(\"qmu.FixedMu_{tanb}\",{mass},1,\"x\")"'.format(CMSSW_BASE=os.environ["CMSSW_BASE"], mass=mass, tanb=tanb_string)) 
+                    os.system(r'root -l -q -b point_{mass}_{tanb} "{CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/test/plotting/hypoTestResultTree.cxx(\"qmu.FixedMu_{tanb}\",{mass},1,\"x\")"'.format(CMSSW_BASE=os.environ["CMSSW_BASE"], mass=mass, tanb=tanb_string))
+                    continue
             directoryList = os.listdir(".")
             if "HypothesisTest.root" in directoryList :
                 os.system("rm HypothesisTest*")
             for wsp in directoryList :
-                if re.match(r"qmu.FixedMu_\d+(.\d\d)?.root", wsp) :
+                if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) :
                     tanb_string = wsp[wsp.rfind("_")+1:]
                     os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/extractSignificanceStats.py --filename qmu.FixedMu_{TANB}".format(CMSSW_BASE=os.environ["CMSSW_BASE"], TANB=tanb_string))
             os.system("hadd HypothesisTest.root HypothesisTest_*.root") 

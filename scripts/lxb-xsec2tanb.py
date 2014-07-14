@@ -15,6 +15,10 @@ parser.add_option("--model", dest="modelname", default="mhmax-mu+200", type="str
                   help="The model which should be used (choices are: mhmax-mu+200, mhmodp, mhmodm). Default: \"mhmax-mu+200\"]")
 parser.add_option("--MSSMvsSM", dest="MSSMvsSM", default=False, action="store_true",
                   help="Do a signal hypothesis separation test MSSM vs SM. [Default: False]")
+parser.add_option("--smartGrid", dest="smartGrid", default=False, action="store_true",
+                  help="Produce grid points depending on the exclusion limits. This option is only valid for hypothesis tests. Note that all grid points will be deleted before producing the new clever grid. [Default: False]")
+parser.add_option("--customTanb", dest="customTanb", default="", type="string",
+                  help="Specify some extra tanb points to generate grid points for. Points should be in form e.g. '40,45,50'")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 if len(args) < 1 :
@@ -49,14 +53,22 @@ eval `scram runtime -sh`
 echo "Running submit.py:"
 echo "in directory {directory}"
 
-$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/submit.py --tanb+ --setup {OLD} {directory} --options "--model {MODEL} {MSSMvsSM}"
+$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/submit.py --tanb+ --setup {OLD} {SMARTGRID} {directory} --options "--model {MODEL} {MSSMvsSM}" {customTanb}
 '''
 
 lxq_fragment = '''#!/bin/zsh
 #$ -l h_rt=01:00:00
-export SCRAM_ARCH=$scram_arch
 export CMSSW_BASE=$cmssw_base
-ini cmssw_cvmfs
+linux_ver=`lsb_release -s -r`
+echo $linux_ver
+if [[ $linux_ver < 6.0 ]];
+then
+     eval "`/afs/desy.de/common/etc/local/ini/ini.pl cmssw_cvmfs`"
+     export SCRAM_ARCH=slc5_amd64_gcc472
+else
+     source /cvmfs/cms.cern.ch/cmsset_default.sh
+     export SCRAM_ARCH=slc6_amd64_gcc472
+fi
 '''
 
 condor_sub_template = '''#!/usr/bin/env condor_submit
@@ -80,7 +92,6 @@ def submit(name, key, masses) :
         if options.condor:
             submit_script.write(condor_sub_template)
         if options.lxq :
-            submit_script.write('export scram_arch=$SCRAM_ARCH\n')
             submit_script.write('export cmssw_base=$CMSSW_BASE\n')
         if not os.path.exists(name):
             os.system("mkdir -p %s" % name)
@@ -100,7 +111,9 @@ def submit(name, key, masses) :
                     directory = dir,
                     OLD = "--old" if options.old else "",
                     MODEL = options.modelname,
-                    MSSMvsSM = "--MSSMvsSM" if options.MSSMvsSM else ""
+                    MSSMvsSM = "--MSSMvsSM" if options.MSSMvsSM else "",
+                    SMARTGRID= "--smartGrid" if options.smartGrid else "",
+                    customTanb = ("--customTanb " + options.customTanb) if not options.customTanb == "" else "" 
                     ))
             os.system('chmod a+x %s' % script_file_name)
             if options.condor :
@@ -115,7 +128,7 @@ def submit(name, key, masses) :
                     % (os.getcwd(), script_file_name.replace('.sh', '.stderr')))
                 submit_script.write("queue\n")
             elif options.lxq :
-                submit_script.write('qsub  -l distro=sld5 -j y -o /dev/null -l h_vmem=2000M -v scram_arch -v cmssw_base %s\n' % script_file_name) 
+                submit_script.write('qsub -j y -o /dev/null -l h_vmem=2000M -v cmssw_base %s\n' % script_file_name) 
             else :
                 os.system('touch {PWD}/log/{LOG}'.format(
                     PWD=os.getcwd(), LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log')))
@@ -149,7 +162,9 @@ masses = directories(args)[1]
 for dir in dirs :
     ana = dir[:dir.rfind('/')]
     limit = dir[len(ana)+1:]
-    jobname = ana[ana.rfind('/')+1:]+'-'+limit+'-'+options.name
+    #jobname = ana[ana.rfind('/')+1:]+'-'+limit+'-'+options.name #old naming. this was problematic, as it would overwrite scripts relative to different limits
+    cmd_ext = '-xsec2tanb'
+    jobname = dir.replace('/', '-').replace('LIMITS','scripts')+cmd_ext
     ## create submission scripts
     submit(jobname, dir, masses)
     ## execute

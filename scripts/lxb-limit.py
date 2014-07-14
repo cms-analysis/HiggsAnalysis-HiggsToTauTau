@@ -51,39 +51,77 @@ if options.condor:
 ## prepare log file directory
 os.system("mkdir -p log")
 
-script_template = '''#!/bin/bash
+if "HypothesisTest" in option_str and "cycle" in option_str: 
+    script_template = '''#!/bin/bash
 
-cd {working_dir}
-eval `scram runtime -sh`
+    cd {working_dir}
+    eval `scram runtime -sh`
 
-echo "Running limit.py:"
-echo "with options {options}"
-echo "in directory {dirhead}{tail}"
+    echo "Running limit.py:"
+    echo "with options {options}"
+    echo "in directory {dirhead}{tail}"
 
-echo "Copy {dirhead}{tail} --> {tmphead}/{tail}"
-mkdir -p {tmphead}
-cp -r {dirhead}{tail} {tmphead}/{tail}
-cp -r {dirhead}common {tmphead}
+    echo "Copy {dirhead}{tail} --> {tmphead}/{tail}"
+    mkdir -p {tmphead}/{tail}
+    cp -r {dirhead}{tail}/fixedMu* {tmphead}/{tail}/
 
-echo "Running"
-$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} {tmphead}/{tail}
+    echo "Running"
+    $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} {tmphead}/{tail}
 
-echo "Copy {tmphead}/{tail} --> {dirhead}{tail} (root output files only)"
-cp {tmphead}/{tail}/*.root* {dirhead}{tail}
-cp {tmphead}/{tail}/.scan {dirhead}{tail}
-cp {tmphead}/{tail}/*.png {dirhead}{tail}
-if [ -d {tmphead}/{tail}/out ] ;
-  then
-    mkdir -p {dirhead}/{tail}/out ;
-    cp -u {tmphead}/{tail}/out/*.* {dirhead}/{tail}/out ;
-fi
-rm -r {tmphead}
-'''
+    echo "Copy {tmphead}/{tail} --> {dirhead}{tail} (root output files only)"
+    cp {tmphead}/{tail}/*.root* {dirhead}{tail}
+    cp {tmphead}/{tail}/.scan {dirhead}{tail}
+    cp {tmphead}/{tail}/*.out {dirhead}{tail}
+    cp {tmphead}/{tail}/*.png {dirhead}{tail}
+    if [ -d {tmphead}/{tail}/out ] ;
+      then
+        mkdir -p {dirhead}/{tail}/out ;
+        cp -u {tmphead}/{tail}/out/*.* {dirhead}/{tail}/out ;
+    fi
+    rm -r {tmphead}
+    '''
+else:
+    script_template = '''#!/bin/bash
 
+    cd {working_dir}
+    eval `scram runtime -sh`
+
+    echo "Running limit.py:"
+    echo "with options {options}"
+    echo "in directory {dirhead}{tail}"
+
+    echo "Copy {dirhead}{tail} --> {tmphead}/{tail}"
+    mkdir -p {tmphead}
+    cp -r {dirhead}{tail} {tmphead}/{tail}
+    cp -r {dirhead}common {tmphead}
+
+    echo "Running"
+    $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} {tmphead}/{tail}
+
+    echo "Copy {tmphead}/{tail} --> {dirhead}{tail} (root output files only)"
+    cp {tmphead}/{tail}/*.root* {dirhead}{tail}
+    cp {tmphead}/{tail}/.scan {dirhead}{tail}
+    cp {tmphead}/{tail}/*.out {dirhead}{tail}
+    cp {tmphead}/{tail}/*.png {dirhead}{tail}
+    if [ -d {tmphead}/{tail}/out ] ;
+      then
+        mkdir -p {dirhead}/{tail}/out ;
+        cp -u {tmphead}/{tail}/out/*.* {dirhead}/{tail}/out ;
+    fi
+    rm -r {tmphead}
+    '''
 lxq_fragment = '''#!/bin/zsh
-export SCRAM_ARCH=$scram_arch
 export CMSSW_BASE=$cmssw_base
-ini cmssw_cvmfs
+linux_ver=`lsb_release -s -r`
+echo $linux_ver
+if [[ $linux_ver < 6.0 ]];
+then
+     eval "`/afs/desy.de/common/etc/local/ini/ini.pl cmssw_cvmfs`"
+     export SCRAM_ARCH=slc5_amd64_gcc472
+else
+     source /cvmfs/cms.cern.ch/cmsset_default.sh
+     export SCRAM_ARCH=slc6_amd64_gcc472
+fi
 '''
 
 condor_sub_template = '''
@@ -117,7 +155,6 @@ with open(submit_name, 'w') as submit_script:
     if options.condor:
         submit_script.write(condor_sub_template)
     if options.lxq :
-        submit_script.write('export scram_arch=$SCRAM_ARCH\n')
         submit_script.write('export cmssw_base=$CMSSW_BASE\n')
     if not os.path.exists(folder):
         os.system("mkdir -p %s" % folder)
@@ -130,7 +167,9 @@ with open(submit_name, 'w') as submit_script:
         log.info("Generating submission script for %s", dir)
         script_file_name = '%s/%s_%i.sh' % (folder, name, i)
         ## create random directory in tmp. This allows to do more than one submission in parallel
-        tmp_head = '/tmp/'+stamp
+        tmp_head = ''
+        if options.lxq : tmp_head='$TMPDIR/'+stamp
+        else : tmp_head='/tmp/'+stamp
         if options.condor:
             tmp_head = "${_CONDOR_SCRATCH_DIR}/" + stamp
         dir_head = dir.rstrip('/')[:dir.rstrip('/').rfind('/')+1]
@@ -157,7 +196,7 @@ with open(submit_name, 'w') as submit_script:
                 % (os.getcwd(), script_file_name.replace('.sh', '.stderr')))
             submit_script.write("queue\n")
         elif options.lxq :
-            submit_script.write('qsub -l distro=sld5 %s -v scram_arch -v cmssw_base %s\n'
+            submit_script.write('qsub %s -v cmssw_base %s\n'
                                 % (bsubargs, script_file_name))
         else :
             os.system('touch {PWD}/log/{LOG}'.format(

@@ -14,6 +14,7 @@
 #include <TLegend.h>
 #include <TAttLine.h>
 #include <TPaveText.h>
+#include <TColor.h>
 
 #include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 #include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
@@ -81,9 +82,9 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   // switch for MSSM/SM
   bool MSSM = std::string(analysis) == std::string("MSSM");
   // determine label
-  if (std::string(dataset) == std::string("2011"     )){ dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV"; }
-  if (std::string(dataset) == std::string("2012"     )){ dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 19.7 fb^{-1} at 8 TeV"; }
-  if (std::string(dataset) == std::string("2011+2012")){ dataset = "CMS Preliminary,  H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV"; }
+  if (std::string(dataset) == std::string("2011"     )){ dataset = "#scale[1.5]{CMS}   H#rightarrow#tau#tau                                       4.9 fb^{-1} (7 TeV)"; }
+  if (std::string(dataset) == std::string("2012"     )){ dataset = "#scale[1.5]{CMS}   H#rightarrow#tau#tau                                      19.7 fb^{-1} (8 TeV)"; }
+  if (std::string(dataset) == std::string("2011+2012")){ dataset = "#scale[1.5]{CMS}   H#rightarrow#tau#tau          19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"; }
   // determine category tag
   const char* category_extra = "";
   if(std::string(extra2) == std::string("0jet_low"  )){ category_extra = "0 jet, low p_{T}";  }
@@ -105,17 +106,17 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   TH1F* Zee    = refill((TH1F*)input->Get("Zee"     ), "Zee"      ); 
   TH1F* ggH    = refill((TH1F*)input->Get("ggH"     ), "ggH"      ); 
   TH1F* data   = (TH1F*)input->Get("data_obs"); 
-  // determine channel for etau Z->ee (EWK) will be shown separated from the rest (EWK1)
+  /*// determine channel for etau Z->ee (EWK) will be shown separated from the rest (EWK1)
   TH1F* EWK1   = 0;
   if(std::string(extra) == std::string("e#tau_{h}")){
     EWK1 = refill((TH1F*)input->Get("EWK1"),  "EWK1");
-  }
+    }*/
   TH1F* ggH_hww = 0;
   if(std::string(extra) == std::string("e#mu") and HWWBG){
     ggH_hww= refill((TH1F*)input->Get("ggH_hww" ), "ggH_hww"  ); 
   }
   TH1F* errorBand = (TH1F*)input->Get("errorBand");
-
+  
   /* 
     mass plot before and after fit
   */
@@ -130,10 +131,12 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(Zmm, log)));
     data->Draw("e");
     if(log){
+      Zmm  ->SetFillColor(TColor::GetColor(100,182,232));
       Zmm  ->Draw("same");
       Ztt  ->Draw("same");
       ttbar->Draw("same");
       Fakes->Draw("same");
+      EWK ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
       if(ggH) ggH  ->Draw("histsame");
     }
@@ -142,10 +145,12 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     data->SetMaximum(max>0 ? max : std::max(maximum(data, log), maximum(Zee, log)));
     data->Draw("e");
     if(log){
+      Zee  ->SetFillColor(TColor::GetColor(100,182,232));
       Zee  ->Draw("same");
       Ztt  ->Draw("same");
       ttbar->Draw("same");
       Fakes->Draw("same");
+      EWK ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
       if(ggH) ggH  ->Draw("histsame");
     }
@@ -156,8 +161,10 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     if(log){
       Ztt  ->Draw("same");
       ttbar->Draw("same");
+      Zee  ->SetFillColor(TColor::GetColor(100,182,232));
+      Zee  ->Draw("same");
+      EWK  ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
-      EWK1 ->Draw("same");
       Fakes->Draw("same");
       if(ggH) ggH  ->Draw("histsame");
     }
@@ -165,8 +172,10 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       if(ggH) ggH  ->Draw("histsame");
       Ztt  ->Draw("same");
       ttbar->Draw("same");
+      Zee  ->SetFillColor(TColor::GetColor(100,182,232));
+      Zee  ->Draw("same");
+      EWK  ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
-      EWK1 ->Draw("same");
       Fakes->Draw("same");
     } 
   }
@@ -177,6 +186,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       ggH_hww -> Draw("same");
       Ztt  ->Draw("same");
       ttbar->Draw("same");
+      EWK ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
       Fakes->Draw("same");
       if(ggH) ggH  ->Draw("histsame");
@@ -186,6 +196,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       ggH_hww -> Draw("same");
       Ztt  ->Draw("same");
       ttbar->Draw("same");
+      EWK ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
       Fakes->Draw("same");
     } 
@@ -196,6 +207,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     if(log){
       Ztt  ->Draw("same");
       ttbar->Draw("same");
+      EWK ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
       Fakes->Draw("same");
       if(ggH) ggH  ->Draw("histsame");
@@ -204,6 +216,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       if(ggH) ggH  ->Draw("histsame");
       Ztt  ->Draw("same");
       ttbar->Draw("same");
+      EWK ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
       Fakes->Draw("same");
     } 
@@ -216,9 +229,8 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
 
 
 
-
   //CMSPrelim(dataset, extra, 0.17, 0.835);
-  CMSPrelim(dataset, "", 0.18, 0.835);  
+  CMSPrelim(dataset, "", 0.16, 0.835);  
   TPaveText* chan     = new TPaveText(0.20, 0.74+0.061, 0.32, 0.74+0.161, "tlbrNDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
@@ -241,18 +253,19 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   cat->Draw();
   */
   if(MSSM){
-    float lower_bound = EWK1 ? 0.45 : 0.50;
-    TPaveText* massA      = new TPaveText(0.53, lower_bound+0.061, 0.95, lower_bound+0.161, "NDC");
+    float lower_bound = 0.49;
+    TPaveText* massA      = new TPaveText(0.53, lower_bound+0.061, 0.95, lower_bound+0.151, "NDC");
     massA->SetBorderSize(   0 );
     massA->SetFillStyle(    0 );
     massA->SetTextAlign(   12 );
     massA->SetTextSize ( 0.03 );
     massA->SetTextColor(    1 );
     massA->SetTextFont (   62 );
-    massA->AddText("m^{h}_{max} (m_{A}=$MA GeV, tan#beta=$TANB)");
+    massA->AddText("MSSM m^{h}_{max} scenario");
+    massA->AddText("m_{A}=$MA GeV, tan#beta=$TANB");
     massA->Draw();
   }    
-  float lower_bound = EWK1 ? 0.60 : 0.65;
+  float lower_bound = 0.65;
   TLegend* leg = new TLegend(MSSM ? 0.53 : 0.50, lower_bound, 0.93, 0.90);
   SetLegendStyle(leg);
   if(MSSM){
@@ -268,26 +281,26 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       }
     }
   }
-  leg->AddEntry(data , "observed"                       , "LP");
+  leg->AddEntry(data , "Observed"                       , "LP");
   
   if(std::string(extra) == std::string("#mu#mu")){
     leg->AddEntry(Zmm  , "Z#rightarrow#mu#mu"    , "F" );
     leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
     leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
     leg->AddEntry(Fakes, "QCD"                 , "F" );
-    leg->AddEntry(EWK  , "electroweak"                  , "F" );
+    leg->AddEntry(EWK  , "Electroweak"                  , "F" );
   }
   else if(std::string(extra) == std::string("ee")){
     leg->AddEntry(Zee  , "Z#rightarrowee"        , "F" );
     leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
     leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
     leg->AddEntry(Fakes, "QCD"                 , "F" );
-    leg->AddEntry(EWK  , "electroweak"                  , "F" );
+    leg->AddEntry(EWK  , "Electroweak"                  , "F" );
   }
   else if(std::string(extra) == std::string("e#tau_{h}")){
     leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
-    leg->AddEntry(EWK  , "Z#rightarrow ee"              , "F" );
-    leg->AddEntry(EWK1 , "electroweak"                  , "F" );
+    leg->AddEntry(Zee  , "Z#rightarrow ee"              , "F" );
+    leg->AddEntry(EWK  , "Electroweak"                  , "F" );
     leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
     leg->AddEntry(Fakes, "QCD"                 , "F" );
   }
@@ -295,17 +308,17 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     leg->AddEntry(ggH_hww  , "H(125 GeV)#rightarrowWW" , "F" );
     leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
     leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
-    leg->AddEntry(EWK  , "electroweak"                  , "F" );
+    leg->AddEntry(EWK  , "Electroweak"                  , "F" );
     leg->AddEntry(Fakes, "QCD"                 , "F" );
   }
   else{
     leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
     leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
-    leg->AddEntry(EWK  , "electroweak"                  , "F" );
+    leg->AddEntry(EWK  , "Electroweak"                  , "F" );
     leg->AddEntry(Fakes, "QCD"                 , "F" );
   }
   if(errorBand){
-    leg->AddEntry(errorBand, "bkg. uncertainty" , "F" );
+    leg->AddEntry(errorBand, "Bkg. uncertainty" , "F" );
   }
   leg->Draw();
 

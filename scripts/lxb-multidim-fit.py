@@ -50,9 +50,17 @@ mv {DIRECTORY}/.done_{OUTPUT} {DIRECTORY}/.done_{IDX}
 '''
 
 lxq_fragment = '''#!/bin/zsh
-export SCRAM_ARCH=$scram_arch
 export CMSSW_BASE=$cmssw_base
-ini cmssw_cvmfs
+linux_ver=`lsb_release -s -r`
+echo $linux_ver
+if [[ $linux_ver < 6.0 ]];
+then
+     ini cmssw_cvmfs
+     export SCRAM_ARCH=slc5_amd64_gcc472
+else
+     source /cvmfs/cms.cern.ch/cmsset_default.sh
+     export SCRAM_ARCH=slc6_amd64_gcc472
+fi
 '''
 
 ## arrange input parameters
@@ -112,7 +120,6 @@ os.system("mkdir -p %s" % options.name)
 submit_name = '%s_submit.sh' % options.name
 with open(submit_name, 'w') as submit_script:
     if options.lxq :
-        submit_script.write('export scram_arch=$SCRAM_ARCH\n')
         submit_script.write('export cmssw_base=$CMSSW_BASE\n')
     for idx in range(int(njobs)) :
         log.info("Generating submission script for %s", args[0])
@@ -131,7 +138,7 @@ with open(submit_name, 'w') as submit_script:
                 ))
             os.system('chmod a+x %s' % script_file_name)
             if options.lxq :
-                submit_script.write('qsub -l distro=sld5 %s -v scram_arch -v cmssw_base %s/%s\n'
+                submit_script.write('qsub %s -v cmssw_base %s/%s\n'
                                     % (options.bsub, os.getcwd(), script_file_name))
             else:
                 os.system('touch {PWD}/log/{LOG}'.format(

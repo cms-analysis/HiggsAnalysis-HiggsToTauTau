@@ -2,18 +2,18 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string("CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV"),
-    #dataset = cms.string("CMS Preliminary,  H#rightarrow#tau#tau,  18.3 fb^{-1} at 8 TeV"),
+    dataset = cms.string("#scale[1.5]{CMS}   H#rightarrow#tau#tau                            19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
+    #dataset = cms.string("#scale[1.5]{CMS}   H#rightarrow#tau#tau                                                + 18.3 fb^{-1} (7 TeV)"),
     ## x-axis title
     xaxis = cms.string("m_{A} [GeV]"),
-    ## x-axis title
+    ## y-axis title
     yaxis = cms.string("#bf{tan#beta}"),
     ## theory label 
     theory = cms.string("MSSM tauphobic scenario"),
     ## min for plotting
-    min = cms.double(0),
+    min = cms.double(1.0),
     ## max for plotting
-    max = cms.double(60),
+    max = cms.double(50),
     ## min for plotting
     log = cms.int32(0),
     ## print to png
@@ -54,16 +54,20 @@ layout = cms.PSet(
    ,500.
    ,600.
    ,700.
-   #,800.
-   #,900.
-   #,1000.
+   ,800.
+   ,900.
+   ,1000.
      ),
     ## is this mssm?
     mssm = cms.bool(True),
+    ## is this MSSMvsSM?
+    MSSMvsSM = cms.bool(True),
+    ## plot black and white friendly?
+    BlackWhite = cms.bool(False),    
     ## print the 2-sigma band
     outerband = cms.bool(True),
     ## plot expected only
-    expectedOnly = cms.bool(True),
+    expectedOnly = cms.bool(False),
     ## plot transparent?
     transparent = cms.bool(True),
     ## print constraints from mH=125GeV

@@ -118,8 +118,8 @@ max = {
     ("emu"    , "1jet"      ) : ["-1",],
     ("emu"    , "btag_low"  ) : ["-1",],
     ("emu"    , "btag_high" ) : ["-1",],
-    ("emu"    , "nobtag"    ) : ["-1",  "-1"], #["3000","2500"],
-    ("emu"    , "btag"      ) : ["-1",  "-1"], #["40","45"],
+    ("emu"    , "nobtag"    ) : ["1900",  "20000"], #["1900","20000"],
+    ("emu"    , "btag"      ) : ["30",  "2000"], #["30","2000"],
     ("emu"    , "vbf"       ) : ["3.0",], ## temporary fit 24.01.2013
     ("muTau"  , "0jet_low"  ) : ["-1",],
     ("muTau"  , "0jet_high" ) : ["-1",],
@@ -131,8 +131,8 @@ max = {
     ("muTau"  , "1jet"      ) : ["-1",],
     ("muTau"  , "btag_low"  ) : ["-1",],
     ("muTau"  , "btag_high" ) : ["-1",],
-    ("muTau"  , "nobtag"    ) : ["-1",  "-1"], #["8000","5000"],
-    ("muTau"  , "btag"      ) : ["-1",  "-1"], #["100","50"],
+    ("muTau"  , "nobtag"    ) : ["4800",  "110000"], #["4800","110000"],
+    ("muTau"  , "btag"      ) : ["60",  "1000"], #["60","1000"],
     ("muTau"  , "vbf"       ) : ["-1",],
     ("eleTau" , "0jet_low"  ) : ["-1",],
     ("eleTau" , "0jet_high" ) : ["-1",],
@@ -143,8 +143,8 @@ max = {
     ("eleTau" , "1jet"      ) : ["-1",],
     ("eleTau" , "btag_low"  ) : ["-1",],
     ("eleTau" , "btag_high" ) : ["-1",],
-    ("eleTau" , "nobtag"    ) : ["-1",  "-1"], #["2000","1500"],
-    ("eleTau" , "btag"      ) : ["-1",  "-1"], #["20","20"],
+    ("eleTau" , "nobtag"    ) : ["2100",  "40000"], #["2100","40000"],
+    ("eleTau" , "btag"      ) : ["28",  "3000"], #["28","3000"],
     ("eleTau" , "vbf"       ) : ["-1",],
     ("mumu"   , "0jet_low"  ) : ["-1",],
     ("mumu"   , "0jet_high" ) : ["-1",],
@@ -154,8 +154,8 @@ max = {
     ("mumu"   , "1jet"      ) : ["-1",],
     ("mumu"   , "btag_low"  ) : ["-1",],
     ("mumu"   , "btag_high" ) : ["-1",],
-    ("mumu"   , "nobtag"    ) : ["-1",  "-1"], #["200000","120000"],
-    ("mumu"   , "btag"      ) : ["-1",  "-1"], #["500","300"],
+    ("mumu"   , "nobtag"    ) : ["-1",  "3000000"], #["-1","3000000"],
+    ("mumu"   , "btag"      ) : ["-1",  "3000"], #["-1","3000"],
     ("mumu"   , "vbf"       ) : ["-1",],
     ("ee"   , "0jet_low"  ) : ["-1",],
     ("ee"   , "0jet_high" ) : ["-1",],
@@ -176,7 +176,7 @@ min = {
     ("emu"    , "btag_low"  ) : ["0",  ],
     ("emu"    , "btag_high" ) : ["0",  ],
     ("emu"    , "nobtag"    ) : ["0", "1e-1"],
-    ("emu"    , "btag"      ) : ["0", "1e-1"],
+    ("emu"    , "btag"      ) : ["0", "1e-3"],
     ("emu"    , "vbf"       ) : ["0",  ],
     ("muTau"  , "0jet_low"  ) : ["0",  ],
     ("muTau"  , "0jet_high" ) : ["0",  ],
@@ -189,7 +189,7 @@ min = {
     ("muTau"  , "btag_low"  ) : ["0",  ],
     ("muTau"  , "btag_high" ) : ["0",  ],
     ("muTau"  , "nobtag"    ) : ["0", "1e-3"],
-    ("muTau"  , "btag"      ) : ["0", "1e-3"],
+    ("muTau"  , "btag"      ) : ["0", "1e-4"],
     ("muTau"  , "vbf"       ) : ["0",  ],
     ("eleTau" , "0jet_low"  ) : ["0",  ],
     ("eleTau" , "0jet_high" ) : ["0",  ],
@@ -201,7 +201,7 @@ min = {
     ("eleTau" , "btag_low"  ) : ["0",  ],
     ("eleTau" , "btag_high" ) : ["0",  ],
     ("eleTau" , "nobtag"    ) : ["0", "1e-3"],
-    ("eleTau" , "btag"      ) : ["0", "1e-3"],
+    ("eleTau" , "btag"      ) : ["0", "1e-4"],
     ("eleTau" , "vbf"       ) : ["0",  ],
     ("mumu"   , "0jet_low"  ) : ["1e-2",  ],
     ("mumu"   , "0jet_high" ) : ["1e-2",  ],
@@ -212,7 +212,7 @@ min = {
     ("mumu"   , "btag_low"  ) : ["0",  ],
     ("mumu"   , "btag_high" ) : ["0",  ],
     ("mumu"   , "nobtag"    ) : ["0", "1e-2"],
-    ("mumu"   , "btag"      ) : ["0", "1e-1"],
+    ("mumu"   , "btag"      ) : ["0", "1e-4"],
     ("mumu"   , "vbf"       ) : ["1e-2",  ],  
     ("ee"   , "0jet_low"  ) : ["1e-2",  ],
     ("ee"   , "0jet_high" ) : ["1e-2",  ],
@@ -250,7 +250,7 @@ print "PERIODS   :", config.comb_periods
 for per in config.comb_periods:
     for chan in config.comb_channels:
         chn = channels[chan]
-        logarithm = "LOG" if (chn in ["mumu","ee"] or options.analysis == "mssm") else "LIN"
+        #logarithm = "LOG" if (chn in ["mumu","ee"] or options.analysis == "mssm") else "LIN"
         for cat in config.comb_categories:
             ## check whether the category which is to be processed is one of the "normal" categories
             if cat not in config.categoryname[chan]:
@@ -258,19 +258,20 @@ for per in config.comb_periods:
                     ## find all categories whos name contain the pattern {CAT} as substring
                     ## the category must be valid for the corresponding period. For 7TeV and 8TeV it must be valid for 7TeV
                     cat_add = [category for category in config.categoryname[chan] if (cat in category and config.categoryname[chan].index(category) < len(config.categories[chan][per.split("_")[0]]))]
-                    rootfiles = ["{CHN}_{CAT}_{TYPE}_{PERIOD}_{LOG}.root".format(CHN=chn, CAT=category, TYPE=type, LOG=logarithm, PERIOD = per) for category in cat_add]
+                    rootfiles_LIN = ["{CHN}_{CAT}_{TYPE}_{PERIOD}_LIN.root".format(CHN=chn, CAT=category, TYPE=type, PERIOD = per) for category in cat_add]
+                    rootfiles_LOG = ["{CHN}_{CAT}_{TYPE}_{PERIOD}_LOG.root".format(CHN=chn, CAT=category, TYPE=type, PERIOD = per) for category in cat_add]
                     ## loop over all given configurations
                     for idx in range(len(min[chn,cat])):
                         if rootfiles:
                             if options.debug:
-                                print "hadd -f {CHN}_{CAT}_{TYPE}_{PERIOD}_{LOG}.root {ROOT}".format(CHN=chn, CAT=cat, TYPE=type, LOG=logarithm, PERIOD = per, ROOT=' '.join(rootfiles))
-                                print "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_{PERIOD}_{LIN}.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
+                                print "hadd -f {CHN}_{CAT}_{TYPE}_{PERIOD}_{LOG}.root {ROOT}".format(CHN=chn, CAT=cat, TYPE=type, LOG="LOG" if log[chn,cat][idx] else "LIN",  PERIOD = per, ROOT=' '.join(rootfiles_LOG) if log[chn,cat][idx]=="true" else ' '.join(rootfiles_LIN))
+                                print "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_{PERIOD}_{LOG}.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
                                     CMSSW_BASE=os.environ['CMSSW_BASE'],
                                     CHN=chn,
                                     CAT=cat,
                                     TYPE=type,
                                     PERIOD=per,
-                                    LIN=logarithm,
+                                    LIN="LOG" if log[chn,cat][idx]=="true" else "LIN",
                                     ANA=options.analysis.upper(),
                                     LABEL="2011+2012",
                                     EXTRA=extra[chn],
@@ -279,14 +280,14 @@ for per in config.comb_periods:
                                     MAX=max[chn,cat][idx],
                                     LOG=log[chn,cat][idx]
                                     )
-                            os.system("hadd -f {CHN}_{CAT}_{TYPE}_{PERIOD}_{LOG}.root {ROOT}".format(CHN=chn, CAT=cat, TYPE=type, LOG=logarithm, PERIOD = per, ROOT=' '.join(rootfiles)))
+                            os.system("hadd -f {CHN}_{CAT}_{TYPE}_{PERIOD}_{LOG}.root {ROOT}".format(CHN=chn, CAT=cat, TYPE=type, LOG="LOG" if log[chn,cat][idx] else "LIN", PERIOD = per, ROOT=' '.join(rootfiles_LOG) if log[chn,cat][idx]=="true" else ' '.join(rootfiles_LIN)))
                             os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_{PERIOD}_{LIN}.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
                                 CMSSW_BASE=os.environ['CMSSW_BASE'],
                                 CHN=chn,
                                 CAT=cat,
                                 TYPE=type,
                                 PERIOD=per,
-                                LIN=logarithm,
+                                LIN="LOG" if log[chn,cat][idx]=="true" else "LIN",
                                 ANA=options.analysis.upper(),
                                 LABEL="2011+2012",
                                 EXTRA=extra[chn],
@@ -300,13 +301,13 @@ for per in config.comb_periods:
                 for idx in range(len(min[chn,cat])):
                     if options.debug:
                         print "hadd -f {CHN}_{CAT}_{TYPE}_7TeV_8TeV_{LOG}.root {CHN}_{CAT}_{TYPE}_7TeV_{LOG}.root {CHN}_{CAT}_{TYPE}_8TeV_{LOG}.root".format(
-                            CHN=chn, CAT=cat, TYPE=type, LOG=logarithm)
+                            CHN=chn, CAT=cat, TYPE=type, LOG="LOG" if log[chn,cat][idx]=="true" else "LIN")
                         print "root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7TeV_8TeV_{LIN}.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
                             CMSSW_BASE=os.environ['CMSSW_BASE'],
                             CHN=chn,
                             CAT=cat,
                             TYPE=type,
-                            LIN=logarithm,
+                            LIN="LOG" if log[chn,cat][idx]=="true" else "LIN",
                             ANA=options.analysis.upper(),
                             LABEL="2011+2012",
                             EXTRA=extra[chn],
@@ -316,13 +317,13 @@ for per in config.comb_periods:
                             LOG=log[chn,cat][idx]
                             )
                     os.system("hadd -f {CHN}_{CAT}_{TYPE}_7TeV_8TeV_{LOG}.root {CHN}_{CAT}_{TYPE}_7TeV_{LOG}.root {CHN}_{CAT}_{TYPE}_8TeV_{LOG}.root".format(
-                        CHN=chn, CAT=cat, TYPE=type, LOG=logarithm))
+                        CHN=chn, CAT=cat, TYPE=type, LOG="LOG" if log[chn,cat][idx]=="true" else "LIN"))
                     os.system("root -l -q -b {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/postfit_use.C+\\(\\\"{CHN}_{CAT}_{TYPE}_7TeV_8TeV_{LIN}.root\\\",\\\"{ANA}\\\",\\\"{LABEL}\\\",\\\"{EXTRA}\\\",\\\"{EXTRA2}\\\",{MIN},{MAX},{LOG}\)".format(
                         CMSSW_BASE=os.environ['CMSSW_BASE'],
                         CHN=chn,
                         CAT=cat,
                         TYPE=type,
-                        LIN=logarithm,
+                        LIN="LOG" if log[chn,cat][idx]=="true" else "LIN",
                         ANA=options.analysis.upper(),
                         LABEL="2011+2012",
                         EXTRA=extra[chn],

@@ -1,3 +1,51 @@
+import re
+
+def subvec(vec, min, max):
+    '''
+    Create a subvector of a vector of strings that contains
+    an integer and a / as substring
+    '''
+    subvec = []
+    for directory in vec :
+        if re.search(r"^.*/\d+?$", directory) :
+            mass = int(directory[directory.rfind("/")+1:])
+            if min <= mass and mass <= max:
+                subvec.append(directory)
+    return subvec
+
+def vec2str(vec, delim=" "):
+    '''
+    Return a string concatenated from elements of a vector
+    seperate these elements by a deliminator as specified
+    by delim. The default deliminator is " "
+    '''
+    str = ""
+    for i in vec:
+        str+=i
+        str+=delim
+    return str
+
+def directories(args) :
+    ## prepare structure of parent directories
+    dirs = []
+    for dir in args :
+        if is_number(get_mass(dir)) or get_mass(dir) == "common" :
+            dir = dir[:dir.rstrip('/').rfind('/')]
+        if not dir in dirs :
+            dirs.append(dir)
+    ## prepare mapping of masses per parent directory
+    masses = {}
+    for dir in dirs :
+        buffer = []
+        for path in args :
+            if dir+'/' in path :
+                if is_number(get_mass(path)) :
+                    mass = get_mass(path)
+                    if not contained(mass, buffer) :
+                        buffer.append(mass)
+        masses[dir] = list(buffer)
+    return (dirs, masses)
+
 def get_mass(directory) :
     '''
     Returns the mass from a directory string. directories
@@ -38,7 +86,9 @@ def contained(elem, list) :
     """
     return true if the element is contained in the list
     """
-    if elem in "\n".join(list) :
+    #if elem in "\n".join(list) :
+    #    return True
+    if elem in list :
         return True
     return False
 

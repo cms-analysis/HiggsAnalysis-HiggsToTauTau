@@ -79,6 +79,8 @@ class PlotLimits {
   void print(const char* filename, TGraph* expected, TGraph* observed, const char* type="txt");
   /// print tabulated limits to a txt file, for inner band, outer band, expected and observed, with inner and outer band
   void print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* innerBand, TGraph* expected, TGraph* observed, const char* type="txt");
+  /// print tabulated limits to a txt file for MSSMvsBG and MSSMvsSM limits
+  void print(const char* filename, TGraphAsymmErrors* outerBand_1, TGraphAsymmErrors* innerBand_1, TGraph* expected_1, TGraph* observed_1, TGraphAsymmErrors* outerBand_2, TGraphAsymmErrors* innerBand_2, TGraph* expected_2, TGraph* observed_2, double tanbLow, double tanbHigh, double tanbLowHigh, const char* type="txt");
   /// print tabulated limits to a txt file, for inner band, outer band, expected and observed, with inner and outer band
   void print(const char* filename, std::string& xval, std::string& yval, std::vector<TGraph*> contour, const char* type="txt");
   /// automatic maximum determination for TGraphs (used for several options)
@@ -96,7 +98,7 @@ class PlotLimits {
   /// plot limits on canvas, print out png, pdf, txt, root formats if desired
   void plotLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0);
   /// plot limits for tanb on canvas, print out png, pdf, txt, root formats if desired
-  void plotTanb(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* innerBand_low, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* outerBand_low, TGraph* expected, TGraph* expected_low, TGraph* observed=0, TGraph* observed_low=0, const char* directory="");
+  void plotTanb(TCanvas& canv, const char* directory="", std::string HIG="");
   /// plot bestfit values for different parameters dependend on mass on canvas, print out png, pdf, txt, root formats if desired 
   void plotSignalStrength(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraph* central, const char* directory="");
   /// plot significance on canvas, print out png, pdf, txt, root formats if desired  
@@ -113,8 +115,6 @@ class PlotLimits {
   void plot2DScan(TCanvas& canv, const char* directory="");
   /// plot 1d-scans for several masses on canvases, print out png, pdf, root formats if desired  
   void plot1DScan(TCanvas& canv, const char* directory="");
-  /// plot Hypothesis test for MSSM vs SM in mA-tanb for several masses on canvases, print out png, pdf, txt, tex, root formats if desired  
-  void plotHypoTest(TCanvas& canv, const char* directory);
 
  private:
   /// fill a single vector of values from toys. Values are obtained from the mean and/or the quantiles of the 
@@ -213,6 +213,8 @@ class PlotLimits {
   bool mssm_;
   /// Option to produce mssm-like plots but with linear scale for xaxis
   bool mssm_nolog_;
+  /// indicate whether MSSMvsSM or MSSMvsBG plots should be made (used for MSSMvsSM and MSSMvsBG)
+  bool MSSMvsSM_;
   /// indicate plot type as bestfit
   bool bestfit_;
   /// indicate whether a marker for the SM should be draw
@@ -229,6 +231,8 @@ class PlotLimits {
   bool expectedOnly_;
   /// print transparent? (used for option tanb)
   bool transparent_;
+  /// print black and white friendly? (used for option tanb)
+  bool BlackWhite_;
   /// indicate whether the +/- 2 sigma should be shown or not (used for option tanb)
   bool outerband_;
   /// print constraint on mA-tanb plane from Higgs boson at 125 GeV? (used for option tanb)

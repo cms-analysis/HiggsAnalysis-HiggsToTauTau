@@ -2,8 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string("CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV"),
-    #dataset = cms.string("CMS Preliminary,  H#rightarrow#tau#tau,  18.3 fb^{-1} at 8 TeV"),
+    dataset = cms.string("#scale[1.5]{CMS}   H#rightarrow#tau#tau                            19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
+    #dataset = cms.string("#scale[1.5]{CMS}   H#rightarrow#tau#tau                                                  18.3 fb^{-1} (8 TeV)"),
     ## x-axis title
     xaxis = cms.string("m_{A} [GeV]"),
     ## x-axis title
@@ -11,7 +11,7 @@ layout = cms.PSet(
     ## theory label 
     theory = cms.string("MSSM m_{h}^{mod+} scenario"),
     ## min for plotting
-    min = cms.double(0),
+    min = cms.double(0.5),
     ## max for plotting
     max = cms.double(60),
     ## min for plotting
@@ -60,6 +60,10 @@ layout = cms.PSet(
      ),
     ## is this mssm?
     mssm = cms.bool(True),
+    ## is this MSSMvsSM?
+    MSSMvsSM = cms.bool(False),
+    ## plot black and white friendly?
+    BlackWhite = cms.bool(False),
     ## plot transparent?
     transparent = cms.bool(True),
     ## print the 2-sigma band
@@ -67,7 +71,7 @@ layout = cms.PSet(
     ## plot expected only
     expectedOnly = cms.bool(False),
     ## print constraints from mH=125GeV
-    higgs125 = cms.bool(False),
+    higgs125 = cms.bool(True),
     ## add arXiv-1211-6956 (ATLAS) to plot
     arXiv_1211_6956 = cms.bool(False),
     ## add arXiv-1204-2760 (ATLAS) to plot
