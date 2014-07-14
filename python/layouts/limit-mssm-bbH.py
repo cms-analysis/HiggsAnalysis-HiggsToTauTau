@@ -10,7 +10,7 @@ layout = cms.PSet(
     ## x-axis title
     xaxis = cms.string("m_{#phi} [GeV]"),
     ## x-axis title
-    yaxis = cms.string("95% CL limit on #sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#tau#tau)} [pb]"),
+    yaxis = cms.string("95% CL limit on #sigma#font[42]{(bb#phi)}#upoint#font[52]{B}#font[42]{(#tau#tau)} [pb]"),
     ## min for plotting
     min = cms.double(0.01),
     ## max for plotting
