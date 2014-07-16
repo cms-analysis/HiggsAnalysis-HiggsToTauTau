@@ -50,7 +50,19 @@ class mssm_xsec_tools():
         " Lookup the branching ratio for A/H/h->bb"
         # Unpack
         type, type_info = input
-        type_info['BR-bb'] = self.lookup_value(mA, tan_beta, "h_brbb_%s" % type)  
+        type_info['BR-bb'] = self.lookup_value(mA, tan_beta, "h_brbb_%s" % type)
+
+    def _add_br_Hhh(self, mA, tan_beta, input):
+        " Lookup the branching ratio for A/H/h->bb"
+        # Unpack
+        type, type_info = input
+        type_info['BR-hh'] = self.lookup_value(mA, tan_beta, "h_brh0h0_%s" % type)
+
+    def _add_br_AZh(self, mA, tan_beta, input):
+        " Lookup the branching ratio for A/H/h->bb"
+        # Unpack
+        type, type_info = input
+        type_info['BR-Zh'] = self.lookup_value(mA, tan_beta, "h_brZh0_%s" % type)  
 
     def _add_mass(self, mA, tan_beta, input):
         " Lookup the mass for a given higgs type "
@@ -179,7 +191,7 @@ class mssm_xsec_tools():
              0 : 0,
         }
 
-    def query(self, mA, tan_beta):
+    def query(self, mA, tan_beta, ana_type):
 
         higgs_types = [ 'h', 'A', 'H' ]
         
@@ -198,6 +210,9 @@ class mssm_xsec_tools():
             self._add_br_htt(mA, tan_beta, (higgs_type, output['higgses'][higgs_type]))
             self._add_br_hmm(mA, tan_beta, (higgs_type, output['higgses'][higgs_type]))
             self._add_br_hbb(mA, tan_beta, (higgs_type, output['higgses'][higgs_type]))
+            if ana_type=='Hhh' :
+                self._add_br_Hhh(mA, tan_beta, (higgs_type, output['higgses'][higgs_type]))
+                self._add_br_AZh(mA, tan_beta, (higgs_type, output['higgses'][higgs_type]))
             self._add_mass(mA, tan_beta, (higgs_type, output['higgses'][higgs_type]))
             self._add_xsec(mA, tan_beta, (higgs_type, output['higgses'][higgs_type]))
             self._add_mu(mA, tan_beta, (higgs_type, output['higgses'][higgs_type]))

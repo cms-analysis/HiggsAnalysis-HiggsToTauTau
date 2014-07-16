@@ -13,7 +13,9 @@ model_opts.add_option("--parameter1", dest="parameter1", default="", type="strin
 model_opts.add_option("--tanb", dest="tanb", default="", type="string",
                        help="The value of tanb in the model. Default: \"\"]")
 model_opts.add_option("--model", dest="modelname", default="mhmax-mu+200", type="string",
-                       help="The model which should be used (choices are: mhmax-mu+200, mhmodp, mhmodm). Default: \"mhmax-mu+200\"]")
+                       help="The model which should be used (choices are: mhmax-mu+200, mhmodp, mhmodm, lowmH, tauphobic, lightstau1, lightstopmod). Default: \"mhmax-mu+200\"]")
+model_opts.add_option("--ana-type", dest="ana_type", default="NeutralMSSM", type="string",
+                       help="The model which should be used (choices are: NeutralMSSM, Hhh). Default: \"NeutralMSSM\"]")
 model_opts.add_option("--MSSMvsSM", dest="MSSMvsSM", default=False, action="store_true",
                       help="This is needed for the signal hypothesis separation test MSSM vs SM [Default: False]")
 parser.add_option_group(model_opts)
@@ -96,7 +98,7 @@ class MODEL(object) :
         shifts is a non-emty list also shifts in mu or pdf are returned. Other shifts are currently not supported.
         """
         ## create model
-        modelMaker = ModelParams_BASE(self.parameter1, self.tanb)
+        modelMaker = ModelParams_BASE(self.parameter1, self.tanb, options.ana_type)
         modelMaker.setup_model(period, self.modelpath, self.modeltype)
         ## create central value
         for proc in procs :
