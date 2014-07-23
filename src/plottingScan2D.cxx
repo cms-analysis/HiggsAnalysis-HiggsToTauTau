@@ -102,13 +102,23 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
     bestfit->SetMarkerColor(kBlack);
     bestfit->Draw("Psame");
   }
-  if(SMexpected){
-    SMexpected->SetMarkerStyle(34);
-    SMexpected->SetMarkerSize(3.0);
-    SMexpected->SetMarkerColor(kRed);
-    SMexpected->Draw("Psame");
+  if(SMexpected){ //rebecca
+    float msize = 4.0;
+    SMexpected->SetMarkerStyle(27);
+    SMexpected->SetMarkerSize(msize);
+    SMexpected->SetMarkerColor(kBlack);
+    SMexpected->Draw("Psame"); 
+    float scale=0.99;
+    for(int i=0; i<30; i++){ 
+      TGraph *gr1 = (TGraph*)SMexpected->Clone();
+      gr1->SetMarkerSize(scale*msize);
+      gr1->Draw("Psame");
+      scale=scale-0.01;
+    }
   }
-  TLegend* leg = new TLegend(0.60, 0.70, 0.90, 0.90);
+  TLegend* leg;
+  if(SMexpected && masslabel=="m_{#phi}") leg = new TLegend(0.55, 0.60, 0.90, 0.90);
+  else leg = new TLegend(0.60, 0.70, 0.90, 0.90);
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
@@ -125,7 +135,9 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
     graph68_copy->SetLineStyle(1);
     leg->AddEntry(graph68_copy, "68% CL", temp ? "L" : "F"); }
   if(bestfit){ leg->AddEntry(bestfit, "best fit", "P"); }
-  if(SMexpected){ leg->AddEntry(SMexpected, "SM", "P"); }
+  if(SMexpected && masslabel=="m_{H}"){ leg->AddEntry(SMexpected, "SM", "P"); }	
+  if(SMexpected && masslabel=="m_{#phi}"){ leg->AddEntry(SMexpected, "Expected for", "P"); } 
+  if(SMexpected && masslabel=="m_{#phi}"){ leg->AddEntry((TObject*)0, "SM H(125 GeV)", ""); }  												
   leg->Draw("same");
   
   TString label = TString::Format("%s = %d GeV", masslabel.c_str(), mass);
