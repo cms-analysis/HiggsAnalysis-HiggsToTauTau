@@ -21,6 +21,7 @@
 #include "TLegend.h"
 #include "TPaveText.h"
 #include "TPaveLabel.h"
+#include "TMarker.h"
 #include "TGraphAsymmErrors.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"

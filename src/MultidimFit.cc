@@ -2,7 +2,7 @@
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::vector<TGraph*> graph68, TGraph* bestfit, TGraph* SMexpected, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp, bool log);
+void plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::vector<TGraph*> graph68, TGraph* bestfit, TMarker* SMexpected, TMarker* SMexpectedLayer, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp, bool log);
 
 TGraph* 
 PlotLimits::sortedGraph(TGraph* graph, double minX, double minY)
@@ -386,32 +386,17 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     }
     TGraph* bestfit = new TGraph();
     bestfit->SetPoint(0, bestX, bestY);
-    TGraph* SMexpected = 0;
+    //To make official style diamond, it is necessary to use the deadful hack of overlaying one marker on top of another slightly larger marker
+    TMarker* SMexpected = 0;
+    TMarker* SMexpectedLayer = 0;
     if(drawsm_){
-      SMexpected = new TGraph();
-      if(model_!="GGH-BBH") SMexpected->SetPoint(0,1,1);
-      else{ //taken from L(asimov(h_SM) | BKG) //rebecca
-	if((int)mass==90  ) SMexpected->SetPoint(0,0,0);
-	if((int)mass==100 ) SMexpected->SetPoint(0,0.676,0.090);
-	if((int)mass==120 ) SMexpected->SetPoint(0,1.815,0.077);
-	if((int)mass==125 ) SMexpected->SetPoint(0,1.325,0.057);
-	if((int)mass==130 ) SMexpected->SetPoint(0,0.979,0.034);
-	if((int)mass==140 ) SMexpected->SetPoint(0,0.514,0.014);
-	if((int)mass==160 ) SMexpected->SetPoint(0,0.146,0.009);
-	if((int)mass==180 ) SMexpected->SetPoint(0,0.014,0.010);
-	if((int)mass==200 ) SMexpected->SetPoint(0,0,0);
-	if((int)mass==250 ) SMexpected->SetPoint(0,0,0);
-	if((int)mass==300 ) SMexpected->SetPoint(0,0,0);
-	if((int)mass==350 ) SMexpected->SetPoint(0,0,0);
-	if((int)mass==400 ) SMexpected->SetPoint(0,0,0);
-	if((int)mass==450 ) SMexpected->SetPoint(0,0,0);	
-	if((int)mass==500 ) SMexpected->SetPoint(0,0,0);
-	if((int)mass==600 ) SMexpected->SetPoint(0,0,0);
-	if((int)mass==700 ) SMexpected->SetPoint(0,0,0);
-	if((int)mass==800 ) SMexpected->SetPoint(0,0,0);	 
-	if((int)mass==900 ) SMexpected->SetPoint(0,0,0);
-	if((int)mass==1000) SMexpected->SetPoint(0,0,0);	   
-      }
+      SMexpected = new TMarker();
+      SMexpectedLayer = new TMarker();
+      //Size and colour are set here. For TMarker the position must be set when drawing, so this can be found in src/plottingScan2D.cxx. 
+      //Currently positions hardcoded 
+      //SMexpected->SetMarkerSize(3.0); SMexpected->SetMarkerColor(97); SMexpected->SetMarkerStyle(33);
+      SMexpected->SetMarkerSize(3.0); SMexpected->SetMarkerColor(1); SMexpected->SetMarkerStyle(33);
+      SMexpectedLayer->SetMarkerSize(1.8); SMexpectedLayer->SetMarkerColor(89); SMexpectedLayer->SetMarkerStyle(33);
     }
     // determine new contours for 68% CL and 95% CL limits
     double contours[2];
@@ -474,10 +459,10 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     // do the plotting
     std::string masslabel = mssm_ ? std::string("m_{#phi}") : std::string("m_{H}");
     if(temp_){
-      plotting2DScan(canv, plot2D, graph95 , graph68 , bestfit, SMexpected, xaxis_, yaxis_, masslabel, mass, xmins_[mass], xmaxs_[mass], ymins_[mass], ymaxs_[mass], temp_, log_);    
+      plotting2DScan(canv, plot2D, graph95 , graph68 , bestfit, SMexpected, SMexpectedLayer, xaxis_, yaxis_, masslabel, mass, xmins_[mass], xmaxs_[mass], ymins_[mass], ymaxs_[mass], temp_, log_);    
     }
     else{
-      plotting2DScan(canv, plot2D, filled95, filled68, bestfit, SMexpected, xaxis_, yaxis_, masslabel, mass, xmins_[mass], xmaxs_[mass], ymins_[mass], ymaxs_[mass], temp_, log_);    
+      plotting2DScan(canv, plot2D, filled95, filled68, bestfit, SMexpected, SMexpectedLayer, xaxis_, yaxis_, masslabel, mass, xmins_[mass], xmaxs_[mass], ymins_[mass], ymaxs_[mass], temp_, log_);    
     }
     // add the CMS Preliminary stamp
     CMSPrelim(dataset_.c_str(), "", 0.135, 0.835);
