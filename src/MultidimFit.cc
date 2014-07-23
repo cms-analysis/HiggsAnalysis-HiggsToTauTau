@@ -295,7 +295,7 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
   // catch CL-CQ, where there is no prefix 'r_' for the branch names when filling the
   // histogram from the TTree
   bool CLCQ = (xval.find("Cl")!=std::string::npos && yval.find("Cq")!=std::string::npos);
-
+  std::cout << model_ << std::endl;
   // pick up boundaries of the scan from .scan file in masses directory. This
   // requires that you have run imits.py beforehand with option --multidim-fit
   char type[20]; 
@@ -389,7 +389,29 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     TGraph* SMexpected = 0;
     if(drawsm_){
       SMexpected = new TGraph();
-      SMexpected->SetPoint(0,1,1);
+      if(model_!="GGH-BBH") SMexpected->SetPoint(0,1,1);
+      else{ //taken from L(asimov(h_SM) | BKG) //rebecca
+	if((int)mass==90  ) SMexpected->SetPoint(0,0,0);
+	if((int)mass==100 ) SMexpected->SetPoint(0,0.676,0.090);
+	if((int)mass==120 ) SMexpected->SetPoint(0,1.815,0.077);
+	if((int)mass==125 ) SMexpected->SetPoint(0,1.325,0.057);
+	if((int)mass==130 ) SMexpected->SetPoint(0,0.979,0.034);
+	if((int)mass==140 ) SMexpected->SetPoint(0,0.514,0.014);
+	if((int)mass==160 ) SMexpected->SetPoint(0,0.146,0.009);
+	if((int)mass==180 ) SMexpected->SetPoint(0,0.014,0.010);
+	if((int)mass==200 ) SMexpected->SetPoint(0,0,0);
+	if((int)mass==250 ) SMexpected->SetPoint(0,0,0);
+	if((int)mass==300 ) SMexpected->SetPoint(0,0,0);
+	if((int)mass==350 ) SMexpected->SetPoint(0,0,0);
+	if((int)mass==400 ) SMexpected->SetPoint(0,0,0);
+	if((int)mass==450 ) SMexpected->SetPoint(0,0,0);	
+	if((int)mass==500 ) SMexpected->SetPoint(0,0,0);
+	if((int)mass==600 ) SMexpected->SetPoint(0,0,0);
+	if((int)mass==700 ) SMexpected->SetPoint(0,0,0);
+	if((int)mass==800 ) SMexpected->SetPoint(0,0,0);	 
+	if((int)mass==900 ) SMexpected->SetPoint(0,0,0);
+	if((int)mass==1000) SMexpected->SetPoint(0,0,0);	   
+      }
     }
     // determine new contours for 68% CL and 95% CL limits
     double contours[2];
