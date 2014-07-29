@@ -2,14 +2,15 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string("#scale[1.5]{CMS}   H#rightarrow#tau#tau                            19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
-    #dataset = cms.string("#scale[1.5]{CMS}   H#rightarrow#tau#tau                                                + 18.3 fb^{-1} (7 TeV)"),
+    dataset = cms.string("#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                     19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
+    #dataset = cms.string("#scale[1.5]{CMS} (unpublished), h,H,A#rightarrow#tau#tau, 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
+    #dataset = cms.string("#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                                         + 18.3 fb^{-1} (7 TeV)"),
     ## x-axis title
     xaxis = cms.string("m_{A} [GeV]"),
     ## y-axis title
     yaxis = cms.string("#bf{tan#beta}"),
     ## theory label 
-    theory = cms.string("MSSM tauphobic scenario"),
+    theory = cms.string("MSSM #scale[1.3]{#bf{#tau}}-phobic scenario"),
     ## min for plotting
     min = cms.double(1.0),
     ## max for plotting
