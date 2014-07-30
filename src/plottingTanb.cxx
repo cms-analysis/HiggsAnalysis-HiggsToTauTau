@@ -9,6 +9,7 @@
 #include "TPaveText.h"
 #include "TGraphAsymmErrors.h"
 #include "TROOT.h"
+#include "TLine.h"
 //#include "TRint.h"
 
 #include <iostream>
@@ -20,12 +21,12 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   canv.cd();
   if(log){ 
     canv.SetLogy(1); 
-    canv.SetLogx(1); 
+   //  canv.SetLogx(1); 
   }
   
   // setup the CMS colors
   TColor* obs = new TColor(1501, 0.463, 0.867, 0.957);
-  if(transparent) obs->SetAlpha(0.5);
+  if(transparent && !BlackWhite) obs->SetAlpha(0.5); 
   TColor* twosigma = gROOT->GetColor(kGray+1);
   if(transparent) twosigma->SetAlpha(0.5);
   TColor* onesigma = gROOT->GetColor(kGray+2);
@@ -56,12 +57,12 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   hr->GetYaxis()->SetTitleSize(0.05);
   hr->GetYaxis()->SetTitleOffset(1.12);
   hr->GetYaxis()->SetLabelSize(0.05);
-  if(log){
-    hr->SetNdivisions(50005, "X");
-    hr->GetXaxis()->SetMoreLogLabels();
-    hr->GetXaxis()->SetNoExponent();
-    hr->GetXaxis()->SetLabelSize(0.040);
-  }
+  // if(log){
+//     hr->SetNdivisions(50005, "X");
+//     hr->GetXaxis()->SetMoreLogLabels();
+//     hr->GetXaxis()->SetNoExponent();
+//     hr->GetXaxis()->SetLabelSize(0.040);
+//   }
 
   TGraphAsymmErrors* background = new TGraphAsymmErrors();
   background->SetPoint(0, expected_1->GetX()[0], 50);
@@ -73,13 +74,13 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
     background->SetPointEYhigh(ipoint, 50);
   }
   background->SetPoint(expected_1->GetN(), expected_1->GetX()[expected_1->GetN()-1], 50);
-  background->SetPointEYlow (expected_1->GetN(), 50);
+  background->SetPointEYlow(expected_1->GetN(), 50);
   background->SetPointEYhigh(expected_1->GetN(), 50); 
-  background->SetFillStyle(3004.); //1001  
+  background->SetFillStyle(3005.); //1001  
   background->SetFillColor(backgroundColor->GetNumber());
   //background->SetLineColor(ph->GetNumber());
-  background->SetLineWidth(3);
-  background->SetLineColor(backgroundColor->GetNumber());
+  background->SetLineWidth(2); 
+  background->SetLineColor(kWhite); //for legend backgroundColor->GetNumber()
   //background->Draw("3"); 
 
   int idx=0;
@@ -137,7 +138,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
       band_max->SetLineWidth(402);
       band_max->SetFillColor(backgroundColor->GetNumber());
       band_max->SetLineColor(backgroundColor->GetNumber());
-      band_max->Draw("Lsame");
+      if(theory=="MSSM low-m_{H} scenario" || theory=="MSSM m_{h}^{max} scenario")  band_max->Draw("Lsame");
     }
   }
 
@@ -145,29 +146,38 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
     plain_1->SetLineColor(ph->GetNumber());
     plain_1->SetFillStyle(1001.);
     plain_1->SetFillColor(obs->GetNumber());
-    if (!transparent) plain_1->Draw("3same");
+    if (!transparent && !BlackWhite) plain_1->Draw("3same");
     observed_1->SetMarkerStyle(20);
     observed_1->SetMarkerSize(1.0);
     observed_1->SetMarkerColor(kBlack);
-    observed_1->SetLineWidth(3.);
+    observed_1->SetLineWidth(3.); 
+    if(BlackWhite) observed_1->SetFillStyle(3245);    
+    if(BlackWhite) observed_1->SetLineWidth(403);       
+    if(BlackWhite) observed_1->SetFillColor(4); 
     
     plain_2->SetLineColor(ph->GetNumber());
     plain_2->SetFillStyle(1001.);
     plain_2->SetFillColor(obs->GetNumber());
     if (HIG=="") {
-      if (!transparent) plain_2->Draw("3same");
+      if (!transparent && !BlackWhite) plain_2->Draw("3same"); 
     }
     observed_2->SetMarkerStyle(20);
     observed_2->SetMarkerSize(1.0);
     observed_2->SetMarkerColor(kBlack);
-    observed_2->SetLineWidth(3.);
+    observed_2->SetLineWidth(3.); 
+    if(BlackWhite) observed_2->SetFillStyle(3245);         
+    if(BlackWhite) observed_2->SetLineWidth(-403);           
+    if(BlackWhite) observed_2->SetFillColor(4);        
     observed_3->SetMarkerStyle(20);
     observed_3->SetMarkerSize(1.0);
     observed_3->SetMarkerColor(kBlack);
-    observed_3->SetLineWidth(3.);
+    observed_3->SetLineWidth(3.); 
+    if(BlackWhite) observed_3->SetFillStyle(3245);    
+    if(BlackWhite) observed_3->SetLineWidth(-403);            
+    if(BlackWhite) observed_3->SetFillColor(4);  
   }
 
-  //Get data points from TGraphAsymmErrors
+  /*//Get data points from TGraphAsymmErrors
   int npoints = expected_1->GetN();
   double outerband_1_ymin[npoints], outerband_1_ymax[npoints], outerband_2_ymin[npoints], outerband_2_ymax[npoints];
   double innerband_1_ymin[npoints], innerband_1_ymax[npoints], innerband_2_ymin[npoints], innerband_2_ymax[npoints];
@@ -196,7 +206,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
     innerband_1_max->SetPoint(i, expected_1_X[i], innerband_1_ymax[i]);
     innerband_2_min->SetPoint(i, expected_2_X[i], innerband_2_ymin[i]);
     innerband_2_max->SetPoint(i, expected_2_X[i], innerband_2_ymax[i]);
-  }
+    }*/
 
   if(plotOuterBand){
     outerBand_1->SetFillStyle(1001);
@@ -204,17 +214,17 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
     outerBand_1->SetLineColor(kWhite);
     outerBand_1->SetLineWidth(1);
     //outerBand_1->SetLineColor(twosigma->GetNumber());
-    if(!BlackWhite) outerBand_1->Draw("3same");    
+    outerBand_1->Draw("3same");    
     outerBand_2->SetFillStyle(1001);
     outerBand_2->SetFillColor(twosigma->GetNumber()); 
     outerBand_2->SetLineColor(twosigma->GetNumber());
-    if(HIG=="" && !BlackWhite) outerBand_2->Draw("3same");  
+    if(HIG=="") outerBand_2->Draw("3same");  
     outerBand_3->SetFillStyle(1001);
     outerBand_3->SetFillColor(twosigma->GetNumber()); 
     outerBand_3->SetLineColor(twosigma->GetNumber());
     //outerBand_3->Draw("3same");
 
-    outerband_1_min->SetLineColor(kGray+1);
+    /*outerband_1_min->SetLineColor(kGray+1);
     outerband_1_max->SetLineColor(kGray+1);
     outerband_2_min->SetLineColor(kGray+1);
     outerband_2_max->SetLineColor(kGray+1);
@@ -231,7 +241,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
       outerband_1_max->Draw("Lsame");
       outerband_2_min->Draw("Lsame");
       outerband_2_max->Draw("Lsame");
-    }
+      }*/
   }
   
   innerBand_1->SetFillStyle(1001);
@@ -239,16 +249,16 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   innerBand_1->SetLineColor(kWhite);
   innerBand_1->SetLineWidth(1);
   //innerBand_1->SetLineColor(onesigma->GetNumber());
-  if(!BlackWhite) innerBand_1->Draw("3same"); 
+  innerBand_1->Draw("3same"); 
   innerBand_2->SetFillColor(onesigma->GetNumber()); 
   innerBand_2->SetLineColor(onesigma->GetNumber());
-  if(HIG=="" && !BlackWhite) innerBand_2->Draw("3same"); 
+  if(HIG=="") innerBand_2->Draw("3same"); 
   innerBand_3->SetFillStyle(1001);
   innerBand_3->SetFillColor(onesigma->GetNumber()); 
   innerBand_3->SetLineColor(onesigma->GetNumber());
   //innerBand_3->Draw("3same"); 
  
-  innerband_1_min->SetLineColor(kGray+2);
+  /*innerband_1_min->SetLineColor(kGray+2);
   innerband_1_max->SetLineColor(kGray+2);
   innerband_2_min->SetLineColor(kGray+2);
   innerband_2_max->SetLineColor(kGray+2);
@@ -263,19 +273,19 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   if(BlackWhite && HIG=="") innerband_1_min->Draw("Lsame");
   if(BlackWhite && HIG=="") innerband_1_max->Draw("Lsame");
   if(BlackWhite && HIG=="") innerband_2_min->Draw("Lsame");
-  if(BlackWhite && HIG=="") innerband_2_max->Draw("Lsame"); 
+  if(BlackWhite && HIG=="") innerband_2_max->Draw("Lsame"); */
     
-  expected_1->SetLineColor(kGray+3);
-  expected_1->SetLineWidth(3);
-  expected_1->SetLineStyle(1);
-  expected_1->Draw("Lsame");
-  expected_2->SetLineColor(kGray+3);
-  expected_2->SetLineWidth(3);
-  expected_2->SetLineStyle(1);
-  if(HIG=="") expected_2->Draw("Lsame");
-  expected_3->SetLineColor(kGray+3);
-  expected_3->SetLineWidth(3);
-  expected_3->SetLineStyle(1);
+  expected_1->SetLineColor(kBlack); //changed from kGray+3
+  expected_1->SetLineWidth(2); //changed from 3 
+  expected_1->SetLineStyle(2); //changed from 1 
+  if(BlackWhite) expected_1->Draw("Lsame");
+  expected_2->SetLineColor(kBlack); //changed from kGray+3
+  expected_2->SetLineWidth(2); //changed from 3 
+  expected_2->SetLineStyle(2); //changed from 1 
+  if(HIG=="" && BlackWhite) expected_2->Draw("Lsame"); 
+  expected_3->SetLineColor(kBlack); //changed from kGray+3
+  expected_3->SetLineWidth(2); //changed from 3 
+  expected_3->SetLineStyle(2); //changed from 1 
   //expected_3->Draw("Lsame");
    
   if(injected_1){
@@ -290,13 +300,15 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   }
 
   if(!expectedOnly){
-    if(transparent) plain_1->Draw("3same");
+    if(transparent && !BlackWhite) plain_1->Draw("3same");
     observed_1->Draw("Lsame");
     if (HIG=="") {
-      if(transparent) plain_2->Draw("3same"); 
+      if(transparent && !BlackWhite) plain_2->Draw("3same");
       observed_2->Draw("Lsame");
     }
     //observed_3->Draw("Lsame"); 
+    if(!BlackWhite) expected_1->Draw("Lsame");
+    if(!BlackWhite && HIG=="") expected_2->Draw("Lsame");
   }
  
   idx=0;
@@ -323,6 +335,8 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   
   TPaveText* theory1;
   if(log){
+    //if(theory=="MSSM light-stop scenario") theory1= new TPaveText(0.375, 0.69, 0.9, 0.75, "NDC"); //for loglog
+    //else theory1= new TPaveText(0.14, 0.85, 0.9, 0.90, "NDC");
     theory1= new TPaveText(0.14, 0.85, 0.9, 0.90, "NDC");
   }
   else{
@@ -330,7 +344,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
     else if(theory=="MSSM m_{h}^{max} scenario") theory1= new TPaveText(0.59, 0.165, 0.91, 0.225, "NDC");
     else if(theory=="MSSM m_{h}^{mod-} scenario") theory1= new TPaveText(0.59, 0.20, 0.91, 0.26, "NDC");
     else if(theory=="MSSM m_{h}^{mod+} scenario") theory1= new TPaveText(0.59, 0.20, 0.91, 0.26, "NDC");
-    else if(theory=="MSSM light-stop scenario") theory1= new TPaveText(0.51, 0.20, 0.91, 0.26, "NDC");
+    else if(theory=="MSSM light-stop scenario") theory1= new TPaveText(0.51, 0.20, 0.91, 0.26, "NDC"); //for loglog
     else if(theory=="MSSM light-stau scenario") theory1= new TPaveText(0.51, 0.20, 0.91, 0.26, "NDC");
     else theory1= new TPaveText(0.51, 0.20, 0.91, 0.26, "NDC");
   }
@@ -346,8 +360,10 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   /// add the proper legend
   TLegend* leg;
   if(log){
-    if(theory=="MSSM light-stop scenario") leg = new TLegend(0.19, 0.67, 0.72, 0.84);
-    else leg = new TLegend(0.635, (!higgsBands.empty() || !comparisons.empty()) ? 0.15 : 0.32, (!higgsBands.empty() || !comparisons.empty()) ? 0.92: 0.92, 0.52);
+    if(theory=="MSSM #scale[1.3]{#bf{#tau}}-phobic scenario") leg = new TLegend(0.635, 0.16, 0.92, 0.41);
+    //else if(theory=="MSSM light-stop scenario") leg = new TLegend(0.36, 0.745, 0.84, 0.905); // for loglog
+    // else leg = new TLegend(0.635, (!higgsBands.empty() || !comparisons.empty()) ? 0.15 : 0.32, (!higgsBands.empty() || !comparisons.empty()) ? 0.92: 0.92, 0.44); // for loglog
+    else leg = new TLegend(0.635, (!higgsBands.empty() || !comparisons.empty()) ? 0.16 : 0.32, (!higgsBands.empty() || !comparisons.empty()) ? 0.92: 0.92, 0.44); //for log
   }
   else{ 
     if(MSSMvsSM){
@@ -362,7 +378,7 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
     }
   }
   if(theory=="MSSM low-m_{H} scenario") leg->SetNColumns(2);
-  if(theory=="MSSM light-stop scenario" && log) leg->SetNColumns(2);
+  //if(theory=="MSSM light-stop scenario" && log) leg->SetNColumns(2); //for loglog
   leg->SetBorderSize(  1 );
   leg->SetFillStyle (1001);
   leg->SetTextSize  (0.03);
@@ -372,24 +388,23 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   if(MSSMvsSM) leg->SetHeader("CL_{S}(MSSM,SM)<0.05:");
   else leg->SetHeader("95% CL Excluded:");
   if(!expectedOnly){ 
-    //if(observed){ 
-    observed_1->SetFillColor(obs->GetNumber()); 
+    if(!BlackWhite) observed_1->SetFillColor(obs->GetNumber()); 
     leg->AddEntry(observed_1, "observed", "FL");
   }
   if(theory=="MSSM low-m_{H} scenario") {
-    if(!BlackWhite) leg->AddEntry(innerBand_1, "#pm 1#sigma expected","F");
-    if(BlackWhite && HIG=="") leg->AddEntry(innerband_1_max, "#pm 1#sigma expected","L"); 
+    leg->AddEntry(innerBand_1, "#pm 1#sigma expected","F");
+    //if(BlackWhite && HIG=="") leg->AddEntry(innerband_1_max, "#pm 1#sigma expected","L"); 
     leg->AddEntry(expected_1, "expected", "L");
   }
   else{
     if(injected_1) leg->AddEntry(injected_1, "SM H injected", "L");
     leg->AddEntry(expected_1, "expected", "L");
-    if(!BlackWhite) leg->AddEntry(innerBand_1, "#pm 1#sigma expected","F");
-    if(BlackWhite && HIG=="") leg->AddEntry(innerband_1_max, "#pm 1#sigma expected","L");
+    leg->AddEntry(innerBand_1, "#pm 1#sigma expected","F");
+    //if(BlackWhite && HIG=="") leg->AddEntry(innerband_1_max, "#pm 1#sigma expected","L");
   }
   if(plotOuterBand){ 
-    if(!BlackWhite) leg->AddEntry(outerBand_1, "#pm 2#sigma expected", "F"); 
-    if(BlackWhite && HIG=="") leg->AddEntry(outerband_1_max, "#pm 2#sigma expected","L"); 
+    leg->AddEntry(outerBand_1, "#pm 2#sigma expected", "F"); 
+    //if(BlackWhite && HIG=="") leg->AddEntry(outerband_1_max, "#pm 2#sigma expected","L"); 
     if(theory=="MSSM low-m_{H} scenario" && injected_1) leg->AddEntry(injected_1, "h_{SM} injected", "L");
   }
   //for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band){
@@ -406,28 +421,43 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
     }
   }
   leg->Draw("same");
+  
 
   TLegend* leg2;
   if(log){
-    if(theory=="MSSM light-stop scenario") leg2 = new TLegend(0.58, 0.15, 0.92, 0.20);
-    else leg2 = new TLegend(0.18, 0.79, 0.52, 0.84);
+    //if(theory=="MSSM light-stop scenario") leg2 = new TLegend(0.55, 0.15, 0.92, 0.20); //for loglog
+    if(theory=="MSSM light-stop scenario") leg2 = new TLegend(0.57, 0.47, 0.92, 0.52); //for log
+    //else leg2 = new TLegend(0.31, 0.79, 0.65, 0.84); //for loglog
+    else leg2 = new TLegend(0.57, 0.60, 0.92, 0.65);
   }
   else{ 
-    if(theory=="MSSM low-m_{H} scenario") leg2 = new TLegend(0.61, 0.78, 0.92, 0.84);
-    else leg2 = new TLegend(0.61, 0.26, 0.92, 0.31);
+    if(theory=="MSSM low-m_{H} scenario") leg2 = new TLegend(0.57, 0.78, 0.92, 0.84);
+    else leg2 = new TLegend(0.57, 0.26, 0.92, 0.31);
   }  
   leg2->SetBorderSize( 1  );
   leg2->SetFillStyle (1001);
-  leg2->SetTextSize  (0.028);
+  leg2->SetTextSize  (0.03);
   leg2->SetTextFont  ( 62 ); 
   leg2->SetFillColor (kWhite);
   leg2->SetLineWidth (2);
   leg2->SetLineColor (kBlack);
   if(log) {
-    leg2->AddEntry(background, "m^{MSSM}_{h,H} #neq 125#pm3 GeV", "F");
+    if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
+    else leg2->AddEntry(background, "m^{MSSM}_{h,H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
   }
-  else leg2->AddEntry(background, "m^{MSSM}_{h,H} #neq 125#pm3 GeV", "F");
+  else {
+    if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
+    else leg2->AddEntry(background, "m^{MSSM}_{h,H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
+  }
   leg2->Draw("same");
+
+  TLine* legline;
+  legline = new TLine(605, 13, 680, 13);
+  legline->SetLineWidth(3);
+  legline->SetLineColor(backgroundColor->GetNumber());
+  //legline->DrawLineNDC(0.585, 0.64, 0.642, 0.64);
+  legline->DrawLineNDC(leg2->GetX1()+0.015, leg2->GetY2()-0.01, leg2->GetX1()+0.072, leg2->GetY2()-0.01);
+  //legline->Draw("same");
   
   //canv.RedrawAxis("g");
   canv.RedrawAxis();
