@@ -93,7 +93,7 @@ plotTanb(const char* filename, const char* channel, bool draw_injected_=false, d
   if(theory_=="MSSM m_{h}^{mod+} scenario") {model = "mhmodp";}
   if(theory_=="MSSM low-m_{H} scenario") {model = "lowmH";}
   if(theory_=="MSSM light-stau scenario") {model = "lightstau1";}
-  if(theory_=="MSSM tauphobic scenario") {model = "tauphobic";}
+  if(theory_=="MSSM #scale[1.3]{#bf{#tau}}-phobic scenario") {model = "tauphobic";}
   if(theory_=="MSSM light-stop scenario") {model = "lightstopmod";}
   std::map<double, TGraphAsymmErrors*> higgsBands;// setup contraints from Higgs mass
   higgsBands[3] = higgsConstraint(expected_1, 125., 3., model);
@@ -112,7 +112,8 @@ plotTanb(const char* filename, const char* channel, bool draw_injected_=false, d
 
   /// setup the CMS Preliminary
   //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
-  TPaveText* cmsprel  = new TPaveText(0.145, 0.835+0.06, 0.145+0.30, 0.835+0.16, "NDC");
+  // TPaveText* cmsprel  = new TPaveText(0.145, 0.835+0.06, 0.145+0.30, 0.835+0.16, "NDC");
+  TPaveText* cmsprel  = new TPaveText(0.135, 0.835+0.06, 0.145+0.30, 0.835+0.16, "NDC"); //for unpublished plots
   cmsprel->SetBorderSize(   0 );
   cmsprel->SetFillStyle(    0 );
   cmsprel->SetTextAlign(   12 );

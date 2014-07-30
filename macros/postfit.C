@@ -82,9 +82,9 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   // switch for MSSM/SM
   bool MSSM = std::string(analysis) == std::string("MSSM");
   // determine label
-  if (std::string(dataset) == std::string("2011"     )){ dataset = "#scale[1.5]{CMS}   H#rightarrow#tau#tau                                       4.9 fb^{-1} (7 TeV)"; }
-  if (std::string(dataset) == std::string("2012"     )){ dataset = "#scale[1.5]{CMS}   H#rightarrow#tau#tau                                      19.7 fb^{-1} (8 TeV)"; }
-  if (std::string(dataset) == std::string("2011+2012")){ dataset = "#scale[1.5]{CMS}   H#rightarrow#tau#tau          19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"; }
+  if (std::string(dataset) == std::string("2011"     )){ dataset = "#scale[1.5]{CMS}  h,H,A#rightarrow#tau#tau                                 4.9 fb^{-1} (7 TeV)"; }
+  if (std::string(dataset) == std::string("2012"     )){ dataset = "#scale[1.5]{CMS}  h,H,A#rightarrow#tau#tau                                19.7 fb^{-1} (8 TeV)"; }
+  if (std::string(dataset) == std::string("2011+2012")){ dataset = "#scale[1.5]{CMS}  h,H,A#rightarrow#tau#tau    19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"; }
   // determine category tag
   const char* category_extra = "";
   if(std::string(extra2) == std::string("0jet_low"  )){ category_extra = "0 jet, low p_{T}";  }
@@ -94,8 +94,8 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   if(std::string(extra2) == std::string("1jet_high" )){ category_extra = "1 jet, high p_{T}"; }
   if(std::string(extra2) == std::string("1jet"      )){ category_extra = "1 jet";             }
   if(std::string(extra2) == std::string("vbf"       )){ category_extra = "2 jet (VBF)";       }
-  if(std::string(extra2) == std::string("nobtag"    )){ category_extra = "No B-Tag";          }
-  if(std::string(extra2) == std::string("btag"      )){ category_extra = "B-Tag";             }
+  if(std::string(extra2) == std::string("nobtag"    )){ category_extra = "no b-tag";          }
+  if(std::string(extra2) == std::string("btag"      )){ category_extra = "b-tag";             }
 
   TFile* input = new TFile(inputfile);
   TH1F* Fakes  = refill((TH1F*)input->Get("Fakes"   ), "Fakes/QCD"); 
@@ -253,7 +253,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   cat->Draw();
   */
   if(MSSM){
-    float lower_bound = 0.49;
+    float lower_bound = 0.44;
     TPaveText* massA      = new TPaveText(0.53, lower_bound+0.061, 0.95, lower_bound+0.151, "NDC");
     massA->SetBorderSize(   0 );
     massA->SetFillStyle(    0 );
@@ -265,11 +265,12 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     massA->AddText("m_{A}=$MA GeV, tan#beta=$TANB");
     massA->Draw();
   }    
-  float lower_bound = 0.65;
+  float lower_bound = 0.60;
   TLegend* leg = new TLegend(MSSM ? 0.53 : 0.50, lower_bound, 0.93, 0.90);
   SetLegendStyle(leg);
+  leg->SetTextSize(0.035);
   if(MSSM){
-    leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau", "L" );
+    leg->AddEntry(ggH  , "h,H,A#rightarrow#tau#tau", "L" );
   }
   else{
     if(ggH){

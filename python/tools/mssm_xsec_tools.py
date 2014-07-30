@@ -8,7 +8,6 @@ class mssm_xsec_tools():
     def __init__(self, inputFileName):
         self.inputFileName_ = inputFileName
         self.inputFile_ = ROOT.TFile(self.inputFileName_)
-
         self.unit_pb = 1.
         self.unit_fb = self.unit_pb*1.e-3
 
@@ -205,7 +204,7 @@ class mssm_xsec_tools():
                 'H' : {}
             }
         }
-
+        
         for higgs_type in higgs_types:
             self._add_br_htt(mA, tan_beta, (higgs_type, output['higgses'][higgs_type]))
             self._add_br_hmm(mA, tan_beta, (higgs_type, output['higgses'][higgs_type]))
