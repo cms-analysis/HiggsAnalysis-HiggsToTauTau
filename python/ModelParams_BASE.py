@@ -123,7 +123,10 @@ class ModelParams_BASE:
             exit('ERROR: Decay channel \'%s\' not supported'%decay)
         if self.ana_type=='Hhh' :
             #if channel=='ggHTohh' :
-            return str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses'][higgs][brname['bb']]*query['higgses'][higgs][brname[decay[1:]]])       
+            if query['higgses'][higgs][brname[channel[2:]]] < 0 : #some BR (h-hh) is negative -> set to 0
+                return str(0)
+            else :
+                return str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses'][higgs][brname['bb']]*query['higgses'][higgs][brname[decay[1:]]])       
             #elif channel=='AToZh' :
             #   return query['higgses'][higgs][brname[channel[2:]]]*query['higgses'][higgs][brname['bb']]*query['higgses'][higgs][brname[decay[1:]]]                  
         else : 
