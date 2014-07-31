@@ -126,8 +126,8 @@ class ModelParams_BASE:
             if query['higgses'][higgs][brname[channel[2:]]] < 0 : #some BR (h-hh) is negative -> set to 0
                 return str(0)
             else :
-                return str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses'][higgs][brname['bb']]*query['higgses'][higgs][brname[decay[1:]]])       
+                return str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses']['h'][brname['bb']]*query['higgses']['h'][brname[decay[1:]]])       
             #elif channel=='AToZh' :
-            #   return query['higgses'][higgs][brname[channel[2:]]]*query['higgses'][higgs][brname['bb']]*query['higgses'][higgs][brname[decay[1:]]]                  
+            #   return query['higgses'][higgs][brname[channel[2:]]]*query['higgses']['h'][brname['bb']]*query['higgses']['h'][brname[decay[1:]]]                  
         else : 
             return query['higgses'][higgs][brname[decay[1:]]]
