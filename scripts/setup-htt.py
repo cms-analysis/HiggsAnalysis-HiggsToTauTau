@@ -142,28 +142,43 @@ directories_sm = {
 
 directories_mssm = {
     'ee' : {
-    '8'  : ['nobtag', 'nobtag-ee'],
-    '9'  : ['btag'  , 'btag-ee'  ],
+    '8'  : ['nobtag'       , 'nobtag-ee'       ],
+    '9'  : ['btag'         , 'btag-ee'         ],
     },
     'mm' : {
-    '8'  : ['nobtag', 'nobtag-mm'],
-    '9'  : ['btag'  , 'btag-mm'  ],
+    '8'  : ['nobtag'       , 'nobtag-mm'       ],
+    '9'  : ['btag'         , 'btag-mm'         ],
     },
     'em' : {
-    '8'  : ['nobtag', 'nobtag-em'],
-    '9'  : ['btag'  , 'btag-em'  ],
+    '8'  : ['nobtag'       , 'nobtag-em'       ],
+    '9'  : ['btag'         , 'btag-em'         ],
     },    
     'et' : {
-    '8'  : ['nobtag', 'nobtag-et'],
-    '9'  : ['btag'  , 'btag-et'  ],
+    '8'  : ['nobtag'       , 'nobtag-et'       ],
+    '9'  : ['btag'         , 'btag-et'         ],
+    '10' : ['nobtag_low'   , 'nobtag_low-et'   ],
+    '11' : ['nobtag_medium', 'nobtag_medium-et'],
+    '12' : ['nobtag_high'  , 'nobtag_high-et'  ],
+    '13' : ['btag_low'     , 'btag_low-et'     ],
+    '14' : ['btag_high'    , 'btag_high-et'    ],
     },
     'mt' : {
-    '8'  : ['nobtag', 'nobtag-mt'],
-    '9'  : ['btag'  , 'btag-mt'  ],
+    '8'  : ['nobtag'       , 'nobtag-mt'       ],
+    '9'  : ['btag'         , 'btag-mt'         ],
+    '10' : ['nobtag_low'   , 'nobtag_low-mt'   ],
+    '11' : ['nobtag_medium', 'nobtag_medium-mt'],
+    '12' : ['nobtag_high'  , 'nobtag_high-mt'  ],
+    '13' : ['btag_low'     , 'btag_low-mt'     ],
+    '14' : ['btag_high'    , 'btag_high-mt'    ],
     },
     'tt' : {
-    '8'  : ['nobtag', 'nobtag-tt'],
-    '9'  : ['btag'  , 'btag-tt'  ],
+    '8'  : ['nobtag'       , 'nobtag-tt'       ],
+    '9'  : ['btag'         , 'btag-tt'         ],
+    '10' : ['nobtag_low'   , 'nobtag_low-tt'   ],
+    '11' : ['nobtag_medium', 'nobtag_medium-tt'],
+    '12' : ['nobtag_high'  , 'nobtag_high-tt'  ],
+    '13' : ['btag_low'     , 'btag_low-tt'     ],
+    '14' : ['btag_high'    , 'btag_high-tt'    ],    
     },
 }
 
