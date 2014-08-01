@@ -1,0 +1,25 @@
+##Example set of commands to setup and run limits for H->hh analysis. Currently available for mt, et, and em, masses 250-350:50. 
+
+#Copy uncertainty files over
+cp -r HiggsAnalysis/HiggsToTauTau/setup-Hhh/ setups-HTohh/
+python HiggsAnalysis/HiggsToTauTau/scripts/setup-datacards.py -i setups-HTohh/ -o aux-HTohh/ -a Hhh -p 8TeV -c 'mt, em, et' "250-350:50"
+#Setup LIMITS directories for model independent limits
+python HiggsAnalysis/HiggsToTauTau/scripts/setup-Hhh.py -i aux-HTohh/ -o LIMITS-HTohh-ggHTohh/ -c 'mt, em, et' -a 'Hhh' -p '8TeV' "250-350:50"
+#Setup LIMITS directories for model dependent limits, e.g. mhmodp scenario
+python HiggsAnalysis/HiggsToTauTau/scripts/setup-Hhh.py -i aux-HTohh/ -o LIMITS-HTohh-mhmodp/ -c 'mt, em, et' -a 'Hhh' -p '8TeV' "250-350:50"
+
+#The following command applies the correct XS*BR for each tanb point we are interested in 
+lxb-xsec2tanb.py --ana-type="Hhh" --model="mhmodp" --customTanb="1,1.5,2,2.5,3" LIMITS-HTohh-mhmodp/*/*
+
+#Run model-dependent mA-tanb limits
+limit.py --tanb+ LIMITS-HTohh-mhmodp/*/* 
+submit.py --tanb+ LIMITS-HTohh-mhmodp/*/* 
+
+#Run model-independent mA-tanb limits
+submit.py --asymptotic --physics-model="Hhh" LIMITS-HTohh-ggHTohh/*/*
+
+#Make plots model dependent 
+plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-mhmodp.py LIMITS-HTohh-mhmodp/mt ## Not yet working for limits from low tanb
+
+#Make plots model independent 
+plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-ggHTohh.py LIMITS-HTohh-ggHTohh/mt
