@@ -50,7 +50,7 @@ for cat in options.categories :
     if cat == ' ' :
         continue
 ## add Nuisance to the conf
-    datacard=options.setup+'/'+options.channel+'/unc-sm-'+options.energy+'-0'+cat+'.vals'
+    datacard=options.setup+'/'+options.channel+'/unc-sm-'+options.energy+('-%02i'% int(cat))+'.vals'
     print "datacard: ",datacard
     old = open(datacard, 'r')
     new = open("%s-tmp.txt" % datacard[0:datacard.rfind('.txt')], 'w')
@@ -72,7 +72,7 @@ for cat in options.categories :
     os.system("mv %s-tmp.txt %s" % (datacard[0:datacard.rfind('.txt')], datacard))           
 
 ## add Nuisance to the vals
-    datacard=options.setup+'/'+options.channel+'/unc-sm-'+options.energy+'-0'+cat+'.conf'
+    datacard=options.setup+'/'+options.channel+'/unc-sm-'+options.energy+('-%02i'% int(cat))+'.conf'
     old = open(datacard, 'r')
     new = open("%s-tmp.txt" % datacard[0:datacard.rfind('.txt')], 'w')
     for line in old :

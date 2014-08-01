@@ -80,13 +80,13 @@ def add_systematics(cat_name, process, systematics, unc_conf_file, unc_val_file)
         unc_val_file.write(
             '%s %s %s 1.00\n' % (cat_name, process, systematic_name))
 
-def create_systematics(channel, category, process, period, shape_file, threshold, normalize):
+def create_systematics(ana, channel, category, process, period, shape_file, threshold, normalize):
     '''
     Create the bin-by-bin systematics in the shape file.
     Returns a list of tuples of kind [(channel name, list of added systs)]
     '''
     ## determine directories pointred to in the datacards (NB: can be more than one, e.g. in vhtt)
-    channel_names = get_channel_dirs(channel, category, period)
+    channel_names = get_channel_dirs(ana, channel, category, period)
     # Parse process description in case we merge histograms
     process_to_merge_in = []
     ## default case -> process = target_process
@@ -168,7 +168,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     ana = 'mssm' if args.mssm else 'sm'
-
+    
     log = logging.getLogger('bin-by-bin')
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
@@ -213,7 +213,7 @@ if __name__ == "__main__":
         log.info("Mangling: %s", ' '.join(command))
         # Create the systematics
         shape_file = get_shape_file(args.outputdir, channel, period, ana)
-        systematics_info = create_systematics(channel, cat, proc, period, shape_file, args.threshold, args.normalize)
+        systematics_info = create_systematics(ana, channel, cat, proc, period, shape_file, args.threshold, args.normalize)
         for (nicename, systematics) in systematics_info :
             log.info("Added systs for %i bins", len(systematics))
             total_added_systematics += len(systematics)
