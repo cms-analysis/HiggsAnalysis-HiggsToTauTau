@@ -9,6 +9,7 @@ parser.add_option("-p", "--period", dest="period", default="7TeV 8TeV", type="ch
 parser.add_option("-m", "--mass", dest="mass", default="125", type="string", help="Mass for signal sample to be included in the table. For MSSM, format should be \"mA:tanb\". [Default: 125]")
 parser.add_option("-a", "--analysis", dest="analysis", type="string", default="sm", help="analysis type. [Default: \"sm\"]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="increase verbosity. [Default: False]")
+parser.add_option("--postfit", dest="postfit", default=False, action="store_true", help="Print postfield yields and uncertainties. This requires to have already run the postfit plots. [Default: False]")
 parser.add_option("--channels", dest="channels", default="mt, et, em, mm, tt", type="string", help="Channels to produce the tables for. [Default: \"mt, et, em, mm, tt\"]")
 parser.add_option("--categories", dest="categories", default="0, 1, 2, 3, 5", type="string", help="Categories to produce the tables for. [Default: \"0, 1, 2, 3, 5\"]")
 cats1 = OptionGroup(parser, "LUMI PER CHANNEL", "Luminosities per channel.")
@@ -38,6 +39,7 @@ from HiggsAnalysis.HiggsToTauTau.utils import contained
 from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools
 
 
+
 def cross_section(process, mass, ecms) :
     """
     Determine the SM cross section for given process, higgs boson mass and center of mass energy.
@@ -60,16 +62,36 @@ def cross_section(process, mass, ecms) :
             period = '7TeV'
         else :
             period = '8TeV'
-        mssm_xsec_tools_path = os.environ.get('CMSSW_BASE')+'/src/auxiliaries/models/out.mhmax-mu+200-'+period+'-tanbHigh-nnlo.root'
+        mssm_xsec_tools_path = os.environ.get('CMSSW_BASE')+'/src/auxiliaries/models/out.mhmodp-'+period+'-tanbHigh-nnlo.root'
         scan = mssm_xsec_tools(mssm_xsec_tools_path)
         xsquery = scan.query(float(mass[:mass.find(':')]), float(mass[mass.find(':')+1:]))
-        if "BR" in  process :
-            xs = xsquery['higgses']['A']['BR']
+        if "mass" in  process :
+            if "massA" in process :
+                xs = xsquery['higgses']['A']['mass']
+            elif "massH" in process :
+                xs = xsquery['higgses']['H']['mass']
+            elif "massh" in process :
+                xs = xsquery['higgses']['h']['mass']
+        elif "BR" in  process :
+            if "Att" in process :
+                xs = xsquery['higgses']['A']['BR']
+            elif "Htt" in process :
+                xs = xsquery['higgses']['H']['BR']
+            elif "htt" in process :
+                xs = xsquery['higgses']['h']['BR']
         else :
             if "bbA" in process :
                 xs = xsquery['higgses']['A']['xsec']['santander']
             elif "ggA" in process :
                 xs = xsquery['higgses']['A']['xsec']['ggF']
+            elif "bbH" in process :
+                xs = xsquery['higgses']['H']['xsec']['santander']
+            elif "ggH" in process :
+                xs = xsquery['higgses']['H']['xsec']['ggF']
+            elif "bbh" in process :
+                xs = xsquery['higgses']['h']['xsec']['santander']
+            elif "ggh" in process :
+                xs = xsquery['higgses']['h']['xsec']['ggF']
     return xs
 
 def digit(x) :
@@ -102,8 +124,8 @@ How to treat uncertainties that are or are not correlated across channels and ev
    and category)
  - when summing up categories: keep two uncerts for correlated and uncorrelated. If cat/chn found
    in list for correlated uncertainties for a given uncertainty than add linear to uncert(linear),
-   otherwise add in quadratire to undert(correlated). At the end add the two uncerts linear and
-   all uncerts in quasradture. 
+   otherwise add in quadrature to uncert(correlated). At the end add the two uncerts linear and
+   all uncerts in quadrature. 
 """
 
 def extractor(path, period):
@@ -116,7 +138,7 @@ def extractor(path, period):
     one decay-channel, event-category and run period.
     """
     tmp  = '/dev/null'
-    #print path
+    #print "<extractor>: path = %s, period = %s" % (path, period)
     ## determine luminosity per channel
     lumi = {}
     if period == "7TeV" :
@@ -154,33 +176,43 @@ def extractor(path, period):
     if '_tt_' in path:
         channel = 'tt'        
     ## determine event category from path
-    category = 'NONE'        
+    category = ['NONE','NONE']        
     if '_0_' in  path:
-        category = '1jet_high_mediumhiggs' if channel == 'tt' else '0jet_low'
+        category = ['1jet_high_mediumhiggs','0'] if channel == 'tt' else ['0jet_low','0']
     if '_1_' in  path:
-        category = '1jet_high_highhiggs' if channel == 'tt' else '0jet_high'
+        category = ['1jet_high_highhiggs','1'] if channel == 'tt' else ['0jet_high','1']
         if channel == 'et' or channel == 'mt' :
-            category = '0jet_medium'
+            category = ['0jet_medium','1']
     if '_2_' in  path:
-        category = 'vbf' if channel == 'tt' else '1jet_low'
+        category = ['vbf','2'] if channel == 'tt' else ['1jet_low','2']
         if channel == 'et' or channel == 'mt' :
-            category = '0jet_high'
+            category = ['0jet_high','2']
     if '_3_' in  path:
-        category = '1jet_medium' if channel == 'et' or channel == 'mt' else '1jet_high'
+        category = ['1jet_medium','3'] if channel == 'et' or channel == 'mt' else ['1jet_high','3']
     if '_4_' in  path:
-        category = '1jet_high_lowhiggs' if channel == 'et' or channel == 'mt' else 'vbf_loose'
+        category = ['1jet_high_lowhiggs','4'] if channel == 'et' or channel == 'mt' else ['vbf_loose','4']
         if channel == 'mm' or channel == 'ee' :
-            category = 'vbf'
+            category = ['vbf','4']
     if '_5_' in  path:
-        category = '1jet_high_mediumhiggs' if channel == 'et' or channel == 'mt' else 'vbf_tight'
+        category = ['1jet_high_mediumhiggs','5'] if channel == 'et' or channel == 'mt' else ['vbf_tight','5']
     if '_6_' in  path:
-        category = 'btag_low' if options.analysis == "mssm" else 'vbf_loose'
+        category = ['btag_low','6'] if options.analysis == "mssm" else ['vbf_loose','6']
     if '_7_' in  path:
-        category = 'btag_high' if options.analysis == "mssm" else 'vbf_tight'
+        category = ['btag_high','7'] if options.analysis == "mssm" else ['vbf_tight','7']
     if '_8_' in  path:
-        category = 'nobtag'
+        category = ['nobtag','8']
     if '_9_' in  path:
-        category = 'btag'        
+        category = ['btag','9']
+    if '_10_' in  path:
+        category = ['nobtag_low','10']
+    if '_11_' in  path:
+        category = ['nobtag_medium','11']
+    if '_12_' in  path:
+        category = ['nobtag_high','12']    
+    if '_13_' in  path:
+        category = ['btag_low','13']
+    if '_14_' in  path:
+        category = ['btag_high','14']    
 
     ## determine cross section for SM Higgs (in pb)
     if options.analysis == "sm" :
@@ -193,11 +225,27 @@ def extractor(path, period):
         BR = cross_section("BR", options.mass, float(period[:period.find("TeV")]))
     else :
         xsec = {
-            "ggH" : cross_section("ggA"      , options.mass, float(period[:period.find("TeV")])),
-            "bbH" : cross_section("bbA"      , options.mass, float(period[:period.find("TeV")])),
+            "ggA" : cross_section("ggA"      , options.mass, float(period[:period.find("TeV")])),
+            "bbA" : cross_section("bbA"      , options.mass, float(period[:period.find("TeV")])),
+            "ggH" : cross_section("ggH"      , options.mass, float(period[:period.find("TeV")])),
+            "bbH" : cross_section("bbH"      , options.mass, float(period[:period.find("TeV")])),
+            "ggh" : cross_section("ggh"      , options.mass, float(period[:period.find("TeV")])),
+            "bbh" : cross_section("bbh"      , options.mass, float(period[:period.find("TeV")])),
             }
-        BR = cross_section("BR:Att", options.mass, float(period[:period.find("TeV")]))
-        
+        BR = {
+            "Att" : cross_section("BR:Att"   , options.mass, float(period[:period.find("TeV")])),
+            "Htt" : cross_section("BR:Htt"   , options.mass, float(period[:period.find("TeV")])),
+            "htt" : cross_section("BR:htt"   , options.mass, float(period[:period.find("TeV")])),
+            }
+        mass = {
+            "mA" : cross_section("massA"     , options.mass, float(period[:period.find("TeV")])),
+            "mH" : cross_section("massH"     , options.mass, float(period[:period.find("TeV")])),
+            "mh" : cross_section("massh"     , options.mass, float(period[:period.find("TeV")])),
+            }
+        #print mass
+        #print BR
+        #print xsec
+
     ## number of observed events
     observed = 0
     ## rate of signal processes
@@ -224,8 +272,8 @@ def extractor(path, period):
         'CMS_htt_et_0',
         'CMS_htt_em_0',
         'CMS_htt_tt_0',
-        'CMS_htt_mm_0'
-        'CMS_htt_ee_0'
+        'CMS_htt_mm_0',
+        'CMS_htt_ee_0',
         ]
     ## largest index for signal samples (used for split up of uncertainties for signal
     ## and background) 
@@ -234,13 +282,13 @@ def extractor(path, period):
     ## signal and background)
     range_bkg = -1
 
-    if category == 'vbf_tight' and period == "7TeV" :
+    if category[0] == 'vbf_tight' and period == "7TeV" :
         file = ''
-    elif category == '1jet_high_lowhiggs' and channel == 'et' :
+    elif category[0] == '1jet_high_lowhiggs' and channel == 'et' :
         file = ''
     else :
         file = open(path)
-        ## loop datacard and extract all necessary inputs
+        ## loop A-datacard and extract all necessary inputs
         for line in file:
             ## COMMENT LINE (skip)
             if line.startswith('---') or line.startswith('#') :
@@ -311,66 +359,208 @@ def extractor(path, period):
                     except ValueError:
                         continue        
         file.close()
+        #print "A", rate_sig
         
+        ##get sig_rate of closest mass for h boson.
+        if options.analysis == "mssm" or options.analysis == "mssm_taupt":
+            masses=[90, 100, 120, 130, 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000]
+            jdx=0
+            massh_helper=0
+            for m in masses :
+                if m==90:
+                    if mass["mh"] < masses[jdx] :
+                        massh_helper = m
+                        break
+                if m!=1000 :
+                    if mass["mh"] > masses[jdx] and mass["mh"] < masses[jdx+1]:
+                        if mass["mh"]-masses[jdx] < masses[jdx+1]-mass["mh"] :
+                            massh_helper = m
+                        else :
+                            massh_helper = masses[jdx+1]
+                        break
+                else:
+                    massh_helper = m
+                jdx=jdx+1           
+            path=path.replace(str(options.mass[:options.mass.find(":")]), str(massh_helper))
+            #print "h", path
+            ## loop h-datacard and extract all signal yield inputs
+            file = open(path)
+            first_process_line = True
+            passed_rate_line = False
+            rate_sig_h = []
+            range_sig_h = -1
+            for line in file:
+                ## COMMENT LINE (skip)
+                if line.startswith('---') or line.startswith('#') :
+                    continue
+                values = line.split()
+                ## PROCESS (organize dict's for signal and background uncertianties, collect
+                ## names of backgrounds)
+                if values[0] =='process' :
+                    if first_process_line :
+                        for idx in range(len(values)) :
+                            ## if correct this change can catch categories where there is no
+                            ## signal included
+                            if values[idx].isdigit() and int(values[idx]) == 1 : # == 0
+                                range_sig_h = idx #idx+1
+                                break
+                        first_process_line = False
+                        continue
+                ## RATE (pick up rates of signal and backgrounds)
+                if values[0] == 'rate':
+                    passed_rate_line = True
+                    rate_sig_h = values[1:range_sig_h]
+                    continue
+            #print "h", rate_sig_h
+            file.close()
+            ##get sig_rate of closest mass for H boson.
+            jdx=0            
+            massH_helper=0
+            for m in masses :
+                if m==90:
+                    if mass["mH"] < masses[jdx] :
+                        massH_helper = m
+                        break
+                if m!=1000 :
+                    if mass["mH"] > masses[jdx] and mass["mH"] < masses[jdx+1]:
+                        if mass["mH"]-masses[jdx] < masses[jdx+1]-mass["mh"] :
+                            massH_helper = m
+                        else :
+                            massH_helper = masses[jdx+1]
+                        break
+                else:
+                    massH_helper = m
+                jdx=jdx+1
+            path=path.replace(str(massh_helper), str(massH_helper))
+            #print "H", path
+            ## loop H-datacard and extract all signal yield inputs
+            file = open(path)
+            first_process_line = True
+            passed_rate_line = False
+            rate_sig_H = []
+            range_sig_H = -1
+            for line in file:
+                ## COMMENT LINE (skip)
+                if line.startswith('---') or line.startswith('#') :
+                    continue
+                values = line.split()
+                ## PROCESS (organize dict's for signal and background uncertianties, collect
+                ## names of backgrounds)
+                if values[0] =='process' :
+                    if first_process_line :
+                        for idx in range(len(values)) :
+                            ## if correct this change can catch categories where there is no
+                            ## signal included
+                            if values[idx].isdigit() and int(values[idx]) == 1 : # == 0
+                                range_sig_H = idx #idx+1
+                                break
+                        first_process_line = False
+                        continue
+                ## RATE (pick up rates of signal and backgrounds)
+                if values[0] == 'rate':
+                    passed_rate_line = True
+                    rate_sig_H = values[1:range_sig_H]
+                    continue
+            #print "H", rate_sig_H
+            file.close()    
+        
+        ##read in of scale files produced within the postfit plot making
+        in_str = {}
+        if options.postfit:
+            in_file = open("HiggsAnalysis/HiggsToTauTau/test/scales_"+channel+"_"+category[1]+"_"+period+".py",'r')
+            in_str = in_file.read()
+            in_file.close()
+            in_str = eval(in_str.replace("scales=",""))    
+    
         ## sum up total signal rate
         rate_sig_summed = 0
-        if options.analysis == "mssm" :
+        if options.analysis == "mssm" or options.analysis == "mssm_taupt":
             for i in range(0, len(rate_sig)) :
-                rate_sig[i] = float(rate_sig[i])
-            rate_sig_summed = xsec["ggH"]*BR*rate_sig[0] + xsec["bbH"]*BR*rate_sig[1]
+                if options.postfit :
+                    name = 'ggH'
+                    if i!=0:
+                        name = 'bbH'
+                    rate_sig[i] = float(rate_sig[i])*in_str[name][0]
+                    rate_sig_h[i] = float(rate_sig_h[i])*in_str[name][0]
+                    rate_sig_H[i] = float(rate_sig_H[i])*in_str[name][0]
+                else :
+                    rate_sig[i] = float(rate_sig[i])
+                    rate_sig_h[i] = float(rate_sig_h[i])
+                    rate_sig_H[i] = float(rate_sig_H[i])
+                    
+            rate_sig_summed = xsec["ggA"]*BR["Att"]*rate_sig[0]   + xsec["bbA"]*BR["Att"]*rate_sig[1]                                                                                                            + xsec["ggh"]*BR["htt"]*rate_sig_h[0] + xsec["bbh"]*BR["htt"]*rate_sig_h[1]                                                                                                          + xsec["ggH"]*BR["Htt"]*rate_sig_H[0] + xsec["bbH"]*BR["Htt"]*rate_sig_H[1]
         else : 
             for i in range(0, len(rate_sig)):
+                ## NEED TO INCLUDE POSTFIT FOR SM ALSO!!!
                 rate_sig[i] = float(rate_sig[i])
                 rate_sig_summed += rate_sig[i]
         ## sum up uncertainty of total signal rate
         uncert_sig_split = []
         uncert_sig_summed = 0
-        if options.analysis == "mssm" :
-            uncert_sig_split.append(math.sqrt(xsec["ggH"]*BR*xsec["ggH"]*BR*uncert_sig[2])*rate_sig[0])
-            uncert_sig_split.append(math.sqrt(xsec["bbH"]*BR*xsec["bbH"]*BR*uncert_sig[3])*rate_sig[1])
-            uncert_sig_summed+=uncert_sig_split[0]*uncert_sig_split[0]
-            uncert_sig_summed+=uncert_sig_split[1]*uncert_sig_split[1]
+        if options.analysis == "mssm" or options.analysis == "mssm_taupt" : 
+            if options.postfit :        
+                uncert_sig_split.append(in_str["ggH"][1]*(rate_sig[0]+rate_sig_h[0]+rate_sig_H[0]))
+                uncert_sig_split.append(in_str["bbH"][1]*(rate_sig[1]+rate_sig_h[1]+rate_sig_H[1]))
+                uncert_sig_summed+=uncert_sig_split[0]*uncert_sig_split[0]
+                uncert_sig_summed+=uncert_sig_split[1]*uncert_sig_split[1]
+            else :
+                uncert_sig_split.append(math.sqrt(xsec["ggA"]*BR["Att"]*xsec["ggA"]*BR["Att"]*uncert_sig[2])*(rate_sig[0]+rate_sig_h[0]+rate_sig_H[0]))
+                uncert_sig_split.append(math.sqrt(xsec["bbA"]*BR["Att"]*xsec["bbA"]*BR["Att"]*uncert_sig[3])*(rate_sig[1]+rate_sig_h[1]+rate_sig_H[1]))
+                uncert_sig_summed+=uncert_sig_split[0]*uncert_sig_split[0]
+                uncert_sig_summed+=uncert_sig_split[1]*uncert_sig_split[1]             
         else :
             for i in range(0, len(rate_sig)):
+                ## NEED TO INCLUDE POSTFIT FOR SM ALSO!!!
                 ## the newest is that we can have categories w/o signal
                 #if len(uncert_sig) == 0 :
                 #    break
                 uncert_sig_split.append(math.sqrt(uncert_sig[2+i])*rate_sig[i])
                 uncert_sig_summed+=uncert_sig_split[i]*uncert_sig_split[i]
         uncert_sig_summed = math.sqrt(uncert_sig_summed)
-        
+          
         ## sum up total background rate
         rate_bkg_summed = 0
-        for i in range(0, len(rate_bkg)):
-            rate_bkg[i] = float(rate_bkg[i])
-    	    if rate_bkg[i]!=0.0 :
-                rate_bkg[i] = round(rate_bkg[i], 0 if round(math.log10(rate_bkg[i]))>0 else -int(math.ceil(-math.log10(rate_bkg[i])))+1)
-                rate_bkg_summed += rate_bkg[i]
+        for name, rate in zip(names_bkg, rate_bkg):
+            if options.postfit :
+                rate = in_str[name][0]*float(rate)
+            else :
+                rate = float(rate)
+    	    if rate!=0.0 :
+                rate = round(rate, 0 if round(math.log10(rate))>0 else -int(math.ceil(-math.log10(rate)))+1)
+                rate_bkg_summed += rate
         ## sum up uncertainty of total background rate
         uncert_bkg_split = []
-        uncert_bkg_summed = 0
-    
-        for i in range(0, len(rate_bkg)):
-            uncert_bkg_split.append(math.sqrt(uncert_bkg[range_sig+1+i])*rate_bkg[i])
-            uncert_bkg_summed+=uncert_bkg_split[i]*uncert_bkg_split[i]        
+        uncert_bkg_summed = 0   
+        u=0
+        for name, rate in zip(names_bkg, rate_bkg): 
+            if options.postfit : 
+                uncert_bkg_split.append(in_str[name][1]*float(rate)*in_str[name][0])
+                uncert_bkg_summed+=uncert_bkg_split[u]*uncert_bkg_split[u]
+            else :
+                uncert_bkg_split.append(math.sqrt(uncert_bkg[range_sig+1+u])*float(rate))
+                uncert_bkg_summed+=uncert_bkg_split[u]*uncert_bkg_split[u]
+            u=u+1
         uncert_bkg_summed = math.sqrt(uncert_bkg_summed)
-    
+          
         ## write tmp results to file, identified by channel, category and period
-        yields = open(channel+'_'+category+'_'+period+'.tmp', 'w')
+        yields = open(channel+'_'+category[0]+'_'+period+'.tmp', 'w')
         for name, rate, uncert in zip(names_bkg, rate_bkg, uncert_bkg_split):
-            yields.write(formated_line(name, rate, uncert))
+            if options.postfit :
+                yields.write(formated_line(name, in_str[name][0]*float(rate), uncert))                  
+            else :
+                yields.write(formated_line(name, float(rate), uncert))
         yields.write(formated_line('Total' , rate_bkg_summed, uncert_bkg_summed))
         yields.write(formated_line('Signal', rate_sig_summed, uncert_sig_summed))
         yields.write('Data \t %d \n' % int(observed))
         yields.close()
     
         efficiencies = open('eff_'+channel+'_'+period+'.tmp','a')
-        efficiencies.write(channel+'_'+category+"\n")
-        if options.analysis == "mssm" :
+        efficiencies.write(channel+'_'+category[0]+"\n")
+        if options.analysis == "mssm" or options.analysis == "mssm_taupt" :
             if len(rate_sig)>1 :
                 ## for mssm the yield needs to be multiplied with xsec*BR
-                efficiencies.write("ggH \t %f \t %f \n" % (xsec["ggH"]*BR*rate_sig[0], xsec["ggH"]*BR*lumi[channel]))
-                efficiencies.write("bbH \t %f \t %f \n" % (xsec["bbH"]*BR*rate_sig[1], xsec["bbH"]*BR*lumi[channel]))
+                efficiencies.write("ggH \t %f \t %f \n" % (xsec["ggH"]*BR["Att"]*rate_sig[0], xsec["ggH"]*BR["Att"]*lumi[channel]))
+                efficiencies.write("bbH \t %f \t %f \n" % (xsec["bbH"]*BR["Att"]*rate_sig[1], xsec["bbH"]*BR["Att"]*lumi[channel]))
         else :
             if len(rate_sig)>2 :
                 efficiencies.write("ggH \t %f \t %f \n" % (rate_sig[0], xsec["ggH"]*BR*lumi[channel]))
@@ -513,7 +703,7 @@ def merge_efficiencies(channel, categories, periods) :
         for cat, subsets in categories.iteritems() :
             file.write(channel+'_'+cat+'\n')
             if len(subsets) == 0 :
-                if options.analysis == "mssm" : 
+                if options.analysis == "mssm" or options.analysis == "mssm_taupt" : 
                     file.write("%s \t %s \t %s \n" % (lines[channel+'_'+cat][0], lines[channel+'_'+cat][1], lines[channel+'_'+cat][2]))
                     file.write("%s \t %s \t %s \n" % (lines[channel+'_'+cat][3], lines[channel+'_'+cat][4], lines[channel+'_'+cat][5]))
                 else :
@@ -522,7 +712,7 @@ def merge_efficiencies(channel, categories, periods) :
                     file.write("%s \t %s \t %s \n" % (lines[channel+'_'+cat][6], lines[channel+'_'+cat][7], lines[channel+'_'+cat][8]))
             else :
                 lines_summed = {}
-                if options.analysis == "mssm" :
+                if options.analysis == "mssm" or options.analysis == "mssm_taupt" :
                     lines_summed = {
                         'ggH' : 0.,
                         'bbH' : 0.,
@@ -534,7 +724,7 @@ def merge_efficiencies(channel, categories, periods) :
                         'VH'  : 0.,
                         }
                 for sub in subsets :
-                    if options.analysis == "mssm" :
+                    if options.analysis == "mssm" or options.analysis == "mssm_taupt" :
                         lines_summed['ggH']+=float(lines[channel+'_'+cat+'_'+sub][1])
                         lines_summed['bbH']+=float(lines[channel+'_'+cat+'_'+sub][4])
                     else :
@@ -542,7 +732,7 @@ def merge_efficiencies(channel, categories, periods) :
                             lines_summed['ggH']+=float(lines[channel+'_'+cat+'_'+sub][1])
                             lines_summed['qqH']+=float(lines[channel+'_'+cat+'_'+sub][4])
                             lines_summed['VH' ]+=float(lines[channel+'_'+cat+'_'+sub][7])
-                if options.analysis == "mssm" :
+                if options.analysis == "mssm" or options.analysis == "mssm_taupt" :
                     file.write("%s \t %f \t %s \n" % (lines[channel+'_'+cat+'_'+sub][0], lines_summed['ggH'], lines[channel+'_'+cat+'_'+sub][2]))
                     file.write("%s \t %f \t %s \n" % (lines[channel+'_'+cat+'_'+sub][3], lines_summed['bbH'], lines[channel+'_'+cat+'_'+sub][5]))
                 else :
@@ -678,7 +868,7 @@ def make_tables(channel, categories, category_labels):
     effs = {}
     lines = {}
     signals_samples = []
-    if options.analysis == 'mssm' :
+    if options.analysis == 'mssm' or options.analysis == 'mssm_taupt' :
         signal_samples = ['ggH', 'bbH']
     else :
         signal_samples = ['ggH', 'qqH', 'VH']
@@ -687,7 +877,7 @@ def make_tables(channel, categories, category_labels):
     for cat in categories :
         values = records[cat]
         if len(values)>0 :
-            if options.analysis == "mssm" :
+            if options.analysis == "mssm" or options.analysis == 'mssm_taupt' :
                 effs['ggH'] = '%.2e' % (float(values[1])/float(values[2]))
                 effs['bbH'] = '%.2e' % (float(values[4])/float(values[5]))
             else :
@@ -722,7 +912,7 @@ periods = options.period.split()
 for idx in range(len(periods)) : periods[idx] = periods[idx].rstrip(',')
 ## extended dictionary of subsets to be contracted (used for merging of table yields)
 if len(periods) == 1 and contained('7TeV', periods) :
-    if options.analysis == "mssm" :
+    if options.analysis == "mssm" or options.analysis == "mssm_taupt" :
         subsets_extended = {
             "btag"  : ["7TeV"],
             "nobtag": ["7TeV"],
@@ -766,6 +956,39 @@ if len(periods) == 1 and contained('8TeV', periods) :
             "btag"  : ["8TeV"],
             "nobtag": ["8TeV"],
             }
+    elif options.analysis == "mssm_taupt" :
+        if len(channels) == 1 and contained('em', channels) :
+            subsets_extended = {
+                "btag"  : ["8TeV"],
+                "nobtag": ["8TeV"],
+                }
+        elif len(channels) == 1 and contained('et', channels) :
+            subsets_extended = {
+                "btag"  : ["low_8TeV", "high_8TeV"],
+                "nobtag"  : ["low_8TeV", "medium_8TeV", "high_8TeV"],
+                }
+        elif len(channels) == 1 and contained('mt', channels) :
+            subsets_extended = {
+                "btag"  : ["low_8TeV", "high_8TeV"],
+                "nobtag"  : ["low_8TeV", "medium_8TeV", "high_8TeV"],
+                }
+        elif len(channels) == 1 and contained('tt', channels) :
+            subsets_extended = {
+                "btag"  : ["low_8TeV", "high_8TeV"],
+                "nobtag"  : ["low_8TeV", "medium_8TeV", "high_8TeV"],
+                }
+        elif len(channels) == 1 and contained('mm', channels) :
+            subsets_extended = {
+                "btag"  : ["8TeV"],
+                "nobtag": ["8TeV"],
+                }
+        elif len(channels) == 1 and contained('ee', channels) :
+            subsets_extended = {
+                "btag"  : ["8TeV"],
+                "nobtag": ["8TeV"],
+                }
+        else :
+            subsets_extended = {}
     else :
         if len(channels) == 1 and contained('em', channels) :
             subsets_extended = {
@@ -810,6 +1033,39 @@ if contained('7TeV', periods) and contained('8TeV', periods) :
             "btag"  : ["7TeV", "8TeV"],
             "nobtag": ["7TeV", "8TeV"],
             }
+    elif options.analysis == "mssm_taupt" :
+        if len(channels) == 1 and contained('em', channels) :
+            subsets_extended = {
+                "btag"  : ["7TeV", "8TeV"],
+                "nobtag": ["7TeV", "8TeV"],
+                }
+        elif len(channels) == 1 and contained('et', channels) :
+            subsets_extended = {
+                "btag"  : ["7TeV", "low_8TeV", "high_8TeV"],
+                "nobtag": ["7TeV", "low_8TeV", "medium_8TeV", "high_8TeV"],
+                }
+        elif len(channels) == 1 and contained('mt', channels) :
+            subsets_extended = {
+                "btag"  : ["7TeV", "low_8TeV", "high_8TeV"],
+                "nobtag": ["7TeV", "low_8TeV", "medium_8TeV", "high_8TeV"],
+                }
+        elif len(channels) == 1 and contained('tt', channels) :
+            subsets_extended = {
+                "btag"  : ["7TeV", "low_8TeV", "high_8TeV"],
+                "nobtag": ["7TeV", "low_8TeV", "medium_8TeV", "high_8TeV"],
+                }
+        elif len(channels) == 1 and contained('mm', channels) :
+            subsets_extended = {
+                "btag"  : ["7TeV", "8TeV"],
+                "nobtag": ["7TeV", "8TeV"],
+                }
+        elif len(channels) == 1 and contained('ee', channels) :
+            subsets_extended = {
+                "btag"  : ["7TeV", "8TeV"],
+                "nobtag": ["7TeV", "8TeV"],
+                }
+        else :
+            subsets_extended = {}
     else :
         if len(channels) == 1 and contained('em', channels) :
             subsets_extended = {
@@ -854,6 +1110,61 @@ if options.analysis == "mssm" :
         'btag'     : [],
         'nobtag'   : [],
         }
+    categories_in_table = [
+        'btag',
+        'nobtag',
+        ]
+    category_labels_in_table = {
+        'btag'     : "\emph{B-Tag}",
+        'nobtag'   : "\emph{No B-Tag}",
+        }
+elif options.analysis == "mssm_taupt" :
+    if len(periods) == 1 and contained('7TeV', periods) :
+        subsets_compact  = {
+            'btag'     : [],
+            'nobtag'   : [],
+            }
+        categories_in_table = [
+            'btag',
+            'nobtag',
+            ]
+        category_labels_in_table = {
+            'btag'     : "\emph{B-Tag}",
+            'nobtag'   : "\emph{No B-Tag}",
+            }
+    else :
+        if len(channels) == 1 and contained('em', channels) :
+            subsets_compact  = {
+                'btag'     : [],
+                'nobtag'   : [],
+                }
+        elif len(channels) == 1 and contained('et', channels) :
+            subsets_compact  = {
+                'btag'     : ['low', 'high'],
+                'nobtag'   : ['low', 'medium', 'high'],
+                }
+        elif len(channels) == 1 and contained('mt', channels) :
+            subsets_compact = {
+                'btag'     : ['low', 'high'],
+                'nobtag'   : ['low', 'medium', 'high'],
+                }
+        elif len(channels) == 1 and contained('tt', channels) :
+            subsets_compact = {
+                'btag'     : ['low', 'high'],
+                'nobtag'   : ['low', 'medium', 'high'],
+                }
+        elif len(channels) == 1 and contained('mm', channels) :
+            subsets_compact = {
+                'btag'     : [],
+                'nobtag'   : [],
+                }
+        elif len(channels) == 1 and contained('ee', channels) :
+            subsets_compact = {
+                'btag'     : [],
+                'nobtag'   : [],
+                }
+        else :
+            subsets_compact = {}
     categories_in_table = [
         'btag',
         'nobtag',
@@ -960,7 +1271,11 @@ for chn in channels :
     print "creating table for decay channel ", chn, "..."
     for period in periods :
         for cat in categories :
-            path = options.input+"/htt_"+chn+"_"+cat+"_"+period+".txt"
+            path = None
+            if options.analysis == "mssm" or options.analysis == "mssm_taupt":
+                path = options.input+"/htt_"+chn+"_"+cat+"_"+period+"-"+options.mass[:options.mass.find(":")]+".txt"   
+            else :
+                path = options.input+"/htt_"+chn+"_"+cat+"_"+period+".txt"            
             ## extract all relevant information from datacards
             extractor(path, period)
     ## merge run periods and subsets of event categories (for yields)
