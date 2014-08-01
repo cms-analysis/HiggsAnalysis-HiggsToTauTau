@@ -96,7 +96,7 @@ def cash_uncerts(dir, backgrounds, categories, signal_processes, datacard="htt_e
     cat = matcher.match(datacard).group('CAT')
     per = matcher.match(datacard).group('PER')
     ## parse uncertainty values file
-    cgs_file = open(options.cash_uncert+"/{CHN}/cgs-{ANA}-{PER}-0{CAT}.conf".format(ANA="mssm" if options.mssm else "sm", CHN=chn, PER=per, CAT=cat),'r')
+    cgs_file = open(options.cash_uncert+"/{CHN}/cgs-{ANA}-{PER}-{CAT}.conf".format(ANA="mssm" if options.mssm else "sm", CHN=chn, PER=per, CAT=('%02i'% int(cat))),'r')
     #signal_processes = []
     for index, line in enumerate(cgs_file) :
         line = line.replace(",", " ")
@@ -126,7 +126,7 @@ def cash_uncerts(dir, backgrounds, categories, signal_processes, datacard="htt_e
         uncert_cat  = {}
         for signal in signal_processes :
             uncert_signal  = {}
-            input = open(options.cash_uncert+"/{CHN}/unc-{ANA}-{PER}-0{CAT}.vals".format(ANA="mssm" if options.mssm else "sm", CHN=chn, PER=per, CAT=cat),'r')
+            input = open(options.cash_uncert+"/{CHN}/unc-{ANA}-{PER}-{CAT}.vals".format(ANA="mssm" if options.mssm else "sm", CHN=chn, PER=per, CAT=('%02i'% int(cat))),'r')
             for index, line in enumerate(input) :
                 if "#" in line :
                     continue

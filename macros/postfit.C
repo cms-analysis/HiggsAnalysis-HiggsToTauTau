@@ -96,6 +96,11 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   if(std::string(extra2) == std::string("vbf"       )){ category_extra = "2 jet (VBF)";       }
   if(std::string(extra2) == std::string("nobtag"    )){ category_extra = "no b-tag";          }
   if(std::string(extra2) == std::string("btag"      )){ category_extra = "b-tag";             }
+  if(std::string(extra2) == std::string("nobtag_low"   )){ category_extra = "no b-tag, low p_{T}";    }
+  if(std::string(extra2) == std::string("nobtag_medium")){ category_extra = "no b-tag, medium p_{T}"; }
+  if(std::string(extra2) == std::string("nobtag_high"  )){ category_extra = "no b-tag, high p_{T}";   }
+  if(std::string(extra2) == std::string("btag_low"     )){ category_extra = "b-tag, low p_{T}";       }
+  if(std::string(extra2) == std::string("btag_high"    )){ category_extra = "b-tag, high p_{T}";      }
 
   TFile* input = new TFile(inputfile);
   TH1F* Fakes  = refill((TH1F*)input->Get("Fakes"   ), "Fakes/QCD"); 
