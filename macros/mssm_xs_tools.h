@@ -26,6 +26,8 @@ class mssm_xs_tools{
   Double_t Give_BR_A_mumu(Double_t mA, Double_t tanb);
   Double_t Give_BR_h_mumu(Double_t mA, Double_t tanb);
   Double_t Give_BR_H_mumu(Double_t mA, Double_t tanb);
+  // access BRs H->hh
+  Double_t Give_BR_H_hh(Double_t mA, Double_t tanb);
 
   // ggF stuff
   Double_t Give_Xsec_ggFA(Double_t mA, Double_t tanb);
@@ -151,6 +153,7 @@ class mssm_xs_tools{
   TH2F* m_h_brmumu_h;    //BR(h->mumu)
   TH2F*	m_h_brmumu_H;	 //BR(H->mumu)	
   TH2F* m_h_brmumu_A;	 //BR(A->mumu)
+  TH2F* m_h_brh0h0_H;	 //BR(H->hh)
   
   // NB: ggF cross-sections are in pb
   TH2F*	m_h_ggF_xsec_h;	   //   gg->h xsection (mA,tan(beta))
