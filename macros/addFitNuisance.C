@@ -1,25 +1,31 @@
 #include <iostream>
-#include "TROOT.h"
-#include "TFile.h"
-#include "TKey.h"
-#include "TF1.h"
-#include "TFitResult.h"
-#include "TFitResultPtr.h"
-#include "TH1F.h"
-#include "TMath.h"
-#include "TPaveText.h"
-#include "TCanvas.h"
-#include "TLegend.h"
-#include "RooBinning.h"                                                                                                                                                               
-#include "RooPlot.h"                                                                                                                                                               
-#include "RooRealVar.h"   
-#include "RooDataHist.h"   
-#include "RooDataSet.h"    
-#include "RooHistPdf.h"     
-#include "RooGenericPdf.h"
-#include "RooFitResult.h"
-#include "TMatrixDSym.h"
-#include "TMatrixDSymEigen.h"
+#include <TROOT.h>
+#include <TFile.h>
+#include <TKey.h>
+#include <TF1.h>
+#include <TFitResult.h>
+#include <TFitResultPtr.h>
+#include <TH1F.h>
+#include <TMath.h>
+#include <TPaveText.h>
+#include <TCanvas.h>
+#include <TLegend.h>
+#include <RooBinning.h>                                                                                                                                                               
+#include <RooPlot.h>                                                                                                                                                               
+#include <RooRealVar.h>   
+#include <RooConstVar.h>  
+#include <RooDataHist.h>   
+#include <RooDataSet.h>    
+#include <RooHistPdf.h>     
+#include <RooGenericPdf.h>
+#include <RooGaussian.h>
+#include <RooFitResult.h>
+#include <RooCmdArg.h>
+#include <TMatrixDSym.h>
+#include <TMatrixDSymEigen.h>
+#include <TGraphAsymmErrors.h>
+
+using namespace RooFit;
 
 //Clone the file excluding the histogram (code stolen from Rene Brun)
 void copyDir(TDirectory *source,std::string iSkipHist,bool iFirst=true) { 
@@ -87,15 +93,20 @@ TH1F* rebin(TH1F* iH,int iNBins,double *iAxis) {
 }
 //Merge Histogram with function histogram
 TH1F * merge(std::string iName,double iMergePoint,TH1F *iH,TH1F *iFunc) {
-  cout << "====> Merging " << iName << endl;
+  std::cout << "====> Merging " << iName << std::endl;
   TH1F *lH = (TH1F*) iH->Clone(iName.c_str());
   lH->SetFillStyle(0);
   int lMergeBin = iH->GetXaxis()->FindBin(iMergePoint);
   //double lVal  = iH->GetBinContent(lMergeBin);
   //iFunc->Scale(lVal/iFunc->GetBinContent(lMergeBin));
+  std::cout << "iH->Integral(lMergeBin, iH->GetXaxis()->FindBin(1500)) = " << iH->Integral(lMergeBin, iH->GetXaxis()->FindBin(1500)) << std::endl;
+  std::cout << "iFunc->Integral(lMergeBin, iFunc->GetXaxis()->FindBin(1500)) = " << iFunc->Integral(lMergeBin, iFunc->GetXaxis()->FindBin(1500)) << std::endl;
   iFunc->Scale( (iH->Integral(lMergeBin, iH->GetXaxis()->FindBin(1500))) / (iFunc->Integral(lMergeBin, iFunc->GetXaxis()->FindBin(1500)) )); // felix - last fit bin = 1500; this approach seems to work much better
   for(int i0 = 0;         i0 < lMergeBin;         i0++) lH->SetBinContent(i0,iH->GetBinContent(i0));
   for(int i0 = lMergeBin; i0 < iH->GetNbinsX()+1; i0++) lH->SetBinContent(i0,iFunc->GetBinContent(iFunc->GetXaxis()->FindBin(lH->GetXaxis()->GetBinCenter(i0))));
+  for(int i0 = 0;         i0 < iH->GetNbinsX()+1; i0++) {
+    std::cout << "bin #" << i0 << " (x = " << lH->GetBinCenter(i0) << ") = " << lH->GetBinContent(i0) << std::endl;
+  }
   lH->SetName(iName.c_str());
   return lH;
 }
@@ -149,7 +160,7 @@ void drawDifference(TH1* iH0,TH1 *iH1,TH1 *iHH=0,TH1 *iHL=0,TH1 *iHH1=0,TH1 *iHL
     if(iH1->GetBinContent(i0) > 0) lHDiffH->SetBinContent(i0,lXValH/(iH1->GetBinContent(i0)));
     if(iH1->GetBinContent(i0) > 0) lHDiffL1->SetBinContent(i0,lXValL1/(iH1->GetBinContent(i0)));
     if(iH1->GetBinContent(i0) > 0) lHDiffH1->SetBinContent(i0,lXValH1/(iH1->GetBinContent(i0)));
-   //if(iH1->GetBinContent(i0) > 0)  cout << "unc" << lXVal << " -- " << sqrt(lXVal)/(iH1->GetBinContent(i0)) << endl;
+   //if(iH1->GetBinContent(i0) > 0)  std::cout << "unc" << lXVal << " -- " << sqrt(lXVal)/(iH1->GetBinContent(i0)) << std::endl;
   }
   lHDiff->SetMarkerStyle(kFullCircle);
   //lHDiff->Draw("EP");
@@ -181,14 +192,21 @@ double * getAxis(TH1F *iH) {
 }
 //Make a histogram from a TF1
 TH1F* makeHist(TF1 *iFit,TH1F *iH,std::string iName) { 
+  std::cout << "====> makeHist " << iName << std::endl;
   TH1F *lH = (TH1F*) iH->Clone(iName.c_str());
+  for(int i0 = 0; i0 < lH->GetNbinsX()+1; i0++) {
+    std::cout << "bin #" << i0 << " (x = " << lH->GetBinCenter(i0) << ") = " << iFit->Eval(lH->GetXaxis()->GetBinCenter(i0)) << std::endl;
+  }
   for(int i0 = 0; i0 < lH->GetNbinsX()+1; i0++) lH->SetBinContent(i0,iFit->Eval(lH->GetXaxis()->GetBinCenter(i0)));
   for(int i0 = 0; i0 < lH->GetNbinsX()+1; i0++) lH->SetBinContent(i0,lH->GetBinContent(i0)*lH->GetXaxis()->GetBinWidth(i0));
   for(int i0 = 0; i0 < lH->GetNbinsX()+1; i0++) lH->SetBinError (i0,lH->GetBinError   (i0)*lH->GetXaxis()->GetBinWidth(i0));
   return lH;
 }
 //I would recommend to use the other version of the fit code
-void addVarBinNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std::string iEnergy,std::string iName,std::string iDir,bool iRebin=true,int iFitModel=0,double iFirst=200,double iLast=1500) { 
+void addVarBinNuisance(const std::string& iFileName, 
+		       const std::string& iChannel, const std::string& iBkg, const std::string& iEnergy, const std::string& iName, const std::string& iDir,
+		       bool iRebin = true, int iFitModel = 0, double iFirst = 200, double iLast = 1500) 
+{ 
   std::cout << "======> " << iDir << "/" << iBkg << " -- " << iFileName << std::endl;  
   TFile *lFile = new TFile(iFileName.c_str());
   TH1F  *lH0   = (TH1F*) lFile->Get((iDir+"/"+iBkg).c_str());
@@ -275,7 +293,7 @@ void addVarBinNuisance(std::string iFileName,std::string iChannel,std::string iB
   lHDown ->SetLineColor(kRed);
   lHUp1  ->SetLineColor(kBlue);
   lHDown1->SetLineColor(kBlue);
-  TCanvas *lC0 = new TCanvas("Can","Can",800,600);
+  TCanvas *lC0 = new TCanvas("Can","Can",800,750);
   lC0->Divide(1,2); lC0->cd();  lC0->cd(1)->SetPad(0,0.2,1.0,1.0); gPad->SetLeftMargin(0.2) ;  
   lH0->Draw();
   lH     ->Draw("hist sames");
@@ -290,7 +308,75 @@ void addVarBinNuisance(std::string iFileName,std::string iChannel,std::string iB
   //lFile->Close();
   return;
 }
-int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std::string iEnergy,std::string iName,std::string iDir,bool iVerbose=false,bool iVarBin=false,int iFitModel=1,double iFirst=150,double iLast=1500,bool addUncerts=true,bool iTestMode=false) {
+TH1F* makeHist2(const std::string& histogramName, TH1F* histogram_original, double par0, double par1, int fitModel, double xMin_fit, double xMax, double x0, 
+		double& sf, double k = 1, TH1F* template_central = 0, double* sf_central = 0)
+{
+  //std::cout << "<makeHist2>:" << std::endl;
+  //std::cout << " histogramName = " << histogramName << std::endl; 
+  //std::cout << " par0 = " << par0 << ", par1 = " << par1 << std::endl;
+  //std::cout << " range = " << xMin_fit << ".." << xMax << std::endl;
+  
+  TF1* tempFit = 0;
+  if ( fitModel == 0 ) {
+    tempFit = new TF1("tempFit", "TMath::Exp(-(x - [2])/([0] + 0.001*[1]*(x - ([2] + [3]))))", xMin_fit, xMax);
+    tempFit->SetParameter(0, par0);
+    tempFit->SetParameter(1, par1);
+    tempFit->SetParameter(2, xMin_fit);
+    tempFit->SetParameter(3, x0);
+  } else if ( fitModel == 1 ) {
+    tempFit = new TF1("tempFit", "TMath::Exp(-(x - [2])/([0]*(1.0 + 0.001*[1]*(x - ([2] + [3])))))", xMin_fit, xMax);
+    tempFit->SetParameter(0, par0);
+    tempFit->SetParameter(1, par1);
+    tempFit->SetParameter(2, xMin_fit);
+    tempFit->SetParameter(3, x0);
+  } else {
+    std::cerr << "Fit model = " << fitModel << " not supported !!" << std::endl;
+    assert(0);
+  }
+  //std::cout << "tempFit = " << tempFit->GetTitle() << std::endl;
+  //for ( double x = xMin_fit; x < xMax; x += 100. ) {
+  //  std::cout << "tempFit(" << x << ") = " << tempFit->Eval(x) << std::endl;
+  //}
+
+  TH1F* histogram_fitted = (TH1F*)histogram_original->Clone(histogramName.c_str());
+  histogram_fitted->Reset();
+  if ( !histogram_fitted->GetSumw2N() ) histogram_fitted->Sumw2();
+  double integral_original = histogram_original->Integral(histogram_original->FindBin(xMin_fit), histogram_original->FindBin(xMax));
+  double tempFit_integral = tempFit->Integral(xMin_fit, xMax);
+  //std::cout << "integral: original = " << integral_original << ", fit = " << tempFit_integral << std::endl;
+  sf = integral_original/tempFit_integral;
+  //std::cout << "sf = " << sf << std::endl;
+  if ( sf_central ) { // CV: if this line is enabled the fit parameter uncertainties will affect not only the shape, but also the yield
+    if ( sf > 0.5*(*sf_central) ) sf = (*sf_central);
+  }
+  TAxis* xAxis = histogram_original->GetXaxis();
+  for ( int iBin = 1; iBin <= xAxis->GetNbins(); ++iBin ) {
+    double binCenter   = xAxis->GetBinCenter(iBin);
+    double binEdgeLow  = xAxis->GetBinLowEdge(iBin);
+    double binEdgeHigh = xAxis->GetBinUpEdge(iBin);
+    if ( binCenter > xMin_fit ) {
+      const double epsilon = 1.e-6;
+      if ( binEdgeHigh < (xMax + epsilon) ) {
+	if ( k != 1. && template_central ) histogram_fitted->SetBinContent(iBin, k*sf*tempFit->Integral(binEdgeLow, binEdgeHigh) - (k - 1.)*template_central->GetBinContent(iBin));
+	else histogram_fitted->SetBinContent(iBin, sf*tempFit->Integral(binEdgeLow, binEdgeHigh));
+      } else {
+	histogram_fitted->SetBinContent(iBin, 0.);
+      }
+    } else {
+      histogram_fitted->SetBinContent(iBin, histogram_original->GetBinContent(iBin));
+    }
+    //std::cout << "bin #" << iBin << " (x = " << histogram_fitted->GetBinCenter(iBin) << ": " << histogram_fitted->GetBinContent(iBin) << " +/- " << histogram_fitted->GetBinError(iBin) << std::endl;
+  }
+  histogram_fitted->SetBinContent(0, histogram_original->GetBinContent(0));
+  //histogram_fitted->SetBinContent(xAxis->GetNbins() + 1, histogram_original->GetBinContent(xAxis->GetNbins() + 1));  
+  histogram_fitted->SetBinContent(xAxis->GetNbins() + 1, 0.);
+
+  return histogram_fitted;
+}
+int addNuisance(const std::string& iFileName, 
+		const std::string& iChannel, const std::string& iBkg, const std::string& iEnergy, const std::string& iName, const std::string& iDir, 
+		int iVerbose = false, bool iVarBin = false, int iFitModel = 1, int iErrorOption = 0, double iFirst = 150, double iLast = 1500, bool addUncerts = true, bool iTestMode = false) 
+{
   if (!iVerbose) {
     RooMsgService::instance().setStreamStatus(0,false);
     RooMsgService::instance().setStreamStatus(1,false);
@@ -312,7 +398,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   TString iStr = TString::Format("%.0f",iFirst);
   //std::cout << iStr << std::endl;
   TString fn = "exp(-(m-"+iStr+")/(a+0.001*b*(m-"+iStr+")))";
-  //std::cout << fn << std::endl;
+  std::cout << "fn = " << fn << std::endl;
   RooGenericPdf *lFit  = 0; lFit = new RooGenericPdf("genPdf",fn,RooArgList(lM,lA,lB));
   if(iFitModel == 1) lFit = new RooGenericPdf("genPdf","exp(-a*pow(m,b))",RooArgList(lM,lA,lB));
   if(iFitModel == 1) {lA.setVal(0.3); lB.setVal(0.5);}
@@ -323,8 +409,8 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   RooFitResult  *lRFit = 0;
   double lFirst = iFirst;
   double lLast  = iLast;
-  //lRFit = lFit->chi2FitTo(*pH0,RooFit::Save(kTRUE),RooFit::Range(lFirst,lLast));
-  lRFit = lFit->fitTo(*pH0,RooFit::Save(kTRUE),RooFit::Range(lFirst,lLast),RooFit::Strategy(0)); 
+  //lRFit = lFit->chi2FitTo(*pH0,Save(kTRUE),Range(lFirst,lLast));
+  lRFit = lFit->fitTo(*pH0,Save(kTRUE),Range(lFirst,lLast),Strategy(0)); 
   
   //std::cout << lRFit->status() << " " <<  lRFit->covQual() << std::endl;
   if(!(lRFit->status()==0 && lRFit->covQual()==3))
@@ -338,13 +424,13 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   TMatrixDSym lCovMatrix   = lRFit->covarianceMatrix(); 
   TMatrixD  lEigVecs(2,2);    lEigVecs = TMatrixDSymEigen(lCovMatrix).GetEigenVectors();
   TVectorD  lEigVals(2);      lEigVals = TMatrixDSymEigen(lCovMatrix).GetEigenValues();
-  cout << " Eigenvectors ---> " << lEigVecs(0,0) << " -- " << lEigVecs(1,0) << " -- " << lEigVecs(0,1) << " -- " << lEigVecs(1,1) << endl;
-  cout << " Covariance matrix ---> " << lCovMatrix(0,0) << " -- " << lCovMatrix(1,0) << " -- " << lCovMatrix(0,1) << " -- " << lCovMatrix(1,1) << endl;
+  std::cout << " Eigenvectors ---> " << lEigVecs(0,0) << " -- " << lEigVecs(1,0) << " -- " << lEigVecs(0,1) << " -- " << lEigVecs(1,1) << std::endl;
+  std::cout << " Covariance matrix ---> " << lCovMatrix(0,0) << " -- " << lCovMatrix(1,0) << " -- " << lCovMatrix(0,1) << " -- " << lCovMatrix(1,1) << std::endl;
   double lACentral = lA.getVal();
   double lBCentral = lB.getVal();
   lEigVals(0) = sqrt(lEigVals(0));
   lEigVals(1) = sqrt(lEigVals(1));
-  cout << "Eigenvalues ===> " << lEigVals(0) << " -- " << lEigVals(1) << endl;
+  std::cout << "Eigenvalues ===> " << lEigVals(0) << " -- " << lEigVals(1) << std::endl;
     
   lM.setRange(lFirst,2000);
   lA.removeRange();
@@ -360,10 +446,11 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   bool flag2down=false; 
     
   //CENTRAL HISTOGRAM   
-  cout << "Values for central hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
+  std::cout << "Values for central hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << std::endl;
   lM.setRange(0,2000);
   
   double mcentral=(-1 * lA.getVal() / lB.getVal() );
+  std::cout << "mcentral = " << mcentral << std::endl;
   if(iFitModel==0 && lFirst < mcentral && mcentral < 2000)
   {
       flagcentral=true;
@@ -381,11 +468,11 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   lA.setVal(lACentral + lEigVals(0)*lEigVecs(0,0));
   lB.setVal(lBCentral + lEigVals(0)*lEigVecs(1,0));
   
-  if(iVerbose) cout << "Values for shift 1 up hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
+  if(iVerbose) std::cout << "Values for shift 1 up hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << std::endl;
   lM.setRange(0,2000);
   
   double mshift1up=(-1 * lA.getVal() / lB.getVal() );
-  
+  std::cout << "mshift1up = " << mshift1up << std::endl;
   if(iFitModel == 0 && lFirst < mshift1up && mshift1up < 2000)
   {
       flag1up=true;
@@ -397,17 +484,24 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   TH1F* lHUp=0, *lHUptemp=0;
   if(!flag1up) lHUp= (TH1F*) lFit->createHistogram("Up"  ,lM,RooFit::Binning(lH0->GetNbinsX(),lH0->GetXaxis()->GetXmin(),lH0->GetXaxis()->GetXmax()));
   else lHUptemp=(TH1F*) lFit->createHistogram("Up" ,lM,RooFit::Binning((lH0->FindBin(mshift1up))-1,lH0->GetXaxis()->GetXmin(),lH0->GetBinLowEdge(lH0->FindBin(mshift1up))));
+  TF1* tempFit = new TF1("tempFit","TMath::Exp(-(x-[0])/([1]+0.001*[2]*(x-[0])))",0.,2000.);
+  tempFit->SetParameter(0, iFirst);
+  tempFit->SetParameter(1, lA.getVal());
+  tempFit->SetParameter(2, lB.getVal());
+  for(int i0 = 1; i0 <= lH0->GetNbinsX()+1; i0++) {
+    std::cout << "bin #" << i0 << " (x = " << lH0->GetBinCenter(i0) << ") = " << tempFit->Eval(lH0->GetXaxis()->GetBinCenter(i0)) << std::endl;
+  }
 
   lA.setVal(lACentral - lEigVals(0)*lEigVecs(0,0));
   lB.setVal(lBCentral - lEigVals(0)*lEigVecs(1,0));
   
   //SHIFT1DOWN HISTOGRAM   
   
-  if(iVerbose) cout << "Values for shift 1 down hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
+  if(iVerbose) std::cout << "Values for shift 1 down hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << std::endl;
   lM.setRange(0,2000);
   
   double mshift1down=(-1 * lA.getVal() / lB.getVal() );
-  
+  std::cout << "mshift1down = " << mshift1down << std::endl;
   if(iFitModel == 0 && lFirst < mshift1down && mshift1down < 2000)
   {
       flag1down=true;
@@ -425,7 +519,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   
   //SHIFT2UP HISTOGRAM   
   
-  if(iVerbose) cout << "Values for shift 2 up hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
+  if(iVerbose) std::cout << "Values for shift 2 up hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << std::endl;
   lM.setRange(0,2000);
   
   double mshift2up=(-1 * lA.getVal() / lB.getVal() );
@@ -447,7 +541,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   
   //SHIFT2DOWN HISTOGRAM   
   
-  if(iVerbose) cout << "Values for shift 2 down hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << endl;
+  if(iVerbose) std::cout << "Values for shift 2 down hist: " << " A: " << lA.getVal() << " B: " << lB.getVal() << std::endl;
   lM.setRange(0,2000);
   
   double mshift2down=(-1 * lA.getVal() / lB.getVal() );
@@ -530,7 +624,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   double I2=lHDown->Integral(lHDown->FindBin(lFirst), lHDown->FindBin(2000));  
   double I3=lHUp1->Integral(lHUp1->FindBin(lFirst), lHUp1->FindBin(2000));  
   double I4=lHDown1->Integral(lHDown1->FindBin(lFirst), lHDown1->FindBin(2000)); 
-  
+  std::cout << "I1 = " << I1 << ", I2 = " << I2 << ", I3 = " << I3 << ", I4 = " << I4 << std::endl;
 
   //If verbosity is set make plot showing the shift up/down/central functions prior to rebinning
   if(iVerbose)
@@ -561,7 +655,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
     lH0->GetYaxis()->SetTitleOffset(1.2);
     lH0->GetYaxis()->SetLabelSize(0.0275);
 
-    TCanvas *lC0Fine = new TCanvas("CanFine","CanFine",800,600);
+    TCanvas *lC0Fine = new TCanvas("CanFine","CanFine",800,750);
     lC0Fine->Divide(1,2); lC0Fine->cd();  lC0Fine->cd(1)->SetPad(0,0.2,1.0,1.0); gPad->SetLeftMargin(0.2) ; 
     lH0    ->Scale(1.0,"width");
     lH     ->Scale(1.0,"width");
@@ -579,7 +673,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   
     TLegend* leg2;
     /// setup the CMS Preliminary
-    leg2 = new TLegend(0.6, 0.65, 0.9, 0.89); 
+    leg2 = new TLegend(0.7, 0.64, 0.89, 0.88); 
     leg2->SetBorderSize( 0 );
     leg2->SetFillStyle ( 1001 );
     leg2->SetFillColor (kWhite);
@@ -704,7 +798,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   lH0->GetYaxis()->SetTitleOffset(1.2);
   lH0->GetYaxis()->SetLabelSize(0.0275);
 
-  TCanvas *lC0 = new TCanvas("Can","Can",800,600);
+  TCanvas *lC0 = new TCanvas("Can","Can",800,750);
   lC0->Divide(1,2); lC0->cd();  lC0->cd(1)->SetPad(0,0.2,1.0,1.0); gPad->SetLeftMargin(0.2) ; 
   lH0    ->Scale(1.0,"width");
   lH     ->Scale(1.0,"width");
@@ -722,7 +816,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   
   TLegend* leg1;
   /// setup the CMS Preliminary
-  leg1 = new TLegend(0.6, 0.65, 0.9, 0.89); 
+  leg1 = new TLegend(0.7, 0.64, 0.89, 0.88); 
   leg1->SetBorderSize( 0 );
   leg1->SetFillStyle ( 1001 );
   leg1->SetFillColor (kWhite);
@@ -786,7 +880,7 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
   lB.setVal(lBCentral);  
 
   lM.setRange(lFirst,2000); 
-  TCanvas* c1 = new TCanvas("c1","c1",600,600);
+  TCanvas* c1 = new TCanvas("c1","c1",800,750);
   RooPlot* mframe = lM.frame(RooFit::Name("mframe"),RooFit::Title("Tail fit in fit range"));
   pH0->plotOn(mframe, RooFit::Name("data"), RooFit::MarkerColor(kBlack));
   lFit->plotOn(mframe, RooFit::Name("model"), RooFit::DrawOption("L"), RooFit::Range(lFirst,2000));
@@ -811,16 +905,632 @@ int addNuisance(std::string iFileName,std::string iChannel,std::string iBkg,std:
 
   return 0;
 }
+void checkForInfinitePoints2(int fitModel, double xMin_fit, double xMax_fit, double x0, const std::string& central_or_shift, double par0, double par1, bool& flag, double& xInfinitePoint, bool silent = false)
+{
+  if ( fitModel == 0 ) {
+    xInfinitePoint = xMin_fit + x0 - par0/(0.001*par1);
+  } else if ( fitModel == 1 ) {
+    xInfinitePoint = xMin_fit + x0 - 1.0/(0.001*par1);
+  } else {
+    std::cerr << "Fit model = " << fitModel << " not supported !!" << std::endl;
+    assert(0);
+  }
+  if ( !silent) {
+    std::cout << "Parameter values for " << central_or_shift << " histogram: par0 = " << par0 << ", par1 = " << par1 << std::endl;
+    std::cout << central_or_shift << ": xInfinitePoint = " << xInfinitePoint << std::endl;
+  }
+  if ( xInfinitePoint > xMin_fit && xInfinitePoint < xMax_fit ) {
+    if ( !silent) {
+      std::cout << "===============================================================================" << std::endl;
+      std::cout << "Infinite point found in " << central_or_shift << " histogram at mass of " << xInfinitePoint << "." << std::endl;
+      std::cout << "Truncating the histogram before that point, setting all bins after to zero." << std::endl;
+      std::cout << "===============================================================================" << std::endl;
+    }
+    flag = true;
+  } else {
+    if ( xInfinitePoint < xMin_fit) xInfinitePoint = 1.e+6; // CV: no need to worry if infinite point is outside fitted range
+    flag = false;
+  }
+}
+void refitShift(const std::string& fitFunction_formula, double par0, double dpar0, double par1, double dpar1, double xMin_fit, double xMax_fit,
+		const RooRealVar& x, RooDataHist& fitData, double& par0_refitted, double& par1_refitted)
+{
+  std::cout << "<refitShift>:" << std::endl;
+  std::cout << " fitFunction_formula = " << fitFunction_formula << std::endl;
+  std::cout << " par0 = " << par0 << ", dpar0 = " << dpar0 << std::endl;
+  std::cout << " par1 = " << par1 << ", dpar1 = " << dpar1 << std::endl;
+  std::cout << " range = " << xMin_fit << ".." << xMax_fit << std::endl;
+  TString fitFunction_formula_modified = fitFunction_formula.data();
+  fitFunction_formula_modified.ReplaceAll("par0", Form("(%f + %f*TMath::Sign(-1,alpha)*(1. - TMath::Power(2., TMath::Abs(alpha))))", par0, dpar0));
+  fitFunction_formula_modified.ReplaceAll("par1", Form("(%f + %f*TMath::Sign(-1,alpha)*(1. - TMath::Power(2., TMath::Abs(alpha))))", par1, dpar1));
+  std::cout << " fitFunction_formula(modified) = " << fitFunction_formula_modified << std::endl;
+  RooRealVar alpha("alpha", "alpha", 0., -10., 10.);
+  RooGenericPdf* tempFitFunction = new RooGenericPdf("tempFitFunction", fitFunction_formula_modified.Data(), RooArgList(x, alpha));
+  RooConstVar constraint_mean("constraint_mean", "constraint_mean", 0.);
+  RooConstVar constraint_width("constraint_width", "constraint_width", 3.);
+  RooGaussian constraint_gaussian("constraint_gaussian", "constraint_gaussian", alpha, constraint_mean, constraint_width);
+  RooFitResult* tempFitResult = tempFitFunction->fitTo(fitData, Save(kTRUE), SumW2Error(kTRUE), Strategy(0), ExternalConstraints(constraint_gaussian));
+  std::cout << "alpha = " << alpha.getVal() << std::endl;
+  par0_refitted = par0 + alpha.getVal()*dpar0;
+  par1_refitted = par1 + alpha.getVal()*dpar1;
+  std::cout << "par0(refitted) = " << par0_refitted << std::endl;
+  std::cout << "par1(refitted) = " << par1_refitted << std::endl;
+  delete tempFitFunction;
+  delete tempFitResult;
+}
+void zeroBinsForChi2(const std::string& histogram1Name, TH1* histogram1, const std::string& histogram2Name, TH1* histogram2, double xMin_fit, double xMax_fit, bool silent = false)
+{
+  // for the chi2 probability, remove bins with no entry in the original template as this screws up the chi2 calculation
+  for ( int iBin = histogram1->FindBin(xMin_fit); iBin <= histogram1->GetNbinsX(); ++iBin ) {
+    const double epsilon = 1.e-8;
+    if ( histogram1->GetBinContent(iBin)        < epsilon ||
+	 histogram2->GetBinContent(iBin) < epsilon ) {
+      histogram1->SetBinContent(iBin, 0.);
+      histogram1->SetBinError(iBin, 0.);
+      histogram2->SetBinContent(iBin, 0.);
+      histogram2->SetBinError(iBin, 0.);
+    }
+    if ( !silent ) {
+      std::cout << "bin #" << iBin << " (x = " << histogram1->GetBinCenter(iBin) << "):" 
+		<< " " << histogram1Name << " = " <<  histogram1->GetBinContent(iBin) << " +/- " << histogram1->GetBinError(iBin) << ","
+		<< " " << histogram2Name << " = " <<  histogram2->GetBinContent(iBin) << " +/- " << histogram2->GetBinError(iBin) << std::endl;
+    }
+  }  
+}
+void scaleHistogramToMaxChi2Difference(const TH1* histogram, const TH1* template_central, double pChi2_central, 
+				       TH1* template_shift, const std::string& central_or_shift, double xMin_fit, double xMax_fit, double maxChi2_relative)
+{
+  TH1F* histogram_cloned = (TH1F*)histogram->Clone(); 
+  TH1F* template_shift_cloned  = (TH1F*)template_shift->Clone(); 
+  const double epsilon = 1.e-1;
+  for ( int iBin = 1; iBin < histogram_cloned->FindBin(xMin_fit + epsilon); ++iBin ) {
+    histogram_cloned->SetBinContent(iBin, 0.);
+    histogram_cloned->SetBinError(iBin, 0.);
+    template_shift_cloned->SetBinContent(iBin, 0.);
+    template_shift_cloned->SetBinError(iBin, 0.);
+  }
+  double sf_difference_shift = 1.;
+  zeroBinsForChi2("", histogram_cloned, "", template_shift_cloned, xMin_fit, xMax_fit, true);
+  double pChi2_shift = histogram_cloned->Chi2Test(template_shift_cloned, "WW");
+  std::cout << "sf_difference_shift = " << sf_difference_shift << ": pChi2_central = " << pChi2_central << ", pChi2_shift = " << pChi2_shift << std::endl;
+  int numIterations = 0;
+  const int maxIterations = 100;
+  while ( pChi2_shift < (maxChi2_relative*pChi2_central) && numIterations < maxIterations ) {
+    sf_difference_shift *= 0.9;    
+    for ( int iBin = histogram_cloned->FindBin(xMin_fit); iBin <= histogram_cloned->GetNbinsX(); ++iBin ) {
+      double binContent_central = template_central->GetBinContent(iBin);
+      double binContent_shift = template_shift->GetBinContent(iBin);
+      template_shift_cloned->SetBinContent(iBin, (1. - sf_difference_shift)*binContent_central + sf_difference_shift*binContent_shift);
+    }
+    zeroBinsForChi2("", histogram_cloned, "", template_shift_cloned, xMin_fit, xMax_fit, true);
+    pChi2_shift = histogram_cloned->Chi2Test(template_shift_cloned, "WW");
+    std::cout << "sf_difference_shift = " << sf_difference_shift << ": pChi2_central = " << pChi2_central << ", pChi2_shift = " << pChi2_shift << std::endl;
+    ++numIterations;
+  }
+  if ( sf_difference_shift != 1. ) {
+     for ( int iBin = histogram_cloned->FindBin(xMin_fit + epsilon); iBin <= histogram_cloned->GetNbinsX(); ++iBin ) {
+      double binContent_central = template_central->GetBinContent(iBin);
+      double binContent_shift = template_shift->GetBinContent(iBin);
+      template_shift->SetBinContent(iBin, (1. - sf_difference_shift)*binContent_central + sf_difference_shift*binContent_shift);
+    }
+    std::cout << "reducing " << central_or_shift << " to improve p(Chi^2): sf_difference_shift = " << sf_difference_shift << std::endl;
+  }
+}
+int addNuisance2(const std::string& inputFileName, 
+		 const std::string& channel, const std::string& process, const std::string& sqrtS, const std::string& label, const std::string& directory, 
+		 int verbosity = false, bool addVarBin = false, int fitModel = 0, int errorOption = 0, double xMin_fit = 150., double xMax_fit = 1500., bool addUncertainties = true, bool testMode = false) 
+{
+  std::cout << "<addNuisance2>:" << std::endl;
+  std::cout << " inputFile = " << inputFileName << ": directory = " << directory << "/" << process << std::endl;
+  std::cout << " range = " << xMin_fit << ".." << xMax_fit << " (addVarBin = " << addVarBin << ")" << std::endl;
+  std::cout << " fitModel = " << fitModel << std::endl;
+  
+  if ( addVarBin ) {
+    addVarBinNuisance(inputFileName, channel, process, sqrtS, label, directory, true, fitModel, xMin_fit, xMax_fit);
+    return 1;
+  }
 
-int addFitNuisance(std::string iFileName="test.root",std::string iChannel="muTau",std::string iBkg="W",std::string iEnergy="8TeV",std::string iName="shift",std::string iCategory="9",double iFirst=150,double iLast=1500,int iFitModel=1,bool iVerbose=true,bool iVarBin=false,bool addUncerts=true,bool iTestMode=false) { 
-  // Also possible old MSSM categorization (for testing)
-  if(iCategory=="0") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet_low"  ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
-  if(iCategory=="1") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_0jet_high" ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
-  if(iCategory=="2") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_boost_low" ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
-  if(iCategory=="3") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_boost_high",iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
-  if(iCategory=="6") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_low"  ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
-  if(iCategory=="7") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag_high" ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
-  if(iCategory=="8") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_nobtag"    ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
-  if(iCategory=="9") return addNuisance          (iFileName,iChannel,iBkg,iEnergy,iName,iChannel+"_btag"      ,iVerbose,iVarBin,iFitModel,iFirst,iLast,addUncerts,iTestMode);
+  if ( !verbosity ) {
+    RooMsgService::instance().setStreamStatus(0, false);
+    RooMsgService::instance().setStreamStatus(1, false);
+    RooMsgService::instance().setSilentMode(true);
+  }
+
+  // Load histogram that is to be fitted
+  TFile* inputFile = new TFile(inputFileName.c_str());
+  std::cout << " inputFile = " << inputFile << std::endl;
+  TString histogramName_fine_binning = directory + "/" + process;
+  TH1F* histogram_fine_binning = (TH1F*)inputFile->Get(histogramName_fine_binning.Data());
+  std::cout << " histogram(fine_binning) = " << histogram_fine_binning << std::endl;
+  TString histogramName_coarse_binning = histogramName_fine_binning;
+  histogramName_coarse_binning.ReplaceAll("_fine_binning", "");
+  TH1F* histogram_coarse_binning = (TH1F*)inputFile->Get(histogramName_coarse_binning.Data());
+  std::cout << " histogram(coarse_binning) = " << histogram_coarse_binning << std::endl;
+  if ( !(histogram_fine_binning && histogram_coarse_binning) ) {
+    std::cerr << "Failed to load histograms !!" << std::endl;
+    assert(0);
+  }
+
+  // Copy bins within fitted range into temporary data structures used as input for the fit
+  std::vector<double> x_values;
+  std::vector<double> xErr_values;
+  std::vector<double> y_values;
+  std::vector<double> yErr_values;  
+  TAxis* xAxis_fine_binning = histogram_fine_binning->GetXaxis();
+  int numBins_fine_binning = xAxis_fine_binning->GetNbins();
+  double sumBinContents = 0.;
+  double sumBinErrors2 = 0.;
+  for ( int iBin = 1; iBin <= numBins_fine_binning; ++iBin ) {
+    double binContent = histogram_fine_binning->GetBinContent(iBin);
+    sumBinContents += binContent;
+    double binError = histogram_fine_binning->GetBinError(iBin);
+    sumBinErrors2 += (binError*binError);
+  }
+  //std::cout << "sumBinContents = " << sumBinContents << std::endl;
+  //std::cout << "sqrt(sumBinErrors2) = " << TMath::Sqrt(sumBinErrors2) << std::endl;
+  double numEvents = ( sumBinContents > 0. ) ? 
+    TMath::Power(sumBinContents/TMath::Sqrt(sumBinErrors2), 2.) : 1.;
+  double avWeight = sumBinContents/numEvents;
+  for ( int iBin = 1; iBin <= numBins_fine_binning; ++iBin ) {
+    double binCenter  = xAxis_fine_binning->GetBinCenter(iBin);
+    double binWidth   = xAxis_fine_binning->GetBinWidth(iBin);
+    double binContent = histogram_fine_binning->GetBinContent(iBin);
+    double binError   = histogram_fine_binning->GetBinError(iBin);
+    if ( binCenter > xMin_fit && binCenter < xMax_fit ) {
+      double x_value = binCenter;
+      double xErr_value = 0.5*binWidth;
+      x_values.push_back(x_value);
+      xErr_values.push_back(xErr_value);
+      // CV: set empty bins to low binContent with uncertainty corresponding to single event weight,
+      //     in order not to bias fit by including upward fluctuating bins, but excluding downward fluctuating bins from the fit
+      double y_value = binContent;
+      if ( y_value < 1.e-2*avWeight ) {
+	y_value = 1.e-2*avWeight;
+      }
+      // CV: set binError to at least >= 1 avWeight,
+      //     to account for empty bins as well as for fluctuations in event weights, e.g. in "stitched" W+jets sample
+      double yErr_value = TMath::Sqrt(binError*binError + avWeight*avWeight);
+      y_values.push_back(y_value);
+      yErr_values.push_back(yErr_value);
+      //std::cout << "bin #" << iBin << ": x = " << x_values.back() << " +/- " << xErr_values.back() << ", y = " << y_values.back() << " +/- " << yErr_values.back() << std::endl;
+    }
+  }
+  
+  int numBins_fitted = x_values.size();
+  TGraphAsymmErrors* graph = new TGraphAsymmErrors(numBins_fitted);
+  for ( int iBin_fitted = 0; iBin_fitted < numBins_fitted; ++iBin_fitted ) {
+    const double yMin = 1.e-9;
+    double log_y_value = TMath::Log(TMath::Max(yMin, y_values.at(iBin_fitted)));
+    graph->SetPoint(iBin_fitted, x_values.at(iBin_fitted), log_y_value);
+    //graph->SetPoint(iBin_fitted, x.at(iBin_fitted), y.at(iBin_fitted));
+    double log_yErrUp_value   = TMath::Log(TMath::Max(yMin, y_values.at(iBin_fitted) + yErr_values.at(iBin_fitted))) - log_y_value;
+    double log_yErrDown_value = log_y_value - TMath::Log(TMath::Max(yMin, y_values.at(iBin_fitted) - yErr_values.at(iBin_fitted)));
+    //std::cout << "bin #" << iBin_fitted << ":" 
+    //	        << " x = " << x_values.at(iBin_fitted) << " +/- " << xErr_values.at(iBin_fitted) << "," 
+    //	        << " y = " << y_values.at(iBin_fitted) << " +/- " << yErr_values.at(iBin_fitted) 
+    //	        << " (logy = " << log_y_value << " + " << log_yErrUp_value << " - " << log_yErrDown_value << ")" << std::endl;
+    graph->SetPointError(iBin_fitted, xErr_values.at(iBin_fitted), xErr_values.at(iBin_fitted), log_yErrDown_value, log_yErrUp_value);
+    //graph->SetPointError(iBin_fitted, xErr_values.at(iBin_fitted), xErr_values.at(iBin_fitted), yErr_values.at(iBin_fitted), yErr_values.at(iBin_fitted));    
+  }
+
+  // Define the fit function
+  double x0 = 0.;
+  std::string fitFunction_formula;
+  if ( fitModel == 0 ) {
+    x0 = 0.;
+    fitFunction_formula = Form("TMath::Exp(-(x - %1.0f)/(par0 + 0.001*par1*(x - (%1.0f + %1.0f))))", xMin_fit, xMin_fit, x0);
+  } else if ( fitModel == 1 ) {
+    x0 = 200.;
+    //x0 = 0.;
+    //double norm = 0.;
+    //for ( int iBin = 1; iBin <= numBins_fine_binning; ++iBin ) {
+    //  double binContent = histogram_fine_binning->GetBinContent(iBin);
+    //  double binCenter  = xAxis_fine_binning->GetBinCenter(iBin);
+    //  if ( binCenter > xMin_fit && binCenter < xMax_fit ) {
+    //	  x0 += (binContent*binCenter);
+    //	  norm += binContent;
+    //  }
+    //}
+    //if ( norm > 0. ) {
+    //  x0 /= norm;
+    //  x0 -= xMin_fit;
+    //  x0 *= 2.;
+    //}
+    fitFunction_formula = Form("TMath::Exp(-(x - %1.0f)/(par0*(1.0 + 0.001*par1*(x - (%1.0f + %1.0f)))))", xMin_fit, xMin_fit, x0);
+  } else {
+    std::cerr << "Fit model = " << fitModel << " not supported !!" << std::endl;
+    assert(0);
+  }
+  std::cout << "fitFunction = " << fitFunction_formula << std::endl;
+  RooRealVar x("x", "x", xMin_fit, xMax_fit);
+  RooDataHist fitData("fitData", "fitData", RooArgList(x), histogram_fine_binning);
+  RooRealVar par0("par0", "par0", 1.e+2, 0., 1.e+3);
+  RooRealVar par1("par1", "par1", 1., -1.e+4, 1.e+4);
+  RooGenericPdf* fitFunction = new RooGenericPdf("genPdf", fitFunction_formula.data(), RooArgList(x, par0, par1));
+  RooFitResult* fitResult = fitFunction->fitTo(fitData, Save(kTRUE), SumW2Error(kTRUE), Strategy(0)); 
+  std::cout << "fit has finished:" << std::endl;
+  std::cout << " status = " << fitResult->status() << ", qual(cov) " <<  fitResult->covQual() << ":" << std::endl;
+  std::cout << " par0 = " << par0.getVal() << ", par1 = " << par1.getVal() << std::endl;
+  //if ( fitResult->covQual() >= 3 ) {
+    std::cout << " cov:" << std::endl; 
+    fitResult->covarianceMatrix().Print();
+    std::cout << " correlation:" << std::endl; 
+    fitResult->correlationMatrix().Print();
+  //}
+  
+  //if ( !(fitResult->status() == 0 && fitResult->covQual() >= 2) ) {
+  if ( !(fitResult->status() == 0) ) {
+    std::cerr << "=================================================================================" << std::endl;
+    std::cerr << "Tail fit has not succeeded. Datacard and uncertainty files will *not* be altered." << std::endl;
+    std::cerr << "=================================================================================" << std::endl;
+    return 1;
+  }
+
+  double par0_central = par0.getVal();
+  double par1_central = par1.getVal();
+  TMatrixDSym covMatrix = fitResult->covarianceMatrix();
+
+  TMatrixD EigenVectors(2,2);
+  EigenVectors = TMatrixDSymEigen(covMatrix).GetEigenVectors();
+  std::cout << "Eigenvectors =  { " << EigenVectors(0,0) << ", " << EigenVectors(1,0) << " }, { " << EigenVectors(0,1) << ", " << EigenVectors(1,1) << " }" << std::endl;
+  TVectorD EigenValues(2);  
+  EigenValues = TMatrixDSymEigen(covMatrix).GetEigenValues();
+  EigenValues(0) = TMath::Sqrt(EigenValues(0));
+  EigenValues(1) = TMath::Sqrt(EigenValues(1));
+  std::cout << "Eigenvalues = " << EigenValues(0) << ", " << EigenValues(1) << std::endl;
+  
+  // convert fitResult into histograms
+  //double xMax = xAxis->GetXmax();
+  double xMax = xMax_fit;
+
+  double k = 1.;
+
+  bool hasInfinitePoint_central = false;
+  double xInfinitePoint_central = -1.;
+  checkForInfinitePoints2(fitModel, xMin_fit, xMax, x0, "central", par0_central, par1_central, hasInfinitePoint_central, xInfinitePoint_central);
+  double sf_central;
+  TH1F* template_central = makeHist2(
+          histogram_fine_binning->GetName(), histogram_fine_binning, par0_central, par1_central, fitModel, 
+	  xMin_fit, TMath::Min(xMax, xInfinitePoint_central), x0, sf_central);
+  double integral_central = template_central->Integral(template_central->FindBin(xMin_fit), template_central->FindBin(xMax));
+
+  double xMax_finite = xMin_fit + 0.5*(xMax - xMin_fit);
+  //double xMax_finite = xMax_fit;
+
+  std::string nuisance1Name = process + "_" + "CMS_" + label + "1_" + directory + "_" + sqrtS + "_" + process;
+  
+  double par0_shift1Up = par0_central + EigenValues(0)*EigenVectors(0,0);
+  double par1_shift1Up = par1_central + EigenValues(0)*EigenVectors(1,0);
+  bool hasInfinitePoint_shift1Up = false;
+  double xInfinitePoint_shift1Up = -1.;
+  checkForInfinitePoints2(fitModel, xMin_fit, xMax, x0, "shift1Up", par0_shift1Up, par1_shift1Up, hasInfinitePoint_shift1Up, xInfinitePoint_shift1Up);
+  if ( errorOption == 1 && hasInfinitePoint_shift1Up ) {
+    double sf_EigenValue_shift1Up = 1.;
+    do { 
+      par0_shift1Up = par0_central + sf_EigenValue_shift1Up*EigenValues(0)*EigenVectors(0,0);
+      par1_shift1Up = par1_central + sf_EigenValue_shift1Up*EigenValues(0)*EigenVectors(1,0);
+      checkForInfinitePoints2(fitModel, xMin_fit, xMax_finite, x0, "shift1Up", par0_shift1Up, par1_shift1Up, hasInfinitePoint_shift1Up, xInfinitePoint_shift1Up, true);
+      sf_EigenValue_shift1Up *= 0.9;
+    } while ( hasInfinitePoint_shift1Up );
+    std::cout << "reducing shift1Up to avoid infinite point: sf_EigenValue_shift1Up = " << sf_EigenValue_shift1Up << std::endl;
+  } else if ( errorOption == 2 ) {
+    double par0_shift1Up_refitted, par1_shift1Up_refitted;
+    refitShift(fitFunction_formula, par0_shift1Up, EigenVectors(0,1), par1_shift1Up, EigenVectors(1,1), xMin_fit, xMax_fit,
+	       x, fitData, par0_shift1Up_refitted, par1_shift1Up_refitted);
+    par0_shift1Up = par0_shift1Up_refitted;
+    par1_shift1Up = par1_shift1Up_refitted;
+    checkForInfinitePoints2(fitModel, xMin_fit, xMax_finite, x0, "shift1Up", par0_shift1Up, par1_shift1Up, hasInfinitePoint_shift1Up, xInfinitePoint_shift1Up);
+    //k = 1.5;
+  }
+  double sf_shift1Up;
+  TH1F* template_shift1Up = makeHist2(
+          nuisance1Name + "Up", histogram_fine_binning, par0_shift1Up, par1_shift1Up, fitModel, 
+	  xMin_fit, TMath::Min(xMax, xInfinitePoint_shift1Up), x0, sf_shift1Up, k, template_central, &sf_central);
+  double integral_shift1Up = template_shift1Up->Integral(template_shift1Up->FindBin(xMin_fit), template_shift1Up->FindBin(xMax));
+
+  double par0_shift1Down = par0_central - EigenValues(0)*EigenVectors(0,0);
+  double par1_shift1Down = par1_central - EigenValues(0)*EigenVectors(1,0);
+  bool hasInfinitePoint_shift1Down = false;
+  double xInfinitePoint_shift1Down = -1.;
+  checkForInfinitePoints2(fitModel, xMin_fit, xMax, x0, "shift1Down", par0_shift1Down, par1_shift1Down, hasInfinitePoint_shift1Down, xInfinitePoint_shift1Down);
+  if ( errorOption == 1 && hasInfinitePoint_shift1Down ) {
+    double sf_EigenValue_shift1Down = 1.;
+    do { 
+      par0_shift1Down = par0_central - sf_EigenValue_shift1Down*EigenValues(0)*EigenVectors(0,0);
+      par1_shift1Down = par1_central - sf_EigenValue_shift1Down*EigenValues(0)*EigenVectors(1,0);
+      checkForInfinitePoints2(fitModel, xMin_fit, xMax_finite, x0, "shift1Down", par0_shift1Down, par1_shift1Down, hasInfinitePoint_shift1Down, xInfinitePoint_shift1Down, true);
+      sf_EigenValue_shift1Down *= 0.9;
+    } while ( hasInfinitePoint_shift1Down );
+    std::cout << "reducing shift1Down to avoid infinite point: sf_EigenValue_shift1Down = " << sf_EigenValue_shift1Down << std::endl;
+  } else if ( errorOption == 2 ) {
+    double par0_shift1Down_refitted, par1_shift1Down_refitted;
+    refitShift(fitFunction_formula, par0_shift1Down, EigenVectors(0,1), par1_shift1Down, EigenVectors(1,1), xMin_fit, xMax_fit,
+	       x, fitData, par0_shift1Down_refitted, par1_shift1Down_refitted);
+    par0_shift1Down = par0_shift1Down_refitted;
+    par1_shift1Down = par1_shift1Down_refitted;
+    checkForInfinitePoints2(fitModel, xMin_fit, xMax_finite, x0, "shift1Down", par0_shift1Down, par1_shift1Down, hasInfinitePoint_shift1Down, xInfinitePoint_shift1Down);
+    //k = 1.5;
+  }
+  double sf_shift1Down;
+  TH1F* template_shift1Down = makeHist2(
+          nuisance1Name + "Down", histogram_fine_binning, par0_shift1Down, par1_shift1Down, fitModel, 
+	  xMin_fit, TMath::Min(xMax_fit, xInfinitePoint_shift1Down), x0, sf_shift1Down, k, template_central, &sf_central);
+  double integral_shift1Down = template_shift1Down->Integral(template_shift1Down->FindBin(xMin_fit), template_shift1Down->FindBin(xMax));
+  
+  std::string nuisance2Name = process + "_" + "CMS_" + label + "2_" + directory + "_" + sqrtS + "_" + process;
+
+  double par0_shift2Up = par0_central + EigenValues(0)*EigenVectors(0,1);
+  double par1_shift2Up = par1_central + EigenValues(0)*EigenVectors(1,1);
+  bool hasInfinitePoint_shift2Up = false;
+  double xInfinitePoint_shift2Up = -1.;
+  checkForInfinitePoints2(fitModel, xMin_fit, xMax, x0, "shift2Up", par0_shift2Up, par1_shift2Up, hasInfinitePoint_shift2Up, xInfinitePoint_shift2Up);
+  if ( errorOption == 1 && hasInfinitePoint_shift2Up ) {
+    double sf_EigenValue_shift2Up = 1.;
+    do { 
+      par0_shift2Up = par0_central + sf_EigenValue_shift2Up*EigenValues(0)*EigenVectors(0,1);
+      par1_shift2Up = par1_central + sf_EigenValue_shift2Up*EigenValues(0)*EigenVectors(1,1);
+      checkForInfinitePoints2(fitModel, xMin_fit, xMax_finite, x0, "shift2Up", par0_shift2Up, par1_shift2Up, hasInfinitePoint_shift2Up, xInfinitePoint_shift2Up, true);
+      sf_EigenValue_shift2Up *= 0.9;
+    } while ( hasInfinitePoint_shift2Up );
+    std::cout << "reducing shift2Up to avoid infinite point: sf_EigenValue_shift2Up = " << sf_EigenValue_shift2Up << std::endl;
+  } else if ( errorOption == 2 ) {
+    double par0_shift2Up_refitted, par1_shift2Up_refitted;
+    refitShift(fitFunction_formula, par0_shift2Up, EigenVectors(0,0), par1_shift2Up, EigenVectors(1,0), xMin_fit, xMax_fit,
+	       x, fitData, par0_shift2Up_refitted, par1_shift2Up_refitted);
+    par0_shift2Up = par0_shift2Up_refitted;
+    par1_shift2Up = par1_shift2Up_refitted;
+    checkForInfinitePoints2(fitModel, xMin_fit, xMax_finite, x0, "shift2Up", par0_shift2Up, par1_shift2Up, hasInfinitePoint_shift2Up, xInfinitePoint_shift2Up);
+    //k = 1.5;
+  }
+  double sf_shift2Up;
+  TH1F* template_shift2Up = makeHist2(
+          nuisance2Name + "Up", histogram_fine_binning, par0_shift2Up, par1_shift2Up, fitModel, 
+	  xMin_fit, TMath::Min(xMax, xInfinitePoint_shift2Up), x0, sf_shift2Up, k, template_central, &sf_central);
+  double integral_shift2Up = template_shift2Up->Integral(template_shift2Up->FindBin(xMin_fit), template_shift2Up->FindBin(xMax));
+
+  double par0_shift2Down = par0_central - EigenValues(0)*EigenVectors(0,1);
+  double par1_shift2Down = par1_central - EigenValues(0)*EigenVectors(1,1);
+  bool hasInfinitePoint_shift2Down = false;
+  double xInfinitePoint_shift2Down = -1.;
+  checkForInfinitePoints2(fitModel, xMin_fit, xMax, x0, "shift2Down", par0_shift2Down, par1_shift2Down, hasInfinitePoint_shift2Down, xInfinitePoint_shift2Down);
+  if ( errorOption == 1 && hasInfinitePoint_shift2Down ) {
+    double sf_EigenValue_shift2Down = 1.;
+    do { 
+      par0_shift2Down = par0_central - sf_EigenValue_shift2Down*EigenValues(0)*EigenVectors(0,1);
+      par1_shift2Down = par1_central - sf_EigenValue_shift2Down*EigenValues(0)*EigenVectors(1,1);
+      checkForInfinitePoints2(fitModel, xMin_fit, xMax_finite, x0, "shift2Down", par0_shift2Down, par1_shift2Down, hasInfinitePoint_shift2Down, xInfinitePoint_shift2Down, true);
+      sf_EigenValue_shift2Down *= 0.9;
+    } while ( hasInfinitePoint_shift2Down );
+    std::cout << "reducing shift2Down to avoid infinite point: sf_EigenValue_shift2Down = " << sf_EigenValue_shift2Down << std::endl;
+  } else if ( errorOption == 2 ) {
+    double par0_shift2Down_refitted, par1_shift2Down_refitted;
+    refitShift(fitFunction_formula, par0_shift2Down, EigenVectors(0,0), par1_shift2Down, EigenVectors(1,0), xMin_fit, xMax_fit,
+	       x, fitData, par0_shift2Down_refitted, par1_shift2Down_refitted);
+    par0_shift2Down = par0_shift2Down_refitted;
+    par1_shift2Down = par1_shift2Down_refitted;
+    checkForInfinitePoints2(fitModel, xMin_fit, xMax_finite, x0, "shift2Down", par0_shift2Down, par1_shift2Down, hasInfinitePoint_shift2Down, xInfinitePoint_shift2Down);
+    //k = 1.5;
+  }
+  double sf_shift2Down;
+  TH1F* template_shift2Down = makeHist2(
+	  nuisance2Name + "Down", histogram_fine_binning, par0_shift2Down, par1_shift2Down, fitModel, 
+	  xMin_fit, TMath::Min(xMax, xInfinitePoint_shift2Down), x0, sf_shift2Down, k, template_central, &sf_central);
+  double integral_shift2Down = template_shift2Down->Integral(template_shift2Down->FindBin(xMin_fit), template_shift2Down->FindBin(xMax));
+
+  double integral_orgiginal = histogram_fine_binning->Integral(histogram_fine_binning->FindBin(xMin_fit), histogram_fine_binning->FindBin(xMax));
+  std::cout << "Integrals:" 
+	    << " original = " << integral_orgiginal << ","
+	    << " central = " << integral_central << ","
+	    << " shift1Up = " << integral_shift1Up << ", shift1Down = " << integral_shift1Down << ","
+	    << " shift2Up = " << integral_shift2Up << ", shift2Down = " << integral_shift2Down << std::endl;
+
+  // check if the shift "Up"/"Down" histograms are integrable. If not terminate the script here.
+  if ( addUncertainties && 
+       !(TMath::Finite(integral_central) && TMath::Finite(integral_shift1Up) && TMath::Finite(integral_shift1Down) && TMath::Finite(integral_shift2Up) && TMath::Finite(integral_shift2Down)) ) {
+    std::cerr << "===============================================================================" << std::endl;
+    std::cerr << "Tail fit has succeeded, but 1 or more of the shift up/down histograms is not integrable." << std::endl;
+    std::cerr << "Script will terminate here without altering datacard. Turn on --verbose option to see the problem histogram." << std::endl; 
+    std::cerr << "===============================================================================" << std::endl;
+    return 1;
+  }
+
+  // rebin the histograms   
+  int numBins_coarse_binning = histogram_coarse_binning->GetNbinsX();
+  double* binning_coarse_binning = getAxis(histogram_coarse_binning);
+  histogram_fine_binning = rebin(histogram_fine_binning,  numBins_coarse_binning, binning_coarse_binning);
+  template_central       = rebin(template_central,    numBins_coarse_binning, binning_coarse_binning);
+  template_shift1Up      = rebin(template_shift1Up,   numBins_coarse_binning, binning_coarse_binning);
+  template_shift1Down    = rebin(template_shift1Down, numBins_coarse_binning, binning_coarse_binning);
+  template_shift2Up      = rebin(template_shift2Up,   numBins_coarse_binning, binning_coarse_binning);
+  template_shift2Down    = rebin(template_shift2Down, numBins_coarse_binning, binning_coarse_binning);
+
+  // clone the fit result and original template for computing the chi2 and KS probability of the fit
+  TH1F* histogram_cloned = (TH1F*)histogram_coarse_binning->Clone(); 
+  TH1F* template_central_cloned  = (TH1F*)template_central->Clone(); 
+  const double epsilon = 1.e-1;
+  for ( int iBin = 1; iBin < histogram_cloned->FindBin(xMin_fit + epsilon); ++iBin ) {
+    histogram_cloned->SetBinContent(iBin, 0.);
+    histogram_cloned->SetBinError(iBin, 0.);
+    template_central_cloned->SetBinContent(iBin, 0.);
+    template_central_cloned->SetBinError(iBin, 0.);
+  }
+  // compute the KS probability
+  double pKS_central = histogram_cloned->KolmogorovTest(template_central_cloned);
+  std::cout << "p(KS) = " << pKS_central << std::endl;
+  // for the chi2 probability, remove bins with no entry in the original template as this screws up the chi2 calculation
+  zeroBinsForChi2("histogram", histogram_cloned, "template_central", template_central_cloned, xMin_fit, xMax_fit);
+  double pChi2_central = histogram_cloned->Chi2Test(template_central_cloned, "WW");
+  std::cout << "p(Chi^2) = " << pChi2_central << std::endl;
+  if ( verbosity ) {
+    std::cout << "==========================================================================================================" << std::endl;
+    std::cout << "Result of chi2 probability test: " << pChi2_central << ", KS probability test: " << pKS_central << std::endl;
+    std::cout << "==========================================================================================================" << std::endl;
+  }
+  delete histogram_cloned;
+  delete template_central_cloned;
+
+  if ( errorOption == 1 ) {
+    scaleHistogramToMaxChi2Difference(histogram_coarse_binning, template_central, pChi2_central, template_shift1Up,   "shift1Up",   xMin_fit, xMax_fit, 0.05);
+    scaleHistogramToMaxChi2Difference(histogram_coarse_binning, template_central, pChi2_central, template_shift1Down, "shift1Down", xMin_fit, xMax_fit, 0.05);
+    scaleHistogramToMaxChi2Difference(histogram_coarse_binning, template_central, pChi2_central, template_shift2Up,   "shift2Up",   xMin_fit, xMax_fit, 0.05);
+    scaleHistogramToMaxChi2Difference(histogram_coarse_binning, template_central, pChi2_central, template_shift2Down, "shift2Down", xMin_fit, xMax_fit, 0.05);
+  }
+
+  // we do not need bin errors for bins that are within the range of the tail-fit (the tail-fit replaces bin-by-bin error!),
+  // therefore we set all errors to 0. This saves us from modifying the add_bbb_error.py script 
+  // in which we otherwise would have to include an option for adding bbb only to bins that are within specific ranges.
+  int iBin_merge = xAxis_fine_binning->FindBin(xMin_fit);
+  for ( int iBin = iBin_merge; iBin <= numBins_fine_binning; ++iBin ) {
+    template_central->SetBinError(iBin, 0.);
+    template_shift1Up->SetBinError(iBin, 0.);
+    template_shift1Down->SetBinError(iBin, 0.);
+    template_shift2Up->SetBinError(iBin, 0.);
+    template_shift2Down->SetBinError(iBin, 0.);
+  }
+
+  // save the new templates to the datacard ROOT file
+  TFile* outputFile = new TFile("Output.root", "RECREATE");
+  cloneFile(outputFile, inputFile, directory + "/" + process);
+  outputFile->cd(directory.c_str());
+  template_central->Write();
+  if ( addUncertainties ) {
+    template_shift1Up->Write(); 
+    template_shift1Down->Write(); 
+    template_shift2Up->Write(); 
+    template_shift2Down->Write(); 
+  }
+
+  // make control plot showing shift "Up"/"Down" and central templates, rebinned as in datacard
+  TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 750);
+  canvas->Divide(1,2); 
+  canvas->cd();  
+  canvas->cd(1)->SetPad(0,0.2,1.0,1.0); 
+  gPad->SetLeftMargin(0.2); 
+  gPad->SetLogy();
+  
+  histogram_fine_binning->SetTitle("");
+  histogram_fine_binning->SetStats(false);
+  histogram_fine_binning->SetLineWidth(1); 
+  histogram_fine_binning->SetMarkerStyle(kFullCircle);
+  histogram_fine_binning->Scale(1.0, "width");
+  histogram_fine_binning->Draw();
+
+  TAxis* xAxis_original = histogram_fine_binning->GetXaxis();
+  xAxis_original->SetTitle("m_{#tau#tau} [GeV]");
+  xAxis_original->SetTitleSize(0.05);
+
+  TAxis* yAxis_original = histogram_fine_binning->GetYaxis();
+  yAxis_original->SetTitle("dN/dm_{#tau#tau} [1/GeV]");
+  yAxis_original->SetTitleSize(0.05);
+  yAxis_original->SetTitleOffset(1.2);
+  yAxis_original->SetLabelSize(0.0275);
+  
+  template_central->SetStats(false);
+  template_central->SetLineColor(kGreen+2);
+  template_central->Scale(1.0,"width");
+  template_central->Draw("hist sames");
+
+  template_shift1Up->SetStats(false);
+  template_shift1Up->SetLineColor(kRed);
+  template_shift1Up->SetLineStyle(9);
+  template_shift1Up->Scale(1.0,"width");
+  template_shift1Up->Draw("hist sames");
+
+  template_shift1Down->SetStats(false);
+  template_shift1Down->SetLineColor(kRed+2);
+  template_shift1Down->SetLineStyle(3);
+  template_shift1Down->SetLineWidth(2);
+  template_shift1Down->Scale(1.0,"width");
+  template_shift1Down->Draw("hist sames");
+
+  template_shift2Up->SetStats(false);
+  template_shift2Up->SetLineColor(kBlue);
+  template_shift2Up->SetLineStyle(9);
+  template_shift2Up->Scale(1.0,"width");
+  template_shift2Up->Draw("hist sames");
+
+  template_shift2Down->SetStats(false);
+  template_shift2Down->SetLineColor(kBlue+2);
+  template_shift2Down->SetLineStyle(3);
+  template_shift2Down->SetLineWidth(2);
+  template_shift2Down->Scale(1.0,"width");
+  template_shift2Down->Draw("hist sames");
+  
+  TLegend* legend = new TLegend(0.7, 0.64, 0.89, 0.88); 
+  legend->SetBorderSize( 0 );
+  legend->SetFillStyle ( 1001 );
+  legend->SetFillColor (kWhite);
+  legend->AddEntry(histogram_fine_binning,  "original",     "PL");
+  legend->AddEntry(template_central,    "central fit",  "L");
+  legend->AddEntry(template_shift1Up,   "shift1 Up",    "L");
+  legend->AddEntry(template_shift1Down, "shift1 Down",  "L");
+  legend->AddEntry(template_shift2Up,   "shift2 Up",    "L");
+  legend->AddEntry(template_shift2Down, "shift2 Down",  "L");
+  legend->Draw("same");
+  
+  TPaveText* text = new TPaveText(0.20, 0.90, 0.50, 0.99, "NDC");
+  text->SetBorderSize(0);
+  text->SetFillStyle(0);
+  text->SetTextAlign(12);
+  text->SetTextSize(0.05);
+  text->SetTextColor(1);
+  text->SetTextFont(62);
+  text->AddText(TString::Format("P(#chi^{2})=%1.5f, P(KS)=%1.5f", pChi2_central, pKS_central));
+  text->Draw();
+  
+  canvas->cd(2)->SetPad(0,0,1.0,0.2); 
+  gPad->SetLeftMargin(0.2);
+  drawDifference(histogram_fine_binning, template_central, template_shift1Up, template_shift1Down, template_shift2Up, template_shift2Down);
+
+  canvas->Update();
+  canvas->SaveAs((process + "_" + "CMS_" + label + "_" + directory + "_" + sqrtS +"_Rebin.png").c_str());
+  canvas->SaveAs((process + "_" + "CMS_" + label + "_" + directory + "_" + sqrtS +"_Rebin.pdf").c_str());
+
+  delete canvas;
+
+  delete inputFile;
+  delete outputFile;
+
+  if ( testMode ) {
+    std::cout << "Running in test mode. Script will exit now without altering datacard or uncertainty files." << std::endl;
+    return 1;
+  }
+  
   return 0;
+}
+int addFitNuisance(const std::string& inputFileName, 
+		   const std::string& channel, const std::string& process, const std::string& sqrtS, const std::string& label, const std::string& category,
+		   double xMin_fit = 150., double xMax_fit = 1500., 
+		   int fitOption = 0, int fitModel = 0, int errorOption = 0, 
+		   int verbose = false, bool addVarBin = false, bool addUncertainties = true, bool testMode = false) 
+{
+  typedef int (*addNuisancePtr)(const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, const std::string&, int, bool, int, int, double, double, bool, bool);
+  addNuisancePtr functionToCall = 0;
+  if ( fitOption == 0 ) {
+    functionToCall = &addNuisance;
+  } else if ( fitOption == 1 ) {
+    functionToCall = &addNuisance2;
+  } else {
+    std::cerr << "Fit option = " << fitOption << " not supported !!" << std::endl;
+  }
+  assert(functionToCall);
+  std::string directory;
+  if      ( category==  "0" ) directory = channel + "_0jet_low";
+  else if ( category==  "1" ) directory = channel + "_0jet_high";
+  else if ( category==  "2" ) directory = channel + "_boost_low";
+  else if ( category==  "3" ) directory = channel + "_boost_high";
+  else if ( category==  "6" ) directory = channel + "_btag_low";
+  else if ( category==  "7" ) directory = channel + "_btag_high";
+  else if ( category==  "8" ) directory = channel + "_nobtag";
+  else if ( category==  "9" ) directory = channel + "_btag";
+  else if ( category== "10" ) directory = channel + "_nobtag_low";
+  else if ( category== "11" ) directory = channel + "_nobtag_medium";
+  else if ( category== "12" ) directory = channel + "_nobtag_high";
+  else if ( category== "13" ) directory = channel + "_btag_low";
+  else if ( category== "14" ) directory = channel + "_btag_high";
+  else {
+    std::cerr << "Category = " << category << " not supported !!" << std::endl;
+  }
+  assert(directory != "");
+  return (*functionToCall)(inputFileName, channel, process, sqrtS, label, directory, verbose, addVarBin, fitModel, errorOption, xMin_fit, xMax_fit, addUncertainties, testMode);
 }
