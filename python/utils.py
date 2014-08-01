@@ -148,7 +148,7 @@ def parseArgs(args) :
                     list.append(elem)
     return list
 
-def get_channel_dirs(finalstate, category, period):
+def get_channel_dirs(analysis, finalstate, category, period):
     ''' Turn 'mt' + 00 -> muTau_0jet_low '''
     fs_map = {
         'mt'  : 'muTau',
@@ -159,7 +159,9 @@ def get_channel_dirs(finalstate, category, period):
         'tt'  : 'tauTau',
         'vhtt': '',
     }
-    cat_map = {'7TeV':
+    cat_map = {'sm':
+               {
+        '7TeV':
         {
         'ee' : {
         '00' : ['0jet_low' ],
@@ -167,8 +169,6 @@ def get_channel_dirs(finalstate, category, period):
         '02' : ['1jet_low' ],
         '03' : ['1jet_high'],
         '04' : ['vbf'      ],
-        '08' : ['nobtag'   ],
-        '09' : ['btag'     ],
         },
         'mm' : {
         '00' : ['0jet_low' ],
@@ -176,8 +176,6 @@ def get_channel_dirs(finalstate, category, period):
         '02' : ['1jet_low' ],
         '03' : ['1jet_high'],
         '04' : ['vbf'      ],
-        '08' : ['nobtag'   ],
-        '09' : ['btag'     ],
         },
         'em' : {
         '00' : ['0jet_low' ],
@@ -185,8 +183,6 @@ def get_channel_dirs(finalstate, category, period):
         '02' : ['1jet_low' ],
         '03' : ['1jet_high'],
         '04' : ['vbf_loose'],
-        '08' : ['nobtag'   ],
-        '09' : ['btag'     ],
         },
         'et' : {
         '00' : ['0jet_low'   ],
@@ -196,8 +192,6 @@ def get_channel_dirs(finalstate, category, period):
         '04' : ['1jet_high_lowhiggs'],
         '05' : ['1jet_high_mediumhiggs'],
         '06' : ['vbf'  ],
-        '08' : ['nobtag'     ],
-        '09' : ['btag'       ],
         },
         'mt' : {
         '00' : ['0jet_low'   ],
@@ -207,8 +201,6 @@ def get_channel_dirs(finalstate, category, period):
         '04' : ['1jet_high_lowhiggs'],
         '05' : ['1jet_high_mediumhiggs'],
         '06' : ['vbf'  ],
-        '08' : ['nobtag'     ],
-        '09' : ['btag'       ],
         },
         'tt' : {
         },
@@ -232,18 +224,13 @@ def get_channel_dirs(finalstate, category, period):
         '02' : ['1jet_low' ],
         '03' : ['1jet_high'],
         '04' : ['vbf'      ],
-        '08' : ['nobtag'   ],
-        '09' : ['btag'     ],
         },
         'mm' : {
         '00' : ['0jet_low' ],
         '01' : ['0jet_high'],
         '02' : ['1jet_low' ],
         '03' : ['1jet_high'],
-        '04' : ['vbf'      ],
-        '08' : ['nobtag'   ],
-        '09' : ['btag'     ],
-        },
+        '04' : ['vbf'      ],        },
         'em' : {
         '00' : ['0jet_low' ],
         '01' : ['0jet_high'],
@@ -251,8 +238,6 @@ def get_channel_dirs(finalstate, category, period):
         '03' : ['1jet_high'],
         '04' : ['vbf_loose'],
         '05' : ['vbf_tight'],
-        '08' : ['nobtag'   ],
-        '09' : ['btag'     ],
         },
         'et' : {
         '00' : ['0jet_low'   ],
@@ -263,8 +248,6 @@ def get_channel_dirs(finalstate, category, period):
         '05' : ['1jet_high_mediumhiggs'],
         '06' : ['vbf_loose'  ],
         '07' : ['vbf_tight'  ],
-        '08' : ['nobtag'     ],
-        '09' : ['btag'       ],
         },
         'mt' : {
         '00' : ['0jet_low'   ],
@@ -275,8 +258,6 @@ def get_channel_dirs(finalstate, category, period):
         '05' : ['1jet_high_mediumhiggs'],
         '06' : ['vbf_loose'  ],
         '07' : ['vbf_tight'  ],
-        '08' : ['nobtag'     ],
-        '09' : ['btag'       ],
         '10' : ['soft_0jet_low'   ],
         '11' : ['soft_0jet_medium'],
         '12' : ['soft_0jet_high'  ],
@@ -287,9 +268,7 @@ def get_channel_dirs(finalstate, category, period):
         'tt' : {
         '00' : ['1jet_high_mediumhiggs'],
         '01' : ['1jet_high_highhiggs'],
-        '02' : ['vbf'   ],
-        '08' : ['nobtag'],
-        '09' : ['btag'  ],              
+        '02' : ['vbf'   ],             
         },
         'vhtt' : {
         '00' : ['mmtCatHigh', 'mmtCatLow'],
@@ -302,13 +281,88 @@ def get_channel_dirs(finalstate, category, period):
         '07' : ['mtt'],
         '08' : ['ett'],
         },        
-    }
+        },
+        },
+               'mssm':
+               {
+        '7TeV':
+        {
+        'ee' : {
+        '08' : ['nobtag'   ],
+        '09' : ['btag'     ],
+        },
+        'mm' : {
+        '08' : ['nobtag'   ],
+        '09' : ['btag'     ],
+        },
+        'em' : {
+        '08' : ['nobtag'   ],
+        '09' : ['btag'     ],
+        },
+        'et' : {
+        '08' : ['nobtag'     ],
+        '09' : ['btag'       ],
+        },
+        'mt' : {
+        '08' : ['nobtag'     ],
+        '09' : ['btag'       ],
+        },
+        'tt' : {
+        },
+        'vhtt' : {
+        },        
+        },
+        '8TeV':
+        {
+        'ee' : {
+        '08' : ['nobtag'   ],
+        '09' : ['btag'     ],
+        },
+        'mm' : {
+        '08' : ['nobtag'   ],
+        '09' : ['btag'     ],
+        },
+        'em' : {
+        '08' : ['nobtag'   ],
+        '09' : ['btag'     ],
+        },
+        'et' : {
+        '08' : ['nobtag'     ],
+        '09' : ['btag'       ],
+        '10' : ['nobtag_low'   ],
+        '11' : ['nobtag_medium'],
+        '12' : ['nobtag_high'  ],
+        '13' : ['btag_low'],
+        '14' : ['btag_high'  ],
+        },
+        'mt' : {
+        '08' : ['nobtag'     ],
+        '09' : ['btag'       ],
+        '10' : ['nobtag_low'   ],
+        '11' : ['nobtag_medium'],
+        '12' : ['nobtag_high'  ],
+        '13' : ['btag_low'],
+        '14' : ['btag_high'  ],
+        },
+        'tt' : {
+        '08' : ['nobtag'],
+        '09' : ['btag'  ],  
+        '10' : ['nobtag_low'   ],
+        '11' : ['nobtag_medium'],
+        '12' : ['nobtag_high'  ],
+        '13' : ['btag_low'],
+        '14' : ['btag_high'  ],            
+        },
+        'vhtt' : {
+        },        
+        },
+        } 
     }
     if fs_map[finalstate] == '' :
-        return cat_map[period][finalstate][category]
+        return cat_map[analysis][period][finalstate][category]
     else :
         combined_names = []
-        for dir in cat_map[period][finalstate][category] :
+        for dir in cat_map[analysis][period][finalstate][category] :
             combined_names.append(fs_map[finalstate]+'_'+dir)
         return combined_names
 
