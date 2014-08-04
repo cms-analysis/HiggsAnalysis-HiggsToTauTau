@@ -389,21 +389,21 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   else leg->SetHeader("95% CL Excluded:");
   if(!expectedOnly){ 
     if(!BlackWhite) observed_1->SetFillColor(obs->GetNumber()); 
-    leg->AddEntry(observed_1, "observed", "FL");
+    leg->AddEntry(observed_1, "Observed", "FL");
   }
   if(theory=="MSSM low-m_{H} scenario") {
-    leg->AddEntry(innerBand_1, "#pm 1#sigma expected","F");
+    leg->AddEntry(innerBand_1, "#pm 1#sigma Expected","F");
     //if(BlackWhite && HIG=="") leg->AddEntry(innerband_1_max, "#pm 1#sigma expected","L"); 
-    leg->AddEntry(expected_1, "expected", "L");
+    leg->AddEntry(expected_1, "Expected", "L");
   }
   else{
     if(injected_1) leg->AddEntry(injected_1, "SM H injected", "L");
-    leg->AddEntry(expected_1, "expected", "L");
-    leg->AddEntry(innerBand_1, "#pm 1#sigma expected","F");
+    leg->AddEntry(expected_1, "Expected", "L");
+    leg->AddEntry(innerBand_1, "#pm 1#sigma Expected","F");
     //if(BlackWhite && HIG=="") leg->AddEntry(innerband_1_max, "#pm 1#sigma expected","L");
   }
   if(plotOuterBand){ 
-    leg->AddEntry(outerBand_1, "#pm 2#sigma expected", "F"); 
+    leg->AddEntry(outerBand_1, "#pm 2#sigma Expected", "F"); 
     //if(BlackWhite && HIG=="") leg->AddEntry(outerband_1_max, "#pm 2#sigma expected","L"); 
     if(theory=="MSSM low-m_{H} scenario" && injected_1) leg->AddEntry(injected_1, "h_{SM} injected", "L");
   }

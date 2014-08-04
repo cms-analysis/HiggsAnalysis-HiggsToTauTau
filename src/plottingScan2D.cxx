@@ -115,7 +115,7 @@ plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::v
     graph68_copy->SetLineColor(0);
     graph68_copy->SetLineStyle(1);
     leg->AddEntry(graph68_copy, "68% CL", temp ? "L" : "F"); }
-  if(bestfit){ leg->AddEntry(bestfit, "best fit", "P"); }
+  if(bestfit){ leg->AddEntry(bestfit, "Best fit", "P"); }
   if(SMexpected && masslabel=="m_{H}"){ leg->AddEntry(SMexpected, "SM", "P"); }	
   if(SMexpected && masslabel=="m_{#phi}"){ leg->AddEntry(SMexpected, "Expected for", "P"); } 
   if(SMexpected && masslabel=="m_{#phi}"){ leg->AddEntry((TObject*)0, "SM H(125 GeV)", ""); }  												
