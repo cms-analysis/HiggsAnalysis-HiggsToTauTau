@@ -51,36 +51,65 @@ if options.condor:
 ## prepare log file directory
 os.system("mkdir -p log")
 
-script_template = '''#!/bin/bash
+if "HypothesisTest" in option_str and "cycle" in option_str: 
+    script_template = '''#!/bin/bash
 
-cd {working_dir}
-eval `scram runtime -sh`
+    cd {working_dir}
+    eval `scram runtime -sh`
 
-echo "Running limit.py:"
-echo "with options {options}"
-echo "in directory {dirhead}{tail}"
+    echo "Running limit.py:"
+    echo "with options {options}"
+    echo "in directory {dirhead}{tail}"
 
-echo "Copy {dirhead}{tail} --> {tmphead}/{tail}"
-mkdir -p {tmphead}
-cp -r {dirhead}{tail} {tmphead}/{tail}
-cp -r {dirhead}common {tmphead}
+    echo "Copy {dirhead}{tail} --> {tmphead}/{tail}"
+    mkdir -p {tmphead}/{tail}
+    cp -r {dirhead}{tail}/fixedMu* {tmphead}/{tail}/
 
-echo "Running"
-$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} {tmphead}/{tail}
+    echo "Running"
+    $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} {tmphead}/{tail}
 
-echo "Copy {tmphead}/{tail} --> {dirhead}{tail} (root output files only)"
-cp {tmphead}/{tail}/*.root* {dirhead}{tail}
-cp {tmphead}/{tail}/.scan {dirhead}{tail}
-cp {tmphead}/{tail}/*.out {dirhead}{tail}
-cp {tmphead}/{tail}/*.png {dirhead}{tail}
-if [ -d {tmphead}/{tail}/out ] ;
-  then
-    mkdir -p {dirhead}/{tail}/out ;
-    cp -u {tmphead}/{tail}/out/*.* {dirhead}/{tail}/out ;
-fi
-rm -r {tmphead}
-'''
+    echo "Copy {tmphead}/{tail} --> {dirhead}{tail} (root output files only)"
+    cp {tmphead}/{tail}/*.root* {dirhead}{tail}
+    cp {tmphead}/{tail}/.scan {dirhead}{tail}
+    cp {tmphead}/{tail}/*.out {dirhead}{tail}
+    cp {tmphead}/{tail}/*.png {dirhead}{tail}
+    if [ -d {tmphead}/{tail}/out ] ;
+      then
+        mkdir -p {dirhead}/{tail}/out ;
+        cp -u {tmphead}/{tail}/out/*.* {dirhead}/{tail}/out ;
+    fi
+    rm -r {tmphead}
+    '''
+else:
+    script_template = '''#!/bin/bash
 
+    cd {working_dir}
+    eval `scram runtime -sh`
+
+    echo "Running limit.py:"
+    echo "with options {options}"
+    echo "in directory {dirhead}{tail}"
+
+    echo "Copy {dirhead}{tail} --> {tmphead}/{tail}"
+    mkdir -p {tmphead}
+    cp -r {dirhead}{tail} {tmphead}/{tail}
+    cp -r {dirhead}common {tmphead}
+
+    echo "Running"
+    $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/limit.py {options} {tmphead}/{tail}
+
+    echo "Copy {tmphead}/{tail} --> {dirhead}{tail} (root output files only)"
+    cp {tmphead}/{tail}/*.root* {dirhead}{tail}
+    cp {tmphead}/{tail}/.scan {dirhead}{tail}
+    cp {tmphead}/{tail}/*.out {dirhead}{tail}
+    cp {tmphead}/{tail}/*.png {dirhead}{tail}
+    if [ -d {tmphead}/{tail}/out ] ;
+      then
+        mkdir -p {dirhead}/{tail}/out ;
+        cp -u {tmphead}/{tail}/out/*.* {dirhead}/{tail}/out ;
+    fi
+    rm -r {tmphead}
+    '''
 lxq_fragment = '''#!/bin/zsh
 export CMSSW_BASE=$cmssw_base
 linux_ver=`lsb_release -s -r`

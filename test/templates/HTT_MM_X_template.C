@@ -148,14 +148,14 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   if(std::string(directory) == std::string("mumu_vbf"            )){ category = "#mu#mu";          }
   if(std::string(directory) == std::string("mumu_vbf"            )){ category_extra = "2-jet";              }
   if(std::string(directory) == std::string("mumu_nobtag"               )){ category = "#mu#mu";          }
-  if(std::string(directory) == std::string("mumu_nobtag"               )){ category_extra = "No B-Tag";                        }
+  if(std::string(directory) == std::string("mumu_nobtag"               )){ category_extra = "no b-tag";                        }
   if(std::string(directory) == std::string("mumu_btag"                 )){ category = "#mu#mu";          }
-  if(std::string(directory) == std::string("mumu_btag"                 )){ category_extra = "B-Tag";                           }
+  if(std::string(directory) == std::string("mumu_btag"                 )){ category_extra = "b-tag";                           }
 
   const char* dataset;
 #ifdef MSSM
-  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS, H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV";}
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS, H#rightarrow#tau#tau, 19.7 fb^{-1} at 8 TeV";}
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "#scale[1.5]{CMS}  h,H,A#rightarrow#tau#tau                                 4.9 fb^{-1} (7 TeV)";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "#scale[1.5]{CMS}  h,H,A#rightarrow#tau#tau                                19.7 fb^{-1} (8 TeV)";}
 #else
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS, 4.9 fb^{-1} at 7 TeV";}
   if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS, 19.7 fb^{-1} at 8 TeV";}
@@ -400,7 +400,7 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   cat->Draw();
 */
 #ifdef MSSM
-  TPaveText* massA      = new TPaveText(0.53, 0.49+0.061, 0.95, 0.49+0.151, "NDC");
+  TPaveText* massA      = new TPaveText(0.53, 0.44+0.061, 0.95, 0.44+0.151, "NDC");
   massA->SetBorderSize(   0 );
   massA->SetFillStyle(    0 );
   massA->SetTextAlign(   12 );
@@ -413,9 +413,9 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
 
 #ifdef MSSM  
-  TLegend* leg = new TLegend(0.53, 0.65, 0.95, 0.90);
+  TLegend* leg = new TLegend(0.53, 0.60, 0.95, 0.90);
   SetLegendStyle(leg);
-  leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau" , "L" );
+  leg->AddEntry(ggH  , "h,H,A#rightarrow#tau#tau" , "L" );
 #else
   TLegend* leg = new TLegend(0.52, 0.58, 0.92, 0.89);
   SetLegendStyle(leg);

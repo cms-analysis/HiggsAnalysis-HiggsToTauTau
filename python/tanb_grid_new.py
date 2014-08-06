@@ -13,7 +13,9 @@ model_opts.add_option("--parameter1", dest="parameter1", default="", type="strin
 model_opts.add_option("--tanb", dest="tanb", default="", type="string",
                        help="The value of tanb in the model. Default: \"\"]")
 model_opts.add_option("--model", dest="modelname", default="mhmax-mu+200", type="string",
-                       help="The model which should be used (choices are: mhmax-mu+200, mhmodp, mhmodm). Default: \"mhmax-mu+200\"]")
+                       help="The model which should be used (choices are: mhmax-mu+200, mhmodp, mhmodm, lowmH, tauphobic, lightstau1, lightstopmod). Default: \"mhmax-mu+200\"]")
+model_opts.add_option("--ana-type", dest="ana_type", default="NeutralMSSM", type="string",
+                       help="The model which should be used (choices are: NeutralMSSM, Hhh). Default: \"NeutralMSSM\"]")
 model_opts.add_option("--MSSMvsSM", dest="MSSMvsSM", default=False, action="store_true",
                       help="This is needed for the signal hypothesis separation test MSSM vs SM [Default: False]")
 parser.add_option_group(model_opts)
@@ -39,10 +41,12 @@ if len(args) < 1 :
     exit(1)
 
 import os
-import re
+import re 
+import ROOT # needed for ana_type=Hhh to recalculate mH into mA
 from HiggsAnalysis.HiggsToTauTau.MODEL_PARAMS import MODEL_PARAMS
 from HiggsAnalysis.HiggsToTauTau.ModelDatacard import ModelDatacard
 from HiggsAnalysis.HiggsToTauTau.ModelParams_BASE import ModelParams_BASE
+from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools # needed for ana_type=Hhh to recalculate mH into mA
 
 
 class MODEL(object) :
@@ -53,7 +57,9 @@ class MODEL(object) :
     to resemble the analysed set of datacards. 
     """
     def __init__(self, parameter1, tanb, modelpath='mhmax-mu+200', modeltype='mssm_xsec') :
-        ## parameter1 ; for lowmH this is mue (higgs/higgsino mass parameter) for all other scenarios this is mA
+        ## parameter1
+        # for lowmH this is mue (higgs/higgsino mass parameter) for all other scenarios this is mA
+        # for ana_type=Hhh parameter1 is mH and has to be changed into corresponding mA for given mH/tanb 
         self.parameter1 = parameter1
         ## tanb
         self.tanb = tanb
@@ -96,7 +102,7 @@ class MODEL(object) :
         shifts is a non-emty list also shifts in mu or pdf are returned. Other shifts are currently not supported.
         """
         ## create model
-        modelMaker = ModelParams_BASE(self.parameter1, self.tanb)
+        modelMaker = ModelParams_BASE(self.parameter1, self.tanb, options.ana_type)
         modelMaker.setup_model(period, self.modelpath, self.modeltype)
         ## create central value
         for proc in procs :
@@ -113,6 +119,35 @@ class MODEL(object) :
                 self.uncerts[shift] = buffer
         ## create masses 
         self.mA = modelMaker.create_model_params(period, proc, decay, '').masses['A']
+
+
+def mH_to_mA(card) :
+	match = re.compile('(?P<CHN>[a-zA-Z0-9]+)_[a-zA-Z0-9]+_[0-9]+_(?P<PER>[a-zA-Z0-9]+)')
+        for bin in card.list_of_bins() :
+        ## a bin can be made up of different decay channels or different run periods. Pick decay channel (chn) and run period
+        ## (per) either from bin or from from datacards name in case it is not accessible from bin.	    
+            if match.match(bin) :
+                chn = match.match(bin).group('CHN')
+                per = match.match(bin).group('PER')
+            else :
+                chn = match.match(path[path.rfind('/')+1:]).group('CHN')
+                per = match.match(path[path.rfind('/')+1:]).group('PER')
+        tanbregion = ''
+        if float(options.tanb) < 1:
+            tanbregion = 'tanbLow'
+        else:
+            tanbregion = 'tanbHigh'
+        mssm_xsec_tools_path = os.getenv('CMSSW_BASE')+'/src/auxiliaries/models/out.'+options.modelname+'-'+per+'-'+tanbregion+'-nnlo.root'
+        prescan = mssm_xsec_tools(mssm_xsec_tools_path)
+        Spline_input = ROOT.TGraph()
+        k=0
+        for mass in range(90, 1000) :
+            #print k, mass, prescan.lookup_value(mass, float(options.tanb), "h_mH")
+            Spline_input.SetPoint(k, prescan.lookup_value(mass, float(options.tanb), "h_mH"), mass)
+            k=k+1
+        print "for mH = ", options.parameter1, "  mA = ", Spline_input.Eval(float(options.parameter1))
+        return Spline_input.Eval(float(options.parameter1))
+
             
 def main() :
     print "# --------------------------------------------------------------------------------------"
@@ -153,14 +188,21 @@ def main() :
     old_file = open(path, 'r')
     card = parseCard(old_file, options)
     old_file.close()
-    
+
+    ##if ana_type=="Hhh" mH has to be translated into mA  
+    if options.ana_type=="Hhh" : #mH has to be translated into mA  
+        neededParameter = mH_to_mA(card)
+    else :
+        neededParameter = options.parameter1
+        
     ## determine MODEL for given datacard.
-    model = MODEL(float(options.parameter1), float(options.tanb), options.modelname)
+    model = MODEL(float(neededParameter), float(options.tanb), options.modelname)
     match = re.compile('(?P<CHN>[a-zA-Z0-9]+)_[a-zA-Z0-9]+_[0-9]+_(?P<PER>[a-zA-Z0-9]+)')
     for bin in card.list_of_bins() :
         print "processing bin = %s:" % bin 
         ## a bin can be made up of different decay channels or different run periods. Pick decay channel (chn) and run period
         ## (per) either from bin or from from datacards name in case it is not accessible from bin.
+	#print "processing bin = %s:" % bin 
         if match.match(bin) :
             chn = match.match(bin).group('CHN')
             per = match.match(bin).group('PER')

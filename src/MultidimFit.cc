@@ -2,7 +2,7 @@
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::vector<TGraph*> graph68, TGraph* bestfit, TGraph* SMexpected, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp, bool log);
+void plotting2DScan(TCanvas& canv, TH2F* plot2D, std::vector<TGraph*> graph95, std::vector<TGraph*> graph68, TGraph* bestfit, TMarker* SMexpected, TMarker* SMexpectedLayer, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp, bool log);
 
 TGraph* 
 PlotLimits::sortedGraph(TGraph* graph, double minX, double minY)
@@ -295,7 +295,7 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
   // catch CL-CQ, where there is no prefix 'r_' for the branch names when filling the
   // histogram from the TTree
   bool CLCQ = (xval.find("Cl")!=std::string::npos && yval.find("Cq")!=std::string::npos);
-
+  std::cout << model_ << std::endl;
   // pick up boundaries of the scan from .scan file in masses directory. This
   // requires that you have run imits.py beforehand with option --multidim-fit
   char type[20]; 
@@ -386,15 +386,22 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     }
     TGraph* bestfit = new TGraph();
     bestfit->SetPoint(0, bestX, bestY);
-    TGraph* SMexpected = 0;
+    //To make official style diamond, it is necessary to use the deadful hack of overlaying one marker on top of another slightly larger marker
+    TMarker* SMexpected = 0;
+    TMarker* SMexpectedLayer = 0;
     if(drawsm_){
-      SMexpected = new TGraph();
-      SMexpected->SetPoint(0,1,1);
+      SMexpected = new TMarker();
+      SMexpectedLayer = new TMarker();
+      //Size and colour are set here. For TMarker the position must be set when drawing, so this can be found in src/plottingScan2D.cxx. 
+      //Currently positions hardcoded 
+      //SMexpected->SetMarkerSize(3.0); SMexpected->SetMarkerColor(97); SMexpected->SetMarkerStyle(33);
+      SMexpected->SetMarkerSize(3.0); SMexpected->SetMarkerColor(1); SMexpected->SetMarkerStyle(33);
+      SMexpectedLayer->SetMarkerSize(1.8); SMexpectedLayer->SetMarkerColor(89); SMexpectedLayer->SetMarkerStyle(33);
     }
     // determine new contours for 68% CL and 95% CL limits
     double contours[2];
-    contours[0] = TMath::ChisquareQuantile(0.68,2)/2; //0.5;     //68% CL
-    contours[1] = TMath::ChisquareQuantile(0.95,2)/2; //1.92;    //95% CL
+    contours[0] = TMath::ChisquareQuantile(0.68,2)/2; // 2.28/2;     //68% CL
+    contours[1] = TMath::ChisquareQuantile(0.95,2)/2; // 5.99/2;    //95% CL
     scan2D->SetContour(2, contours);
     scan2D->Draw("CONT Z LIST");  // draw contours as filled regions, and save points
     canv.Update();                // needed to force the plotting and retrieve the contours in TGraph
@@ -452,10 +459,10 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     // do the plotting
     std::string masslabel = mssm_ ? std::string("m_{#phi}") : std::string("m_{H}");
     if(temp_){
-      plotting2DScan(canv, plot2D, graph95 , graph68 , bestfit, SMexpected, xaxis_, yaxis_, masslabel, mass, xmins_[mass], xmaxs_[mass], ymins_[mass], ymaxs_[mass], temp_, log_);    
+      plotting2DScan(canv, plot2D, graph95 , graph68 , bestfit, SMexpected, SMexpectedLayer, xaxis_, yaxis_, masslabel, mass, xmins_[mass], xmaxs_[mass], ymins_[mass], ymaxs_[mass], temp_, log_);    
     }
     else{
-      plotting2DScan(canv, plot2D, filled95, filled68, bestfit, SMexpected, xaxis_, yaxis_, masslabel, mass, xmins_[mass], xmaxs_[mass], ymins_[mass], ymaxs_[mass], temp_, log_);    
+      plotting2DScan(canv, plot2D, filled95, filled68, bestfit, SMexpected, SMexpectedLayer, xaxis_, yaxis_, masslabel, mass, xmins_[mass], xmaxs_[mass], ymins_[mass], ymaxs_[mass], temp_, log_);    
     }
     // add the CMS Preliminary stamp
     CMSPrelim(dataset_.c_str(), "", 0.135, 0.835);

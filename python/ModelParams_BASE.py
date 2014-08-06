@@ -14,9 +14,10 @@ class ModelParams_BASE:
     MODEL_PARAMS.
     The main functions to be used for creation of the MODEL_PARAMS are 'setup_model' and  'create_model_params'
     """
-    def __init__(self, mA, tanb):
+    def __init__(self, mA, tanb, ana_type):
         self.mA = mA
         self.tanb = tanb
+        self.ana_type = ana_type
    
     def setup_model(self, period, modelpath='mhmax-mu+200', modeltype='mssm_xsec'):
         """
@@ -36,7 +37,7 @@ class ModelParams_BASE:
                 tanbregion = 'tanbHigh'
             mssm_xsec_tools_path = getenv('CMSSW_BASE')+'/src/auxiliaries/models/out.'+modelpath+'-'+period+'-'+tanbregion+'-nnlo.root'
             scan = mssm_xsec_tools(mssm_xsec_tools_path)
-            self.htt_query = scan.query(self.mA, self.tanb)
+            self.htt_query = scan.query(self.mA, self.tanb, self.ana_type)
 
     def create_model_params(self, period, channel, decay, uncert=''):
         """
@@ -76,13 +77,13 @@ class ModelParams_BASE:
 
     def use_mssm_xsec(self, query, channel, decay, model_params):
         """
-        This function takes the imput from create_model_params and uses mssm_xsec_tools to determine the masses,
+        This function takes the input from create_model_params and uses mssm_xsec_tools to determine the masses,
         cross-sections and branchingratios for the given production and decay channels
         """
         for higgs in model_params.list_of_higgses:
             model_params.masses[higgs] = self.query_masses(higgs, query)
             model_params.xsecs[higgs] = self.query_xsec(higgs, channel, query)
-            model_params.brs[higgs] = self.query_br(higgs, decay, query)
+            model_params.brs[higgs] = self.query_br(higgs, decay, channel, query)
         
     def query_masses(self, higgs, query):
         """
@@ -98,7 +99,7 @@ class ModelParams_BASE:
         This function uses the mssm_xsec_tools.
         Currently only 'ggH' and 'bbH' are supported
         """
-        channels = {'ggH':'ggF', 'bbH':'santander'}
+        channels = {'ggH':'ggF', 'bbH':'santander', 'ggAToZh':'ggF', 'ggHTohh':'ggF'}
         if channel not in channels:
             exit('ERROR: Production channel \'%s\' not supported'%channel)
         if self.uncert == '':
@@ -110,13 +111,28 @@ class ModelParams_BASE:
         else:
             exit("ERROR: uncertainty %s is not supported"%(self.uncert))
 
-    def query_br(self, higgs, decay, query):
+    def query_br(self, higgs, decay, channel, query):
         """
         Determine the branching ratio of the specified decay channel for a given higgs.
         This function uses the mssm_xsec_tools.
-        Currently only htt, hbb and hmm are supported.
+        For NeutralMSSM currently only htt, hbb and hmm are supported.
+        For Hhh currently only Hhh*hbb*(hbb/htt/hmm) and AZh*hbb*ZLL are supported.
         """
-        brname = {'tt':'BR','bb':'BR-bb', 'mm' : 'BR-mumu'}
+        brname = {'tt':'BR', 'bb':'BR-bb', 'mm':'BR-mumu', 'HTohh':'BR-hh', 'AToZh':'BR-Zh'}
         if decay[1:] not in brname:
             exit('ERROR: Decay channel \'%s\' not supported'%decay)
-        return query['higgses'][higgs][brname[decay[1:]]]
+        if self.ana_type=='Hhh' :
+            if channel=='ggHTohh' :
+                if query['higgses'][higgs][brname[channel[2:]]] < 0 : #some BR (h-hh) is negative -> set to 0
+                    return str(0)
+                else :
+                    #print channel, str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses']['h'][brname['bb']]*query['higgses']['h'][brname[decay[1:]]]*2)
+                    return str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses']['h'][brname['bb']]*query['higgses']['h'][brname[decay[1:]]]*2)
+            elif channel=='ggAToZh' :
+                if query['higgses'][higgs][brname[channel[2:]]] < 0 : #some BR (h-hh) is negative -> set to 0
+                    return str(0)
+                else :  
+                    #print channel, str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses']['h'][brname['bb']]*0.10099)
+                    return str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses']['h'][brname['bb']]*0.10099) #BR(Z->LL)=0.003363(ee)+0.003366(mumu)+0.003370(tautau)               
+        else : 
+            return query['higgses'][higgs][brname[decay[1:]]]
