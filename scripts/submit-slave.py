@@ -21,6 +21,8 @@ parser.add_option("--seed", dest="seed", default="", type="string",
                   help="Seed in case it is not chosen randomly. If emtpy the option has no effect. If option --random is chosen this option also has no effect. Currently only implemented for method='significance'. [Default: \"\"]")
 parser.add_option("--model", dest="model", default="HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root", type="string",
                   help="The model that should be applied for direct limits on tanb (only applicable for --method tanb, for other methods this option will have no effect). The model should be given as the absolute path to the mssm_xsec_tool input file starting from CMSSW_BASE/src/, or feyn-higgs::saeffm , feyn-higgs::gluoph, ... in case the model is assumed to be picked from feyn-higgs. In the case of feyn-higgs the model tag following the \'::\' will be passed on the the feyn-higgs extration tool feyn-higgs-mssm. [Default: 'HiggsAnalysis/HiggsToTauTau/data/out.mhmax-mu+200-{PERIOD}-{tanbRegion}-nnlo.root']")
+parser.add_option("--ana-type", dest="ana_type", default="NeutralMSSM", type="string",
+                  help="The model which should be used (choices are: NeutralMSSM, Hhh). Default: \"NeutralMSSM\"]")
 parser.add_option("--interpolation", dest="interpolation_mode", default='mode-1', type="choice",
                   help="Mode for mass interpolation for direct limits tanb (only applicable for --method tanb, for other methods this option will have no effect). [Default: mode-1]", choices=["mode-0", "mode-1", "mode-2", "mode-3", "mode-4", "mode-5"])
 parser.add_option("--noSystematics", dest="nosys", default=False, action="store_true",
@@ -105,6 +107,9 @@ if len(args) < 1 :
 
 import os
 import re
+import ROOT # needed for ana_type=Hhh to recalculate mH into mA
+from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools # needed for ana_type=Hhh to recalculate mH into mA
+
 
 ## define root path (to allow for direcotry
 ## structure of arbitrary depth)
@@ -256,8 +261,8 @@ for directory in args :
                             mass=masspoint, tanb=tanb, model=options.model, interpolation=options.interpolation_mode))
                     else :
                         ## new
-                        os.system("python tanb_grid_new.py --parameter1 {mass} --tanb {tanb} --model {model} {MSSMvsSM} tmp.txt".format(
-                            mass=masspoint, tanb=tanb, model=options.model, MSSMvsSM='--MSSMvsSM' if options.MSSMvsSM else ""))
+                        os.system("python tanb_grid_new.py --parameter1 {mass} --tanb {tanb} --model {model} --ana-type {anatype} {MSSMvsSM} tmp.txt".format(
+                            mass=masspoint, tanb=tanb, model=options.model, anatype=options.ana_type, MSSMvsSM='--MSSMvsSM' if options.MSSMvsSM else ""))
                 ## setup the batchjob creation for combine -M CLs with tanb grid points instead of cross section grid points
                 opts = "-o {out} -n {points} -m {mass} -O {options} -T {toysH} -t {toys} -j {jobs} -q {queue}".format(
                     out=options.out, points=options.points, mass='110' if options.model=='lowmH' else masspoint, options=options.options, toysH=options.T,
@@ -284,16 +289,43 @@ for directory in args :
                 if options.v != 0 :
                     print "> creating batch job for combine -M CLs"
                 ## create the job
-                if not options.MSSMvsSM :
+                #if not options.MSSMvsSM : not needed anymore!
+                if options.ana_type=="wrong statement" :
                     os.system("combine-tanb.py %s --shape %s tmp.txt %s %s" % (opts, options.shape, options.min, options.max))
                     if not os.path.exists("debug") :
                         os.system("mkdir debug")
                     os.system("cp tmp*.txt debug")
                 else :
                     for tanb in points :
-                        print "translating tmp_{tanb}0.txt into workspace".format(tanb=tanb)
-                        os.system("text2workspace.py -m {mass} tmp_{tanb}0.txt -P HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:twoHypothesisHiggs -o fixedMu_{tanb}0.root".format(
-                            mass='110' if options.model=='lowmH' else masspoint, tanb=tanb))
+                        neededParameter=''
+                        if options.model=='lowmH' :
+                            neededParameter='110'
+                        elif options.ana_type=='Hhh' :  #only available for mhmodp
+                            if float(tanb) < 1:
+                                tanbregion = 'tanbLow'
+                            else:
+                                tanbregion = 'tanbHigh'
+                            mssm_xsec_tools_path = os.getenv('CMSSW_BASE')+'/src/auxiliaries/models/out.'+options.model+'-8TeV-'+tanbregion+'-nnlo.root'
+                            prescan = mssm_xsec_tools(mssm_xsec_tools_path)
+                            Spline_input = ROOT.TGraph()
+                            k=0
+                            if 'mhmod' in options.model : #only available for mhmodp
+                                for m in range(90, 1000) :  
+                                    Spline_input.SetPoint(k, prescan.lookup_value(m, float(tanb), "h_mH"), m)
+                                    k=k+1
+                                neededParameter=str(Spline_input.Eval(float(masspoint)))
+                        else :
+                            neededParameter=str(masspoint)
+                        #print "translating tmp_{tanb}0.txt into workspace".format(tanb=tanb)
+                        if options.MSSMvsSM :
+                            os.system("text2workspace.py -m {mass} tmp_{tanb}0.txt -P HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:twoHypothesisHiggs -o fixedMu_{tanb}0.root".format(
+                                mass=str(neededParameter), tanb=tanb))
+                        else :
+                            os.system("text2workspace.py -m {mass} tmp_{tanb}0.txt -o batch_{tanb}0.root".format(
+                                mass=str(neededParameter), tanb=tanb))
+                        if not os.path.exists("debug") :
+                            os.system("mkdir debug")
+                        os.system("cp tmp*.txt debug")
             if options.method == "Bayesian" :
                 ## -----------------------------------------------------------------------------------------
                 ## Option: combine Bayesian

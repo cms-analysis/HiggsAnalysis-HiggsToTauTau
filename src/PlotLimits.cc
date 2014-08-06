@@ -13,7 +13,8 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   txt_  (cfg.existsAs<bool  >("txt" ) ? cfg.getParameter<bool  >("txt" ) : false),
   root_ (cfg.existsAs<bool  >("root") ? cfg.getParameter<bool  >("root") : false),
   parabolic_ (cfg.existsAs<bool  >("parabolic") ? cfg.getParameter<bool  >("parabolic") : false),
-  mssm_ (cfg.existsAs<bool  >("mssm") ? cfg.getParameter<bool  >("mssm") : false)
+  mssm_ (cfg.existsAs<bool  >("mssm") ? cfg.getParameter<bool  >("mssm") : false),
+  mssm_nolog_ (cfg.existsAs<bool  >("mssm_nolog") ? cfg.getParameter<bool  >("mssm_nolog") : false)
 {
   // mass-points
   bins_=cfg.getParameter<std::vector<double> >("masspoints");
@@ -82,6 +83,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   transparent_=cfg.existsAs<bool>("transparent") ? cfg.getParameter<bool>("transparent") : false;
   expectedOnly_=cfg.existsAs<bool>("expectedOnly") ? cfg.getParameter<bool>("expectedOnly") : false;
   MSSMvsSM_=cfg.existsAs<bool  >("MSSMvsSM") ? cfg.getParameter<bool  >("MSSMvsSM") : false;
+  BlackWhite_=cfg.existsAs<bool  >("BlackWhite") ? cfg.getParameter<bool  >("BlackWhite") : false;
 }
 
 

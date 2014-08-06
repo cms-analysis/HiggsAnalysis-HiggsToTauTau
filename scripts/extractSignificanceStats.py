@@ -183,8 +183,10 @@ else :
     minus_one_sigma_bin=0
     plus_two_sigma_bin=0
     minus_two_sigma_bin=0
-    for i in range(nbins) :
-        help= hSM.Integral(1, i)/hSM.Integral()
+    help=0
+    for i in xrange(1, nbins) :
+        binVal = hSM.GetBinContent(i)
+        help += binVal/integralSM
         if help > 0.975 and plus_two_sigma_bin == 0 :
             plus_two_sigma_bin=i
         if help > 0.84 and plus_one_sigma_bin == 0 :

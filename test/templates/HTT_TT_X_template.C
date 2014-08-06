@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <algorithm>
 
@@ -176,34 +177,34 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   if(std::string(directory) == std::string("tauTau_vbf"                  )){ category = "#tau_{h}#tau_{h}";           }
   if(std::string(directory) == std::string("tauTau_vbf"                  )){ category_extra = "VBF tag";              }
   if(std::string(directory) == std::string("tauTau_nobtag"               )){ category = "#tau_{h}#tau_{h}";           }
-  if(std::string(directory) == std::string("tauTau_nobtag"               )){ category_extra = "No B-Tag";             }
+  if(std::string(directory) == std::string("tauTau_nobtag"               )){ category_extra = "no b-tag";             }
   if(std::string(directory) == std::string("tauTau_btag"                 )){ category = "#tau_{h}#tau_{h}";           }
-  if(std::string(directory) == std::string("tauTau_btag"                 )){ category_extra = "B-Tag";                }
+  if(std::string(directory) == std::string("tauTau_btag"                 )){ category_extra = "b-tag";                }
   if(std::string(directory) == std::string("tauTau_nobtag_low"           )){ category = "#tau_{h}#tau_{h}";           }
-  if(std::string(directory) == std::string("tauTau_nobtag_low"           )){ category_extra = "No B-Tag"; }
+  if(std::string(directory) == std::string("tauTau_nobtag_low"           )){ category_extra = "no b-tag"; }
   if(std::string(directory) == std::string("tauTau_nobtag_low"           )){ category_extra2 = "low p_{T}^{#tau_{h}}"; }
   if(std::string(directory) == std::string("tauTau_nobtag_medium"        )){ category = "#tau_{h}#tau_{h}";           }
-  if(std::string(directory) == std::string("tauTau_nobtag_medium"        )){ category_extra = "No B-Tag"; }
+  if(std::string(directory) == std::string("tauTau_nobtag_medium"        )){ category_extra = "no b-tag"; }
   if(std::string(directory) == std::string("tauTau_nobtag_medium"        )){ category_extra2 = "medium p_{T}^{#tau_{h}}"; }
   if(std::string(directory) == std::string("tauTau_nobtag_high"          )){ category = "#tau_{h}#tau_{h}";           }
-  if(std::string(directory) == std::string("tauTau_nobtag_high"          )){ category_extra = "No B-Tag"; }
+  if(std::string(directory) == std::string("tauTau_nobtag_high"          )){ category_extra = "no b-tag"; }
   if(std::string(directory) == std::string("tauTau_nobtag_high"          )){ category_extra2 = "high p_{T}^{#tau_{h}}"; }
   if(std::string(directory) == std::string("tauTau_btag_low"             )){ category = "#tau_{h}#tau_{h}";           }
-  if(std::string(directory) == std::string("tauTau_btag_low"             )){ category_extra = "B-Tag"; }
+  if(std::string(directory) == std::string("tauTau_btag_low"             )){ category_extra = "b-tag"; }
   if(std::string(directory) == std::string("tauTau_btag_low"             )){ category_extra2 = "low p_{T}^{#tau_{h}}"; }
   if(std::string(directory) == std::string("tauTau_btag_high"            )){ category = "#tau_{h}#tau_{h}";           }
-  if(std::string(directory) == std::string("tauTau_btag_high"            )){ category_extra = "B-Tag"; }
+  if(std::string(directory) == std::string("tauTau_btag_high"            )){ category_extra = "b-tag"; }
   if(std::string(directory) == std::string("tauTau_btag_high"            )){ category_extra2 = "high p_{T}^{#tau_{h}}"; }
 
   const char* dataset;
 #ifdef MSSM
-  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV";}
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "#scale[1.5]{CMS}  h,H,A#rightarrow#tau#tau                                 4.9 fb^{-1} (7 TeV)";}
   if(std::string(inputfile).find("8TeV")!=std::string::npos){
     if(std::string(directory).find("btag")!=std::string::npos){
-      dataset = "CMS, H#rightarrow#tau#tau, 18.3 fb^{-1} at 8 TeV";
+      dataset = "#scale[1.5]{CMS}  h,H,A#rightarrow#tau#tau                                18.3 fb^{-1} (8 TeV)";
     }
     else{
-      dataset = "CMS, H#rightarrow#tau#tau, 19.8 fb^{-1} at 8 TeV";
+      dataset = "#scale[1.5]{CMS}  h,H,A#rightarrow#tau#tau                                19.7 fb^{-1} (8 TeV)";
     }
   }
 #else
@@ -403,7 +404,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   CMSPrelim(dataset, "", 0.16, 0.835);  
 #if defined MSSM
   TPaveText* chan     = new TPaveText(0.20, 0.74+0.061, 0.32, 0.74+0.161, "tlbrNDC");
-  if(std::string(inputfile).find("8TeV")!=std::string::npos) chan     = new TPaveText(0.20, 0.69+0.061, 0.32, 0.74+0.161, "tlbrNDC");
+  if (category_extra2!="") chan     = new TPaveText(0.20, 0.69+0.061, 0.32, 0.74+0.161, "tlbrNDC");
 #else
   TPaveText* chan     = new TPaveText(0.52, 0.35, 0.91, 0.55, "tlbrNDC");
 #endif
@@ -416,7 +417,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   chan->AddText(category);
   chan->AddText(category_extra);
 #if defined MSSM
-  if(std::string(inputfile).find("8TeV")!=std::string::npos) chan->AddText(category_extra2);
+  if (category_extra2!="") chan->AddText(category_extra2);
 #else
   chan->AddText(category_extra2);
 #endif
@@ -443,7 +444,7 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   cat2->Draw();
 */  
 #ifdef MSSM
-  TPaveText* massA      = new TPaveText(0.53, 0.49+0.061, 0.95, 0.49+0.151, "NDC");
+  TPaveText* massA      = new TPaveText(0.53, 0.44+0.061, 0.95, 0.44+0.151, "NDC");
   massA->SetBorderSize(   0 );
   massA->SetFillStyle(    0 );
   massA->SetTextAlign(   12 );
@@ -456,9 +457,9 @@ HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 #endif
   
 #ifdef MSSM
-  TLegend* leg = new TLegend(0.53, 0.65, 0.95, 0.90);
+  TLegend* leg = new TLegend(0.53, 0.60, 0.95, 0.90);
   SetLegendStyle(leg);
-  leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau" , "L" );
+  leg->AddEntry(ggH  , "h,H,A#rightarrow#tau#tau" , "L" );
 #else
   TLegend* leg = new TLegend(0.52, 0.58, 0.92, 0.89);
   SetLegendStyle(leg);
