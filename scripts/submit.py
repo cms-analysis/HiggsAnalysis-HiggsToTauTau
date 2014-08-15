@@ -229,7 +229,7 @@ def model_config(model_name) :
         model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
         opts  = "--physics-model-options 'modes=bbH;bbHRange=0:BBH-BOUND'"    
     elif "Hhh" in options.fitModel:
-        model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:multiSignalModel'"
+        model = "--physics-model 'tmp=HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel'"
         opts  = "--physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohh$:r[1,-5,5];map=^.*/ggHTohh_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZh(\d+\.*\d*)*$:AZh=AZh[1,-500,500] \'"
     else:
         return None
@@ -529,7 +529,7 @@ if options.optAsym :
         model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
         opts  = "--physics-model-options 'modes=bbH;bbHRange=0:BBH-BOUND'"
     elif "Hhh" in options.fitModel:
-        model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:multiSignalModel'"
+        model = "--physics-model 'tmp=HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel'"
         opts  = "--physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohh$:r[1,-5,5];map=^.*/ggHTohh_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZh(\d+\.*\d*)*$:AZh=AZh[1,-500,500] \'"
 
     ## prepare calculation
