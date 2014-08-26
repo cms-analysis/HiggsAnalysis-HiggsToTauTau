@@ -10,7 +10,7 @@ cp -r HiggsAnalysis/HiggsToTauTau/setup-Hhh/ setups-HTohh/
 cp htt_mt.inputs-Hhh-8TeV-svfit-test.root setups-Hhh/mt/htt_mt.inputs-Hhh-8TeV.root 
 cp htt_et.inputs-Hhh-8TeV-svfit-test.root setups-Hhh/et/htt_et.inputs-Hhh-8TeV.root 
 cp htt_em.inputs-Hhh-8TeV-svfit-test.root setups-Hhh/em/htt_em.inputs-Hhh-8TeV.root 
-cp python HiggsAnalysis/HiggsToTauTau/scripts/setup-datacards.py -i setups-HTohh/ -o aux-HTohh/ -a 'Hhh' -p '8TeV' -c 'mt, em, et' "250-350:50"
+python HiggsAnalysis/HiggsToTauTau/scripts/setup-datacards.py -i setups-HTohh/ -o aux-HTohh/ -a 'Hhh' -p '8TeV' -c 'mt, em, et' "250-350:50"
 #Setup LIMITS directories for model independent limits
 python HiggsAnalysis/HiggsToTauTau/scripts/setup-Hhh.py -i aux-HTohh/ -o LIMITS-HTohh-ggHTohh/ -c 'mt, em, et' -a 'Hhh' -p '8TeV' "250-350:50"
 #Setup LIMITS directories for model dependent limits, e.g. mhmodp scenario (can also use mhmodm)
