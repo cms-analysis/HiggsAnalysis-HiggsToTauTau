@@ -10,6 +10,8 @@ parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="
                   help="Choose between run periods [Default: \"7TeV 8TeV\"]")
 parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", type="string",
                   help="List of channels, for which inputs should be scaled. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et\"]")
+parser.add_option("-a", "--analysis", dest="Hhh", default="", type="string",
+                  help="Running acceptance corrections in context of Hhh analysis [Default: \"\"]")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 if len(args) < 1 :
@@ -45,13 +47,14 @@ for channel in channels :
             for mass in parseArgs(args) :
                 for process in ['ggH', 'bbH'] :
                     exe = "{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/macros/rescaleSignal.C+".format(CMSSW_BASE=os.environ.get("CMSSW_BASE"))
-                    os.system(r"root -l -b -q {EXE}\(true,{SCALE},\"{PATH}/{CHN}/htt_{CHN}.inputs-mssm-{PER}-{MASSCAT}.root\",\"{PROCESS}\",0\)".format(
+                    os.system(r"root -l -b -q {EXE}\(true,{SCALE},\"{PATH}/{CHN}/htt_{CHN}.inputs-{MSSM}-{PER}{MASSCAT}.root\",\"{PROCESS}\",0\)".format(
                         EXE=exe,
                         PATH=source_path,
                         SCALE=acceptance_correction(process, mass, period),
                         CHN=channel,
+                        MSSM="Hhh" if options.Hhh=="Hhh" else "mssm",
                         PER=period,
-                        MASSCAT=mass_category(mass,cat,'htt_'+channel),
+                        MASSCAT="-" + str(mass_category(mass,cat,'htt_'+channel)) if options.Hhh=="" else "",
                         PROCESS=process+str(mass)
                         ))
                     if channel=="mm" :
