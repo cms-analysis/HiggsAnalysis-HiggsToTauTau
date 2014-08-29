@@ -243,11 +243,11 @@ if options.update_aux :
                     CATS=' '.join(config.categories[chn][per]),
                     MASSES=' '.join(masses),
                     ))
-        if 'bbb' in ana :
-            if options.drop_list != '' :
-                for subdir in glob.glob("{DIR}/{ANA}/mssm/*".format(DIR=dir, ANA=ana)) :
-                    print '...comment bbb uncertainties for', subdir
-                    os.system("python HiggsAnalysis/CombinedLimit/scripts/commentUncerts.py --drop-list={DROP} {SUB}".format(DROP=options.drop_list, SUB=subdir))
+        ## if 'bbb' in ana :
+##             if options.drop_list != '' :
+##                 for subdir in glob.glob("{DIR}/{ANA}/mssm/*".format(DIR=dir, ANA=ana)) :
+##                     print '...comment bbb uncertainties for', subdir
+##                     os.system("python HiggsAnalysis/CombinedLimit/scripts/commentUncerts.py --drop-list={DROP} {SUB}".format(DROP=options.drop_list, SUB=subdir))
     print "analyses", analyses  
     ## blind datacards
     if options.blind_datacards :
