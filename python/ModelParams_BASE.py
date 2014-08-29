@@ -99,7 +99,7 @@ class ModelParams_BASE:
         This function uses the mssm_xsec_tools.
         Currently only 'ggH' and 'bbH' are supported
         """
-        channels = {'ggH':'ggF', 'bbH':'santander', 'ggAToZh':'ggF', 'ggHTohh':'ggF'}
+        channels = {'ggH':'ggF', 'bbH':'santander', 'ggAToZhToLLBB':'ggF','ggAToZhToLLTauTau':'ggF', 'ggHTohhTo2Tau2B':'ggF'}
         if channel not in channels:
             exit('ERROR: Production channel \'%s\' not supported'%channel)
         if self.uncert == '':
@@ -118,7 +118,7 @@ class ModelParams_BASE:
         For NeutralMSSM currently only htt, hbb and hmm are supported.
         For Hhh currently only Hhh*hbb*(hbb/htt/hmm) and AZh*hbb*ZLL and AZh*htt*Zbb are supported.
         """
-        brname = {'tt':'BR', 'bb':'BR-bb', 'mm':'BR-mumu', 'HTohhTo2Tau2B':'BR-hh', 'AToZhBBToTauTau':'BR-Zh', 'AToZhToTauTauBB':'BR-Zh'}
+        brname = {'tt':'BR', 'bb':'BR-bb', 'mm':'BR-mumu', 'HTohhTo2Tau2B':'BR-hh', 'AToZhToLLTauTau':'BR-Zh', 'AToZhToLLBB':'BR-Zh'}
         if decay[1:] not in brname:
             exit('ERROR: Decay channel \'%s\' not supported'%decay)
         if self.ana_type=='Hhh' :
