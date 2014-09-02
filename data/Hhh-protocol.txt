@@ -2,19 +2,8 @@
 
 #From src directory of CMSSW release, with the CombinedLimits and HiggsTauTau packages added as described on the twiki:
 # https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideHiggs2TauLimits
-#Please use the branch MSSM-paper for the HiggsTauTau package
-
-#Copy uncertainty files over to your own setup directory
-cp -r HiggsAnalysis/HiggsToTauTau/setup-Hhh/ setups-HTohh/
-#Copy in your datacards, maintaining the correct naming convention, e.g.
-cp htt_mt.inputs-Hhh-8TeV-svfit-test.root setups-Hhh/mt/htt_mt.inputs-Hhh-8TeV.root 
-cp htt_et.inputs-Hhh-8TeV-svfit-test.root setups-Hhh/et/htt_et.inputs-Hhh-8TeV.root 
-cp htt_em.inputs-Hhh-8TeV-svfit-test.root setups-Hhh/em/htt_em.inputs-Hhh-8TeV.root 
-python HiggsAnalysis/HiggsToTauTau/scripts/setup-datacards.py -i setups-HTohh/ -o aux-HTohh/ -a 'Hhh' -p '8TeV' -c 'mt, em, et' "250-350:50"
-#Setup LIMITS directories for model independent limits
-python HiggsAnalysis/HiggsToTauTau/scripts/setup-Hhh.py -i aux-HTohh/ -o LIMITS-HTohh-ggHTohh/ -c 'mt, em, et' -a 'Hhh' -p '8TeV' "250-350:50"
-#Setup LIMITS directories for model dependent limits, e.g. mhmodp scenario (can also use mhmodm)
-python HiggsAnalysis/HiggsToTauTau/scripts/setup-Hhh.py -i aux-HTohh/ -o LIMITS-HTohh-mhmodp/ -c 'mt, em, et' -a 'Hhh' -p '8TeV' "250-350:50"
+#Use of doHTohh.py script to replace the individual scripts
+python HiggsAnalysis/HiggsToTauTau/scripts/doHTohh.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-Hhh -a plain --label="SomeLabel"
 
 #The following command applies the correct XS*BR for each tanb point we are interested in for the model-dependent limits 
 lxb-xsec2tanb.py --ana-type="Hhh" --model="mhmodp" --customTanb="1,1.5,2,2.5,3" LIMITS-HTohh-mhmodp/*/*
