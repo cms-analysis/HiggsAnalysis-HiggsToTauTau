@@ -31,8 +31,15 @@ layout = cms.PSet(
     outputLabel = cms.string("ggHTohh-limit"), 
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
-   250.
+   260.
+   ,270.
+   ,280.
+   ,290.
    ,300.
+   ,310.
+   ,320.
+   ,330.
+   ,340.
    ,350.
     ),
     ## SM like limit without the line at sigma=1
