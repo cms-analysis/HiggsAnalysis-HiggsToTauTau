@@ -55,7 +55,7 @@ for channel in channels :
                         MSSM="Hhh" if options.Hhh=="Hhh" else "mssm",
                         PER=period,
                         MASSCAT="-" + str(mass_category(mass,cat,'htt_'+channel)) if options.Hhh=="" else "",
-                        PROCESS=process+str(mass)
+                        PROCESS=process+str(mass)+"\(\[\^0-9\]\|\$\)"
                         ))
                     if channel=="mm" :
                         os.system(r"root -l -b -q {EXE}\(true,{SCALE},\"{PATH}/{CHN}/htt_{CHN}.inputs-mssm-{PER}-{MASSCAT}-msv.root\",\"{PROCESS}\",0\)".format(
@@ -65,6 +65,6 @@ for channel in channels :
                             CHN=channel,
                             PER=period,
                             MASSCAT=mass_category(mass,cat,'htt_'+channel),
-                            PROCESS=process+str(mass)
+                            PROCESS=process+str(mass)+"\(\[\^0-9\]\|\$\)"
                             ))
                     
