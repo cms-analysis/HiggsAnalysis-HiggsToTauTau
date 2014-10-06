@@ -1,6 +1,6 @@
 #include "HiggsAnalysis/HiggsToTauTau/interface/PlotLimits.h"
 
-void 
+/*void 
 PlotLimits::print(const char* filename, std::string& xval, std::string& yval, std::vector<TGraph*> contour, const char* type)
 {
   if(std::string(type) == std::string("tex")){
@@ -37,6 +37,43 @@ PlotLimits::print(const char* filename, std::string& xval, std::string& yval, st
 	  << "   " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << (*g)->GetY()[idx]
 	  << std::endl;
       }
+    }
+  }
+}*/
+
+void 
+PlotLimits::print(const char* filename, std::string& xval, std::string& yval, TGraph* contour, const char* type)
+{
+  if(std::string(type) == std::string("tex")){
+    ofstream file;
+    file.open (std::string(filename).append(".tex").c_str());
+    file
+      << "   " << std::setw(15) << std::right << xval << " (pb) " 
+      << " & " << std::setw(15) << std::right << yval << " (pb) "
+      << std::right << "  \\\\"
+      << std::endl << "\\hline" << std::endl;
+      unsigned int precision = 5;
+      for(int idx=0; idx<contour->GetN(); ++idx){
+	file
+	  << "   " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << contour->GetX()[idx]
+	  << " & " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << contour->GetY()[idx]
+	  << std::right << "  \\\\"
+	  << std::endl << "\\hline" << std::endl;
+      }
+  }
+  if(std::string(type) == std::string("txt")){
+    ofstream file;
+    file.open (std::string(filename).append(".txt").c_str());
+    file
+      << "   " << std::setw(15) << std::right << xval 
+      << "   " << std::setw(15) << std::right << yval
+      << std::endl;
+    unsigned int precision = 5;
+    for(int idx=0; idx<contour->GetN(); ++idx){
+      file
+	<< "   " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << contour->GetX()[idx]
+	<< "   " << std::setw(15) << std::fixed << std::scientific << std::setprecision(precision) << std::right << contour->GetY()[idx]
+	<< std::endl;
     }
   }
 }
