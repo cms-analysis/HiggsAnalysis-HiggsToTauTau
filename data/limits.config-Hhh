@@ -233,10 +233,10 @@ mt_categories_8TeV = 0 1 2 3 4
 tt_categories_8TeV = 0 1 2 3 4
 
 
-em_names_8TeV = 2jet0tag 2jet1tag 2jet2tag 1jet0tag 1jet1tag
-et_names_8TeV = 2jet0tag 2jet1tag 2jet2tag 1jet0tag 1jet1tag
-mt_names_8TeV = 2jet0tag 2jet1tag 2jet2tag 1jet0tag 1jet1tag
-tt_names_8TeV = 2jet0tag 2jet1tag 2jet2tag 1jet0tag 1jet1tag
+em_names_8TeV = 1jet0tag 1jet1tag 2jet0tag 2jet1tag 2jet2tag
+et_names_8TeV = 1jet0tag 1jet1tag 2jet0tag 2jet1tag 2jet2tag
+mt_names_8TeV = 1jet0tag 1jet1tag 2jet0tag 2jet1tag 2jet2tag
+tt_names_8TeV = 1jet0tag 1jet1tag 2jet0tag 2jet1tag 2jet2tag
 
 
 [bbb-Hhh]

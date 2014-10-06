@@ -1,11 +1,11 @@
 [inputs]
 
 em = Imperial
-et = Imperial
+et = Italians
 mt = Imperial
 mm = DESY-KIT
 ee = DESY-KIT
-tt = Italians
+tt = CERN
 vhtt = VHTT
 mt_soft = LLR
 
