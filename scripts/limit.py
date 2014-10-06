@@ -119,7 +119,7 @@ fgroup.add_option("--minuit", dest="minuit", default=False, action="store_true",
                   help="Switch from minuit2 to minuit for the fit that is performed before the asymptotic limits are calculated. [Default: False]")
 fgroup.add_option("--qtilde", dest="qtilde", default=False, action="store_true",
                   help="Also allow negative signal strength in the fit that is performed before the asymptotic limits are calculated. [Default: False]")
-fgroup.add_option("--strategy", dest="strategy", default=2, type="int",
+fgroup.add_option("--strategy", dest="strategy", default=0, type="int",
                   help="Change the strategy of the fit that is performed before the asymptotic limits are calculated. Possible strategies are 0, 1, 2. [Default: 2]")
 fgroup.add_option("--hide-fitresult", dest="hide_fitresult", default=False, action="store_true",
                   help="Specify this option if you want to hide the result of the ML fit from the prompt. [Default: False]")
