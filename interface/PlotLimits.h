@@ -83,7 +83,8 @@ class PlotLimits {
   /// print tabulated limits to a txt file for MSSMvsBG and MSSMvsSM limits
   void print(const char* filename, TGraphAsymmErrors* outerBand_1, TGraphAsymmErrors* innerBand_1, TGraph* expected_1, TGraph* observed_1, TGraphAsymmErrors* outerBand_2, TGraphAsymmErrors* innerBand_2, TGraph* expected_2, TGraph* observed_2, double tanbLow, double tanbHigh, double tanbLowHigh, const char* type="txt");
   /// print tabulated limits to a txt file, for inner band, outer band, expected and observed, with inner and outer band
-  void print(const char* filename, std::string& xval, std::string& yval, std::vector<TGraph*> contour, const char* type="txt");
+  void print(const char* filename, std::string& xval, std::string& yval, TGraph* contour, const char* type="txt");
+  //void print(const char* filename, std::string& xval, std::string& yval, std::vector<TGraph*> contour, const char* type="txt");
   /// automatic maximum determination for TGraphs (used for several options)
   float maximum(TGraph* graph); 
   /// automatic minimum determination for TGraphs (used for several options)
