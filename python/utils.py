@@ -356,6 +356,50 @@ def get_channel_dirs(analysis, finalstate, category, period):
         'vhtt' : {
         },        
         },
+        '14TeV':
+        {
+        'ee' : {
+        '08' : ['nobtag'   ],
+        '09' : ['btag'     ],
+        },
+        'mm' : {
+        '08' : ['nobtag'   ],
+        '09' : ['btag'     ],
+        },
+        'em' : {
+        '08' : ['nobtag'   ],
+        '09' : ['btag'     ],
+        },
+        'et' : {
+        '08' : ['nobtag'     ],
+        '09' : ['btag'       ],
+        '10' : ['nobtag_low'   ],
+        '11' : ['nobtag_medium'],
+        '12' : ['nobtag_high'  ],
+        '13' : ['btag_low'],
+        '14' : ['btag_high'  ],
+        },
+        'mt' : {
+        '08' : ['nobtag'     ],
+        '09' : ['btag'       ],
+        '10' : ['nobtag_low'   ],
+        '11' : ['nobtag_medium'],
+        '12' : ['nobtag_high'  ],
+        '13' : ['btag_low'],
+        '14' : ['btag_high'  ],
+        },
+        'tt' : {
+        '08' : ['nobtag'],
+        '09' : ['btag'  ],  
+        '10' : ['nobtag_low'   ],
+        '11' : ['nobtag_medium'],
+        '12' : ['nobtag_high'  ],
+        '13' : ['btag_low'],
+        '14' : ['btag_high'  ],            
+        },
+        'vhtt' : {
+        },        
+        },
         } 
     }
     if fs_map[finalstate] == '' :
