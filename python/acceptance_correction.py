@@ -1,3 +1,4 @@
+
 def interval(keys, mass) :
     """
     return the interval in which the value mass resides. This interval will be used
@@ -30,6 +31,28 @@ def acceptance_correction(process, mass, period) :
     """
     if not (process == "ggH" or process == "bbH") :
         return -999.
+    values_14TeV = {  #14TeV = 8TeV for debugging
+        80.   : ({"ggH" :  0.10297, "bbH" :  0.10103}),
+        90.   : ({"ggH" :  0.10301, "bbH" :  0.10103}),
+        100.  : ({"ggH" :  0.10309, "bbH" :  0.10107}),
+        120.  : ({"ggH" :  0.10318, "bbH" :  0.10111}),
+        130.  : ({"ggH" :  0.10321, "bbH" :  0.10111}),
+        140.  : ({"ggH" :  0.10322, "bbH" :  0.10112}),
+        160.  : ({"ggH" :  0.10330, "bbH" :  0.10115}),
+        180.  : ({"ggH" :  0.10337, "bbH" :  0.10118}),
+        200.  : ({"ggH" :  0.10359, "bbH" :  0.10122}),
+        250.  : ({"ggH" :  0.10413, "bbH" :  0.10132}),
+        300.  : ({"ggH" :  0.10565, "bbH" :  0.10164}),
+        350.  : ({"ggH" :  0.11232, "bbH" :  0.10234}),
+        400.  : ({"ggH" :  0.11543, "bbH" :  0.10286}),
+        450.  : ({"ggH" :  0.12152, "bbH" :  0.10349}),
+        500.  : ({"ggH" :  0.13408, "bbH" :  0.10436}),
+        600.  : ({"ggH" :  0.27492, "bbH" :  0.10712}),
+        700.  : ({"ggH" :  0.38186, "bbH" :  0.10972}),
+        800.  : ({"ggH" :  0.53704, "bbH" :  0.11305}),
+        900.  : ({"ggH" :  0.76101, "bbH" :  0.11716}),
+        1000. : ({"ggH" :  1.07387, "bbH" :  0.12235}),
+        }
     values_8TeV = {  #8TeV
         80.   : ({"ggH" :  1.0297, "bbH" :  1.0103}),
         90.   : ({"ggH" :  1.0301, "bbH" :  1.0103}),
@@ -51,28 +74,6 @@ def acceptance_correction(process, mass, period) :
         800.  : ({"ggH" :  5.3704, "bbH" :  1.1305}),
         900.  : ({"ggH" :  7.6101, "bbH" :  1.1716}),
         1000. : ({"ggH" : 10.7387, "bbH" :  1.2235}),
-        ## new acceptance correction factors from valentina, keep in mind: "the samples I 
-        ## have at hand are skimmed requiring a loose lepton, so not perfectly inclusive"
-##         80.   : ({"ggH" : 1.018, "bbH" : 1.008}),
-##         90.   : ({"ggH" : 1.019, "bbH" : 1.008}),
-##         100.  : ({"ggH" : 1.021, "bbH" : 1.009}),
-##         120.  : ({"ggH" : 1.023, "bbH" : 1.009}),
-##         130.  : ({"ggH" : 1.024, "bbH" : 1.009}),
-##         140.  : ({"ggH" : 1.025, "bbH" : 1.010}),
-##         160.  : ({"ggH" : 1.027, "bbH" : 1.010}),
-##         180.  : ({"ggH" : 1.028, "bbH" : 1.011}),
-##         200.  : ({"ggH" : 1.033, "bbH" : 1.011}),
-##         250.  : ({"ggH" : 1.037, "bbH" : 1.012}),
-##         300.  : ({"ggH" : 1.052, "bbH" : 1.015}),
-##         350.  : ({"ggH" : 1.109, "bbH" : 1.022}),
-##         400.  : ({"ggH" : 1.135, "bbH" : 1.027}),
-##         450.  : ({"ggH" : 1.185, "bbH" : 1.032}),
-##         500.  : ({"ggH" : 1.277, "bbH" : 1.040}),
-##         600.  : ({"ggH" : 1.826, "bbH" : 1.063}),
-##         700.  : ({"ggH" : 2.322, "bbH" : 1.086}),
-##         800.  : ({"ggH" : 3.040, "bbH" : 1.115}),
-##         900.  : ({"ggH" : 4.078, "bbH" : 1.152}),
-##         1000. : ({"ggH" : 5.525, "bbH" : 1.198}),
         }
     values_7TeV = {  #7TeV
         90.   : ({"ggH" :  1.0310, "bbH" :  1.0107}),
@@ -95,6 +96,20 @@ def acceptance_correction(process, mass, period) :
         900.  : ({"ggH" : 10.4280, "bbH" :  1.2221}),
         1000. : ({"ggH" : 15.3254, "bbH" :  1.3023}),
         }
+
+    if period=="14TeV" :
+        if mass<80 :
+            return values_14TeV[80][process]
+        if mass>1000 :
+            return values_14TeV[1000][process]
+        
+        bin = interval(values_14TeV.keys(), mass)
+        if bin[0]<0 :
+            return -999.
+        else :
+            dx = bin[1]-bin[0]
+            dy = values_14TeV[bin[1]][process]-values_14TeV[bin[0]][process]
+            return values_14TeV[bin[0]][process] if dx==0 else values_14TeV[bin[0]][process]+dy/dx*(float(mass)-bin[0])
 
     if period=="8TeV" :
         if mass<80 :
