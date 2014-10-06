@@ -8,7 +8,7 @@
 //#include "httStyle.cxx"
 #include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
-void plottingScan2D(TCanvas& canv, TH2D* h2d, TString file, TMarker* SMexpected, TMarker* SMexpectedLayer, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp, bool log) {
+void plottingScan2D(TCanvas& canv, TH2D* h2d, TGraph* bestfit, TGraph* c68, TGraph* c95, TString file, TMarker* SMexpected, TMarker* SMexpectedLayer, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp, bool log) {
   canv.cd();
   SetStyle();
   TFile infile(file);
@@ -43,11 +43,8 @@ void plottingScan2D(TCanvas& canv, TH2D* h2d, TString file, TMarker* SMexpected,
   h2d->SetMinimum(0.);
   h2d->SetNameTitle("","");
   h2d->Draw("AXIS");
-  //h2d->Draw("COLZ");
+  if(temp) h2d->Draw("COLZ");
 
-  TGraph *bestfit = (TGraph *)gDirectory->Get("contour2D_best")->Clone();
-  TGraph *c68 = (TGraph *)((TList *)gDirectory->Get("contour2D_c68"))->At(0)->Clone();
-  TGraph *c95 = (TGraph *)((TList *)gDirectory->Get("contour2D_c95"))->At(0)->Clone();
   c95->SetLineStyle(1);
   c95->SetLineColor(kBlack);
   c95->SetLineWidth(3);
@@ -56,8 +53,8 @@ void plottingScan2D(TCanvas& canv, TH2D* h2d, TString file, TMarker* SMexpected,
   c68->SetLineColor(kBlack);
   c68->SetLineWidth(3);
   c68->SetFillColor(kBlue-8);
-  c95->Draw("F SAME");
-  c68->Draw("F SAME");
+  if(!temp) c95->Draw("F SAME");
+  if(!temp) c68->Draw("F SAME");
   c95->Draw("CONT SAME");
   c68->Draw("CONT SAME");
 
@@ -67,8 +64,10 @@ void plottingScan2D(TCanvas& canv, TH2D* h2d, TString file, TMarker* SMexpected,
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
-  leg->AddEntry(c95, "95% CL", "F");
-  leg->AddEntry(c68, "68% CL", "F");
+  if(!temp) leg->AddEntry(c95, "95% CL", "F");
+  if(!temp) leg->AddEntry(c68, "68% CL", "F");
+  if(temp) leg->AddEntry(c95, "95% CL", "L");
+  if(temp) leg->AddEntry(c68, "68% CL", "L");
   leg->AddEntry(bestfit, "Best fit", "P"); 
   if(SMexpected && masslabel=="m_{H}"){ leg->AddEntry(SMexpected, "SM", "P"); } 
   if(SMexpected && masslabel=="m_{#phi}"){ leg->AddEntry(SMexpected, "Expected for", "P"); } 

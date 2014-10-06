@@ -3,7 +3,7 @@
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
 void contour2D(TString xvar, int xbins, float xmin, float xmax, TString yvar, int ybins, float ymin, float ymax, float smx=1.0, float smy=1.0, TFile *fOut=0, TString name="contour2D");
-void plottingScan2D(TCanvas& canv, TH2D* plot2D, TString file, TMarker* SMexpected, TMarker* SMexpectedLayer, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp, bool log);
+void plottingScan2D(TCanvas& canv, TH2D* plot2D, TGraph* bestfit, TGraph* c68, TGraph* c95, TString file, TMarker* SMexpected, TMarker* SMexpectedLayer, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp, bool log);
 
 void 
 PlotLimits::band1D(ostream& out, std::string& xval, std::string& yval, TGraph* bestFit, TGraph* band, float xoffset, float yoffset, std::string CL)
@@ -133,17 +133,20 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
     gFile = Fout;
     // do the plotting 
     TH2D *plot2D = (TH2D *)gDirectory->Get("contour2D_h2d")->Clone();
+    TGraph *bestfit = (TGraph *)gDirectory->Get("contour2D_best")->Clone();
+    TGraph *c68 = (TGraph *)((TList *)gDirectory->Get("contour2D_c68"))->At(0)->Clone();
+    TGraph *c95 = (TGraph *)((TList *)gDirectory->Get("contour2D_c95"))->At(0)->Clone();
     std::string masslabel = mssm_ ? std::string("m_{#phi}") : std::string("m_{H}");
-    plottingScan2D(canv, plot2D, TString::Format("%s/%d/%s-%s-%s-%d.root", directory, (int)mass, output_.c_str(), label_.c_str(), model_.c_str(), (int)mass), SMexpected, SMexpectedLayer, xaxis_, yaxis_, masslabel, (int)mass, xmin, xmax, ymin, ymax, temp_, log_);
+    plottingScan2D(canv, plot2D, bestfit, c68, c95, TString::Format("%s/%d/%s-%s-%s-%d.root", directory, (int)mass, output_.c_str(), label_.c_str(), model_.c_str(), (int)mass), SMexpected, SMexpectedLayer, xaxis_, yaxis_, masslabel, (int)mass, xmin, xmax, ymin, ymax, temp_, log_);
     // add the CMS Preliminary stamp
     CMSPrelim(dataset_.c_str(), "", 0.135, 0.835);
     //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
     // print 1d band
-    // ofstream scanOut;  
-//     scanOut.open(TString::Format("%s/%d/signal-strength.output", directory, (int)mass));
-//     scanOut << " --- MultiDimFit ---" << std::endl;
-//     scanOut << "best fit parameter values and uncertainties from NLL scan:" << std::endl;
-//     band1D(scanOut, xval, yval, bestfit, graph68.back(), (xmax-xmin)/nbins/2, (ymax-ymin)/nbins/2, "(68%)");
+    ofstream scanOut;  
+    scanOut.open(TString::Format("%s/%d/signal-strength.output", directory, (int)mass));
+    scanOut << " --- MultiDimFit ---" << std::endl;
+    scanOut << "best fit parameter values and uncertainties from NLL scan:" << std::endl;
+    band1D(scanOut, xval, yval, bestfit, c68, (xmax-xmin)/nbins/2, (ymax-ymin)/nbins/2, "(68%)");
 
     if(png_){
       canv.Print(TString::Format("%s-%s-%s-%d.png", output_.c_str(), label_.c_str(), model_.c_str(), (int)mass));
@@ -153,41 +156,28 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
       canv.Print(TString::Format("%s-%s-%s-%d.eps", output_.c_str(), label_.c_str(), model_.c_str(), (int)mass));
       canv.Print(TString::Format("%s-%s-%s-%d.C"  , output_.c_str(), label_.c_str(), model_.c_str(), (int)mass));
     }
-    // if(txt_){
-//       TString path;
-//       path = TString::Format("%s_%s_%s-%d-CL68", output_.c_str(), label_.c_str(), model_.c_str(), (int)mass);
-//       print(path, xval, yval, graph68, "txt"); print(path, xval, yval, graph68, "tex");
-//       path = TString::Format("%s_%s_%s-%d-CL95", output_.c_str(), label_.c_str(), model_.c_str(), (int)mass);
-//       print(path, xval, yval, graph95, "txt"); print(path, xval, yval, graph95, "tex");
-//     }
+    if(txt_){
+      TString path;
+      path = TString::Format("%s_%s_%s-%d-CL68", output_.c_str(), label_.c_str(), model_.c_str(), (int)mass);
+      print(path, xval, yval, c68, "txt"); print(path, xval, yval, c68, "tex");
+      path = TString::Format("%s_%s_%s-%d-CL95", output_.c_str(), label_.c_str(), model_.c_str(), (int)mass);
+      print(path, xval, yval, c95, "txt"); print(path, xval, yval, c95, "tex");
+    }
 
     Fout->Close();
-    // if(root_){
-//       TFile* output = new TFile(TString::Format("scan-%s-versus-%s.root", xval.c_str(), yval.c_str()), "update");
-//       if(!output->cd(output_.c_str())){
-// 	output->mkdir(output_.c_str());
-// 	output->cd(output_.c_str());
-//       }
-//       int idx=0;
-//       for(std::vector<TGraph*>::const_iterator g=graph68.begin() ; g!=graph68.end() ; ++g){
-// 	(*g)->Write(TString::Format("graph68_%d_%d"  , (int)mass , idx++)); 
-//       }
-//       idx=0;
-//       for(std::vector<TGraph*>::const_iterator g=filled68.begin(); g!=filled68.end(); ++g){
-// 	(*g)->Write(TString::Format("filled68_%d_%d" , (int)mass , idx++)); 
-//       }
-//       idx=0;
-//       for(std::vector<TGraph*>::const_iterator g=graph95.begin() ; g!=graph95.end() ; ++g){
-// 	(*g)->Write(TString::Format("graph95_%d_%d"  , (int)mass , idx++)); 
-//       }
-//       idx=0;
-//       for(std::vector<TGraph*>::const_iterator g=filled95.begin(); g!=filled95.end(); ++g){
-// 	(*g)->Write(TString::Format("filled95_%d_%d" , (int)mass , idx++)); 
-//       }
-//       if(bestfit ){ bestfit ->Write(TString::Format("bestfit_%d"  , (int)mass) ); }
-//       plot2D  ->Write(TString::Format("plot2D_%d"   , (int)mass) );
-//       output->Close();
-//     }
+    if(root_){
+      TFile* output = new TFile(TString::Format("scan-%s-versus-%s.root", xval.c_str(), yval.c_str()), "update");
+      if(!output->cd(output_.c_str())){
+	output->mkdir(output_.c_str());
+	output->cd(output_.c_str());
+      }
+      c68    ->Write(TString::Format("graph68_%d"  , (int)mass)); 
+      c95    ->Write(TString::Format("graph95_%d"  , (int)mass)); 
+      bestfit->Write(TString::Format("bestfit_%d"  , (int)mass));
+      plot2D ->Write(TString::Format("plot2D_%d"   , (int)mass));
+
+      output->Close();
+    }
   }
   return;
 }
