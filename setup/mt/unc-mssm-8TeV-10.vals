@@ -24,7 +24,7 @@ muTau_nobtag_low                  	QCD				CMS_htt_QCDShape_mutau_nobtag_low_8TeV
 muTau_nobtag_low			ZJ				CMS_htt_ZJetFakeTau_mutau_8TeV      			1.20
 muTau_nobtag_low			ZL				CMS_htt_ZLeptonFakeTau_mutau_8TeV			1.30
 muTau_nobtag_low			ZL			        CMS_htt_ZLScale_mutau_8TeV       			1.00
-muTau_nobtag_low			W			        CMS_htt_WShape_mutau_8TeV       			1.00
+muTau_nobtag_low			W			        CMS_htt_WShape_mutau_nobtag_low_8TeV   			1.00
 #[tail]muTau_nobtag_low			W				tailShape						1.00
 muTau_nobtag_low                    	ggH_SM125                       pdf_gg                                          	1.097
 muTau_nobtag_low                    	qqH_SM125                       pdf_qqbar                                       	1.036
