@@ -1,6 +1,6 @@
 (1) setup limit structure (blinded + unblinded):
 ## datacards blinded (bbb-asimov)
-python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM_taupt.py -a bbb --label='-yymmdd-mssm' --tail-fitting --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-yymmdd" --update-all --SMHasBackground --SMHasSignal  --blind-datacards --extra-templates='ggH_SM125,qqH_SM125,VH_SM125'
+python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM_taupt.py -a bbb --label='-yymmdd-mssm-taupt' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-yymmdd-mssm-taupt.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-taupt-yymmdd" --update-all --SMHasBackground --SMHasSignal  --blind-datacards --extra-templates='ggH_SM125,qqH_SM125,VH_SM125'
 
 
 ## datacards unblinded (bbb)
@@ -25,12 +25,13 @@ cvs2local.py -i aux-yymmdd-mssm/bbb -o LIMITS-yymmdd-mssm/bbb-ggH-bbH -p 8TeV -a
 
 (2) launch ML-fit:
 ## choose ggH (default choice)
-lxb: submit.py --max-likelihood --options="--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH;ggHRange=-5:5'" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500]
-lxq: submit.py --max-likelihood --options="--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH;ggHRange=-5:5'" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500] --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
+lxb: submit.py --max-likelihood --options="--stable-new --physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH;ggHRange=-5:5'" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500]
+lxq: submit.py --max-likelihood --options="--stable-new --physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH;ggHRange=-5:5'" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500] --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
 ## choose bbH
-lxb: submit.py --max-likelihood --options="--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=bbH;bbHRange=-5:5'" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500]
-lxq: submit.py --max-likelihood --options="--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=bbH;bbHRange=-5:5'" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500] --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
+lxb: submit.py --max-likelihood --options="--stable-new --physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=bbH;bbHRange=-5:5'" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500]
+lxq: submit.py --max-likelihood --options="--stable-new --physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=bbH;bbHRange=-5:5'" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500] --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
 
-(2a) pruning
+
+(2a) pruning 
 ## pruning after ML-fit
 prune-uncerts-htt.py --mass=160  --blacklist='tauTau_nobtag_8TeV_QCD,tauTau_btag_8TeV_QCD' --whitelist='_bin_' --threshold=0.1 --fit-results 'UNCERTAINTY FILES'
