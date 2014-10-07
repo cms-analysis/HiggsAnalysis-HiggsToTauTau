@@ -93,7 +93,7 @@ mt_soft_processes = ZL,ZJ,W>QCD
 
 [mssm]
 
-unblind
+blind
 
 periods = 7TeV 8TeV
 channels = mt et mm em tt
