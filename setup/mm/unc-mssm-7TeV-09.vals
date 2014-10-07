@@ -26,5 +26,3 @@ mumu_btag               qqH_SM125                       QCDscale_qqH            
 mumu_btag               VH_SM125                        QCDscale_VH                             1.04
 mumu_btag               ggH_SM125                       UEPS                                    0.984
 mumu_btag               qqH_SM125,VH_SM125              UEPS                                    1.000
-
-
