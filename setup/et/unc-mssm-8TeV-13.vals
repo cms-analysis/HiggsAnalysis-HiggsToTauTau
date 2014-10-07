@@ -45,4 +45,3 @@ eleTau_btag_low      		qqH_SM125,VH_SM125      	UEPS                            
 eleTau_btag_low      		ggH_SM125               	UEPS                                    	0.946
 eleTau_btag_low			ggH                       	CMS_htt_higgsPtReweight_8TeV			1.00
 eleTau_btag_low                 ggH_SM125                       CMS_htt_higgsPtReweightSM_8TeV                  1.00
-
