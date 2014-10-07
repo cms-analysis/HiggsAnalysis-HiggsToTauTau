@@ -31,3 +31,4 @@ tauTau_nobtag_low            	VH_SM125                        QCDscale_VH       
 tauTau_nobtag_low            	qqH_SM125,VH_SM125              UEPS                                            	1.025
 tauTau_nobtag_low            	ggH_SM125                       UEPS                                            	0.975
 tauTau_nobtag_low            	ggH                       	CMS_htt_higgsPtReweight_8TeV				1.00
+tauTau_nobtag_low               ggH_SM125                       CMS_htt_higgsPtReweightSM_8TeV                          1.00
