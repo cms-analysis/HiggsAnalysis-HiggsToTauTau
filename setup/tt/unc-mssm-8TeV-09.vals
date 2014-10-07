@@ -26,4 +26,3 @@ tauTau_btag                     qqH_SM125                       QCDscale_qqH    
 tauTau_btag                     VH_SM125                        QCDscale_VH                                     1.04            
 tauTau_btag                     qqH_SM125,VH_SM125              UEPS                                            1.025
 tauTau_btag                     ggH_SM125                       UEPS                                            0.975
-
