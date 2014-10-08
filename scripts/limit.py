@@ -705,10 +705,18 @@ for directory in args :
             model = [options.fitModel]
         if options.collect :
             ## combine outputs
-            os.system("hadd -f higgsCombine{MODEL}.MultiDimFit.mH{MASS}.root higgsCombine*.MultiDimFit.mH{MASS}-[0-9]*-[0-9]*.root".format(
-                MASS=mass, MODEL=model[0].upper()))
+            os.system("hadd -f higgsCombine{MODEL}.MultiDimFit.mH{MASS}_2.root higgsCombine*.MultiDimFit.mH{MASS}-[0-9]*-[0-9]*.root".format(
+                MASS=mass, MODEL=model[0].upper()))            
+            if os.path.exists("higgsCombine{MODEL}.MultiDimFit.mH{MASS}.root".format(MASS=mass, MODEL=model[0].upper())):
+                os.system("mv higgsCombine{MODEL}.MultiDimFit.mH{MASS}.root higgsCombine{MODEL}.MultiDimFit.mH{MASS}_3.root".format(
+                    MASS=mass, MODEL=model[0].upper()))
+                os.system("hadd -f higgsCombine{MODEL}.MultiDimFit.mH{MASS}.root higgsCombine*.MultiDimFit.mH{MASS}_[0-9].root".format(
+                    MASS=mass, MODEL=model[0].upper())) 
+            if not os.path.exists("higgsCombine{MODEL}.MultiDimFit.mH{MASS}.root".format(MASS=mass, MODEL=model[0].upper())):
+                os.system("mv higgsCombine{MODEL}.MultiDimFit.mH{MASS}_2.root higgsCombine{MODEL}.MultiDimFit.mH{MASS}.root".format(
+                    MASS=mass, MODEL=model[0].upper())) 
             ## cleanup
-            os.system("rm higgsCombine*.MultiDimFit.mH{MASS}-[0-9]*-[0-9]*.root".format(MASS=mass))
+            os.system("rm higgsCombine*.MultiDimFit.mH{MASS}-[0-9]*-[0-9]*.root higgsCombine*.MultiDimFit.mH{MASS}_[0-9].root".format(MASS=mass))
             continue
         if not options.setupOnly :
             ## if it does not exist already, create link to executable

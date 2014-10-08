@@ -136,10 +136,6 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
   /// open input file  
   TFile* inputFile = new TFile(filename); if(inputFile->IsZombie()){ std::cout << "ERROR:: file: " << filename << " does not exist.\n"; }
   
-  if(std::string(type).find("sm")!=std::string::npos){
-    label="CMS H#rightarrow#tau#tau, up to 4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV";
-  }
-
   /// prepare input parameters
   std::vector<std::string> channels;
   string2Vector(cleanupWhitespaces(channelstr), channels);
@@ -207,7 +203,6 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
 	y_title = std::string("#bf{tan#beta}");
       }
       else{
-	//y_title = std::string("#sigma(H#rightarrow#tau#tau)_{95% CL} / #sigma(H#rightarrow#tau#tau)_{SM}");
 	y_title = std::string("95% CL limit on #sigma/#sigma_{SM}");
       }
       hexp[i]->GetYaxis()->SetTitle(y_title.c_str());
@@ -267,15 +262,14 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
       // format y-axis
       std::string y_title;
       if( std::string(type) == std::string("mssm-xsec") ){
-	if(ggH) y_title = std::string("95% CL limit on #sigma(gg#rightarrow#phi)#timesBR [pb]");
-	else y_title = std::string("95% CL limit on #sigma(gg#rightarrowbb#phi)#timesBR [pb]");
+	if(ggH) y_title = std::string("95% CL limit on #sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]");
+	else y_title = std::string("95% CL limit on #sigma#font[42]{(bb#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]");
       }
       else if(  std::string(type) == std::string("mssm-tanb")  ){
 	y_title = std::string("#bf{tan#beta}");
       }
       else{
 	y_title = std::string("95% CL limit on #sigma/#sigma_{SM}");
-	//y_title = std::string("#sigma(H)_{95% CL} / #sigma(H)_{SM}");
       }
       hobs[i]->GetYaxis()->SetTitle(y_title.c_str());
       hobs[i]->GetYaxis()->SetLabelFont(62);
@@ -303,8 +297,8 @@ void compareLimits(const char* filename, const char* channelstr, bool expected, 
     extra->SetTextSize  (0.04 );
     extra->SetTextColor (   1 );
     extra->SetTextFont  (  62 );
-    if(ggH) extra->AddText("gg#rightarrowbb#phi profiled");
-    else extra->AddText("gg#rightarrow#phi profiled");
+    if(ggH) extra->AddText("gg#phi");
+    else extra->AddText("bb#phi");
     extra->Draw();
   }
 
