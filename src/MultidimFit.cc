@@ -163,8 +163,6 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory)
       path = TString::Format("%s_%s_%s-%d-CL95", output_.c_str(), label_.c_str(), model_.c_str(), (int)mass);
       print(path, xval, yval, c95, "txt"); print(path, xval, yval, c95, "tex");
     }
-
-    Fout->Close();
     if(root_){
       TFile* output = new TFile(TString::Format("scan-%s-versus-%s.root", xval.c_str(), yval.c_str()), "update");
       if(!output->cd(output_.c_str())){
