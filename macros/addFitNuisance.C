@@ -1259,16 +1259,16 @@ int addNuisance2(const std::string& inputFileName,
   
   std::string nuisance2Name = process + "_" + "CMS_" + label + "2_" + directory + "_" + sqrtS + "_" + process;
 
-  double par0_shift2Up = par0_central + EigenValues(0)*EigenVectors(0,1);
-  double par1_shift2Up = par1_central + EigenValues(0)*EigenVectors(1,1);
+  double par0_shift2Up = par0_central + EigenValues(1)*EigenVectors(0,1);
+  double par1_shift2Up = par1_central + EigenValues(1)*EigenVectors(1,1);
   bool hasInfinitePoint_shift2Up = false;
   double xInfinitePoint_shift2Up = -1.;
   checkForInfinitePoints2(fitModel, xMin_fit, xMax, x0, "shift2Up", par0_shift2Up, par1_shift2Up, hasInfinitePoint_shift2Up, xInfinitePoint_shift2Up);
   if ( errorOption == 1 && hasInfinitePoint_shift2Up ) {
     double sf_EigenValue_shift2Up = 1.;
     do { 
-      par0_shift2Up = par0_central + sf_EigenValue_shift2Up*EigenValues(0)*EigenVectors(0,1);
-      par1_shift2Up = par1_central + sf_EigenValue_shift2Up*EigenValues(0)*EigenVectors(1,1);
+      par0_shift2Up = par0_central + sf_EigenValue_shift2Up*EigenValues(1)*EigenVectors(0,1);
+      par1_shift2Up = par1_central + sf_EigenValue_shift2Up*EigenValues(1)*EigenVectors(1,1);
       checkForInfinitePoints2(fitModel, xMin_fit, xMax_finite, x0, "shift2Up", par0_shift2Up, par1_shift2Up, hasInfinitePoint_shift2Up, xInfinitePoint_shift2Up, true);
       sf_EigenValue_shift2Up *= 0.9;
     } while ( hasInfinitePoint_shift2Up );
@@ -1288,16 +1288,16 @@ int addNuisance2(const std::string& inputFileName,
 	  xMin_fit, TMath::Min(xMax, xInfinitePoint_shift2Up), x0, sf_shift2Up, k, template_central, &sf_central);
   double integral_shift2Up = template_shift2Up->Integral(template_shift2Up->FindBin(xMin_fit), template_shift2Up->FindBin(xMax));
 
-  double par0_shift2Down = par0_central - EigenValues(0)*EigenVectors(0,1);
-  double par1_shift2Down = par1_central - EigenValues(0)*EigenVectors(1,1);
+  double par0_shift2Down = par0_central - EigenValues(1)*EigenVectors(0,1);
+  double par1_shift2Down = par1_central - EigenValues(1)*EigenVectors(1,1);
   bool hasInfinitePoint_shift2Down = false;
   double xInfinitePoint_shift2Down = -1.;
   checkForInfinitePoints2(fitModel, xMin_fit, xMax, x0, "shift2Down", par0_shift2Down, par1_shift2Down, hasInfinitePoint_shift2Down, xInfinitePoint_shift2Down);
   if ( errorOption == 1 && hasInfinitePoint_shift2Down ) {
     double sf_EigenValue_shift2Down = 1.;
     do { 
-      par0_shift2Down = par0_central - sf_EigenValue_shift2Down*EigenValues(0)*EigenVectors(0,1);
-      par1_shift2Down = par1_central - sf_EigenValue_shift2Down*EigenValues(0)*EigenVectors(1,1);
+      par0_shift2Down = par0_central - sf_EigenValue_shift2Down*EigenValues(1)*EigenVectors(0,1);
+      par1_shift2Down = par1_central - sf_EigenValue_shift2Down*EigenValues(1)*EigenVectors(1,1);
       checkForInfinitePoints2(fitModel, xMin_fit, xMax_finite, x0, "shift2Down", par0_shift2Down, par1_shift2Down, hasInfinitePoint_shift2Down, xInfinitePoint_shift2Down, true);
       sf_EigenValue_shift2Down *= 0.9;
     } while ( hasInfinitePoint_shift2Down );
