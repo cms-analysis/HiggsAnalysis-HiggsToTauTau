@@ -2,36 +2,38 @@
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 # Example:
 # emu_vbf,emu_novbf,emu_boost     signal,EWK              lumi            1.045
-# background WZ,ZZ,tt1l,tt2l,ttW,ttZ,ttH,reducible
+# background WZ,ZZ,ttW,ttZ,ttH,reducible
 
 ## for all but the reducible, as the latter is taken from data
-emt     signal,simulated		lumi_8TeV               1.026
+emt     signal,simulated                lumi_8TeV                   1.026
 
 ## from former WH semiletponic analysis
-emt     signal,simulated		CMS_th_trigger_8TeV     1.01
+emt     simulated                       CMS_th_trigger_emt_8TeV     1.01
+emt     signal                          CMS_th_sig_trigger_emt_8TeV 1.02
 
-emt     signal,simulated		CMS_th_eff_e_8TeV       1.02
-emt     signal,simulated		CMS_th_eff_m_8TeV       1.02
-emt     signal,simulated		CMS_th_eff_t_8TeV       1.06
-emt     signal,simulated		CMS_th_scale_t_8TeV     1.03
+emt     signal,simulated                CMS_th_eff_e_8TeV           1.02
+emt     signal,simulated                CMS_th_eff_m_8TeV           1.02
+emt     signal,simulated                CMS_th_eff_t_8TeV           1.06
+emt     signal,simulated                CMS_th_scale_t_8TeV         1.03
 
 ## eff: average out from MSSM. fake: from WH. A bit slippery, FIXME
-emt     signal,ttH,tt1l,tt2l,ttW,ttZ	CMS_th_eff_b_8TeV       1.05
-emt     WZ,ZZ				CMS_th_fake_b_8TeV      0.99
+#emt     signal,ttH,tt1l,tt2l,ttW,ttZ    CMS_th_eff_b_8TeV           1.05
+emt     signal,ttH,ttW,ttZ              CMS_th_eff_b_8TeV           1.05
+emt     WZ,ZZ                           CMS_th_fake_b_8TeV          0.99
 
 ## utterly arbitrary
-emt     reducible			CMS_th_reducible_8TeV   1.50
+emt     reducible                       CMS_th_reducible_emt_8TeV   1.50
 
 ## from ttH analysis https://svnweb.cern.ch/cern/wsvn/cmshcg/trunk/summer2013/couplings/tth/125/ttH_hbb_8TeV.txt
-emt     signal				QCDscale_ttH            1.067
-emt     tt1l,tt2l			QCDscale_ttbar          1.03
-emt     ttW				QCDscale_ttW            1.105
-emt     ttZ				QCDscale_ttZ            1.116
+emt     signal                          QCDscale_ttH                1.067
+#emt     tt1l,tt2l                       QCDscale_ttbar              1.03
+emt     ttW                             QCDscale_ttW                1.105
+emt     ttZ                             QCDscale_ttZ                1.116
 
-emt     WZ,ZZ				QCDscale_VV             1.036
+emt     WZ,ZZ                           QCDscale_VV                 1.036
 
-emt     signal,ttH			pdf_gg                  0.923
-emt     tt1l,tt2l			pdf_gg                  0.974
-emt     ttZ				pdf_gg                  0.914
-emt     ttW				pdf_qqbar               1.072
+emt     signal,ttH                      pdf_gg                      0.923
+#emt     tt1l,tt2l                       pdf_gg                      0.974
+emt     ttZ                             pdf_gg                      0.914
+emt     ttW                             pdf_qqbar                   1.072
 
