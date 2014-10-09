@@ -129,7 +129,7 @@ void compareLimitsWithBand(const char* filename, const char* channelstr, double 
 
   for(unsigned i=0; i<channels.size(); ++i){    
     /// observed
-    if(i==0) observed.push_back(get<TGraph>(inputFile, std::string(channels[i]).append("/observed").c_str()));
+    observed.push_back(get<TGraph>(inputFile, std::string(channels[i]).append("/observed").c_str()));
     ///expected
     expected.push_back(get<TGraph>(inputFile, std::string(channels[i]).append("/expected").c_str()));
     /// inner band
@@ -147,8 +147,15 @@ void compareLimitsWithBand(const char* filename, const char* channelstr, double 
   canv->SetGridx(1);
   canv->SetGridy(1);
 
+  // for logx the label for x axis values below 100 needs to be slightly shifted to prevent 
+  // the label from being printed into the canvas
+  int shift_label = 1.;
+  if((std::string(type) == std::string("mssm-xsec") || std::string(type) == std::string("mssm-tanb")) && log ){
+    if(observed[0]) { observed[0]->GetX()[0] = observed[0]->GetX()[0]+0.01; }
+    if(expected[0]->GetX()[0]<100.){ shift_label = -1.; }
+  }
   // draw a frame to define the range
-  TH1F* hr = canv->DrawFrame(outerBand[0]->GetX()[0]-.01, minimum, outerBand[0]->GetX()[outerBand[0]->GetN()-1]+.01, maximum);
+  TH1F* hr=canv->DrawFrame(expected[0]->GetX()[0]-shift_label*.01, minimum, expected[0]->GetX()[expected[0]->GetN()-1]+.01, maximum);
   std::string x_title;
   if(std::string(type) == std::string("mssm-tanb")){
     x_title = std::string("m_{A} [GeV]");
@@ -256,7 +263,8 @@ void compareLimitsWithBand(const char* filename, const char* channelstr, double 
 
   TGraph* SMexpectation = new TGraph();  
   //SMexpectation->SetPoint(0,125,0.2035*0.06319); //8TeV: bbH=0.2035 ggH=19.27         
-  SMexpectation->SetPoint(0,125,49.47*0.06319); //14TeV: bbH=0.5805  ggH=49.47 
+  if(ggH) SMexpectation->SetPoint(0,125,49.47*0.06319); //14TeV: bbH=0.5805  ggH=49.47 
+  else SMexpectation->SetPoint(0,125,0.5805*0.06319);
   SMexpectation->SetMarkerColor(kBlue);
   SMexpectation->SetMarkerSize(2.0);
   SMexpectation->SetMarkerStyle(34);
@@ -269,14 +277,12 @@ void compareLimitsWithBand(const char* filename, const char* channelstr, double 
   //leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
   leg->SetHeader( "95% CL Limits" );
-  // for(unsigned int idx=0; idx<observed.size(); ++idx){
-//     leg->AddEntry( observed[idx] , legendEntry(channels[idx]).c_str(), "PL");
-//   }
   leg->AddEntry( observed[0] , "observed 14TeV/19.7fb^{-1}", "PL");
   leg->AddEntry( expected[0] , "expected 14TeV/19.7fb^{-1}",  "L" );
   leg->AddEntry( innerBand[0], "#pm 1#sigma expected" ,  "F" );
   leg->AddEntry( outerBand[0], "#pm 2#sigma expected" ,  "F" );
-  if(expected.size()>0) { leg->AddEntry( expected[1] , "expected 14TeV/300fb^{-1}",  "L" );}
+  if(addObserved) { leg->AddEntry( observed[1] , "observed 14TeV/300fb^{-1}",  "L" );}
+  if(addExpected) { leg->AddEntry( expected[1] , "expected 14TeV/300fb^{-1}",  "L" );}
   if( std::string(type) == std::string("mssm-xsec") ) leg->AddEntry( SMexpectation, "h_{SM}(125 GeV) theory" ,  "P" );
   leg->Draw("same");
   //canv.RedrawAxis("g");
