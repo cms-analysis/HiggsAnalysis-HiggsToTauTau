@@ -18,7 +18,8 @@ emt     signal,simulated                CMS_th_scale_t_8TeV         1.03
 
 ## eff: average out from MSSM. fake: from WH. A bit slippery, FIXME
 #emt     signal,ttH,tt1l,tt2l,ttW,ttZ    CMS_th_eff_b_8TeV           1.05
-emt     signal,ttH,ttW,ttZ              CMS_th_eff_b_8TeV           1.05
+emt     signal                          CMS_th_eff_b_8TeV           1.05
+emt     ttH,ttW,ttZ                     CMS_th_eff_b_8TeV           1.03
 emt     WZ,ZZ                           CMS_th_fake_b_8TeV          0.99
 
 ## utterly arbitrary

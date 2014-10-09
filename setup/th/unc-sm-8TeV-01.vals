@@ -17,7 +17,8 @@ mmt     signal,simulated                CMS_th_scale_t_8TeV         1.03
 
 ## eff: average out from MSSM. fake: from WH. A bit slippery, FIXME!
 #mmt     signal,ttH,tt1l,tt2l,ttW,ttZ    CMS_th_eff_b_8TeV           1.05
-mmt     signal,ttH,ttW,ttZ              CMS_th_eff_b_8TeV           1.05
+mmt     signal                          CMS_th_eff_b_8TeV           1.05
+mmt     ttH,ttW,ttZ                     CMS_th_eff_b_8TeV           1.03
 mmt     WZ,ZZ                           CMS_th_fake_b_8TeV          0.99
 
 ## utterly arbitrary
