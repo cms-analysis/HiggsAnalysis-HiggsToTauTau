@@ -80,7 +80,7 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label="CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV", bool legendOnRight=true, bool legendOnTop=true, bool ggH=true)
+void compareLimits(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., bool log=false, const char* label="#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                     19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)", bool legendOnRight=true, bool legendOnTop=true, bool ggH=true)
 {
   SetStyle();
 
