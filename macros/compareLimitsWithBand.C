@@ -254,27 +254,36 @@ void compareLimitsWithBand(const char* filename, const char* channelstr, double 
   /// setup the CMS Preliminary
   CMSPrelim(label, "", 0.145, 0.835);
 
+  TGraph* SMexpectation = new TGraph();  
+  //SMexpectation->SetPoint(0,125,0.2035*0.06319); //8TeV: bbH=0.2035 ggH=19.27         
+  SMexpectation->SetPoint(0,125,49.47*0.06319); //14TeV: bbH=0.5805  ggH=49.47 
+  SMexpectation->SetMarkerColor(kBlue);
+  SMexpectation->SetMarkerSize(2.0);
+  SMexpectation->SetMarkerStyle(34);
+  if( std::string(type) == std::string("mssm-xsec") ) SMexpectation->Draw("PLsame");
+
   /// add the proper legend
-  TLegend* leg = new TLegend(0.45, 0.65, 0.90, 0.90);
+  TLegend* leg = new TLegend(0.45, 0.60, 0.90, 0.90);
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 1001 );
   //leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
   leg->SetHeader( "95% CL Limits" );
-  for(unsigned int idx=0; idx<observed.size(); ++idx){
-    leg->AddEntry( observed[idx] , legendEntry(channels[idx]).c_str(), "PL");
-  }
-  //leg->AddEntry( observed[0] , "observed 14TeV/19.7fb^{-1}", "PL");
+  // for(unsigned int idx=0; idx<observed.size(); ++idx){
+//     leg->AddEntry( observed[idx] , legendEntry(channels[idx]).c_str(), "PL");
+//   }
+  leg->AddEntry( observed[0] , "observed 14TeV/19.7fb^{-1}", "PL");
   leg->AddEntry( expected[0] , "expected 14TeV/19.7fb^{-1}",  "L" );
   leg->AddEntry( innerBand[0], "#pm 1#sigma expected" ,  "F" );
   leg->AddEntry( outerBand[0], "#pm 2#sigma expected" ,  "F" );
   if(expected.size()>0) { leg->AddEntry( expected[1] , "expected 14TeV/300fb^{-1}",  "L" );}
+  if( std::string(type) == std::string("mssm-xsec") ) leg->AddEntry( SMexpectation, "h_{SM}(125 GeV) theory" ,  "P" );
   leg->Draw("same");
   //canv.RedrawAxis("g");
   canv->RedrawAxis();
 
   canv->Print(std::string("CompareWithBand.png").c_str());
-  canv->Print(std::string("CompareWithBabd.pdf").c_str());
+  canv->Print(std::string("CompareWithBand.pdf").c_str());
   canv->Print(std::string("CompareWithBand.eps").c_str());
 
   return;
