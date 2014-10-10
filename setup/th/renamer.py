@@ -1,6 +1,7 @@
 import ROOT
+import copy
 
-def fill_root_file(file_in_name, category, file_out_name, option = 'recreate') :
+def fill_root_file(file_in_name, category, triggerSF, file_out_name, option = 'recreate', dummy_data = False) :
 
   names = {
     'FisherWZ'            :  'WZ'           ,
@@ -26,6 +27,7 @@ def fill_root_file(file_in_name, category, file_out_name, option = 'recreate') :
     hist = key.ReadObj()
     if hist.GetName() in names.keys() :
       if names[hist.GetName()] in [hh.GetName() for hh in hists] : continue
+      if 'tH_YtMinus' in names[hist.GetName()] : hist.Scale(triggerSF)
       hist.SetName(names[hist.GetName()])
       hist.SetMarkerStyle(9)
       hist.SetMarkerSize(1)
@@ -39,9 +41,15 @@ def fill_root_file(file_in_name, category, file_out_name, option = 'recreate') :
   file_out.cd(category)
   for hist in hists :
     hist.Write()
+  if dummy_data : 
+    data = copy.deepcopy(hists[0])
+    data.SetName('data_obs')
+    for bin in range(data.GetNbinsX()+1) :
+      data.SetBinContent(bin, 0.)
+    data.Write()      
   file_out.cd()
   file_out.Close()
  
   
-fill_root_file('Fisher_emt.root','emt','htt_th.inputs-sm-8TeV.root','recreate')
-fill_root_file('Fisher_mmt.root','mmt','htt_th.inputs-sm-8TeV.root','update'  )
+fill_root_file('Fisher_emt.root','emt', 0.919, 'htt_th.inputs-sm-8TeV.root','recreate', dummy_data = True )
+fill_root_file('Fisher_mmt.root','mmt', 0.919, 'htt_th.inputs-sm-8TeV.root','update'  , dummy_data = True )
