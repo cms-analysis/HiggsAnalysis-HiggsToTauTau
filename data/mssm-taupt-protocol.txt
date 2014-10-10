@@ -34,7 +34,7 @@ lxq: submit.py --max-likelihood --options="--stable-new --physics-model 'tmp=Hig
 
 (2a) pruning 
 ## pruning after ML-fit
-prune-uncerts-htt.py --mass=160  --blacklist='tauTau_nobtag_8TeV_QCD,tauTau_btag_8TeV_QCD' --whitelist='_bin_' --threshold=0.1 --fit-results 'UNCERTAINTY FILES'
+prune-uncerts-htt.py --mass=160  --blacklist='tauTau_nobtag_low_8TeV_QCD tauTau_nobtag_medium_8TeV_QCD tauTau_nobtag_high_8TeV_QCD tauTau_btag_low_8TeV_QCD tauTau_btag_high_8TeV_QCD' --whitelist='_bin_' --threshold=0.1 --fit-results 'UNCERTAINTY FILES'
 
 (2b) postfit plots (in HiggsAnalysis/HiggsToTauTau/test)
 ## setup postfit plots beginning to the end
