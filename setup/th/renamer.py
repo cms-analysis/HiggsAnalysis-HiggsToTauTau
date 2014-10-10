@@ -52,4 +52,4 @@ def fill_root_file(file_in_name, category, triggerSF, file_out_name, option = 'r
  
   
 fill_root_file('Fisher_emt.root','emt', 0.919, 'htt_th.inputs-sm-8TeV.root','recreate', dummy_data = True )
-fill_root_file('Fisher_mmt.root','mmt', 0.919, 'htt_th.inputs-sm-8TeV.root','update'  , dummy_data = True )
+fill_root_file('Fisher_mmt.root','mmt', 0.964, 'htt_th.inputs-sm-8TeV.root','update'  , dummy_data = True )
