@@ -28,7 +28,7 @@ agroup.add_option("--pvalue-frequentist", dest="optPValue", default=False, actio
 agroup.add_option("--asymptotic", dest="optAsym", default=False, action="store_true",
                   help="Calculate asymptotic CLs limits from the datacards in the directory/ise corresponding to ARGs. The process will be executed via lxb (lxq), split by each single mass point that is part of ARGs or as a single interactive job when using the option --interactive. When submitting to lxb (lxq) you can configure the queue to which the jobs will be submitted as described in section BATCH OPTIONS of this parameter description. When running in batch mode you can go one level up in the expected directory structure as described in the head of this section. [Default: False]")
 agroup.add_option("--feldman-cousins", dest="optFeldmanCousins", default=False, action="store_true",
-                  help="Calculate a Feldman-Cousins limits with a given physics model. Check in the corresponding subsection what additional configurations are required fro thsi option. [Default: False]")
+                  help="Calculate a Feldman-Cousins limits with a given physics model. Check in the corresponding subsection what additional configurations are required for this option. [Default: False]")
 agroup.add_option("--CLs", dest="optCLs", default=False, action="store_true",
                   help="Calculate the observed and expected full CLs limits. This method is completely toy based. This script will submit toys to the grid using crab. This action will require a grid certificate. As this operation is very computing intensive there is no pre-defined option to submit to lxb (lxq). You can monitor and receive the results of your jobs once finished using the script limit.py using the CRAB OPTIONS as explained in the parameter description, there. [Default: False]")
 agroup.add_option("--bayesian", dest="optBayes", default=False, action="store_true",
@@ -52,6 +52,8 @@ bgroup.add_option("--cycles", dest="cycles", default="1-1", type="string",
                   help="Number of submission cycles for crab job submission. The options constitutes of two integers seperated by a minus sign, e.g. '7-10'. This would mean the script would run cycles 10, 9, 8, and 7. It makes combining toys easier '--HypothesisTest'. in The option only applies to the main options --CLs, --tanb and --HypothesisTest. For all other main options it has no effect. One submission cycle consists of 50 crab jobs. [Default: 1]")
 bgroup.add_option("--options", dest="opt", default="", type="string",
                   help="You can use this string for additional options that can be passed on to the scripts that are executed within this script. NB: these options should be enclosed by \"...\". [Default: \"\"]")
+bgroup.add_option("--collect", dest="optCollect", default=False, action="store_true",
+                  help="Collect toys for HypothesisTest/significance/limit/p-value/feldman-cousins and calculate observed using lxb (lxq). To run with this options the toys have to be produced beforehand. [Default: False]")
 parser.add_option_group(bgroup)
 ##
 ## BATCH OPTIONS
@@ -117,7 +119,7 @@ parser.add_option_group(fgroup)
 ##
 ## INJECTED OPTIONS
 ##
-ggroup = OptionGroup(parser, "INJECTED OPTIONS", "These are the command line options that can be used to configure lxb (lxq) batch job submission for 95% CL upper asymptotic CLs limits, (frequentist) significance or p-value calculations with a SM signal injected via the script lxb-injected.py, which uses the script limit.py. The expected limit with a SM signal injected is obtained from a large sample of toys. For each toy a pseudo data set is prepared and the observed limit/significance/p-value is calculated. After the toys have been produced you can collect the output using the script limit.py with option --injected. You can also use this script to do this using the option --collect-injected-toys, which will collect the injected toys and runthe observe limit on data. The expected limit and the uncertainties are obtained from the median and the quantiles of the collected toys. The number of toys (--toys) and the batch queue options (--queue) can be configured using the options described in section BATCH OPTIONS of this parameter description. The option --bunch-masses as described below can be used to define a maximal number of masses that will be bunched into a single job before a new job is created. The option --external-pulls can be used to pass a pre-defined set of nuisance parameters to limit.py that will be used instead of determining the central values of the nuisances by the prefit for each toy on its own.")
+ggroup = OptionGroup(parser, "INJECTED OPTIONS", "These are the command line options that can be used to configure lxb (lxq) batch job submission for 95% CL upper asymptotic CLs limits, (frequentist) significance or p-value calculations with a SM signal injected via the script lxb-injected.py, which uses the script limit.py. The expected limit with a SM signal injected is obtained from a large sample of toys. For each toy a pseudo data set is prepared and the observed limit/significance/p-value is calculated. After the toys have been produced you can collect the output using the script limit.py with option --injected. You can also use this script to do this using the option --collect, which will collect the injected toys and runthe observe limit on data. The expected limit and the uncertainties are obtained from the median and the quantiles of the collected toys. The number of toys (--toys) and the batch queue options (--queue) can be configured using the options described in section BATCH OPTIONS of this parameter description. The option --bunch-masses as described below can be used to define a maximal number of masses that will be bunched into a single job before a new job is created. The option --external-pulls can be used to pass a pre-defined set of nuisance parameters to limit.py that will be used instead of determining the central values of the nuisances by the prefit for each toy on its own.")
 ggroup.add_option("--injected-method", dest="injected_method", default="--asymptotic", type="choice", choices=["--asymptotic", "--significance-frequentist", "--pvalue-frequentist","--max-likelihood"],
                   help="Indicate here the method that you want to use the injected signal toys for. Available choices are '--asymptotic', '--significance-frequentist','--pvalue-frequentist' and '--max-likelihood' [Default: --asymptotic]")
 ggroup.add_option("--bunch-masses", dest="nmasses", default="10", type="string",
@@ -130,8 +132,6 @@ ggroup.add_option("--injected-mH", dest="injected_mH", default=False, action="st
                   help="Inject the signal at the given mH into the background only hypothesis from simulation. [Default: False]")
 ggroup.add_option("--SplusB", dest="signal_plus_BG", default=True, action="store_true",
                   help="When using options --external-pulls, use the fit results with signal plus background. If 'False' the fit result of the background only hypothesis is used. [Default: False]")
-ggroup.add_option("--collect-injected-toys", dest="calculate_injected", default=False, action="store_true",
-                  help="Collect toys and calculate observed limit/significance/p-value using lxb (lxq). To run with this options the toys have to be produced beforehand. [Default: False]")
 ggroup.add_option("--MSSM", dest="MSSM", default=False, action="store_true",
                   help="Is this MSSM? [Default: false]")
 parser.add_option_group(ggroup)
@@ -159,8 +159,6 @@ parser.add_option_group(igroup)
 ## HYPOTHESIS TEST
 ##
 jgroup = OptionGroup(parser, "HYPOTHESIS TEST OPTIONS", "These are the command line options that can be used to configure the submission of hypothesis test limits in the MSSM.")
-jgroup.add_option("--collectToys", dest="collectToys", default=False, action="store_true",
-                  help="Collect toys and calculate hypothesis test limits using lxb (lxq). To run with this options the toys have to be produced beforehand. [Default: False]")
 jgroup.add_option("--smartScan", dest="smartScan", default=False, action="store_true",
                   help="Run toy production only for the tanb points which are near the exclusion limit. ATTENTION: Before using this option you should have already produced a reasonable number of toys and plotted the results once. [Default: False]")
 jgroup.add_option("--smartGrid", dest="smartGrid", default=False, action="store_true",
@@ -319,14 +317,14 @@ if options.optGoodnessOfFit :
             if mass == 'common' :
                 continue
             if options.printOnly :
-                if options.calculate_injected :
-                    print "limit.py --goodness-of-fit --collect-injected-toys {USER} {DIR}".format(USER=options.opt, DIR=dir, )
+                if options.optCollect:
+                    print "limit.py --goodness-of-fit --collect {USER} {DIR}".format(USER=options.opt, DIR=dir, )
                 else :
                     print "limit.py --goodness-of-fit --expectedOnly --toys {TOYS} --seed {SEED} {USER} {DIR}".format(
                         TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt, DIR=dir, )
             else :
-                if options.calculate_injected :
-                    os.system("limit.py --goodness-of-fit --collect-injected-toys {USER} {DIR}".format(USER=options.opt, DIR=dir, ))
+                if options.optCollect :
+                    os.system("limit.py --goodness-of-fit --collect {USER} {DIR}".format(USER=options.opt, DIR=dir, ))
                     os.system("limit.py --goodness-of-fit --observedOnly {USER} {DIR}".format(USER=options.opt, DIR=dir))
                 else:
                     os.system("limit.py --goodness-of-fit --expectedOnly --toys {TOYS} --seed {SEED} {USER} {DIR}".format(
@@ -334,10 +332,10 @@ if options.optGoodnessOfFit :
     else :
         ## directories and mases per directory
         struct = directories(args)
-        if options.calculate_injected :
+        if options.optCollect :
             for dir in struct[0] :
                 for mass in struct[1][dir] :
-                    os.system("limit.py --goodness-of-fit --collect-injected-toys {DIR}/{MASS}".format(DIR=dir, MASS=mass))
+                    os.system("limit.py --goodness-of-fit --collect {DIR}/{MASS}".format(DIR=dir, MASS=mass))
             lxb_submit(struct[0], struct[1], "--goodness-of-fit", "--observedOnly {USER}".format(USER=options.opt))
         else: 
             cycle = options.cycles
@@ -399,30 +397,47 @@ if options.optNLLScan :
 ## FELDMAN COUSINS
 ##
 if options.optFeldmanCousins :
-    model  = model_config(options.fitModel)[0]
-    opts   = model_config(options.fitModel)[1]
     points = []
-    if "cV-cF" in options.fitModel :
-        conf  = "--feldman-cousins-toys=100 --feldman-cousins-points='CV={X},CF={Y}' --feldman-cousins-ranges='CV=0,2:CF=0,2'"
+    idx=0
+    for dir in args :
+        mass = get_mass(dir)
+        model  = model_config(options.fitModel)[0]
+        opts   = model_config(options.fitModel)[1]
+        from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
+        if "cV-cF" in options.fitModel :
+            conf  = "--feldman-cousins-toys=100 --feldman-cousins-points='CV={X},CF={Y}' --feldman-cousins-ranges='CV=0,2:CF=0,2'"
+        elif "ggH-bbH" in options.fitModel :
+            conf  = "--feldman-cousins-toys=100 --feldman-cousins-points='r_ggH={X},r_bbH={Y}' --feldman-cousins-ranges='r_ggH=0,{GGH}:r_bbH=0,{BBH}'"#.format(
+                #GGH=bounds["ggH-bbH",mass][0], BBH=bounds["ggH-bbH",mass][1])
+        else :
+            print "----- OPTION NOT SUPPORTED ----- "
+            exit(1)    
         for x in range(0,11) :
             for y in range(0,11) :
-                points.append(conf.format(X=0.+x*(2.-0.)/10, Y=0.+y*(2.-0.)/10))
-    idx=0
-    for point in points :
-        if options.interactive :
-            for dir in args :
-                mass = get_mass(dir)
-                if mass == 'common' :
-                    continue
-                if options.printOnly :
-                    print"limit.py --feldman-cousins {POINT} {MODEL} {OPTS} {USER} {DIR}".format(POINT=point, MODEL=model, OPTS=opts, DIR=dir, USER=options.opt)
+                points.append(conf.format(
+                    X=0.+x*(2.-0.)/10 if "cV-cF" in options.fitModel else 0.+x*(float(bounds["ggH-bbH",mass][0])-0.)/10,
+                    Y=0.+y*(2.-0.)/10 if "cV-cF" in options.fitModel else 0.+y*(float(bounds["ggH-bbH",mass][1])-0.)/10,
+                    GGH=bounds["ggH-bbH",mass][0],
+                    BBH=bounds["ggH-bbH",mass][1]))
+        if not options.optCollect :
+            for point in points :
+                if options.interactive :
+                    if mass == 'common' :
+                        continue
+                    if options.printOnly :
+                        print"limit.py --feldman-cousins {POINT} {MODEL} {OPTS} {USER} {DIR}".format(POINT=point, MODEL=model, OPTS=opts, DIR=dir, USER=options.opt)
+                    else :
+                        os.system("limit.py --feldman-cousins {POINT} {MODEL} {OPTS} {USER} {DIR}".format(POINT=point, MODEL=model, OPTS=opts, DIR=dir, USER=options.opt))
                 else :
-                    os.system("limit.py --feldman-cousins {POINT} {MODEL} {OPTS} {USER} {DIR}".format(POINT=point, MODEL=model, OPTS=opts, DIR=dir, USER=options.opt))
+                    ## directories and mases per directory
+                    struct = directories(args)
+                    lxb_submit(struct[0], struct[1], "--feldman-cousins", "{POINT} {MODEL} {OPTS} {USER}".format(POINT=point, MODEL=model, OPTS=opts, USER=options.opt), str(idx))
+                idx+=1
         else :
-            ## directories and mases per directory
-            struct = directories(args)
-            lxb_submit(struct[0], struct[1], "--feldman-cousins", "{POINT} {MODEL} {OPTS} {USER}".format(POINT=point, MODEL=model, OPTS=opts, USER=options.opt), str(idx))
-            idx+=1
+            if options.printOnly :
+                print"limit.py --feldman-cousins --collect {POINT} {MODEL} {OPTS} {USER} {DIR}".format(POINT=conf.format(X=1,Y=1,GGH=1,BBH=1), MODEL=model, OPTS=opts, DIR=dir, USER=options.opt)
+            else :
+                os.system("limit.py --feldman-cousins --collect {POINT} {MODEL} {OPTS} {USER} {DIR}".format(POINT=conf.format(X=1,Y=1,GGH=1,BBH=1), MODEL=model, OPTS=opts, DIR=dir, USER=options.opt))                
 ##
 ## MULTIDIM-FIT
 ##
@@ -576,7 +591,7 @@ if options.optInject :
         folder_extension = "-sig"
     elif options.injected_method == "--pvalue-frequentist" :
         folder_extension = "-pval"
-    if not options.calculate_injected :
+    if not options.optCollect :
         ## prepare options
         opts = options.opt
         if options.MSSM :
@@ -625,7 +640,7 @@ if options.optInject :
                 print "subtracting global minimum from NLL for dir:", dir
                 os.system("massDeltaNLL.py --histname higgsCombineMLFIT*.root {DIR}".format(DIR=dir))
                 for mass in struct[1][dir] :
-                    os.system("limit.py --max-likelihood --collect-injected-toys {DIR}/{MASS}".format(DIR=dir, MASS=mass))
+                    os.system("limit.py --max-likelihood --collect {DIR}/{MASS}".format(DIR=dir, MASS=mass))
             ## finally obtain the result on data 
             lxb_submit(struct[0], struct[1], "--max-likelihood --stable-new", "{USER}".format(USER=options.opt))
             ## obtain the expected results using an asimov dataset
@@ -636,7 +651,7 @@ if options.optInject :
                     NAME=jobname, METHOD=options.injected_method, PATH=path, SUB=options.queue, NJOB='1', NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else ""))
            
         else :
-            lxb_submit(struct[0], struct[1], "{METHOD} --collect-injected-toys".format(METHOD=options.injected_method), "{USER}".format(USER=opts))
+            lxb_submit(struct[0], struct[1], "{METHOD} --collect".format(METHOD=options.injected_method), "{USER}".format(USER=opts))
 ##
 ## CLs
 ##
@@ -734,7 +749,7 @@ if options.optTanb or options.optTanbPlus :
 if options.optHypothesisTest :
     dirs = []
     ## produce HybridNew TEV toys
-    if not options.collectToys:   
+    if not options.optCollect:   
         if options.interactive :
             cycle_begin, cycle_end = options.cycles.split("-")
             cycle=int(cycle_end)
@@ -773,9 +788,9 @@ if options.optHypothesisTest :
                 if mass == 'common' :
                     continue
                 if options.printOnly :
-                    print "limit.py --HypothesisTest --collectToys {OPTS} {DIR}".format(OPTS=options.opt, DIR=dir)
+                    print "limit.py --HypothesisTest --collect {OPTS} {DIR}".format(OPTS=options.opt, DIR=dir)
                 else :
-                    os.system("limit.py --HypothesisTest --collectToys {OPTS} {DIR}".format(OPTS=options.opt, DIR=dir))
+                    os.system("limit.py --HypothesisTest --collect {OPTS} {DIR}".format(OPTS=options.opt, DIR=dir))
         else :
             for dir in args :
                 ## chop off masses directory if present as this will be added automatically by the submission script
@@ -785,6 +800,6 @@ if options.optHypothesisTest :
                     dirs.append(dir)
             ## directories and masses per directory
             struct = directories(args)
-            lxb_submit(struct[0], struct[1], "--HypothesisTest --collectToys", options.opt)
+            lxb_submit(struct[0], struct[1], "--HypothesisTest --collect", options.opt)
 
 
