@@ -109,7 +109,15 @@ limit.py --collect --multidim-fit --physics-model="ggH-bbH" LIMITS-yymmdd-mssm/b
 plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-bbH.py
 
 
-(8) launch/collect/plot signal hypothesis test SM vs MSSM in mA-tanb plane 
+(8) launch/collect/plot FC limits (2d limits)
+## launch ggH-bbH 2d limits
+lxb: submit.py --feldman-cousins --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-ggH-bbH/* 
+lxq: submit.py --feldman-cousins --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-ggH-bbH/* --lxq --queue="-l h_vmem=4000M -l h_rt=12:00:00 -j y -o /dev/null"
+## collect ggH-bbH FC toys and use combine script 
+submit.py --collectToys --feldman-cousins --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-ggH-bbH/*
+
+
+(9) launch/collect/plot signal hypothesis test SM vs MSSM in mA-tanb plane 
 ## lauch final setup of datacards
 lxb: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM (--smartGrid --customTanb="10,13") --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic,lightstopmod]
 lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM (--smartGrid --customTanb="10,13") --model [mhmodm,mhmodp,mhmax-mu+200,lowmH,lightstau1,tauphobic,lightstopmod] --lxq
@@ -117,8 +125,8 @@ lxq: lxb-xsec2tanb.py LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --MSSMvsSM (--smartGri
 lxb: submit.py --HypothesisTest --cycles 1-5 --toys 200 (--smartScan --customTanb="10,13") LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
 lxq: submit.py --HypothesisTest --cycles 1-5 --toys 200 (--smartScan --customTanb="10,13") LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null" --options="--userOpt '-v -1  > /dev/null'"
 ## collect toys and calculate limits
-lxb: submit.py --HypothesisTest --collectToys LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
-lxq: submit.py --HypothesisTest --collectToys LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null" --options=''
+lxb: submit.py --HypothesisTest --collect LIMITS-yymmdd-mssm/bbb[-asimov]/*/* -q '-q 2nd'
+lxq: submit.py --HypothesisTest --collect LIMITS-yymmdd-mssm/bbb[-asimov]/*/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null" --options=''
 ## plotting
 plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/hypo-test-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic,lightstopmod].py LIMITS-yymmdd-mssm/bbb-[mhmax,mhmodm,mhmodp,lowmH,lightstau1,tauphobic,lightstopmod]-[-asimov] [expectedOnly=1]
 ## ATTENTION
