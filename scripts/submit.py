@@ -435,9 +435,9 @@ if options.optFeldmanCousins :
                 idx+=1
         else :
             if options.printOnly :
-                print"limit.py --feldman-cousins --collect {POINT} {MODEL} {OPTS} {USER} {DIR}".format(POINT=point, MODEL=model, OPTS=opts, DIR=dir, USER=options.opt)
+                print"limit.py --feldman-cousins --collect {POINT} {MODEL} {OPTS} {USER} {DIR}".format(POINT=conf.format(X=1,Y=1,GGH=1,BBH=1), MODEL=model, OPTS=opts, DIR=dir, USER=options.opt)
             else :
-                os.system("limit.py --feldman-cousins --collect {POINT} {MODEL} {OPTS} {USER} {DIR}".format(POINT=point, MODEL=model, OPTS=opts, DIR=dir, USER=options.opt))                
+                os.system("limit.py --feldman-cousins --collect {POINT} {MODEL} {OPTS} {USER} {DIR}".format(POINT=conf.format(X=1,Y=1,GGH=1,BBH=1), MODEL=model, OPTS=opts, DIR=dir, USER=options.opt))                
 ##
 ## MULTIDIM-FIT
 ##

@@ -664,16 +664,16 @@ for directory in args :
         ## determine mass value from directory name
         mass  = get_mass(directory)
         ## prepare workspace
-        if not options.fitModel == "" :
-            model = []
-            if "=" in options.fitModel :
-                model = options.fitModel.split('=')
-                create_card_workspace_with_physics_model(mass)
-            else :
-                model = [options.fitModel]
-        if not options.setupOnly :
-            ## if it does not exist already, create link to executable
-            if not options.optCollect :
+        if not options.optCollect :
+            if not options.fitModel == "" :
+                model = []
+                if "=" in options.fitModel :
+                    model = options.fitModel.split('=')
+                    create_card_workspace_with_physics_model(mass)
+                else :
+                    model = [options.fitModel]
+            if not options.setupOnly :
+                ## if it does not exist already, create link to executable
                 if not os.path.exists("combine") :
                     os.system("cp -s $(which combine) .")
                 os.system("combine -M HybridNew --freq --testStat=PL --rule=CLsplusb -T {TOYS} --clsAcc 0 -v 0 -n FC-POINT-{LABEL} --saveHybridResult --saveToys -s -1 -i 1 --singlePoint {POINT} --setPhysicsModelParameterRanges {RANGE} -m {MASS} {MODEL}".format(
@@ -684,11 +684,14 @@ for directory in args :
                     MASS  = mass,
                     MODEL = model[0]+'.root'
                     ))
-            else :
-                os.system("hadd -f higgsCombineFC.HybridNew.mH125.root  higgsCombineFC-POINT-*.HybridNew.mH125.*.root")
-                os.system("python ${CMSSW_BASE}/HiggsAnalysis/CombinedLimit/test/makeFCcontour.py higgsCombineFC.HybridNew.mH125.root -x {X} -y {Y} --cl=0.68,0.95".format(
-                    X=options.fcPoints.replace(',','=').split("=")[0],
-                    Y=options.fcPoints.replace(',','=').split("=")[2]))
+        else :
+            if os.path.exists("higgsCombineFC.HybridNew.mH125.root") :
+                os.system("higgsCombineFC.HybridNew.mH125.root")
+            os.system("hadd -f higgsCombineFC.HybridNew.mH125.root  higgsCombineFC-POINT-*.HybridNew.mH125.*.root")
+            os.system("python {CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/test/makeFCcontour.py higgsCombineFC.HybridNew.mH125.root -x {X} -y {Y} --cl=0.68,0.95".format(
+                CMSSW_BASE=os.environ["CMSSW_BASE"],
+                X=options.fcPoints.replace(',','=').split("=")[0],
+                Y=options.fcPoints.replace(',','=').split("=")[2]))
                 
             
     ##
