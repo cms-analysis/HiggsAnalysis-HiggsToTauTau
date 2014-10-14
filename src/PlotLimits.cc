@@ -367,13 +367,15 @@ PlotLimits::higgsConstraint(const char* directory, double mass, double deltaM, c
   for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
     std::string line;
     bool filled = false;
-    float tanb_save=-99.0, tanb, mh, mA, mH, upperTanb=-1., lowerTanb=-1.;
+    float tanb_save=-99.0, tanb, mh, mA, mH, upperTanb=-1., lowerTanb=-1., mhiggs=0;
     ifstream higgs (TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/%s/higgs_%d.dat", model, (int)bins_[imass])); 
     if(higgs.is_open()){
       while(higgs.good()){
 	getline(higgs,line);
 	sscanf(line.c_str(),"%f %f %f %f", &tanb, &mh, &mA, &mH);
-	if((fabs(mh-mass)<deltaM || fabs(mH-mass)<deltaM) && tanb!=tanb_save){
+	if(TString(model)=="lowmH") mhiggs=mH;
+	else mhiggs=mh;
+	if(fabs(mhiggs-mass)<deltaM && tanb!=tanb_save){
 	  if(!filled){
 	    graph->SetPoint(ipoint, bins_[imass], tanb); 
 	    graph->SetPointEYlow(ipoint, 0.);

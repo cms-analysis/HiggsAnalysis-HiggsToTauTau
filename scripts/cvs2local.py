@@ -225,12 +225,12 @@ if options.analysis == "sm" :
         }
 if options.analysis == "mssm" :
     valid_periods = {
-        "ee"   : "7TeV 8TeV",
-        "mm"   : "7TeV 8TeV",
-        "em"   : "7TeV 8TeV",
-        "mt"   : "7TeV 8TeV",
-        "et"   : "7TeV 8TeV",
-        "tt"   :      "8TeV",
+        "ee"   : "7TeV 8TeV 13TeV 14TeV",
+        "mm"   : "7TeV 8TeV 13TeV 14TeV",
+        "em"   : "7TeV 8TeV 13TeV 14TeV",
+        "mt"   : "7TeV 8TeV 13TeV 14TeV",
+        "et"   : "7TeV 8TeV 13TeV 14TeV",
+        "tt"   :      "8TeV 13TeV 14TeV",
         #"hmm"  : "7TeV"     ,
         "hbb"  : "7TeV"     ,
         }

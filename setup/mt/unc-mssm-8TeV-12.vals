@@ -24,7 +24,7 @@ muTau_nobtag_high                  	QCD				CMS_htt_QCDShape_mutau_nobtag_high_8T
 muTau_nobtag_high			ZJ				CMS_htt_ZJetFakeTau_mutau_8TeV      			1.20
 muTau_nobtag_high			ZL				CMS_htt_ZLeptonFakeTau_mutau_8TeV			1.30
 muTau_nobtag_high			ZL			        CMS_htt_ZLScale_mutau_8TeV       			1.00
-muTau_nobtag_high			W			        CMS_htt_WShape_mutau_8TeV       			1.00
+muTau_nobtag_high			W			        CMS_htt_WShape_mutau_nobtag_high_8TeV  			1.00
 #[tail]muTau_nobtag_high		W				tailShape						1.00
 muTau_nobtag_high                    	ggH_SM125                       pdf_gg                                          	1.097
 muTau_nobtag_high                    	qqH_SM125                       pdf_qqbar                                       	1.036
@@ -35,4 +35,4 @@ muTau_nobtag_high                    	VH_SM125                        QCDscale_V
 muTau_nobtag_high                    	qqH_SM125,VH_SM125              UEPS                                            	1.05
 muTau_nobtag_high                    	ggH_SM125                       UEPS                                            	1.013
 muTau_nobtag_high			ggH                       	CMS_htt_higgsPtReweight_8TeV				1.00
-
+muTau_nobtag_high                       ggH_SM125                       CMS_htt_higgsPtReweightSM_8TeV                          1.00

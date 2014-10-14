@@ -28,7 +28,7 @@ python HiggsAnalysis/HiggsToTauTau/scripts/doSM.py --label='-yymmdd-sm' --drop-l
 (3) run goodness-of-fit:
 ## calculation and plotting
 submit.py --goodness-of-fit --toys 100 --cycles 10 LIMITS-yymmdd-sm/bbb/*/125
-submit.py --goodness-of-fit --collect-injected-toys LIMITS-yymmdd-sm/bbb/*/125
+submit.py --goodness-of-fit --collect LIMITS-yymmdd-sm/bbb/*/125
 plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py LIMITS-yymmdd-sm/bbb/*
 
 (4) run max-likelihood fit:
@@ -59,7 +59,7 @@ addHiggs2BG.py --uncert-inputs="{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/set
 (5b) run asymptotic limits with higgs injected (blue band):
 ## calculation and plotting (ATTENTION: this spawns ~1000*N(masses) jobs to the batch system)
 submit.py --injected injected-method="--asymptotic" --toys 1000 --bunch-masses=1 LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
-submit.py --injected --injected-method "--asymptotic" --collect-injected-toys LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
+submit.py --injected --injected-method "--asymptotic" --collect LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
 plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-sm.py LIMITS-yymmdd-sm/bbb/* injected=1 ["expecteOnly=True"]
 
 (5a) sensitivity per channel/category:
@@ -74,7 +74,7 @@ plot --significance-frequentist HiggsAnalysis/HiggsToTauTau/python/layouts/signi
 (6a) significance w/ uncertainty band:
 ## calculation and plotting (ATTENTION: this spawns ~1000*N(masses) jobs to the batch system)
 submit.py --injected --injected-method "--significance-frequentist" --toys 1000 --bunch-masses 1 LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
-submit.py --injected --injected-method "--significance-frequentist" --collect-injected-toys LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
+submit.py --injected --injected-method "--significance-frequentist" --collect LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
 plot --injected-sig HiggsAnalysis/HiggsToTauTau/python/layouts/significance-sm.py LIMITS-yymmdd-sm/bbb/* ['expectedOnly=True']
 
 (7) p-value:
@@ -85,7 +85,7 @@ plot --pvalue-frequentist HiggsAnalysis/HiggsToTauTau/python/layouts/pvalue-sm.p
 (7a) p-value w/ uncertainty band:
 ## calculation and plotting (ATTENTION: this spawns ~1000*N(masses) jobs to the batch system)
 submit.py --injected --injected-method "--pvalue-frequentist" --toys 1000 --bunch-masses 1 LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
-submit.py --injected --injected-method "--pvalue-frequentist" --collect-injected-toys LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
+submit.py --injected --injected-method "--pvalue-frequentist" --collect LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
 plot --injected-pval HiggsAnalysis/HiggsToTauTau/python/layouts/pvalue-sm.py LIMITS-yymmdd-sm/bbb/* ['expectedOnly=True']
 
 (7b) p-value per channel/category:
@@ -95,7 +95,7 @@ root -l >> .x HiggsAnalysis/HiggsToTauTau/macros/comparePValues.C++("inputfile.r
 (6) mass scan w/ uncertainty band (1-dim):
 ## calculation and plotting (ATTENTION: this spawns ~1000*N(masses) jobs to the batch system)
 submit.py --injected --injected-method "--max-likelihood" --toys 1000 --bunch-masses 1 LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
-submit.py --injected --injected-method "--max-likelihood" --collect-injected-toys LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
+submit.py --injected --injected-method "--max-likelihood" --collect LIMITS-yymmdd-sm/bbb/*/* [--lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"]
 plot --mass-estimate HiggsAnalysis/HiggsToTauTau/python/layouts/likelihood-scan-mass.py LIMITS-yymmdd-sm/bbb/* ['expectedOnly=True']
 
 (7) mu vs mass scan (2-dim):

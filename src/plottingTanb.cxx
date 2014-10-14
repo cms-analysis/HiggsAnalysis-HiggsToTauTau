@@ -306,10 +306,10 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
       if(transparent && !BlackWhite) plain_2->Draw("3same");
       observed_2->Draw("Lsame");
     }
+  }
     //observed_3->Draw("Lsame"); 
     if(!BlackWhite) expected_1->Draw("Lsame");
     if(!BlackWhite && HIG=="") expected_2->Draw("Lsame");
-  }
  
   idx=0;
   std::map<std::string,int> coloredComps;
@@ -443,11 +443,11 @@ plottingTanb(TCanvas& canv, TGraphAsymmErrors* plain_1, TGraphAsymmErrors* plain
   leg2->SetLineColor (kBlack);
   if(log) {
     if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
-    else leg2->AddEntry(background, "m^{MSSM}_{h,H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
+    else leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
   }
   else {
     if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
-    else leg2->AddEntry(background, "m^{MSSM}_{h,H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
+    else leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
   }
   leg2->Draw("same");
 

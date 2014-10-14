@@ -53,8 +53,8 @@ bgroup.add_option("--no-repeat", dest="norepeat", default=False, action="store_t
                   help="Detect if a command has already been run, and do not execute the command again if this is the case. [Default: False]")
 bgroup.add_option("--shape", dest="shape", default="shape2", type="string",
                   help="Choose a dedicated algorithm for vertical shape morphing during roofit model creation. [Default: 'shape2']")
-bgroup.add_option("--collect-injected-toys", dest="optCollect", default=False, action="store_true",
-                  help="Collect the output for external toy calculations with SM Higgs boson signal injected. This option can be used together with the main options --asymptotic, --significance-frequentist and --pvalue--frequentist, which can be run with external toys. For other options it has no effect. The toy outputs will be collected and observed outputs will be calculated. In case that toys from previous submissions exist already they will be merged with the new toys. This does allow to increase the external toy statistics in subsequent submissions. In case you do not want this feature you should specify this with the option --from-scratch. [Default: False]")
+bgroup.add_option("--collect", dest="optCollect", default=False, action="store_true",
+                  help="Collect the output for external or internal toy calculations (for some with SM Higgs boson signal injected). This option can be used together with the main options --asymptotic, --significance-frequentist , --HypothesisTest, --FeldmanCousins, --multidim-fit and --pvalue--frequentist, which can be run with external and internal toys. For other options it has no effect. The toy outputs will be collected (and for some approaches observed outputs will be calculated). In case that toys from previous submissions exist already they will be merged with the new toys. This does allow to increase the external or internal toy statistics in subsequent submissions. In case you do not want this feature you should specify this with the option --from-scratch. [Default: False]")
 bgroup.add_option("--from-scratch", dest="fromScratch", default=False, action="store_true",
                   help="Delete former toys if they exist to make sure that the calculated toys that will be collected are not distorted by any remnants of former calculations. [Default: False]")
 bgroup.add_option('--external-pulls', dest='externalPulls', default=None, type="string",
@@ -119,7 +119,7 @@ fgroup.add_option("--minuit", dest="minuit", default=False, action="store_true",
                   help="Switch from minuit2 to minuit for the fit that is performed before the asymptotic limits are calculated. [Default: False]")
 fgroup.add_option("--qtilde", dest="qtilde", default=False, action="store_true",
                   help="Also allow negative signal strength in the fit that is performed before the asymptotic limits are calculated. [Default: False]")
-fgroup.add_option("--strategy", dest="strategy", default=2, type="int",
+fgroup.add_option("--strategy", dest="strategy", default=0, type="int",
                   help="Change the strategy of the fit that is performed before the asymptotic limits are calculated. Possible strategies are 0, 1, 2. [Default: 2]")
 fgroup.add_option("--hide-fitresult", dest="hide_fitresult", default=False, action="store_true",
                   help="Specify this option if you want to hide the result of the ML fit from the prompt. [Default: False]")
@@ -149,8 +149,6 @@ hgroup.add_option("--setupOnly", dest="setupOnly", action="store_true", default=
                   help="Only setup the model, do not start the minimization. To be used with job splitting for maximum likelihood scans. If \"False\" the model will be set up and the minimzation will be executed right away. [Default: \"False\"]")
 hgroup.add_option("--saveResults", dest="saveResults", action="store_true", default=False,
                   help="Store the fit output that is usually prompted to the screen in a txt file called signal-strength.output. This input file can be used further on to plot the signal strength as function of mH or as function of mA. [Default: \"False\"]")
-hgroup.add_option("--collect", dest="collect", action="store_true", default=False,
-                  help="Use this option to re-collect the output in the directory/ies corresponding to ARGs in case you have run the multimensional fit using the script submit.py with option --multidim-fit. Note that you have to specify a physics model, when using limit.py with option --multidim-fit. It is enought to give the name of the physics model in this case. The name of the output file will be modified according to the capitalized name of the physcis model to indicate clearly what model has been fit to the data. [Default: \"False\"]")
 parser.add_option_group(hgroup)
 ##
 ## SIGNIFICANCE OPTIONS
@@ -210,8 +208,6 @@ parser.add_option_group(ngroup)
 ogroup = OptionGroup(parser, "HYPOTHESIS TEST OPTIONS", "These are the command line options that can be used to configure the submission of hypothesis test limits in the MSSM.")
 ogroup.add_option("--cycle", dest="cycle", default="", type="string",
                   help="Name of the cycle, e.g. '1', '2', etc.. . [Defaul: \"\"]")
-ogroup.add_option("--collectToys", dest="collectToys", default=False, action="store_true",
-                  help="Collect toys and calculate hypothesis test limits using lxb (lxq). To run with this options the toys have to be produced beforehand. [Default: False]")
 ogroup.add_option("--smartScan", dest="smartScan", default=False, action="store_true",
                   help="Run toy production only for the tanb points which are near the exclusion limit. ATTENTION: Before using this option you should have already produced a reasonable number of toys and plotted the results once. [Default: False]")
 ogroup.add_option("--customTanb", dest="customTanb", default="", type="string",
@@ -662,31 +658,42 @@ for directory in args :
         os.system("combine -M MultiDimFit -m {mass} --algo=grid {points} --rMin {min} --rMax {max} {user} {wdir}/{wsp}.root".format(
             mass=mass, points=gridpointsOpts, user=options.userOpt, min=options.rMin, max=options.rMax, wdir=options.workingdir, wsp=wsp))
     ##
-    ##
+    ## FELDMAN-COUSINS
     ##
     if options.optFeldmanCousins :
         ## determine mass value from directory name
         mass  = get_mass(directory)
         ## prepare workspace
-        if not options.fitModel == "" :
-            model = []
-            if "=" in options.fitModel :
-                model = options.fitModel.split('=')
-                create_card_workspace_with_physics_model(mass)
-            else :
-                model = [options.fitModel]
-        if not options.setupOnly :
-            ## if it does not exist already, create link to executable
-            if not os.path.exists("combine") :
-                os.system("cp -s $(which combine) .")
-            os.system("combine -M HybridNew --freq --testStat=PL --rule=CLsplusb -T {TOYS} --clsAcc 0 -v 0 -n FC-POINT-{LABEL} --saveHybridResult --saveToys -s -1 -i 1 --singlePoint {POINT} --setPhysicsModelParameterRanges {RANGE} -m {MASS} {MODEL}".format(
-                TOYS  = options.fcToys,
-                LABEL = options.fcPoints.replace('=','-').replace(',','-'),
-                POINT = options.fcPoints,
-                RANGE = options.fcRanges,
-                MASS  = mass,
-                MODEL = model[0]+'.root'
-                ))        
+        if not options.optCollect :
+            if not options.fitModel == "" :
+                model = []
+                if "=" in options.fitModel :
+                    model = options.fitModel.split('=')
+                    create_card_workspace_with_physics_model(mass)
+                else :
+                    model = [options.fitModel]
+            if not options.setupOnly :
+                ## if it does not exist already, create link to executable
+                if not os.path.exists("combine") :
+                    os.system("cp -s $(which combine) .")
+                os.system("combine -M HybridNew --freq --testStat=PL --rule=CLsplusb -T {TOYS} --clsAcc 0 -v 0 -n FC-POINT-{LABEL} --saveHybridResult --saveToys -s -1 -i 1 --singlePoint {POINT} --setPhysicsModelParameterRanges {RANGE} -m {MASS} {MODEL}".format(
+                    TOYS  = options.fcToys,
+                    LABEL = options.fcPoints.replace('=','-').replace(',','-'),
+                    POINT = options.fcPoints,
+                    RANGE = options.fcRanges,
+                    MASS  = mass,
+                    MODEL = model[0]+'.root'
+                    ))
+        else :
+            if os.path.exists("higgsCombineFC.HybridNew.mH125.root") :
+                os.system("higgsCombineFC.HybridNew.mH125.root")
+            os.system("hadd -f higgsCombineFC.HybridNew.mH125.root  higgsCombineFC-POINT-*.HybridNew.mH125.*.root")
+            os.system("python {CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/test/makeFCcontour.py higgsCombineFC.HybridNew.mH125.root -x {X} -y {Y} --cl=0.68,0.95".format(
+                CMSSW_BASE=os.environ["CMSSW_BASE"],
+                X=options.fcPoints.replace(',','=').split("=")[0],
+                Y=options.fcPoints.replace(',','=').split("=")[2]))
+                
+            
     ##
     ## MULTIDIM-FIT
     ##
@@ -703,12 +710,20 @@ for directory in args :
             exit(1)
         else :
             model = [options.fitModel]
-        if options.collect :
+        if options.optCollect :
             ## combine outputs
-            os.system("hadd -f higgsCombine{MODEL}.MultiDimFit.mH{MASS}.root higgsCombine*.MultiDimFit.mH{MASS}-[0-9]*-[0-9]*.root".format(
-                MASS=mass, MODEL=model[0].upper()))
+            os.system("hadd -f higgsCombine{MODEL}.MultiDimFit.mH{MASS}_2.root higgsCombine*.MultiDimFit.mH{MASS}-[0-9]*-[0-9]*.root".format(
+                MASS=mass, MODEL=model[0].upper()))            
+            if os.path.exists("higgsCombine{MODEL}.MultiDimFit.mH{MASS}.root".format(MASS=mass, MODEL=model[0].upper())):
+                os.system("mv higgsCombine{MODEL}.MultiDimFit.mH{MASS}.root higgsCombine{MODEL}.MultiDimFit.mH{MASS}_3.root".format(
+                    MASS=mass, MODEL=model[0].upper()))
+                os.system("hadd -f higgsCombine{MODEL}.MultiDimFit.mH{MASS}.root higgsCombine*.MultiDimFit.mH{MASS}_[0-9].root".format(
+                    MASS=mass, MODEL=model[0].upper())) 
+            if not os.path.exists("higgsCombine{MODEL}.MultiDimFit.mH{MASS}.root".format(MASS=mass, MODEL=model[0].upper())):
+                os.system("mv higgsCombine{MODEL}.MultiDimFit.mH{MASS}_2.root higgsCombine{MODEL}.MultiDimFit.mH{MASS}.root".format(
+                    MASS=mass, MODEL=model[0].upper())) 
             ## cleanup
-            os.system("rm higgsCombine*.MultiDimFit.mH{MASS}-[0-9]*-[0-9]*.root".format(MASS=mass))
+            os.system("rm higgsCombine*.MultiDimFit.mH{MASS}-[0-9]*-[0-9]*.root higgsCombine*.MultiDimFit.mH{MASS}_[0-9].root".format(MASS=mass))
             continue
         if not options.setupOnly :
             ## if it does not exist already, create link to executable
@@ -1158,7 +1173,7 @@ for directory in args :
         ## fetch workspace for each tanb point
         directoryList = os.listdir(".")       
         ## produce HybridNew TEV toys and save them
-        if not options.collectToys: 
+        if not options.optCollect: 
             ## list of all tasks to do
             tasks = []
             seedNR=random.randint(100000, 999999)
