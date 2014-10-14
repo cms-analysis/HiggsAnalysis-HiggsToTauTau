@@ -114,7 +114,7 @@ class PlotLimits {
   ///
   void plotGoodnessOfFit(TCanvas& canv, const char* directory="");
   /// plot 2d-scans for several masses on canvases, print out png, pdf, txt, root formats if desired  
-  void plot2DScan(TCanvas& canv, const char* directory="");
+  void plot2DScan(TCanvas& canv, const char* directory="", std::string="multidim-fit");
   /// plot 1d-scans for several masses on canvases, print out png, pdf, root formats if desired  
   void plot1DScan(TCanvas& canv, const char* directory="");
 

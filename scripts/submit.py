@@ -407,18 +407,28 @@ if options.optFeldmanCousins :
         if "cV-cF" in options.fitModel :
             conf  = "--feldman-cousins-toys=100 --feldman-cousins-points='CV={X},CF={Y}' --feldman-cousins-ranges='CV=0,2:CF=0,2'"
         elif "ggH-bbH" in options.fitModel :
-            conf  = "--feldman-cousins-toys=100 --feldman-cousins-points='r_ggH={X},r_bbH={Y}' --feldman-cousins-ranges='r_ggH=0,{GGH}:r_bbH=0,{BBH}'"#.format(
-                #GGH=bounds["ggH-bbH",mass][0], BBH=bounds["ggH-bbH",mass][1])
+            conf  = "--feldman-cousins-toys=100 --feldman-cousins-points='r_ggH={X},r_bbH={Y}' --feldman-cousins-ranges='r_ggH=0,{GGH}:r_bbH=0,{BBH}'"
         else :
             print "----- OPTION NOT SUPPORTED ----- "
-            exit(1)    
-        for x in range(0,11) :
-            for y in range(0,11) :
+            exit(1)
+        xmax=11
+        ymax=11
+        for x in range(0,xmax) :
+            for y in range(0,ymax) :
                 points.append(conf.format(
                     X=0.+x*(2.-0.)/10 if "cV-cF" in options.fitModel else 0.+x*(float(bounds["ggH-bbH",mass][0])-0.)/10,
                     Y=0.+y*(2.-0.)/10 if "cV-cF" in options.fitModel else 0.+y*(float(bounds["ggH-bbH",mass][1])-0.)/10,
                     GGH=bounds["ggH-bbH",mass][0],
-                    BBH=bounds["ggH-bbH",mass][1]))
+                    BBH=bounds["ggH-bbH",mass][1]))        
+        footprint = open("{DIR}/.scan".format(DIR=dir), "w")
+        footprint.write("points : {POINTS}\n".format(POINTS=int(xmax*ymax)))
+        if "cV-cF" in options.fitModel :
+            footprint.write("{VAL} : {RANGE}\n".format(VAL="CV", RANGE="0 2.0"))
+            footprint.write("{VAL} : {RANGE}\n".format(VAL="CF", RANGE="0 2.0"))
+        elif "ggH-bbH" in options.fitModel :
+            footprint.write("{VAL} : 0 {RANGE}\n".format(VAL="ggH", RANGE=float(bounds["ggH-bbH",mass][0])))
+            footprint.write("{VAL} : 0 {RANGE}\n".format(VAL="bbH", RANGE=float(bounds["ggH-bbH",mass][1])))
+        footprint.close()       
         if not options.optCollect :
             for point in points :
                 if options.interactive :
@@ -437,7 +447,7 @@ if options.optFeldmanCousins :
             if options.printOnly :
                 print"limit.py --feldman-cousins --collect {POINT} {MODEL} {OPTS} {USER} {DIR}".format(POINT=conf.format(X=1,Y=1,GGH=1,BBH=1), MODEL=model, OPTS=opts, DIR=dir, USER=options.opt)
             else :
-                os.system("limit.py --feldman-cousins --collect {POINT} {MODEL} {OPTS} {USER} {DIR}".format(POINT=conf.format(X=1,Y=1,GGH=1,BBH=1), MODEL=model, OPTS=opts, DIR=dir, USER=options.opt))                
+                os.system("limit.py --feldman-cousins --collect {POINT} {MODEL} {OPTS} {USER} {DIR}".format(POINT=conf.format(X=1,Y=1,GGH=1,BBH=1), MODEL=model, OPTS=opts, DIR=dir, USER=options.opt))
 ##
 ## MULTIDIM-FIT
 ##
@@ -563,7 +573,7 @@ if options.optAsym :
         struct = directories(args)
         lxb_submit(struct[0], struct[1], cmd, "{MODEL} {OPTS} {USER}".format(MODEL=model, OPTS=opts, USER=options.opt))
 ##
-## INJECTED (asymptotic limits with signal injected, implementation for SM only)
+## INJECTED (asymptotic limits with signal injected)
 ##
 if options.optInject :
     ## the input for lxb-injected.py should be a path, that is passed on as an
@@ -698,7 +708,7 @@ if options.optBayes :
                 os.system("{CMD} {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=options.opt, USER=options.opt, DIRS=vec2str(subvec(args, 90, 150))))
         cycle = cycle-1
 ##
-## TANB
+## TANB MSSMvsBG
 ##
 if options.optTanb or options.optTanbPlus :
     cycle_begin, cycle_end = options.cycles.split("-")
@@ -746,6 +756,9 @@ if options.optTanb or options.optTanbPlus :
                 struct = directories(args)
                 lxb_submit(struct[0], struct[1], "--tanb+", options.opt)
         cycle = cycle-1
+##
+## TANB MSSMvsSM
+##
 if options.optHypothesisTest :
     dirs = []
     ## produce HybridNew TEV toys
