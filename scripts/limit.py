@@ -688,12 +688,10 @@ for directory in args :
             if os.path.exists("higgsCombineFC.HybridNew.mH125.root") :
                 os.system("higgsCombineFC.HybridNew.mH125.root")
             os.system("hadd -f higgsCombineFC.HybridNew.mH125.root  higgsCombineFC-POINT-*.HybridNew.mH125.*.root")
-            os.system("python {CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/test/makeFCcontour.py higgsCombineFC.HybridNew.mH125.root -x {X} -y {Y} --cl=0.68,0.95".format(
+            os.system("python {CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/test/makeFCcontour.py higgsCombineFC.HybridNew.mH125.root -x {X} -y {Y} --cl=0.0,0.68,0.95".format(
                 CMSSW_BASE=os.environ["CMSSW_BASE"],
                 X=options.fcPoints.replace(',','=').split("=")[0],
-                Y=options.fcPoints.replace(',','=').split("=")[2]))
-                
-            
+                Y=options.fcPoints.replace(',','=').split("=")[2]))           
     ##
     ## MULTIDIM-FIT
     ##
