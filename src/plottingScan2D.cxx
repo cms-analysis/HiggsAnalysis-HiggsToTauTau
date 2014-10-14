@@ -33,7 +33,7 @@ void plottingScan2D(TCanvas& canv, TH2D* h2d, TGraph* bestfit, TGraph* c68, TGra
   h2d->GetYaxis()->SetTitleOffset(1.4);
   h2d->GetYaxis()->SetTitleFont(62);
   h2d->GetYaxis()->SetLabelSize(0.04);
-  h2d->SetZTitle("#bf{#Delta NLL}");
+  h2d->GetZaxis()->SetTitle("#bf{#Delta NLL}");
   h2d->GetZaxis()->SetLabelFont(62);
   h2d->GetZaxis()->SetTitleSize(0.04);
   h2d->GetZaxis()->SetTitleOffset(1.03);
@@ -44,7 +44,7 @@ void plottingScan2D(TCanvas& canv, TH2D* h2d, TGraph* bestfit, TGraph* c68, TGra
   h2d->SetNameTitle("","");
   h2d->Draw("AXIS");
   if(temp) h2d->Draw("COLZ");
-
+  
   c95->SetLineStyle(1);
   c95->SetLineColor(kBlack);
   c95->SetLineWidth(3);
@@ -57,7 +57,7 @@ void plottingScan2D(TCanvas& canv, TH2D* h2d, TGraph* bestfit, TGraph* c68, TGra
   if(!temp) c68->Draw("F SAME");
   c95->Draw("CONT SAME");
   c68->Draw("CONT SAME");
-
+  
   TLegend* leg;
   if(SMexpected && masslabel=="m_{#phi}") leg = new TLegend(0.55, 0.60, 0.90, 0.90);
   else leg = new TLegend(0.60, 0.70, 0.90, 0.90);;
@@ -80,7 +80,7 @@ void plottingScan2D(TCanvas& canv, TH2D* h2d, TGraph* bestfit, TGraph* c68, TGra
     canv.Update();
     SMexpectedLayer->DrawMarker(0.554*gPad->GetUxmax(),0.708*gPad->GetUymax());
   }
-
+  
   TString label = TString::Format("%s = %d GeV", masslabel.c_str(), mass);
   TPaveText* textlabel = new TPaveText(0.18, 0.81, 0.50, 0.90, "NDC");
   textlabel->SetBorderSize(   0 );
@@ -92,14 +92,13 @@ void plottingScan2D(TCanvas& canv, TH2D* h2d, TGraph* bestfit, TGraph* c68, TGra
   textlabel->AddText(label);
   textlabel->SetLabel("");
   textlabel->Draw();
-
+  
   canv.RedrawAxis();
   bestfit->SetMarkerStyle(34);
   bestfit->SetMarkerSize(3.0);
   bestfit->SetMarkerColor(kBlack);
-  //bestfit->Draw("Psame");
   bestfit->Draw("P SAME");
-
+  
   if(SMexpected && SMexpectedLayer){
     //Hardcoded positions of the SM expectation. Fixed for the 2 diamonds. Must be done after RedrawAxis
     if((int)mass==90  ) {SMexpected->DrawMarker(0,0); SMexpectedLayer->DrawMarker(0,0);}
