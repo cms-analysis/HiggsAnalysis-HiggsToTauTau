@@ -111,10 +111,12 @@ plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-
 
 (8) launch/collect/plot FC limits (2d limits)
 ## launch ggH-bbH 2d limits
-lxb: submit.py --feldman-cousins --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-ggH-bbH/* 
-lxq: submit.py --feldman-cousins --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-ggH-bbH/* --lxq --queue="-l h_vmem=4000M -l h_rt=12:00:00 -j y -o /dev/null"
+lxb: submit.py --feldman-cousins --toys=100 --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-ggH-bbH/* 
+lxq: submit.py --feldman-cousins --toys=100 --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-ggH-bbH/* --lxq --queue="-l h_vmem=4000M -l h_rt=12:00:00 -j y -o /dev/null"
 ## collect ggH-bbH FC toys and use combine script 
 submit.py --collect --feldman-cousins --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-ggH-bbH/*
+## plotting
+plot --feldman-cousins HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-bbH.py
 
 
 (9) launch/collect/plot signal hypothesis test SM vs MSSM in mA-tanb plane 
