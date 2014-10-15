@@ -30,7 +30,7 @@ eleTau_btag_low			W	          		CMS_htt_WNorm_etau_btag_low_8TeV 		1.30
 eleTau_btag_low			ZTT	          		CMS_htt_extrap_ztt_etau_btag_low_8TeV		1.05
 eleTau_btag_low         	QCD	          		CMS_htt_QCDSyst_etau_btag_low_8TeV		1.20
 eleTau_btag_low         	QCD	          		CMS_htt_QCDShape_etau_btag_low_8TeV		1.00
-eleTau_btag_low			QCD				CMS_htt_QCDfrShape_etau_btag_low_8TeV		1.00
+eleTau_btag_low			QCD				CMS_htt_QCDfrShape_etau_8TeV			1.00
 eleTau_btag_low         	ZL	          		CMS_htt_ZLeptonFakeTau_etau_8TeV		1.20
 eleTau_btag_low         	ZJ	          		CMS_htt_ZJetFakeTau_etau_8TeV			1.20
 eleTau_btag_low			ZL				CMS_htt_ZLScale_etau_8TeV			1.00

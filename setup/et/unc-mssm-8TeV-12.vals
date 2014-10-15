@@ -21,7 +21,7 @@ eleTau_nobtag_high		W				CMS_htt_WNorm_etau_nobtag_high_8TeV 		1.10
 eleTau_nobtag_high              ZTT                             CMS_htt_extrap_ztt_etau_nobtag_high_8TeV        1.05
 eleTau_nobtag_high         	QCD				CMS_htt_QCDSyst_etau_nobtag_high_8TeV		1.10
 eleTau_nobtag_high         	QCD				CMS_htt_QCDShape_etau_nobtag_high_8TeV		1.00
-eleTau_nobtag_high		QCD				CMS_htt_QCDfrShape_etau_nobtag_high_8TeV	1.00
+eleTau_nobtag_high		QCD				CMS_htt_QCDfrShape_etau_8TeV			1.00
 eleTau_nobtag_high		ZJ				CMS_htt_ZJetFakeTau_etau_8TeV    		1.20
 eleTau_nobtag_high		ZL				CMS_htt_ZLeptonFakeTau_etau_8TeV		1.20
 eleTau_nobtag_high		ZL				CMS_htt_ZLScale_etau_8TeV			1.00
