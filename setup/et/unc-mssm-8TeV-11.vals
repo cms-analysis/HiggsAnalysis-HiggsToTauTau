@@ -36,5 +36,5 @@ eleTau_nobtag_medium           		VH_SM125                        QCDscale_VH    
 eleTau_nobtag_medium           		qqH_SM125,VH_SM125              UEPS                                            	1.05
 eleTau_nobtag_medium           		ggH_SM125                       UEPS                                            	1.013
 eleTau_nobtag_medium			ggH                       	CMS_htt_higgsPtReweight_8TeV				1.00
-eleTau_nobtag_medium			ggH				CMS_htt_higgsPtReweight_scale_8TeV		1.00
+eleTau_nobtag_medium			ggH				CMS_htt_higgsPtReweight_scale_8TeV			1.00
 eleTau_nobtag_medium                    ggH_SM125                       CMS_htt_higgsPtReweightSM_8TeV                          1.00
