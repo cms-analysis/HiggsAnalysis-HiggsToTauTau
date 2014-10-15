@@ -238,7 +238,8 @@ tt_threshold = 0.05
 
 tt_categories_8TeV = 00,01,02,03,04
 
-tt_processes = ZTT,TT,QCD,W,ZL,ZJ,VV
+# tt_processes = ZTT,TT,QCD,W,ZL,ZJ,VV # temporarily disabled ZL, ZJ
+tt_processes = ZTT,TT,QCD,W,VV
 
 
 
