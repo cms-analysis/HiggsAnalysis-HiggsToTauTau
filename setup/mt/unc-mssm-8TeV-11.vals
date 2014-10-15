@@ -22,7 +22,7 @@ muTau_nobtag_medium			W				CMS_htt_WNorm_mutau_nobtag_medium_8TeV 			1.10
 muTau_nobtag_medium			VV				CMS_htt_DiBosonNorm_8TeV				1.15 
 muTau_nobtag_medium                  	QCD				CMS_htt_QCDSyst_mutau_nobtag_medium_8TeV		1.10
 muTau_nobtag_medium                  	QCD				CMS_htt_QCDShape_mutau_nobtag_medium_8TeV		1.00
-muTau_nobtag_medium			QCD				CMS_htt_QCDfrShape_mutau_nobtag_medium_8TeV		1.00
+muTau_nobtag_medium			QCD				CMS_htt_QCDfrShape_mutau_8TeV				1.00
 muTau_nobtag_medium			ZJ				CMS_htt_ZJetFakeTau_mutau_8TeV      			1.20
 muTau_nobtag_medium			ZL				CMS_htt_ZLeptonFakeTau_mutau_8TeV			1.30
 muTau_nobtag_medium			ZL			        CMS_htt_ZLScale_mutau_8TeV       			1.00
