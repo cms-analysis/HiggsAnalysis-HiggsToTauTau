@@ -104,7 +104,7 @@ plot --injected HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-bbH.py LIM
 lxb: submit.py --multidim-fit --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-ggH-bbH/*
 lxq: submit.py --multidim-fit --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-ggH-bbH/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
 ## collect ggH-bbH 2d limits
-limit.py --collect --multidim-fit --physics-model="ggH-bbH" LIMITS-yymmdd-mssm/bbb-ggH-bbH/*
+submit.py --collect --multidim-fit --physics-model="ggH-bbH" LIMITS-yymmdd-mssm/bbb-ggH-bbH/*
 ## plotting
 plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-bbH.py
 
