@@ -472,9 +472,9 @@ if options.optFeldmanCousins :
                 idx+=1
         else :
             if options.printOnly :
-                print"limit.py --feldman-cousins --collect {POINT} {MODEL} {OPTS} {USER} {DIR}".format(POINT=conf.format(X=1,Y=1,GGH=1,BBH=1), MODEL=model, OPTS=opts, DIR=dir, USER=options.opt)
+                print"limit.py --feldman-cousins --collect {OPTS} {USER} {DIR}".format(OPTS=opts, DIR=dir, USER=options.opt)
             else :
-                os.system("limit.py --feldman-cousins --collect {POINT} {MODEL} {OPTS} {USER} {DIR}".format(POINT=conf.format(X=1,Y=1,GGH=1,BBH=1), MODEL=model, OPTS=opts, DIR=dir, USER=options.opt))
+                os.system("limit.py --feldman-cousins --collect {OPTS} {USER} {DIR}".format(OPTS=opts, DIR=dir, USER=options.opt))
 ##
 ## MULTIDIM-FIT
 ##
@@ -520,12 +520,18 @@ if options.optMDFit :
         queue = " --batch-options '%s'" % options.queue
         ## add fastScan option
         fastScan = " --limit-options '--fastScan'" if options.fastScan else ""
-        if options.printOnly :
-          print "{CMD} {MODEL} {OPTS} {FAST} {QUEUE} {SYS} {USER} {STABLE} {DIR}".format(
-                CMD=cmd, MODEL=model, OPTS=opts, FAST=fastScan, QUEUE=queue, SYS=sys, USER=options.opt, STABLE=stable, DIR=dir)
+        if not options.optCollect :
+            if options.printOnly :
+                print "{CMD} {MODEL} {OPTS} {FAST} {QUEUE} {SYS} {USER} {STABLE} {DIR}".format(
+                    CMD=cmd, MODEL=model, OPTS=opts, FAST=fastScan, QUEUE=queue, SYS=sys, USER=options.opt, STABLE=stable, DIR=dir)
+            else :
+                os.system("{CMD} {MODEL} {OPTS} {FAST} {QUEUE} {SYS} {USER} {STABLE} {DIR}".format(
+                    CMD=cmd, MODEL=model, OPTS=opts, FAST=fastScan, QUEUE=queue, SYS=sys, USER=options.opt, STABLE=stable, DIR=dir))
         else :
-            os.system("{CMD} {MODEL} {OPTS} {FAST} {QUEUE} {SYS} {USER} {STABLE} {DIR}".format(
-                CMD=cmd, MODEL=model, OPTS=opts, FAST=fastScan, QUEUE=queue, SYS=sys, USER=options.opt, STABLE=stable, DIR=dir))
+            if options.printOnly :
+                print"limit.py --multidim-fit --collect {MODEL} {OPTS} {USER} {DIR}".format(MODEL=model, OPTS=opts, DIR=dir, USER=options.opt)
+            else :
+                os.system("limit.py --multidim-fit --collect {MODEL} {OPTS} {USER} {DIR}".format(MODEL=model, OPTS=opts, DIR=dir, USER=options.opt))
 ##
 ## SIGNIFICANCE
 ##
