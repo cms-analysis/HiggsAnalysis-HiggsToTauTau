@@ -8,12 +8,11 @@ tauTau_nobtag_medium         	TT				CMS_scale_j_8TeV					1.01
 tauTau_nobtag_medium         	VV				CMS_scale_j_8TeV					1.03
 tauTau_nobtag_medium		signal,SM,ZJ,ZL,TT,VV 		CMS_eff_b_8TeV 						0.98
 tauTau_nobtag_medium		signal,SM,ZJ,ZL,TT,VV 		CMS_fake_b_8TeV 					0.98
-tauTau_nobtag_medium         	QCD				CMS_htt_QCDSyst_tautau_nobtag_medium_8TeV		1.10              
-tauTau_nobtag_medium         	QCD				CMS_htt_QCDfrNorm_tautau_8TeV        			1.00 
+tauTau_nobtag_medium         	QCD				CMS_htt_QCDSyst_tautau_nobtag_medium_8TeV		1.10
 tauTau_nobtag_medium         	QCD				CMS_htt_QCDfrShape_tautau_8TeV        			1.00 
 tauTau_nobtag_medium		W				CMS_htt_WNorm_tautau_nobtag_medium_8TeV			1.30                  
 tauTau_nobtag_medium		ZTT,ZL,ZJ		        CMS_htt_zttNorm_8TeV 					1.033           
-tauTau_nobtag_medium		ZTT			        CMS_htt_extrap_ztt_tautau_nobtag_medium_8TeV		1.030           
+tauTau_nobtag_medium		ZTT			        CMS_htt_extrap_ztt_tautau_nobtag_medium_8TeV		1.050           
 tauTau_nobtag_medium		TT				CMS_htt_ttbarNorm_8TeV					1.10
 tauTau_nobtag_medium		TT				CMS_htt_ttbarNorm_tautau_nobtag_medium_8TeV		1.05
 tauTau_nobtag_medium		TT				CMS_htt_ttbarPtReweight_8TeV				1.00

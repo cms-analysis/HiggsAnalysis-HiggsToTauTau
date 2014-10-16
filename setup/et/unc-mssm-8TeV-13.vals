@@ -27,9 +27,10 @@ eleTau_btag_low			TT     		  		CMS_htt_ttbar_emb_8TeV 				1.14
 eleTau_btag_low			TT				CMS_htt_ttbarPtReweight_8TeV			1.00
 eleTau_btag_low	 		VV	          		CMS_htt_DiBosonNorm_8TeV 			1.15
 eleTau_btag_low			W	          		CMS_htt_WNorm_etau_btag_low_8TeV 		1.30
-eleTau_btag_low			ZTT	          		CMS_htt_extrap_ztt_etau_btag_low_8TeV		1.03
+eleTau_btag_low			ZTT	          		CMS_htt_extrap_ztt_etau_btag_low_8TeV		1.05
 eleTau_btag_low         	QCD	          		CMS_htt_QCDSyst_etau_btag_low_8TeV		1.20
 eleTau_btag_low         	QCD	          		CMS_htt_QCDShape_etau_btag_low_8TeV		1.00
+eleTau_btag_low			QCD				CMS_htt_QCDfrShape_etau_8TeV			1.00
 eleTau_btag_low         	ZL	          		CMS_htt_ZLeptonFakeTau_etau_8TeV		1.20
 eleTau_btag_low         	ZJ	          		CMS_htt_ZJetFakeTau_etau_8TeV			1.20
 eleTau_btag_low			ZL				CMS_htt_ZLScale_etau_8TeV			1.00
@@ -44,4 +45,5 @@ eleTau_btag_low      		VH_SM125                	QCDscale_VH                     
 eleTau_btag_low      		qqH_SM125,VH_SM125      	UEPS                                    	1.007
 eleTau_btag_low      		ggH_SM125               	UEPS                                    	0.946
 eleTau_btag_low			ggH                       	CMS_htt_higgsPtReweight_8TeV			1.00
+eleTau_btag_low			ggH				CMS_htt_higgsPtReweight_scale_8TeV		1.00
 eleTau_btag_low                 ggH_SM125                       CMS_htt_higgsPtReweightSM_8TeV                  1.00
