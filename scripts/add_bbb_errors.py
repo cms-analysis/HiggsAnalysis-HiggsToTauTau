@@ -46,8 +46,10 @@ def get_shape_file(sourcedir, channel, period, ana='sm'):
         else :
             filename = 'htt_'+channel+'.inputs-'+ana+'-'+period+'.root'
         return os.path.join(sourcedir, channel, filename)
-    else : ## for mssm - may have to add mass-category (atm its 0 for all)
+    elif ana=='mssm' : ## for mssm - may have to add mass-category (atm its 0 for all)
         return os.path.join(sourcedir, channel, 'htt_'+channel+'.inputs-'+ana+'-'+period+'-'+'0'+'.root')
+    else :
+        return os.path.join(sourcedir,channel,'htt_'+channel+'.inputs-'+ana+'-'+period+'.root')
 
 def get_card_config_files(sourcedir, channel, period, category, ana='sm'):
     ''' Get the configuration files (cgs, unc.vals, etc)
@@ -159,6 +161,9 @@ if __name__ == "__main__":
     parser.add_argument('--mssm', dest='mssm', action='store_true',
                         help='Modify MSSM cards')
 
+    parser.add_argument('--Hhh', dest='Hhh', action='store_true',
+                        help='Modify Hhh cards')
+
     parser.add_argument('-f', dest='force', action='store_true',
                         help='Force creation of new output dir')
 
@@ -167,7 +172,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    ana = 'mssm' if args.mssm else 'sm'
+    ana = 'mssm' if args.mssm else 'Hhh' if args.Hhh  else 'sm'
     
     log = logging.getLogger('bin-by-bin')
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)

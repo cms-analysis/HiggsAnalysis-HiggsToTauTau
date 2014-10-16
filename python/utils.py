@@ -283,6 +283,16 @@ def get_channel_dirs(analysis, finalstate, category, period):
         },        
         },
         },
+               'Hhh':
+               {
+        '8TeV':
+        {
+        'mt' : {
+        '01' : ['2jet1tag' ],
+        '02' : ['2jet2tag' ],
+        },
+        },
+        }, 
                'mssm':
                {
         '7TeV':
