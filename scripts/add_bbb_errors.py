@@ -32,6 +32,7 @@ from HiggsAnalysis.HiggsToTauTau.utils import get_channel_dirs
 
 import logging
 import os
+os.environ['TERM'] = 'vt100'
 import shutil
 import subprocess
 import sys
@@ -46,10 +47,10 @@ def get_shape_file(sourcedir, channel, period, ana='sm'):
         else :
             filename = 'htt_'+channel+'.inputs-'+ana+'-'+period+'.root'
         return os.path.join(sourcedir, channel, filename)
-    elif ana=='mssm' : ## for mssm - may have to add mass-category (atm its 0 for all)
+    elif ana=='Hhh' :
+        return os.path.join(sourcedir,channel, 'htt_'+channel+'.inputs-'+ana+'-'+period+'.root')
+    else : ## for mssm - may have to add mass-category (atm its 0 for all)
         return os.path.join(sourcedir, channel, 'htt_'+channel+'.inputs-'+ana+'-'+period+'-'+'0'+'.root')
-    else :
-        return os.path.join(sourcedir,channel,'htt_'+channel+'.inputs-'+ana+'-'+period+'.root')
 
 def get_card_config_files(sourcedir, channel, period, category, ana='sm'):
     ''' Get the configuration files (cgs, unc.vals, etc)
@@ -172,7 +173,12 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    ana = 'mssm' if args.mssm else 'Hhh' if args.Hhh  else 'sm'
+    if args.mssm:
+       ana = 'mssm'
+    elif args.Hhh:
+       ana = 'Hhh'
+    else:
+       ana = 'sm'
     
     log = logging.getLogger('bin-by-bin')
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
