@@ -116,7 +116,7 @@ lxq: submit.py --feldman-cousins --toys=100 --physics-model='ggH-bbH' LIMITS-yym
 ## collect ggH-bbH FC toys and use combine script 
 submit.py --collect --feldman-cousins --physics-model='ggH-bbH' LIMITS-yymmdd-mssm/bbb-ggH-bbH/*
 ## plotting
-plot --feldman-cousins HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-bbH.py
+plot --feldman-cousins HiggsAnalysis/HiggsToTauTau/python/layouts/feldman-cousins-ggH-bbH.py
 
 
 (9) launch/collect/plot signal hypothesis test SM vs MSSM in mA-tanb plane 
