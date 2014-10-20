@@ -38,6 +38,8 @@ import subprocess
 import sys
 import re
 
+os.environ['TERM'] = 'vt100' #this is needed for sl6
+
 def get_shape_file(sourcedir, channel, period, ana='sm'):
     # Ex: shape file for mt lives in
     #  setup/mt/htt_mt.inputs-sm-7TeV.root
