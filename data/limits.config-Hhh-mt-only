@@ -229,13 +229,13 @@ channels = mt
 
 em_categories_8TeV = 0 1 2 3 4
 et_categories_8TeV = 0 1 2 3 4
-mt_categories_8TeV = 1 2 
+mt_categories_8TeV = 0 1 2 3 4
 tt_categories_8TeV = 0 1 2 3 4
 
 
 em_names_8TeV = 1jet0tag 1jet1tag 2jet0tag 2jet1tag 2jet2tag
 et_names_8TeV = 1jet0tag 1jet1tag 2jet0tag 2jet1tag 2jet2tag
-mt_names_8TeV = 2jet1tag 2jet2tag
+mt_names_8TeV = 1jet0tag 1jet1tag 2jet0tag 2jet1tag 2jet2tag
 tt_names_8TeV = 1jet0tag 1jet1tag 2jet0tag 2jet1tag 2jet2tag
 
 
@@ -248,7 +248,7 @@ tt_threshold = 0.05
 
 em_categories_8TeV = 00,01,02,03,04
 et_categories_8TeV = 00,01,02,03,04
-mt_categories_8TeV = 01,02
+mt_categories_8TeV = 00,01,02,03,04
 tt_categories_8TeV = 00,01,02,03,04
 
 em_processes = Fakes,EWK,ttbar,Ztt
