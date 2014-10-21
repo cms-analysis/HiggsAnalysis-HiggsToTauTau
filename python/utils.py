@@ -283,6 +283,40 @@ def get_channel_dirs(analysis, finalstate, category, period):
         },        
         },
         },
+               'Hhh':
+               {
+        '8TeV':
+        {
+	'em' : {
+        '00' : ['2jet0tag' ],
+        '01' : ['2jet1tag' ],
+        '02' : ['2jet2tag' ],
+        '03' : ['1jet0tag' ],
+        '04' : ['1jet1tag' ],
+        },
+        'et' : {
+        '00' : ['2jet0tag' ],
+        '01' : ['2jet1tag' ],
+        '02' : ['2jet2tag' ],
+        '03' : ['1jet0tag' ],
+        '04' : ['1jet1tag' ],
+        },
+        'mt' : {
+        '00' : ['2jet0tag' ],
+        '01' : ['2jet1tag' ],
+        '02' : ['2jet2tag' ],
+        '03' : ['1jet0tag' ],
+        '04' : ['1jet1tag' ],
+        },
+        'tt' : {
+ 	'00' : ['2jet0tag' ],
+        '01' : ['2jet1tag' ],
+        '02' : ['2jet2tag' ],
+        '03' : ['1jet0tag' ],
+        '04' : ['1jet1tag' ],
+        },
+        }, 
+        },
                'mssm':
                {
         '7TeV':

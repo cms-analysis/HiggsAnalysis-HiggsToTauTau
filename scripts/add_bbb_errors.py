@@ -32,6 +32,7 @@ from HiggsAnalysis.HiggsToTauTau.utils import get_channel_dirs
 
 import logging
 import os
+os.environ['TERM'] = 'vt100'
 import shutil
 import subprocess
 import sys
@@ -48,6 +49,8 @@ def get_shape_file(sourcedir, channel, period, ana='sm'):
         else :
             filename = 'htt_'+channel+'.inputs-'+ana+'-'+period+'.root'
         return os.path.join(sourcedir, channel, filename)
+    elif ana=='Hhh' :
+        return os.path.join(sourcedir,channel, 'htt_'+channel+'.inputs-'+ana+'-'+period+'.root')
     else : ## for mssm - may have to add mass-category (atm its 0 for all)
         return os.path.join(sourcedir, channel, 'htt_'+channel+'.inputs-'+ana+'-'+period+'-'+'0'+'.root')
 
@@ -161,6 +164,9 @@ if __name__ == "__main__":
     parser.add_argument('--mssm', dest='mssm', action='store_true',
                         help='Modify MSSM cards')
 
+    parser.add_argument('--Hhh', dest='Hhh', action='store_true',
+                        help='Modify Hhh cards')
+
     parser.add_argument('-f', dest='force', action='store_true',
                         help='Force creation of new output dir')
 
@@ -169,7 +175,12 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    ana = 'mssm' if args.mssm else 'sm'
+    if args.mssm:
+       ana = 'mssm'
+    elif args.Hhh:
+       ana = 'Hhh'
+    else:
+       ana = 'sm'
     
     log = logging.getLogger('bin-by-bin')
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
