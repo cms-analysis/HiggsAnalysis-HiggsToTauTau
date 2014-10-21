@@ -341,8 +341,8 @@ if options.optGoodnessOfFit :
         else: 
             cycle = options.cycles
             while cycle>0 :
-                lxb_submit(struct[0], struct[1], "--goodness-of-fit", "--expectedOnly --toys {TOYS} --seed {SEED} {USER}".format(TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt), "-{CYCLE}".format(CYCLE=cycle-1))
-                cycle = cycle-1
+                lxb_submit(struct[0], struct[1], "--goodness-of-fit", "--expectedOnly --toys {TOYS} --seed {SEED} {USER}".format(TOYS=options.toys, SEED=random.randint(1, 999999), USER=options.opt), "-{CYCLE}".format(CYCLE=int(cycle)-1))
+                cycle = int(cycle)-1
 ##
 ## MAX-LIKELIHOOD
 ##
