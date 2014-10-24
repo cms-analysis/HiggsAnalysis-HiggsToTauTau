@@ -19,7 +19,6 @@ eleTau_nobtag_low		TT				CMS_htt_ttbarPtReweight_8TeV			1.00
 eleTau_nobtag_low		VV				CMS_htt_DiBosonNorm_8TeV			1.15
 eleTau_nobtag_low		W				CMS_htt_WNorm_etau_nobtag_low_8TeV 		1.10
 eleTau_nobtag_low         	QCD				CMS_htt_QCDSyst_etau_nobtag_low_8TeV		1.10
-eleTau_nobtag_low         	QCD				CMS_htt_QCDShape_etau_nobtag_low_8TeV		1.00
 eleTau_nobtag_low		QCD				CMS_htt_QCDfrShape_etau_8TeV			1.00
 eleTau_nobtag_low		ZJ				CMS_htt_ZJetFakeTau_etau_8TeV    		1.20
 eleTau_nobtag_low		ZL				CMS_htt_ZLeptonFakeTau_etau_8TeV		1.20
