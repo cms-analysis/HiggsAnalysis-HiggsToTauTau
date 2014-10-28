@@ -672,6 +672,11 @@ if options.optInject :
         elif "bbH" in options.fitModel :
             opts += " --physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
             opts += " --physics-model-options 'modes=bbH;bbHRange=0:BBH-BOUND'"
+        elif "Hhh" in options.fitModel:
+            model = "--physics-model 'tmp=HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel'"
+            #opts  = "--physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohh$:r[1,-5,5];map=^.*/ggHTohh_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZh(\d+\.*\d*)*$:AZh=AZh[1,-500,500] \'"        
+            opts  = "--physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohhTo2Tau2B$:r[1,-5,5];map=^.*/ggHTohhTo2Tau2B_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZhToLLBB(\d+\.*\d*)*$:AZhLLBB=AZhLLBB[1,-500,500];map=^.*/ggAToZhToLLTauTau(\d+\.*\d*)*$:AZhLLTauTau=AZhLLTauTau[1,-500,500];map=^.*/bbH(\d+\.*\d*)*$:bbH=bbH[1,-500,500] \'"
+
         ## directories and masses per directory
         print "Collecting results"
         struct = directories(args)
