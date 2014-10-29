@@ -27,3 +27,7 @@ submit.py --goodness-of-fit --toys 100 --cycles 10 LIMITS-HTohh/mt/300
 submit.py --goodness-of-fit --collect LIMITS-HTohh/mt/300
 plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py LIMITS-HTohh masspoints=300
 
+## SM signal injected model independent limits 
+lxb: submit.py --injected --injected-method="--asymptotic" --physics-model='Hhh' --Hhh --toys 1000 --bunch-masses=1 LIMITS-HTohh/mt/*
+lxb: submit.py --injected --injected-method "--asymptotic" --collect --physics-model='Hhh' LIMITS-HTohh/mt/*
+
