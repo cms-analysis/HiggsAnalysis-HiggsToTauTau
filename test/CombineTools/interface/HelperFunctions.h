@@ -1,5 +1,5 @@
-#ifndef ICHiggsTauTau_CombineTools_HelperFunctions_h
-#define ICHiggsTauTau_CombineTools_HelperFunctions_h
+#ifndef CombineTools_HelperFunctions_h
+#define CombineTools_HelperFunctions_h
 #include <algorithm>
 #include <vector>
 #include <boost/range/begin.hpp>
@@ -14,9 +14,6 @@
 #include "RooFitResult.h"
 #include "RooHistPdf.h"
 
-// #include <memory>
-// #include <string>
-// #include "TH1.h"
 #include "CombineTools/interface/Parameter.h"
 #include "CombineTools/interface/Nuisance.h"
 #include "CombineTools/interface/Process.h"
@@ -156,8 +153,11 @@ void SetStandardBinName(T *input) {
 
 template<class T>
 void SetFromBinName(T *input, std::string parse_rules) {
-  boost::replace_all(parse_rules, "{", "(?<");
-  boost::replace_all(parse_rules, "}", ">\\w+)");
+  boost::replace_all(parse_rules, "$ANALYSIS",  "(?<ANALYSIS>\\w+)");
+  boost::replace_all(parse_rules, "$ERA",       "(?<ERA>\\w+)");
+  boost::replace_all(parse_rules, "$CHANNEL",   "(?<CHANNEL>\\w+)");
+  boost::replace_all(parse_rules, "$BINID",     "(?<BINID>\\w+)");
+  boost::replace_all(parse_rules, "$MASS",      "(?<MASS>\\w+)");
   boost::regex rgx(parse_rules);
   boost::smatch matches;
   boost::regex_search(input->bin(), matches, rgx);
