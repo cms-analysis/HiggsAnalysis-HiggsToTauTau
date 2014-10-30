@@ -1,0 +1,7 @@
+<use name="root"/>
+<use name="roofit"/>
+<use name="boost"/>
+<use name="boost_regex"/>
+<library name="CombineTools" file="CombineTools/src/*.cc">
+  <Flags CXXFLAGS="-I$(CMSSW_BASE)/src/HiggsAnalysis/HiggsToTauTau/test"/>
+</library>
