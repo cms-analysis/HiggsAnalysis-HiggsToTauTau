@@ -22,7 +22,7 @@ export PATH=$CMSSW_BASE/test/$SCRAM_ARCH:$PATH
 
 tanb=8
 mass=160
-input=mssm-paper-cmb
+input=data/mssm-paper-cmb
 postfit="true"
 
 MSSMYieldTable --channel=mt --header="$\\Pgm\\Pgt_{h}$ channel" \
