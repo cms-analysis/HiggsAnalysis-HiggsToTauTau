@@ -1,4 +1,4 @@
-etups aux LIMITS
+rm -r setups aux LIMITS
 mkdir -p setups aux
 cp -r HiggsAnalysis/HiggsToTauTau/setup setups/example
 add_bbb_errors.py "th:8TeV:00,01:reducible" -f -i setups/example -o setups/example-bin-by-bin --normalize --threshold 0.10
