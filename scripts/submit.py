@@ -166,6 +166,8 @@ ggroup.add_option("--SplusB", dest="signal_plus_BG", default=True, action="store
                   help="When using options --external-pulls, use the fit results with signal plus background. If 'False' the fit result of the background only hypothesis is used. [Default: False]")
 ggroup.add_option("--MSSM", dest="MSSM", default=False, action="store_true",
                   help="Is this MSSM? [Default: false]")
+ggroup.add_option("--Hhh", dest="Hhh", default=False, action="store_true",
+                  help="Is this H->hh? [Default: false]")
 parser.add_option_group(ggroup)
 
 ## check number of arguments; in case print usage
@@ -646,6 +648,11 @@ if options.optInject :
             elif "bbH" in options.fitModel :
                 model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
                 opts  = "--physics-model-options 'modes=bbH;bbHRange=0:BBH-BOUND'"
+        elif options.Hhh :       
+            if "Hhh" in options.fitModel:
+                model = "--physics-model 'tmp=HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel'"
+                #opts  = "--physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohh$:r[1,-5,5];map=^.*/ggHTohh_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZh(\d+\.*\d*)*$:AZh=AZh[1,-500,500] \'"        
+                opts  = "--physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohhTo2Tau2B$:r[1,-5,5];map=^.*/ggHTohhTo2Tau2B_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZhToLLBB(\d+\.*\d*)*$:AZhLLBB=AZhLLBB[1,-500,500];map=^.*/ggAToZhToLLTauTau(\d+\.*\d*)*$:AZhLLTauTau=AZhLLTauTau[1,-500,500];map=^.*/bbH(\d+\.*\d*)*$:bbH=bbH[1,-500,500] \'"
         if not options.injected_method == "--max-likelihood" :
             opts+=" --observedOnly"
         else:
@@ -657,11 +664,11 @@ if options.optInject :
         for path in paths :
             jobname = "injected-"+path[path.rstrip('/').rfind('/')+1:]+folder_extension
             if options.printOnly :
-                print "lxb-injected.py --name {NAME} --method {METHOD} --input {PATH} {LXQ} {CONDOR} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" --injected-mass {INJECTEDMASS} {INJECTEDMH} {MASSES} {MSSM} --model \"{MODEL}\" ".format(
-                    NAME=jobname, METHOD=options.injected_method, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else "", INJECTEDMH="--injected-mH" if options.injected_mH else "", MSSM="--MSSM" if options.MSSM else "", MODEL=model)
+                print "lxb-injected.py --name {NAME} --method {METHOD} --input {PATH} {LXQ} {CONDOR} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" --injected-mass {INJECTEDMASS} {INJECTEDMH} {MASSES} {MSSM} {Hhh} --model \"{MODEL}\" ".format(
+                    NAME=jobname, METHOD=options.injected_method, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else "", INJECTEDMH="--injected-mH" if options.injected_mH else "", MSSM="--MSSM" if options.MSSM else "", Hhh="--Hhh" if options.Hhh else "", MODEL=model)
             else :
-                os.system("lxb-injected.py --name {NAME} --method {METHOD} --input {PATH} {LXQ} {CONDOR} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" --injected-mass {INJECTEDMASS} {INJECTEDMH} {MASSES} {MSSM} --model \"{MODEL}\" ".format(
-                    NAME=jobname, METHOD=options.injected_method, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else "", INJECTEDMH="--injected-mH" if options.injected_mH else "", MSSM="--MSSM" if options.MSSM else "", MODEL=model))
+                os.system("lxb-injected.py --name {NAME} --method {METHOD} --input {PATH} {LXQ} {CONDOR} --batch-options \"{SUB}\" --toys {NJOB} --mass-points-per-job {NMASSES} --limit-options \"{OPTS}\" --injected-mass {INJECTEDMASS} {INJECTEDMH} {MASSES} {MSSM} {Hhh} --model \"{MODEL}\" ".format(
+                    NAME=jobname, METHOD=options.injected_method, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else "", INJECTEDMH="--injected-mH" if options.injected_mH else "", MSSM="--MSSM" if options.MSSM else "", Hhh="--Hhh" if options.Hhh else "", MODEL=model))
     else :
         opts = options.opt
         ## MSSM ggH while bbH is profiled (GGH-BOUND will be resolved in limit.create_card_workspace_with_physics_model)
@@ -672,6 +679,11 @@ if options.optInject :
         elif "bbH" in options.fitModel :
             opts += " --physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
             opts += " --physics-model-options 'modes=bbH;bbHRange=0:BBH-BOUND'"
+        elif "Hhh" in options.fitModel:
+            model = "--physics-model 'tmp=HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel'"
+            #opts  = "--physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohh$:r[1,-5,5];map=^.*/ggHTohh_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZh(\d+\.*\d*)*$:AZh=AZh[1,-500,500] \'"        
+            opts  = "--physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohhTo2Tau2B$:r[1,-5,5];map=^.*/ggHTohhTo2Tau2B_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZhToLLBB(\d+\.*\d*)*$:AZhLLBB=AZhLLBB[1,-500,500];map=^.*/ggAToZhToLLTauTau(\d+\.*\d*)*$:AZhLLTauTau=AZhLLTauTau[1,-500,500];map=^.*/bbH(\d+\.*\d*)*$:bbH=bbH[1,-500,500] \'"
+
         ## directories and masses per directory
         print "Collecting results"
         struct = directories(args)

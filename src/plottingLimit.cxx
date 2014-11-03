@@ -16,7 +16,9 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   bool bestfit  = (PLOT == std::string("BESTFIT" ));
   bool BG_Higgs = (PLOT == std::string("BG_HIGGS"));
   bool mssm_log = (PLOT == std::string("MSSM-LOG"));
+  bool mssm_nolog = (PLOT == std::string("MSSM-NOLOG"));
   if (PLOT == std::string("MSSM-LOG_INJECTED")) { mssm_log = true; injected=true; }
+  if (PLOT == std::string("MSSM-NOLOG_INJECTED")) { mssm_nolog = true; injected=true; }
   // set up styles
   canv.cd();
   //canv.SetGridx(1);
@@ -153,7 +155,7 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
     //leg->AddEntry(observed, "Asimov w/ H(125)",  "PL");
   }
   if(expected_injected){
-    if(!mssm_log) leg->AddEntry( expected_injected , TString::Format("SM H(%s GeV) injected", injectedMass.c_str()),  "L" );
+    if(!mssm_log && ! mssm_nolog) leg->AddEntry( expected_injected , TString::Format("SM H(%s GeV) injected", injectedMass.c_str()),  "L" );
     else leg->AddEntry( expected_injected , TString::Format("SM H(%s GeV) injected", injectedMass.c_str()),  "L" );
   }
   if(injected){
