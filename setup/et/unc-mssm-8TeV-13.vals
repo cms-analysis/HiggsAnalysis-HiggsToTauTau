@@ -35,6 +35,7 @@ eleTau_btag_low         	ZJ	          		CMS_htt_ZJetFakeTau_etau_8TeV			1.20
 eleTau_btag_low			ZL				CMS_htt_ZLScale_etau_8TeV			1.00
 eleTau_btag_low			W				CMS_htt_WShape_etau_btag_low_8TeV		1.00
 #[tail]eleTau_btag_low		W				tailShape					1.00
+eleTau_btag_low	                SM	                        CMS_htt_SM125_mu                                1.30
 eleTau_btag_low      		ggH_SM125               	pdf_gg                                  	1.097
 eleTau_btag_low      		qqH_SM125               	pdf_qqbar                               	1.036
 eleTau_btag_low     		VH_SM125                	pdf_qqbar                               	1.04

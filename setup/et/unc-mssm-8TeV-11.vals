@@ -26,6 +26,7 @@ eleTau_nobtag_medium			ZL				CMS_htt_ZLeptonFakeTau_etau_8TeV			1.20
 eleTau_nobtag_medium			ZL				CMS_htt_ZLScale_etau_8TeV				1.00
 eleTau_nobtag_medium			W				CMS_htt_WShape_etau_nobtag_medium_8TeV			1.00
 #[tail]eleTau_nobtag_medium		W				tailShape						1.00
+eleTau_nobtag_medium	                SM	                        CMS_htt_SM125_mu 	                                1.30
 eleTau_nobtag_medium           		ggH_SM125                       pdf_gg                                          	1.097
 eleTau_nobtag_medium           		qqH_SM125                       pdf_qqbar                                       	1.036
 eleTau_nobtag_medium           		VH_SM125                        pdf_qqbar                                       	1.04
