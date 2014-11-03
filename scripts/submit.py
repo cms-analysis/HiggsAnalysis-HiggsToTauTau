@@ -373,7 +373,7 @@ if options.optMLFit :
 ##
 ## MAX-LIKELIHOOD WITH TOYS
 ##
-if options.optMLFit :
+if options.optMLFitToys :
     stable = ''
     if options.stable :
         stable = '--stable'
