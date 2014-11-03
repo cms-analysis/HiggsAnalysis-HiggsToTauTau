@@ -145,6 +145,12 @@ void rescale(TH1F* hin, unsigned int idx)
   ${MSSM}ggH$MA
   case  9: // bbH
   ${MSSM}bbH$MA
+  // case 10: // ggH_SM125
+//   $ggH_SM125
+//   case 11  // qqH_SM125:
+//   $qqH_SM125
+//   case 12: // VH_SM125
+//   $VH_SM125
 #else
 #ifndef DROP_SIGNAL
   case  8: // ggH
@@ -235,6 +241,9 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 #ifdef MSSM
   TH1F* ggH    = refill((TH1F*)input2->Get(TString::Format("%s/ggH$MA" , directory)), "ggH"); InitSignal(ggH); ggH->Scale($TANB);
   TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA" , directory)), "bbH"); InitSignal(bbH); bbH->Scale($TANB);
+  TH1F* ggH_SM125= refill((TH1F*)input->Get(TString::Format("%s/ggH_SM125"  , directory)), "ggH_SM125"); InitHist(ggH_SM125, "", "", kGreen+2, 1001);
+  TH1F* qqH_SM125= refill((TH1F*)input->Get(TString::Format("%s/qqH_SM125"  , directory)), "qqH_SM125"); InitHist(qqH_SM125, "", "", kGreen+2, 1001);
+  TH1F* VH_SM125 = refill((TH1F*)input->Get(TString::Format("%s/VH_SM125"   , directory)), "VH_SM125" ); InitHist(VH_SM125, "", "", kGreen+2, 1001);
 #else
 #ifndef DROP_SIGNAL
   TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125"  , directory)), "ggH"); InitSignal(ggH); ggH->Scale(SIGNAL_SCALE);
@@ -362,6 +371,11 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 #endif
 #endif
 
+#ifdef MSSM
+  qqH_SM125->Add(ggH_SM125);
+  VH_SM125->Add(qqH_SM125);
+  Fakes->Add(VH_SM125);
+#endif
   EWK0 ->Add(Fakes);
   EWK1 ->Add(EWK0 );
 #ifdef EXTRA_SAMPLES
@@ -372,9 +386,12 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 #endif
   ttbar->Add(EWK  );
   Ztt  ->Add(ttbar);
+#ifdef MSSM
+  ggH  ->Add(bbH);
+#endif
   if(log){
 #ifdef MSSM
-    ggH  ->Add(bbH);
+    //ggH  ->Add(bbH);
 #else
 #ifndef DROP_SIGNAL
     qqH  ->Add(VH );
@@ -433,6 +450,9 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
     EWK  ->Draw("histsame");
     EWK1 ->Draw("histsame");
     Fakes->Draw("histsame");
+#ifdef MSSM
+    VH_SM125->Draw("histsame");
+#endif   
     $DRAW_ERROR
 #ifndef DROP_SIGNAL
     ggH  ->Draw("histsame");
@@ -447,6 +467,9 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
     EWK  ->Draw("histsame");
     EWK1 ->Draw("histsame");
     Fakes->Draw("histsame");
+#ifdef MSSM
+    VH_SM125->Draw("histsame");
+#endif
     $DRAW_ERROR
   }
   data->Draw("esame");
@@ -503,7 +526,7 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   massA->SetTextSize ( 0.03 );
   massA->SetTextColor(    1 );
   massA->SetTextFont (   62 );
-  massA->AddText("MSSM m^{h}_{max} scenario");
+  massA->AddText("MSSM m^{h}_{mod+} scenario");
   massA->AddText("m_{A}=$MA GeV, tan#beta=$TANB");
   massA->Draw();
 #endif
@@ -534,6 +557,9 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   leg->AddEntry(EWK1 , "W+jets"                         , "F" );
   leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
   leg->AddEntry(Fakes, "QCD"                            , "F" );
+#ifdef MSSM
+  leg->AddEntry(VH_SM125, "SM H(125 GeV) #rightarrow #tau#tau", "F" );
+#endif
   $ERROR_LEGEND
   leg->Draw();
 
@@ -732,8 +758,8 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   output->cd();
   data ->Write("data_obs");
   Fakes->Write("Fakes"   );
-    EWK  ->Write("Zee"     );
-    EWK1 ->Write("EWK"    );
+  EWK  ->Write("Zee"     );
+  EWK1 ->Write("EWK"    );
   //EWK  ->Write("EWK"     );
   EWK1 ->Write("EWK1"    );
   ttbar->Write("ttbar"   );
@@ -741,6 +767,9 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 #ifdef MSSM
   ggH  ->Write("ggH"     );
   bbH  ->Write("bbH"     );
+  ggH_SM125->Write("ggH_SM125");
+  qqH_SM125->Write("qqH_SM125");
+  VH_SM125 ->Write("VH_SM125");
 #else
 #ifndef DROP_SIGNAL
   ggH  ->Write("ggH"     );
