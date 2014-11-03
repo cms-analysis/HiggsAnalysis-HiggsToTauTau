@@ -21,6 +21,7 @@ tauTau_nobtag_medium		VV				CMS_htt_DiBosonNorm_tautau_nobtag_medium_8TeV		1.15
 tauTau_nobtag_medium         	ZJ              		CMS_htt_ZJetFakeTau_tautau_8TeV				1.20
 tauTau_nobtag_medium         	ZL              		CMS_htt_ZLeptonFakeTau_tautau_8TeV    			1.20
 tauTau_nobtag_medium         	W				CMS_htt_WShape_tautau_8TeV				1.00
+tauTau_nobtag_medium            SM	                        CMS_htt_SM125_mu                                	1.30
 tauTau_nobtag_medium         	ggH_SM125                       pdf_gg                                          	1.097                    
 tauTau_nobtag_medium         	qqH_SM125                       pdf_qqbar                                       	1.036              
 tauTau_nobtag_medium         	VH_SM125                        pdf_qqbar                                       	1.02              
