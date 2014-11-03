@@ -16,6 +16,7 @@ emu_nobtag	EWK				CMS_htt_DiBosonNorm_8TeV		1.15
 emu_nobtag	Fakes				CMS_htt_fakes_em_8TeV			1.30
 emu_nobtag	Fakes				CMS_htt_FakeShape_em_nobtag_8TeV 	1.00
 emu_nobtag	ttbar				CMS_htt_TTbarShape_em_nobtag_8TeV 	1.00
+emu_nobtag	SM	                        CMS_htt_SM125_mu                        1.30
 emu_nobtag    	ggH_SM125                  	pdf_gg                                  1.097
 emu_nobtag    	qqH_SM125                 	pdf_qqbar                               1.036
 emu_nobtag    	VH_SM125                    	pdf_qqbar                               1.01

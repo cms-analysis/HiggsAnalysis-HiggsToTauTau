@@ -34,6 +34,7 @@ muTau_btag_high			ZL				CMS_htt_ZLeptonFakeTau_mutau_8TeV		1.30
 muTau_btag_high	        	ZL		       		CMS_htt_ZLScale_mutau_8TeV             	 	1.00
 muTau_btag_high	        	W				CMS_htt_WShape_mutau_btag_high_8TeV    		1.00
 #[tail]muTau_btag_high		W				tailShape					1.00
+muTau_btag_high	                SM	                        CMS_htt_SM125_mu                                1.30
 muTau_btag_high              	ggH_SM125               	pdf_gg                                  	1.097
 muTau_btag_high              	qqH_SM125              		pdf_qqbar                               	1.036
 muTau_btag_high              	VH_SM125                	pdf_qqbar                               	1.04
