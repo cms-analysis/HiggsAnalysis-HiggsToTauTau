@@ -1,4 +1,4 @@
- #!/usr/bin/env python
+#!/usr/bin/env python
 from optparse import OptionParser, OptionGroup
 
 parser = OptionParser(usage="usage: %prog [options] ARG",
