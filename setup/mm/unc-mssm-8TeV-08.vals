@@ -14,6 +14,7 @@ mumu_nobtag		ZMM					CMS_htt_mm_zmmNorm_8TeV			1.05
 mumu_nobtag		QCD					CMS_htt_mm_QCDNorm_nobtag_8TeV		1.10
 mumu_nobtag		WJets					CMS_htt_mm_WJetsNorm_nobtag_8TeV	1.22
 mumu_nobtag		ZMM					CMS_htt_mm_res_met_8TeV			1.00
+mumu_nobtag	        SM		                        CMS_htt_SM125_mu                        1.30
 mumu_nobtag             ggH_SM125                               pdf_gg                                  1.097
 mumu_nobtag             qqH_SM125                               pdf_qqbar                               1.036
 mumu_nobtag             VH_SM125                                pdf_vh                                  1.01
