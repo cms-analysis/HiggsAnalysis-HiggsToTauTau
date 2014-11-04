@@ -18,3 +18,11 @@ ERROR parsing 'Gaussian::CMS_htt_th_emt_8TeV_reducible_bin_5_Pdf(CMS_htt_th_emt_
 
 shows up, please double check the .txt in  LIMITS/example-bin-by-bin/sm/th/125
 
+
+
+Once you have run the limit, you may want to plot it.
+use this script
+th_plotter.py LIMITS/example-bin-by-bin/sm/
+
+
+
