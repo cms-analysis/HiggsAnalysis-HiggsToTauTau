@@ -165,17 +165,17 @@ if options.update_setup :
         os.system("horizontal-morphing.py --categories='emu_1jet0tag,emu_1jet1tag,emu_2jet0tag,emu_2jet1tag,emu_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_e_8TeV' --masses='300,350' --step-size 10. -v {SETUP}/em/htt_em.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
     ##et
     if "et" in config.channels:
-        os.system("horizontal-morphing.py --categories='eleTau_1jet0tag,eleTau_1jet1tag,eleTau_2jet0tag,eleTau_2jet1tag,eleTau_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_t_etau_8TeV' --masses='250,300' --step-size 10. -v {SETUP}/et/htt_et.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
-        os.system("horizontal-morphing.py --categories='eleTau_1jet0tag,eleTau_1jet1tag,eleTau_2jet0tag,eleTau_2jet1tag,eleTau_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_t_etau_8TeV' --masses='300,350' --step-size 10. -v {SETUP}/et/htt_et.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='eleTau_2jet0tag,eleTau_2jet1tag,eleTau_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_t_etau_8TeV' --masses='250,300' --step-size 10. -v {SETUP}/et/htt_et.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='eleTau_2jet0tag,eleTau_2jet1tag,eleTau_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_t_etau_8TeV' --masses='300,350' --step-size 10. -v {SETUP}/et/htt_et.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
     ##mt
     if "mt" in config.channels:
-        os.system("horizontal-morphing.py --categories='muTau_1jet0tag,muTau_1jet1tag,muTau_2jet0tag,muTau_2jet1tag,muTau_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_t_mutau_8TeV' --masses='250,300' --step-size 10. -v {SETUP}/mt/htt_mt.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
-        os.system("horizontal-morphing.py --categories='muTau_1jet0tag,muTau_1jet1tag,muTau_2jet0tag,muTau_2jet1tag,muTau_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_t_mutau_8TeV' --masses='300,350' --step-size 10. -v {SETUP}/mt/htt_mt.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='muTau_2jet0tag,muTau_2jet1tag,muTau_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_t_mutau_8TeV' --masses='250,300' --step-size 10. -v {SETUP}/mt/htt_mt.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='muTau_2jet0tag,muTau_2jet1tag,muTau_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_t_mutau_8TeV' --masses='300,350' --step-size 10. -v {SETUP}/mt/htt_mt.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
     ##tt
     if "tt" in config.channels:
         ##os.system("horizontal-morphing.py --categories='tauTau_1jet0tag,tauTau_1jet1tag,tauTau_2jet0tag,tauTau_2jet1tag,tauTau_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_t_tautau_8TeV' --masses='250,300' --step-size 10. -v {SETUP}/tt/htt_tt.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
         ##os.system("horizontal-morphing.py --categories='tauTau_1jet0tag,tauTau_1jet1tag,tauTau_2jet0tag,tauTau_2jet1tag,tauTau_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_t_tautau_8TeV' --masses='300,350' --step-size 10. -v {SETUP}/tt/htt_tt.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
-        os.system("horizontal-morphing.py --categories='tauTau_1jet0tag,tauTau_1jet1tag,tauTau_2jet0tag,tauTau_2jet1tag,tauTau_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_t_tautau_8TeV' --masses='250,350' --step-size 10. -v {SETUP}/tt/htt_tt.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --categories='tauTau_2jet0tag,tauTau_2jet1tag,tauTau_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_t_tautau_8TeV' --masses='250,350' --step-size 10. -v {SETUP}/tt/htt_tt.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
 
     ## setup directory structure
     dir = "{CMSSW_BASE}/src/setups{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
