@@ -27,7 +27,6 @@ class hplus_xsec_tools():
         inputFile_.GetObject("FeynHiggs_results", tree)
         tree.SetBranchAddress( "tanb", hplustanb )
         tree.SetBranchAddress( "mA", massA )
-        print parameter
         tree.SetBranchAddress( parameter, param )
 
         k=0
@@ -43,8 +42,6 @@ class hplus_xsec_tools():
             k=k+1
         #del hplustanb, massA, param
         Spline.Sort()
-        print Spline.Eval(float(mA))
-        print "-----------------------------------------------------"
         return Spline.Eval(float(mA))
 
     def _add_br_tHpb(self, mA, tan_beta, input):
@@ -67,40 +64,22 @@ class hplus_xsec_tools():
     def _add_xsec(self, mA, tan_beta, input):
         type, type_info = input
         type_info.setdefault('xsec', {})
-        for prod_type, unit in [ ('tHp_xsec', self.unit_pb)]:
+        for prod_type, unit in [ ('HH', self.unit_pb), ('HW', self.unit_pb) ]:
             type_info['xsec'][prod_type] = unit*self.lookup_value(mA, tan_beta, "tHp_xsec")
 
-    ## def _add_mu(self, mA, tan_beta, input):
-##         type, type_info = input
-##         type_info.setdefault('mu', {})
-##         if(self.inputFileName_.find('mhmax-mu+200')>-1) : #for old mhmax scenario not produced with sushi
-##             type_info['mu']['bbH'] = {
-##                 -1 : self.lookup_value(mA, tan_beta, 'h_bbH_mudown_%s' % type)*self.unit_pb,
-##                 +1 : self.lookup_value(mA, tan_beta, 'h_bbH_muup_%s' % type)*self.unit_pb,
-##                 0 : 0,
-##             }
-##         else :
-##             type_info['mu']['bbH'] = {
-##                 -1 : (self.lookup_value(mA, tan_beta, 'h_bbH_mudown_%s' % type) -
-##                       self.lookup_value(mA, tan_beta, 'h_bbH_xsec_%s' % type))*self.unit_pb,
-##                 +1 : (self.lookup_value(mA, tan_beta, 'h_bbH_muup_%s' % type) -
-##                       self.lookup_value(mA, tan_beta, 'h_bbH_xsec_%s' % type))*self.unit_pb,
-##                 0 : 0,
-##                 }
-##         type_info['mu']['bbH4f'] = {
-##             -1 : (self.lookup_value(mA, tan_beta, 'h_bbH4f_xsec_%s_low' % type) -
-##                   self.lookup_value(mA, tan_beta, 'h_bbH4f_xsec_%s' % type))*self.unit_pb,
-##             +1 : (self.lookup_value(mA, tan_beta, 'h_bbH4f_xsec_%s_high' % type) -
-##                   self.lookup_value(mA, tan_beta, 'h_bbH4f_xsec_%s' % type))*self.unit_pb,
-##             0 : 0,
-##             }
-##         type_info['mu']['ggF'] = {
-##             -1 : (self.lookup_value(mA, tan_beta, 'h_ggF_xsec20_%s' % type) -
-##                   self.lookup_value(mA, tan_beta, 'h_ggF_xsec_%s' % type))*self.unit_pb,
-##             +1 : (self.lookup_value(mA, tan_beta, 'h_ggF_xsec05_%s' % type) -
-##                   self.lookup_value(mA, tan_beta, 'h_ggF_xsec_%s' % type))*self.unit_pb,
- ##            0 : 0,
-##           }
+    def _add_mu(self, mA, tan_beta, input):
+        type, type_info = input
+        type_info.setdefault('mu', {})
+        type_info['mu']['HH'] = {
+            -1 : float(0.21),
+            +1 : float(0.21),
+            0 : 0,
+            }
+        type_info['mu']['HW'] = {
+            -1 : float(0.21),
+            +1 : float(0.21),
+            0 : 0,
+            }
 
     def query(self, mA, tan_beta):
 
@@ -120,7 +99,7 @@ class hplus_xsec_tools():
             self._add_br_tHpb(mA, tan_beta, (higgs_type, output['higgses'][higgs_type]))
             self._add_br_taunu(mA, tan_beta, (higgs_type, output['higgses'][higgs_type]))
             self._add_xsec(mA, tan_beta, (higgs_type, output['higgses'][higgs_type]))
-            #self._add_mu(mA, tan_beta, (higgs_type, output['higgses'][higgs_type]))
+            self._add_mu(mA, tan_beta, (higgs_type, output['higgses'][higgs_type]))
 
         print output
         return output

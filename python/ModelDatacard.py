@@ -18,7 +18,7 @@ class ModelDatacard(DatacardAdaptor) :
     counting experiments. For counting experiments no differences in acceptance due to differing masses of the contributing
     Higgses are taken into account, as these can not be a priori known from a single datacard. 
     """
-    def __init__(self, parser_options, model_label, update_file=False) :
+    def __init__(self, parser_options, model_label, mA, update_file=False, ana_type='') :
         ## postfix label for the root input file where to find the rates modified according to the given model
         self.model_label = model_label
         ## write the the new template histogram with new histogram name into the same file (i.e. update the existing file)
@@ -29,6 +29,10 @@ class ModelDatacard(DatacardAdaptor) :
         ## memory of the root input files that have been processed by ModelTemplates during the lifetime of the instantiated
         ## class object
         self.already_processed_template_files = []
+        ## analyses type (for Htt its empty, only for Hplus its 'Hplus'
+        self.ana_type=ana_type
+        ## mass of A
+        self.mA = mA
         ## initialize base class
         super(ModelDatacard, self).__init__()
 
@@ -171,12 +175,20 @@ class ModelDatacard(DatacardAdaptor) :
                                 if idx == index_order.index(bin+'_'+proc) :
                                     if type == 'mu' :
                                         if  value>0 and lower/value!=1 :
-                                            uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.-lower/value), 1.+upper/value)
+                                            if self.ana_type=="Hplus" :
+                                                ## uncertainty hardcoded added depending on mass - could be done nicer
+                                                uncerts[idx]=" \t\t %.3f " % (1.21 if params[0].masses['Hp'] < 165 else 1.32)
+                                            else:
+                                                uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.-lower/value), 1.+upper/value)
                                         else :
                                             uncerts[idx]=" \t\t 0.1 "
                                     if type == 'pdf' :
                                         if value>0 :
-                                            uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.+lower/value), 1.+upper/value)
+                                            if self.ana_type=="Hplus" :
+                                                ## uncertainty hardcoded added depending on mass - could be done nicer
+                                                uncerts[idx]=" \t\t %.3f " % (1.21 if params[0].masses['Hp'] < 165 else 1.32)
+                                            else :
+                                                uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.+lower/value), 1.+upper/value)
                                         else :
                                             uncerts[idx]=" \t\t 0.1 "
                 ## in case label is not yet in dict, add uncerts as they are. Otherwise update '-' entries in existing list
@@ -256,14 +268,14 @@ class ModelDatacard(DatacardAdaptor) :
         for (shape_file,reduced_model) in schedule.iteritems() :
             print 'creating template(s) :', dir+shape_file, '(morphing mode is', morph_per_file[shape_file]+')'
             if self.update_file :
-                template = ModelTemplate(dir+shape_file, self.model_label)
+                template = ModelTemplate(dir+shape_file, self.mA, self.ana_type, self.model_label)
                 template.create_templates(reduced_model, self.model_label, 1./float(model.tanb), morph_per_file[shape_file])
                 tmp = '/tmp/'+''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))
                 os.system("hadd {TMP} {SOURCE} {SOURCE}{MODEL}".format(TMP=tmp, SOURCE=dir+shape_file, MODEL=self.model_label))
                 os.system("mv {TMP} {SOURCE}".format(TMP=tmp, SOURCE=dir+shape_file))
                 os.system("rm {SOURCE}{MODEL}".format(SOURCE=dir+shape_file,MODEL=self.model_label))
             else :
-                template = ModelTemplate(dir+shape_file)
+                template = ModelTemplate(dir+shape_file, self.mA, self.ana_type)
                 template.create_templates(reduced_model, self.model_label, 1./float(model.tanb), morph_per_file[shape_file])
         ## adapt datacards to pick up proper signal rates
         print 'adapting datacard(s) :', path
