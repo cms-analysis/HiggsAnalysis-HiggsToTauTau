@@ -18,7 +18,7 @@ class ModelTemplate():
     and all available shape uncertainties for each bin (=directory in the root input file) and each available pivotal for
     each bin.
     """
-    def __init__(self, path, hist_label='', verbosity=0) :
+    def __init__(self, path, mA, ana_type='', hist_label='', verbosity=0) :
         ## path to root input file
         self.path = path
         ## root input file where to find the raw templates
@@ -32,6 +32,10 @@ class ModelTemplate():
         self.shape_labels = {}
         ## determine verbosity level
         self.verbosity = verbosity
+        ## ana-type
+        self.ana_type = ana_type
+        ## mass of A
+        self.mA = mA
 
     def __del__(self) :
         ## close input root file
@@ -82,6 +86,7 @@ class ModelTemplate():
                 self.fill_pivotals(proc, label, dir.Get(name))
             else :
                 if isinstance(dir.Get(name), ROOT.TH1) :
+                    #print "pivotals3"
                     for pivotal in proc_match.findall(name) :
                         if dir.Get(name).Integral()>0 :
                             if not pivotal in pivotals:
@@ -105,6 +110,8 @@ class ModelTemplate():
         Load a histogram with name from self.input_file. Issue a warning in case the histogram is not available. In this case
         the class will most probably crash, but at least one knows which histogram was searched for and not found.
         """
+        if name.startswith('./') :
+            name=name.replace('./','')
         hist = self.input_file.Get(name)
         if type(hist) == ROOT.TObject :
             print "hist not found: ", self.input_file.GetName(), ":", name
@@ -169,7 +176,7 @@ class ModelTemplate():
         elif float(window[0]) > float(mass) :
             ## mass out of bounds of pivotals (too small)
             single_template = self.load_hist(dir+'/'+proc+window[0]+label).Clone(proc+window[0]+label+'_template'); single_template.Scale(scale) 
-        elif float(window[1]) < float(mass) :
+        elif float(window[1]) < float(mass) :           
             ## mass out of bounds of pivotals (too large)
             single_template = self.load_hist(dir+'/'+proc+window[1]+label).Clone(proc+window[1]+label+'_template'); single_template.Scale(scale)
         else :
@@ -222,7 +229,11 @@ class ModelTemplate():
                     combined_template = None
                     self.pivotals = {}; self.fill_pivotals(proc, label, self.input_file)
                     for higgs in params.list_of_higgses :
-                        scale = float(params.xsecs[higgs])*float(params.brs[higgs])*hist_scale
+                        #print "here6", higgs, hist_scale
+                        if self.ana_type=="Hplus" :
+                            scale = float(params.brs[higgs])*hist_scale
+                        else :
+                            scale = float(params.xsecs[higgs])*float(params.brs[higgs])*hist_scale
                         histo = self.single_template(dir, proc, self.save_float_conversion(params.masses[higgs]), label, scale, MODE)
                         if combined_template :
                             if not 'fine_binning' in histo.GetName() :
@@ -233,8 +244,14 @@ class ModelTemplate():
                     output_file.cd('' if dir == '.' else dir)
                     if combined_template :
                         if self.verbosity>0 :
-                            print 'write histogram to file: ', dir+'/'+proc+self.save_float_conversion(params.masses['A'])+self.hist_label+label  
-                        combined_template.Write(proc+self.save_float_conversion(params.masses['A'])+self.hist_label+label, ROOT.TObject.kOverwrite)
+                            if self.ana_type=="Hplus" :
+                                print 'write histogram to file: ', dir+'/'+proc+self.save_float_conversion(self.mA)+self.hist_label+label
+                            else :
+                                print 'write histogram to file: ', dir+'/'+proc+self.save_float_conversion(params.masses['A'])+self.hist_label+label
+                        if self.ana_type=="Hplus" :
+                            combined_template.Write(proc+self.save_float_conversion(self.mA)+self.hist_label+label, ROOT.TObject.kOverwrite)
+                        else :
+                            combined_template.Write(proc+self.save_float_conversion(params.masses['A'])+self.hist_label+label, ROOT.TObject.kOverwrite)
         output_file.Close()
         return 
 
