@@ -18,9 +18,9 @@ cats1 = OptionGroup(parser, "Hhh EVENT CATEGORIES", "Event categories to be pick
 cats1.add_option("--Hhh-categories-ee", dest="ee_Hhh_categories", default="0 1 2 3 4", type="string", help="List of ee event categories. [Default: \"0 1 2 3 4\"]")
 cats1.add_option("--Hhh-categories-mm", dest="mm_Hhh_categories", default="0 1 2 3 4", type="string", help="List of mm event categories. [Default: \"0 1 2 3 4\"]")
 cats1.add_option("--Hhh-categories-em", dest="em_Hhh_categories", default="0 1 2 3 4", type="string", help="List of em event categories. [Default: \"0 1 2 3 4\"]")
-cats1.add_option("--Hhh-categories-mt", dest="mt_Hhh_categories", default="0 1 2 3 4", type="string", help="List of mt event categories. [Default: \"0 1 2 3 4\"]")
-cats1.add_option("--Hhh-categories-et", dest="et_Hhh_categories", default="0 1 2 3 4", type="string", help="List of et event categories. [Default: \"0 1 2 3 4\"]")
-cats1.add_option("--Hhh-categories-tt", dest="tt_Hhh_categories", default="0 1 2 3 4", type="string", help="List of tt event categories. [Default: \"0 1 2 3 4\"]")
+cats1.add_option("--Hhh-categories-mt", dest="mt_Hhh_categories", default="0 1 2", type="string", help="List of mt event categories. [Default: \"0 1 2 3 4\"]")
+cats1.add_option("--Hhh-categories-et", dest="et_Hhh_categories", default="0 1 2", type="string", help="List of et event categories. [Default: \"0 1 2 3 4\"]")
+cats1.add_option("--Hhh-categories-tt", dest="tt_Hhh_categories", default="0 1 2", type="string", help="List of tt event categories. [Default: \"0 1 2 3 4\"]")
 parser.add_option_group(cats1)
 
 ## check number of arguments; in case print usage

@@ -308,23 +308,23 @@ void addVarBinNuisance(const std::string& iFileName,
   //lFile->Close();
   return;
 }
-TH1F* makeHist2(const std::string& histogramName, TH1F* histogram_original, double par0, double par1, int fitModel, double xMin_fit, double xMax, double x0, 
+TH1F* makeHist2(const std::string& histogramName, TH1F* histogram_original, double par0, double par1, int fitModel, double xMin_fit, double xMax_fit, double x0, 
 		double& sf, double k = 1, TH1F* template_central = 0, double* sf_central = 0)
 {
   //std::cout << "<makeHist2>:" << std::endl;
   //std::cout << " histogramName = " << histogramName << std::endl; 
   //std::cout << " par0 = " << par0 << ", par1 = " << par1 << std::endl;
-  //std::cout << " range = " << xMin_fit << ".." << xMax << std::endl;
+  //std::cout << " range = " << xMin_fit << ".." << xMax_fit << std::endl;
   
   TF1* tempFit = 0;
   if ( fitModel == 0 ) {
-    tempFit = new TF1("tempFit", "TMath::Exp(-(x - [2])/([0] + 0.001*[1]*(x - ([2] + [3]))))", xMin_fit, xMax);
+    tempFit = new TF1("tempFit", "TMath::Exp(-(x - [2])/([0] + 0.001*[1]*(x - ([2] + [3]))))", xMin_fit, xMax_fit);
     tempFit->SetParameter(0, par0);
     tempFit->SetParameter(1, par1);
     tempFit->SetParameter(2, xMin_fit);
     tempFit->SetParameter(3, x0);
   } else if ( fitModel == 1 ) {
-    tempFit = new TF1("tempFit", "TMath::Exp(-(x - [2])/([0]*(1.0 + 0.001*[1]*(x - ([2] + [3])))))", xMin_fit, xMax);
+    tempFit = new TF1("tempFit", "TMath::Exp(-(x - [2])/([0]*(1.0 + 0.001*[1]*(x - ([2] + [3])))))", xMin_fit, xMax_fit);
     tempFit->SetParameter(0, par0);
     tempFit->SetParameter(1, par1);
     tempFit->SetParameter(2, xMin_fit);
@@ -334,15 +334,15 @@ TH1F* makeHist2(const std::string& histogramName, TH1F* histogram_original, doub
     assert(0);
   }
   //std::cout << "tempFit = " << tempFit->GetTitle() << std::endl;
-  //for ( double x = xMin_fit; x < xMax; x += 100. ) {
+  //for ( double x = xMin_fit; x < xMax_fit; x += 100. ) {
   //  std::cout << "tempFit(" << x << ") = " << tempFit->Eval(x) << std::endl;
   //}
 
   TH1F* histogram_fitted = (TH1F*)histogram_original->Clone(histogramName.c_str());
   histogram_fitted->Reset();
   if ( !histogram_fitted->GetSumw2N() ) histogram_fitted->Sumw2();
-  double integral_original = histogram_original->Integral(histogram_original->FindBin(xMin_fit), histogram_original->FindBin(xMax));
-  double tempFit_integral = tempFit->Integral(xMin_fit, xMax);
+  double integral_original = histogram_original->Integral(histogram_original->FindBin(xMin_fit), histogram_original->FindBin(xMax_fit));
+  double tempFit_integral = tempFit->Integral(xMin_fit, xMax_fit);
   //std::cout << "integral: original = " << integral_original << ", fit = " << tempFit_integral << std::endl;
   sf = integral_original/tempFit_integral;
   //std::cout << "sf = " << sf << std::endl;
@@ -354,14 +354,9 @@ TH1F* makeHist2(const std::string& histogramName, TH1F* histogram_original, doub
     double binCenter   = xAxis->GetBinCenter(iBin);
     double binEdgeLow  = xAxis->GetBinLowEdge(iBin);
     double binEdgeHigh = xAxis->GetBinUpEdge(iBin);
-    if ( binCenter > xMin_fit ) {
-      const double epsilon = 1.e-6;
-      if ( binEdgeHigh < (xMax + epsilon) ) {
-	if ( k != 1. && template_central ) histogram_fitted->SetBinContent(iBin, k*sf*tempFit->Integral(binEdgeLow, binEdgeHigh) - (k - 1.)*template_central->GetBinContent(iBin));
-	else histogram_fitted->SetBinContent(iBin, sf*tempFit->Integral(binEdgeLow, binEdgeHigh));
-      } else {
-	histogram_fitted->SetBinContent(iBin, 0.);
-      }
+    if ( binCenter > xMin_fit && binCenter < xMax_fit ) {
+      if ( k != 1. && template_central ) histogram_fitted->SetBinContent(iBin, k*sf*tempFit->Integral(binEdgeLow, binEdgeHigh) - (k - 1.)*template_central->GetBinContent(iBin));
+      else histogram_fitted->SetBinContent(iBin, sf*tempFit->Integral(binEdgeLow, binEdgeHigh));
     } else {
       histogram_fitted->SetBinContent(iBin, histogram_original->GetBinContent(iBin));
       histogram_fitted->SetBinError(iBin, histogram_original->GetBinError(iBin));
@@ -1409,13 +1404,15 @@ int addNuisance2(const std::string& inputFileName,
   // we do not need bin errors for bins that are within the range of the tail-fit (the tail-fit replaces bin-by-bin error!),
   // therefore we set all errors to 0. This saves us from modifying the add_bbb_error.py script 
   // in which we otherwise would have to include an option for adding bbb only to bins that are within specific ranges.
-  int iBin_merge = xAxis_fine_binning->FindBin(xMin_fit);
-  for ( int iBin = iBin_merge; iBin <= numBins_fine_binning; ++iBin ) {
-    template_central->SetBinError(iBin, 0.);
-    template_shift1Up->SetBinError(iBin, 0.);
-    template_shift1Down->SetBinError(iBin, 0.);
-    template_shift2Up->SetBinError(iBin, 0.);
-    template_shift2Down->SetBinError(iBin, 0.);
+  for ( int iBin = 1; iBin <= xAxis_fine_binning->GetNbins(); ++iBin ) {
+    double binCenter = xAxis_fine_binning->GetBinCenter(iBin);
+    if ( binCenter > xMin_fit && binCenter < xMax_fit ) {
+      template_central->SetBinError(iBin, 0.);
+      template_shift1Up->SetBinError(iBin, 0.);
+      template_shift1Down->SetBinError(iBin, 0.);
+      template_shift2Up->SetBinError(iBin, 0.);
+      template_shift2Down->SetBinError(iBin, 0.);
+    }
   }
 
   // save the new templates to the datacard ROOT file

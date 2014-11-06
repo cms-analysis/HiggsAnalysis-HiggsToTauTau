@@ -25,11 +25,11 @@ muTau_2jet1tag		TT     		  		CMS_htt_ttbar_emb_8TeV 			1.14
 muTau_2jet1tag	 	VV	          		CMS_htt_DiBosonNorm_8TeV 		1.15
 muTau_2jet1tag		W	          		CMS_htt_WNorm_mutau_2jet1tag_8TeV 	1.30
 muTau_2jet1tag          QCD	          		CMS_htt_QCDSyst_mutau_2jet1tag_8TeV	1.20
-muTau_2jet1tag          QCD	          		CMS_htt_QCDShape_mutau_2jet1tag_8TeV    1.00
+#muTau_2jet1tag          QCD	          		CMS_htt_QCDShape_mutau_2jet1tag_8TeV    1.00
 muTau_2jet1tag		ZJ				CMS_htt_ZJetFakeTau_mutau_2jet1tag_8TeV	1.20
 muTau_2jet1tag		ZL				CMS_htt_ZLeptonFakeTau_mutau_8TeV	1.30
 muTau_2jet1tag	        ZL		       		CMS_htt_ZLScale_mutau_8TeV              1.00
-muTau_2jet1tag	        W				CMS_htt_WShape_mutau_2jet1tag_8TeV      1.00
+#muTau_2jet1tag	        W				CMS_htt_WShape_mutau_2jet1tag_8TeV      1.00
 #[tail]muTau_2jet1tag	W				tailShape				1.00
 muTau_2jet1tag          ggH_SM125               	pdf_gg                                  1.097
 muTau_2jet1tag          qqH_SM125              		pdf_qqbar                               1.036
