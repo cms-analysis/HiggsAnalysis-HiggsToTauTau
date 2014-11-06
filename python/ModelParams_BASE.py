@@ -1,4 +1,5 @@
 from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools
+from HiggsAnalysis.HiggsToTauTau.tools.hplus_xsec_tools import hplus_xsec_tools
 from HiggsAnalysis.HiggsToTauTau.tools.feyn_higgs_mssm import feyn_higgs_mssm
 from HiggsAnalysis.HiggsToTauTau.MODEL_PARAMS import MODEL_PARAMS
 from os import getenv
@@ -38,6 +39,10 @@ class ModelParams_BASE:
             mssm_xsec_tools_path = getenv('CMSSW_BASE')+'/src/auxiliaries/models/out.'+modelpath+'-'+period+'-'+tanbregion+'-nnlo.root'
             scan = mssm_xsec_tools(mssm_xsec_tools_path)
             self.htt_query = scan.query(self.mA, self.tanb, self.ana_type)
+        elif modeltype == 'hplus_xsec' :
+            hplus_xsec_tools_path = getenv('CMSSW_BASE')+'/src/auxiliaries/models/hplus.'+modelpath+'-'+period+'-LHCHXSWG.root'
+            scan = hplus_xsec_tools(hplus_xsec_tools_path)
+            self.htt_query = scan.query(self.mA, self.tanb)
 
     def create_model_params(self, period, channel, decay, uncert=''):
         """
@@ -51,11 +56,13 @@ class ModelParams_BASE:
         '' specifies no uncertainty to be used.
         """
         self.uncert = uncert
-        model_params = MODEL_PARAMS()
+        model_params = MODEL_PARAMS(self.ana_type)
         if self.model == 'feyn_higgs':
             self.use_feyn_higgs(modelpath, period, channel, decay, model_params)
         elif self.model == 'mssm_xsec':
             self.use_mssm_xsec(self.htt_query, channel, decay, model_params)
+        elif self.model == 'hplus_xsec':
+            self.use_hplus_xsec(self.htt_query, channel, decay, model_params)           
         else:
             exit('ERROR: modeltype \'%s\' not supported'%modeltype)
         return model_params
@@ -84,6 +91,16 @@ class ModelParams_BASE:
             model_params.masses[higgs] = self.query_masses(higgs, query)
             model_params.xsecs[higgs] = self.query_xsec(higgs, channel, query)
             model_params.brs[higgs] = self.query_br(higgs, decay, channel, query)
+
+    def use_hplus_xsec(self, query, channel, decay, model_params):
+        """
+        This function takes the input from create_model_params and uses mssm_xsec_tools to determine the masses,
+        cross-sections and branchingratios for the given production and decay channels
+        """
+        for higgs in model_params.list_of_higgses:
+            model_params.masses[higgs] = self.query_masses(higgs, query)
+            model_params.xsecs[higgs] = self.query_xsec(higgs, channel, query)
+            model_params.brs[higgs] = self.query_br(higgs, decay, channel, query)
         
     def query_masses(self, higgs, query):
         """
@@ -99,7 +116,7 @@ class ModelParams_BASE:
         This function uses the mssm_xsec_tools.
         Currently only 'ggH' and 'bbH' are supported
         """
-        channels = {'ggH':'ggF', 'bbH':'santander', 'ggAToZhToLLBB':'ggF','ggAToZhToLLTauTau':'ggF', 'ggHTohhTo2Tau2B':'ggF'}
+        channels = {'ggH':'ggF', 'bbH':'santander', 'ggAToZhToLLBB':'ggF','ggAToZhToLLTauTau':'ggF', 'ggHTohhTo2Tau2B':'ggF', 'HH':'HH', 'HW':'HW'} 
         if channel not in channels:
             exit('ERROR: Production channel \'%s\' not supported'%channel)
         if self.uncert == '':
@@ -118,20 +135,22 @@ class ModelParams_BASE:
         For NeutralMSSM currently only htt, hbb and hmm are supported.
         For Hhh currently only Hhh*hbb*(hbb/htt/hmm) and AZh*hbb*ZLL and AZh*htt*Zbb are supported.
         """
-        brname = {'tt':'BR', 'bb':'BR-bb', 'mm':'BR-mumu', 'HTohhTo2Tau2B':'BR-hh', 'AToZhToLLTauTau':'BR-Zh', 'AToZhToLLBB':'BR-Zh'}
+        brname = {'tt':'BR', 'bb':'BR-bb', 'mm':'BR-mumu', 'HTohhTo2Tau2B':'BR-hh', 'AToZhToLLTauTau':'BR-Zh', 'AToZhToLLBB':'BR-Zh', 'tHpb':'BR-tHpb', 'taunu':'BR-taunu'}
         if decay[1:] not in brname:
             exit('ERROR: Decay channel \'%s\' not supported'%decay)
         if self.ana_type=='Hhh' :
             if channel=='ggHTohhTo2Tau2B' :
-                #print channel, str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses']['h'][brname['bb']]*query['higgses']['h'][brname[decay[1:]]]*2)
                 return str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses']['h'][brname['bb']]*query['higgses']['h'][brname[decay[1:]]]*2) #factor 2: bbtautau or tautaubb
             elif channel=='ggAToZhToLLBB' :
-                #print channel, str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses']['h'][brname['bb']]*0.10099)
                 return str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses']['h'][brname['bb']]*0.10099) #BR(Z->LL)=0.003363(ee)+0.003366(mumu)+0.003370(tautau)
             elif channel=='ggAToZhToLLTauTau' :
-                #print channel, str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses']['h'][brname['tt']]*0.10099)
                 return str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses']['h'][brname['tt']]*0.10099) #BR(Z->LL)=0.003363(ee)+0.003366(mumu)+0.003370(tautau)
             elif channel=='bbH' :
-                return query['higgses'][higgs][brname[decay[1:]]]                
+                return query['higgses'][higgs][brname[decay[1:]]]
+        elif self.ana_type=='Hplus':
+            if 'HH' in channel :
+                return str(query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['taunu']]*query['higgses'][higgs][brname['taunu']])
+            elif 'HW' in channel : 
+               return str(2*(1-query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['taunu']])*query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['taunu']]) 
         else : 
             return query['higgses'][higgs][brname[decay[1:]]]

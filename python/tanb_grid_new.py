@@ -32,6 +32,8 @@ morph_opts.add_option("--morphing-htt_et", dest="morphing_htt_et", default="MORP
                  help="Choose the morphing type for the htt_et decay channel. [Default: \"MORPHED\"]", choices=["MORPHED", "NEAREST_NEIGHBOUR"])
 morph_opts.add_option("--morphing-htt_tt", dest="morphing_htt_tt", default="MORPHED", type="choice",
                  help="Choose the morphing type for the htt_tt decay channel. [Default: \"MORPHED\"]", choices=["MORPHED", "NEAREST_NEIGHBOUR"])
+morph_opts.add_option("--morphing-htaunu_had", dest="morphing_htaunu_had", default="MORPHED", type="choice",
+                 help="Choose the morphing type for the htaunu_had decay channel. [Default: \"MORPHED\"]", choices=["MORPHED", "NEAREST_NEIGHBOUR"])
 parser.add_option_group(morph_opts)
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -66,7 +68,7 @@ class MODEL(object) :
         ## model path (as defined in ModelParams_BASE)
         self.modelpath = modelpath
         ## model type (as defined in ModelParams_BASE)
-        self.modeltype = modeltype
+        self.modeltype = 'hplus_xsec' if options.ana_type=="Hplus" else 'mssm_xsec'
         ## central value of type {(period,decay,proc) : MODEL_PARAMS}
         self.central = {}
         ## shifts for uncertainties of type {'type' : {(period,decay,proc) : (MODEL_PARAMS,MODEL_PARAMS)}}
@@ -117,11 +119,14 @@ class MODEL(object) :
                 self.uncerts[shift].update(buffer)
             else :
                 self.uncerts[shift] = buffer
-        ## create masses 
-        self.mA = modelMaker.create_model_params(period, proc, decay, '').masses['A']
+        ## create masses
+        if options.ana_type=="Hplus":
+            self.mA = self.parameter1
+        else :
+            self.mA = modelMaker.create_model_params(period, proc, decay, '').masses['A']
+        
 
-
-def mH_to_mA(card) :
+def mX_to_mA(card) :
 	match = re.compile('(?P<CHN>[a-zA-Z0-9]+)_[a-zA-Z0-9]+_[0-9]+_(?P<PER>[a-zA-Z0-9]+)')
         for bin in card.list_of_bins() :
         ## a bin can be made up of different decay channels or different run periods. Pick decay channel (chn) and run period
@@ -132,21 +137,23 @@ def mH_to_mA(card) :
             else :
                 chn = match.match(path[path.rfind('/')+1:]).group('CHN')
                 per = match.match(path[path.rfind('/')+1:]).group('PER')
-        tanbregion = ''
-        if float(options.tanb) < 1:
-            tanbregion = 'tanbLow'
-        else:
-            tanbregion = 'tanbHigh'
-        mssm_xsec_tools_path = os.getenv('CMSSW_BASE')+'/src/auxiliaries/models/out.'+options.modelname+'-'+per+'-'+tanbregion+'-nnlo.root'
-        prescan = mssm_xsec_tools(mssm_xsec_tools_path)
-        Spline_input = ROOT.TGraph()
-        k=0
-        for mass in range(90, 1000) :
-            #print k, mass, prescan.lookup_value(mass, float(options.tanb), "h_mH")
-            Spline_input.SetPoint(k, prescan.lookup_value(mass, float(options.tanb), "h_mH"), mass)
-            k=k+1
-        print "for mH = ", options.parameter1, "  mA = ", Spline_input.Eval(float(options.parameter1))
-        return Spline_input.Eval(float(options.parameter1))
+        if options.ana_type=="Hhh" :
+            tanbregion = ''
+            if float(options.tanb) < 1:
+                tanbregion = 'tanbLow'
+            else:
+                tanbregion = 'tanbHigh'
+            mssm_xsec_tools_path = os.getenv('CMSSW_BASE')+'/src/auxiliaries/models/out.'+options.modelname+'-'+per+'-'+tanbregion+'-nnlo.root'
+            prescan = mssm_xsec_tools(mssm_xsec_tools_path)
+            Spline_input = ROOT.TGraph()
+            k=0
+            for mass in range(90, 1000) :
+                #print k, mass, prescan.lookup_value(mass, float(options.tanb), "h_mH")
+                Spline_input.SetPoint(k, prescan.lookup_value(mass, float(options.tanb), "h_mH"), mass)
+                k=k+1
+            print "for mH = ", options.parameter1, "  mA = ", Spline_input.Eval(float(options.parameter1))
+            return Spline_input.Eval(float(options.parameter1))
+                
 
             
 def main() :
@@ -154,14 +161,15 @@ def main() :
     print "# tanb_grid_new.py "
     print "# --------------------------------------------------------------------------------------"
     print "# You are using the following configuration: "
-    print "# --tanb            :", options.tanb
-    print "# --parameter1      :", options.parameter1 #for the lowmH scenario this is the higgs/higgsino mass parameter; everywhere else its mass of A
-    print "# --morphing-htt_ee : ", options.morphing_htt_ee
-    print "# --morphing-htt_em : ", options.morphing_htt_em
-    print "# --morphing-htt_mm : ", options.morphing_htt_mm
-    print "# --morphing-htt_mt : ", options.morphing_htt_mt
-    print "# --morphing-htt_et : ", options.morphing_htt_et
-    print "# --morphing-htt_tt : ", options.morphing_htt_tt
+    print "# --tanb                :", options.tanb
+    print "# --parameter1          :", options.parameter1 #for the lowmH scenario this is the higgs/higgsino mass parameter; everywhere else its mass of A
+    print "# --morphing-htt_ee     : ", options.morphing_htt_ee
+    print "# --morphing-htt_em     : ", options.morphing_htt_em
+    print "# --morphing-htt_mm     : ", options.morphing_htt_mm
+    print "# --morphing-htt_mt     : ", options.morphing_htt_mt
+    print "# --morphing-htt_et     : ", options.morphing_htt_et
+    print "# --morphing-htt_tt     : ", options.morphing_htt_tt
+    print "# --morphing-htaunu_had : ", options.morphing_htaunu_had
     print "# Check option --help in case of doubt about the meaning of one or more of these confi-"
     print "# guration parameters.                           "
     print "# --------------------------------------------------------------------------------------"
@@ -172,17 +180,18 @@ def main() :
     label = '_{PARAMETER1}_{TANB}'.format(PARAMETER1=options.parameter1, TANB=options.tanb)
     ## mophing configuration
     morph = {
-        'htt_ee' : options.morphing_htt_ee,
-        'htt_em' : options.morphing_htt_em,
-        'htt_mm' : options.morphing_htt_mm,
-        'htt_mt' : options.morphing_htt_mt,
-        'htt_et' : options.morphing_htt_et,
-        'htt_tt' : options.morphing_htt_tt,
+        'htt_ee'     : options.morphing_htt_ee,
+        'htt_em'     : options.morphing_htt_em,
+        'htt_mm'     : options.morphing_htt_mm,
+        'htt_mt'     : options.morphing_htt_mt,
+        'htt_et'     : options.morphing_htt_et,
+        'htt_tt'     : options.morphing_htt_tt,
+        'htaunu_had' : options.morphing_htaunu_had,
         }
     ## complete model for given mass and tanb value (including uncertainties)
     models = {}
     ## adaptor of the datacard for given mass and tanb value
-    adaptor = ModelDatacard(options, label, False)
+    adaptor = ModelDatacard(options, label, options.parameter1, False, options.ana_type)
     adaptor.cleanup('.' if not path.find('/')>0 else path[:path.rfind('/')], label)
     ## parse datacard (first go)
     old_file = open(path, 'r')
@@ -191,9 +200,9 @@ def main() :
 
     ##if ana_type=="Hhh" mH has to be translated into mA  
     if options.ana_type=="Hhh" : #mH has to be translated into mA  
-        neededParameter = mH_to_mA(card)
+        neededParameter = mX_to_mA(card)
     else :
-        neededParameter = options.parameter1
+        neededParameter = options.parameter1   
         
     ## determine MODEL for given datacard.
     model = MODEL(float(neededParameter), float(options.tanb), options.modelname)
@@ -212,15 +221,19 @@ def main() :
         ## check which processes are still missing for given decay channel and run period
         missing_procs = model.missing_procs(chn, per, card.list_of_signals())
         if len(missing_procs)>0 :
-            print "updating model to parameter set:", per, chn, missing_procs, ['mu', 'pdf']
-            model.setup_model(per, chn, missing_procs, ['mu', 'pdf'])
+            if options.ana_type=="Hplus":
+                print "updating model to parameter set:", per, chn, missing_procs, ['mu']
+                model.setup_model(per, chn, missing_procs, ['mu'])
+            else :
+                print "updating model to parameter set:", per, chn, missing_procs, ['mu', 'pdf']
+                model.setup_model(per, chn, missing_procs, ['mu', 'pdf'])
     ## create new datacard
     new_name = path[:path.rfind('.txt')]+'_%.2f'%float(options.tanb)+'.txt'
     os.system("cp {SRC} {TARGET}".format(SRC=path, TARGET=new_name))
     ## adapt datacards
     if options.MSSMvsSM :
         ## this options rejects the scaling of bbH and ggH by 1/tanb -> therefore at each mA/tanb point all signals (including SM) are xs*BR
-        model.tanb = 1 
+        model.tanb = 1
     adaptor.make_model_datacard(new_name, model, morph)
 
 main()
