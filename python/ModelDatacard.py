@@ -155,7 +155,7 @@ class ModelDatacard(DatacardAdaptor) :
                 ## shifts. For mu these shifts are added linearly for each higgs (MOMENT=1). For pdf they are added in quad-
                 ## rature (MOMENT=2). In the datacards the absolute shifts are divided by the central value (added linearly)
                 ## to transform them into relative shifts. The difference in adding the uncertainties leads to a slightly
-                ## different treatment, in the transformation of abs->rel difference, esp for the -shift.  
+                ## different treatment, in the transformation of abs->rel difference, esp for the -shift.
                 value = model.central[key].effective()
                 lower = params[0].effective(1 if type == 'mu' else 2)
                 upper = params[1].effective(1 if type == 'mu' else 2)
@@ -165,34 +165,39 @@ class ModelDatacard(DatacardAdaptor) :
                         continue
                     if not (period in bin or '*' in bin) :
                         continue
-                    for proc_in_card in card.list_of_signals() :
-                        if proc_in_card == proc :
-                            ## first fill whole list with placeholders then replace with uncertainty numbers at right places
-                            if len(uncerts)==0 :
-                                for idx in range(len(index_order)) :
-                                    uncerts.append('-')
+                    if self.ana_type=="Hplus" :
+                        label = 'signal_'+decay+'_'+type+'_'+period
+                        if len(uncerts)==0 :
                             for idx in range(len(index_order)) :
-                                if idx == index_order.index(bin+'_'+proc) :
-                                    if type == 'mu' :
-                                        if  value>0 and lower/value!=1 :
-                                            if self.ana_type=="Hplus" :
-                                                ## uncertainty hardcoded added depending on mass - could be done nicer
-                                                uncerts[idx]=" \t\t %.3f " % (1.21 if params[0].masses['Hp'] < 165 else 1.32)
-                                            else:
+                                uncerts.append('-')
+                            for idx in range(len(index_order)) :
+                                for proc_in_card in card.list_of_signals() :
+                                    if idx == index_order.index(bin+'_'+proc_in_card) :
+                                        uncerts[idx]=" \t\t %.3f " % (1.21 if params[0].masses['Hp'] < 165 else 1.32)
+                    else :
+                        for proc_in_card in card.list_of_signals() :
+                            if proc_in_card == proc :
+                                ## first fill whole list with placeholders then replace with uncertainty numbers at right places
+                                if len(uncerts)==0 :
+                                    for idx in range(len(index_order)) :
+                                        uncerts.append('-')
+                                for idx in range(len(index_order)) :
+                                    if idx == index_order.index(bin+'_'+proc) :
+                                        if type == 'mu' :
+                                            if  value>0 and lower/value!=1 :
                                                 uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.-lower/value), 1.+upper/value)
-                                        else :
-                                            uncerts[idx]=" \t\t 0.1 "
-                                    if type == 'pdf' :
-                                        if value>0 :
-                                            if self.ana_type=="Hplus" :
-                                                ## uncertainty hardcoded added depending on mass - could be done nicer
-                                                uncerts[idx]=" \t\t %.3f " % (1.21 if params[0].masses['Hp'] < 165 else 1.32)
                                             else :
+                                                uncerts[idx]=" \t\t 0.1 "
+                                        if type == 'pdf' :
+                                            if value>0 :
                                                 uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.+lower/value), 1.+upper/value)
-                                        else :
-                                            uncerts[idx]=" \t\t 0.1 "
+                                            else :
+                                                uncerts[idx]=" \t\t 0.1 "
                 ## in case label is not yet in dict, add uncerts as they are. Otherwise update '-' entries in existing list
                 ## of uncerts
+                if self.ana_type=="Hplus" :
+                    uncert_appendix[label] = uncerts
+                    break
                 if not label in uncert_appendix :
                     uncert_appendix[label] = uncerts
                 else :
