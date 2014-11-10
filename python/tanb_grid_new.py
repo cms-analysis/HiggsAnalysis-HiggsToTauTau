@@ -148,7 +148,6 @@ def mX_to_mA(card) :
             Spline_input = ROOT.TGraph()
             k=0
             for mass in range(90, 1000) :
-                #print k, mass, prescan.lookup_value(mass, float(options.tanb), "h_mH")
                 Spline_input.SetPoint(k, prescan.lookup_value(mass, float(options.tanb), "h_mH"), mass)
                 k=k+1
             print "for mH = ", options.parameter1, "  mA = ", Spline_input.Eval(float(options.parameter1))
@@ -197,7 +196,7 @@ def main() :
     old_file = open(path, 'r')
     card = parseCard(old_file, options)
     old_file.close()
-
+    
     ##if ana_type=="Hhh" mH has to be translated into mA  
     if options.ana_type=="Hhh" : #mH has to be translated into mA  
         neededParameter = mX_to_mA(card)
@@ -211,7 +210,6 @@ def main() :
         print "processing bin = %s:" % bin 
         ## a bin can be made up of different decay channels or different run periods. Pick decay channel (chn) and run period
         ## (per) either from bin or from from datacards name in case it is not accessible from bin.
-	#print "processing bin = %s:" % bin 
         if match.match(bin) :
             chn = match.match(bin).group('CHN')
             per = match.match(bin).group('PER')

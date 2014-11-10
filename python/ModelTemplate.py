@@ -166,7 +166,10 @@ class ModelTemplate():
         polation. 
         """
         ## window of closest pivotal masses below/above mass. Window can be None, if no pivotals exist for a given dir. In
-        ## this case return None
+        ## this case return None       
+        if self.ana_type=="Hplus" and mass=="" : 
+            single_template = self.load_hist(dir+'/'+proc+label).Clone(proc+label+'_template'); single_template.Scale(scale)
+            return single_template
         window = self.pivotal_mass_window(float(mass), self.pivotals[dir])
         if not window :
             return None
@@ -213,6 +216,7 @@ class ModelTemplate():
         templates can optionally be scaled by an additional parameter (like 1./float(model.tanb)).
         """
         output_file = ROOT.TFile(self.path+file_label, 'UPDATE')
+        print "output file", self.path+file_label
         for (proc, params) in reduced_model :
             ## determine all available shapes (central value and uncerts) for given proc
             self.shape_labels = {}; self.fill_shape_labels(proc, self.input_file)
@@ -229,7 +233,6 @@ class ModelTemplate():
                     combined_template = None
                     self.pivotals = {}; self.fill_pivotals(proc, label, self.input_file)
                     for higgs in params.list_of_higgses :
-                        #print "here6", higgs, hist_scale
                         if self.ana_type=="Hplus" :
                             scale = float(params.brs[higgs])*hist_scale
                         else :
@@ -252,6 +255,34 @@ class ModelTemplate():
                             combined_template.Write(proc+self.save_float_conversion(self.mA)+self.hist_label+label, ROOT.TObject.kOverwrite)
                         else :
                             combined_template.Write(proc+self.save_float_conversion(params.masses['A'])+self.hist_label+label, ROOT.TObject.kOverwrite)
+        ## for Hplus the MC tt background has to be rescaled by params.ttscale (1-BR(t->Hp+b)*BR(Hp->tau+nu))^2
+        if self.ana_type=="Hplus" :
+            self.shape_labels = {}; self.fill_shape_labels("tt_EWK_faketau", self.input_file) #bkg name ugly hardcoded..
+            params=reduced_model[0][1] #get ttscale (same for all signals)..
+            for dir in self.shape_labels.keys() :
+                ## skip directories that did not contain any templates for proc in the input file
+                if len(self.shape_labels[dir]) == 0 :
+                    continue
+                ## build up directory structure in output file
+                if not output_file.GetDirectory(dir) :
+                    if not dir == '.' :
+                        output_file.mkdir(dir)
+                ## build up combined template histogram for each central value and each shape uncertainty for bin and proc
+                for label in self.shape_labels[dir] :
+                    combined_template = None
+                    scale = float(params.ttscale)
+                    histo = self.single_template(dir, "tt_EWK_faketau", "", label, scale, MODE) #bkg name ugly hardcoded..
+                    if combined_template :
+                        if not 'fine_binning' in histo.GetName() :
+                            combined_template.Add(histo)
+                    else:
+                        combined_template = histo
+                    ## write combined template to output file
+                    output_file.cd('' if dir == '.' else dir)
+                    if combined_template :
+                        if self.verbosity>0 :
+                            print 'write histogram to file: ', dir+'/'+"tt_EWK_faketau"+self.hist_label+label
+                        combined_template.Write("tt_EWK_faketau"+self.hist_label+label, ROOT.TObject.kOverwrite)
         output_file.Close()
         return 
 

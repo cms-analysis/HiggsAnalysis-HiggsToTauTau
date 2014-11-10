@@ -97,7 +97,8 @@ class ModelDatacard(DatacardAdaptor) :
                         if not '_SM125' in proc :
                             if card.path_to_file(bin, proc) == '' :
                                 ## this channel is counting only; NOTE: this does not allow to take acceptance differences due
-                                ## to the different masses of the different higgses into account.
+                                ## to the different masses of the different higgses into account. THIS IS NOT WORKING CURRENTLY
+                                print "counting only is currently NOT WORKING"; continue
                                 new_rate=0
                                 for higgs in self.model[proc].list_of_higgses :
                                     new_rate+=float(self.model[proc].xsec[higgs])*float(self.model[proc].brs[higgs])
@@ -107,6 +108,18 @@ class ModelDatacard(DatacardAdaptor) :
                                 hist_file = ROOT.TFile(path[:path.rfind('/')+1]+card.path_to_file(bin, proc), 'READ')
                                 hist = hist_file.Get(card.path_to_shape(bin, proc).replace('$MASS', mass))
                                 new_rates[index_order.index(bin+'_'+proc)] = str(hist.Integral())
+                    if self.ana_type=="Hplus" : ##felix for tt scale background, but only once!
+                        for bkg in card.list_of_backgrounds() :
+                            if "tt_" in bkg and bkg!="EWKnontt_faketau" :
+                                if card.path_to_file(bin, bkg) == '' :
+                                    ## this channel is counting only; NOTE: this does not allow to take acceptance differences due
+                                    ## to the different masses of the different higgses into account. THIS IS NOT WORKING CURRENTLY
+                                    print "counting only is NOT SUPPORTED"
+                                else :
+                                    ## get tt rate from file
+                                    hist_file = ROOT.TFile(path[:path.rfind('/')+1]+card.path_to_file(bin, bkg), 'READ')
+                                    hist = hist_file.Get(card.path_to_shape(bin, bkg))
+                                    new_rates[index_order.index(bin+'_'+bkg)] = str(hist.Integral())
                 new_line = 'rate\t'+'\t'.join(new_rates)+'\n'
             new_file.write(new_line)
         old_file.close()
@@ -284,6 +297,9 @@ class ModelDatacard(DatacardAdaptor) :
                 template.create_templates(reduced_model, self.model_label, 1./float(model.tanb), morph_per_file[shape_file])
         ## adapt datacards to pick up proper signal rates
         print 'adapting datacard(s) :', path
+        if self.ana_type=="Hplus" :            
+            ## filename gets label self.model_label, histogram name remains as is
+            self.adapt_shapes_lines(path, card, 'tt_EWK_faketau', '', self.model_label) #background ugly hardcoded ...
         for key in model.central.keys() :
             ## expected key elements are (period,decay,proc)
             period = key[0]; decay = key[1]; proc = key[2]
@@ -296,6 +312,6 @@ class ModelDatacard(DatacardAdaptor) :
                 self.adapt_shapes_lines(path, card, proc, self.model_label, '')
             else :
                 ## filename gets label self.model_label, histogram name remains as is
-                self.adapt_shapes_lines(path, card, proc, '', self.model_label)      
+                self.adapt_shapes_lines(path, card, proc, '', self.model_label)
         self.adapt_rate_lines(path, card.list_of_signals(), model.save_float_conversion(model.mA))
         self.add_uncert_lines(path, model)
