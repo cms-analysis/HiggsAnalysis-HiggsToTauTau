@@ -12,8 +12,10 @@ lxb-xsec2tanb.py --ana-type="Hhh" --model="mhmodp" --customTanb="1,1.5,2,2.5,3" 
 limit.py --tanb+ LIMITS-HTohh-mhmodp/*/* 
 submit.py --tanb+ LIMITS-HTohh-mhmodp/*/* 
 
-#Run model-independent mA-tanb limits
-submit.py --asymptotic --physics-model="Hhh" LIMITS-HTohh-ggHTohh/*/*
+#Run model-independent mA-tanb limits. While blinded, don't run the prefit to
+#data which is normally used to get the postfit limits (run pre-prefit limits)
+#When running with option --no-prefit, only expected limits are calculated.
+submit.py --asymptotic --no-prefit --physics-model="Hhh" LIMITS-HTohh-ggHTohh/*/*
 
 #Make plots of model dependent 
 plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-mhmodp.py LIMITS-HTohh-mhmodp/mt ## Not yet working for limits from low tanb

@@ -170,6 +170,13 @@ ggroup.add_option("--Hhh", dest="Hhh", default=False, action="store_true",
                   help="Is this H->hh? [Default: false]")
 parser.add_option_group(ggroup)
 
+##
+## ASYMPTOTIC OPTIONS
+##
+kgroup = OptionGroup(parser,"ASYMPTOTIC OPTIONS","These are the command line options that can be used to configure submission of asymptotic limits.")
+kgroup.add_option("--no-prefit", dest="noPrefit", default=False, action="store_true", help="Do not run the prefit that is normally performed when running asymptotic limits. When this option is enabled only expected limits are calculated.")
+parser.add_option_group(kgroup)
+
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 if len(args) < 1 :
@@ -580,6 +587,8 @@ if options.optAsym :
     cmd   = "--asymptotic"
     model = ""
     opts  = ""
+    if options.noPrefit :
+       cmd += " --no-prefit --expectedOnly"
     ## MSSM ggH while bbH is profiled (GGH-BOUND will be resolved in limit.create_card_workspace_with_physics_model)
     if "ggH" in options.fitModel :
         model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
