@@ -97,7 +97,8 @@ class ModelDatacard(DatacardAdaptor) :
                         if not '_SM125' in proc :
                             if card.path_to_file(bin, proc) == '' :
                                 ## this channel is counting only; NOTE: this does not allow to take acceptance differences due
-                                ## to the different masses of the different higgses into account.
+                                ## to the different masses of the different higgses into account. THIS IS NOT WORKING CURRENTLY
+                                print "counting only is currently NOT WORKING"; continue
                                 new_rate=0
                                 for higgs in self.model[proc].list_of_higgses :
                                     new_rate+=float(self.model[proc].xsec[higgs])*float(self.model[proc].brs[higgs])
@@ -107,6 +108,18 @@ class ModelDatacard(DatacardAdaptor) :
                                 hist_file = ROOT.TFile(path[:path.rfind('/')+1]+card.path_to_file(bin, proc), 'READ')
                                 hist = hist_file.Get(card.path_to_shape(bin, proc).replace('$MASS', mass))
                                 new_rates[index_order.index(bin+'_'+proc)] = str(hist.Integral())
+                    if self.ana_type=="Hplus" : ##felix for tt scale background, but only once!
+                        for bkg in card.list_of_backgrounds() :
+                            if "tt_" in bkg and bkg!="EWKnontt_faketau" :
+                                if card.path_to_file(bin, bkg) == '' :
+                                    ## this channel is counting only; NOTE: this does not allow to take acceptance differences due
+                                    ## to the different masses of the different higgses into account. THIS IS NOT WORKING CURRENTLY
+                                    print "counting only is NOT SUPPORTED"
+                                else :
+                                    ## get tt rate from file
+                                    hist_file = ROOT.TFile(path[:path.rfind('/')+1]+card.path_to_file(bin, bkg), 'READ')
+                                    hist = hist_file.Get(card.path_to_shape(bin, bkg))
+                                    new_rates[index_order.index(bin+'_'+bkg)] = str(hist.Integral())
                 new_line = 'rate\t'+'\t'.join(new_rates)+'\n'
             new_file.write(new_line)
         old_file.close()
@@ -155,7 +168,7 @@ class ModelDatacard(DatacardAdaptor) :
                 ## shifts. For mu these shifts are added linearly for each higgs (MOMENT=1). For pdf they are added in quad-
                 ## rature (MOMENT=2). In the datacards the absolute shifts are divided by the central value (added linearly)
                 ## to transform them into relative shifts. The difference in adding the uncertainties leads to a slightly
-                ## different treatment, in the transformation of abs->rel difference, esp for the -shift.  
+                ## different treatment, in the transformation of abs->rel difference, esp for the -shift.
                 value = model.central[key].effective()
                 lower = params[0].effective(1 if type == 'mu' else 2)
                 upper = params[1].effective(1 if type == 'mu' else 2)
@@ -165,34 +178,39 @@ class ModelDatacard(DatacardAdaptor) :
                         continue
                     if not (period in bin or '*' in bin) :
                         continue
-                    for proc_in_card in card.list_of_signals() :
-                        if proc_in_card == proc :
-                            ## first fill whole list with placeholders then replace with uncertainty numbers at right places
-                            if len(uncerts)==0 :
-                                for idx in range(len(index_order)) :
-                                    uncerts.append('-')
+                    if self.ana_type=="Hplus" :
+                        label = 'signal_'+decay+'_'+type+'_'+period
+                        if len(uncerts)==0 :
                             for idx in range(len(index_order)) :
-                                if idx == index_order.index(bin+'_'+proc) :
-                                    if type == 'mu' :
-                                        if  value>0 and lower/value!=1 :
-                                            if self.ana_type=="Hplus" :
-                                                ## uncertainty hardcoded added depending on mass - could be done nicer
-                                                uncerts[idx]=" \t\t %.3f " % (1.21 if params[0].masses['Hp'] < 165 else 1.32)
-                                            else:
+                                uncerts.append('-')
+                            for idx in range(len(index_order)) :
+                                for proc_in_card in card.list_of_signals() :
+                                    if idx == index_order.index(bin+'_'+proc_in_card) :
+                                        uncerts[idx]=" \t\t %.3f " % (1.21 if params[0].masses['Hp'] < 165 else 1.32)
+                    else :
+                        for proc_in_card in card.list_of_signals() :
+                            if proc_in_card == proc :
+                                ## first fill whole list with placeholders then replace with uncertainty numbers at right places
+                                if len(uncerts)==0 :
+                                    for idx in range(len(index_order)) :
+                                        uncerts.append('-')
+                                for idx in range(len(index_order)) :
+                                    if idx == index_order.index(bin+'_'+proc) :
+                                        if type == 'mu' :
+                                            if  value>0 and lower/value!=1 :
                                                 uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.-lower/value), 1.+upper/value)
-                                        else :
-                                            uncerts[idx]=" \t\t 0.1 "
-                                    if type == 'pdf' :
-                                        if value>0 :
-                                            if self.ana_type=="Hplus" :
-                                                ## uncertainty hardcoded added depending on mass - could be done nicer
-                                                uncerts[idx]=" \t\t %.3f " % (1.21 if params[0].masses['Hp'] < 165 else 1.32)
                                             else :
+                                                uncerts[idx]=" \t\t 0.1 "
+                                        if type == 'pdf' :
+                                            if value>0 :
                                                 uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.+lower/value), 1.+upper/value)
-                                        else :
-                                            uncerts[idx]=" \t\t 0.1 "
+                                            else :
+                                                uncerts[idx]=" \t\t 0.1 "
                 ## in case label is not yet in dict, add uncerts as they are. Otherwise update '-' entries in existing list
                 ## of uncerts
+                if self.ana_type=="Hplus" :
+                    uncert_appendix[label] = uncerts
+                    break
                 if not label in uncert_appendix :
                     uncert_appendix[label] = uncerts
                 else :
@@ -279,6 +297,9 @@ class ModelDatacard(DatacardAdaptor) :
                 template.create_templates(reduced_model, self.model_label, 1./float(model.tanb), morph_per_file[shape_file])
         ## adapt datacards to pick up proper signal rates
         print 'adapting datacard(s) :', path
+        if self.ana_type=="Hplus" :            
+            ## filename gets label self.model_label, histogram name remains as is
+            self.adapt_shapes_lines(path, card, 'tt_EWK_faketau', '', self.model_label) #background ugly hardcoded ...
         for key in model.central.keys() :
             ## expected key elements are (period,decay,proc)
             period = key[0]; decay = key[1]; proc = key[2]
@@ -291,6 +312,6 @@ class ModelDatacard(DatacardAdaptor) :
                 self.adapt_shapes_lines(path, card, proc, self.model_label, '')
             else :
                 ## filename gets label self.model_label, histogram name remains as is
-                self.adapt_shapes_lines(path, card, proc, '', self.model_label)      
+                self.adapt_shapes_lines(path, card, proc, '', self.model_label)
         self.adapt_rate_lines(path, card.list_of_signals(), model.save_float_conversion(model.mA))
         self.add_uncert_lines(path, model)

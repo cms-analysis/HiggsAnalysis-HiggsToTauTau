@@ -101,6 +101,7 @@ class ModelParams_BASE:
             model_params.masses[higgs] = self.query_masses(higgs, query)
             model_params.xsecs[higgs] = self.query_xsec(higgs, channel, query)
             model_params.brs[higgs] = self.query_br(higgs, decay, channel, query)
+        model_params.ttscale = self.query_ttscale(higgs, decay, channel, query)
         
     def query_masses(self, higgs, query):
         """
@@ -114,7 +115,9 @@ class ModelParams_BASE:
         """
         Determine the cross-section of the specified production channel for a given higgs.
         This function uses the mssm_xsec_tools.
-        Currently only 'ggH' and 'bbH' are supported
+        For NeutralMSSM currently only 'ggH' and 'bbH' are supported.
+        For Hhh currently only 'ggAToZhToLLTauTau', 'ggHTohhTo2Tau2B' and 'ggAToZhToLLBB' are supported.
+        For Hplus currently only 'HH' and 'HW' are supported.
         """
         channels = {'ggH':'ggF', 'bbH':'santander', 'ggAToZhToLLBB':'ggF','ggAToZhToLLTauTau':'ggF', 'ggHTohhTo2Tau2B':'ggF', 'HH':'HH', 'HW':'HW'} 
         if channel not in channels:
@@ -134,6 +137,7 @@ class ModelParams_BASE:
         This function uses the mssm_xsec_tools.
         For NeutralMSSM currently only htt, hbb and hmm are supported.
         For Hhh currently only Hhh*hbb*(hbb/htt/hmm) and AZh*hbb*ZLL and AZh*htt*Zbb are supported.
+        For Hplus currently only BR(t->Hp+b) and BR(Hp->tau+nu) are supported.
         """
         brname = {'tt':'BR', 'bb':'BR-bb', 'mm':'BR-mumu', 'HTohhTo2Tau2B':'BR-hh', 'AToZhToLLTauTau':'BR-Zh', 'AToZhToLLBB':'BR-Zh', 'tHpb':'BR-tHpb', 'taunu':'BR-taunu'}
         if decay[1:] not in brname:
@@ -154,3 +158,17 @@ class ModelParams_BASE:
                return str(2*(1-query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['taunu']])*query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['taunu']]) 
         else : 
             return query['higgses'][higgs][brname[decay[1:]]]
+
+    def query_ttscale(self, higgs, decay, channel, query):
+        """
+        Determine the tt MC rescale factor for .
+        This function uses the hplus_xsec_tools.
+        Its only used for Hplus.
+        """
+        brname = {'tHpb':'BR-tHpb', 'taunu':'BR-taunu'}
+        if decay[1:] not in brname:
+            exit('ERROR: Decay channel \'%s\' not supported'%decay)
+        if self.ana_type=='Hplus':
+            return str((1-query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['taunu']])*(1-query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['taunu']]))
+        else : 
+            return str(1.0)

@@ -129,7 +129,7 @@ void compareLimitsWithBand(const char* filename, const char* channelstr, double 
 
   for(unsigned i=0; i<channels.size(); ++i){    
     /// observed
-    observed.push_back(get<TGraph>(inputFile, std::string(channels[i]).append("/observed").c_str()));
+    if(i==1) observed.push_back(get<TGraph>(inputFile, std::string(channels[i]).append("/observed").c_str()));
     ///expected
     expected.push_back(get<TGraph>(inputFile, std::string(channels[i]).append("/expected").c_str()));
     /// inner band
@@ -144,8 +144,8 @@ void compareLimitsWithBand(const char* filename, const char* channelstr, double 
   if((std::string(type) == std::string("mssm-xsec") || std::string(type) == std::string("mssm-tanb")) && log) canv->SetLogx(1); 
   canv->SetLogy(log);
   canv->cd();
-  canv->SetGridx(1);
-  canv->SetGridy(1);
+  // canv->SetGridx(1);
+//   canv->SetGridy(1);
 
   // for logx the label for x axis values below 100 needs to be slightly shifted to prevent 
   // the label from being printed into the canvas
@@ -180,8 +180,8 @@ void compareLimitsWithBand(const char* filename, const char* channelstr, double 
   }
   std::string y_title;
   if( std::string(type) == std::string("mssm-xsec") ){
-    if(ggH) y_title = std::string("95% CL limit on #sigma(gg#rightarrow#phi)#timesBR [pb]");
-    else y_title = std::string("95% CL limit on #sigma(gg#rightarrowbb#phi)#timesBR [pb]");
+    if(ggH) y_title = std::string("95% CL limit on #sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]");
+    else y_title = std::string("95% CL limit on #sigma#font[42]{(bb#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]");
   }
   else if(  std::string(type) == std::string("mssm-tanb")  ){
     y_title = std::string("#bf{tan#beta}");
@@ -215,9 +215,9 @@ void compareLimitsWithBand(const char* filename, const char* channelstr, double 
 
   if(addExpected){
     for(unsigned int idx=0; idx<expected.size(); ++idx){
-      expected[idx]->SetLineColor(idx==0 ? kRed : kRed+2);
+      expected[idx]->SetLineColor(idx==0 ? kBlack : kRed+2);
       expected[idx]->SetLineWidth(3);
-      expected[idx]->SetLineStyle(idx==0 ? 1 : 11);
+      expected[idx]->SetLineStyle(idx==0 ? 11 : 11);
       expected[idx]->Draw("L");
     }
   }
@@ -256,7 +256,7 @@ void compareLimitsWithBand(const char* filename, const char* channelstr, double 
   else{
     observed[0]->SetLineStyle(1);
     observed[0]->SetLineWidth(3.);
-    observed[0]->Draw("PLsame");
+    //observed[0]->Draw("PLsame");
   }
   /// setup the CMS Preliminary
   CMSPrelim(label, "", 0.145, 0.835);
@@ -271,20 +271,40 @@ void compareLimitsWithBand(const char* filename, const char* channelstr, double 
   if( std::string(type) == std::string("mssm-xsec") ) SMexpectation->Draw("PLsame");
 
   /// add the proper legend
-  TLegend* leg = new TLegend(0.45, 0.60, 0.90, 0.90);
+  TLegend* leg = new TLegend(0.35, 0.65, 0.90, 0.90);
+  if(std::string(type) == std::string("mssm-xsec")) leg = new TLegend(0.35, 0.70, 0.95, 0.90);
   leg->SetBorderSize( 0 );
   leg->SetFillStyle ( 1001 );
-  //leg->SetFillStyle ( 0 );
+  //leg->SetTextSize ( 0.025 );
   leg->SetFillColor (kWhite);
-  leg->SetHeader( "95% CL Limits" );
-  leg->AddEntry( observed[0] , "observed 14TeV/19.7fb^{-1}", "PL");
-  leg->AddEntry( expected[0] , "expected 14TeV/19.7fb^{-1}",  "L" );
-  leg->AddEntry( innerBand[0], "#pm 1#sigma expected" ,  "F" );
-  leg->AddEntry( outerBand[0], "#pm 2#sigma expected" ,  "F" );
-  if(addObserved) { leg->AddEntry( observed[1] , "observed 14TeV/300fb^{-1}",  "L" );}
-  if(addExpected) { leg->AddEntry( expected[1] , "expected 14TeV/300fb^{-1}",  "L" );}
-  if( std::string(type) == std::string("mssm-xsec") ) leg->AddEntry( SMexpectation, "h_{SM}(125 GeV) theory" ,  "P" );
+  //leg->SetHeader( "95% CL Limits" );
+  //leg->AddEntry( observed[0] , "observed 14TeV, 300/fb", "PL");
+  leg->AddEntry( expected[0] , "Expected 14TeV, 300/fb",  "L" );
+  leg->AddEntry( innerBand[0], "#pm 1#sigma Expected" ,  "F" );
+  leg->AddEntry( outerBand[0], "#pm 2#sigma Expected" ,  "F" );
   leg->Draw("same");
+  
+  TLegend* leg0 = new TLegend(0.18, 0.22, 0.78, 0.34);
+  leg0->SetBorderSize( 0 );
+  leg0->SetFillStyle ( 1001 );
+  //leg0->SetTextSize ( 0.025 );
+  leg0->SetFillColor (kWhite);
+  //leg0->AddEntry( observed[0] , "arXiv:1408.3316 observed (scaled to 14 TeV)",  "PL" );
+  if(addExpected) { 
+    leg0->AddEntry( expected[1] , "arXiv:1408.3316 expected",  "L" );
+    leg0->AddEntry((TObject*)0, "(8 TeV scaled to 14 TeV)", "");
+    //leg0->AddEntry((TObject*)0, "", "");
+  }
+  if(addObserved | addExpected) leg0->Draw("same");
+
+  TLegend* leg1 = new TLegend(0.18, 0.15, 0.78, 0.19);
+  leg1->SetBorderSize( 0 );
+  leg1->SetFillStyle ( 1001 );
+  //leg1->SetTextSize ( 0.025 );
+  leg1->SetFillColor (kWhite);
+  if( std::string(type) == std::string("mssm-xsec") && ggH)  leg1->AddEntry( SMexpectation, "gg #rightarrow h_{SM} (m_{H}=125 GeV, 14 TeV)" ,  "P" );
+  if( std::string(type) == std::string("mssm-xsec") && !ggH) leg1->AddEntry( SMexpectation, "bb #rightarrow h_{SM} (m_{H}=125 GeV, 14 TeV)" ,  "P" );
+  if(addObserved | addExpected) leg1->Draw("same");
   //canv.RedrawAxis("g");
   canv->RedrawAxis();
 
