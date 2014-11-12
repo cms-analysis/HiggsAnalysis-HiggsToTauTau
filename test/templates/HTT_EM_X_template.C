@@ -202,7 +202,6 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
   TH1F* ggH_SM125= refill((TH1F*)input->Get(TString::Format("%s/ggH_SM125"  , directory)), "ggH_SM125"); InitHist(ggH_SM125, "", "", kGreen+2, 1001);
   TH1F* qqH_SM125= refill((TH1F*)input->Get(TString::Format("%s/qqH_SM125"  , directory)), "qqH_SM125"); InitHist(qqH_SM125, "", "", kGreen+2, 1001);
   TH1F* VH_SM125 = refill((TH1F*)input->Get(TString::Format("%s/VH_SM125"   , directory)), "VH_SM125" ); InitHist(VH_SM125, "", "", kGreen+2, 1001);
-#endif
 #else
 #ifdef HWW_BG
   TH1F* ggH_hww= refill((TH1F*)input->Get(TString::Format("%s/ggH_hww125", directory)), "ggH_hww"); InitHist(ggH_hww  , "", "", kGreen + 2, 1001); ggH_hww->Scale(SIGNAL_SCALE);
@@ -221,6 +220,7 @@ HTT_EM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString 
 #endif
 #endif
 #endif
+
 #ifdef ASIMOV
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs_asimov", directory)), "data", true);
 #else
