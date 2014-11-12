@@ -162,6 +162,8 @@ def main() :
     print "# You are using the following configuration: "
     print "# --tanb                :", options.tanb
     print "# --parameter1          :", options.parameter1 #for the lowmH scenario this is the higgs/higgsino mass parameter; everywhere else its mass of A
+    print "# --ana_type            :", options.ana_type
+    print "# if ana_type == Hhh, only --morphing-htt_mt and --morphing-htt_et set for now despite printout below"
     print "# --morphing-htt_ee     : ", options.morphing_htt_ee
     print "# --morphing-htt_em     : ", options.morphing_htt_em
     print "# --morphing-htt_mm     : ", options.morphing_htt_mm
@@ -178,15 +180,21 @@ def main() :
     print "path = %s" % path
     label = '_{PARAMETER1}_{TANB}'.format(PARAMETER1=options.parameter1, TANB=options.tanb)
     ## mophing configuration
-    morph = {
-        'htt_ee'     : options.morphing_htt_ee,
-        'htt_em'     : options.morphing_htt_em,
-        'htt_mm'     : options.morphing_htt_mm,
-        'htt_mt'     : options.morphing_htt_mt,
-        'htt_et'     : options.morphing_htt_et,
-        'htt_tt'     : options.morphing_htt_tt,
-        'htaunu_had' : options.morphing_htaunu_had,
-        }
+    if options.ana_type=="Hhh" :
+        morph= {
+            'htt_mt'   : options.morphing_htt_mt,
+            'htt_et'   : options.morphing_htt_et,
+            } 
+    else :
+        morph = {
+            'htt_ee'     : options.morphing_htt_ee,
+            'htt_em'     : options.morphing_htt_em,
+            'htt_mm'     : options.morphing_htt_mm,
+            'htt_mt'     : options.morphing_htt_mt,
+            'htt_et'     : options.morphing_htt_et,
+            'htt_tt'     : options.morphing_htt_tt,
+            'htaunu_had' : options.morphing_htaunu_had,
+            }
     ## complete model for given mass and tanb value (including uncertainties)
     models = {}
     ## adaptor of the datacard for given mass and tanb value
@@ -203,6 +211,7 @@ def main() :
     else :
         neededParameter = options.parameter1   
         
+    print options.ana_type
     ## determine MODEL for given datacard.
     model = MODEL(float(neededParameter), float(options.tanb), options.modelname)
     match = re.compile('(?P<CHN>[a-zA-Z0-9]+)_[a-zA-Z0-9]+_[0-9]+_(?P<PER>[a-zA-Z0-9]+)')

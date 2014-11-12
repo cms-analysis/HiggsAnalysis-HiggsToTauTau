@@ -225,7 +225,7 @@ tt_processes = ZTT,TT,QCD,W,ZL,ZJ,VV
 blind
 
 periods = 8TeV
-channels = et mt tt 
+channels = et mt 
 
 em_categories_8TeV = 0 1 2 3 4
 et_categories_8TeV = 0 1 2

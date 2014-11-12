@@ -37,6 +37,9 @@ if not options.skip :
         system("limit.py --max-likelihood --stable --rMin %s --rMax %s %s" % (options.rMin, options.rMax, dir))
     if options.analysis == "mssm" :    
         system("limit.py --max-likelihood --stable --rMin %s --rMax %s --physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH;ggHRange=-5:5' %s" % (options.rMin, options.rMax, dir))
+    if options.analysis == "Hhh" :
+        system("limit.py --max-likelihood --stable --rMin %s --rMax %s --physics-model 'tmp=HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel' --physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohhTo2Tau2B$:r[1,-5,5];map=^.*/ggHTohhTo2Tau2B_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZhToLLBB(\d+\.*\d*)*$:AZhLLBB=AZhLLBB[1,-500,500];map=^.*/ggAToZhToLLTauTau(\d+\.*\d*)*$:AZhLLTauTau=AZhLLTauTau[1,-500,500];map=^.*/bbH(\d+\.*\d*)*$:bbH=bbH[1,-500,500] \' %s" %(options.rMin,options.rMax,dir))
+
 
 if options.analysis == "sm" :
     system("cp -v %s/out/mlfit.txt ./fitresults/mlfit_sm.txt" % dir)
@@ -57,6 +60,11 @@ if options.analysis == "mssm" :
     if not options.mm_discriminator :
         os.system("cp -v %s/../common/htt_mm.inputs-mssm-8TeV-0-msv.root ./root/htt_mm.inputs-mssm-8TeV-0.root" % (dir))
         os.system("cp -v %s/../common/htt_mm.inputs-mssm-7TeV-0-msv.root ./root/htt_mm.inputs-mssm-7TeV-0.root" % (dir))
+
+if options.analysis == "Hhh" :
+    system("cp -v %s/out/mlfit.txt ./fitresults/mlfit_Hhh.txt" % dir)
+    system("cp -v %s/*.txt ./datacards" % dir)
+    system("cp -v %s/../common/htt_*.input_8TeV.root ./root" % (dir))
     
     optcards = ""  
     for datacard in os.listdir("datacards"):
@@ -70,8 +78,9 @@ if options.analysis == "mssm" :
     system("combineCards.py -S %s > datacards/tmp.txt" % optcards)
     system("perl -pi -e 's/datacards//g' datacards/{DATACARD}".format(DATACARD="tmp.txt"))
     system("perl -pi -e 's/common/root/g' datacards/{DATACARD}".format(DATACARD="tmp.txt"))
-    system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/python/tanb_grid_new.py --model mhmodp --parameter1 {MA} --tanb {TANB} datacards/{PATH}".format(
+    system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/python/tanb_grid_new.py --ana-type {ANA} --model mhmodp --parameter1 {MA} --tanb {TANB} datacards/{PATH}".format(
         CMSSW_BASE=os.environ['CMSSW_BASE'],
+        ANA=options.analysis,
         MA=options.mA,
         TANB=options.tanb,
         PATH="tmp.txt"
