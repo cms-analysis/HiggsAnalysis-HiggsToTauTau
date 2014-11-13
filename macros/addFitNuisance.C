@@ -999,8 +999,8 @@ void fixBinErrors(TH1* histogram, bool silent = false)
     // CV: set empty bins to low binContent with uncertainty corresponding to single event weight,
     //     in order not to bias fit by including upward fluctuating bins, but excluding downward fluctuating bins from the fit
     double y_value = binContent;
-    if ( y_value < 1.e-4*avWeight ) {
-      y_value = 1.e-4*avWeight;
+    if ( y_value < 1.e-5*avWeight ) {
+      y_value = 1.e-5*avWeight;
     }
     if ( !silent ) {
       std::cout << "bin #" << iBin << " (x = " << histogram->GetBinCenter(iBin) << "): updating binContent " << binContent << " --> " << y_value << std::endl;
@@ -1202,8 +1202,8 @@ int addNuisance2(const std::string& inputFileName,
       // CV: set empty bins to low binContent with uncertainty corresponding to single event weight,
       //     in order not to bias fit by including upward fluctuating bins, but excluding downward fluctuating bins from the fit
       double y_value = binContent;
-      if ( y_value < 1.e-4*avWeight ) {
-	y_value = 1.e-4*avWeight;
+      if ( y_value < 1.e-5*avWeight ) {
+	y_value = 1.e-5*avWeight;
       }
       // CV: set binError to at least >= 1 avWeight,
       //     to account for empty bins as well as for fluctuations in event weights, e.g. in "stitched" W+jets sample
