@@ -12,16 +12,16 @@ mmt     signal                          BR_Htotautau                    1.057
 mmt     simulated                       CMS_th_trigger_mmt_8TeV         1.01
 mmt     signal                          CMS_th_sig_trigger_mmt_8TeV     1.02
     
-mmt     signal,simulated                CMS_th_eff_m_8TeV               1.04
+mmt     signal,simulated                CMS_th_eff_m_8TeV               1.05
 mmt     signal,simulated                CMS_th_eff_t_8TeV               1.06
 mmt     signal,simulated                CMS_th_scale_t_8TeV             1.03
 
 ## RM: at the moment this is uncorrelated wrt the rest of CMS. Should read CMS_scale_j
-mmt     signal                          CMS_th_scale_j_8TeV             0.98
-mmt     ttW                             CMS_th_scale_j_8TeV             0.98
-mmt     ttH                             CMS_th_scale_j_8TeV             0.98
-mmt     ZZ                              CMS_th_scale_j_8TeV             0.98
-mmt     WZ                              CMS_th_scale_j_8TeV             0.94
+mmt     signal                          CMS_th_scale_j_8TeV             1.01
+mmt     ttW                             CMS_th_scale_j_8TeV             1.01
+mmt     ttH                             CMS_th_scale_j_8TeV             1.01
+mmt     ZZ                              CMS_th_scale_j_8TeV             1.01
+mmt     WZ                              CMS_th_scale_j_8TeV             1.01
 
 ## limited MC statistics (as for emt, FIXME)
 mmt     ttZ                             CMS_th_mc_stats_ttZ_mmt_8TeV    1.18

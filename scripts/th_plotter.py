@@ -9,8 +9,10 @@ import sys
 import os
 from array import array
 from optparse import OptionParser
+from copy import deepcopy as dc
 
 ROOT.gStyle.SetOptStat(False)
+ROOT.gStyle.SetLegendBorderSize(0)
 
 def grab_tree(folder, mass = '125') : 
   '''
@@ -58,7 +60,9 @@ def get_values(tree, process) :
   
   g2sigma .SetLineColor(ROOT.kYellow)
   g1sigma .SetLineColor(ROOT.kGreen )
-  gCentral.SetLineColor(ROOT.kBlack )
+  gCentral.SetLineColor(ROOT.kRed   )
+
+#   gCentral.SetLineStyle(ROOT.kBlack )
   
   gCentral.SetMarkerStyle(8)
   
@@ -68,6 +72,26 @@ def get_values(tree, process) :
   
   return [g2sigma, g1sigma, gCentral]
 
+def build_legend(graphs, titles, options = None) :
+  
+  my_graphs = dc(graphs)
+  
+  if options : zipped = zip(my_graphs,graphs,titles,options)
+  else       : zipped = zip(my_graphs,graphs,titles)
+  
+  l1 = ROOT.TLegend(0.6,0.22,0.88,0.40)
+  l1.SetHeader('m_{H} = 125 GeV')
+  for entry in zipped : 
+    entry[0].SetLineWidth(2)
+    entry[0].SetFillColor(entry[1].GetLineColor())
+    import pdb ; pdb.set_trace()
+    if options : l1.AddEntry(entry[0],entry[2],entry[3])  
+    else       : l1.AddEntry(entry[0],entry[2])  
+
+  l1.SetFillColor(0)
+    
+  return l1
+   
 def multigraph(graphs, file_name, legend = False, logX = False) :
   '''
   reads a list of TGraph and plot them together.
@@ -99,7 +123,7 @@ def multigraph(graphs, file_name, legend = False, logX = False) :
   
   mg.Draw('AZP')
   
-  mg.SetTitle('CMS Preliminary tHq, H#rightarrow#tau#tau, 19.7 fb^{-1} at 8 TeV')
+  mg.SetTitle('CMS Preliminary tH, H#rightarrow#tau#tau, 19.7 fb^{-1} at 8 TeV')
   
   mg.GetYaxis().SetNdivisions(0)
   mg.GetYaxis().SetLabelSize(0)
@@ -107,9 +131,17 @@ def multigraph(graphs, file_name, legend = False, logX = False) :
   mg.SetMinimum(0.)
   mg.SetMaximum(3.)
   
-  mg.GetXaxis().SetRangeUser(-2.,50)
+  mg.GetXaxis().SetRangeUser(-2.,60)
   mg.GetXaxis().SetTitleOffset(1.4)
   mg.GetXaxis().SetTitle('95% CL Limit on (#sigma#timesBR)/(#sigma#timesBR)_{y_{t}=-1}')
+
+  if legend :
+    leg = build_legend(
+                       graphs[:3]                         ,
+                       ['1 #sigma band', '2 #sigma band','Expected'],
+                       ['f'            , 'f'            ,'l'       ],
+                       )
+    leg.Draw('sameAEPZ')
   
   c1.SaveAs(file_name)
 
@@ -157,4 +189,4 @@ if __name__ == '__main__' :
     graphs = do_category( folder, cat )
     graphs_tot.extend(graphs)
   
-  multigraph(graphs_tot, options.file_name)  
+  multigraph(graphs_tot, options.file_name, legend=True)  
