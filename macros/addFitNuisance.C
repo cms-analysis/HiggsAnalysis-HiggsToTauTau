@@ -332,8 +332,9 @@ double compIntegral(const TH1* histogram, double xMin, double xMax)
   }
   return integral;
 }
-TH1F* makeHist2(const std::string& histogramName, TH1F* histogram_original, double par0, double par1, int fitModel, double xMin_fit, double xMax_fit, double xMax_valid, int extrapolOption, 
-		double x0, double& sf, double k = 1, TH1F* template_central = 0, double* sf_central = 0, int verbosity = false)
+TH1F* makeHist2(const std::string& histogramName, TH1F* histogram_original, double par0, double par1, int fitModel, 
+		double xMin_fit, double xMax_fit, double xMax_valid, double xInfinitePoint, int extrapolOption, 
+		double x0, double& sf, double k = 1.0, TH1F* template_central = 0, double* sf_central = 0, int verbosity = false)
 {
   if ( verbosity ) {
     std::cout << "<makeHist2>:" << std::endl;
@@ -368,8 +369,10 @@ TH1F* makeHist2(const std::string& histogramName, TH1F* histogram_original, doub
   TH1F* histogram_fitted = (TH1F*)histogram_original->Clone(histogramName.c_str());
   histogram_fitted->Reset();
   if ( !histogram_fitted->GetSumw2N() ) histogram_fitted->Sumw2();
-  double integral_original = compIntegral(histogram_original, xMin_fit, TMath::Min(xMax_fit, xMax_valid));
-  double tempFit_integral = tempFit->Integral(xMin_fit, TMath::Min(xMax_fit, xMax_valid));
+  double xIntegral = TMath::Min(xMax_fit, xMax_valid);
+  if ( xIntegral > (0.99*xInfinitePoint) ) xIntegral = 0.99*xInfinitePoint;
+  double integral_original = compIntegral(histogram_original, xMin_fit, xIntegral);
+  double tempFit_integral = tempFit->Integral(xMin_fit, xIntegral);
   //std::cout << "integral: original = " << integral_original << ", fit = " << tempFit_integral << std::endl;
   sf = integral_original/tempFit_integral;
   //std::cout << "sf = " << sf << std::endl;
@@ -382,7 +385,7 @@ TH1F* makeHist2(const std::string& histogramName, TH1F* histogram_original, doub
     double binCenter   = xAxis->GetBinCenter(iBin);
     double binEdgeLow  = xAxis->GetBinLowEdge(iBin);
     double binEdgeHigh = xAxis->GetBinUpEdge(iBin);
-    if ( binCenter > xMin_fit && ((extrapolOption == 0 && binCenter < TMath::Max(xMax_fit, xMax_valid)) || binCenter < TMath::Min(xMax_fit, xMax_valid)) ) {
+    if ( binCenter > xMin_fit && binEdgeHigh < 0.99*xInfinitePoint && ((extrapolOption == 0 && binEdgeHigh < TMath::Max(xMax_fit, xMax_valid)) || binEdgeHigh < TMath::Min(xMax_fit, xMax_valid)) ) {
       if ( verbosity ) {
 	std::cout << "bin #" << iBin << " (x = " << histogram_fitted->GetBinCenter(iBin) << ": setting binContent = tempFit->Integral(binEdgeLow, binEdgeHigh)" << std::endl;
       }
@@ -392,8 +395,10 @@ TH1F* makeHist2(const std::string& histogramName, TH1F* histogram_original, doub
       if ( verbosity ) {
 	std::cout << "bin #" << iBin << " (x = " << histogram_fitted->GetBinCenter(iBin) << ": setting binContent = tempFit->Eval(xMax_valid)*(binEdgeHigh - binEdgeLow)" << std::endl;
       }
-      if ( k != 1. && template_central ) histogram_fitted->SetBinContent(iBin, k*sf*tempFit->Eval(TMath::Min(xMax_fit, xMax_valid))*(binEdgeHigh - binEdgeLow) - (k - 1.)*template_central->GetBinContent(iBin));
-      else histogram_fitted->SetBinContent(iBin, sf*tempFit->Eval(TMath::Min(xMax_fit, xMax_valid))*(binEdgeHigh - binEdgeLow));
+      double xEval = TMath::Min(xMax_fit, xMax_valid);
+      if ( xEval > (0.99*xInfinitePoint) ) xEval = 0.99*xInfinitePoint;
+      if ( k != 1. && template_central ) histogram_fitted->SetBinContent(iBin, k*sf*tempFit->Eval(xEval)*(binEdgeHigh - binEdgeLow) - (k - 1.)*template_central->GetBinContent(iBin));
+      else histogram_fitted->SetBinContent(iBin, sf*tempFit->Eval(xEval)*(binEdgeHigh - binEdgeLow));
     } else {
       if ( verbosity ) {
 	std::cout << "bin #" << iBin << " (x = " << histogram_fitted->GetBinCenter(iBin) << ": setting binContent = histogram_original->GetBinContent()" << std::endl;
@@ -1139,7 +1144,8 @@ int addNuisance2(const std::string& inputFileName,
   std::cout << " inputFile = " << inputFileName << ": directory = " << directory << "/" << process << std::endl;
   std::cout << " range = " << xMin_fit << ".." << xMax_fit << " (addVarBin = " << addVarBin << ")" << std::endl;
   std::cout << " fitModel = " << fitModel << std::endl;
-  
+  std::cout << " verbosity = " << verbosity << std::endl;
+
   if ( addVarBin ) {
     addVarBinNuisance(inputFileName, channel, process, sqrtS, label, directory, true, fitModel, xMin_fit, xMax_fit);
     return 1;
@@ -1310,8 +1316,8 @@ int addNuisance2(const std::string& inputFileName,
   double sf_central;
   TH1F* template_central = makeHist2(
           histogram_fine_binning->GetName(), histogram_fine_binning, par0_central, par1_central, fitModel, 
-	  xMin_fit, xMax_fit, TMath::Min(xMax_valid, xInfinitePoint_central), extrapolOption, x0, sf_central, verbosity);
-  double integral_central = compIntegral(template_central, xMin_fit, xMax_valid);
+	  xMin_fit, xMax_fit, xMax_valid, xInfinitePoint_central, extrapolOption, x0, sf_central, 1., 0, 0, verbosity);
+  double integral_central = compIntegral(template_central, xMin_fit, TMath::Min(xMax_valid, 0.99*xInfinitePoint_central));
 
   std::string nuisance1Name = process + "_" + "CMS_" + label + "1_" + directory + "_" + sqrtS + "_" + process;
   
@@ -1327,7 +1333,7 @@ int addNuisance2(const std::string& inputFileName,
       par1_shift1Up = par1_central + sf_EigenValue_shift1Up*EigenValues(0)*EigenVectors(1,0);
       checkForInfinitePoints2(fitModel, xMin_fit, xMax_valid, x0, "shift1Up", par0_shift1Up, par1_shift1Up, hasInfinitePoint_shift1Up, xInfinitePoint_shift1Up, true);
       sf_EigenValue_shift1Up *= 0.9;
-    } while ( hasInfinitePoint_shift1Up );
+    } while ( hasInfinitePoint_shift1Up && xInfinitePoint_shift1Up < (0.9*xInfinitePoint_central) );
     std::cout << "reducing shift1Up to avoid infinite point: sf_EigenValue_shift1Up = " << sf_EigenValue_shift1Up << std::endl;
   } else if ( errorOption == 2 ) {
     double par0_shift1Up_refitted, par1_shift1Up_refitted;
@@ -1341,8 +1347,8 @@ int addNuisance2(const std::string& inputFileName,
   double sf_shift1Up;
   TH1F* template_shift1Up = makeHist2(
           nuisance1Name + "Up", histogram_fine_binning, par0_shift1Up, par1_shift1Up, fitModel, 
-	  xMin_fit, xMax_fit, TMath::Min(xMax_valid, xInfinitePoint_shift1Up), extrapolOption, x0, sf_shift1Up, k, template_central, &sf_central, verbosity);
-  double integral_shift1Up = compIntegral(template_shift1Up, xMin_fit, xMax_valid);
+	  xMin_fit, xMax_fit, xMax_valid, xInfinitePoint_shift1Up, extrapolOption, x0, sf_shift1Up, k, template_central, &sf_central, verbosity);
+  double integral_shift1Up = compIntegral(template_shift1Up, xMin_fit, TMath::Min(xMax_valid, 0.99*xInfinitePoint_shift1Up));
 
   double par0_shift1Down = par0_central - EigenValues(0)*EigenVectors(0,0);
   double par1_shift1Down = par1_central - EigenValues(0)*EigenVectors(1,0);
@@ -1356,7 +1362,7 @@ int addNuisance2(const std::string& inputFileName,
       par1_shift1Down = par1_central - sf_EigenValue_shift1Down*EigenValues(0)*EigenVectors(1,0);
       checkForInfinitePoints2(fitModel, xMin_fit, xMax_valid, x0, "shift1Down", par0_shift1Down, par1_shift1Down, hasInfinitePoint_shift1Down, xInfinitePoint_shift1Down, true);
       sf_EigenValue_shift1Down *= 0.9;
-    } while ( hasInfinitePoint_shift1Down );
+    } while ( hasInfinitePoint_shift1Down  && xInfinitePoint_shift1Down < (0.9*xInfinitePoint_central) );
     std::cout << "reducing shift1Down to avoid infinite point: sf_EigenValue_shift1Down = " << sf_EigenValue_shift1Down << std::endl;
   } else if ( errorOption == 2 ) {
     double par0_shift1Down_refitted, par1_shift1Down_refitted;
@@ -1370,8 +1376,8 @@ int addNuisance2(const std::string& inputFileName,
   double sf_shift1Down;
   TH1F* template_shift1Down = makeHist2(
           nuisance1Name + "Down", histogram_fine_binning, par0_shift1Down, par1_shift1Down, fitModel, 
-	  xMin_fit, xMax_fit, TMath::Min(xMax_fit, xInfinitePoint_shift1Down), extrapolOption, x0, sf_shift1Down, k, template_central, &sf_central, verbosity);
-  double integral_shift1Down = compIntegral(template_shift1Down, xMin_fit, xMax_valid);
+	  xMin_fit, xMax_fit, xMax_fit, xInfinitePoint_shift1Down, extrapolOption, x0, sf_shift1Down, k, template_central, &sf_central, verbosity);
+  double integral_shift1Down = compIntegral(template_shift1Down, xMin_fit, TMath::Min(xMax_fit, 0.99*xInfinitePoint_shift1Down));
   
   std::string nuisance2Name = process + "_" + "CMS_" + label + "2_" + directory + "_" + sqrtS + "_" + process;
 
@@ -1387,7 +1393,7 @@ int addNuisance2(const std::string& inputFileName,
       par1_shift2Up = par1_central + sf_EigenValue_shift2Up*EigenValues(1)*EigenVectors(1,1);
       checkForInfinitePoints2(fitModel, xMin_fit, xMax_valid, x0, "shift2Up", par0_shift2Up, par1_shift2Up, hasInfinitePoint_shift2Up, xInfinitePoint_shift2Up, true);
       sf_EigenValue_shift2Up *= 0.9;
-    } while ( hasInfinitePoint_shift2Up );
+    } while ( hasInfinitePoint_shift2Up  && xInfinitePoint_shift2Up < (0.9*xInfinitePoint_central) );
     std::cout << "reducing shift2Up to avoid infinite point: sf_EigenValue_shift2Up = " << sf_EigenValue_shift2Up << std::endl;
   } else if ( errorOption == 2 ) {
     double par0_shift2Up_refitted, par1_shift2Up_refitted;
@@ -1402,8 +1408,8 @@ int addNuisance2(const std::string& inputFileName,
   double sf_shift2Up;
   TH1F* template_shift2Up = makeHist2(
           nuisance2Name + "Up", histogram_fine_binning, par0_shift2Up, par1_shift2Up, fitModel, 
-	  xMin_fit, xMax_fit, TMath::Min(xMax_valid, xInfinitePoint_shift2Up), extrapolOption, x0, sf_shift2Up, k, template_central, &sf_central, verbosity);
-  double integral_shift2Up = compIntegral(template_shift2Up, xMin_fit, xMax_valid);
+	  xMin_fit, xMax_fit, xMax_valid, xInfinitePoint_shift2Up, extrapolOption, x0, sf_shift2Up, k, template_central, &sf_central, verbosity);
+  double integral_shift2Up = compIntegral(template_shift2Up, xMin_fit, TMath::Min(xMax_valid, 0.99*xInfinitePoint_shift2Up));
 
   double par0_shift2Down = par0_central - EigenValues(1)*EigenVectors(0,1);
   double par1_shift2Down = par1_central - EigenValues(1)*EigenVectors(1,1);
@@ -1417,7 +1423,7 @@ int addNuisance2(const std::string& inputFileName,
       par1_shift2Down = par1_central - sf_EigenValue_shift2Down*EigenValues(1)*EigenVectors(1,1);
       checkForInfinitePoints2(fitModel, xMin_fit, xMax_valid, x0, "shift2Down", par0_shift2Down, par1_shift2Down, hasInfinitePoint_shift2Down, xInfinitePoint_shift2Down, true);
       sf_EigenValue_shift2Down *= 0.9;
-    } while ( hasInfinitePoint_shift2Down );
+    } while ( hasInfinitePoint_shift2Down && xInfinitePoint_shift2Down < (0.9*xInfinitePoint_central) );
     std::cout << "reducing shift2Down to avoid infinite point: sf_EigenValue_shift2Down = " << sf_EigenValue_shift2Down << std::endl;
   } else if ( errorOption == 2 ) {
     double par0_shift2Down_refitted, par1_shift2Down_refitted;
@@ -1432,8 +1438,8 @@ int addNuisance2(const std::string& inputFileName,
   double sf_shift2Down;
   TH1F* template_shift2Down = makeHist2(
 	  nuisance2Name + "Down", histogram_fine_binning, par0_shift2Down, par1_shift2Down, fitModel, 
-	  xMin_fit, xMax_fit, TMath::Min(xMax_valid, xInfinitePoint_shift2Down), extrapolOption, x0, sf_shift2Down, k, template_central, &sf_central, verbosity);
-  double integral_shift2Down = compIntegral(template_shift2Down, xMin_fit, xMax_valid);
+	  xMin_fit, xMax_fit, xMax_valid, xInfinitePoint_shift2Down, extrapolOption, x0, sf_shift2Down, k, template_central, &sf_central, verbosity);
+  double integral_shift2Down = compIntegral(template_shift2Down, xMin_fit, TMath::Min(xMax_valid, 0.99*xInfinitePoint_shift2Down));
 
   double integral_orgiginal = compIntegral(histogram_fine_binning, xMin_fit, xMax_valid);
   std::cout << "Integrals:" 
