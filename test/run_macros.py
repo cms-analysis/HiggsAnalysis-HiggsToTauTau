@@ -6,8 +6,8 @@ import os
 parser = OptionParser(usage="usage: %prog [options]",
                       description="Script to run all macros to create postfit plots. Macros have to be prodiced before hand and are expected to be located in the test directory.")
 ## direct options
-parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
-parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string", help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
+parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm", "Hhh"])
+parser.add_option("-p", "--periods", dest="periods", default="8TeV", type="string", help="List of run periods for which the datacards are to be copied. [Default: \"8TeV\"]")
 parser.add_option("--add-mutau-soft", dest="add_mutau_soft", action="store_true", default=False, help="Add the soft categories to the mt channel [Default: False]")
 parser.add_option("-c", "--config", dest="config", default="", type="string", help="Additional configuration file to be used for the channels, periods and categories. [Default: '']")
 ## check number of arguments; in case print usage
@@ -95,6 +95,15 @@ log = {
     ("tt", "14") : ["false", "true"],
     ("mm", "8") : ["false", "true"],
     ("mm", "9") : ["false", "true"],
+    },
+    'Hhh' :
+    {
+    ("et", "0") : ["false","true"],
+    ("et", "1") : ["false","true"],
+    ("et", "2") : ["false","true"],
+    ("mt", "0") : ["false","true"],
+    ("mt", "1") : ["false","true"],
+    ("mt", "2") : ["false","true"],
     }
     }
 
@@ -175,6 +184,15 @@ max = {
     ("tt", "14") : ["-1.", "-1"],
     ("mm", "8") :  ["-1.", "-1"],
     ("mm", "9") :  ["-1.", "-1"],
+    },
+    'Hhh' :
+    {
+    ("et", "0") : ["-1.", "-1"],
+    ("et", "1") : ["-1.", "-1"],
+    ("et", "2") : ["-1.", "-1"],
+    ("mt", "0") : ["-1.", "-1"],
+    ("mt", "1") : ["-1.", "-1"],
+    ("mt", "2") : ["-1.", "-1"],
     }
     }
 
@@ -255,6 +273,15 @@ min = {
     ("tt", "14") : ["0.", "3e-3"],
     ("mm", "8") : ["0.", "1e-3"],
     ("mm", "9") : ["0.", "1e-3"],
+    },
+    'Hhh' :
+    {
+    ("et", "0") : ["0.","1e-4"],
+    ("et", "1") : ["0.","1e-4"],
+    ("et", "2") : ["0.","1e-4"],
+    ("mt", "0") : ["0.","1e-4"],
+    ("mt", "1") : ["0.","1e-4"],
+    ("mt", "2") : ["0.","1e-4"],
     }
     }
 

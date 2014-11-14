@@ -8,12 +8,12 @@ parser = OptionParser(usage="usage: %prog [options]",
                       description="Script to produce postfit plos from a set of inputs cards (datacards), input histograms (root) and maximum likelihood fits for niussance parameter pulls (fitresults)")
 ## direct options
 parser.add_option("-f", "--fitresults", dest="fitresults", default="fitresults/mlfit_{ANALYSIS}.txt", type="string", help="Path to the pulls of the maximum likelihood fit. [Default: \"fitresults/mlfit_{ANALYSIS}.txt\"]")
-parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
+parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm", "Hhh"])
 parser.add_option("-y", "--yields", dest="yields", default="1", type="int", help="Shift yield uncertainties. [Default: '1']")
 parser.add_option("-s", "--shapes", dest="shapes", default="1", type="int", help="Shift shape uncertainties. [Default: '1']")
 parser.add_option("--shapes-mm-special", dest="shapes_mm_special", default="0", type="int", help="Shift shape uncertainties in the mm channel. This option is needed to make an estimate on the additional stat. uncertainties in the mm channel when using the msv distribution instead of the actual 2-d discriminator folded to 1 dimonesion, which goes into hte limit calculation in the MSSM analysis. This option automatically switches the option --shapes to 0, as this option is not applicable in this case. [Default: '0']")
-parser.add_option("--mA", dest="mA", default="160", type="float", help="Mass of pseudoscalar mA only needed for mssm. [Default: '160']")
-parser.add_option("--tanb", dest="tanb", default="8", type="float", help="Tanb only needed for mssm. [Default: '8']")
+parser.add_option("--mA", dest="mA", default="300", type="float", help="Mass of pseudoscalar mA only needed for mssm. [Default: '300']")
+parser.add_option("--tanb", dest="tanb", default="2.5", type="float", help="Tanb only needed for mssm. [Default: '2.5']")
 parser.add_option("-u", "--uncertainties", dest="uncertainties", default="1", type="int", help="Set uncertainties of backgrounds. [Default: '1']")
 parser.add_option("-o", "--omit", dest="omit", default="0", type="int", help="Do not include uncertainty from original file. [Default: '0']")
 parser.add_option("--asimov", dest="asimov", action="store_true", default=False, help="Use asimov dataset for postfit-plots. [Default: 'False']")
@@ -101,6 +101,17 @@ class Analysis:
             return True
         return False
 
+    def signal_process_Hhh(self, process) :
+        if "ggHTohhTo2Tau2B" in process :
+            return True
+        if "ggAToZhToLLBB" in process :
+            return True
+        if "ggAToZhToLLTauTau" in process :
+            return True
+        if "bbH" in process :
+            return True
+        return False
+
     def drop_signal(self, category) :
         if options.no_zero_jet:
             if '0jet' in category:
@@ -122,7 +133,7 @@ class Analysis:
              ## prepare first lines of macro
              line = line.replace("$CMSSW_BASE", os.environ['CMSSW_BASE'])
              line = line.replace("$DEFINE_ASIMOV", "#define ASIMOV" if options.asimov else "")
-             line = line.replace("$DEFINE_MSSM", "#define MSSM" if self.analysis == "mssm" else "")
+             line = line.replace("$DEFINE_MSSM", "#define MSSM" if self.analysis == "Hhh" else "")
              line = line.replace("$DEFINE_DROP_SIGNAL", "#define DROP_SIGNAL" if self.drop_signal(self.category) else "")
              line = line.replace("$DEFINE_HWWBG", "#define HWW_BG" if not options.hwwsig else "")
              line = line.replace("$BLIND", "false" if config.unblind else "true")
@@ -132,7 +143,7 @@ class Analysis:
              line = line.replace("$CATEGORY", self.category)
              if self.drop_wjets_from_templates(output_name, self.category) :
                  line = line.replace("$WJets", "break;")
-             if(options.analysis=="mssm") :
+             if(options.analysis=="Hhh") :
                  line = line.replace("$MA" , str(int(options.mA)))
                  line = line.replace("$TANB", str(int(options.tanb)))
 	     if options.uncertainties and (options.yields or options.shapes):
@@ -144,8 +155,8 @@ class Analysis:
              word_arr=line.split("\n")
              uncertainties_set=[]
              for process_name in self.process_weight.keys():
-                 if self.signal_process(process_name) :
-                     cand_str = "${%s}%s" % (options.analysis.upper() , process_name)
+                 if self.signal_process_Hhh(process_name) :
+                     cand_str = "$%s" % process_name
                  else :
                      cand_str = "$%s" % process_name
                  output_cand = ""
@@ -198,8 +209,8 @@ class Analysis:
                                        self.analysis,self.category,". Please check."
 	     if options.shapes:
                for process_name in self.process_shape_weight.keys():
-                 if self.signal_process(process_name) :
-                     cand_str = "${%s}%s" % (options.analysis.upper() , process_name)
+                 if self.signal_process_Hhh(process_name) :
+                     cand_str = "$%s" % process_name
                  else :
                      cand_str = "$%s" % process_name
                  output_cand = ""
@@ -271,7 +282,7 @@ for chn in config.channels :
             if chn == "hbb" :
                 histfile = "{CHN}.input_{PER}-0.root".format(CHN=chn, PER=per)
             else :
-                histfile = "htt_{CHN}.input_{PER}.root".format(CHN=chn, PER=per) if options.analysis == "sm" else "htt_{CHN}.inputs-mssm-{PER}-0.root".format(CHN=chn, PER=per, MA=str(int(options.mA)), TANB=str(int(options.tanb)))
+                histfile = "htt_{CHN}.input_{PER}.root".format(CHN=chn, PER=per) if options.analysis == "sm" else "htt_{CHN}.input_{PER}.root".format(CHN=chn, PER=per, MA=str(int(options.mA)), TANB=str(int(options.tanb)))
                 if chn == "mm" :
                 ## there is one speciality for mm, which need special input files
                     histfile.replace(".root", "-svfit.root")
@@ -301,9 +312,10 @@ for chn in config.channels :
                 else:
                    plots = Analysis(options.analysis, histfile, config.categoryname[chn][per][config.categories[chn][per].index(cat)],
                                     process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
-                                    "templates/HTT_{CHN}_X_template.C".format(CHN=chn.upper()),
+                                    "templates/HTT_{CHN}_X_template_Hhh.C".format(CHN=chn.upper()),
                                     "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per)
                                     )
             plots.run()
             scale_file=open("scales_{CHN}_{CAT}_{PER}.py".format(CHN=chn, CAT=cat, PER=per),'w')
             scale_file.write("scales="+str(plots.scale_output))
+

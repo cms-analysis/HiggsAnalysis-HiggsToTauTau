@@ -206,10 +206,10 @@ def main() :
     old_file.close()
     
     ##if ana_type=="Hhh" mH has to be translated into mA  
-    if options.ana_type=="Hhh" : #mH has to be translated into mA  
-        neededParameter = mX_to_mA(card)
-    else :
-        neededParameter = options.parameter1   
+#    if options.ana_type=="Hhh" : #mH has to be translated into mA  
+#        neededParameter = mX_to_mA(card)
+#    else :
+    neededParameter = options.parameter1   
         
     print options.ana_type
     ## determine MODEL for given datacard.
