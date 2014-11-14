@@ -312,7 +312,7 @@ for chn in config.channels :
                 else:
                    plots = Analysis(options.analysis, histfile, config.categoryname[chn][per][config.categories[chn][per].index(cat)],
                                     process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
-                                    "templates/HTT_{CHN}_X_template_Hhh.C".format(CHN=chn.upper()),
+                                    "templates/HHH_{CHN}_X_template.C".format(CHN=chn.upper()),
                                     "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per)
                                     )
             plots.run()
