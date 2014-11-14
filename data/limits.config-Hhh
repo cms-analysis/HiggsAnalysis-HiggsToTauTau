@@ -225,7 +225,7 @@ tt_processes = ZTT,TT,QCD,W,ZL,ZJ,VV
 blind
 
 periods = 8TeV
-channels = et mt 
+channels = et mt tt
 
 em_categories_8TeV = 0 1 2 3 4
 et_categories_8TeV = 0 1 2
@@ -268,6 +268,6 @@ categories_sm = 0jet
 channels_mssm = em et mt mm
 categories_mssm = nobtag btag
 
-channels_Hhh = et mt 
+channels_Hhh = et mt tt
 categories_Hhh = 2jet0tag 2jet1tag 2jet2tag
 

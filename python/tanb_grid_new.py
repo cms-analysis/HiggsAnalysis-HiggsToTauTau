@@ -163,7 +163,7 @@ def main() :
     print "# --tanb                :", options.tanb
     print "# --parameter1          :", options.parameter1 #for the lowmH scenario this is the higgs/higgsino mass parameter; everywhere else its mass of A
     print "# --ana_type            :", options.ana_type
-    print "# if ana_type == Hhh, only --morphing-htt_mt and --morphing-htt_et set for now despite printout below"
+    print "# if ana_type == Hhh, only --morphing-htt_tt --morphing-htt_mt and --morphing-htt_et set for now despite printout below"
     print "# --morphing-htt_ee     : ", options.morphing_htt_ee
     print "# --morphing-htt_em     : ", options.morphing_htt_em
     print "# --morphing-htt_mm     : ", options.morphing_htt_mm
@@ -184,6 +184,7 @@ def main() :
         morph= {
             'htt_mt'   : options.morphing_htt_mt,
             'htt_et'   : options.morphing_htt_et,
+            'htt_tt'   : options.morphing_htt_tt,
             } 
     else :
         morph = {

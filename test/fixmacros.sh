@@ -1,3 +1,6 @@
+sed -i 's/HTT_TT_X/htt_tt_0_8TeV/g' htt_tt_0_8TeV.C
+sed -i 's/HTT_TT_X/htt_tt_1_8TeV/g' htt_tt_1_8TeV.C
+sed -i 's/HTT_TT_X/htt_tt_2_8TeV/g' htt_tt_2_8TeV.C
 sed -i 's/HTT_MT_X/htt_mt_0_8TeV/g' htt_mt_0_8TeV.C
 sed -i 's/HTT_MT_X/htt_mt_1_8TeV/g' htt_mt_1_8TeV.C
 sed -i 's/HTT_MT_X/htt_mt_2_8TeV/g' htt_mt_2_8TeV.C

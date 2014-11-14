@@ -19,7 +19,7 @@
 #include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 #include "$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
 
-static const float SIGNAL_SCALE = 1.;
+static const float SIGNAL_SCALE = 10.;
 
 $DEFINE_ASIMOV
 $DEFINE_DROP_SIGNAL
@@ -39,7 +39,7 @@ $DEFINE_MSSM
 static const bool BLIND_DATA = $BLIND; //false;
 static const bool FULLPLOTS = true; //true;
 static const bool CONVERVATIVE_CHI2 = false;
-static const float UPPER_EDGE = 1495; // 695; 1495;
+static const float UPPER_EDGE = 1005; // 695; 1495;
 
 float blinding_SM(float mass){ return (100<mass && mass<150); }
 float blinding_MSSM(float mass){ return (100<mass); }
@@ -164,9 +164,8 @@ void rescale(TH1F* hin, unsigned int idx)
 
 void 
 //HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string inputfile="root/$HISTFILE", const char* directory="muTau_$CATEGORY")
-HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., TString datacard="htt_mt_1_7TeV", string inputfile="root/$HISTFILE", const char* directory="muTau_$CATEGORY")
+HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string inputfile="root/$HISTFILE", const char* directory="muTau_$CATEGORY")
 {
-datacard="htt_mt_1_7TeV";
   // defining the common canvas, axes pad styles
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
 
@@ -210,7 +209,7 @@ datacard="htt_mt_1_7TeV";
   TH1F* ggAToZhToLLBB = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLBB$MA", directory)), "ggAToZHToLLBB"); InitSignal(ggAToZhToLLBB);ggAToZhToLLBB->Scale($TANB);
   TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA" , directory)), "bbH"); InitSignal(bbH); bbH->Scale($TANB);
 */
-  TH1F* ggHTohhTo2Tau2B    = refill((TH1F*)input2->Get(TString::Format("%s/ggHTohhTo2Tau2B$MA" , directory)), "ggHTohhTo2Tau2B"); InitHist(ggHTohhTo2Tau2B,"","",kGreen+2,1001);
+  TH1F* ggHTohhTo2Tau2B    = refill((TH1F*)input2->Get(TString::Format("%s/ggHTohhTo2Tau2B$MA" , directory)), "ggHTohhTo2Tau2B"); InitSignal(ggHTohhTo2Tau2B); ggHTohhTo2Tau2B->Scale(SIGNAL_SCALE);
   TH1F* ggAToZhToLLTauTau = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLTauTau$MA", directory)), "ggAToZHToLLTauTau"); InitHist(ggHTohhTo2Tau2B,"","",kGreen+2,1001);
   TH1F* ggAToZhToLLBB = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLBB$MA", directory)), "ggAToZHToLLBB"); InitHist(ggHTohhTo2Tau2B,"","",kGreen+2,1001);
   TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA" , directory)), "bbH"); InitHist(bbH,"","",kGreen+2);
@@ -218,19 +217,20 @@ datacard="htt_mt_1_7TeV";
 //  TH1F* ggH_SM125= refill((TH1F*)input->Get(TString::Format("%s/ggH_SM125"  , directory)), "ggH_SM125"); InitHist(ggH_SM125, "", "", kGreen+2, 1001);
  // TH1F* qqH_SM125= refill((TH1F*)input->Get(TString::Format("%s/qqH_SM125"  , directory)), "qqH_SM125"); InitHist(qqH_SM125, "", "", kGreen+2, 1001);
   //TH1F* VH_SM125 = refill((TH1F*)input->Get(TString::Format("%s/VH_SM125"   , directory)), "VH_SM125" ); InitHist(VH_SM125, "", "", kGreen+2, 1001);
-#else
+/*#else
 #ifndef DROP_SIGNAL
 //  TH1F* ggH    = refill((TH1F*)input->Get(TString::Format("%s/ggH125"  , directory)), "ggH"); InitSignal(ggH); ggH->Scale(SIGNAL_SCALE);
 //  TH1F* qqH    = refill((TH1F*)input->Get(TString::Format("%s/qqH125"  , directory)), "qqH"); InitSignal(qqH); qqH->Scale(SIGNAL_SCALE);
  // TH1F* VH     = refill((TH1F*)input->Get(TString::Format("%s/VH125"   , directory)), "VH" ); InitSignal(VH ); VH ->Scale(SIGNAL_SCALE);
 #endif
+*/
 #endif
 #ifdef ASIMOV
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs_asimov", directory)), "data", true);
 #else
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data");
 #endif
-  InitHist(data, "#bf{m_{#tau#tau} [GeV]}", "#bf{dN/dm_{#tau#tau} [1/GeV]}"); InitData(data);
+  InitHist(data, "#bf{m_{H} [GeV]}", "#bf{dN/dm_{H} [1/GeV]}"); InitData(data);
 
   TH1F* ref=(TH1F*)Fakes->Clone("ref");
   ref->Add(EWK1 );
@@ -257,12 +257,13 @@ datacard="htt_mt_1_7TeV";
   unscaled[5] = ggAToZhToLLTauTau->Integral();
   unscaled[6] = ggAToZhToLLBB->Integral();
   unscaled[7] = bbH  ->Integral();
-#else
+/*#else
 #ifndef DROP_SIGNAL
 //  unscaled[4] = ggH  ->Integral();
 //  unscaled[5] = qqH  ->Integral();
  // unscaled[6] = VH   ->Integral();
 #endif
+*/
 #endif
 
 
@@ -303,13 +304,16 @@ datacard="htt_mt_1_7TeV";
     rescale(Ztt  , 1);
 #ifdef MSSM
     rescale(ggHTohhTo2Tau2B  , 8); 
-    rescale(bbH  , 9);  
-#else
+    rescale(ggAToZhToLLTauTau,9);
+    rescale(ggAToZhToLLBB,10);
+    rescale(bbH  , 11);  
+/*#else
 #ifndef DROP_SIGNAL
 //    rescale(ggH  , 8); 
 //    rescale(qqH  , 9);  
  //   rescale(VH   ,10);  
 #endif
+*/
 #endif
   }
 
@@ -337,23 +341,25 @@ datacard="htt_mt_1_7TeV";
   scales[6]->SetBinContent(7,unscaled[6]>0 ? (ggAToZhToLLBB->Integral()/unscaled[6]-1.) : 0.);
   scales[7] = new TH1F("scales-bbH"  , "", 8, 0, 8);
   scales[7]->SetBinContent(8, unscaled[7]>0 ? (bbH  ->Integral()/unscaled[7]-1.) : 0.);
-#else
+/*#else
 #ifndef DROP_SIGNAL
-/*  scales[4] = new TH1F("scales-ggH"  , "", 7, 0, 7);
+  scales[4] = new TH1F("scales-ggH"  , "", 7, 0, 7);
   scales[4]->SetBinContent(5, unscaled[4]>0 ? (ggH  ->Integral()/unscaled[4]-1.) : 0.);
   scales[5] = new TH1F("scales-qqH"  , "", 7, 0, 7);
   scales[5]->SetBinContent(6, unscaled[5]>0 ? (qqH  ->Integral()/unscaled[5]-1.) : 0.);
   scales[6] = new TH1F("scales-VH"   , "", 7, 0, 7);
   scales[6]->SetBinContent(7, unscaled[6]>0 ? (VH   ->Integral()/unscaled[6]-1.) : 0.);
+
+#endif
 */
 #endif
-#endif
 
-#ifdef MSSM
+/*#ifdef MSSM
 //  qqH_SM125->Add(ggH_SM125);
  // VH_SM125->Add(qqH_SM125);
   //Fakes->Add(VH_SM125);
 #endif
+*/
   EWK1 ->Add(Fakes);
   EWK2 ->Add(EWK1 );
 #ifdef EXTRA_SAMPLES
@@ -364,7 +370,7 @@ datacard="htt_mt_1_7TeV";
 #endif
   ttbar->Add(EWK  );
   Ztt  ->Add(ttbar);
-  if(log){
+/*  if(log){
 #ifdef MSSM
     //ggH  ->Add(bbH);
 #else
@@ -373,6 +379,7 @@ datacard="htt_mt_1_7TeV";
   //  ggH  ->Add(qqH);
 #endif
 #endif
+
   }
   else{
 #ifdef MSSM    
@@ -386,6 +393,7 @@ datacard="htt_mt_1_7TeV";
 #endif
 #endif
   }
+*/
 
   /*
     Mass plot before and after fit
@@ -395,9 +403,9 @@ datacard="htt_mt_1_7TeV";
   canv->cd();
   if(log){ canv->SetLogy(1); }
 #if defined MSSM
-  if(!log){ data->GetXaxis()->SetRange(0, data->FindBin(345)); } else{ data->GetXaxis()->SetRange(0, data->FindBin(UPPER_EDGE)); };
+  if(!log){ data->GetXaxis()->SetRange(200, data->FindBin(UPPER_EDGE)); } else{ data->GetXaxis()->SetRange(200, data->FindBin(UPPER_EDGE)); };
 #else
-  data->GetXaxis()->SetRange(0, data->FindBin(345));
+  data->GetXaxis()->SetRange(200, data->FindBin(UPPER_EDGE));
 #endif
   data->SetNdivisions(505);
   data->SetMinimum(min);
@@ -507,7 +515,7 @@ datacard="htt_mt_1_7TeV";
 #ifdef MSSM
   TLegend* leg = new TLegend(0.53, 0.60, 0.95, 0.90);
   SetLegendStyle(leg);
-  leg->AddEntry(ggHTohhTo2Tau2B  , "h,A,H#rightarrow#tau#tau" , "L" );
+  leg->AddEntry(ggHTohhTo2Tau2B  , TString::Format("%.0f#timesH#rightarrowhh#rightarrow#tau#taubb",SIGNAL_SCALE) , "L" );
 #else
   TLegend* leg = new TLegend(0.52, 0.58, 0.92, 0.89);
   SetLegendStyle(leg);
@@ -587,7 +595,7 @@ datacard="htt_mt_1_7TeV";
   rat1->SetMinimum(-range);
   rat1->GetYaxis()->CenterTitle();
   rat1->GetYaxis()->SetTitle("#bf{Data/MC-1}");
-  rat1->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}");
+  rat1->GetXaxis()->SetTitle("#bf{m_{H} [GeV]}");
   rat1->Draw();
   zero->SetFillStyle(  3013);
   zero->SetFillColor(kBlack);
@@ -636,9 +644,9 @@ datacard="htt_mt_1_7TeV";
   if (edges[edges.size()-2]>1.0) { range = 1.5; }
   if (edges[edges.size()-2]>1.5) { range = 2.0; }
 #if defined MSSM
-  if(!log){ rat2->GetXaxis()->SetRange(0, rat2->FindBin(345)); } else{ rat2->GetXaxis()->SetRange(0, rat2->FindBin(UPPER_EDGE)); };
+  if(!log){ rat2->GetXaxis()->SetRange(200, rat2->FindBin(UPPER_EDGE)); } else{ rat2->GetXaxis()->SetRange(200, rat2->FindBin(UPPER_EDGE)); };
 #else
-  rat2->GetXaxis()->SetRange(0, rat2->FindBin(345));
+  rat2->GetXaxis()->SetRange(200, rat2->FindBin(UPPER_EDGE));
 #endif
   rat2->SetNdivisions(505);
   rat2->SetLineColor(kRed+ 3);
@@ -648,7 +656,7 @@ datacard="htt_mt_1_7TeV";
   rat2->SetMinimum(-range);
   rat2->GetYaxis()->SetTitle("#bf{Postfit/Prefit-1}");
   rat2->GetYaxis()->CenterTitle();
-  rat2->GetXaxis()->SetTitle("#bf{m_{#tau#tau} [GeV]}");
+  rat2->GetXaxis()->SetTitle("#bf{m_{H} [GeV]}");
   rat2->Draw();
   zero->SetFillStyle(  3013);
   zero->SetFillColor(kBlack);
@@ -669,9 +677,10 @@ datacard="htt_mt_1_7TeV";
   InitHist  (scales[2], "", "", TColor::GetColor(155,152,204), 1001);
   InitHist  (scales[3], "", "", TColor::GetColor(248,206,104), 1001);
 #ifndef DROP_SIGNAL
-  InitSignal(scales[4]);
-  InitSignal(scales[5]);
-  InitSignal(scales[6]);
+  InitHist(scales[4],"","",kGreen+2,1001);
+  InitHist(scales[5],"","",kGreen+2,1001);
+  InitHist(scales[6],"","",kGreen+2,1001);
+  InitHist(scales[7],"","",kGreen+2,1001);
 #endif
   scales[0]->Draw();
   scales[0]->GetXaxis()->SetBinLabel(1, "#bf{Fakes}");
@@ -683,10 +692,11 @@ datacard="htt_mt_1_7TeV";
   scales[0]->GetXaxis()->SetBinLabel(6, "#bf{ggAToZhToLLTauTau}"  );
   scales[0]->GetXaxis()->SetBinLabel(7, "#bf{ggAToZhToLLBB}"      );
   scales[0]->GetXaxis()->SetBinLabel(8, "#bf{bbH}");
-#else
+/*#else
   scales[0]->GetXaxis()->SetBinLabel(5, "#bf{ggH}"  );
   scales[0]->GetXaxis()->SetBinLabel(6, "#bf{qqH}"  );
   scales[0]->GetXaxis()->SetBinLabel(7, "#bf{VH}"   );
+*/
 #endif
   scales[0]->SetMaximum(+0.5);
   scales[0]->SetMinimum(-0.5);
@@ -697,12 +707,13 @@ datacard="htt_mt_1_7TeV";
   scales[3]->Draw("same");
 #ifdef MSSM
   scales[4]->Draw("same");
-#else
+/*#else
 #ifndef DROP_SIGNAL
   scales[4]->Draw("same");
   scales[5]->Draw("same");
   scales[6]->Draw("same");
 #endif
+*/
 #endif
   TH1F* zero_samples = (TH1F*)scales[0]->Clone("zero_samples"); zero_samples->Clear();
   zero_samples->SetBinContent(1,0.);
@@ -741,16 +752,19 @@ datacard="htt_mt_1_7TeV";
   Ztt  ->Write("Ztt"     );
 #ifdef MSSM
   ggHTohhTo2Tau2B  ->Write("ggHTohhTo2Tau2B"     );
+  ggAToZhToLLTauTau->Write("ggAToZhToLLTauTau");
+  ggAToZhToLLBB->Write("ggAToZhToLLBB");
   bbH  ->Write("bbH"     );
   //ggH_SM125->Write("ggH_SM125");
   //qqH_SM125->Write("qqH_SM125");
   //VH_SM125 ->Write("VH_SM125");
-#else
+/*#else
 #ifndef DROP_SIGNAL
  // ggH  ->Write("ggH"     );
   //qqH  ->Write("qqH"     );
  // VH   ->Write("VH"      );
 #endif
+*/
 #endif
   if(errorBand){
     errorBand->Write("errorBand");

@@ -6,7 +6,7 @@ import os
 parser = OptionParser(usage="usage: %prog [options]",
                       description="Script to run all macros to create postfit plots. Macros have to be prodiced before hand and are expected to be located in the test directory.")
 ## direct options
-parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm", "Hhh"])
+parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm,mssm or Hhh). Lower case is required. [Default: sm]", choices=["sm", "mssm", "Hhh"])
 parser.add_option("-p", "--periods", dest="periods", default="8TeV", type="string", help="List of run periods for which the datacards are to be copied. [Default: \"8TeV\"]")
 parser.add_option("--add-mutau-soft", dest="add_mutau_soft", action="store_true", default=False, help="Add the soft categories to the mt channel [Default: False]")
 parser.add_option("-c", "--config", dest="config", default="", type="string", help="Additional configuration file to be used for the channels, periods and categories. [Default: '']")
@@ -104,6 +104,10 @@ log = {
     ("mt", "0") : ["false","true"],
     ("mt", "1") : ["false","true"],
     ("mt", "2") : ["false","true"],
+    ("tt", "0") : ["false","true"],
+    ("tt", "1") : ["false","true"],
+    ("tt", "2") : ["false","true"],
+
     }
     }
 
@@ -193,6 +197,9 @@ max = {
     ("mt", "0") : ["-1.", "-1"],
     ("mt", "1") : ["-1.", "-1"],
     ("mt", "2") : ["-1.", "-1"],
+    ("tt", "0") : ["-1.", "-1"],
+    ("tt", "1") : ["-1.", "-1"],
+    ("tt", "2") : ["-1.", "-1"],
     }
     }
 
@@ -282,6 +289,9 @@ min = {
     ("mt", "0") : ["0.","1e-4"],
     ("mt", "1") : ["0.","1e-4"],
     ("mt", "2") : ["0.","1e-4"],
+    ("tt", "0") : ["0.","1e-4"],
+    ("tt", "1") : ["0.","1e-4"],
+    ("tt","2") : ["0.","1e-4"],
     }
     }
 
