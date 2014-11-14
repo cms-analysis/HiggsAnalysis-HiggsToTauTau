@@ -1,4 +1,4 @@
-#include "/afs/cern.ch/work/a/adewit/private/CMSSW_6_1_1/src/HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "../interface/HttStyles.h"
 
 void SetStyle()
 {

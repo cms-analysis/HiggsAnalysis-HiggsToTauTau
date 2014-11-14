@@ -17,6 +17,13 @@ submit.py --tanb+ LIMITS-HTohh-mhmodp/*/*
 #When running with option --no-prefit, only expected limits are calculated.
 submit.py --asymptotic --no-prefit --physics-model="Hhh" LIMITS-HTohh-ggHTohh/*/*
 
+#postfit plots
+cd HiggsAnalysis/HiggsToTauTau/test
+python mlfit_and_copy.py -a Hhh --mA 300 --tanb 2 $CMSSW_BASE/src/LIMITS-label/bbb/cmb/300
+python produce_macros_Hhh.py -a Hhh --mA 300 --tanb 2 --config ../data/limits.config-Hhh
+./fixmacros.sh
+python run_macros.py -a Hhh --config ../data/limits.config-Hhh
+
 #Make plots of model dependent 
 plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-mhmodp.py LIMITS-HTohh-mhmodp/mt ## Not yet working for limits from low tanb
 
