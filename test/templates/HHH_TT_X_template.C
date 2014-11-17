@@ -41,7 +41,7 @@ static const bool CONSERVATIVE_CHI2 = false;
 static const float UPPER_EDGE = 1005; // 695; 1495;
 
 float blinding_SM(float mass){ return (100<mass && mass<150); }
-float blinding_MSSM(float mass){ return (100<mass); }
+float blinding_MSSM(float mass){ return (200<mass && mass<600); }
 float maximum(TH1F* h, bool LOG=false){
   if(LOG){
     if(h->GetMaximum()>1000){ return 1000.*TMath::Nint(30*h->GetMaximum()/1000.); }
@@ -298,13 +298,14 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
  // VH_SM125->Add(qqH_SM125);
  // Fakes->Add(VH_SM125);
 //#endif
+  Fakes->Add(ttbar);
   EWK1 ->Add(Fakes);
   EWK2 ->Add(EWK1 );
 //EWK3 ->Add(EWK2 );
 //EWK  ->Add(EWK3 );
   EWK  ->Add(EWK2 );
-  ttbar->Add(EWK  );
-  Ztt  ->Add(ttbar);
+//  ttbar->Add(EWK  );
+  Ztt  ->Add(EWK);
   //if(log){
 //#ifdef MSSM
  //   ggH->Add(bbH);
@@ -354,9 +355,10 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   }
   if(log){
     Ztt  ->Draw("histsame");
-    ttbar->Draw("histsame");
+//    ttbar->Draw("histsame");
     EWK  ->Draw("histsame");
     Fakes->Draw("histsame");
+    ttbar->Draw("histsame");
 //#ifdef MSSM
 //    VH_SM125->Draw("histsame");
 //#endif
@@ -366,9 +368,10 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   else{
     ggHTohhTo2Tau2B  ->Draw("histsame");
     Ztt  ->Draw("histsame");
-    ttbar->Draw("histsame");
+//    ttbar->Draw("histsame");
     EWK  ->Draw("histsame");
     Fakes->Draw("histsame");
+    ttbar->Draw("histsame");
 #ifdef MSSM
     //VH_SM125->Draw("histsame");
 #endif
@@ -444,9 +447,9 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   leg->AddEntry(data , "Observed"                       , "LP");
 #endif
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
-  leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
   leg->AddEntry(EWK  , "Electroweak"                    , "F" );
   leg->AddEntry(Fakes, "QCD"                            , "F" );
+  leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
 /*#ifdef MSSM
   leg->AddEntry(VH_SM125, "SM H(125 GeV) #rightarrow #tau#tau", "F" );
 #endif

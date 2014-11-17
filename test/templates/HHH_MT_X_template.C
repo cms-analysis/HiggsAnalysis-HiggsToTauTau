@@ -42,7 +42,7 @@ static const bool CONVERVATIVE_CHI2 = false;
 static const float UPPER_EDGE = 1005; // 695; 1495;
 
 float blinding_SM(float mass){ return (100<mass && mass<150); }
-float blinding_MSSM(float mass){ return (100<mass); }
+float blinding_MSSM(float mass){ return (200<mass && mass<600); }
 float maximum(TH1F* h, bool LOG=false){
   if(LOG){
     if(h->GetMaximum()>1000){ return 1000.*TMath::Nint(30*h->GetMaximum()/1000.); }
@@ -210,9 +210,9 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA" , directory)), "bbH"); InitSignal(bbH); bbH->Scale($TANB);
 */
   TH1F* ggHTohhTo2Tau2B    = refill((TH1F*)input2->Get(TString::Format("%s/ggHTohhTo2Tau2B$MA" , directory)), "ggHTohhTo2Tau2B"); InitSignal(ggHTohhTo2Tau2B); ggHTohhTo2Tau2B->Scale(SIGNAL_SCALE);
-  TH1F* ggAToZhToLLTauTau = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLTauTau$MA", directory)), "ggAToZHToLLTauTau"); InitHist(ggHTohhTo2Tau2B,"","",kGreen+2,1001);
-  TH1F* ggAToZhToLLBB = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLBB$MA", directory)), "ggAToZHToLLBB"); InitHist(ggHTohhTo2Tau2B,"","",kGreen+2,1001);
-  TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA" , directory)), "bbH"); InitHist(bbH,"","",kGreen+2);
+  TH1F* ggAToZhToLLTauTau = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLTauTau$MA", directory)), "ggAToZHToLLTauTau"); InitSignal(ggAToZhToLLTauTau); ggAToZhToLLTauTau->Scale(SIGNAL_SCALE);
+  TH1F* ggAToZhToLLBB = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLBB$MA", directory)), "ggAToZHToLLBB"); InitSignal(ggAToZhToLLBB); ggAToZhToLLBB->Scale(SIGNAL_SCALE);
+  TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA" , directory)), "bbH"); InitSignal(bbH); bbH->Scale(SIGNAL_SCALE);
 
 //  TH1F* ggH_SM125= refill((TH1F*)input->Get(TString::Format("%s/ggH_SM125"  , directory)), "ggH_SM125"); InitHist(ggH_SM125, "", "", kGreen+2, 1001);
  // TH1F* qqH_SM125= refill((TH1F*)input->Get(TString::Format("%s/qqH_SM125"  , directory)), "qqH_SM125"); InitHist(qqH_SM125, "", "", kGreen+2, 1001);
@@ -228,7 +228,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #ifdef ASIMOV
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs_asimov", directory)), "data", true);
 #else
-  TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data");
+  TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data",true);
 #endif
   InitHist(data, "#bf{m_{H} [GeV]}", "#bf{dN/dm_{H} [1/GeV]}"); InitData(data);
 
@@ -360,6 +360,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   //Fakes->Add(VH_SM125);
 #endif
 */
+  Fakes->Add(ttbar);
   EWK1 ->Add(Fakes);
   EWK2 ->Add(EWK1 );
 #ifdef EXTRA_SAMPLES
@@ -368,8 +369,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #else
   EWK  ->Add(EWK2 );
 #endif
-  ttbar->Add(EWK  );
-  Ztt  ->Add(ttbar);
+  Ztt  ->Add(EWK);
 /*  if(log){
 #ifdef MSSM
     //ggH  ->Add(bbH);
@@ -429,9 +429,9 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   }
   if(log){
     Ztt  ->Draw("histsame");
-    ttbar->Draw("histsame");
     EWK  ->Draw("histsame");
     Fakes->Draw("histsame");
+    ttbar->Draw("histsame");
 #ifdef MSSM
     //VH_SM125->Draw("histsame");
 #endif   
@@ -445,9 +445,9 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
     ggHTohhTo2Tau2B  ->Draw("histsame");
 #endif
     Ztt  ->Draw("histsame");
-    ttbar->Draw("histsame");
     EWK  ->Draw("histsame");
     Fakes->Draw("histsame");
+    ttbar->Draw("histsame");
 #ifdef MSSM
     //VH_SM125->Draw("histsame");
 #endif   
@@ -535,9 +535,9 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   leg->AddEntry(data , "Observed"                       , "LP");
 #endif
   leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
-  leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
   leg->AddEntry(EWK  , "Electroweak"                    , "F" );
   leg->AddEntry(Fakes, "QCD"                            , "F" );
+  leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
 #ifdef MSSM
 //  leg->AddEntry(VH_SM125, "SM H(125 GeV) #rightarrow #tau#tau", "F" );
 #endif
