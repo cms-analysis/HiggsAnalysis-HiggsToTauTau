@@ -5,7 +5,7 @@ muTau_1jet1tag		signal,SM,ZTT,ZL,ZJ,TT,VV  	CMS_eff_m 				1.01
 muTau_1jet1tag		signal,SM,ZTT,VV  		CMS_eff_t_mutau_8TeV			1.08
 #muTau_1jet1tag		signal,SM 	          	CMS_eff_t_mssmHigh_mutau_8TeV		1.00
 muTau_1jet1tag		signal,SM,ZTT			CMS_scale_t_mutau_8TeV         		1.00
-muTau_1jet1tag      	signal,ggH_SM125	  	CMS_scale_j_8TeV 			0.99	
+muTau_1jet1tag      signal,SM,ZTT,ZJ,ZL,TT,VV    CMS_scale_j_8TeV				1.00
 muTau_1jet1tag      	TT			  	CMS_scale_j_8TeV 			0.92
 muTau_1jet1tag      	VV		  		CMS_scale_j_8TeV 			0.98
 muTau_1jet1tag      	ZL,ZJ		  		CMS_scale_j_8TeV 			0.98
