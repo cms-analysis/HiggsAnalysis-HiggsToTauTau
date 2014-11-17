@@ -165,7 +165,7 @@ if options.update_setup :
 
             unc = {"em": "CMS_scale_e_8TeV",
                    "et": "CMS_scale_t_etau_8TeV",
-                   "mt": "CMS_scale_t_mtau_8TeV",
+                   "mt": "CMS_scale_t_mutau_8TeV",
                    "tt": "CMS_scale_t_tautau_8TeV",
                    }[chn]
 
