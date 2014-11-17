@@ -158,24 +158,41 @@ if options.update_setup :
                 CHN=chn,
                 PER=per,
                 ))
-  ## apply horizontal template morphing for finer step sizes for limit calculation
-    ##em
-    if "em" in config.channels:
-        os.system("horizontal-morphing.py --categories='emu_1jet0tag,emu_1jet1tag,emu_2jet0tag,emu_2jet1tag,emu_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_e_8TeV' --masses='250,300' --step-size 10. -v {SETUP}/em/htt_em.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
-        os.system("horizontal-morphing.py --categories='emu_1jet0tag,emu_1jet1tag,emu_2jet0tag,emu_2jet1tag,emu_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_e_8TeV' --masses='300,350' --step-size 10. -v {SETUP}/em/htt_em.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
-    ##et
-    if "et" in config.channels:
-        os.system("horizontal-morphing.py --categories='eleTau_2jet0tag,eleTau_2jet1tag,eleTau_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_t_etau_8TeV' --masses='250,300' --step-size 10. -v {SETUP}/et/htt_et.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
-        os.system("horizontal-morphing.py --categories='eleTau_2jet0tag,eleTau_2jet1tag,eleTau_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_t_etau_8TeV' --masses='300,350' --step-size 10. -v {SETUP}/et/htt_et.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
-    ##mt
-    if "mt" in config.channels:
-        os.system("horizontal-morphing.py --categories='muTau_2jet0tag,muTau_2jet1tag,muTau_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_t_mutau_8TeV' --masses='250,300' --step-size 10. -v {SETUP}/mt/htt_mt.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
-        os.system("horizontal-morphing.py --categories='muTau_2jet0tag,muTau_2jet1tag,muTau_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_t_mutau_8TeV' --masses='300,350' --step-size 10. -v {SETUP}/mt/htt_mt.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
-    ##tt
-    if "tt" in config.channels:
-        ##os.system("horizontal-morphing.py --categories='tauTau_1jet0tag,tauTau_1jet1tag,tauTau_2jet0tag,tauTau_2jet1tag,tauTau_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_t_tautau_8TeV' --masses='250,300' --step-size 10. -v {SETUP}/tt/htt_tt.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
-        ##os.system("horizontal-morphing.py --categories='tauTau_1jet0tag,tauTau_1jet1tag,tauTau_2jet0tag,tauTau_2jet1tag,tauTau_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_t_tautau_8TeV' --masses='300,350' --step-size 10. -v {SETUP}/tt/htt_tt.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
-        os.system("horizontal-morphing.py --categories='tauTau_2jet0tag,tauTau_2jet1tag,tauTau_2jet2tag' --samples='bbH{MASS}' --uncerts='CMS_scale_t_tautau_8TeV' --masses='250,350' --step-size 10. -v {SETUP}/tt/htt_tt.inputs-Hhh-8TeV.root".format(SETUP=setup, MASS="{MASS}"))
+
+            ## apply horizontal template morphing for finer step sizes for limit calculation
+            if per != "8TeV":
+                continue
+
+            unc = {"em": "CMS_scale_e_8TeV",
+                   "et": "CMS_scale_t_etau_8TeV",
+                   "mt": "CMS_scale_t_mtau_8TeV",
+                   "tt": "CMS_scale_t_tautau_8TeV",
+                   }[chn]
+
+            massStrings = {"em": ["'250,300'", "'300,350'"],
+                           "et": ["'250,300'", "'300,350'"],
+                           "mt": ["'250,300'", "'300,350'"],
+                           "tt": ["'250,350'"],
+                           }[chn]
+
+            categoryPrefix = {"em": "emu",
+                              "et": "eleTau",
+                              "mt": "muTau",
+                              "tt": "tauTau",
+                              }[chn]
+            categoryList = ','.join(["%s_%s" % (categoryPrefix, cat) for cat in config.categoryname[chn][per]])
+
+            args = ["--categories='%s'" % categoryList,
+                    "--samples='bbH{MASS}'".format(MASS="{MASS}"),
+                    "--step-size 10. -v",
+                    "--uncerts='%s'" % unc,
+                    " {SETUP}/{CHN}/htt_{CHN}.inputs-Hhh-8TeV.root".format(SETUP=setup, CHN=chn),
+                    ]
+            for massString in massStrings:
+                cmd = " ".join(["horizontal-morphing.py", "--masses=%s" % massString] + args)
+                #print cmd
+                os.system(cmd)
+
 
     ## setup directory structure
     dir = "{CMSSW_BASE}/src/setups{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
@@ -285,12 +302,13 @@ if options.update_limits :
         for chn in config.channels:
             for per in config.periods:
                 if config.categories[chn][per]:
-                    os.system("setup-Hhh.py -i aux{INDEX}/{ANA}{ASIMOV} -o {DIR}/{ANA}{ASIMOV} -p '{PER}' -a Hhh -c '{CHN}' {MASSES}".format(
+                    os.system("setup-Hhh.py -i aux{INDEX}/{ANA}{ASIMOV} -o {DIR}/{ANA}{ASIMOV} -p '{PER}' -a Hhh -c '{CHN}' {CATS} {MASSES}".format(
                         INDEX=options.label,                
                         ANA=ana,
                         ASIMOV='-asimov' if options.blind_datacards else '',
                         DIR=dir,
                         PER=per,
                         CHN=chn,
+                        CATS="--Hhh-categories-%s='%s'" % (chn, " ".join(config.categories[chn][per])),
                         MASSES=' '.join(masses),
                         ))
