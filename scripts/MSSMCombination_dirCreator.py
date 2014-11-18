@@ -26,7 +26,7 @@ if os.path.exists("LIMITS-MSSMCombination{LABEL}".format(LABEL="" if options.lab
 os.system("mkdir LIMITS-MSSMCombination{LABEL}".format(LABEL="" if options.label=="" else "-"+options.label))
 os.system("cp -r {HTT}/common LIMITS-MSSMCombination{LABEL}/".format(HTT=options.path_htt, LABEL="" if options.label=="" else "-"+options.label))
 
-for mass in (90, 100, 120, 130, 140, 160, 180, 200, 250, 300, 350, 400, 500, 600, 700, 800, 900, 1000) :
+for mass in (90, 100, 120, 130, 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000) :
     os.system("mkdir LIMITS-MSSMCombination{LABEL}/{MASS}".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
     if os.path.exists("{HTT}/{MASS}/debug".format(HTT=options.path_htt, MASS=str(mass))) :
         for file in glob.glob("{HTT}/{MASS}/debug/*0.txt".format(HTT=options.path_htt, MASS=str(mass))) :
@@ -35,8 +35,9 @@ for mass in (90, 100, 120, 130, 140, 160, 180, 200, 250, 300, 350, 400, 500, 600
             os.system("cp {FILE} LIMITS-MSSMCombination{LABEL}/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="htt_"+str(tanb)+".txt"))
             if mass > 150 : #area without hplus
                 os.system("text2workspace.py -m {MASS} LIMITS-MSSMCombination{LABEL}/{MASS}/htt_{TANB}.txt -o LIMITS-MSSMCombination{LABEL}/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
-            elif float(tanb) < 1 and float(tanb) >= 10 :
+            elif float(tanb) < 1 or float(tanb) >= 10 :
                 os.system("text2workspace.py -m {MASS} LIMITS-MSSMCombination{LABEL}/{MASS}/htt_{TANB}.txt -o LIMITS-MSSMCombination{LABEL}/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
+            print "htt mass", mass, "tanb", tanb
         for file in glob.glob("{HPLUS}/{MASS}/debug/*0.txt".format(HPLUS=options.path_hplus, MASS=str(mass))) :
             if mass < 150 : #only interesting and allowed area 
                 tanbs=file.rstrip(".txt").split("_")
@@ -45,15 +46,13 @@ for mass in (90, 100, 120, 130, 140, 160, 180, 200, 250, 300, 350, 400, 500, 600
                     os.system("cp {FILE} LIMITS-MSSMCombination{LABEL}/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="hplus_"+str(tanb)+".txt"))
                     os.system("cp {HPLUS}/{MASS}/combine_histograms_hplushadronic_light.root_{MASS}_{TANB} LIMITS-MSSMCombination{LABEL}/{MASS}".format(HPLUS=options.path_hplus, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb).replace("00", "0")))
                     os.system("cp {HPLUS}/{MASS}/combine_histograms_hplushadronic_light.root LIMITS-MSSMCombination{LABEL}/{MASS}".format(HPLUS=options.path_hplus, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
-                    os.system("combineCards.py -S LIMITS-MSSMCombination{LABEL}/{MASS}/hplus_{TANB}.txt LIMITS-MSSMCombination{LABEL}/{MASS}/htt_{TANB}.txt > tmp_{TANB}.txt".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
-                    os.system("text2workspace.py -m {MASS} LIMITS-MSSMCombination{LABEL}/{MASS}/htt_{TANB}.txt -o LIMITS-MSSMCombination{LABEL}/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
+                    os.system("combineCards.py -S LIMITS-MSSMCombination{LABEL}/{MASS}/hplus_{TANB}.txt LIMITS-MSSMCombination{LABEL}/{MASS}/htt_{TANB}.txt > LIMITS-MSSMCombination{LABEL}/{MASS}/tmp_{TANB}.txt".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
+                    os.system("text2workspace.py -m {MASS} LIMITS-MSSMCombination{LABEL}/{MASS}/tmp_{TANB}.txt -o LIMITS-MSSMCombination{LABEL}/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
+                    print "hplus mass", mass, "tanb", tanb
                               
                                                                                         
 
         
-    #os.system("combineCards.py -S %s > tmp.txt" % optcards)
-#os.system("text2workspace.py -m {mass} tmp_{tanb}0.txt -o batch_{tanb}0.root")
-
 
     
     

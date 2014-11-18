@@ -2,7 +2,6 @@
 ## datacards blinded (bbb-asimov)
 python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM_taupt.py -a bbb --label='-yymmdd-mssm-taupt' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-yymmdd-mssm-taupt.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-taupt-yymmdd" --update-all --SMHasBackground --SMHasSignal  --blind-datacards --extra-templates='ggH_SM125,qqH_SM125,VH_SM125'
 
-
 ## datacards unblinded (bbb)
 setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-[mhmodm,mhmodp,mhmax-mu+200,lightstau1,tauphobic,lightstopmod] -a mssm -c 'mt et em mm tt' -p 8TeV --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 90 130 100-200:20 250-500:50 600-1000:100 
 setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-[mhmodm,mhmodp,mhmax-mu+200,lightstau1,tauphobic,lightstopmod] -a mssm -c 'mt et em mm tt' -p 7TeV 90 130 100-200:20 250-500:50 600-1000:100 
@@ -23,14 +22,14 @@ setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-bbH -p
 mkdir LIMITS-yymmdd-mssm/bbb-ggH-bbH
 cvs2local.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-ggH-bbH -p 8TeV -a mssm -c 'mt et em mm tt' --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 90 130 100-200:20 250-500:50 600-1000:100
 
+
 (2) launch ML-fit:
 ## choose ggH (default choice)
-lxb: submit.py --max-likelihood --options="--stable-new --physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH;ggHRange=-5:5'" LIMITS-yymmdd-mssm-taupt/bbb-mlfit/*/[160, 350, 500]
-lxq: submit.py --max-likelihood --options="--stable-new --physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH;ggHRange=-5:5'" LIMITS-yymmdd-mssm-taupt/bbb-mlfit/*/[160, 350, 500] --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
+lxb: submit.py --max-likelihood --stable-new --physics-model "ggH-mlfit" LIMITS-yymmdd-mssm-taupt/bbb-mlfit/*/[160, 350, 500]
+lxq: submit.py --max-likelihood --stable-new --physics-model "ggH-mlfit" LIMITS-yymmdd-mssm-taupt/bbb-mlfit/*/[160, 350, 500] --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
 ## choose bbH
-lxb: submit.py --max-likelihood --options="--stable-new --physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=bbH;bbHRange=-5:5'" LIMITS-yymmdd-mssm-taupt/bbb-mlfit/*/[160, 350, 500]
-lxq: submit.py --max-likelihood --options="--stable-new --physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=bbH;bbHRange=-5:5'" LIMITS-yymmdd-mssm-taupt/bbb-mlfit/*/[160, 350, 500] --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
-
+lxb: submit.py --max-likelihood --stable-new --physics-model "bbH-mlfit" LIMITS-yymmdd-mssm-taupt/bbb-mlfit/*/[160, 350, 500]
+lxq: submit.py --max-likelihood --stable-new --physics-model "bbH-mlfit" LIMITS-yymmdd-mssm-taupt/bbb-mlfit/*/[160, 350, 500] --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
 
 (2a) pruning 
 ## pruning after ML-fit
@@ -38,10 +37,10 @@ prune-uncerts-htt.py --mass=160  --blacklist='tauTau_nobtag_low_8TeV_QCD tauTau_
 
 (2b) postfit plots (in HiggsAnalysis/HiggsToTauTau/test)
 ## setup postfit plots beginning to the end
-python mlfit_and_copy.py -a mssm --skip --mA [160,350,500] --tanb [8,20,40] $CMSSW_BASE/src/LIMITS-yymmdd-mssm-taupt/bbb-mlfit/cmb/[160,350,500]
-python produce_macros.py -a mssm --mA [160,350,500] --tanb [8,20,40] --hww-signal --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-taupt-yymmdd
+python mlfit_and_copy.py -a mssm --skip --mA 350 --tanb 30 $CMSSW_BASE/src/LIMITS-yymmdd-mssm-taupt/bbb-mlfit/cmb/350
+python produce_macros.py -a mssm --mA 350 --tanb 30 --hww-signal --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-taupt-yymmdd
 python run_macros.py -a mssm --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-taupt-yymmdd
-python summary_plots.py -a mssm --mA [160,350,500] --tanb [8,20,40] --hww-signal --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-taupt-yymmdd
+python summary_plots.py -a mssm --mA 350 --tanb 30 --hww-signal --config $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-taupt-yymmdd
 
 
 (3) launch/collect/plot Goodness-of-fit
@@ -53,7 +52,6 @@ lxb: submit.py --goodness-of-fit --collect LIMITS-yymmdd-mssm-taupt/bbb-gof/*/[1
 lxq: submit.py --goodness-of-fit --collect LIMITS-yymmdd-mssm-taupt/bbb-gof/*/[160,350,500] --lxq --queue="-l h_vmem=4000M -l h_rt=12:00:00 -j y -o /dev/null"
 ## plotting
 plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py LIMITS-yymmdd-mssm-taupt/bbb-gof/ masspoints='350'
-
 
 
 (4) launch/collect/plot MSSMvsBG tanb
@@ -69,6 +67,7 @@ plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-[mhmax,mhmodm,mhmodp
 .x HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C+("limits_mA-tanb.root", "mm,em,tt,et,mt,cmb", true, false, "mssm-tanb", 0., 60., false, "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV", true, false)
 ## comparison plots (per category)
 .x HiggsAnalysis/HiggsToTauTau/macros/compareLimits.C+("limits_mA-tanb.root", "btag,nobtag,cmb", true, false, "mssm-tanb", 0., 60., false, "CMS Preliminary,  H#rightarrow#tau#tau,  4.9 fb^{-1} at 7 TeV, 19.8 fb^{-1} at 8 TeV", true, false)
+
 
 (5) launch/plot 1d limits
 ## launch ggH 1d limit

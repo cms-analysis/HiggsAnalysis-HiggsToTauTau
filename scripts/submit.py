@@ -79,8 +79,8 @@ parser.add_option_group(cgroup)
 ## MODEL OPTIONS
 ##
 dgroup = OptionGroup(parser, "MODEL OPTIONS", "These are the command line options that can be used to configure the submission of multi-dimensional fits or asymptotic limits that do require specific models. Specific models can be used for option --multidim-fit and for option --asymptotic. Possible model options for option --multidim-fit are: ggH-bbH (MSSM), ggH-qqH (SM), rV-rF (SM) and cV-cF (SM). Possible model options for option --asymptotic are: \"\" (SM), ggH (MSSM) and bbH (MSSM).")
-dgroup.add_option("--physics-model", dest="fitModel", default="", type="choice", choices=["cb-ctau", "cl-cq", "ggH-bbH", "ggH-qqH", "rV-rF", "cV-cF", "ggH", "bbH", "", "Hhh"],
-                  help="Define the model for which you want to submit the process with option --multidim-fit ('ggH-bbH' (MSSM), 'ggH-qqH' (SM) and 'cV-cF' (SM)) or option --asymptotic ('ggH' (MSSM), 'bbH' (MSSM) and '' (SM)). [Default: \"\"]")
+dgroup.add_option("--physics-model", dest="fitModel", default="", type="choice", choices=["cb-ctau", "cl-cq", "ggH-bbH", "ggH-qqH", "rV-rF", "cV-cF", "ggH", "bbH", "ggH-mlfit", "bbH-mlfit", "", "Hhh"],
+                  help="Define the model for which you want to submit the process with option --multidim-fit ('ggH-bbH' (MSSM), 'ggH-qqH' (SM) and 'cV-cF' (SM)) or option --asymptotic ('ggH' (MSSM), 'bbH' (MSSM) and '' (SM)) or option --max-likelihood ('ggH-mlfit' (MSSM), 'bbH-mlfit' (MSSM) and '' (SM)). [Default: \"\"]")
 parser.add_option_group(dgroup)
 ##
 ## LIKELIHOOD-SCAN OPTIONS
@@ -204,41 +204,48 @@ def model_config(model_name) :
     not known None is returned. 
     '''
     ## MSSM ggH versus bbH
-    if "ggH-bbH" in model_name :
+    if model_name=="ggH-bbH" :
         from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
         model = "--physics-model 'ggH-bbH=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
         opts  = "--physics-model-options 'modes=ggH,bbH;ggHRange=0:{GGH};bbHRange=0:{BBH}'".format(GGH=bounds["ggH-bbH",mass][0], BBH=bounds["ggH-bbH",mass][1])
     ## MSSM cb versus ctau
-    elif "cb-ctau" in model_name :
+    elif model_name=="cb-ctau" :
         from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
         model = "--physics-model 'cb-ctau=HiggsAnalysis.HiggsToTauTau.BSMHiggsCouplings:CbCtauMSSMHiggs'"
         opts  = "--physics-model-options 'cbRange=0:{CB};ctauRange=0:{CTAU}'".format(CB=bounds["cb-ctau",mass][0], CTAU=bounds["cb-ctau",mass][1])
     ## MSSM cl versus cq
-    elif "cl-cq" in model_name :
+    elif model_name=="cl-cq" :
         from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
         model = "--physics-model 'cl-cq=HiggsAnalysis.HiggsToTauTau.BSMHiggsCouplings:ClCqMSSMHiggs'"
         opts  = "--physics-model-options 'clRange=0:{CL};cqRange=0:{CQ}'".format(CL=bounds["cl-cq",mass][0], CQ=bounds["cl-cq",mass][1])
     ## SM ggH versus qqH (this configuration is optimized for mH=125)
-    elif "ggH-qqH" in model_name :
+    elif model_name=="ggH-qqH" :
         model = "--physics-model 'ggH-qqH=HiggsAnalysis.CombinedLimit.PhysicsModel:floatingXSHiggs'"
         opts  = "--physics-model-options 'modes=ggH,qqH ggHRange=0:4 qqHRange=0:4'"
     ## SM rV versus rF (this configuration is optimized for mH=125)
-    elif "rV-rF" in model_name :
+    elif model_name=="rV-rF" :
         model = "--physics-model 'rV-rF=HiggsAnalysis.CombinedLimit.PhysicsModel:rVrFXSHiggs'"
         opts  = "--physics-model-options 'rVRange=-3:5 rFRange=-2:4'"
     ## SM cV versus cF (this configuration is optimized for mH=125)
-    elif "cV-cF" in model_name :
+    elif model_name=="cV-cF" :
         model = "--physics-model 'cV-cF=HiggsAnalysis.CombinedLimit.HiggsCouplings:cVcF'"
         opts  = "--physics-model-options 'cVRange=0:3 cFRange=0:2'"   
     ## MSSM ggH while bbH is profiled (GGH-BOUND will be resolved in limit.create_card_workspace_with_physics_model)
-    elif "ggH" in model_name :
+    elif model_name=="ggH" :
         model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
         opts  = "--physics-model-options 'modes=ggH;ggHRange=0:GGH-BOUND'"
-    ## MSSM bbH while ggH is profiled (BBH-BOUND will be resolved in limit.create_card_workspace_with_physics_model)
-    elif "bbH" in model_name :
+    elif model_name=="ggH-mlfit" :
         model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
-        opts  = "--physics-model-options 'modes=bbH;bbHRange=0:BBH-BOUND'"    
-    elif "Hhh" in options.fitModel:
+        opts  = "--physics-model-options 'modes=ggH;ggHRange=-GGH-BOUND:GGH-BOUND'"
+    ## MSSM bbH while ggH is profiled (BBH-BOUND will be resolved in limit.create_card_workspace_with_physics_model)
+    elif model_name=="bbH" :
+        model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
+        opts  = "--physics-model-options 'modes=bbH;bbHRange=0:BBH-BOUND'"
+    elif model_name=="bbH-mlfit" :
+        model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
+        opts  = "--physics-model-options 'modes=bbH;bbHRange=-BBH-BOUND:BBH-BOUND'"   
+    ## Hhh while others are profiled  
+    elif model_name=="Hhh" :
         model = "--physics-model 'tmp=HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel'"             
         opts  = "--physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohhTo2Tau2B$:r[1,-5,5];map=^.*/ggHTohhTo2Tau2B_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZhToLLBB(\d+\.*\d*)*$:AZhLLBB=AZhLLBB[1,-500,500];map=^.*/ggAToZhToLLTauTau(\d+\.*\d*)*$:AZhLLTauTau=AZhLLTauTau[1,-500,500];map=^.*/bbH(\d+\.*\d*)*$:bbH=bbH[1,-500,500] \'"
     else:
@@ -360,12 +367,11 @@ if options.optGoodnessOfFit :
 if options.optMLFit :
     stable = ''
     hidefit= ''
-    if "Hhh" in options.fitModel:
-         model = "--physics-model 'tmp=HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel'"             
-         opts  = "--physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohhTo2Tau2B$:r[1,-5,5];map=^.*/ggHTohhTo2Tau2B_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZhToLLBB(\d+\.*\d*)*$:AZhLLBB=AZhLLBB[1,-500,500];map=^.*/ggAToZhToLLTauTau(\d+\.*\d*)*$:AZhLLTauTau=AZhLLTauTau[1,-500,500];map=^.*/bbH(\d+\.*\d*)*$:bbH=bbH[1,-500,500] \'"
-    else : 
-         model= ''
-         opts= ''
+    model= ''
+    opts= ''
+    if options.fitModel!="" :
+        model = model_config(options.fitModel)[0]
+        opts  = model_config(options.fitModel)[1]
     if options.stable :
         stable = '--stable'
     elif options.stable_old :
@@ -601,18 +607,9 @@ if options.optAsym :
     opts  = ""
     if options.noPrefit :
        cmd += " --no-prefit --expectedOnly"
-    ## MSSM ggH while bbH is profiled (GGH-BOUND will be resolved in limit.create_card_workspace_with_physics_model)
-    if "ggH" in options.fitModel :
-        model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
-        opts  = "--physics-model-options 'modes=ggH;ggHRange=0:GGH-BOUND'"
-    ## MSSM bbH while ggH is profiled (BBH-BOUND will be resolved in limit.create_card_workspace_with_physics_model)
-    elif "bbH" in options.fitModel :
-        model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
-        opts  = "--physics-model-options 'modes=bbH;bbHRange=0:BBH-BOUND'"
-    elif "Hhh" in options.fitModel:
-        model = "--physics-model 'tmp=HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel'"
-        #opts  = "--physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohh$:r[1,-5,5];map=^.*/ggHTohh_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZh(\d+\.*\d*)*$:AZh=AZh[1,-500,500] \'"        
-        opts  = "--physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohhTo2Tau2B$:r[1,-5,5];map=^.*/ggHTohhTo2Tau2B_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZhToLLBB(\d+\.*\d*)*$:AZhLLBB=AZhLLBB[1,-500,500];map=^.*/ggAToZhToLLTauTau(\d+\.*\d*)*$:AZhLLTauTau=AZhLLTauTau[1,-500,500];map=^.*/bbH(\d+\.*\d*)*$:bbH=bbH[1,-500,500] \'"
+    if options.fitModel!="" :
+        model  = model_config(options.fitModel)[0]
+        opts   = model_config(options.fitModel)[1]
 
     ## prepare calculation
     if options.interactive :
@@ -660,20 +657,9 @@ if options.optInject :
     if not options.optCollect :
         ## prepare options
         opts = options.opt
-        if options.MSSM :
-            ## MSSM ggH while bbH is profiled (GGH-BOUND will be resolved in limit.create_card_workspace_with_physics_model)
-            if "ggH" in options.fitModel :
-                model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
-                opts  = "--physics-model-options 'modes=ggH;ggHRange=0:GGH-BOUND'"
-            ## MSSM bbH while ggH is profiled (BBH-BOUND will be resolved in limit.create_card_workspace_with_physics_model)
-            elif "bbH" in options.fitModel :
-                model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
-                opts  = "--physics-model-options 'modes=bbH;bbHRange=0:BBH-BOUND'"
-        elif options.Hhh :       
-            if "Hhh" in options.fitModel:
-                model = "--physics-model 'tmp=HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel'"
-                #opts  = "--physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohh$:r[1,-5,5];map=^.*/ggHTohh_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZh(\d+\.*\d*)*$:AZh=AZh[1,-500,500] \'"        
-                opts  = "--physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohhTo2Tau2B$:r[1,-5,5];map=^.*/ggHTohhTo2Tau2B_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZhToLLBB(\d+\.*\d*)*$:AZhLLBB=AZhLLBB[1,-500,500];map=^.*/ggAToZhToLLTauTau(\d+\.*\d*)*$:AZhLLTauTau=AZhLLTauTau[1,-500,500];map=^.*/bbH(\d+\.*\d*)*$:bbH=bbH[1,-500,500] \'"
+        if options.fitModel!="" :
+            model  = model_config(options.fitModel)[0]
+            opts   = model_config(options.fitModel)[1]
         if not options.injected_method == "--max-likelihood" :
             opts+=" --observedOnly"
         else:
@@ -692,18 +678,9 @@ if options.optInject :
                     NAME=jobname, METHOD=options.injected_method, PATH=path, SUB=options.queue, NJOB=options.toys, NMASSES=options.nmasses, OPTS=opts, INJECTEDMASS=options.injected_mass, MASSES=' '.join(dirs[path]), LXQ="--lxq" if options.lxq else "", CONDOR="--condor" if options.condor else "", INJECTEDMH="--injected-mH" if options.injected_mH else "", MSSM="--MSSM" if options.MSSM else "", Hhh="--Hhh" if options.Hhh else "", MODEL=model))
     else :
         opts = options.opt
-        ## MSSM ggH while bbH is profiled (GGH-BOUND will be resolved in limit.create_card_workspace_with_physics_model)
-        if "ggH" in options.fitModel :
-            opts += " --physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
-            opts += " --physics-model-options 'modes=ggH;ggHRange=0:GGH-BOUND'"
-        ## MSSM bbH while ggH is profiled (BBH-BOUND will be resolved in limit.create_card_workspace_with_physics_model)
-        elif "bbH" in options.fitModel :
-            opts += " --physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
-            opts += " --physics-model-options 'modes=bbH;bbHRange=0:BBH-BOUND'"
-        elif "Hhh" in options.fitModel:
-            model = "--physics-model 'tmp=HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel'"
-            #opts  = "--physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohh$:r[1,-5,5];map=^.*/ggHTohh_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZh(\d+\.*\d*)*$:AZh=AZh[1,-500,500] \'"        
-            opts  = "--physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohhTo2Tau2B$:r[1,-5,5];map=^.*/ggHTohhTo2Tau2B_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZhToLLBB(\d+\.*\d*)*$:AZhLLBB=AZhLLBB[1,-500,500];map=^.*/ggAToZhToLLTauTau(\d+\.*\d*)*$:AZhLLTauTau=AZhLLTauTau[1,-500,500];map=^.*/bbH(\d+\.*\d*)*$:bbH=bbH[1,-500,500] \'"
+        if options.fitModel!="" :
+            opts += model_config(options.fitModel)[0]
+            opts += model_config(options.fitModel)[1]
 
         ## directories and masses per directory
         print "Collecting results"
