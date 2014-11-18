@@ -33,6 +33,8 @@ parser.add_option("--new-merging-threshold", dest="new_merging_threshold", defau
                   help="Threshold for the new merging by Andrew. [Default: \"0.5\"]")
 parser.add_option("--drop-normalize-bbb", dest="drop_normalize_bbb", default=False, action="store_true",
                   help="Normalize yield to stay constand when adding bbb shape uncertainties. [Default: False]")
+parser.add_option("--profile", dest="profile", default=False, action="store_true",
+                  help="Add extra signals bbH and A->Zh for profiling. [Default: False]")
 parser.add_option("-c", "--config", dest="config", default="",
                   help="Additional configuration file to be used for the setup [Default: \"\"]")
 
@@ -109,7 +111,7 @@ if options.reload :
     ## remove existing cash
     if os.path.exists("{CMSSW_BASE}/src/.setup{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)):
         os.system("rm -r {CMSSW_BASE}/src/.setup{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label))
-    os.system("cp -r {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup-Hhh {CMSSW_BASE}/src/.setup{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label))
+    os.system("cp -r {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/setup-Hhh{PROFILE} {CMSSW_BASE}/src/.setup{LABEL}".format(PROFILE="-profile" if options.profile else "", CMSSW_BASE=cmssw_base, LABEL=options.label))
     for chn in config.channels :
         print "... copy files for channel:", chn
         ## remove legacy
@@ -153,6 +155,8 @@ if options.update_setup :
         for per in config.periods :
             if directories[chn][per] == 'None' :
                 continue
+            if not options.profile :
+                continue
             os.system("scale2accept.py -i {SETUP} -c '{CHN}' -p '{PER}' -a 'Hhh' 90 100-200:20 130 250-400:50".format(
                 SETUP=setup,
                 CHN=chn,
@@ -164,8 +168,8 @@ if options.update_setup :
                 continue
 
             unc = {"em": "CMS_scale_e_8TeV",
-                   "et": "CMS_scale_t_etau_8TeV",
-                   "mt": "CMS_scale_t_mutau_8TeV",
+                   "et": "CMS_scale_t_etau_8TeV, CMS_scale_j_8TeV",
+                   "mt": "CMS_scale_t_mutau_8TeV, CMS_scale_j_8TeV",
                    "tt": "CMS_scale_t_tautau_8TeV",
                    }[chn]
 
