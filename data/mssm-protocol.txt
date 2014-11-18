@@ -19,11 +19,11 @@ cvs2local.py -i aux-yymmdd-mssm/bbb -o LIMITS-yymmdd-mssm/bbb-ggH-bbH -p 8TeV -a
 
 (2) launch ML-fit:
 ## choose ggH (default choice)
-lxb: submit.py --max-likelihood --options="--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH;ggHRange=-5:5'" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500]
-lxq: submit.py --max-likelihood --options="--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH;ggHRange=-5:5'" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500] --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
+lxb: submit.py --max-likelihood --stable-new --physics-model "ggH-mlfit" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500]
+lxq: submit.py --max-likelihood --stable-new --physics-model "ggH-mlfit" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500] --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
 ## choose bbH
-lxb: submit.py --max-likelihood --options="--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=bbH;bbHRange=-5:5'" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500]
-lxq: submit.py --max-likelihood --options="--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=bbH;bbHRange=-5:5'" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500] --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
+lxb: submit.py --max-likelihood --stable-new --physics-model "bbH-mlfit" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500]
+lxq: submit.py --max-likelihood --stable-new --physics-model "bbH-mlfit" LIMITS-yymmdd-mssm/bbb-mlfit/*/[160, 350, 500] --lxq --queue="-l h_cpu=12:00:00 -j y -o /dev/null"
 
 (2a) pruning
 ## pruning after ML-fit
