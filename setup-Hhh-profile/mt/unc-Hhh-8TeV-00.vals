@@ -1,0 +1,36 @@
+###########################################################################
+# unc.vals: specification of uncertainty values by category, sample, and uncertainty name
+muTau_2jet0tag			signal,SM 	            	lumi_8TeV            				1.026
+muTau_2jet0tag		 	signal,SM,ZTT,ZJ,ZL,TT,VV	CMS_eff_m 					1.01
+muTau_2jet0tag		 	signal,SM,ZTT,TT,VV 		CMS_eff_t_mutau_8TeV				1.08
+muTau_2jet0tag		 	signal,SM,ZTT			CMS_scale_t_mutau_8TeV 				1.00
+#muTau_2jet0tag		 	signal,SM           		CMS_eff_t_mssmHigh_mutau_8TeV		        1.00
+muTau_2jet0tag        	signal,SM,ZTT,ZJ,ZL,TT,VV    CMS_scale_j_8TeV				1.00
+muTau_2jet0tag	 		signal,SM   			CMS_htt_scale_met_8TeV				0.99
+muTau_2jet0tag	 		TT,ZL,ZJ		    	CMS_htt_scale_met_8TeV				1.01
+muTau_2jet0tag			signal 			CMS_eff_b_8TeV 					0.92
+muTau_2jet0tag			VV 				CMS_eff_b_8TeV 					0.99
+muTau_2jet0tag			TT 				CMS_eff_b_8TeV 					0.95
+muTau_2jet0tag			W 				CMS_eff_b_8TeV 					1.01
+muTau_2jet0tag			VV 				CMS_fake_b_8TeV 				0.99
+muTau_2jet0tag			ZTT,ZL,ZJ			CMS_htt_zttNorm_8TeV 				1.03
+muTau_2jet0tag			TT				CMS_htt_ttbarNorm_8TeV				1.10
+muTau_2jet0tag			W				CMS_htt_WNorm_mutau_2jet0tag_8TeV 		1.10
+muTau_2jet0tag			VV				CMS_htt_DiBosonNorm_8TeV			1.15 
+muTau_2jet0tag                 	QCD				CMS_htt_QCDSyst_mutau_2jet0tag_8TeV		1.20
+#muTau_2jet0tag                 	QCD				CMS_htt_QCDShape_mutau_2jet0tag_8TeV		1.00
+muTau_2jet0tag			ZJ				CMS_htt_ZJetFakeTau_mutau_2jet0tag_8TeV      	1.20
+muTau_2jet0tag			ZL				CMS_htt_ZLeptonFakeTau_mutau_8TeV		1.30
+muTau_2jet0tag			ZL			        CMS_htt_ZLScale_mutau_8TeV       		1.00
+#muTau_2jet0tag			W			        CMS_htt_WShape_mutau_2jet0tag_8TeV     		1.00
+#[tail]muTau_2jet0tag		W				tailShape					1.00
+muTau_2jet0tag                  ggH_SM125                       pdf_gg                                          1.097
+muTau_2jet0tag                  qqH_SM125                       pdf_qqbar                                       1.036
+muTau_2jet0tag                  VH_SM125                        pdf_qqbar                                       1.04
+muTau_2jet0tag                  ggH_SM125                       QCDscale_ggH                                    1.08
+muTau_2jet0tag                  qqH_SM125                       QCDscale_qqH                                    1.022
+muTau_2jet0tag                  VH_SM125                        QCDscale_VH                                     1.01
+muTau_2jet0tag                  qqH_SM125,VH_SM125              UEPS                                            1.05
+muTau_2jet0tag                  ggH_SM125                       UEPS                                            1.013
+
+

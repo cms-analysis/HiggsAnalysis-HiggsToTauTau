@@ -1,0 +1,37 @@
+###########################################################################
+# unc.vals: specification of uncertainty values by category, sample, and uncertainty name
+eleTau_2jet2tag		signal,SM	            	lumi_8TeV            			1.026
+eleTau_2jet2tag		signal,SM,ZTT,ZL,ZJ,TT,VV  	CMS_eff_e 				1.02
+eleTau_2jet2tag		signal,SM,ZTT,VV  		CMS_eff_t_etau_8TeV			1.08
+#eleTau_2jet2tag	signal,SM  			CMS_eff_t_mssmHigh_etau_8TeV            1.00
+eleTau_2jet2tag		signal,SM,ZTT			CMS_scale_t_etau_8TeV          		1.00
+eleTau_2jet1tag     signal,SM,ZTT,ZJ,ZL,TT,VV  	CMS_scale_j_8TeV				1.00
+eleTau_2jet2tag     signal,SM		  	CMS_htt_scale_met_8TeV			0.99
+eleTau_2jet2tag     TT,W,ZL,ZJ	  		CMS_htt_scale_met_8TeV			1.01
+eleTau_2jet2tag		signal,TT      		CMS_eff_b_8TeV                  	1.04
+eleTau_2jet2tag		VV        		    CMS_eff_b_8TeV                  	1.13
+eleTau_2jet2tag		W        		    CMS_eff_b_8TeV                  	0.68
+eleTau_2jet2tag		ZL        		    CMS_eff_b_8TeV                  	1.07
+eleTau_2jet2tag		W            		CMS_fake_b_8TeV                 	0.95
+eleTau_2jet2tag		ZTT,ZL,ZJ        		CMS_htt_zttNorm_8TeV 			1.03
+eleTau_2jet2tag		TT     		  		CMS_htt_ttbarNorm_8TeV 			1.10
+eleTau_2jet2tag		TT     		  		CMS_htt_ttbar_emb_8TeV 			1.14
+eleTau_2jet2tag	 	VV	          		CMS_htt_DiBosonNorm_8TeV 		1.15
+eleTau_2jet2tag		W	          		CMS_htt_WNorm_etau_2jet2tag_8TeV 	2.00
+eleTau_2jet2tag		ZTT	          		CMS_htt_extrap_ztt_etau_2jet2tag_8TeV	1.03
+eleTau_2jet2tag        	QCD	          		CMS_htt_QCDSyst_etau_2jet2tag_8TeV	2.00
+#eleTau_2jet2tag        	QCD	          		CMS_htt_QCDShape_etau_2jet2tag_8TeV	1.00
+eleTau_2jet2tag        	ZL	          		CMS_htt_ZLeptonFakeTau_etau_8TeV	1.20
+eleTau_2jet2tag        	ZJ	          		CMS_htt_ZJetFakeTau_etau_2jet2tag_8TeV	1.20
+eleTau_2jet2tag		ZL				CMS_htt_ZLScale_etau_8TeV		1.00
+#eleTau_2jet2tag		W				CMS_htt_WShape_etau_2jet2tag_8TeV	1.00
+#[tail]eleTau_2jet2tag	W				tailShape				1.00
+eleTau_2jet2tag      	ggH_SM125               	pdf_gg                                  1.097
+eleTau_2jet2tag      	qqH_SM125               	pdf_qqbar                               1.036
+eleTau_2jet2tag     	VH_SM125                	pdf_qqbar                               1.04
+eleTau_2jet2tag      	ggH_SM125               	QCDscale_ggH                            1.125
+eleTau_2jet2tag      	qqH_SM125               	QCDscale_qqH                            1.015
+eleTau_2jet2tag      	VH_SM125                	QCDscale_VH                             1.04
+eleTau_2jet2tag      	qqH_SM125,VH_SM125      	UEPS                                    1.007
+eleTau_2jet2tag      	ggH_SM125               	UEPS                                    0.946
+
