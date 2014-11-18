@@ -203,14 +203,14 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/ZTT"     , directory)), "ZTT"); InitHist(Ztt  , "", "", TColor::GetColor(248,206,104), 1001);
 #ifdef MSSM
   TH1F* ggHTohhTo2Tau2B    = refill((TH1F*)input2->Get(TString::Format("%s/ggHTohhTo2Tau2B$MA" , directory)), "ggHTohhTo2Tau2B"); InitSignal(ggHTohhTo2Tau2B); ggHTohhTo2Tau2B->Scale(SIGNAL_SCALE);
-  TH1F* ggAToZhToLLTauTau = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLTauTau$MA",directory)),"ggAToZhToLLTauTau"); InitHist(ggAToZhToLLTauTau,"","",kGreen+2,1001);
-  TH1F* ggAToZhToLLBB = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLBB$MA",directory)),"ggAToZhToLLBB"); InitHist(ggAToZhToLLBB,"","",kGreen+2,1001);
-  TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA" , directory)), "bbH"); InitHist(bbH,"","",kGreen+2,1001);
+  TH1F* ggAToZhToLLTauTau = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLTauTau$MA",directory)),"ggAToZhToLLTauTau"); InitSignal(ggAToZhToLLTauTau);
+  TH1F* ggAToZhToLLBB = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLBB$MA",directory)),"ggAToZhToLLBB"); InitSignal(ggAToZhToLLBB);
+  TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA" , directory)), "bbH"); InitSignal(bbH);
 #endif
 #ifdef ASIMOV
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs_asimov", directory)), "data", true);
 #else
-  TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data");
+  TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs", directory)), "data",true);
 #endif
   InitHist(data, "#bf{m_{H} [GeV]}", "#bf{dN/dm_{H} [1/GeV]}"); InitData(data);
 
