@@ -94,6 +94,8 @@ egroup.add_option("--stable-old", dest="stable_old", default=False, action="stor
                   help="Specify this option to run the max-likelihood fit calculation with option --stable-old. [Default: False]")
 egroup.add_option("--stable-new", dest="stable_new", default=False, action="store_true",
                   help="Specify this option to run the max-likelihood fit calculation with option --stable-new. [Default: False]")
+egroup.add_option("--hide-fitresult", dest="hide_fit",default=False,action="store_true",
+                  help="Hide fitresult from the prompt")
 parser.add_option_group(egroup)
 ##
 ## MULTIDIM-FIT OPTIONS
@@ -357,26 +359,35 @@ if options.optGoodnessOfFit :
 ##
 if options.optMLFit :
     stable = ''
+    hidefit= ''
+    if "Hhh" in options.fitModel:
+         model = "--physics-model 'tmp=HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel'"             
+         opts  = "--physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohhTo2Tau2B$:r[1,-5,5];map=^.*/ggHTohhTo2Tau2B_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZhToLLBB(\d+\.*\d*)*$:AZhLLBB=AZhLLBB[1,-500,500];map=^.*/ggAToZhToLLTauTau(\d+\.*\d*)*$:AZhLLTauTau=AZhLLTauTau[1,-500,500];map=^.*/bbH(\d+\.*\d*)*$:bbH=bbH[1,-500,500] \'"
+    else : 
+         model= ''
+         opts= ''
     if options.stable :
         stable = '--stable'
     elif options.stable_old :
         stable = '--stable-old'
     elif options.stable_new :
         stable = '--stable-new'
+    if options.hide_fit :
+       hidefit= '--hide-fitresult'
     if options.interactive :
         for dir in args :
             mass = get_mass(dir)
             if mass == 'common' :
                 continue
             if options.printOnly :
-                print"limit.py --max-likelihood {STABLE} --rMin {RMIN} --rMax {RMAX} {DIR}".format(DIR=dir, STABLE=stable, RMIN=options.rMin, RMAX=options.rMax)
+                print"limit.py --max-likelihood {MODEL} {OPTS} {STABLE} --rMin {RMIN} --rMax {RMAX} {HIDE} {DIR}".format(DIR=dir, MODEL=model, OPTS=opts, STABLE=stable, RMIN=options.rMin, RMAX=options.rMax,HIDE=hidefit)
             else :
-                os.system("limit.py --max-likelihood {STABLE} --rMin {RMIN} --rMax {RMAX} {USER} {DIR}".format(
-                    STABLE=stable, RMIN=options.rMin, RMAX=options.rMax, USER=options.opt, DIR=dir))
+                os.system("limit.py --max-likelihood {STABLE} {MODEL} {OPTS} --rMin {RMIN} --rMax {RMAX} {HIDE} {USER} {DIR}".format(
+                    STABLE=stable, RMIN=options.rMin, RMAX=options.rMax, HIDE=hidefit, USER=options.opt, DIR=dir, MODEL=model, OPTS=opts))
     else :
         ## directories and mases per directory
         struct = directories(args)
-        lxb_submit(struct[0], struct[1], "--max-likelihood", "{STABLE} --rMin {RMIN} --rMax {RMAX} {USER}".format(STABLE=stable, RMIN=options.rMin, RMAX=options.rMax, USER=options.opt))
+        lxb_submit(struct[0], struct[1], "--max-likelihood", "{STABLE} {MODEL} {OPTS} --rMin {RMIN} --rMax {RMAX} {HIDE} {USER}".format(STABLE=stable, MODEL=model, OPTS=opts, HIDE=hidefit, RMIN=options.rMin, RMAX=options.rMax, USER=options.opt))
 ##
 ## MAX-LIKELIHOOD WITH TOYS
 ##
@@ -392,6 +403,7 @@ if options.optMLFitToys :
         for dir in args :
             mass = get_mass(dir)
             if mass == 'common' :
+
                 continue
             if options.printOnly :
                 print"limit.py --max-likelihood-toys {STABLE} --rMin {RMIN} --rMax {RMAX} {DIR}".format(DIR=dir, STABLE=stable, RMIN=options.rMin, RMAX=options.rMax)
