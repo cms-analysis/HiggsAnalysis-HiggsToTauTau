@@ -1,4 +1,4 @@
-#include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
+#include "../interface/HttStyles.h"
 
 void SetStyle()
 {
