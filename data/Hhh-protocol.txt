@@ -3,7 +3,7 @@
 #From src directory of CMSSW release, with the CombinedLimits and HiggsTauTau packages added as described on the twiki:
 # https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideHiggs2TauLimits
 #Use of doHTohh.py script to replace the individual scripts
-python HiggsAnalysis/HiggsToTauTau/scripts/doHTohh.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-Hhh -a plain --label="SomeLabel"
+python HiggsAnalysis/HiggsToTauTau/scripts/doHTohh.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-Hhh -a plain --label="SomeLabel" [--profile]
 
 #The following command applies the correct XS*BR for each tanb point we are interested in for the model-dependent limits 
 lxb-xsec2tanb.py --ana-type="Hhh" --model="mhmodp" --customTanb="1,1.5,2,2.5,3" LIMITS-HTohh-mhmodp/*/*
@@ -15,7 +15,7 @@ submit.py --tanb+ LIMITS-HTohh-mhmodp/*/*
 #Run model-independent mA-tanb limits. While blinded, don't run the prefit to
 #data which is normally used to get the postfit limits (run pre-prefit limits)
 #When running with option --no-prefit, only expected limits are calculated.
-submit.py --asymptotic --no-prefit --physics-model="Hhh" LIMITS-HTohh-ggHTohh/*/*
+submit.py --asymptotic --no-prefit [--physics-model="Hhh"] LIMITS-HTohh-ggHTohh/*/*
 
 #postfit plots
 cd HiggsAnalysis/HiggsToTauTau/test
