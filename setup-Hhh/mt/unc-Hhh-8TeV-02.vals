@@ -15,7 +15,7 @@ muTau_2jet2tag		ZJ             			CMS_eff_b_8TeV                  	1.41
 muTau_2jet2tag		VV             			CMS_fake_b_8TeV                 	1.01
 muTau_2jet2tag		W             			CMS_fake_b_8TeV                 	0.96
 muTau_2jet2tag		ZTT,ZL,ZJ        		CMS_htt_zttNorm_8TeV 			1.03
-muTau_2jet2tag		ZTT	          		CMS_htt_extrap_ztt_mutau_2jet2tag_8TeV	1.03
+muTau_2jet2tag		ZTT	          		CMS_htt_extrap_ztt_mutau_2jet2tag_8TeV	1.06
 muTau_2jet2tag		TT     		  		CMS_htt_ttbarNorm_8TeV 			1.10
 muTau_2jet2tag		ZTT    		  		CMS_htt_ttbar_emb_8TeV 			1.27
 muTau_2jet2tag	 	VV	          		CMS_htt_DiBosonNorm_8TeV 		1.15

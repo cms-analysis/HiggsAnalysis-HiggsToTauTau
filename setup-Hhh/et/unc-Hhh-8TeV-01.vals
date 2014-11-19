@@ -17,7 +17,7 @@ eleTau_2jet1tag		TT     		  		CMS_htt_ttbarNorm_8TeV 			1.10
 eleTau_2jet1tag		ZTT    		  		CMS_htt_ttbar_emb_8TeV 			1.08
 eleTau_2jet1tag	 	VV	          		CMS_htt_DiBosonNorm_8TeV 		1.15
 eleTau_2jet1tag		W	          		CMS_htt_WNorm_etau_2jet1tag_8TeV 	1.40
-eleTau_2jet1tag		ZTT	          		CMS_htt_extrap_ztt_etau_2jet1tag_8TeV	1.03
+eleTau_2jet1tag		ZTT	          		CMS_htt_extrap_ztt_etau_2jet1tag_8TeV	1.05
 eleTau_2jet1tag        	QCD	 	         	CMS_htt_QCDSyst_etau_2jet1tag_8TeV	1.40
 #eleTau_2jet1tag        	QCD	        	  	CMS_htt_QCDShape_etau_2jet1tag_8TeV	1.00
 eleTau_2jet1tag        	ZL	          		CMS_htt_ZLeptonFakeTau_etau_8TeV	1.20
