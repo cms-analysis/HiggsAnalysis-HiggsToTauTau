@@ -214,7 +214,7 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/TT"      , directory)), "TT" ); InitHist(ttbar, "", "", TColor::GetColor(155,152,204), 1001);
   TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/ZTT"     , directory)), "ZTT"); InitHist(Ztt  , "", "", TColor::GetColor(248,206,104), 1001);
 #ifdef MSSM
-  TH1F* ggHTohhTo2Tau2B    = refill((TH1F*)input2->Get(TString::Format("%s/ggHTohhTo2Tau2B$MA" , directory)), "ggHTohhTo2Tau2B"); InitSignal(ggHTohhTo2Tau2B); ggHTohhTo2Tau2B->Scale(SIGNAL_SCALE);
+  TH1F* ggHTohhTo2Tau2B    = refill((TH1F*)input2->Get(TString::Format("%s/ggHTohhTo2Tau2B$MA" , directory)), "ggHTohhTo2Tau2B"); InitSignal(ggHTohhTo2Tau2B); ggHTohhTo2Tau2B->Scale($TANB*SIGNAL_SCALE);
 /*
   TH1F* ggAToZhToLLTauTau = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLTauTau$MA", directory)), "ggAToZhToLLTauTau"); InitSignal(ggAToZhToLLTauTau); ggAToZhToLLTauTau->Scale(SIGNAL_SCALE);
   TH1F* ggAToZhToLLBB = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLBB$MA", directory)),"ggAToZhToLLBB"); InitSignal(ggAToZhToLLBB); ggAToZhToLLBB->Scale(SIGNAL_SCALE);
@@ -442,9 +442,6 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
   }
   else{
-#ifndef DROP_SIGNAL
-    ggHTohhTo2Tau2B->Draw("histsame");
-#endif
     Ztt  ->Draw("histsame");
     EWK  ->Draw("histsame");
     EWK1 ->Draw("histsame");
@@ -455,6 +452,9 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
 */
     $DRAW_ERROR
+#ifndef DROP_SIGNAL
+    ggHTohhTo2Tau2B->Draw("histsame");
+#endif
   }
   data->Draw("esame");
   canv->RedrawAxis();

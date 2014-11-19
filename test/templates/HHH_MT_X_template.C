@@ -211,7 +211,7 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TH1F* ggAToZhToLLBB = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLBB$MA", directory)), "ggAToZHToLLBB"); InitSignal(ggAToZhToLLBB);ggAToZhToLLBB->Scale($TANB);
   TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA" , directory)), "bbH"); InitSignal(bbH); bbH->Scale($TANB);
 */
-  TH1F* ggHTohhTo2Tau2B    = refill((TH1F*)input2->Get(TString::Format("%s/ggHTohhTo2Tau2B$MA" , directory)), "ggHTohhTo2Tau2B"); InitSignal(ggHTohhTo2Tau2B); ggHTohhTo2Tau2B->Scale(SIGNAL_SCALE);
+  TH1F* ggHTohhTo2Tau2B    = refill((TH1F*)input2->Get(TString::Format("%s/ggHTohhTo2Tau2B$MA" , directory)), "ggHTohhTo2Tau2B"); InitSignal(ggHTohhTo2Tau2B); ggHTohhTo2Tau2B->Scale($TANB*SIGNAL_SCALE);
 /*
   TH1F* ggAToZhToLLTauTau = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLTauTau$MA", directory)), "ggAToZHToLLTauTau"); InitSignal(ggAToZhToLLTauTau); ggAToZhToLLTauTau->Scale(SIGNAL_SCALE);
   TH1F* ggAToZhToLLBB = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLBB$MA", directory)), "ggAToZHToLLBB"); InitSignal(ggAToZhToLLBB); ggAToZhToLLBB->Scale(SIGNAL_SCALE);
@@ -451,9 +451,6 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
   }
   else{
-#ifndef DROP_SIGNAL
-    ggHTohhTo2Tau2B  ->Draw("histsame");
-#endif
     Ztt  ->Draw("histsame");
     EWK  ->Draw("histsame");
     Fakes->Draw("histsame");
@@ -462,7 +459,10 @@ HTT_MT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
     //VH_SM125->Draw("histsame");
 #endif   
     $DRAW_ERROR
-  }
+ #ifndef DROP_SIGNAL
+    ggHTohhTo2Tau2B  ->Draw("histsame");
+#endif
+}
   data->Draw("esame");
   canv->RedrawAxis();
 
