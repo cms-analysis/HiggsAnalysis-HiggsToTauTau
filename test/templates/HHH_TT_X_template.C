@@ -41,7 +41,7 @@ static const bool CONSERVATIVE_CHI2 = false;
 static const float UPPER_EDGE = 1005; // 695; 1495;
 
 float blinding_SM(float mass){ return (100<mass && mass<150); }
-float blinding_MSSM(float mass){ return (200<mass && mass<600); }
+float blinding_MSSM(float mass){ return (200<mass && mass<400); }
 float maximum(TH1F* h, bool LOG=false){
   if(LOG){
     if(h->GetMaximum()>1000){ return 1000.*TMath::Nint(30*h->GetMaximum()/1000.); }
@@ -146,12 +146,13 @@ void rescale(TH1F* hin, unsigned int idx)
 #if defined MSSM
   case  8: // ggH
   $ggHTohhTo2Tau2B$MA
-  case  9:
+  /*case  9:
   $ggAToZhToLLTauTau$MA
   case 10:
   $ggAToZhToLLBB$MA
   case  11: // bbH
   $bbH$MA
+*/
 #endif
   default :
     std::cout << "error histograms not known?!?" << std::endl;
@@ -203,9 +204,11 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/ZTT"     , directory)), "ZTT"); InitHist(Ztt  , "", "", TColor::GetColor(248,206,104), 1001);
 #ifdef MSSM
   TH1F* ggHTohhTo2Tau2B    = refill((TH1F*)input2->Get(TString::Format("%s/ggHTohhTo2Tau2B$MA" , directory)), "ggHTohhTo2Tau2B"); InitSignal(ggHTohhTo2Tau2B); ggHTohhTo2Tau2B->Scale(SIGNAL_SCALE);
+/*
   TH1F* ggAToZhToLLTauTau = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLTauTau$MA",directory)),"ggAToZhToLLTauTau"); InitSignal(ggAToZhToLLTauTau);
   TH1F* ggAToZhToLLBB = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLBB$MA",directory)),"ggAToZhToLLBB"); InitSignal(ggAToZhToLLBB);
   TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA" , directory)), "bbH"); InitSignal(bbH);
+*/
 #endif
 #ifdef ASIMOV
   TH1F* data   = refill((TH1F*)input->Get(TString::Format("%s/data_obs_asimov", directory)), "data", true);
@@ -232,9 +235,11 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   unscaled[3] = Ztt  ->Integral();
 #ifdef MSSM
   unscaled[4] = ggHTohhTo2Tau2B  ->Integral();
+/*
   unscaled[5] = ggAToZhToLLTauTau->Integral();
   unscaled[6] = ggAToZhToLLBB->Integral();
   unscaled[7] = bbH  ->Integral();
+*/
 #endif
 
   if(scaled){
@@ -263,9 +268,11 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
     rescale(Ztt  , 1);
 #ifdef MSSM
     rescale(ggHTohhTo2Tau2B  , 8); 
+/*
     rescale(ggAToZhToLLTauTau,9);
     rescale(ggAToZhToLLBB,10);
     rescale(bbH  , 11);  
+*/
 #endif
   }
 
@@ -285,12 +292,14 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #ifdef MSSM
   scales[4] = new TH1F("scales-ggHTohhTo2Tau2B"  , "", 8, 0, 8);
   scales[4]->SetBinContent(5, unscaled[4]>0 ? (ggHTohhTo2Tau2B  ->Integral()/unscaled[4]-1.) : 0.);
+/*
   scales[5] = new TH1F("scales-ggAToZhToLLTauTau"  , "", 8, 0, 8);
   scales[5]->SetBinContent(6, unscaled[5]>0 ? (ggAToZhToLLTauTau  ->Integral()/unscaled[5]-1.) : 0.);
   scales[6] = new TH1F("scales-ggAToZhToLLBB"  , "", 8, 0, 8);
   scales[6]->SetBinContent(7, unscaled[6]>0 ? (ggAToZhToLLBB  ->Integral()/unscaled[6]-1.) : 0.);
   scales[7] = new TH1F("scales-bbH"  , "", 8, 0, 8);
   scales[7]->SetBinContent(8, unscaled[7]>0 ? (bbH  ->Integral()/unscaled[7]-1.) : 0.);
+*/
 #endif
 
 //#ifdef MSSM
@@ -590,9 +599,10 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   InitHist  (scales[2], "", "", TColor::GetColor(155,152,204), 1001);
   InitHist  (scales[3], "", "", TColor::GetColor(248,206,104), 1001);
   InitHist(scales[4],"","",kGreen+2,1001);
-  InitHist(scales[5],"","",kGreen+2,1001);
+/*  InitHist(scales[5],"","",kGreen+2,1001);
   InitHist(scales[6],"","",kGreen+2,1001);
   InitHist(scales[7],"","",kGreen+2,1001);
+*/
 
   scales[0]->Draw();
   scales[0]->GetXaxis()->SetBinLabel(1, "#bf{Fakes}");
@@ -601,9 +611,11 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   scales[0]->GetXaxis()->SetBinLabel(4, "#bf{Ztt}"  );
 #ifdef MSSM
   scales[0]->GetXaxis()->SetBinLabel(5, "#bf{ggHTohhTo2tau2B}"  );
+/*
   scales[0]->GetXaxis()->SetBinLabel(6, "#bf{ggAToZhToLLTauTau}");
   scales[0]->GetXaxis()->SetBinLabel(7, "#bf{ggAToZhToLLBB}");
   scales[0]->GetXaxis()->SetBinLabel(8, "#bf{bbH}"  );
+*/
 #endif
   scales[0]->SetMaximum(+0.5);
   scales[0]->SetMinimum(-0.5);
@@ -613,8 +625,9 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   scales[2]->Draw("same");
   scales[3]->Draw("same");
   scales[4]->Draw("same");
-  scales[5]->Draw("same");
+ /* scales[5]->Draw("same");
   scales[6]->Draw("same");
+*/
   TH1F* zero_samples = (TH1F*)scales[0]->Clone("zero_samples"); zero_samples->Clear();
   zero_samples->SetBinContent(1,0.);
   zero_samples->Draw("same"); 
@@ -652,9 +665,11 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   Ztt  ->Write("Ztt"     );
 #ifdef MSSM
   ggHTohhTo2Tau2B  ->Write("ggHTohhTo2Tau2B"     );
+/*
   ggAToZhToLLTauTau->Write("ggAToZhToLLTauTau");
   ggAToZhToLLBB->Write("ggAToZhToLLBB");
   bbH  ->Write("bbH"     );
+*/
 #endif
   output->Close();
  

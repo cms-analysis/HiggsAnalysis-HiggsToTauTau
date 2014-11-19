@@ -143,14 +143,12 @@ void rescale(TH1F* hin, unsigned int idx)
 #if defined MSSM
   case  8: // ggH
   $ggHTohhTo2Tau2B$MA
-/*
   case  9: // bbH
   $ggAToZhToLLBB$MA
   case 10:
   $ggAToZhToLLTauTau$MA
   case 11:
   $bbH$MA
-*/
 /*  // case 10: // ggH_SM125
 //   $ggH_SM125
 //   case 11  // qqH_SM125:
@@ -215,11 +213,9 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/ZTT"     , directory)), "ZTT"); InitHist(Ztt  , "", "", TColor::GetColor(248,206,104), 1001);
 #ifdef MSSM
   TH1F* ggHTohhTo2Tau2B    = refill((TH1F*)input2->Get(TString::Format("%s/ggHTohhTo2Tau2B$MA" , directory)), "ggHTohhTo2Tau2B"); InitSignal(ggHTohhTo2Tau2B); ggHTohhTo2Tau2B->Scale(SIGNAL_SCALE);
-/*
   TH1F* ggAToZhToLLTauTau = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLTauTau$MA", directory)), "ggAToZhToLLTauTau"); InitSignal(ggAToZhToLLTauTau); ggAToZhToLLTauTau->Scale(SIGNAL_SCALE);
   TH1F* ggAToZhToLLBB = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLBB$MA", directory)),"ggAToZhToLLBB"); InitSignal(ggAToZhToLLBB); ggAToZhToLLBB->Scale(SIGNAL_SCALE);
   TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA" , directory)), "bbH"); InitSignal(bbH); bbH->Scale(SIGNAL_SCALE);
-*/
 //  TH1F* ggH_SM125= refill((TH1F*)input->Get(TString::Format("%s/ggH_SM125"  , directory)), "ggH_SM125"); InitHist(ggH_SM125, "", "", kGreen+2, 1001);
  // TH1F* qqH_SM125= refill((TH1F*)input->Get(TString::Format("%s/qqH_SM125"  , directory)), "qqH_SM125"); InitHist(qqH_SM125, "", "", kGreen+2, 1001);
   //TH1F* VH_SM125 = refill((TH1F*)input->Get(TString::Format("%s/VH_SM125"   , directory)), "VH_SM125" ); InitHist(VH_SM125, "", "", kGreen+2, 1001);
@@ -257,11 +253,9 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   unscaled[3] = Ztt  ->Integral();
 #ifdef MSSM
   unscaled[4] = ggHTohhTo2Tau2B->Integral();
-/*
   unscaled[5] = ggAToZhToLLTauTau->Integral();
   unscaled[6] = ggAToZhToLLBB->Integral();
   unscaled[7] = bbH  ->Integral();
-*/
 /*
 #else
 #ifndef DROP_SIGNAL
@@ -307,11 +301,9 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
     rescale(Ztt  , 1);
 #ifdef MSSM
     rescale(ggHTohhTo2Tau2B  , 8); 
-/*
     rescale(ggAToZhToLLTauTau  , 9);  
     rescale(ggAToZhToLLBB, 10);
     rescale(bbH,11);
-*/
 /*
 #else
 #ifndef DROP_SIGNAL
@@ -338,14 +330,12 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #ifdef MSSM
   scales[4] = new TH1F("scales-ggHTohhTo2Tau2B"  , "", 8, 0, 8);
   scales[4]->SetBinContent(5, unscaled[4]>0 ? (ggHTohhTo2Tau2B->Integral()/unscaled[4]-1.) : 0.);
-/*
   scales[5] = new TH1F("scales-ggAToZhToLLTauTau"  , "", 8, 0, 8);
   scales[5]->SetBinContent(6, unscaled[5]>0 ? (ggAToZhToLLTauTau ->Integral()/unscaled[5]-1.) : 0.);
   scales[6] = new TH1F("scales-ggAToZhToLLBB"  , "", 8, 0, 8);
   scales[6]->SetBinContent(7, unscaled[6]>0 ? (ggAToZhToLLBB ->Integral()/unscaled[6]-1.) : 0.);
   scales[7] = new TH1F("scales-bbH"  , "", 8, 0, 8);
   scales[7]->SetBinContent(8, unscaled[7]>0 ? (bbH ->Integral()/unscaled[7]-1.) : 0.);
-*/
 /*
 #else
 #ifndef DROP_SIGNAL
@@ -683,11 +673,9 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   InitHist  (scales[3], "", "", TColor::GetColor(248,206,104), 1001);
 #ifndef DROP_SIGNAL
   InitSignal(scales[4]);
-/*
   InitSignal(scales[5]);
   InitSignal(scales[6]);
   InitSignal(scales[7]);
-*/
 #endif
   scales[0]->Draw();
   scales[0]->GetXaxis()->SetBinLabel(1, "#bf{Fakes}");
@@ -696,11 +684,9 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   scales[0]->GetXaxis()->SetBinLabel(4, "#bf{Ztt}"  );
 #ifdef MSSM
   scales[0]->GetXaxis()->SetBinLabel(5, "#bf{ggHTohhTo2Tau2B}"  );
-/*
   scales[0]->GetXaxis()->SetBinLabel(6, "#bf{ggAToZhToLLTauTau}"  );
   scales[0]->GetXaxis()->SetBinLabel(7, "#bf{ggAToZhToLLBB}"      );
   scales[0]->GetXaxis()->SetBinLabel(8, "#bf{bbH}");
-*/
 /*#else
   scales[0]->GetXaxis()->SetBinLabel(5, "#bf{ggH}"  );
   scales[0]->GetXaxis()->SetBinLabel(6, "#bf{qqH}"  );
@@ -764,11 +750,9 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   Ztt  ->Write("Ztt"     );
 #ifdef MSSM
   ggHTohhTo2Tau2B  ->Write("ggHTohhTo2Tau2B"     );
-/*
   ggAToZhToLLTauTau->Write("ggAToZhToLLTauTau");
   ggAToZhToLLBB->Write("ggAToZhToLLBB");
   bbH  ->Write("bbH"     );
-*/
 //  ggH_SM125->Write("ggH_SM125");
  // qqH_SM125->Write("qqH_SM125");
 //  VH_SM125 ->Write("VH_SM125");
