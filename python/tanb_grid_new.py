@@ -73,8 +73,6 @@ class MODEL(object) :
         self.central = {}
         ## shifts for uncertainties of type {'type' : {(period,decay,proc) : (MODEL_PARAMS,MODEL_PARAMS)}}
         self.uncerts = {}
-        ## mass of the pseudoscalar A 
-        self.mA = 0
 
     def missing_procs(self, decay, period, procs) :
         """
@@ -119,11 +117,6 @@ class MODEL(object) :
                 self.uncerts[shift].update(buffer)
             else :
                 self.uncerts[shift] = buffer
-        ## create masses
-        if options.ana_type=="Hplus":
-            self.mA = self.parameter1
-        else :
-            self.mA = modelMaker.create_model_params(period, proc, decay, '').masses['A']
         
 
 def mX_to_mA(card) :
@@ -150,7 +143,7 @@ def mX_to_mA(card) :
             for mass in range(90, 1000) :
                 Spline_input.SetPoint(k, prescan.lookup_value(mass, float(options.tanb), "h_mH"), mass)
                 k=k+1
-            print "for mH = ", options.parameter1, "  mA = ", Spline_input.Eval(float(options.parameter1))
+            print "mH = ", options.parameter1, " / tanb = ", options.tanb, "   =>   mA = ", Spline_input.Eval(float(options.parameter1))
             return Spline_input.Eval(float(options.parameter1))
                 
 
@@ -163,7 +156,6 @@ def main() :
     print "# --tanb                :", options.tanb
     print "# --parameter1          :", options.parameter1 #for the lowmH scenario this is the higgs/higgsino mass parameter; everywhere else its mass of A
     print "# --ana_type            :", options.ana_type
-    print "# if ana_type == Hhh, only --morphing-htt_tt --morphing-htt_mt and --morphing-htt_et set for now despite printout below"
     print "# --morphing-htt_ee     : ", options.morphing_htt_ee
     print "# --morphing-htt_em     : ", options.morphing_htt_em
     print "# --morphing-htt_mm     : ", options.morphing_htt_mm
@@ -179,15 +171,8 @@ def main() :
     path = args[0]
     print "path = %s" % path
     label = '_{PARAMETER1}_{TANB}'.format(PARAMETER1=options.parameter1, TANB=options.tanb)
-    ## mophing configuration
-    if options.ana_type=="Hhh" :
-        morph= {
-            'htt_mt'   : options.morphing_htt_mt,
-            'htt_et'   : options.morphing_htt_et,
-            'htt_tt'   : options.morphing_htt_tt,
-            } 
-    else :
-        morph = {
+    ## mophing configuration       }
+    morph = {
             'htt_ee'     : options.morphing_htt_ee,
             'htt_em'     : options.morphing_htt_em,
             'htt_mm'     : options.morphing_htt_mm,
@@ -206,11 +191,10 @@ def main() :
     card = parseCard(old_file, options)
     old_file.close()
     
-    ##if ana_type=="Hhh" mH has to be translated into mA  
-#    if options.ana_type=="Hhh" : #mH has to be translated into mA  
-#        neededParameter = mX_to_mA(card)
-#    else :
-    neededParameter = options.parameter1   
+    if options.ana_type=="Hhh" : #mH has to be translated into mA to get the correct BR and xs from the model file
+        neededParameter = mX_to_mA(card)
+    else :
+        neededParameter = options.parameter1   
         
     print options.ana_type
     ## determine MODEL for given datacard.

@@ -18,7 +18,7 @@ class ModelDatacard(DatacardAdaptor) :
     counting experiments. For counting experiments no differences in acceptance due to differing masses of the contributing
     Higgses are taken into account, as these can not be a priori known from a single datacard. 
     """
-    def __init__(self, parser_options, model_label, mA, update_file=False, ana_type='') :
+    def __init__(self, parser_options, model_label, parameter1, update_file=False, ana_type='') :
         ## postfix label for the root input file where to find the rates modified according to the given model
         self.model_label = model_label
         ## write the the new template histogram with new histogram name into the same file (i.e. update the existing file)
@@ -31,8 +31,8 @@ class ModelDatacard(DatacardAdaptor) :
         self.already_processed_template_files = []
         ## analyses type (for Htt its empty, only for Hplus its 'Hplus'
         self.ana_type=ana_type
-        ## mass of A
-        self.mA = mA
+        ## mass of A or in the case of the lowmH scenario its mu
+        self.parameter1 = parameter1
         ## initialize base class
         super(ModelDatacard, self).__init__()
 
@@ -217,7 +217,7 @@ class ModelDatacard(DatacardAdaptor) :
                     for idx in range(len(uncert_appendix[label])) :
                         if uncert_appendix[idx] == '-' :
                             uncert_appendix[idx] = uncer[idx]
-        ## replace lines tha might already exist with updated values. Otherwise just append the new uncertainy lines
+        ## replace lines that might already exist with updated values. Otherwise just append the new uncertainy lines
         for label,uncerts in uncert_appendix.iteritems() :
             found_label = False
             old_file = open(path, 'r')
@@ -227,6 +227,18 @@ class ModelDatacard(DatacardAdaptor) :
                 if words[0] == label :
                     found_label = True
                     line = label+'\t lnN \t'+'\t'.join(uncerts)+'\n'
+                ## handle mhplus dependent lnN errors in Hplus (using nearest neightbour)
+                if self.ana_type=="Hplus" : 
+                    if len(line.lstrip().split()) > 2 :
+                        if words[1]=="lnN" :
+                            nuisance_file = open("../common/HplusNuisanceFile.dat", 'r')
+                            delta=100
+                            for n_line in nuisance_file:
+                                n_words = n_line.lstrip().split()
+                                if words[0]==n_words[1] and abs(float(n_words[0])-float(params[0].masses['Hp'])) < delta :
+                                    delta = abs(float(n_words[0])-float(params[0].masses['Hp']))
+                                    line = n_line.lstrip(n_words[0]+" ")
+                            nuisance_file.close()
                 new_file.write(line)
             old_file.close()
             new_file.close()
@@ -286,14 +298,14 @@ class ModelDatacard(DatacardAdaptor) :
         for (shape_file,reduced_model) in schedule.iteritems() :
             print 'creating template(s) :', dir+shape_file, '(morphing mode is', morph_per_file[shape_file]+')'
             if self.update_file :
-                template = ModelTemplate(dir+shape_file, self.mA, self.ana_type, self.model_label)
+                template = ModelTemplate(dir+shape_file, self.parameter1, self.ana_type, self.model_label)
                 template.create_templates(reduced_model, self.model_label, 1./float(model.tanb), morph_per_file[shape_file])
                 tmp = '/tmp/'+''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))
                 os.system("hadd {TMP} {SOURCE} {SOURCE}{MODEL}".format(TMP=tmp, SOURCE=dir+shape_file, MODEL=self.model_label))
                 os.system("mv {TMP} {SOURCE}".format(TMP=tmp, SOURCE=dir+shape_file))
                 os.system("rm {SOURCE}{MODEL}".format(SOURCE=dir+shape_file,MODEL=self.model_label))
             else :
-                template = ModelTemplate(dir+shape_file, self.mA, self.ana_type)
+                template = ModelTemplate(dir+shape_file, self.parameter1, self.ana_type)
                 template.create_templates(reduced_model, self.model_label, 1./float(model.tanb), morph_per_file[shape_file])
         ## adapt datacards to pick up proper signal rates
         print 'adapting datacard(s) :', path
@@ -313,5 +325,5 @@ class ModelDatacard(DatacardAdaptor) :
             else :
                 ## filename gets label self.model_label, histogram name remains as is
                 self.adapt_shapes_lines(path, card, proc, '', self.model_label)
-        self.adapt_rate_lines(path, card.list_of_signals(), model.save_float_conversion(model.mA))
+        self.adapt_rate_lines(path, card.list_of_signals(), model.save_float_conversion(self.parameter1))
         self.add_uncert_lines(path, model)
