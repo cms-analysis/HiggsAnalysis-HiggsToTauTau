@@ -102,7 +102,6 @@ class ModelParams_BASE:
             model_params.xsecs[higgs] = self.query_xsec(higgs, channel, query)
             model_params.brs[higgs] = self.query_br(higgs, decay, channel, query)
         model_params.ttscale = self.query_ttscale('Hp', decay, channel, query)
-        model_params.mA = self.query_mA(query)
         
     def query_masses(self, higgs, query):
         """
@@ -172,13 +171,3 @@ class ModelParams_BASE:
             return str((1-query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['taunu']])*(1-query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['taunu']]))
         else : 
             return str(1.0)
-
-    def query_mA(self, query):
-        """
-        Save the mass of the pseudoscalar A.
-        Its only used for Hplus.
-        """
-        if self.ana_type=='Hplus':
-            return str(query['massA'])
-        else : 
-            return str(-999)
