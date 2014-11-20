@@ -190,7 +190,7 @@ class mssm_xsec_tools():
              0 : 0,
         }
 
-    def query(self, mA, tan_beta, ana_type):
+    def query(self, mA, tan_beta, ana_type): #mA = mu in case of lowmH and mA in all other scenarios 
 
         higgs_types = [ 'h', 'A', 'H' ]
         
@@ -217,5 +217,6 @@ class mssm_xsec_tools():
             self._add_mu(mA, tan_beta, (higgs_type, output['higgses'][higgs_type]))
             self._add_pdf(mA, tan_beta, (higgs_type, output['higgses'][higgs_type]))
             self._add_santander((higgs_type, output['higgses'][higgs_type]))
-        
+
+        #print output
         return output

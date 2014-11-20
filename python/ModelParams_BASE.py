@@ -15,8 +15,8 @@ class ModelParams_BASE:
     MODEL_PARAMS.
     The main functions to be used for creation of the MODEL_PARAMS are 'setup_model' and  'create_model_params'
     """
-    def __init__(self, mA, tanb, ana_type):
-        self.mA = mA
+    def __init__(self, parameter1, tanb, ana_type):
+        self.parameter1 = parameter1 #mass of pseudoscalar A or for lowmH scenario the higgsino mass mu
         self.tanb = tanb
         self.ana_type = ana_type
    
@@ -38,11 +38,11 @@ class ModelParams_BASE:
                 tanbregion = 'tanbHigh'
             mssm_xsec_tools_path = getenv('CMSSW_BASE')+'/src/auxiliaries/models/out.'+modelpath+'-'+period+'-'+tanbregion+'-nnlo.root'
             scan = mssm_xsec_tools(mssm_xsec_tools_path)
-            self.htt_query = scan.query(self.mA, self.tanb, self.ana_type)
+            self.htt_query = scan.query(self.parameter1, self.tanb, self.ana_type)
         elif modeltype == 'hplus_xsec' :
             hplus_xsec_tools_path = getenv('CMSSW_BASE')+'/src/auxiliaries/models/hplus.'+modelpath+'-'+period+'-LHCHXSWG.root'
             scan = hplus_xsec_tools(hplus_xsec_tools_path)
-            self.htt_query = scan.query(self.mA, self.tanb)
+            self.htt_query = scan.query(self.parameter1, self.tanb)
 
     def create_model_params(self, period, channel, decay, uncert=''):
         """
@@ -72,9 +72,9 @@ class ModelParams_BASE:
         This functions takes the input from create_model_params and uses feyn_higgs_mssm to determine the masses, cross-sections
         and branchingratios for the given production and decay channels
         """
-        scan = feyn_higgs_mssm(self.mA, self.tanb, 'sm', path, period) #consider using variable for 'sm', 'mssm'
+        scan = feyn_higgs_mssm(self.parameter1, self.tanb, 'sm', path, period) #consider using variable for 'sm', 'mssm'
         for higgs in model_params.list_of_higgses:
-            if higgs == 'A': model_params.masses[higgs] = self.mA
+            if higgs == 'A': model_params.masses[higgs] = self.parameter1
             if higgs == 'h': model_params.masses[higgs] = scan.get_mh()
             if higgs == 'H': model_params.masses[higgs] = scan.get_mH()
             xsecs = scan.get_xs(channel[:-1]+higgs)
@@ -101,14 +101,14 @@ class ModelParams_BASE:
             model_params.masses[higgs] = self.query_masses(higgs, query)
             model_params.xsecs[higgs] = self.query_xsec(higgs, channel, query)
             model_params.brs[higgs] = self.query_br(higgs, decay, channel, query)
-        model_params.ttscale = self.query_ttscale(higgs, decay, channel, query)
+        model_params.ttscale = self.query_ttscale('Hp', decay, channel, query)
+        model_params.mA = self.query_mA(query)
         
     def query_masses(self, higgs, query):
         """
         Determine the mass of the higgs given as input. This function uses the
         mssm_xsec_tools.
-        """
-        #if higgs == 'A': return self.mA #this is no longer correct for lowmH!         
+        """     
         return query['higgses'][higgs]['mass']
 
     def query_xsec(self, higgs, channel, query):
@@ -161,7 +161,7 @@ class ModelParams_BASE:
 
     def query_ttscale(self, higgs, decay, channel, query):
         """
-        Determine the tt MC rescale factor for .
+        Determine the tt MC rescale factor.
         This function uses the hplus_xsec_tools.
         Its only used for Hplus.
         """
@@ -172,3 +172,13 @@ class ModelParams_BASE:
             return str((1-query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['taunu']])*(1-query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['taunu']]))
         else : 
             return str(1.0)
+
+    def query_mA(self, query):
+        """
+        Save the mass of the pseudoscalar A.
+        Its only used for Hplus.
+        """
+        if self.ana_type=='Hplus':
+            return str(query['massA'])
+        else : 
+            return str(-999)
