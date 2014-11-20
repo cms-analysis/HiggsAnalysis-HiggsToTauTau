@@ -11,10 +11,6 @@ class hplus_xsec_tools():
         self.unit_pb = 1.
         self.unit_fb = self.unit_pb*1.e-3
 
-    ## @staticmethod
-##     def _add_in_quadrature(*xs):
-##         return math.sqrt(sum(x*x for x in xs))
-
     def lookup_value(self, parameter1, tan_beta, searched_parameter):
         Spline = ROOT.TGraph()
         
@@ -41,9 +37,6 @@ class hplus_xsec_tools():
                 Spline.SetPoint(k, float(all_parameter1[0]), float(searched_param[0]))
                 k=k+1
         Spline.Sort()
-        if not "lowmH" in self.inputFileName_:
-            if searched_parameter=="mA" :
-                return parameter1
         return Spline.Eval(float(parameter1))
 
     def _add_br_tHpb(self, parameter1, tan_beta, input):
@@ -62,11 +55,6 @@ class hplus_xsec_tools():
         " Lookup the mass for Hp"
         type, type_info = input
         type_info['mass'] = self.lookup_value(parameter1, tan_beta, "mHp")
-
-    def _add_massA(self, parameter1, tan_beta, input):
-        " Lookup the mass for Hp"
-        type_info = input
-        type_info['massA'] = self.lookup_value(parameter1, tan_beta, "mA")
 
     def _add_xsec(self, parameter1, tan_beta, input):
         type, type_info = input
@@ -94,7 +82,7 @@ class hplus_xsec_tools():
         
         # Build emtpy dictionaries for each Higgs type
         output = {
-            'mA' : parameter1,
+            'parameter1' : parameter1,
             'tan_beta' : tan_beta,
             'higgses' : {
                 'Hp' : {}
@@ -107,6 +95,6 @@ class hplus_xsec_tools():
             self._add_br_taunu(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
             self._add_xsec(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
             self._add_mu(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
-        self._add_massA(parameter1, tan_beta, output)
-        print output
+        
+        #print output
         return output
