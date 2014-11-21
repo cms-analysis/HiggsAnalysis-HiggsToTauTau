@@ -19,10 +19,9 @@ submit.py --tanb+ LIMITS-HTohh-mhmodp/*/*
 submit.py --asymptotic --no-prefit [--physics-model="Hhh"] LIMITS-HTohh-ggHTohh/*/*
 
 #postfit plots
-#NOTE: If running postfit plots where you're taking profiling of A->Zh and bbH into account, run mlfit_and_copy and produce_macros with an extra option  --profile  
 cd HiggsAnalysis/HiggsToTauTau/test
-python mlfit_and_copy.py -a Hhh --mA 300 --tanb 2 $CMSSW_BASE/src/LIMITS-label/bbb/cmb/300
-python produce_macros_Hhh.py -a Hhh --mA 300 --tanb 2 --config ../data/limits.config-Hhh
+python mlfit_and_copy.py -a Hhh --mA 300 --tanb 2 [--profile] $CMSSW_BASE/src/LIMITS-label/bbb/cmb/300
+python produce_macros_Hhh.py -a Hhh --mA 300 --tanb 2 [--profile]  --config ../data/limits.config-Hhh
 ./fixmacros.sh
 python run_macros.py -a Hhh --config ../data/limits.config-Hhh
 
