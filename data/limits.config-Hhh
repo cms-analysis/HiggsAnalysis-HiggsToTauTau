@@ -241,10 +241,10 @@ tt_names_8TeV = 2jet0tag 2jet1tag 2jet2tag
 
 [bbb-Hhh]
 
-em_threshold = 0.05
-et_threshold = 0.05
-mt_threshold = 0.05
-tt_threshold = 0.05
+em_threshold = 0.1
+et_threshold = 0.1
+mt_threshold = 0.1
+tt_threshold = 0.1
 
 em_categories_8TeV = 00,01,02,03,04
 et_categories_8TeV = 00,01,02
@@ -252,9 +252,9 @@ mt_categories_8TeV = 00,01,02
 tt_categories_8TeV = 00,01,02
 
 em_processes = Fakes,EWK,ttbar,Ztt
-et_processes = TT,QCD,ZTT,W,ZL,ZJ,VV
-mt_processes = TT,QCD,ZTT,W,ZL,ZJ,VV
-tt_processes = ZTT,TT,QCD,W,ZL,ZJ,VV
+et_processes = QCD>W>ZL>ZJ>VV,ZTT,TT
+mt_processes = QCD>W>ZL>ZJ>VV,ZTT,TT
+tt_processes = QCD>W>ZL>ZJ>VV,ZTT,TT
 
 
 

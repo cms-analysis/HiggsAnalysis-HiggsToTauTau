@@ -3,7 +3,8 @@
 #From src directory of CMSSW release, with the CombinedLimits and HiggsTauTau packages added as described on the twiki:
 # https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideHiggs2TauLimits
 #Use of doHTohh.py script to replace the individual scripts
-python HiggsAnalysis/HiggsToTauTau/scripts/doHTohh.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-Hhh -a plain --label="SomeLabel" [--profile]
+#Note the syntax for bbb processes in the config file;  only the samples before the first comma are merged atm
+python HiggsAnalysis/HiggsToTauTau/scripts/doHTohh.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-Hhh -a bbb --label="SomeLabel" [--profile] [--new-merging --new-merging-threshold 0.5]
 
 #The following command applies the correct XS*BR for each tanb point we are interested in for the model-dependent limits 
 lxb-xsec2tanb.py --ana-type="Hhh" --model="mhmodp" --customTanb="1,1.5,2,2.5,3" LIMITS-HTohh-mhmodp/*/*

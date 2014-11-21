@@ -221,13 +221,14 @@ if options.update_setup :
                         if options.new_merging :
                             filename='htt_'+chn+'.inputs-Hhh-'+per+'.root'
                             for cat in config.bbbcat[chn][per][idx].split(',') :
+                                print cat
                                 ## loop all categories in question for index idx
-                                if len(config.bbbproc[chn][idx].replace('>',',').split(','))>1 :
+                                if len(config.bbbproc[chn][idx].replace('>','+').split('+'))>1 :
                                     ## only get into action if there is more than one sample to do the merging for
                                     os.system("merge_bin_errors.py --folder {DIR} --processes {PROC} --bbb_threshold={BBBTHR} --merge_threshold={THRESH} --verbose {SOURCE} {TARGET}".format(
                                         ## this list has only one entry by construction
-                                        DIR=get_channel_dirs(chn, cat,per)[0],
-                                        PROC=config.bbbproc[chn][idx].replace('>',','),
+                                        DIR=get_channel_dirs("Hhh",chn, cat,per)[0],
+                                        PROC=config.bbbproc[chn][idx].split(',')[0].replace('>',','),
                                         BBBTHR=config.bbbthreshold[chn],
                                         THRESH=options.new_merging_threshold,
                                         SOURCE=dir+'/'+ana+'/'+chn+'/'+filename,
@@ -243,7 +244,7 @@ if options.update_setup :
                             PER=per,
                             NORMALIZE=normalize_bbb,
                             CAT=config.bbbcat[chn][per][idx],
-                            PROC=config.bbbproc[chn][idx].replace('>',',') if options.new_merging else config.bbbproc[chn][idx],
+                            PROC=config.bbbproc[chn][idx].replace('>',','),
                             THR=config.bbbthreshold[chn]
                             ))                   
                         os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
