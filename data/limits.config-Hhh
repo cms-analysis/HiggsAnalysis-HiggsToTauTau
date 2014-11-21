@@ -252,9 +252,9 @@ mt_categories_8TeV = 00,01,02
 tt_categories_8TeV = 00,01,02
 
 em_processes = Fakes,EWK,ttbar,Ztt
-et_processes = QCD>W>ZL>ZJ>VV,ZTT,TT
-mt_processes = QCD>W>ZL>ZJ>VV,ZTT,TT
-tt_processes = QCD>W>ZL>ZJ>VV,ZTT,TT
+et_processes = QCD>W>ZL>ZJ>VV>ZTT>TT
+mt_processes = QCD>W>ZL>ZJ>VV>ZTT>TT
+tt_processes = QCD>W>ZL>ZJ>VV>ZTT>TT
 
 
 
