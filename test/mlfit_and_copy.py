@@ -65,25 +65,26 @@ if options.analysis == "Hhh" :
     system("cp -v %s/out/mlfit.txt ./fitresults/mlfit_Hhh.txt" % dir)
     system("cp -v %s/*.txt ./datacards" % dir)
     system("cp -v %s/../common/htt_*.input_8TeV.root ./root" % (dir))
-    
-optcards = ""  
-for datacard in os.listdir("datacards"):
-    if datacard.endswith(".txt"):
-        optcards += datacard[:datacard.find(".txt")]
-        optcards += "=datacards/"
-        ## add datacard for combination
-        optcards += datacard
-        optcards += " "
-    #print optcards
-system("combineCards.py -S %s > datacards/tmp.txt" % optcards)
-system("perl -pi -e 's/datacards//g' datacards/{DATACARD}".format(DATACARD="tmp.txt"))
-system("perl -pi -e 's/common/root/g' datacards/{DATACARD}".format(DATACARD="tmp.txt"))
-system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/python/tanb_grid_new.py --ana-type {ANA} --model mhmodp --parameter1 {MA} --tanb {TANB} datacards/{PATH}".format(
-    CMSSW_BASE=os.environ['CMSSW_BASE'],
-    ANA=options.analysis,
-    MA=options.mA,
-    TANB=options.tanb,
-    PATH="tmp.txt"
-    ))
-system("rm datacards/tmp*")
+
+if options.analysis != "sm" :
+    optcards = ""  
+    for datacard in os.listdir("datacards"):
+        if datacard.endswith(".txt"):
+            optcards += datacard[:datacard.find(".txt")]
+            optcards += "=datacards/"
+             ## add datacard for combination
+            optcards += datacard
+            optcards += " "
+        #print optcards
+    system("combineCards.py -S %s > datacards/tmp.txt" % optcards)
+    system("perl -pi -e 's/datacards//g' datacards/{DATACARD}".format(DATACARD="tmp.txt"))
+    system("perl -pi -e 's/common/root/g' datacards/{DATACARD}".format(DATACARD="tmp.txt"))
+    system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/python/tanb_grid_new.py --ana-type {ANA} --model mhmodp --parameter1 {MA} --tanb {TANB} datacards/{PATH}".format(
+        CMSSW_BASE=os.environ['CMSSW_BASE'],
+        ANA=options.analysis,
+        MA=options.mA,
+        TANB=options.tanb,
+        PATH="tmp.txt"
+        ))
+    system("rm datacards/tmp*")
 
