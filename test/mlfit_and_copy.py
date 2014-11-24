@@ -10,6 +10,7 @@ parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="strin
 parser.add_option("--mm-discriminator", dest="mm_discriminator", default=False, action="store_true", help="Show the actual mm discriminator instead of the more intuitive msvfit plot. [Default: False]")
 parser.add_option("--mA", dest="mA", default="160", type="string", help="Mass of pseudoscalar mA only needed for mssm. [Default: '160']")
 parser.add_option("--tanb", dest="tanb", default="8", type="string", help="Tanb only needed for mssm. [Default: '8']")
+parser.add_option("--profile", dest="profile", default=False, action="store_true", help="Apply profiling of A->Zh and bbH in Hhh. [Default: False]")
 (options, args) = parser.parse_args()
 
 if len(args) < 1 :
@@ -38,7 +39,10 @@ if not options.skip :
     if options.analysis == "mssm" :    
         system("limit.py --max-likelihood --stable --rMin %s --rMax %s --physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs' --physics-model-options 'modes=ggH;ggHRange=-5:5' %s" % (options.rMin, options.rMax, dir))
     if options.analysis == "Hhh" :
-        system("limit.py --max-likelihood --stable --rMin %s --rMax %s --physics-model 'tmp=HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel' --physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohhTo2Tau2B$:r[1,-5,5];map=^.*/ggHTohhTo2Tau2B_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZhToLLBB(\d+\.*\d*)*$:AZhLLBB=AZhLLBB[1,-500,500];map=^.*/ggAToZhToLLTauTau(\d+\.*\d*)*$:AZhLLTauTau=AZhLLTauTau[1,-500,500];map=^.*/bbH(\d+\.*\d*)*$:bbH=bbH[1,-500,500] \' %s" %(options.rMin,options.rMax,dir))
+        if options.profile :
+            system("limit.py --max-likelihood --stable --rMin %s --rMax %s --physics-model 'tmp=HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel' --physics-model-options=\'map=^.*h(bb|tt|cc|mm).*/ggHTohhTo2Tau2B$:r[1,-5,5];map=^.*/ggHTohhTo2Tau2B_h(bb|tt|cc|mm)$:r[1,-5,5];map=^.*/ggAToZhToLLBB(\d+\.*\d*)*$:AZhLLBB=AZhLLBB[1,-500,500];map=^.*/ggAToZhToLLTauTau(\d+\.*\d*)*$:AZhLLTauTau=AZhLLTauTau[1,-500,500];map=^.*/bbH(\d+\.*\d*)*$:bbH=bbH[1,-500,500] \' %s" %(options.rMin,options.rMax,dir))
+        else :
+            system("limit.py --max-likelihood --stable --rMin %s --rMax %s %s" %(options.rMin,options.rMax,dir))
 
 
 if options.analysis == "sm" :

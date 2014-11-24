@@ -22,6 +22,7 @@ parser.add_option("--add-mutau-soft", dest="add_mutau_soft", action="store_true"
 parser.add_option("--hww-signal", dest="hwwsig", action="store_true", default=False, help="Add H->WW processes as background to the em channel [Default: False]")
 parser.add_option("-v", "--verbose", dest="verbose", action="store_true", default=False, help="Run in verbose more. [Default: 'False']")
 parser.add_option("-c", "--config", dest="config", default="", help="Additional configuration file for the channels, periods and categories. [Default: '']")
+parser.add_option("--profile",dest="profile",default=False, action="store_true", help="Include A->Zh and bbH (in case of profiling). [Default: False]")
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -307,13 +308,20 @@ for chn in config.channels :
                    plots = Analysis(options.analysis, histfile, config.categoryname[chn][per][config.categories[chn][per].index(cat)][:3],
                                     process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
                                     "templates/HTT_{CHN}_X_template.C".format(CHN=chn.upper()),
-                                    "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per)
+                                    "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per),
+                                    options.profile
                                     )
-                else:
+                elif options.profile:
                    plots = Analysis(options.analysis, histfile, config.categoryname[chn][per][config.categories[chn][per].index(cat)],
                                     process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
+                                    "templates/HHH_{CHN}_X_Profile_template.C".format(CHN=chn.upper()),
+                                    "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per),
+                                    )
+                else :
+                   plots = Analysis(options.analysis,histfile,config.categoryname[chn][per][config.categories[chn][per].index(cat)],
+                                    process_weight,process_shape_weight, process_uncertainties, process_shape_uncertainties,
                                     "templates/HHH_{CHN}_X_template.C".format(CHN=chn.upper()),
-                                    "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per)
+                                    "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per),
                                     )
             plots.run()
             scale_file=open("scales_{CHN}_{CAT}_{PER}.py".format(CHN=chn, CAT=cat, PER=per),'w')
