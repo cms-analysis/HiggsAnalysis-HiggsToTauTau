@@ -3,7 +3,8 @@ import FWCore.ParameterSet.Config as cms
 layout = cms.PSet(
     ## dataset
     #dataset = cms.string("#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                     19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
-    dataset = cms.string("#scale[1.5]{CMS} (unpublished), h,H,A#rightarrow#tau#tau, 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
+    #dataset = cms.string("#scale[1.5]{CMS} (unpublished), h,H,A#rightarrow#tau#tau, 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
+    dataset = cms.string("#scale[1.5]{CMS} Preliminary, h,H,A#rightarrow#tau#tau, 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
     #dataset = cms.string("#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                                           18.3 fb^{-1} (8 TeV)"),
     ## x-axis title
     xaxis = cms.string("m_{A} [GeV]"),
@@ -14,7 +15,7 @@ layout = cms.PSet(
     ## min for plotting
     min = cms.double(0.7),
     ## max for plotting
-    max = cms.double(30),
+    max = cms.double(30), #60 for logplotting
     ## min for plotting
     log = cms.int32(0),
     ## print to png

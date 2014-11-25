@@ -3,7 +3,8 @@ import FWCore.ParameterSet.Config as cms
 layout = cms.PSet(
     ## dataset
     #dataset = cms.string("#scale[1.5]{CMS}   #phi#rightarrow#tau#tau                                          19.7 fb^{-1} (8 TeV)"),	
-    dataset = cms.string("#scale[1.5]{CMS} (unpublished)   #phi#rightarrow#tau#tau                 19.7 fb^{-1} (8 TeV)"),
+    #dataset = cms.string("#scale[1.5]{CMS} (unpublished)   #phi#rightarrow#tau#tau                 19.7 fb^{-1} (8 TeV)"),
+    dataset = cms.string("#scale[1.5]{CMS} Preliminary   #phi#rightarrow#tau#tau                 19.7 fb^{-1} (8 TeV)"),
     #dataset = cms.string("#scale[1.5]{CMS}   Projection       #phi#rightarrow#tau#tau                 300 fb^{-1} (14 TeV)"),
     #dataset = cms.string("#scale[1.5]{CMS}   #phi#rightarrow#tau#tau                                          18.3 fb^{-1} (8 TeV)"),
     ## extra labels (below legend)
