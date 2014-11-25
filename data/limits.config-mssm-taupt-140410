@@ -96,7 +96,7 @@ mt_soft_processes = ZL,ZJ,W>QCD
 blind
 
 periods = 7TeV 8TeV
-channels = mt et mm em tt
+channels = mm em et mt tt
 
 em_categories_7TeV = 8 9
 et_categories_7TeV = 8 9
