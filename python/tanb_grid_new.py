@@ -68,7 +68,8 @@ class MODEL(object) :
         ## model path (as defined in ModelParams_BASE)
         self.modelpath = modelpath
         ## model type (as defined in ModelParams_BASE)
-        self.modeltype = 'hplus_xsec' if options.ana_type=="Hplus" else 'mssm_xsec'
+        #self.modeltype = 'hplus_xsec' if options.ana_type=="Hplus" else 'mssm_xsec'
+        self.modeltype = 'mssm_xsec'
         ## central value of type {(period,decay,proc) : MODEL_PARAMS}
         self.central = {}
         ## shifts for uncertainties of type {'type' : {(period,decay,proc) : (MODEL_PARAMS,MODEL_PARAMS)}}
