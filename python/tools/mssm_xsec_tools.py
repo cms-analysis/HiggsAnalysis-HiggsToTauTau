@@ -61,7 +61,20 @@ class mssm_xsec_tools():
         " Lookup the branching ratio for A/H/h->bb"
         # Unpack
         type, type_info = input
-        type_info['BR-Zh'] = self.lookup_value(parameter1, tan_beta, "h_brZh0_%s" % type)  
+        type_info['BR-Zh'] = self.lookup_value(parameter1, tan_beta, "h_brZh0_%s" % type)
+
+    def _add_br_tHpb(self, parameter1, tan_beta, input):
+        " Lookup the branching ratio for t->Hp+b"
+        # Unpack
+        type, type_info = input
+        type_info['BR-tHpb'] = self.lookup_value(parameter1, tan_beta, "h_brHpb_t")
+
+    def _add_br_taunu(self, parameter1, tan_beta, input):
+        " Lookup the branching ratio for Hp->tau+nu"
+        # Unpack
+        type, type_info = input
+        print parameter1, tan_beta, self.lookup_value(parameter1, tan_beta, "h_brtaunu_%s" % type)
+        type_info['BR-taunu'] = self.lookup_value(parameter1, tan_beta, "h_brtaunu_%s" % type)
 
     def _add_mass(self, parameter1, tan_beta, input):
         " Lookup the mass for a given higgs type "
@@ -117,6 +130,20 @@ class mssm_xsec_tools():
             -1 : (1.0/(1.0 + t))*pdf_down_5f
         }
 
+    def _add_muHp(self, parameter1, tan_beta, input):
+        type, type_info = input
+        type_info.setdefault('mu', {})
+        type_info['mu']['HH'] = {
+            -1 : float(0.21),
+            +1 : float(0.21),
+            0 : 0,
+            }
+        type_info['mu']['HW'] = {
+            -1 : float(0.21),
+            +1 : float(0.21),
+            0 : 0,
+            }
+
     def _add_mu(self, parameter1, tan_beta, input):
         type, type_info = input
         type_info.setdefault('mu', {})
@@ -157,7 +184,7 @@ class mssm_xsec_tools():
             type_info['pdf']['bbH'] = {
                 -1 : self.lookup_value(parameter1, tan_beta, 'h_bbH_pdfalphas68down_%s' % type)*self.unit_pb,
                 +1 : self.lookup_value(parameter1, tan_beta, 'h_bbH_pdfalphas68up_%s'   % type)*self.unit_pb,
-                 0 : 0,
+                0 : 0,
                 }
         else :
             bbH_alphasdown = self.lookup_value(parameter1, tan_beta, 'h_bbH_pdfalphas68down_%s' % type)
@@ -190,33 +217,57 @@ class mssm_xsec_tools():
              0 : 0,
         }
 
+
     def query(self, parameter1, tan_beta, ana_type): #parameter1 = mu in case of lowmH and mA in all other scenarios 
-
-        higgs_types = [ 'h', 'A', 'H' ]
         
-        # Build emtpy dictionaries for each Higgs type
-        output = {
-            'parameter1' : parameter1,
-            'tan_beta' : tan_beta,
-            'higgses' : {
-                'h' : {},
-                'A' : {},
-                'H' : {}
-            }
-        }
+        output = {}
         
-        for higgs_type in higgs_types:
-            self._add_br_htt(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
-            self._add_br_hmm(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
-            self._add_br_hbb(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
-            if ana_type=='Hhh' :
-                self._add_br_Hhh(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
-                self._add_br_AZh(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
-            self._add_mass(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
-            self._add_xsec(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
-            self._add_mu(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
-            self._add_pdf(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
-            self._add_santander((higgs_type, output['higgses'][higgs_type]))
+        if ana_type=='Hplus' :
+            higgs_types = [ 'Hp' ]
+         
+            # Build emtpy dictionaries for each Higgs type
+            output = {
+                'parameter1' : parameter1,
+                'tan_beta' : tan_beta,
+                'higgses' : {
+                    'Hp' : {}
+                    }
+                }
+         
+            for higgs_type in higgs_types:
+                self._add_mass(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
+                self._add_br_tHpb(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
+                self._add_br_taunu(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
+                #self._add_xsec(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
+                self._add_muHp(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
+                
+        else :
+            higgs_types = [ 'h', 'A', 'H' ]
+            
+            # Build emtpy dictionaries for each Higgs type
+            output = {
+                'parameter1' : parameter1,
+                'tan_beta' : tan_beta,
+                'higgses' : {
+                    'h' : {},
+                    'A' : {},
+                    'H' : {}
+                    }
+                }
+            for higgs_type in higgs_types:
+                self._add_br_htt(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
+                self._add_br_hmm(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
+                self._add_br_hbb(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
+                if ana_type=='Hhh' :
+                    self._add_br_Hhh(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
+                    self._add_br_AZh(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
+                self._add_mass(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
+                self._add_xsec(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
+                self._add_mu(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
+                self._add_pdf(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
+                self._add_santander((higgs_type, output['higgses'][higgs_type]))
+            
 
-        #print output
+        print output
         return output
+    
