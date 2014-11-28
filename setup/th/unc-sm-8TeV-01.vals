@@ -36,7 +36,7 @@ mmt     ttH                             CMS_th_mc_stats_ttH_mmt_8TeV    1.09
 mmt     ZZ                              CMS_th_mc_stats_WZ_mmt_8TeV     1.15
 mmt     WZ                              CMS_th_mc_stats_ZZ_mmt_8TeV     1.18
 
-## eff: average out from MSSM. fake: from WH. A bit slippery, FIXME!
+## 
 # mmt     signal                          CMS_th_eff_b_8TeV               1.05
 # mmt     ttH,ttW,ttZ                     CMS_th_eff_b_8TeV               1.03
 # mmt     WZ,ZZ                           CMS_th_fake_b_8TeV              1.20
@@ -49,7 +49,7 @@ mmt     WZ,ZZ                           CMS_fake_b_8TeV                 1.20
 ## from the amount of non closure in f3
 mmt     reducible                       CMS_th_reducible_mmt_8TeV       1.50
 
-## from ttH analysis https://svnweb.cern.ch/cern/wsvn/cmshcg/trunk/summer2013/couplings/tth/125/ttH_hbb_8TeV.txt
+## from tHq WW analysis
 mmt     signal                          QCDscale_tHq                    1.019
 mmt     ttH                             QCDscale_ttH                    1.067
 mmt     ttW                             QCDscale_ttW                    1.105
