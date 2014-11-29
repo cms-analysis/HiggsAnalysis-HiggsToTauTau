@@ -18,6 +18,9 @@ submit.py --tanb+ LIMITS-HTohh-mhmodp/*/*
 #When running with option --no-prefit, only expected limits are calculated.
 submit.py --asymptotic --no-prefit [--physics-model="Hhh"] LIMITS-HTohh-ggHTohh/*/*
 
+#Maximum likelihood fit
+limit.py --max-likelihood LIMITS-HTohh/bbb/cmb/300
+
 #postfit plots
 cd HiggsAnalysis/HiggsToTauTau/test
 python mlfit_and_copy.py -a Hhh --mA 300 --tanb 2 [--profile] $CMSSW_BASE/src/LIMITS-label/bbb/cmb/300
