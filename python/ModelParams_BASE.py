@@ -89,8 +89,11 @@ class ModelParams_BASE:
         """
         for higgs in model_params.list_of_higgses:
             model_params.masses[higgs] = self.query_masses(higgs, query)
-            model_params.xsecs[higgs] = self.query_xsec(higgs, channel, query)
+            if self.ana_type!='Hplus' :
+                model_params.xsecs[higgs] = self.query_xsec(higgs, channel, query)
             model_params.brs[higgs] = self.query_br(higgs, decay, channel, query)
+        if self.ana_type=='Hplus' :
+            model_params.ttscale = self.query_ttscale('Hp', decay, channel, query)
 
     def use_hplus_xsec(self, query, channel, decay, model_params):
         """
