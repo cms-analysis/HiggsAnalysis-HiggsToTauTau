@@ -7,9 +7,9 @@ setup-datacards.py -p 8TeV -c th -i setups/example-bin-by-bin -o aux/example -a 
 mkdir -p LIMITS
 mkdir -p LIMITS/example-bin-by-bin
 setup-htt.py -p 8TeV -i aux/example/ -o LIMITS/example-bin-by-bin/sm -c 'th' 125
-limit.py --asymptotic --expectedOnly LIMITS/example-bin-by-bin/sm/th/125
+limit.py --no-prefit --asymptotic --expectedOnly LIMITS/example-bin-by-bin/sm/th/125
 
-limit.py --asymptotic --expectedOnly LIMITS/example-bin-by-bin/sm/*/125
+limit.py --no-prefit --asymptotic --expectedOnly LIMITS/example-bin-by-bin/sm/*/125
 
 
 beware that under SLC6, the datacard txt can contain weird carachters that may mess the limit computation up.
@@ -26,5 +26,14 @@ Once you have run the limit, you may want to plot it.
 use this script
 th_plotter.py LIMITS/example-bin-by-bin/sm/
 
+
+
+Pulls and postfit plots
+limit.py --hide-fitresult --max-likelihood --stable --rMin -5 --rMax 5 LIMITS/example-bin-by-bin/sm/th/125
+
+cd HiggsAnalysis/HiggsToTauTau/test
+python mlfit_and_copy.py $CMSSW_BASE/src/LIMITS/example-bin-by-bin/sm/th/125
+python produce_macros.py
+python run_macros.py
 
 
