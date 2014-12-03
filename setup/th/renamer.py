@@ -54,5 +54,5 @@ def fill_root_file(file_in_name, category, triggerSF, file_out_name, option = 'r
   file_out.Close()
  
   
-fill_root_file('Fisher_emt.root','emt', 0.915, 'htt_th.inputs-sm-8TeV.root','recreate', dummy_data = True )
-fill_root_file('Fisher_mmt.root','mmt', 0.959, 'htt_th.inputs-sm-8TeV.root','update'  , dummy_data = True )
+fill_root_file('Fisher_emt.root','emt', 0.915, 'htt_th.inputs-sm-8TeV.root','recreate', dummy_data = False )
+fill_root_file('Fisher_mmt.root','mmt', 0.959, 'htt_th.inputs-sm-8TeV.root','update'  , dummy_data = False )
