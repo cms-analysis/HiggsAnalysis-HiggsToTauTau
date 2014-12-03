@@ -12,7 +12,6 @@ muTau_2jet1tag		VV              	CMS_eff_b_8TeV                  	1.02
 muTau_2jet1tag		W               	CMS_eff_b_8TeV                  	1.01
 muTau_2jet1tag		QCD               	CMS_eff_b_8TeV                  	0.98
 muTau_2jet1tag		ZL               	CMS_eff_b_8TeV                  	1.05
-muTau_2jet1tag		VV        			CMS_fake_b_8TeV                 	1.01
 muTau_2jet1tag		VV        			CMS_fake_b_8TeV                 	1.03
 muTau_2jet1tag		ZL        			CMS_fake_b_8TeV                 	1.04
 muTau_2jet1tag		ZJ        			CMS_fake_b_8TeV                 	1.02
