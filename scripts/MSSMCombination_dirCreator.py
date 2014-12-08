@@ -58,14 +58,14 @@ else :
                 os.system("cp {FILE} LIMITS-MSSMCombination{LABEL}/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="htt_"+str(tanb)+".txt"))
                 if mass > 150 : #area without hplus
                     os.system("text2workspace.py -m {MASS} LIMITS-MSSMCombination{LABEL}/{MASS}/htt_{TANB}.txt -o LIMITS-MSSMCombination{LABEL}/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
-                elif float(tanb) < 1 or float(tanb) >= 10 :
+                elif float(tanb) >= 10 :
                     os.system("text2workspace.py -m {MASS} LIMITS-MSSMCombination{LABEL}/{MASS}/htt_{TANB}.txt -o LIMITS-MSSMCombination{LABEL}/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
                 print "htt mass", mass, "tanb", tanb
             for file in glob.glob("{HPLUS}/{MASS}/debug/*0.txt".format(HPLUS=options.path_hplus, MASS=str(mass))) :
                 if mass < 150 : #only interesting and allowed area 
                     tanbs=file.rstrip(".txt").split("_")
                     tanb=tanbs[1]
-                    if float(tanb) >= 1 and float(tanb) < 10 :
+                    if float(tanb) < 10 :
                         os.system("cp {FILE} LIMITS-MSSMCombination{LABEL}/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="hplus_"+str(tanb)+".txt"))
                         os.system("cp {HPLUS}/{MASS}/combine_histograms_hplushadronic_light.root_{MASS}_{TANB} LIMITS-MSSMCombination{LABEL}/{MASS}".format(HPLUS=options.path_hplus, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb).replace("00", "0")))
                         os.system("cp {HPLUS}/{MASS}/combine_histograms_hplushadronic_light.root LIMITS-MSSMCombination{LABEL}/{MASS}".format(HPLUS=options.path_hplus, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
