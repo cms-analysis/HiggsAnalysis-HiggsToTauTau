@@ -23,6 +23,7 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
     canv.SetLogy(1); 
   }
 
+  
   // determine 1sigma uncertainties on mass value
   bool crossed = false;
   double lowerBound = 0.;
@@ -32,6 +33,7 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   double fitUpperBound = 9999.;
   double fitMinX = 0, fitMinY = 9999.;
 
+  
   // calculate the DeltaNLL for the expected
   TGraph *newexpected = new TGraph();
   for(int idx=0; idx<expected->GetN(); ++idx){
@@ -135,11 +137,21 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   outerBand->SetLineWidth(1.);
   outerBand->SetLineColor(kBlack);
   outerBand->SetFillColor(kAzure-9);
+  //convert Delta NLL to 2*Delta NLL (plotting convention)
+  for (int i=0;i<outerBand->GetN();i++) {
+    outerBand->GetY()[i] *= 2;
+    outerBand->SetPointError(i,outerBand->GetErrorXlow(i),outerBand->GetErrorXhigh(i),outerBand->GetErrorYlow(i)*2,outerBand->GetErrorYhigh(i)*2);
+  }
   outerBand->Draw("3");
 
   innerBand->SetLineWidth(1.);
   innerBand->SetLineColor(kBlack);
   innerBand->SetFillColor(kAzure-4);
+  //convert Delta NLL to 2*Delta NLL (plotting convention)
+  for (int i=0;i<innerBand->GetN();i++) { 
+    innerBand->GetY()[i] *= 2;
+    innerBand->SetPointError(i,innerBand->GetErrorXlow(i),innerBand->GetErrorXhigh(i),innerBand->GetErrorYlow(i)*2,innerBand->GetErrorYhigh(i)*2);
+  }
   innerBand->Draw("3same");
 
   canv.RedrawAxis();
@@ -147,25 +159,37 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   newexpected->SetLineColor(kBlue);
   newexpected->SetLineWidth(3.);
   newexpected->SetLineStyle(11);
+  //convert Delta NLL to 2*Delta NLL (plotting convention)
+  for (int i=0;i<newexpected->GetN();i++) newexpected->GetY()[i] *= 2;
   newexpected->Draw("Lsame");
   
   observed->SetMarkerStyle(20);
   observed->SetMarkerSize(1.0);
   observed->SetMarkerColor(kBlack);
   observed->SetLineWidth(3.);
+  //convert Delta NLL to 2*Delta NLL (plotting convention)
+  for (int i=0;i<observed->GetN();i++) observed->GetY()[i] *= 2;
+  observed->GetFunction("pol2")->SetBit(TF1::kNotDraw);
   observed->Draw("PLsame");
+  TF1 * fit_function_new=NULL;
   if(parabolic)
   {
-    fit_function->SetRange(lowerBound-(minX-lowerBound),upperBound+(upperBound-minX));
-    fit_function->SetLineColor(kRed-4);
-    fit_function->SetLineStyle(7);
-    fit_function->SetLineWidth(3);
-    fit_function->Draw("Lsame");
+    // A messy hack to get the fit function to double its y axis also
+    fit_function_new= new TF1("fit_function_new", "pol2");
+    fit_function_new->SetParameters(2*fit_function->GetParameter(0), 2*fit_function->GetParameter(1), 2*fit_function->GetParameter(2));
+    fit_function_new->SetRange(lowerBound-(minX-lowerBound),upperBound+(upperBound-minX));
+    fit_function_new->SetLineStyle(7);
+    fit_function_new->SetLineColor(kRed-4);
+    fit_function_new->SetLineStyle(7);
+    fit_function_new->SetLineWidth(3);
+    fit_function_new->Draw("Lsame");
   }
 
   for(std::vector<TGraph*>::const_iterator sigma = sigmas.begin(); sigma!=sigmas.end(); ++sigma){
     (*sigma)->SetLineColor(kGray+2);
     (*sigma)->SetLineWidth(3.);
+  //convert Delta NLL to 2*Delta NLL (plotting convention)
+    for (int i=0;i<(*sigma)->GetN();i++) (*sigma)->GetY()[i] *= 2;
     (*sigma)->Draw("Lsame");
   }
 
@@ -174,7 +198,7 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   leg->SetFillStyle ( 0 );
   leg->SetFillColor (kWhite);
   leg->AddEntry(observed, "Observed",  "PL");
-  if(parabolic){ leg->AddEntry( fit_function, "Parabolic fit",  "L" ); }
+  if(parabolic){ leg->AddEntry( fit_function_new, "Parabolic fit",  "L" ); }
   leg->AddEntry( newexpected , "H (125 GeV) Expected",  "L" );
   leg->AddEntry( innerBand, "#pm 1#sigma Expected",  "F" ); 
   leg->AddEntry( outerBand, "#pm 2#sigma Expected",  "F" ); 
@@ -194,8 +218,10 @@ void plottingMassEstimate(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsy
   //mass->AddText(massText.str().c_str());
   //mass->Draw("same"); 
   
+  //convert Delta NLL to 2*Delta NLL (plotting convention)
+  max=max*0.5;
   /// 1 sigma
-  TPaveText * sigma1 = new TPaveText(0.88, (0.6/(max*1.2))+0.09, 0.93, (0.6/max)+0.14, "NDC");
+  TPaveText * sigma1 = new TPaveText(0.88, (0.6/(max*1.2))+0.09, 0.93, (0.6/(max))+0.14, "NDC");
   sigma1->SetBorderSize(   0 );
   sigma1->SetFillStyle(    0 );
   sigma1->SetTextAlign(   12 );
