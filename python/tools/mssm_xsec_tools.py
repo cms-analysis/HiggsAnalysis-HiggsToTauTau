@@ -37,7 +37,7 @@ class mssm_xsec_tools():
         " Lookup the branching ratio for a given higgs type "
         # Unpack
         type, type_info = input
-        type_info['BR'] = self.lookup_value(parameter1, tan_beta, "h_brtautau_%s" % type)
+        type_info['BR-tautau'] = self.lookup_value(parameter1, tan_beta, "h_brtautau_%s" % type)
 
     def _add_br_hmm(self, parameter1, tan_beta, input):
         " Lookup the branching ratio for A/H/h->mumu"

@@ -13,9 +13,9 @@ model_opts.add_option("--parameter1", dest="parameter1", default="", type="strin
 model_opts.add_option("--tanb", dest="tanb", default="", type="string",
                        help="The value of tanb in the model. Default: \"\"]")
 model_opts.add_option("--model", dest="modelname", default="mhmax-mu+200", type="string",
-                       help="The model which should be used (choices are: mhmax-mu+200, mhmodp, mhmodm, lowmH, tauphobic, lightstau1, lightstopmod). Default: \"mhmax-mu+200\"]")
+                       help="The model which should be used (choices are: mhmax-mu+200, mhmodp, mhmodm, lowmH, tauphobic, lightstau1, lightstopmod, 2HDM_ty1_mA300_mH300.root). Default: \"mhmax-mu+200\"]")
 model_opts.add_option("--ana-type", dest="ana_type", default="NeutralMSSM", type="string",
-                       help="The model which should be used (choices are: NeutralMSSM, Hhh). Default: \"NeutralMSSM\"]")
+                       help="The model which should be used (choices are: NeutralMSSM, Hhh, Hplus, twoHDM). Default: \"NeutralMSSM\"]")
 model_opts.add_option("--MSSMvsSM", dest="MSSMvsSM", default=False, action="store_true",
                       help="This is needed for the signal hypothesis separation test MSSM vs SM [Default: False]")
 parser.add_option_group(model_opts)
@@ -69,7 +69,8 @@ class MODEL(object) :
         self.modelpath = modelpath
         ## model type (as defined in ModelParams_BASE)
         #self.modeltype = 'hplus_xsec' if options.ana_type=="Hplus" else 'mssm_xsec'
-        self.modeltype = 'mssm_xsec'
+        #self.modeltype = 'mssm_xsec'
+        self.modeltype = 'twohdm_xsec' if options.ana_type=="twoHDM" else 'mssm_xsec'
         ## central value of type {(period,decay,proc) : MODEL_PARAMS}
         self.central = {}
         ## shifts for uncertainties of type {'type' : {(period,decay,proc) : (MODEL_PARAMS,MODEL_PARAMS)}}
@@ -99,7 +100,7 @@ class MODEL(object) :
 
     def setup_model(self, period, decay, procs, shifts=[]) :
         """
-        Setup the mdoel for given self.modelpath, self.modeltype, self.mass, self.tanb, period, procs and decay. In case that
+        Setup the model for given self.modelpath, self.modeltype, self.mass, self.tanb, period, procs and decay. In case that
         shifts is a non-emty list also shifts in mu or pdf are returned. Other shifts are currently not supported.
         """
         ## create model
@@ -217,6 +218,9 @@ def main() :
             if options.ana_type=="Hplus":
                 print "updating model to parameter set:", per, chn, missing_procs, ['mu']
                 model.setup_model(per, chn, missing_procs, ['mu'])
+            elif options.ana_type=="twoHDM" :
+                print "updating model to parameter set:", per, chn, missing_procs
+                model.setup_model(per, chn, missing_procs)               
             else :
                 print "updating model to parameter set:", per, chn, missing_procs, ['mu', 'pdf']
                 model.setup_model(per, chn, missing_procs, ['mu', 'pdf'])
