@@ -51,8 +51,6 @@ mgroup.add_option("--min", dest="min", default="0.5", type="string",
 mgroup.add_option("--max", dest="max", default="80", type="string", help="Maximum value of signal strength. [Default: 80]")
 mgroup.add_option("--no-prefit", dest="nofit", default=False, action="store_true",
                   help="Don't apply a fit before running toys. [Default: False]")
-mgroup.add_option("--old", dest="old", default=False, action="store_true",
-                  help="Switch between tanb_grid.py and tanb_grid_new.py. If validated this could be deleted [Default: False]")
 parser.add_option_group(mgroup)
 ## combine options for MarkovChainMC/Bayesian
 ngroup = OptionGroup(parser, "COMBINE (MarkovChainMC) COMMAND OPTIONS", "Command options for the use of combine with method -M MarkovChainMC.")
@@ -242,12 +240,7 @@ for directory in args :
                 ## determine masspoint from directory name
                 masspoint = directory[directory.rfind("/")+1:]
                 ## prepare additional workspace creation
-                if options.old :
-                     ## old
-                    os.system("cp $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/python/tanb_grid.py .")
-                else :
-                    ## new
-                    os.system("cp $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/python/tanb_grid_new.py .")
+                os.system("cp $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/python/tanb_grid.py .")
                 ## determine grid of tanb values from min and max
                 dx = 0
                 if options.points > 1 :
@@ -255,14 +248,8 @@ for directory in args :
                 points = [ float(options.min) + dx*i for i in range(options.points) ]
                 ## create additional workspaces
                 for tanb in points :
-                    if options.old :
-                        ## old
-                        os.system("python tanb_grid.py -m {mass} -t {tanb} --model {model} --interpolation {interpolation} tmp.txt".format(
-                            mass=masspoint, tanb=tanb, model=options.model, interpolation=options.interpolation_mode))
-                    else :
-                        ## new
-                        os.system("python tanb_grid_new.py --parameter1 {mass} --tanb {tanb} --model {model} --ana-type {anatype} {MSSMvsSM} tmp.txt".format(
-                            mass=masspoint, tanb=tanb, model=options.model, anatype=options.ana_type, MSSMvsSM='--MSSMvsSM' if options.MSSMvsSM else ""))
+                    os.system("python tanb_grid.py --parameter1 {mass} --tanb {tanb} --model {model} --ana-type {anatype} {MSSMvsSM} tmp.txt".format(
+                        mass=masspoint, tanb=tanb, model=options.model, anatype=options.ana_type, MSSMvsSM='--MSSMvsSM' if options.MSSMvsSM else ""))
                 ## setup the batchjob creation for combine -M CLs with tanb grid points instead of cross section grid points
                 opts = "-o {out} -n {points} -m {mass} -O {options} -T {toysH} -t {toys} -j {jobs} -q {queue}".format(
                     out=options.out, points=options.points, mass='110' if options.model=='lowmH' else masspoint, options=options.options, toysH=options.T,
