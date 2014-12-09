@@ -40,7 +40,7 @@ parser.add_option("-c", "--config", dest="config", default="",
 
 (options, args) = parser.parse_args()
 if len(args) < 1 :
-    args.append("260-350:10")
+    args.append("260_350:10")
 
 import os
 import glob 
@@ -157,7 +157,7 @@ if options.update_setup :
                 continue
             if not options.profile :
                 continue
-            os.system("scale2accept.py -i {SETUP} -c '{CHN}' -p '{PER}' -a 'Hhh' 90 100-200:20 130 250-400:50".format(
+            os.system("scale2accept.py -i {SETUP} -c '{CHN}' -p '{PER}' -a 'Hhh' 90 100_200:20 130 250_400:50".format(
                 SETUP=setup,
                 CHN=chn,
                 PER=per,

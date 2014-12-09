@@ -3,11 +3,11 @@
 python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM_taupt.py -a bbb --label='-yymmdd-mssm-taupt' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-yymmdd-mssm-taupt.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-taupt-yymmdd" --update-all --SMHasBackground --SMHasSignal  --blind-datacards --extra-templates='ggH_SM125,qqH_SM125,VH_SM125'
 
 ## datacards unblinded (bbb)
-setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-[mhmodm,mhmodp,mhmax-mu+200,lightstau1,tauphobic,lightstopmod] -a mssm -c 'mt et em mm tt' -p 8TeV --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 90 130 100-200:20 250-500:50 600-1000:100 
-setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-[mhmodm,mhmodp,mhmax-mu+200,lightstau1,tauphobic,lightstopmod] -a mssm -c 'mt et em mm tt' -p 7TeV 90 130 100-200:20 250-500:50 600-1000:100 
+setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-[mhmodm,mhmodp,mhmax-mu+200,lightstau1,tauphobic,lightstopmod] -a mssm -c 'mt et em mm tt' -p 8TeV --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 90 130 100_200:20 250_500:50 600_1000:100 
+setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-[mhmodm,mhmodp,mhmax-mu+200,lightstau1,tauphobic,lightstopmod] -a mssm -c 'mt et em mm tt' -p 7TeV 90 130 100_200:20 250_500:50 600_1000:100 
 ## datacards unblinded (bbb) for lowmH
-setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-lowmH --lowmH -a mssm -c 'mt et em mm tt' -p 8TeV --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 300-3100:100
-setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-lowmH --lowmH -a mssm -c 'mt et em mm tt' -p 7TeV 300-3100:100
+setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-lowmH --model lowmH -a mssm -c 'mt et em mm tt' -p 8TeV --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 300_3100:100
+setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-lowmH --model lowmH -a mssm -c 'mt et em mm tt' -p 7TeV 300_3100:100
 ## datacards for ML-fit (bbb-mlfit)
 setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-mlfit -a mssm -c 'mt et em mm tt' -p 8TeV --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 160 350 500
 setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-mlfit -a mssm -c 'mt et em mm tt' -p 7TeV 160 350 500
@@ -15,12 +15,12 @@ setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-mlfit 
 setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-gof -a mssm -c 'mt et em mm tt' -p 8TeV --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 160 350 500
 setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-gof -a mssm -c 'mt et em mm tt' -p 7TeV 160 350 500
 ## datacards for 1d limits on ggH
-setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-ggH -p 8TeV -a mssm -c 'mt et em mm tt' --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 90 130 100-200:20 250-500:50 600-1000:100
+setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-ggH -p 8TeV -a mssm -c 'mt et em mm tt' --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 90 130 100_200:20 250_500:50 600_1000:100
 ## datacards for 1d limits on bbH
-setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-bbH -p 8TeV -a mssm -c 'mt et em mm tt' --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 90 130 100-200:20 250-500:50 600-1000:100
+setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-bbH -p 8TeV -a mssm -c 'mt et em mm tt' --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 90 130 100_200:20 250_500:50 600_1000:100
 ## datacards for 2d limits ggH-bbH (bbb-2d)
 mkdir LIMITS-yymmdd-mssm/bbb-ggH-bbH
-cvs2local.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-ggH-bbH -p 8TeV -a mssm -c 'mt et em mm tt' --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 90 130 100-200:20 250-500:50 600-1000:100
+cvs2local.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-ggH-bbH -p 8TeV -a mssm -c 'mt et em mm tt' --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 90 130 100_200:20 250_500:50 600_1000:100
 
 
 (2) launch ML-fit:

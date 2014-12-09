@@ -122,15 +122,15 @@ def parseArgs(args) :
     """
     list = []
     for elem in args :
-        if elem.find("-") > -1 :
+        if elem.rfind("_") > -1 :
             if elem.find(":") > -1 :
                 step = float(elem[elem.find(":")+1:])
-                min = float(elem[:elem.find("-")  ])
-                max = float(elem[elem.find("-")+1:elem.find(":")])
+                min = float(elem[:elem.find("_")  ])
+                max = float(elem[elem.find("_")+1:elem.find(":")])
             else :
                 step = 1
-                min = float(elem[:elem.find("-")  ])
-                max = float(elem[elem.find("-")+1:])
+                min = float(elem[:elem.find("_")  ])
+                max = float(elem[elem.find("_")+1:])
             while min <= max :
                 if is_integer(min):
                     if not int(min) in list :
