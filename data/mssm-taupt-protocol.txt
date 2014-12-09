@@ -6,8 +6,8 @@ python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM_taupt.py -a bbb --label='-yymm
 setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-[mhmodm,mhmodp,mhmax-mu+200,lightstau1,tauphobic,lightstopmod] -a mssm -c 'mt et em mm tt' -p 8TeV --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 90 130 100_200:20 250_500:50 600_1000:100 
 setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-[mhmodm,mhmodp,mhmax-mu+200,lightstau1,tauphobic,lightstopmod] -a mssm -c 'mt et em mm tt' -p 7TeV 90 130 100_200:20 250_500:50 600_1000:100 
 ## datacards unblinded (bbb) for lowmH
-setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-lowmH --lowmH -a mssm -c 'mt et em mm tt' -p 8TeV --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 300_3100:100
-setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-lowmH --lowmH -a mssm -c 'mt et em mm tt' -p 7TeV 300_3100:100
+setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-lowmH --model lowmH -a mssm -c 'mt et em mm tt' -p 8TeV --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 300_3100:100
+setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-lowmH --model lowmH -a mssm -c 'mt et em mm tt' -p 7TeV 300_3100:100
 ## datacards for ML-fit (bbb-mlfit)
 setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-mlfit -a mssm -c 'mt et em mm tt' -p 8TeV --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 160 350 500
 setup-htt.py -i aux-yymmdd-mssm-taupt/bbb -o LIMITS-yymmdd-mssm-taupt/bbb-mlfit -a mssm -c 'mt et em mm tt' -p 7TeV 160 350 500
