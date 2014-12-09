@@ -56,7 +56,7 @@ parser.add_option("--finebin-morph", dest="rebin_morph", default=False, action="
 (options, args) = parser.parse_args()
 if len(args) < 1 :
     #parser.print_usage()
-    args.append("110-145:5")
+    args.append("110_145:5")
     #exit(1)
 
 import os

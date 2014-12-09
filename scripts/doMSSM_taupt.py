@@ -53,10 +53,10 @@ parser.add_option("-c", "--config", dest="config", default="",
 if len(args) < 1 :
     #parser.print_usage()
     if not options.fine_scan:
-        args.append("90 130 100-200:20 250-500:50 600-1000:100")
+        args.append("90 130 100_200:20 250_500:50 600_1000:100")
     else :
-        args.append("90-250:10 275-500:25 550-1000:50")
-        #args.append("90 100-180:5 200 250-500:50 600-1000:100")
+        args.append("90_250:10 275_500:25 550_1000:50")
+        #args.append("90 100_180:5 200 250_500:50 600_1000:100")
     #exit(1)
 
 import os
@@ -219,7 +219,7 @@ if options.update_setup :
         for per in config.periods :
             if directories[chn][per] == 'None' :
                 continue
-            runCommand("scale2accept.py -i {SETUP} -c '{CHN}' -p '{PER}' 90 100-200:20 130 250-500:50 600-1000:100".format(
+            runCommand("scale2accept.py -i {SETUP} -c '{CHN}' -p '{PER}' 90 100_200:20 130 250_500:50 600_1000:100".format(
                 SETUP=setup,
                 CHN=chn,
                 PER=per,

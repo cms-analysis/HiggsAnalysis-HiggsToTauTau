@@ -1,4 +1,4 @@
-##Example set of commands to setup and run limits for H->hh analysis. Currently available for mt, et, and em, masses 250-350 in steps of 50, 8TeV only. 
+##Example set of commands to setup and run limits for H->hh analysis. Currently available for mt, et, and em, masses 250 to 350 in steps of 50, 8TeV only. 
 
 #From src directory of CMSSW release, with the CombinedLimits and HiggsTauTau packages added as described on the twiki:
 # https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideHiggs2TauLimits
