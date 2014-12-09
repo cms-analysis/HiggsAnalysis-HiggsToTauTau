@@ -18,7 +18,10 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
         custom_tanb = [float(k) for k in customTanb.split(',')]
         idx=0
         while idx < len(custom_tanb) :
-            dirs = vec2str(subvec(args,  90,  1000))
+            #dirs = vec2str(subvec(args,  -1000,  1000))
+            dirs = ""
+            for dir in args :
+                dirs += dir+" "
             if idx < len(custom_tanb)-1 :
                 grid_save = [
                     "{CMD} -n 2 --min {START} --max {END} {SUB} {OPTS} {USER} {DIRS}".format(START=custom_tanb[idx], END=custom_tanb[idx+1], CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
