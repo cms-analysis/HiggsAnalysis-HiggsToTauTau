@@ -176,14 +176,33 @@ if options.analysis == "mssm" :
             "hbb"  : ( 90,  350),
             }
 if options.analysis == "Hhh" :
-    valid_masses = {
-        "ee"   : (250, 350),
-        "mm"   : (250, 350),
-        "em"   : (250, 350),
-        "mt"   : (250, 350),
-        "et"   : (250, 350),
-        "tt"   : (250, 350),
-    }
+    if options.model=="lowmH" :
+        valid_masses = {
+            "ee"   : ( 300, 3100),
+            "mm"   : ( 300, 3100),
+            "em"   : ( 300, 3100),
+            "mt"   : ( 300, 3100),
+            "et"   : ( 300, 3100),
+            "tt"   : ( 300, 3100),
+            }
+    elif options.model=="2HDM" :
+        valid_masses = {
+            "ee"   : ( -1, 1),
+            "mm"   : ( -1, 1),
+            "em"   : ( -1, 1),
+            "mt"   : ( -1, 1),
+            "et"   : ( -1, 1),
+            "tt"   : ( -1, 1),
+            }
+    else :
+        valid_masses = {
+            "ee"   : (250, 350),
+            "mm"   : (250, 350),
+            "em"   : (250, 350),
+            "mt"   : (250, 350),
+            "et"   : (250, 350),
+            "tt"   : (250, 350),
+           }
 
 if options.verbose :
     print "------------------------------------------------------"
@@ -263,14 +282,15 @@ for period in periods :
                         os.system("cp {INPUT}/{CHN}/{PRE}{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root* {OUTPUT}/common".format(
                             INPUT=input, ANA=options.analysis, CHN=channel, OUTPUT=options.out, PRE=prefix, PERIOD=period, MASSCAT=mass_category(mass,category, channel)))
                         os.system("cp {INPUT}/{CHN}/{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASSDIR}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
-                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS='100' if options.model=='lowmH' or options.model=='2HDM' else mass, MASSDIR=massdir(mass), OUTPUT=options.out, PRE=prefix))
+                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS='300' if options.model=='lowmH' or options.model=='2HDM' else mass, MASSDIR=massdir(mass), OUTPUT=options.out, PRE=prefix))
+                        print "zwf"
                         os.system("perl -pi -e 's/{CHN}.inputs/..\/common\/{PRE}{CHN}.inputs/g' {OUTPUT}/{MASSDIR}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
                             CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, MASSDIR=massdir(mass), CAT=category, PERIOD=period, MASSCAT=mass_category(mass,category,channel)))
                     else :
                         os.system("cp {INPUT}/{CHN}/{CHN}.inputs-{ANA}-{PERIOD}.root {OUTPUT}/common/{PRE}{CHN}.input_{PERIOD}.root".format(
                             INPUT=input, ANA=options.analysis, CHN=channel, OUTPUT=options.out, PRE=prefix, PERIOD=period))
                         os.system("cp {INPUT}/{CHN}/{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASSDIR}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
-                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, MASSDIR=massdir(mass), OUTPUT=options.out, PRE=prefix))
+                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS='300' if options.model=='lowmH' or options.model=='2HDM' else mass, MASSDIR=massdir(mass), OUTPUT=options.out, PRE=prefix))
                         os.system("perl -pi -e 's/{CHN}.inputs-{ANA}-{PERIOD}.root/..\/common\/{PRE}{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASSDIR}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
                             CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, MASSDIR=massdir(mass), CAT=category, PERIOD=period))
             elif channel == "vhtt":
@@ -308,7 +328,8 @@ for period in periods :
                             os.system("cp {INPUT}/htt_{CHN}/{PRE}htt_{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root* {OUTPUT}/common/".format(
                                 INPUT=input, CHN=channel, ANA=options.analysis, PERIOD=period, OUTPUT=options.out, PRE=prefix, MASSCAT=mass_category(mass,category, channel)))
                         os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASSDIR}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
-                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS='100' if options.model=='lowmH' or options.model=='2HDM' else mass, MASSDIR=massdir(mass), OUTPUT=options.out, PRE=prefix))
+                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS='300' if options.model=='lowmH' or options.model=='2HDM' else mass, MASSDIR=massdir(mass), OUTPUT=options.out, PRE=prefix))
+                        print "ZWWWW"
                         os.system("perl -pi -e 's/htt_{CHN}.inputs/..\/common\/{PRE}htt_{CHN}.inputs/g' {OUTPUT}/{MASSDIR}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
                             CHN=channel, PRE=prefix, OUTPUT=options.out, MASS=mass, MASSDIR=massdir(mass), CAT=category, PERIOD=period))
                     else :
@@ -328,7 +349,7 @@ for period in periods :
                             os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}.inputs-{ANA}-{PERIOD}.root {OUTPUT}/common/{PRE}htt_{CHN}.input_{PERIOD}.root".format(
                                 INPUT=input, CHN=channel, ANA=options.analysis, OUTPUT=options.out, PRE=prefix, PERIOD=period))
                         os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASSDIR}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
-                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, MASSDIR=massdir(mass), OUTPUT=options.out, PRE=prefix))
+                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS='300' if options.model=='lowmH' or options.model=='2HDM' else mass, MASSDIR=massdir(mass), OUTPUT=options.out, PRE=prefix))
                         os.system("perl -pi -e 's/htt_{CHN}.inputs-{ANA}-{PERIOD}.root/..\/common\/{PRE}htt_{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASSDIR}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
                             CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, MASSDIR=massdir(mass), CAT=category, PERIOD=period))
                         
