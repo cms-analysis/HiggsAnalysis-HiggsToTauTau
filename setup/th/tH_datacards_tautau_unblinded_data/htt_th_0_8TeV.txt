@@ -36,7 +36,7 @@ QCDscale_ttW lnN                                     -             -            
 QCDscale_ttZ lnN                                     -             -             -             -             -             1.116         -             -              
 QCDscale_VV lnN                                      -             -             1.036         1.036         -             -             -             -              
 pdf_gg lnN                                           -             -             -             -             -             0.919         0.926         -              
-pdf_qqbar lnN                                        1.048         -             -             -             1.072         -             -             -              
+pdf_qqbar lnN                                        1.048         -             1.040         1.040         1.072         -             -             -              
 pdf_qg lnN                                           -             1.048         -             -             -             -             -             -              
 CMS_htt_th_emt_8TeV_reducible_bin_1 shape            -             -             -             -             -             -             -             1.000          
 CMS_htt_th_emt_8TeV_reducible_bin_2 shape            -             -             -             -             -             -             -             1.000          

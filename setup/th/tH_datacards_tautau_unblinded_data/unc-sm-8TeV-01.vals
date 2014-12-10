@@ -62,6 +62,7 @@ mmt     ttZ                             pdf_gg                          0.919
 mmt     ttH                             pdf_gg                          0.926
 mmt     tH_YtMinus                      pdf_qqbar                       1.048
 mmt     ttW                             pdf_qqbar                       1.072
+mmt     WZ,ZZ                           pdf_qqbar                       1.040
 mmt     tHW                             pdf_qg                          1.048
 #mmt     tt1l,tt2l                       pdf_gg                          0.974 ## from data
     

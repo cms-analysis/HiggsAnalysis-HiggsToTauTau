@@ -64,6 +64,7 @@ emt     ttZ                             pdf_gg                          0.919
 emt     ttH                             pdf_gg                          0.926
 emt     tH_YtMinus                      pdf_qqbar                       1.048
 emt     ttW                             pdf_qqbar                       1.072
+emt     WZ,ZZ                           pdf_qqbar                       1.040
 emt     tHW                             pdf_qg                          1.048
 #emt     tt1l,tt2l                       pdf_gg                          0.974 ## from data
 
