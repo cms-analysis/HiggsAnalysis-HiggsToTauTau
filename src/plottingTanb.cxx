@@ -1,3 +1,4 @@
+
 #include <map>
 #include <vector>
 #include "TH1F.h"
@@ -24,7 +25,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     canv.SetLogy(1); 
    //  canv.SetLogx(1); 
   }
-  
+ 
   // setup the CMS colors
   TColor* obs = new TColor(1501, 0.463, 0.867, 0.957);
   if(transparent && !BlackWhite) obs->SetAlpha(0.5); 
@@ -66,7 +67,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
 //   h2d->SetMinimum(0.);
   h2d->SetNameTitle("","");
   h2d->Draw("AXIS");
-
+ 
   //mass constraint white area
   int idx=0;
   //int coloredBands[] = {kRed, kRed-7, kRed-9};
@@ -126,7 +127,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
       //if(theory=="MSSM low-m_{H} scenario" || theory=="MSSM m_{h}^{max} scenario")  band_max->Draw("Lsame");
     }
   }
-
+  
   //mass constraint (background color)
   TGraphAsymmErrors* background = new TGraphAsymmErrors();
   background->SetPoint(0, expected[0]->GetX()[0], 50);
@@ -188,7 +189,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     expected[i]->SetLineStyle(2); 
     expected[i]->Draw("CONT SAME");
   }
-
+  
   if(!expectedOnly){
     for(unsigned int i=0; i<observed.size(); i++){
       observed[i]->SetFillColor(obs->GetNumber());
@@ -258,7 +259,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   theory1->SetTextFont (   62 );
   theory1->AddText(theory.c_str());
   theory1->Draw();
-
+ 
   /// add the proper legend
   TLegend* leg;
   if(log){
@@ -320,7 +321,6 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     }
   }
   leg->Draw("same");
-  
 
   TLegend* leg2;
   if(log){
@@ -348,14 +348,14 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
     else leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
   }
-  leg2->Draw("same");
+  if(theory!="2HDM") leg2->Draw("same");
 
   TLine* legline;
   legline = new TLine(605, 13, 680, 13);
   legline->SetLineWidth(3);
   legline->SetLineColor(backgroundColor->GetNumber());
-  legline->DrawLineNDC(leg2->GetX1()+0.015, leg2->GetY2()-0.01, leg2->GetX1()+0.072, leg2->GetY2()-0.01);
-  
+  if(theory!="2HDM") legline->DrawLineNDC(leg2->GetX1()+0.015, leg2->GetY2()-0.01, leg2->GetX1()+0.072, leg2->GetY2()-0.01);
+
   canv.RedrawAxis();
   return;
 }
