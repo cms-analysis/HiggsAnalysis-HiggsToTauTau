@@ -45,7 +45,7 @@ parser.add_option("--range",dest="range",default="",
 (options, args) = parser.parse_args()
 if len(args) < 1 :
     if options.model=="2HDM" :
-        args.append("0_1:0.1")
+        args.append("0.0_1.0:0.1")
     else : 
         args.append("260_350:10")
 
@@ -271,7 +271,7 @@ if options.update_aux :
         for chn in config.channels:
             for per in config.periods: 
                 if config.categories[chn][per]:
-                    os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a Hhh -c '{CHN}' --Hhh-categories-{CHN}='{CATS}' {MASSES}".format(
+                    os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a Hhh -c '{CHN}' --Hhh-categories-{CHN}='{CATS}' {TWOHDM} {MASSES}".format(
                     CMSSW_BASE=cmssw_base,
                     LABEL=options.label,
                     ANA=ana,
@@ -279,6 +279,7 @@ if options.update_aux :
                     PER=per,
                     CHN=chn,
                     CATS=' '.join(config.categories[chn][per]),
+                    TWOHDM='--twohdm' if options.model=="2HDM" else ' ',
                     MASSES=' '.join(masses),
                     ))
         if 'bbb' in ana :
