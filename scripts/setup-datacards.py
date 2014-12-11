@@ -134,7 +134,7 @@ if options.analysis == "mssm" :
 if options.analysis == "Hhh" :
     if options.twohdm :
         valid_masses={
-            #This ensure we only create one datacard in the 2HDM case, that's enough because  mH is always 300 in this case
+            #This ensures we only create one datacard in the 2HDM case, that's enough because  mH is always 300 in this case
             "ee" : (-1,0),
             "mm" : (-1,0),
             "em" : (-1,0),
