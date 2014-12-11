@@ -9,7 +9,7 @@ void plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, st
 void contour2D(TString xvar, int xbins, float xmin, float xmax, TString yvar, int ybins, float ymin, float ymax, float smx=1.0, float smy=1.0, TFile *fOut=0, TString name="contour2D");
 TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool require_minPoints=true);
 
-void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGraph* graph_expected, TGraph* graph_plus1sigma, TGraph* graph_plus2sigma, TGraph* graph_observed, const char* directory, float mass, int max, int ymax);
+void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGraph* graph_expected, TGraph* graph_plus1sigma, TGraph* graph_plus2sigma, TGraph* graph_observed, const char* directory, float mass, int max, int ymax, const char* model);
 
 struct STestFunctor{
   STestFunctor() { sum = 0; }
@@ -40,6 +40,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   if(theory_=="MSSM light-stau scenario") {extralabel_= "lightstau1-"; model = "lightstau1"; tanbHigh=60; tanbLow=0.5; tanbLowHigh=3;}
   if(theory_=="MSSM #scale[1.3]{#bf{#tau}}-phobic scenario") {extralabel_= "tauphobic-"; model = "tauphobic"; tanbHigh=50; tanbLow=1.0; tanbLowHigh=2;}
   if(theory_=="MSSM light-stop scenario") {extralabel_= "lightstopmod-"; model = "lightstopmod"; tanbHigh=60; tanbLow=0.7; tanbLowHigh=2;}
+  if(theory_=="2HDM") {extralabel_= "2HDM-"; model = "2HDM"; tanbHigh=10; tanbLow=1; tanbLowHigh=2;}
  
   // set up styles
   SetStyle();
@@ -65,27 +66,27 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 //   TGraph* injected_1 = 0;
 //   TGraph* injected_2 = 0;
 
-  // Histogram to be filled for finding contours 
-  // binning depends on used model
-  //int nxbins = 19;
-  //Double_t xbins[20] = {90, 100, 120, 130, 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000,1001};
-  //int nxbins = 19;
-  //Double_t xbins[20] = {90, 95, 110, 125, 135, 150, 170, 190, 225, 275, 325, 375, 425, 475, 550, 650, 750, 850, 950, 1000.0001};
-  // Double_t xbins[(int)(bins_[bins_.size()-1]-bins_[0])/10+1];
-//   int nxbins=0;
-//   for(float mass=bins_[0]-5; mass<bins_[bins_.size()-1]+1; mass=mass+10){
-//     xbins[nxbins]=mass;
-//     nxbins++;
-//   }
-//   xbins[nxbins]=bins_[bins_.size()-1];
-  Double_t xbins[(int)(bins_[bins_.size()-1]-bins_[0])/10+1];
   int nxbins=0;
-  for(float mass=bins_[0]; mass<bins_[bins_.size()-1]+1; mass=mass+10){
-    xbins[nxbins]=mass;
-    nxbins++;
-  }
-  xbins[nxbins]=bins_[bins_.size()-1]+1;
+  int array_number=0;
+  if(model==TString::Format("2HDM")) array_number = (int)((bins_[bins_.size()-1]-bins_[0])/0.1)+1;
+  else array_number = (int)(bins_[bins_.size()-1]-bins_[0])/10+1;
+  Double_t xbins[array_number];
   
+  if(model!=TString::Format("2HDM")){
+    for(float mass=bins_[0]; mass<bins_[bins_.size()-1]+1; mass=mass+10){
+      xbins[nxbins]=mass;
+      nxbins++;;
+    }
+    xbins[nxbins]=bins_[bins_.size()-1]+1;
+  }
+  else {
+    for(double mass=bins_[0]; mass<bins_[bins_.size()-1]+0.01; mass=mass+0.1){
+      xbins[nxbins]=mass;
+      nxbins++;
+    }
+    xbins[nxbins]=bins_[bins_.size()-1]+0.01;
+    }
+
   TH2D *plane_minus2sigma = 0, *plane_minus1sigma = 0, *plane_expected = 0, *plane_plus1sigma = 0, *plane_plus2sigma = 0, *plane_observed = 0;
   if(model!=TString::Format("lowmH")) {
     plane_minus2sigma = new TH2D("minus2sigma","minus2sigma", nxbins, xbins, (int)((tanbHigh-tanbLow)*10-1), tanbLow, tanbHigh);
@@ -133,8 +134,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     //int ipoint_exp=0, ipoint_obs=0;
     for(unsigned int imass=0; imass<bins_.size(); ++imass){
       // buffer mass value
-      float mass = bins_[imass];
-      
+      float mass = bins_[imass];    
       //control plots
       TGraph* graph_minus2sigma = new TGraph();
       TGraph* graph_minus1sigma = new TGraph();
@@ -144,9 +144,11 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       TGraph* graph_observed = new TGraph();
       
       ofstream exclusion;  // saves the exclusion limits within the directory so it can be used to throw toys only in regions near the exclusion limit
-      exclusion.open(TString::Format("%s/%d/exclusion_%d.out", directory, (int)mass, (int)mass)); 
+      //exclusion.open(TString::Format("%s/%d/exclusion_%d.out", directory, (int)mass, (int)mass)); 
+      exclusion.open(TString::Format("%s/%f/exclusion_%f.out", directory, bins_[imass], bins_[imass])); 
       
       TString fullpath = TString::Format("%s/%d/HypothesisTest.root", directory, (int)mass);
+      if (model==TString::Format("2HDM")) fullpath = TString::Format("%s/%0.1f/HypothesisTest.root", directory, bins_[imass]);
       std::cout << "open file: " << fullpath << std::endl;
       
       TFile* file_ = TFile::Open(fullpath); if(!file_){ std::cout << "--> TFile is corrupt: skipping masspoint." << std::endl; continue; }
@@ -193,7 +195,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       }
 
       //control plot plotting
-      CLsControlPlots(graph_minus2sigma, graph_minus1sigma, graph_expected, graph_plus1sigma, graph_plus2sigma, graph_observed, directory, mass, xmax, ymax);
+      CLsControlPlots(graph_minus2sigma, graph_minus1sigma, graph_expected, graph_plus1sigma, graph_plus2sigma, graph_observed, directory, mass, xmax, ymax, model);
 
       //push back graphs and save mass for tex/txt output printing
       v_graph_minus2sigma.push_back(graph_minus2sigma);
@@ -202,7 +204,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       v_graph_plus1sigma.push_back(graph_plus1sigma);
       v_graph_plus2sigma.push_back(graph_plus2sigma);
       v_graph_observed.push_back(graph_observed);
-      masses[imass]=mass;	
+      masses[imass]=mass;
 
       // Linear Interpolation along the y-axis for filling everything in between
       for(int idy=1; idy<plane_minus2sigma->GetNbinsY()+1; idy++)
@@ -273,14 +275,14 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   TIter iterobs((TList *)contourFromTH2(plane_observed, 1.0, 20, false));
   STestFunctor obs = std::for_each( iterobs.Begin(), TIter::End(), STestFunctor() );
   n_obs=obs.sum; 
-
+  
   for(int i=0; i<n_m2s; i++) {gr_minus2sigma.push_back((TGraph *)((TList *)contourFromTH2(plane_minus2sigma, 1.0, 20, false))->At(i));}
   for(int i=0; i<n_m1s; i++) {gr_minus1sigma.push_back((TGraph *)((TList *)contourFromTH2(plane_minus1sigma, 1.0, 20, false))->At(i));}
   for(int i=0; i<n_exp; i++) {gr_expected.push_back(   (TGraph *)((TList *)contourFromTH2(plane_expected,    1.0, 20, false))->At(i));}
   for(int i=0; i<n_p1s; i++) {gr_plus1sigma.push_back( (TGraph *)((TList *)contourFromTH2(plane_plus1sigma,  1.0, 20, false))->At(i));}
   for(int i=0; i<n_p2s; i++) {gr_plus2sigma.push_back( (TGraph *)((TList *)contourFromTH2(plane_plus2sigma,  1.0, 20, false))->At(i));}
   for(int i=0; i<n_obs; i++) {gr_observed.push_back(   (TGraph *)((TList *)contourFromTH2(plane_observed,    1.0, 20, false))->At(i));}
-
+  
   // create plots for additional comparisons
   std::map<std::string, TGraph*> comparisons; TGraph* comp=0;
   if(arXiv_1211_6956_){ comp = new TGraph(), arXiv_1211_6956 (comp); comp->SetName("arXiv_1211_6956" ); comparisons[std::string("ATLAS H#rightarrow#tau#tau (4.8/fb)")] = comp;}
@@ -300,7 +302,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     //  higgsBands[3-deltaM] = higgsConstraint(directory, 125., 4-deltaM, model);
     //}
   }  
-
+  
   // do the plotting
   plottingTanb(canv, plane_expected, gr_minus2sigma, gr_minus1sigma, gr_expected, gr_plus1sigma, gr_plus2sigma, gr_observed, higgsBands, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, expectedOnly_, outerband_, MSSMvsSM_, HIG, BlackWhite_); 
   /// setup the CMS Preliminary
@@ -315,7 +317,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   cmsprel->SetTextFont (   62 );
   cmsprel->AddText(dataset_.c_str());
   cmsprel->Draw();
-  
+
   // write results to files
   if(png_){
     canv.Print(std::string(output_).append("_").append(extralabel_).append(label_).append(".png").c_str());
@@ -338,10 +340,12 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 
 
 
-void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGraph* graph_expected, TGraph* graph_plus1sigma, TGraph* graph_plus2sigma, TGraph* graph_observed, const char* directory, float mass, int xmax, int ymax){
+void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGraph* graph_expected, TGraph* graph_plus1sigma, TGraph* graph_plus2sigma, TGraph* graph_observed, const char* directory, float mass, int xmax, int ymax, const char* model){
 //control plots showing the CLs value over tanb for each mass
     //minus2sigma
-    TCanvas* canv_minus2sigma = new TCanvas(TString::Format("tanb-CLs_025_%d", (int)mass), "", 600, 600);
+    TCanvas* canv_minus2sigma = new TCanvas();
+    if(model==TString::Format("2HDM")) canv_minus2sigma = new TCanvas(TString::Format("tanb-CLs_025_%0.1f", mass), "", 600, 600);
+    else canv_minus2sigma = new TCanvas(TString::Format("tanb-CLs_025_%d", (int)mass), "", 600, 600);
     canv_minus2sigma->cd();
     canv_minus2sigma->SetGridx(1);
     canv_minus2sigma->SetGridy(1);
@@ -361,13 +365,13 @@ void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGrap
     for(int j=0; j<graph_minus2sigma->GetN(); j++){ 
       if(graph_minus2sigma->GetY()[j]>ymax) {ymax=graph_minus2sigma->GetY()[j]; xmax=graph_minus2sigma->GetX()[j];}
     }
-    //TF1 *f1_minus2sigma = new TF1(TString::Format("fit_025_%d", (int)mass), "[0]*exp([1]+x*[2])", xmax, graph_minus2sigma->GetX()[0]);
-    //TFitResultPtr r_minus2sigma = graph_minus2sigma->Fit(f1_minus2sigma, "SQR");
-    //if (f1_minus2sigma->GetX(0.05, xmax, 200>=xmax) v_minus2sigma[1]=f1_minus2sigma->GetX(0.05, xmax, 200;
     graph_minus2sigma->Draw("AP");
-    canv_minus2sigma->Print(TString::Format("%s/%d/tanb-CLs_025_%dGeV.png", directory, (int)mass, (int)mass));
+    if(model==TString::Format("2HDM")) canv_minus2sigma->Print(TString::Format("%s/%0.1f/tanb-CLs_025_%0.1f.png", directory, mass, mass));
+    else canv_minus2sigma->Print(TString::Format("%s/%d/tanb-CLs_025_%d.png", directory, (int)mass, (int)mass));
     //minus1sigma
-    TCanvas* canv_minus1sigma = new TCanvas(TString::Format("tanb-CLs_160_%d", (int)mass), "", 600, 600);
+    TCanvas* canv_minus1sigma = new TCanvas();
+    if(model==TString::Format("2HDM")) canv_minus1sigma = new TCanvas(TString::Format("tanb-CLs_160_%0.1f", mass), "", 600, 600);
+    else canv_minus1sigma = new TCanvas(TString::Format("tanb-CLs_160_%d", (int)mass), "", 600, 600);
     canv_minus1sigma->cd();
     canv_minus1sigma->SetGridx(1);
     canv_minus1sigma->SetGridy(1);
@@ -387,13 +391,13 @@ void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGrap
     for(int j=0; j<graph_minus1sigma->GetN(); j++){ 
       if(graph_minus1sigma->GetY()[j]>ymax) {ymax=graph_minus1sigma->GetY()[j]; xmax=graph_minus1sigma->GetX()[j];}
     }
-    //TF1 *f1_minus1sigma = new TF1(TString::Format("fit_025_%d", (int)mass), "[0]*exp([1]+x*[2])", xmax, graph_minus1sigma->GetX()[0]);
-    //TFitResultPtr r_minus1sigma = graph_minus1sigma->Fit(f1_minus1sigma, "SQR");
-    //if (f1_minus1sigma->GetX(0.05, xmax, 200)>=xmax) v_minus1sigma[1]=f1_minus1sigma->GetX(0.05, xmax, 200);
     graph_minus1sigma->Draw("AP");
-    canv_minus1sigma->Print(TString::Format("%s/%d/tanb-CLs_160_%dGeV.png", directory, (int)mass, (int)mass));
+    if(model==TString::Format("2HDM")) canv_minus1sigma->Print(TString::Format("%s/%0.1f/tanb-CLs_160_%0.1f.png", directory, mass, mass));
+    else canv_minus1sigma->Print(TString::Format("%s/%d/tanb-CLs_160_%d.png", directory, (int)mass, (int)mass));
     //expected
-    TCanvas* canv_expected = new TCanvas(TString::Format("tanb-CLs_EXP_%d", (int)mass), "", 600, 600);
+    TCanvas* canv_expected = new TCanvas();
+    if(model==TString::Format("2HDM")) canv_expected = new TCanvas(TString::Format("tanb-CLs_EXP_%0.1f", mass), "", 600, 600);
+    else canv_expected = new TCanvas(TString::Format("tanb-CLs_EXP_%d", (int)mass), "", 600, 600);
     canv_expected->cd();
     canv_expected->SetGridx(1);
     canv_expected->SetGridy(1);
@@ -413,13 +417,13 @@ void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGrap
     for(int j=0; j<graph_expected->GetN(); j++){ 
       if(graph_expected->GetY()[j]>ymax) {ymax=graph_expected->GetY()[j]; xmax=graph_expected->GetX()[j];}
     }
-    //TF1 *f1_expected = new TF1(TString::Format("fit_025_%d", (int)mass), "[0]*exp([1]+x*[2])", xmax, graph_expected->GetX()[0]);
-    //TFitResultPtr r_expected = graph_expected->Fit(f1_expected, "SQR");
-    //if (f1_expected->GetX(0.05, xmax, 200)>=xmax) v_exp[1]=f1_expected->GetX(0.05, xmax, 200);
     graph_expected->Draw("AP");
-    canv_expected->Print(TString::Format("%s/%d/tanb-CLs_EXP_%dGeV.png", directory, (int)mass, (int)mass));
+    if(model==TString::Format("2HDM")) canv_expected->Print(TString::Format("%s/%0.1f/tanb-CLs_EXP_%0.1f.png", directory, mass, mass));
+    else canv_expected->Print(TString::Format("%s/%d/tanb-CLs_EXP_%d.png", directory, (int)mass, (int)mass));
     //plus1sigma
-    TCanvas* canv_plus1sigma = new TCanvas(TString::Format("tanb-CLs_860_%d", (int)mass), "", 600, 600);
+    TCanvas* canv_plus1sigma = new TCanvas();
+    if(model==TString::Format("2HDM")) canv_plus1sigma = new TCanvas(TString::Format("tanb-CLs_860_%0.1f", mass), "", 600, 600);
+    else canv_plus1sigma = new TCanvas(TString::Format("tanb-CLs_860_%d", (int)mass), "", 600, 600);
     canv_plus1sigma->cd();
     canv_plus1sigma->SetGridx(1);
     canv_plus1sigma->SetGridy(1);
@@ -439,13 +443,13 @@ void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGrap
     for(int j=0; j<graph_plus1sigma->GetN(); j++){ 
       if(graph_plus1sigma->GetY()[j]>ymax) {ymax=graph_plus1sigma->GetY()[j]; xmax=graph_plus1sigma->GetX()[j];}
     }
-    //TF1 *f1_plus1sigma = new TF1(TString::Format("fit_025_%d", (int)mass), "[0]*exp([1]+x*[2])", xmax, graph_plus1sigma->GetX()[0]);
-    //TFitResultPtr r_plus1sigma = graph_plus1sigma->Fit(f1_plus1sigma, "SQR");
-    //if (f1_plus1sigma->GetX(0.05, xmax, 200)>=xmax) v_plus1sigma[1]=f1_plus1sigma->GetX(0.05, xmax, 200);
     graph_plus1sigma->Draw("AP");
-    canv_plus1sigma->Print(TString::Format("%s/%d/tanb-CLs_860_%dGeV.png", directory, (int)mass, (int)mass));
+    if(model==TString::Format("2HDM")) canv_plus1sigma->Print(TString::Format("%s/%0.1f/tanb-CLs_860_%0.1f.png", directory, mass, mass));
+    else canv_plus1sigma->Print(TString::Format("%s/%d/tanb-CLs_860_%d.png", directory, (int)mass, (int)mass));
     //plus2sigma
-    TCanvas* canv_plus2sigma = new TCanvas(TString::Format("tanb-CLs_975_%d", (int)mass), "", 600, 600);
+    TCanvas* canv_plus2sigma = new TCanvas();
+    if(model==TString::Format("2HDM")) canv_plus2sigma = new TCanvas(TString::Format("tanb-CLs_975_%0.1f", mass), "", 600, 600);
+    else canv_plus2sigma = new TCanvas(TString::Format("tanb-CLs_975_%d", (int)mass), "", 600, 600);
     canv_plus2sigma->cd();
     canv_plus2sigma->SetGridx(1);
     canv_plus2sigma->SetGridy(1);
@@ -465,13 +469,13 @@ void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGrap
     for(int j=0; j<graph_plus2sigma->GetN(); j++){ 
       if(graph_plus2sigma->GetY()[j]>ymax) {ymax=graph_plus2sigma->GetY()[j]; xmax=graph_plus2sigma->GetX()[j];}
     }
-    //TF1 *f1_plus2sigma = new TF1(TString::Format("fit_025_%d", (int)mass), "[0]*exp([1]+x*[2])", xmax, graph_plus2sigma->GetX()[0]);
-    //TFitResultPtr r_plus2sigma = graph_plus2sigma->Fit(f1_plus2sigma, "SQR");
-    //if (f1_plus2sigma->GetX(0.05, xmax, 200)>=xmax) v_plus2sigma[1]=f1_plus2sigma->GetX(0.05, xmax, 200);
     graph_plus2sigma->Draw("AP");
-    canv_plus2sigma->Print(TString::Format("%s/%d/tanb-CLs_975_%dGeV.png", directory, (int)mass, (int)mass));
+    if(model==TString::Format("2HDM")) canv_plus2sigma->Print(TString::Format("%s/%0.1f/tanb-CLs_975_%0.1f.png", directory, mass, mass));
+    else canv_plus2sigma->Print(TString::Format("%s/%d/tanb-CLs_975_%d.png", directory, (int)mass, (int)mass));
     //observed
-    TCanvas* canv_observed = new TCanvas(TString::Format("tanb-CLs_OBS_%d", (int)mass), "", 600, 600);
+    TCanvas* canv_observed = new TCanvas();
+    if(model==TString::Format("2HDM")) canv_observed = new TCanvas(TString::Format("tanb-CLs_OBS_%0.1f", mass), "", 600, 600);
+    else canv_observed = new TCanvas(TString::Format("tanb-CLs_OBS_%d", (int)mass), "", 600, 600);
     canv_observed->cd();
     canv_observed->SetGridx(1);
     canv_observed->SetGridy(1);
@@ -491,11 +495,9 @@ void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGrap
     for(int j=0; j<graph_observed->GetN(); j++){ 
       if(graph_observed->GetY()[j]>ymax) {ymax=graph_observed->GetY()[j]; xmax=graph_observed->GetX()[j];}
     }
-    //TF1 *f1_observed = new TF1(TString::Format("fit_025_%d", (int)mass), "[0]*exp([1]+x*[2])", xmax, graph_observed->GetX()[0]);
-    //TFitResultPtr r_observed = graph_observed->Fit(f1_observed, "SQR");
-    //if (f1_observed->GetX(0.05, xmax, 200)>=xmax) v_obs[1]=f1_observed->GetX(0.05, xmax, 200);
     graph_observed->Draw("AP");
-    canv_observed->Print(TString::Format("%s/%d/tanb-CLs_OBS_%dGeV.png", directory, (int)mass, (int)mass));
+    if(model==TString::Format("2HDM")) canv_observed->Print(TString::Format("%s/%0.1f/tanb-CLs_OBS_%0.1f.png", directory, mass, mass));
+    else canv_observed->Print(TString::Format("%s/%d/tanb-CLs_OBS_%d.png", directory, (int)mass, (int)mass));
     return;
 }
 

@@ -10,7 +10,7 @@ def subvec(vec, min, max):
         if re.search(r"^.*/\d+?$", directory) :
             mass = int(directory[directory.rfind("/")+1:])
             if min <= mass and mass <= max:
-                subvec.append(directory)
+                subvec.append(directory)          
     return subvec
 
 def vec2str(vec, delim=" "):

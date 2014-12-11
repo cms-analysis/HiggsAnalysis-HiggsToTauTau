@@ -94,7 +94,7 @@ class MODEL(object) :
         histogram search in the root input file.
         """
         value_str = str(float_value)
-        if re.match('^\d*\.0$', value_str) :
+        if re.match('^[-]?\d*\.0$', value_str) :
             value_str = value_str[:value_str.rfind('.0')]
         return value_str
 

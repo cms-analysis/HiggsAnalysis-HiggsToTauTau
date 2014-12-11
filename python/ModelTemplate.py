@@ -100,7 +100,7 @@ class ModelTemplate():
         histogram search in the root input file.
         """
         value_str = str(float_value)
-        if re.match('^\d*\.0$', value_str) :
+        if re.match('^[-]?\d*\.0$', value_str) :
             value_str = value_str[:value_str.rfind('.0')]
         return value_str
                             
@@ -245,9 +245,9 @@ class ModelTemplate():
                     ## write combined template to output file
                     output_file.cd('' if dir == '.' else dir)
                     if combined_template :
-                        if self.verbosity>0 :
-                            print 'write histogram to file: ', dir+'/'+proc+self.save_float_conversion(self.parameter1)+self.hist_label+label
-                        combined_template.Write(proc+self.save_float_conversion(self.parameter1)+self.hist_label+label, ROOT.TObject.kOverwrite)
+                       if self.verbosity>0 :
+                           print 'write histogram to file: ', dir+'/'+proc+self.save_float_conversion(self.parameter1)+self.hist_label+label
+                       combined_template.Write(proc+self.save_float_conversion(self.parameter1)+self.hist_label+label, ROOT.TObject.kOverwrite)
         ## for Hplus the MC tt background has to be rescaled by params.ttscale (1-BR(t->Hp+b)*BR(Hp->tau+nu))^2
         if self.ana_type=="Hplus" :
             self.shape_labels = {}; self.fill_shape_labels("tt_EWK_faketau", self.input_file) #bkg name ugly hardcoded..
