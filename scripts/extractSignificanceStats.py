@@ -56,13 +56,20 @@ if options.MSSMvsBG :
     ###for mA-tanb plotting save everything in a root file
     f = ROOT.TFile("HypothesisTest_{TANB}.root".format(TANB=tanb), "recreate")
     t = ROOT.TTree("tree", "HypoTest")
-    tanbeta    = n.zeros(1, dtype=float)
+    tanbeta    = n.zeros(1, dtype=float) 
     minus2sigma= n.zeros(1, dtype=float)
     minus1sigma= n.zeros(1, dtype=float)
     exp        = n.zeros(1, dtype=float)
     plus1sigma = n.zeros(1, dtype=float)
     plus2sigma = n.zeros(1, dtype=float)
     obs        = n.zeros(1, dtype=float)
+    minus2sigma[0]=999
+    minus1sigma[0]=999
+    exp[0]=999
+    plus1sigma[0]=999
+    plus2sigma[0]=999
+    obs[0]=999
+    
     t.Branch('tanb',        tanbeta,     'tanb/D')
     t.Branch('minus2sigma', minus2sigma, 'minus2sigma/D')
     t.Branch('minus1sigma', minus1sigma, 'minus1sigma/D')
@@ -73,7 +80,7 @@ if options.MSSMvsBG :
     
     for i in range(tree.GetEntries()) :
         tree.GetEntry(i);
-        print i, staff.limit/float(tanb), staff.quantileExpected
+        #print i, staff.limit, staff.limit/float(tanb), staff.quantileExpected
         if abs(staff.quantileExpected-0.025) < 0.01  :
             minus2sigma[0]=staff.limit/float(tanb)
         if abs(staff.quantileExpected-0.160) < 0.01  :
