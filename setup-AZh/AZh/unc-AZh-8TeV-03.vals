@@ -1,0 +1,46 @@
+###########################################################################
+# unc.vals: specification of uncertainty values by category, sample, and uncertainty name
+
+mmtt_zh      signal,ZZ,GGToZZ2L2L,TTZ,ZH_ww125,ZH_tt125,WWZ,ZZZ,WZZ   lumi_8TeV                            1.026
+mmtt_zh      signal,ZZ,GGToZZ2L2L,TTZ,ZH_ww125,ZH_tt125,WWZ,ZZZ,WZZ   CMS_eff_m_8TeV                       1.04
+mmtt_zh      signal,ZZ,GGToZZ2L2L,TTZ,ZH_ww125,ZH_tt125,WWZ,ZZZ,WZZ   CMS_eff_t_lltt_8TeV                  1.12
+mmtt_zh      signal,ZZ,GGToZZ2L2L,TTZ,ZH_ww125,ZH_tt125,WWZ,ZZZ,WZZ   CMS_trigger_m_8TeV                   1.01
+mmtt_zh      signal,ZZ,GGToZZ2L2L,TTZ,ZH_ww125,ZH_tt125,WWZ,ZZZ,WZZ   CMS_fake_b_8TeV                      1.01
+mmtt_zh      ZZ                                                       QCDscale_VV                          1.06
+mmtt_zh      ZZ                                                       pdf_qqbar                            1.05
+mmtt_zh      ZH_ww125,ZH_tt125                                        QCDscale_VH                          1.031
+mmtt_zh      ZH_ww125,ZH_tt125                                        pdf_qqbar                            1.025
+mmtt_zh      Zjets                                                    CMS_zh2l2tau_ZjetBkg_tt_extrap_8TeV  1.15
+#mmtt_zh      signal,ZZ,GGToZZ2L2L,TTZ,ZH_ww125,ZH_tt125,WWZ,ZZZ,WZZ   CMS_scale_t_lltt_8TeV                1.00
+mmtt_zh      GGToZZ2L2L                                               CMS_zh2l2tau_GGZZ2L2LBkg_8TeV        1.44
+mmtt_zh      TTZ                                                      CMS_zh2l2tau_TTZBkg_8TeV             1.50
+mmtt_zh      GGToZZ2L2L                                               CMS_vhtt_ggZZNorm_tt_8TeV            1.05
+mmtt_zh      TTZ                                                      CMS_vhtt_ttZNorm_tt_8TeV             1.50
+mmtt_zh      ZZ                                                       CMS_vhtt_zzNorm_tt_8TeV              1.05
+mmtt_zh      WWZ                                                      CMS_vhtt_wwzNorm_em_8TeV             1.50
+mmtt_zh      WZZ                                                      CMS_vhtt_wzzNorm_em_8TeV             1.50
+mmtt_zh      ZZZ                                                      CMS_vhtt_zzzNorm_em_8TeV             1.50
+
+###########################################################################
+# unc.vals: specification of uncertainty values by category, sample, and uncertainty name
+
+eett_zh      signal,ZZ,GGToZZ2L2L,TTZ,ZH_ww125,ZH_tt125,WWZ,ZZZ,WZZ   lumi_8TeV                            1.026
+eett_zh      signal,ZZ,GGToZZ2L2L,TTZ,ZH_ww125,ZH_tt125,WWZ,ZZZ,WZZ   CMS_eff_e_8TeV                       1.04
+eett_zh      signal,ZZ,GGToZZ2L2L,TTZ,ZH_ww125,ZH_tt125,WWZ,ZZZ,WZZ   CMS_eff_t_lltt_8TeV                  1.12
+eett_zh      signal,ZZ,GGToZZ2L2L,TTZ,ZH_ww125,ZH_tt125,WWZ,ZZZ,WZZ   CMS_trigger_e_8TeV                   1.01
+eett_zh      signal,ZZ,GGToZZ2L2L,TTZ,ZH_ww125,ZH_tt125,WWZ,ZZZ,WZZ   CMS_fake_b_8TeV                      1.01
+eett_zh      ZZ                                                       QCDscale_VV                          1.06
+eett_zh      ZZ                                                       pdf_qqbar                            1.05
+eett_zh      ZH_ww125,ZH_tt125                                        QCDscale_VH                          1.031
+eett_zh      ZH_ww125,ZH_tt125                                        pdf_qqbar                            1.025
+eett_zh      Zjets                                                    CMS_zh2l2tau_ZjetBkg_tt_extrap_8TeV  1.15
+#eett_zh      signal,ZZ,GGToZZ2L2L,TTZ,ZH_ww125,ZH_tt125,WWZ,ZZZ,WZZ   CMS_scale_t_lltt_8TeV                1.00
+eett_zh      GGToZZ2L2L                                               CMS_zh2l2tau_GGZZ2L2LBkg_8TeV        1.44
+eett_zh      TTZ                                                      CMS_zh2l2tau_TTZBkg_8TeV             1.50
+eett_zh      GGToZZ2L2L                                               CMS_vhtt_ggZZNorm_tt_8TeV            1.05
+eett_zh      TTZ                                                      CMS_vhtt_ttZNorm_tt_8TeV             1.50
+eett_zh      ZZ                                                       CMS_vhtt_zzNorm_tt_8TeV              1.05
+eett_zh      WWZ                                                      CMS_vhtt_wwzNorm_em_8TeV             1.50
+eett_zh      WZZ                                                      CMS_vhtt_wzzNorm_em_8TeV             1.50
+eett_zh      ZZZ                                                      CMS_vhtt_zzzNorm_em_8TeV             1.50
+
