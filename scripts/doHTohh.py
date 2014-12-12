@@ -37,10 +37,17 @@ parser.add_option("--profile", dest="profile", default=False, action="store_true
                   help="Add extra signals bbH and A->Zh for profiling. [Default: False]")
 parser.add_option("-c", "--config", dest="config", default="",
                   help="Additional configuration file to be used for the setup [Default: \"\"]")
+parser.add_option("--model",dest="model",default="",
+                  help="Setup directory structure for model-dependent limits in bins of a different variable than mass. Possible choices are lowmH and 2HDM [Default:\"\"]")
+parser.add_option("--range",dest="range",default="",
+                  help="Specify range of variable points when running for lowmH or 2HDM [Default:\"\"]")
 
 (options, args) = parser.parse_args()
 if len(args) < 1 :
-    args.append("260_350:10")
+    if options.model=="2HDM" :
+        args.append("0.0_1.0:0.1")
+    else : 
+        args.append("260_350:10")
 
 import os
 import glob 
@@ -264,7 +271,7 @@ if options.update_aux :
         for chn in config.channels:
             for per in config.periods: 
                 if config.categories[chn][per]:
-                    os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a Hhh -c '{CHN}' --Hhh-categories-{CHN}='{CATS}' {MASSES}".format(
+                    os.system("setup-datacards.py -i {CMSSW_BASE}/src/setups{LABEL}/{ANA} -o {DIR}/{ANA} -p '{PER}' -a Hhh -c '{CHN}' --Hhh-categories-{CHN}='{CATS}' {TWOHDM} {MASSES}".format(
                     CMSSW_BASE=cmssw_base,
                     LABEL=options.label,
                     ANA=ana,
@@ -272,6 +279,7 @@ if options.update_aux :
                     PER=per,
                     CHN=chn,
                     CATS=' '.join(config.categories[chn][per]),
+                    TWOHDM='--twohdm' if options.model=="2HDM" else ' ',
                     MASSES=' '.join(masses),
                     ))
         if 'bbb' in ana :
@@ -307,13 +315,26 @@ if options.update_limits :
         for chn in config.channels:
             for per in config.periods:
                 if config.categories[chn][per]:
-                    os.system("setup-Hhh.py -i aux{INDEX}/{ANA}{ASIMOV} -o {DIR}/{ANA}{ASIMOV} -p '{PER}' -a Hhh -c '{CHN}' {CATS} {MASSES}".format(
-                        INDEX=options.label,                
-                        ANA=ana,
-                        ASIMOV='-asimov' if options.blind_datacards else '',
-                        DIR=dir,
-                        PER=per,
-                        CHN=chn,
-                        CATS="--Hhh-categories-%s='%s'" % (chn, " ".join(config.categories[chn][per])),
-                        MASSES=' '.join(masses),
-                        ))
+                    if options.model=="" :
+                         os.system("setup-Hhh.py -i aux{INDEX}/{ANA}{ASIMOV} -o {DIR}/{ANA}{ASIMOV} -p '{PER}' -a Hhh  -c '{CHN}' {CATS} {MASSES}".format(
+                            INDEX=options.label,                
+                            ANA=ana,
+                            ASIMOV='-asimov' if options.blind_datacards else '',
+                            DIR=dir,
+                            PER=per,
+                            CHN=chn,
+                            CATS="--Hhh-categories-%s='%s'" % (chn, " ".join(config.categories[chn][per])),
+                            MASSES=' '.join(masses),
+                            ))
+                    else :
+                         os.system("setup-Hhh.py -i aux{INDEX}/{ANA}{ASIMOV} -o {DIR}/{ANA}{ASIMOV} -p '{PER}' -a Hhh  -c '{CHN}' {CATS} --model {MODEL} {MASSES}".format(
+                            INDEX=options.label,                
+                            ANA=ana,
+                            ASIMOV='-asimov' if options.blind_datacards else '',
+                            DIR=dir,
+                            PER=per,
+                            CHN=chn,
+                            CATS="--Hhh-categories-%s='%s'" % (chn, " ".join(config.categories[chn][per])),
+                            MODEL=options.model,
+                            MASSES=' '.join(masses)
+                            ))
