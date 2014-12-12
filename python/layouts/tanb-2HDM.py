@@ -33,7 +33,7 @@ layout = cms.PSet(
     outputLabel = cms.string("mA-tanb") ,
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
-   -1.0
+   -1
    ,-0.9
    ,-0.8
    ,-0.7 
@@ -43,7 +43,7 @@ layout = cms.PSet(
    ,-0.3
    ,-0.2 
    ,-0.1 
-   ,0.0 
+   ,0 
    ,0.1
    ,0.2
    ,0.3
@@ -53,7 +53,7 @@ layout = cms.PSet(
    ,0.7
    ,0.8
    ,0.9
-   ,1.0
+   ,1
      ),
     ## is this mssm?
     mssm = cms.bool(True),
