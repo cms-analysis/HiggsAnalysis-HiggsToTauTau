@@ -449,10 +449,7 @@ def get_channel_dirs(analysis, finalstate, category, period):
         },
         } 
     }
-    print "cecile"
-    print finalstate, fs_map[finalstate]
     if fs_map[finalstate] == '' :
-        print "map"
         return cat_map[analysis][period][finalstate][category]
     else :
         combined_names = []
