@@ -32,7 +32,7 @@ layout = cms.PSet(
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
    220.
-   ,230.,
+   ,230.
    ,240.
    ,250.
    ,260.
