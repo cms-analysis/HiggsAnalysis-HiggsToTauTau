@@ -180,8 +180,6 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 	graph_minus2sigma->SetPoint(k, tanb, minus2sigma/exclusion_);
 	graph_minus1sigma->SetPoint(k, tanb, minus1sigma/exclusion_);
 	graph_expected   ->SetPoint(k, tanb, exp/exclusion_);
-        std::cout<<"exp over exclusion for tanb "<<tanb<<std::endl;
-        std::cout<<exp/exclusion_<<std::endl;
 	graph_plus1sigma ->SetPoint(k, tanb, plus1sigma/exclusion_);
 	graph_plus2sigma ->SetPoint(k, tanb, plus2sigma/exclusion_);
 	graph_observed   ->SetPoint(k, tanb, obs/exclusion_);
