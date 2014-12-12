@@ -158,6 +158,7 @@ def get_channel_dirs(analysis, finalstate, category, period):
         'ee'  : 'ee',
         'tt'  : 'tauTau',
         'vhtt': '',
+        'AZh': '',
     }
     cat_map = {'sm':
                {
@@ -317,6 +318,18 @@ def get_channel_dirs(analysis, finalstate, category, period):
         },
         }, 
         },
+               'AZh':
+               {
+        '8TeV':
+        {
+        'AZh' : {
+        '00' : ['mmme_zh','eeem_zh'],
+        '01' : ['mmmt_zh','eemt_zh'],
+        '02' : ['mmet_zh','eeet_zh'],
+        '03' : ['mmtt_zh','eett_zh'],
+        },
+        },
+        },
                'mssm':
                {
         '7TeV':
@@ -436,7 +449,10 @@ def get_channel_dirs(analysis, finalstate, category, period):
         },
         } 
     }
+    print "cecile"
+    print finalstate, fs_map[finalstate]
     if fs_map[finalstate] == '' :
+        print "map"
         return cat_map[analysis][period][finalstate][category]
     else :
         combined_names = []

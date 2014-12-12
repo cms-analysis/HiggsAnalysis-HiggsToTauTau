@@ -12,7 +12,7 @@ parser.add_option("-o", "--out", dest="out", default="ichep2012", type="string",
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
                   help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice",
-                  help="Type of analysis (sm or mssm or Hhh). Lower case is required. [Default: sm]", choices=["sm", "mssm", "Hhh"])
+                  help="Type of analysis (sm or mssm or Hhh or AZh). Lower case is required. [Default: sm]", choices=["sm", "mssm", "Hhh","AZh"])
 parser.add_option("-c", "--channels", dest="channels", default="mm em mt et tt", type="string",
                   help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are ee, mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et tt\"]")
 parser.add_option("-u", "--no-update", dest="no_update", default=False, action="store_true",
@@ -66,6 +66,10 @@ cats3.add_option("--Hhh-categories-et", dest="et_Hhh_categories", default="0 1 2
 cats3.add_option("--Hhh-categories-tt", dest="tt_Hhh_categories", default="0 1 2", type="string",
                  help="List of tt event categories. [Default: \"0 1 2\"]")
 parser.add_option_group(cats3)
+cats4 = OptionGroup(parser, "AZh EVENT CATEGORIES", "Event categories to be used for the Hhh analysis.")
+cats4.add_option("--AZh-categories-AZh", dest="AZh_AZh_categories", default="0 1 2 3", type="string",
+                 help="List AZh of event categories. [Default: \"0 1 2 3\"]")
+parser.add_option_group(cats4)
 parser.add_option("-4", "--SM4", dest="sm4", default=False, action="store_true",
                   help="Copy SM4 datacards (will add a prefix SM4_ to each file). [Default: False]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true",
@@ -131,7 +135,10 @@ if options.analysis == "Hhh" :
         "et"   : options.et_Hhh_categories.split(),
         "tt"   : options.tt_Hhh_categories.split(),
         }
-
+if options.analysis == "AZh" :
+    categories = {
+        "AZh"   : options.AZh_AZh_categories.split(),
+        }
 
 ## valid mass range per category
 if options.analysis == "sm" :
@@ -174,6 +181,10 @@ if options.analysis == "mssm" :
             "tt"   : ( 90, 1000),
             #"hmm"  : (120,  300),
             "hbb"  : ( 90,  350),
+            }
+if options.analysis == "AZh" :
+       valid_masses = {
+            "AZh"   : ( 220, 350),
             }
 if options.analysis == "Hhh" :
     if options.model=="lowmH" :
@@ -244,6 +255,10 @@ if options.analysis == "Hhh" :
         "et"   : "7TeV 8TeV",
         "tt"   :      "8TeV",
         }
+if options.analysis == "AZh" :
+    valid_periods = {
+        "AZh"   : "8TeV",
+    }
 
 if options.verbose :
     print "------------------------------------------------------"
