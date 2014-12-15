@@ -101,7 +101,7 @@ class twohdm_xsec_tools():
 ##             0 : 0,
 ##             }
 
-    def query(self, parameter1, tan_beta): #parameter1 = higgsino mass mu in case of lowmH and mass of pseudoscalar in all other scenarios 
+    def query(self, parameter1, tan_beta): #parameter1 = cos(beta-alpha) 
 
         higgs_types = [ 'h', 'H', 'A' ]
         

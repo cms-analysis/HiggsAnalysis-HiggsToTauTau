@@ -222,7 +222,7 @@ class mssm_xsec_tools():
         
         output = {}
         
-        if ana_type=='Hplus' :
+        if ana_type=='Htaunu' :
             higgs_types = [ 'Hp' ]
          
             # Build emtpy dictionaries for each Higgs type
@@ -258,7 +258,7 @@ class mssm_xsec_tools():
                 self._add_br_htt(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
                 self._add_br_hmm(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
                 self._add_br_hbb(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
-                if ana_type=='Hhh' :
+                if ana_type=='Hhh' or ana_type=='AZh' :
                     self._add_br_Hhh(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
                     self._add_br_AZh(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
                 self._add_mass(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
