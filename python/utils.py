@@ -159,6 +159,7 @@ def get_channel_dirs(analysis, finalstate, category, period):
         'tt'  : 'tauTau',
         'vhtt': '',
         'AZh': '',
+        'bbA': '',
     }
     cat_map = {'sm':
                {
@@ -327,6 +328,21 @@ def get_channel_dirs(analysis, finalstate, category, period):
         '01' : ['mmmt_zh','eemt_zh'],
         '02' : ['mmet_zh','eeet_zh'],
         '03' : ['mmtt_zh','eett_zh'],
+        },
+        },
+        },
+               'bbA':
+               {
+        '8TeV':
+        {
+        'mt' : {
+        '00' : ['muTau_btag'],
+        }
+	'et' : {
+        '00' : ['eleTau_btag'],
+	}
+	'em' : {
+        '00' : ['emu_btag'],
         },
         },
         },

@@ -1,0 +1,32 @@
+[inputs]
+
+bbA = ULB
+
+[bbA]
+
+blind
+
+periods = 8TeV
+channels = mt et em
+
+mt_categories_8TeV = 0
+et_categories_8TeV = 0
+em_categories_8TeV = 0
+
+mt_names_8TeV = muTau_btag
+et_names_8TeV = eleTau_btag
+em_names_8TeV = emu_btag
+
+[bbb-bbA]
+
+bbA_threshold = 0.1
+
+mt_categories_8TeV = 00
+et_categories_8TeV = 01
+em_categories_8TeV = 02
+
+mt_processes = ZTT_lowMass
+et_processes = ZTT_lowMass
+em_processes = Fakes,DY_lowMass
+
+
