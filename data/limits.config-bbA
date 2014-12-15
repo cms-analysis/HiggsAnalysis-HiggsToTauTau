@@ -1,6 +1,8 @@
 [inputs]
 
-bbA = ULB
+mt = ULB
+et = ULB
+em = ULB
 
 [bbA]
 
@@ -13,20 +15,28 @@ mt_categories_8TeV = 0
 et_categories_8TeV = 0
 em_categories_8TeV = 0
 
-mt_names_8TeV = muTau_btag
-et_names_8TeV = eleTau_btag
-em_names_8TeV = emu_btag
+mt_names_8TeV = btag
+et_names_8TeV = btag
+em_names_8TeV = btag
 
 [bbb-bbA]
 
-bbA_threshold = 0.1
+mt_threshold = 0.1
+et_threshold = 0.1
+em_threshold = 0.1
 
 mt_categories_8TeV = 00
-et_categories_8TeV = 01
-em_categories_8TeV = 02
+et_categories_8TeV = 00
+em_categories_8TeV = 00
 
 mt_processes = ZTT_lowMass
 et_processes = ZTT_lowMass
 em_processes = Fakes,DY_lowMass
 
+[combination]
+
+periods = 8TeV
+
+channels_bbA = mt et em
+categories_bbA = btag
 

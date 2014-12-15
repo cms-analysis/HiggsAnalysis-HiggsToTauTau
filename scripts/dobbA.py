@@ -70,7 +70,7 @@ config=configuration('bbA', options.config)
 
 ## define inputs from cvs; Note: not all analyses are available for all inputs
 directories = {}
-from HiggsAnalysis.HiggsToTauTau.summer13_analyses_cfg import htt_bbA
+from HiggsAnalysis.HiggsToTauTau.summer13_analyses_cfg import htt_mt,htt_et,htt_em
 for chn in config.channels:
     directories[chn] = locals()['htt_'+chn](config.inputs[chn])
 

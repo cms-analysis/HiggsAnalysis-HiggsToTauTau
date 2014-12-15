@@ -336,13 +336,13 @@ def get_channel_dirs(analysis, finalstate, category, period):
         '8TeV':
         {
         'mt' : {
-        '00' : ['muTau_btag'],
-        }
+        '00' : ['btag'],
+        },
 	'et' : {
-        '00' : ['eleTau_btag'],
-	}
+        '00' : ['btag'],
+	},
 	'em' : {
-        '00' : ['emu_btag'],
+        '00' : ['btag'],
         },
         },
         },

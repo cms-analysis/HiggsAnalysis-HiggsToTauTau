@@ -79,12 +79,12 @@ cats4 = OptionGroup(parser, "AZh EVENT CATEGORIES", "Event categories to be used
 cats4.add_option("--AZh-categories-AZh", dest="AZh_AZh_categories", default="0 1 2 3", type="string",
                  help="List AZh of event categories. [Default: \"0 1 2 3\"]")
 parser.add_option_group(cats4)
-cats4 = OptionGroup(parser, "bbA EVENT CATEGORIES", "Event categories to be used for the bbA analysis.")
-cats4.add_option("--bbA-categories-mt", dest="mt_bbA_categories", default="0", type="string",
+cats5 = OptionGroup(parser, "bbA EVENT CATEGORIES", "Event categories to be used for the bbA analysis.")
+cats5.add_option("--bbA-categories-mt", dest="mt_bbA_categories", default="0", type="string",
                  help="List mt of bbA event categories. [Default: \"0\"]")
-cats4.add_option("--bbA-categories-et", dest="et_bbA_categories", default="0", type="string",
+cats5.add_option("--bbA-categories-et", dest="et_bbA_categories", default="0", type="string",
                  help="List et of bbA event categories. [Default: \"0\"]")
-cats4.add_option("--bbA-categories-em", dest="em_bbA_categories", default="0", type="string",
+cats5.add_option("--bbA-categories-em", dest="em_bbA_categories", default="0", type="string",
                  help="List em of bbA event categories. [Default: \"0\"]")
 parser.add_option_group(cats5)
 
