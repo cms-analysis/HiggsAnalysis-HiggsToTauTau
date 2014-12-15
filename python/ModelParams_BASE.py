@@ -96,10 +96,10 @@ class ModelParams_BASE:
         """
         for higgs in model_params.list_of_higgses:
             model_params.masses[higgs] = self.query_masses(higgs, query)
-            if self.ana_type!='Hplus' :
+            if self.ana_type!='Htaunu' :
                 model_params.xsecs[higgs] = self.query_xsec(higgs, channel, query)
             model_params.brs[higgs] = self.query_br(higgs, decay, channel, query)
-        if self.ana_type=='Hplus' :
+        if self.ana_type=='Htaunu' :
             model_params.ttscale = self.query_ttscale('Hp', decay, channel, query)
 
     def use_hplus_xsec(self, query, channel, decay, model_params):
@@ -138,7 +138,7 @@ class ModelParams_BASE:
         For Hhh currently only 'ggAToZhToLLTauTau', 'ggHTohhTo2Tau2B' and 'ggAToZhToLLBB' are supported.
         For Hplus currently only 'HH' and 'HW' are supported.
         """
-        channels = {'ggH':'ggF', 'bbH':'santander', 'ggAToZhToLLBB':'ggF','ggAToZhToLLTauTau':'ggF', 'ggHTohhTo2Tau2B':'ggF', 'HH':'HH', 'HW':'HW'} 
+        channels = {'ggH':'ggF', 'bbH':'santander', 'ggAToZhToLLBB':'ggF','ggAToZhToLLTauTau':'ggF', 'ggHTohhTo2Tau2B':'ggF', 'AZh':'ggF', 'HH':'HH', 'HW':'HW'} 
         if channel not in channels:
             exit('ERROR: Production channel \'%s\' not supported'%channel)
         if self.uncert == '':
@@ -158,39 +158,39 @@ class ModelParams_BASE:
         For Hhh currently only Hhh*hbb*(hbb/htt/hmm) and AZh*hbb*ZLL and AZh*htt*Zbb are supported.
         For Hplus currently only BR(t->Hp+b) and BR(Hp->tau+nu) are supported.
         """
-        brname = {'tt':'BR-tautau', 'bb':'BR-bb', 'mm':'BR-mumu', 'HTohhTo2Tau2B':'BR-hh', 'AToZhToLLTauTau':'BR-Zh', 'AToZhToLLBB':'BR-Zh', 'tHpb':'BR-tHpb', 'taunu':'BR-taunu'}
+        brname = {'tt':'BR-tautau', 'bb':'BR-bb', 'mm':'BR-mumu', 'HTohhTo2Tau2B':'BR-hh', 'AToZhToLLTauTau':'BR-Zh', 'AToZhToLLBB':'BR-Zh', 'AZh':'BR-Zh', 'tHpb':'BR-tHpb', 'taunu':'BR-taunu'}
         if decay[1:] not in brname:
             exit('ERROR: Decay channel \'%s\' not supported'%decay)
         if self.ana_type=='Hhh' :
             if channel=='ggHTohhTo2Tau2B' :
                 return str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses']['h'][brname['bb']]*query['higgses']['h'][brname[decay[1:]]]*2) #factor 2: bbtautau or tautaubb
             elif channel=='ggAToZhToLLBB' :
-                return str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses']['h'][brname['bb']]*0.10099) #BR(Z->LL)=0.003363(ee)+0.003366(mumu)+0.003370(tautau)
+                return str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses']['h'][brname['bb']]*0.10099) #BR(Z->LL)=0.03363(ee)+0.03366(mumu)+0.03370(tautau)
             elif channel=='ggAToZhToLLTauTau' :
-                return str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses']['h'][brname['tt']]*0.10099) #BR(Z->LL)=0.003363(ee)+0.003366(mumu)+0.003370(tautau)
+                return str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses']['h'][brname['tt']]*0.10099) #BR(Z->LL)=0.03363(ee)+0.03366(mumu)+0.03370(tautau)
             elif channel=='bbH' :
                 return query['higgses'][higgs][brname[decay[1:]]]
-        elif self.ana_type=='Hplus':
+        elif self.ana_type=='AZh':
+            if channel=='AZh' :
+                return str(query['higgses'][higgs][brname[channel]]*query['higgses']['h'][brname['tt']]*0.06729) #BR(Z->ll)=0.03363(ee)+0.03366(mumu) (tautau is not considered)
+        elif self.ana_type=='Htaunu':
             if 'HH' in channel :
                 return str(query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['taunu']]*query['higgses'][higgs][brname['taunu']])
             elif 'HW' in channel : 
                return str(2*(1-query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['taunu']])*query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['taunu']])
-        elif self.ana_type=='twoHDM':
-            if channel=='ggHTohhTo2Tau2B' :
-                return str(query['higgses'][higgs][brname[channel[2:]]]*query['higgses']['h'][brname['bb']]*query['higgses']['h'][brname[decay[1:]]]*2)
         else : 
             return query['higgses'][higgs][brname[decay[1:]]]
 
     def query_ttscale(self, higgs, decay, channel, query):
         """
-        Determine the tt MC rescale factor.
+        Determine the tautau MC rescale factor.
         This function uses the hplus_xsec_tools.
         Its only used for Hplus.
         """
         brname = {'tHpb':'BR-tHpb', 'taunu':'BR-taunu'}
         if decay[1:] not in brname:
             exit('ERROR: Decay channel \'%s\' not supported'%decay)
-        if self.ana_type=='Hplus':
+        if self.ana_type=='Htaunu':
             return str((1-query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['taunu']])*(1-query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['taunu']]))
         else : 
             return str(1.0)

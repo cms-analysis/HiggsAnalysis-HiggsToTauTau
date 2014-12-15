@@ -108,7 +108,7 @@ class ModelDatacard(DatacardAdaptor) :
                                 hist_file = ROOT.TFile(path[:path.rfind('/')+1]+card.path_to_file(bin, proc), 'READ')
                                 hist = hist_file.Get(card.path_to_shape(bin, proc).replace('$MASS', mass))
                                 new_rates[index_order.index(bin+'_'+proc)] = str(hist.Integral())
-                    if self.ana_type=="Hplus" : ##felix for tt scale background, but only once!
+                    if self.ana_type=="Htaunu" : ##felix for tt scale background, but only once!
                         for bkg in card.list_of_backgrounds() :
                             if "tt_" in bkg and bkg!="EWKnontt_faketau" :
                                 if card.path_to_file(bin, bkg) == '' :
@@ -178,7 +178,7 @@ class ModelDatacard(DatacardAdaptor) :
                         continue
                     if not (period in bin or '*' in bin) :
                         continue
-                    if self.ana_type=="Hplus" :
+                    if self.ana_type=="Htaunu" :
                         label = 'signal_'+decay+'_'+type+'_'+period
                         if len(uncerts)==0 :
                             for idx in range(len(index_order)) :
@@ -208,7 +208,7 @@ class ModelDatacard(DatacardAdaptor) :
                                                 uncerts[idx]=" \t\t 0.1 "
                 ## in case label is not yet in dict, add uncerts as they are. Otherwise update '-' entries in existing list
                 ## of uncerts
-                if self.ana_type=="Hplus" :
+                if self.ana_type=="Htaunu" :
                     uncert_appendix[label] = uncerts
                     break
                 if not label in uncert_appendix :
@@ -228,7 +228,7 @@ class ModelDatacard(DatacardAdaptor) :
                     found_label = True
                     line = label+'\t lnN \t'+'\t'.join(uncerts)+'\n'
                 ## handle mhplus dependent lnN errors in Hplus (using nearest neightbour)
-                if self.ana_type=="Hplus" : 
+                if self.ana_type=="Htaunu" : 
                     if len(line.lstrip().split()) > 2 :
                         if words[1]=="lnN" :
                             nuisance_file = open("../common/HplusNuisanceFile.dat", 'r')
@@ -309,7 +309,7 @@ class ModelDatacard(DatacardAdaptor) :
                 template.create_templates(reduced_model, self.model_label, 1./float(model.tanb), morph_per_file[shape_file])
         ## adapt datacards to pick up proper signal rates
         print 'adapting datacard(s) :', path
-        if self.ana_type=="Hplus" :            
+        if self.ana_type=="Htaunu" :            
             ## filename gets label self.model_label, histogram name remains as is
             self.adapt_shapes_lines(path, card, 'tt_EWK_faketau', '', self.model_label) #background ugly hardcoded ...
         for key in model.central.keys() :

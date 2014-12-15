@@ -5,7 +5,7 @@ import math
 class MODEL_PARAMS :
     """Class for storing parameters of a model"""
     def __init__(self, ana_type):
-        if ana_type=="Hplus":
+        if ana_type=="Htaunu":
            self.list_of_higgses = ['Hp']
            self.masses = {'Hp' : '125'}
            self.xsecs  = {'Hp' : '3'  }

@@ -166,7 +166,7 @@ class ModelTemplate():
         """
         ## window of closest pivotal masses below/above mass. Window can be None, if no pivotals exist for a given dir. In
         ## this case return None       
-        if self.ana_type=="Hplus" and mass=="" : 
+        if self.ana_type=="Htaunu" and mass=="" : 
             single_template = self.load_hist(dir+'/'+proc+label).Clone(proc+label+'_template'); single_template.Scale(scale)
             return single_template
         window = self.pivotal_mass_window(float(mass), self.pivotals[dir])
@@ -232,7 +232,7 @@ class ModelTemplate():
                     combined_template = None
                     self.pivotals = {}; self.fill_pivotals(proc, label, self.input_file)
                     for higgs in params.list_of_higgses :
-                        if self.ana_type=="Hplus" :
+                        if self.ana_type=="Htaunu" :
                             scale = float(params.brs[higgs])*hist_scale
                         else :
                             scale = float(params.xsecs[higgs])*float(params.brs[higgs])*hist_scale
@@ -249,7 +249,7 @@ class ModelTemplate():
                            print 'write histogram to file: ', dir+'/'+proc+self.save_float_conversion(self.parameter1)+self.hist_label+label
                        combined_template.Write(proc+self.save_float_conversion(self.parameter1)+self.hist_label+label, ROOT.TObject.kOverwrite)
         ## for Hplus the MC tt background has to be rescaled by params.ttscale (1-BR(t->Hp+b)*BR(Hp->tau+nu))^2
-        if self.ana_type=="Hplus" :
+        if self.ana_type=="Htaunu" :
             self.shape_labels = {}; self.fill_shape_labels("tt_EWK_faketau", self.input_file) #bkg name ugly hardcoded..
             params=reduced_model[0][1] #get ttscale (same for all signals)..
             for dir in self.shape_labels.keys() :

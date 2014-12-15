@@ -12,10 +12,10 @@ model_opts.add_option("--parameter1", dest="parameter1", default="", type="strin
                        help="The value of the free parameter in the model. Mue (higgs/higgsino mass parameter) Default: \"\"]")
 model_opts.add_option("--tanb", dest="tanb", default="", type="string",
                        help="The value of tanb in the model. Default: \"\"]")
-model_opts.add_option("--model", dest="modelname", default="mhmax-mu+200", type="string",
-                       help="The model which should be used (choices are: mhmax-mu+200, mhmodp, mhmodm, lowmH, tauphobic, lightstau1, lightstopmod, 2HDM_ty1_mA300_mH300.root). Default: \"mhmax-mu+200\"]")
-model_opts.add_option("--ana-type", dest="ana_type", default="NeutralMSSM", type="string",
-                       help="The model which should be used (choices are: NeutralMSSM, Hhh, Hplus, twoHDM). Default: \"NeutralMSSM\"]")
+model_opts.add_option("--model", dest="modelname", default="mhmodp", type="string",
+                       help="The model which should be used (choices are: mhmax-mu+200, mhmodp, mhmodm, lowmH, tauphobic, lightstau1, lightstopmod, 2HDM_ty1_mA300_mH300, 2HDM_ty2_mA300_mH300). Default: \"mhmdop\"]")
+model_opts.add_option("--ana-type", dest="ana_type", default="Htautau", type="string",
+                       help="The model which should be used (choices are: Htautau, Hhh, Htaunu, AZh). Default: \"Htautau\"]")
 model_opts.add_option("--MSSMvsSM", dest="MSSMvsSM", default=False, action="store_true",
                       help="This is needed for the signal hypothesis separation test MSSM vs SM [Default: False]")
 parser.add_option_group(model_opts)
@@ -34,6 +34,8 @@ morph_opts.add_option("--morphing-htt_tt", dest="morphing_htt_tt", default="MORP
                  help="Choose the morphing type for the htt_tt decay channel. [Default: \"MORPHED\"]", choices=["MORPHED", "NEAREST_NEIGHBOUR"])
 morph_opts.add_option("--morphing-htaunu_had", dest="morphing_htaunu_had", default="MORPHED", type="choice",
                  help="Choose the morphing type for the htaunu_had decay channel. [Default: \"MORPHED\"]", choices=["MORPHED", "NEAREST_NEIGHBOUR"])
+morph_opts.add_option("--morphing-htt_AZh", dest="morphing_htt_AZh", default="MORPHED", type="choice",
+                 help="Choose the morphing type for the AZh decay channel. [Default: \"MORPHED\"]", choices=["MORPHED", "NEAREST_NEIGHBOUR"])
 parser.add_option_group(morph_opts)
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -70,7 +72,7 @@ class MODEL(object) :
         ## model type (as defined in ModelParams_BASE)
         #self.modeltype = 'hplus_xsec' if options.ana_type=="Hplus" else 'mssm_xsec'
         #self.modeltype = 'mssm_xsec'
-        self.modeltype = 'twohdm_xsec' if options.ana_type=="twoHDM" else 'mssm_xsec'
+        self.modeltype = 'twohdm_xsec' if "2HDM" in options.modelname else 'mssm_xsec'
         ## central value of type {(period,decay,proc) : MODEL_PARAMS}
         self.central = {}
         ## shifts for uncertainties of type {'type' : {(period,decay,proc) : (MODEL_PARAMS,MODEL_PARAMS)}}
@@ -165,6 +167,7 @@ def main() :
     print "# --morphing-htt_et     : ", options.morphing_htt_et
     print "# --morphing-htt_tt     : ", options.morphing_htt_tt
     print "# --morphing-htaunu_had : ", options.morphing_htaunu_had
+    print "# --morphing-htt-AZh    : ", options.morphing_htt_AZh
     print "# Check option --help in case of doubt about the meaning of one or more of these confi-"
     print "# guration parameters.                           "
     print "# --------------------------------------------------------------------------------------"
@@ -182,6 +185,7 @@ def main() :
             'htt_et'     : options.morphing_htt_et,
             'htt_tt'     : options.morphing_htt_tt,
             'htaunu_had' : options.morphing_htaunu_had,
+            'htt_AZh'    : options.morphing_htt_AZh,
             }
     ## complete model for given mass and tanb value (including uncertainties)
     models = {}
@@ -193,10 +197,10 @@ def main() :
     card = parseCard(old_file, options)
     old_file.close()
     
-    if options.ana_type=="Hhh" : #mH has to be translated into mA to get the correct BR and xs from the model file
-        neededParameter = mX_to_mA(card)
-    else :
-        neededParameter = options.parameter1   
+    ## if options.ana_type=="Hhh" : #mH has to be translated into mA to get the correct BR and xs from the model file
+##         neededParameter = mX_to_mA(card)
+##     else :
+    neededParameter = options.parameter1   
         
     print options.ana_type
     ## determine MODEL for given datacard.
@@ -215,10 +219,10 @@ def main() :
         ## check which processes are still missing for given decay channel and run period
         missing_procs = model.missing_procs(chn, per, card.list_of_signals())
         if len(missing_procs)>0 :
-            if options.ana_type=="Hplus":
+            if options.ana_type=="Htaunu":
                 print "updating model to parameter set:", per, chn, missing_procs, ['mu']
                 model.setup_model(per, chn, missing_procs, ['mu'])
-            elif options.ana_type=="twoHDM" :
+            elif "2HDM" in options.modelname :
                 print "updating model to parameter set:", per, chn, missing_procs
                 model.setup_model(per, chn, missing_procs)               
             else :
