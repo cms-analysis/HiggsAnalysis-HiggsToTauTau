@@ -1,0 +1,44 @@
+##Example set of commands to setup and run limits for bbA analysis. Currently available for bbA,  masses 220 to 350 in steps of 10, 8TeV only. 
+
+#From src directory of CMSSW release, with the CombinedLimits and HiggsTauTau packages added as described on the twiki:
+# https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideHiggs2TauLimits
+#Use of dobbA.py script to replace the individual scripts
+#Note the syntax for bbb processes in the config file;  only the samples before the first comma are merged atm
+python HiggsAnalysis/HiggsToTauTau/scripts/dobbA.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-bbA -a bbb --label="-bbA" --update-all
+
+#Run model-independent. While blinded, don't run the prefit to
+#data which is normally used to get the postfit limits (run pre-prefit limits)
+#When running with option --no-prefit, only expected limits are calculated.
+submit.py --asymptotic --no-prefit LIMITS-bbA/bbb/*/*
+
+#Maximum likelihood fit
+limit.py --max-likelihood LIMITS-bbA/bbb/cmb/50
+
+#postfit plots
+#cd HiggsAnalysis/HiggsToTauTau/test
+#python mlfit_and_copy.py -a Hhh --mA 300 --tanb 2 [--profile] $CMSSW_BASE/src/LIMITS-label/bbb/cmb/300
+#python produce_macros_Hhh.py -a Hhh --mA 300 --tanb 2 [--profile]  --config ../data/limits.config-Hhh
+#./fixmacros.sh
+#python run_macros.py -a Hhh --config ../data/limits.config-Hhh
+
+#Make plots of model independent 
+plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-bbA.py LIMITS-bbA/bbb/emu_btag
+plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-bbA.py LIMITS-bbA/bbb/eleTau_btag
+plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-bbA.py LIMITS-bbA/bbb/muTau_btag
+plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-bbA.py LIMITS-bbA/bbb/bbA
+
+#Run goodness-of-fit:
+## calculation and plotting
+submit.py --goodness-of-fit --toys 100 --cycles 10 LIMITS-bbA/bbb/emu_btag/50
+submit.py --goodness-of-fit --collect LIMITS-bbA/bbb/emu_btag/50
+plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py LIMITS-bbA/bbb/emu_btag masspoints=50
+submit.py --goodness-of-fit --toys 100 --cycles 10 LIMITS-bbA/bbb/eleTau_btag/50
+submit.py --goodness-of-fit --collect LIMITS-bbA/bbb/eleTau_btag/50
+plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py LIMITS-bbA/bbb/eleTau_btag masspoints=50
+submit.py --goodness-of-fit --toys 100 --cycles 10 LIMITS-bbA/bbb/muTau_btag/50
+submit.py --goodness-of-fit --collect LIMITS-bbA/bbb/muTau_btag/50
+plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py LIMITS-bbA/bbb/muTau_btag masspoints=50
+submit.py --goodness-of-fit --toys 100 --cycles 10 LIMITS-bbA/bbb/bbA/50
+submit.py --goodness-of-fit --collect LIMITS-bbA/bbb/bbA/50
+plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py LIMITS-bbA/bbb/bbA masspoints=50
+

@@ -53,6 +53,8 @@ def get_shape_file(sourcedir, channel, period, ana='sm'):
         return os.path.join(sourcedir,channel, 'htt_'+channel+'.inputs-'+ana+'-'+period+'.root')
     elif ana=='AZh' :
         return os.path.join(sourcedir,channel, 'htt_AZh.inputs-AZh-'+period+'.root')
+    elif ana=='bbA' :
+        return os.path.join(sourcedir,channel, 'htt_'+channel+'.inputs-bbA-'+period+'.root')
     else : ## for mssm - may have to add mass-category (atm its 0 for all)
         return os.path.join(sourcedir, channel, 'htt_'+channel+'.inputs-'+ana+'-'+period+'-'+'0'+'.root')
 
@@ -172,6 +174,9 @@ if __name__ == "__main__":
     parser.add_argument('--AZh', dest='AZh', action='store_true',
                         help='Modify AZh cards')
 
+    parser.add_argument('--bbA', dest='bbA', action='store_true',
+                        help='Modify bbA cards')
+
     parser.add_argument('-f', dest='force', action='store_true',
                         help='Force creation of new output dir')
 
@@ -186,6 +191,8 @@ if __name__ == "__main__":
        ana = 'Hhh'
     elif args.AZh:
        ana = 'AZh'
+    elif args.bbA:
+       ana = 'bbA'
     else:
        ana = 'sm'
     
