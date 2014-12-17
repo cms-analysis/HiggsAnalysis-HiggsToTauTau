@@ -12,7 +12,7 @@ parser.add_option("-o", "--out", dest="out", default="auxiliaries/datacards", ty
                   help="Name of the output directory to which the datacards should be copied. [Default: auxiliaries/datacards]")
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
                   help="Choose between run periods [Default: \"7TeV 8TeV\"]")
-parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm or Hhh). Lower case is required. [Default: sm]", choices=["sm", "mssm" ,"Hhh", "AZh", "bbA"])
+parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice", help="Type of analysis (sm or mssm or Hhh). Lower case is required. [Default: sm]", choices=["sm", "mssm" ,"Hhh", "AZh"])
 parser.add_option("--twohdm",dest="twohdm",default=False,action="store_true",
                  help="If setting up for 2HDM")
 parser.add_option("-c", "--channels", dest="channels", default="ee mm em mt et tt", type="string",
@@ -79,14 +79,6 @@ cats4 = OptionGroup(parser, "AZh EVENT CATEGORIES", "Event categories to be used
 cats4.add_option("--AZh-categories-AZh", dest="AZh_AZh_categories", default="0 1 2 3", type="string",
                  help="List AZh of event categories. [Default: \"0 1 2 3\"]")
 parser.add_option_group(cats4)
-cats5 = OptionGroup(parser, "bbA EVENT CATEGORIES", "Event categories to be used for the bbA analysis.")
-cats5.add_option("--bbA-categories-mt", dest="mt_bbA_categories", default="0", type="string",
-                 help="List mt of bbA event categories. [Default: \"0\"]")
-cats5.add_option("--bbA-categories-et", dest="et_bbA_categories", default="0", type="string",
-                 help="List et of bbA event categories. [Default: \"0\"]")
-cats5.add_option("--bbA-categories-em", dest="em_bbA_categories", default="0", type="string",
-                 help="List em of bbA event categories. [Default: \"0\"]")
-parser.add_option_group(cats5)
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -164,15 +156,14 @@ if options.analysis == "Hhh" :
             "tt"   : (250, 350),
         }
 if options.analysis == "AZh" :
-    valid_masses = {
-        "AZh"   : (220,350),
-    } 
-if options.analysis == "bbA" :
-    valid_masses = {
-        "mt"   : (25,80),
-        "et"   : (25,80),
-        "em"   : (25,80),
-    }
+    if options.twohdm : 
+        valid_masses={
+            "AZh" : (-1,0),
+        }
+    else :
+        valid_masses = {
+            "AZh"   : (220,350),
+        } 
 
 print "------------------------------------------------------"
 print " Valid mass ranges per channel:"
@@ -214,12 +205,6 @@ if options.analysis == "Hhh" :
 if options.analysis == "AZh" :
     valid_periods = {
         "AZh"   : "8TeV",
-        }
-if options.analysis == "bbA" :
-    valid_periods = {
-        "mt"   : "8TeV",
-        "et"   : "8TeV",
-        "em"   : "8TeV",
         }
 
 print "------------------------------------------------------"
@@ -269,14 +254,6 @@ if options.analysis == "AZh" :
     os.chdir("AZh")
     categories = {
         "AZh"   : options.AZh_AZh_categories.split(),
-        }
-
-if options.analysis == "bbA" :
-    os.chdir("bbA")
-    categories = {
-        "mt"   : options.mt_bbA_categories.split(),
-        "et"   : options.mt_bbA_categories.split(),
-        "em"   : options.mt_bbA_categories.split(),
         }
 
 ## return closest simulated masspoint to value
@@ -345,16 +322,16 @@ for channel in channels :
                             ))
 
                 if options.analysis == "AZh" :
+                    if options.twohdm :
                         os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{PER}.root -o {CHN}_{CAT}_{PER}-{LABEL}.txt {MASS}".format(
                             CHN=prefix+channel,
                             ANA=options.analysis,
                             PER=period,
                             CAT=cat,
-                            MASS='' if options.ignore_mass_argument else mass,
-                            LABEL='125' if options.ignore_mass_argument else mass
+                            MASS='300', 
+                            LABEL='300' 
                             ))
-
-                if options.analysis == "bbA" :
+                    else :
                         os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{PER}.root -o {CHN}_{CAT}_{PER}-{LABEL}.txt {MASS}".format(
                             CHN=prefix+channel,
                             ANA=options.analysis,

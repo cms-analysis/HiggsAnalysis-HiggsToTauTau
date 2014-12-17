@@ -58,6 +58,13 @@ class twohdm_xsec_tools():
         else :
             type_info['BR-hh'] = self.lookup_value(parameter1, tan_beta, "hh", "BR%s" % type)
 
+    def _add_br_zh(self, parameter1, tan_beta, input) :
+        type, type_info = input
+        if type=="h" or type=="H" :
+            type_info['BR-Zh'] = 0
+        else :
+            type_info['BR-Zh'] = self.lookup_value(parameter1,tan_beta,"Zh","BR%s" % type)
+
     def _add_br_tautau(self, parameter1, tan_beta, input):
         " Lookup the branching ratio for Hp->tau+nu"
         # Unpack
@@ -118,6 +125,7 @@ class twohdm_xsec_tools():
         
         for higgs_type in higgs_types:
             self._add_mass(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
+            self._add_br_zh(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
             self._add_br_hh(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
             self._add_br_tautau(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
             self._add_br_bb(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
