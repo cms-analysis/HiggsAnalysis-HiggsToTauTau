@@ -51,6 +51,7 @@ def walk_and_copy(inputdir, outputdir, folder, processes, bbb_threshold, merge_t
       # First get a list of all the backgrounds we will consider
       for bkg in merge_bkgs:
         th1 = inputdir.Get(bkg)
+        th1.SetName(str(bkg))
         hist_map.extend([(bkg, inputdir.Get(bkg))])
 
       # loop through bins
