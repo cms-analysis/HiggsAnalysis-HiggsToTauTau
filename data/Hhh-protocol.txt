@@ -12,7 +12,7 @@ lxb-xsec2tanb.py --ana-type="Hhh" --model="mhmodp" --customTanb="1,1.5,2,2.5,3" 
 #To set up model-dependent limits for the 2HD model we need a different directory structure :
 python HiggsAnalysis/HiggsToTauTau/scripts/doHTohh.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-Hhh -a bbb --label="SomeLabel" --model=2HDM [--new-merging --new-merging-threshold 0.5]
 #Applying the correct XS*BR for each tanb point:
-lxb-xsec2tanb.py --ana-type="twoHDM" --model="2HDM_ty1_mA300_mH300" --customTanb="1,2,3,4,5,6,7,8,9,10" LIMITS-HTohh-2HDM/bbb/*/*
+lxb-xsec2tanb.py --ana-type="Hhh" --model="2HDM_ty1_mA300_mH300" --customTanb="1,2,3,4,5,6,7,8,9,10" LIMITS-HTohh-2HDM/bbb/*/*
 
 #Run model-dependent mA-tanb limits
 limit.py --tanb+ LIMITS-HTohh-mhmodp/*/* 

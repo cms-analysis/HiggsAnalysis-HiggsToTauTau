@@ -12,7 +12,7 @@ parser.add_option("-o", "--out", dest="out", default="ichep2012", type="string",
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
                   help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice",
-                  help="Type of analysis (sm or mssm or Hhh or AZh). Lower case is required. [Default: sm]", choices=["sm", "mssm", "Hhh","AZh"])
+                  help="Type of analysis (sm or mssm or Hhh or AZh or bbA). Lower case is required. [Default: sm]", choices=["sm", "mssm", "Hhh","AZh", "bbA"])
 parser.add_option("-c", "--channels", dest="channels", default="mm em mt et tt", type="string",
                   help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are ee, mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et tt\"]")
 parser.add_option("-u", "--no-update", dest="no_update", default=False, action="store_true",
@@ -66,10 +66,18 @@ cats3.add_option("--Hhh-categories-et", dest="et_Hhh_categories", default="0 1 2
 cats3.add_option("--Hhh-categories-tt", dest="tt_Hhh_categories", default="0 1 2", type="string",
                  help="List of tt event categories. [Default: \"0 1 2\"]")
 parser.add_option_group(cats3)
-cats4 = OptionGroup(parser, "AZh EVENT CATEGORIES", "Event categories to be used for the Hhh analysis.")
+cats4 = OptionGroup(parser, "AZh EVENT CATEGORIES", "Event categories to be used for the AZh analysis.")
 cats4.add_option("--AZh-categories-AZh", dest="AZh_AZh_categories", default="0 1 2 3", type="string",
                  help="List AZh of event categories. [Default: \"0 1 2 3\"]")
 parser.add_option_group(cats4)
+cats5 = OptionGroup(parser, "bbA EVENT CATEGORIES", "Event categories to be used for the bbA analysis.")
+cats5.add_option("--bbA-categories-mt", dest="mt_bbA_categories", default="0", type="string",
+                 help="List mt of bbA event categories. [Default: \"0\"]")
+cats5.add_option("--bbA-categories-et", dest="et_bbA_categories", default="0", type="string",
+                 help="List mt of bbA event categories. [Default: \"0\"]")
+cats5.add_option("--bbA-categories-em", dest="em_bbA_categories", default="0", type="string",
+                 help="List mt of bbA event categories. [Default: \"0\"]")
+parser.add_option_group(cats5)
 parser.add_option("-4", "--SM4", dest="sm4", default=False, action="store_true",
                   help="Copy SM4 datacards (will add a prefix SM4_ to each file). [Default: False]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true",
@@ -139,6 +147,12 @@ if options.analysis == "AZh" :
     categories = {
         "AZh"   : options.AZh_AZh_categories.split(),
         }
+if options.analysis == "bbA" :
+    categories = {
+        "mt"   : options.mt_bbA_categories.split(),
+        "et"   : options.et_bbA_categories.split(),
+        "em"   : options.em_bbA_categories.split(),
+        }
 
 ## valid mass range per category
 if options.analysis == "sm" :
@@ -184,12 +198,18 @@ if options.analysis == "mssm" :
             }
 if options.analysis == "AZh" :
     if options.model=="2HDM" :
-        valid_masses= {
-            "AZh"   : (-1,1),
-         }
+        valid_masses = {
+            "AZh" : (-1,1),
+            }
     else :
-       valid_masses = {
+        valid_masses = {
             "AZh"   : ( 220, 350),
+            }
+if options.analysis == "bbA" :
+       valid_masses = {
+            "mt"   : ( 25, 80),
+            "et"   : ( 25, 80),
+            "em"   : ( 25, 80),
             }
 if options.analysis == "Hhh" :
     if options.model=="lowmH" :
@@ -263,6 +283,12 @@ if options.analysis == "Hhh" :
 if options.analysis == "AZh" :
     valid_periods = {
         "AZh"   : "8TeV",
+    }
+if options.analysis == "bbA" :
+    valid_periods = {
+        "mt"   : "8TeV",
+        "et"   : "8TeV",
+        "em"   : "8TeV",
     }
 
 if options.verbose :

@@ -4,7 +4,8 @@
 # https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideHiggs2TauLimits
 #Use of doAZh.py script to replace the individual scripts
 #Note the syntax for bbb processes in the config file;  only the samples before the first comma are merged atm
-python HiggsAnalysis/HiggsToTauTau/scripts/doAZh.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-AZh -a bbb --label="-AZh" --update-all
+python HiggsAnalysis/HiggsToTauTau/scripts/doAZh.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-AZh -a bbb --label="-AZh" [--new-merging --new-merging-threshold 0.5]
+
 
 #Run model-independent. While blinded, don't run the prefit to
 #data which is normally used to get the postfit limits (run pre-prefit limits)
@@ -13,6 +14,11 @@ submit.py --asymptotic --no-prefit LIMITS-AZh/bbb/*/*
 
 #Maximum likelihood fit
 limit.py --max-likelihood LIMITS-AZh/bbb/cmb/300
+
+#Set up and run 2HDM model-dependent limits:
+python HiggsAnalysis/HiggsToTauTau/scripts/doAZh.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-AZh -a bbb --label="SomeLabel" [--new-merging --new-merging-threshold 0.5]
+#Applying correct XS*BR to each tanb point
+lxb-xsec2tanb.py --ana-type="AZh" --model="2HDM_ty2_mA300_mH300" --customTanb="1,2,3,4,5,6,7,8,9,10" LIMITS-2HDM-AZh/bbb/*/*
 
 #postfit plots
 #cd HiggsAnalysis/HiggsToTauTau/test

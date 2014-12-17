@@ -1,3 +1,10 @@
+def htt_AZh(TYPE='ULB') :
+    dict = {}
+    dict['7TeV'] = 'None'
+    dict['8TeV'] = 'ULB'
+    dict['14TeV'] = 'None'
+    return dict
+
 def htt_ee(TYPE='KIT') :
     dict = {}
     dict['7TeV'] = 'DESY-KIT'
@@ -45,9 +52,4 @@ def vhtt(TYPE='VHTT') :
     dict['7TeV'] = 'VHTT'
     dict['8TeV'] = 'VHTT'
     dict['14TeV'] = 'VHTT'
-    return dict
-
-def htt_AZh(TYPE='ULB') :
-    dict = {}
-    dict['8TeV'] = TYPE
     return dict
