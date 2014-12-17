@@ -9,15 +9,20 @@ parser.add_option("-o", "--output", dest="output", default="", type="string",
                   help="Output directory, where to find the output of the last  submission. [Default: \"\"]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true",
                   help="increase verbosity. [Default: False]")
+parser.add_option("-m", "--mass", dest="mass", default="", type="string",
+		  help="Option for choosing explicit masses, for which the scripts should be resubmitted. Format: separate the masses through commata.")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 
 import os
 
 directoryList = os.listdir("{PATH}".format(PATH=options.output))
+massarray = options.mass.replace(" ","").split(",")
 for dir in directoryList :
     if "common" in dir:
         continue
+    if ("" not in massarray) and (dir not in massarray):
+	continue
     ## open submission script and go through it line by line (line corresponds to idx-1, starting from 0)
     ijob=0
     done=0
