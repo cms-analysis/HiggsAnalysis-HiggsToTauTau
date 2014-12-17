@@ -164,9 +164,14 @@ if options.analysis == "Hhh" :
             "tt"   : (250, 350),
         }
 if options.analysis == "AZh" :
-    valid_masses = {
-        "AZh"   : (220,350),
-    } 
+    if options.twohdm : 
+        valid_masses={
+            "AZh" : (-1,0),
+        }
+    else :
+        valid_masses = {
+            "AZh"   : (220,350),
+        } 
 if options.analysis == "bbA" :
     valid_masses = {
         "mt"   : (25,80),
@@ -345,6 +350,16 @@ for channel in channels :
                             ))
 
                 if options.analysis == "AZh" :
+                    if options.twohdm :
+                        os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{PER}.root -o {CHN}_{CAT}_{PER}-{LABEL}.txt {MASS}".format(
+                            CHN=prefix+channel,
+                            ANA=options.analysis,
+                            PER=period,
+                            CAT=cat,
+                            MASS='300',
+                            LABEL='300'
+                            ))
+                    else :
                         os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{PER}.root -o {CHN}_{CAT}_{PER}-{LABEL}.txt {MASS}".format(
                             CHN=prefix+channel,
                             ANA=options.analysis,
@@ -353,6 +368,7 @@ for channel in channels :
                             MASS='' if options.ignore_mass_argument else mass,
                             LABEL='125' if options.ignore_mass_argument else mass
                             ))
+
 
                 if options.analysis == "bbA" :
                         os.system("create-datacard.py -i {CHN}.inputs-{ANA}-{PER}.root -o {CHN}_{CAT}_{PER}-{LABEL}.txt {MASS}".format(

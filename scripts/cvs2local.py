@@ -197,7 +197,12 @@ if options.analysis == "mssm" :
             "hbb"  : ( 90,  350),
             }
 if options.analysis == "AZh" :
-       valid_masses = {
+    if options.model=="2HDM" :
+        valid_masses = {
+            "AZh" : (-1,1),
+            }
+    else :
+        valid_masses = {
             "AZh"   : ( 220, 350),
             }
 if options.analysis == "bbA" :
