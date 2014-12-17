@@ -356,7 +356,7 @@ for channel in channels :
                             ANA=options.analysis,
                             PER=period,
                             CAT=cat,
-                            MASS='300'
+                            MASS='300',
                             LABEL='300'
                             ))
                     else :
