@@ -12,13 +12,12 @@ observation                                          5
 bin                                                  emt           emt           emt           emt           emt           emt           emt           emt            
 process                                              -1            0             1             2             3             4             5             6              
 process                                              tH_YtMinus    tHW           WZ            ZZ            ttW           ttZ           ttH           reducible      
-rate                                                 0.382395      0.0551221     0.59342       0.0526528     1.21695       0.439838      0.590914      7.63156        
+rate                                                 0.382672      0.0558521     0.59342       0.0526528     1.21695       0.474418      0.596686      6.27802        
 ------------------------------------------------------------------------------- 
 lumi_8TeV lnN                                        1.026         1.026         1.026         1.026         1.026         1.026         1.026         -              
-CMS_th_trigger_emt_8TeV lnN                          -             -             1.050         1.050         1.050         1.050         1.050         -              
 CMS_th_sig_trigger_emt_8TeV lnN                      1.05          1.05          -             -             -             -             -             -              
-CMS_th_eff_e_8TeV lnN                                1.025         1.025         1.025         1.025         1.025         1.025         1.025         -              
-CMS_th_eff_m_8TeV lnN                                1.025         1.025         1.025         1.025         1.025         1.025         1.025         -              
+CMS_th_eff_e_8TeV lnN                                1.051         1.051         1.051         1.051         1.051         1.051         1.051         -              
+CMS_th_eff_m_8TeV lnN                                1.051         1.051         1.051         1.051         1.051         1.051         1.051         -              
 CMS_th_eff_t_8TeV lnN                                1.06          1.06          1.060         1.060         1.060         1.060         1.060         -              
 CMS_th_scale_t_8TeV lnN                              1.03          1.03          1.030         1.030         1.030         1.030         1.030         -              
 CMS_scale_j_8TeV lnN                                 1.01          1.01          1.010         1.010         1.010         -             1.010         -              
@@ -38,9 +37,7 @@ QCDscale_VV lnN                                      -             -            
 pdf_gg lnN                                           -             -             -             -             -             0.919         0.926         -              
 pdf_qqbar lnN                                        1.048         -             1.040         1.040         1.072         -             -             -              
 pdf_qg lnN                                           -             1.048         -             -             -             -             -             -              
-CMS_htt_th_emt_8TeV_reducible_bin_1 shape            -             -             -             -             -             -             -             1.000          
-CMS_htt_th_emt_8TeV_reducible_bin_2 shape            -             -             -             -             -             -             -             1.000          
-CMS_htt_th_emt_8TeV_reducible_bin_3 shape            -             -             -             -             -             -             -             1.000          
 CMS_htt_th_emt_8TeV_reducible_bin_4 shape            -             -             -             -             -             -             -             1.000          
 CMS_htt_th_emt_8TeV_reducible_bin_5 shape            -             -             -             -             -             -             -             1.000          
 CMS_htt_th_emt_8TeV_reducible_bin_6 shape            -             -             -             -             -             -             -             1.000          
+CMS_htt_th_emt_8TeV_reducible_bin_7 shape            -             -             -             -             -             -             -             1.000          

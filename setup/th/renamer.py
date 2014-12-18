@@ -26,6 +26,9 @@ def fill_root_file(file_in_name, category, triggerSF, file_out_name, option = 'r
   
   for key in file_in.GetListOfKeys() :
     hist = key.ReadObj()
+    print hist, hist.Integral()
+    import pdb ; pdb.set_trace()
+
     if hist.GetName() in names.keys() :
       if names[hist.GetName()] in [hh.GetName() for hh in hists] : continue
       if 'tH_YtMinus' in names[hist.GetName()] or  \
