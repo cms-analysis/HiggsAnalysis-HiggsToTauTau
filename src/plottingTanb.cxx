@@ -130,17 +130,17 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   
   //mass constraint (background color)
   TGraphAsymmErrors* background = new TGraphAsymmErrors();
-  background->SetPoint(0, expected[0]->GetX()[0], 50);
-  background->SetPointEYlow (0, 50);
-  background->SetPointEYhigh(0, 50); 
-  for(int ipoint=1; ipoint<expected[0]->GetN(); ipoint++){
-    background->SetPoint(ipoint, expected[0]->GetX()[ipoint], 50); 
-    background->SetPointEYlow (ipoint, 50);
-    background->SetPointEYhigh(ipoint, 50);
-  }
-  background->SetPoint(expected[0]->GetN(), expected[0]->GetX()[expected[0]->GetN()-1], 50);
-  background->SetPointEYlow(expected[0]->GetN(), 50);
-  background->SetPointEYhigh(expected[0]->GetN(), 50); 
+//   background->SetPoint(0, expected[0]->GetX()[0], 50);
+//   background->SetPointEYlow (0, 50);
+//   background->SetPointEYhigh(0, 50); 
+//   for(int ipoint=1; ipoint<expected[0]->GetN(); ipoint++){
+//     background->SetPoint(ipoint, expected[0]->GetX()[ipoint], 50); 
+//     background->SetPointEYlow (ipoint, 50);
+//     background->SetPointEYhigh(ipoint, 50);
+//   }
+//   background->SetPoint(expected[0]->GetN(), expected[0]->GetX()[expected[0]->GetN()-1], 50);
+//   background->SetPointEYlow(expected[0]->GetN(), 50);
+//   background->SetPointEYhigh(expected[0]->GetN(), 50); 
   background->SetFillStyle(3005.); //1001  
   background->SetFillColor(backgroundColor->GetNumber());
   //background->SetLineColor(ph->GetNumber());
@@ -182,7 +182,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   band_min->Draw("Lsame");
   connection_max->Draw("Lsame");
   if(theory=="MSSM low-m_{H} scenario" || theory=="MSSM m_{h}^{max} scenario")  band_max->Draw("Lsame");
-
+  
   for(unsigned int i=0; i<expected.size(); i++){
     expected[i]->SetLineColor(kBlack); 
     expected[i]->SetLineWidth(2);
@@ -259,7 +259,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   theory1->SetTextFont (   62 );
   theory1->AddText(theory.c_str());
   theory1->Draw();
- 
+
   /// add the proper legend
   TLegend* leg;
   if(log){

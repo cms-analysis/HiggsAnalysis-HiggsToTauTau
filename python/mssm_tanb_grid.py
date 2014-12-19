@@ -197,6 +197,14 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
                     ,"{CMD} -n  3 --min 15.0  --max 25.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     ,"{CMD} -n  5 --min 30.0  --max 50.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     ]
+        elif "low-tb-high" in opt :
+            if len(subvec(args,  150, 501))>0 :
+                dirs = vec2str(subvec(args, 150, 501))
+                grid = [
+                    "{CMD} -n  3 --min  0.5 --max 0.9 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ,"{CMD} -n 4 --min  1.5 --max 4.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs) 
+                    ,"{CMD} -n 5 --min  5.5 --max 9.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ]
         elif "2HDM" in opt :
             dirs = ""
             for dir in args :
