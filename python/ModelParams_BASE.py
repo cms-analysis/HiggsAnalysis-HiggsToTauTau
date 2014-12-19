@@ -3,7 +3,7 @@ from HiggsAnalysis.HiggsToTauTau.tools.hplus_xsec_tools import hplus_xsec_tools
 from HiggsAnalysis.HiggsToTauTau.tools.twohdm_xsec_tools import twohdm_xsec_tools
 from HiggsAnalysis.HiggsToTauTau.tools.feyn_higgs_mssm import feyn_higgs_mssm
 from HiggsAnalysis.HiggsToTauTau.MODEL_PARAMS import MODEL_PARAMS
-from os import getenv
+from os import getenv, path
 from sys import exit
 
 class ModelParams_BASE:
@@ -37,6 +37,8 @@ class ModelParams_BASE:
                 tanbregion = 'tanbLow'
             else:
                 tanbregion = 'tanbHigh'
+            if not path.exists(getenv('CMSSW_BASE')+'/src/auxiliaries/models/out.'+modelpath+'-'+period+'-'+tanbregion+'-nnlo.root') :
+                tanbregion = 'tanbAll'
             mssm_xsec_tools_path = getenv('CMSSW_BASE')+'/src/auxiliaries/models/out.'+modelpath+'-'+period+'-'+tanbregion+'-nnlo.root'
             scan = mssm_xsec_tools(mssm_xsec_tools_path)
             self.htt_query = scan.query(self.parameter1, self.tanb, self.ana_type)

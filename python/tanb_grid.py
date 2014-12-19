@@ -13,7 +13,7 @@ model_opts.add_option("--parameter1", dest="parameter1", default="", type="strin
 model_opts.add_option("--tanb", dest="tanb", default="", type="string",
                        help="The value of tanb in the model. Default: \"\"]")
 model_opts.add_option("--model", dest="modelname", default="mhmodp", type="string",
-                       help="The model which should be used (choices are: mhmax-mu+200, mhmodp, mhmodm, lowmH, tauphobic, lightstau1, lightstopmod, 2HDM_ty1_mA300_mH300, 2HDM_ty2_mA300_mH300). Default: \"mhmdop\"]")
+                       help="The model which should be used (choices are: mhmax-mu+200, mhmodp, mhmodm, lowmH, tauphobic, lightstau1, lightstopmod, low-tb-high, 2HDM_ty1_mA300_mH300, 2HDM_ty2_mA300_mH300). Default: \"mhmdop\"]")
 model_opts.add_option("--ana-type", dest="ana_type", default="Htautau", type="string",
                        help="The model which should be used (choices are: Htautau, Hhh, Htaunu, AZh). Default: \"Htautau\"]")
 model_opts.add_option("--MSSMvsSM", dest="MSSMvsSM", default=False, action="store_true",
