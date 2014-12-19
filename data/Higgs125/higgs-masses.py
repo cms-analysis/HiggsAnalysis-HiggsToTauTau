@@ -15,6 +15,7 @@ parser.add_option_group(cgroup)
 (options, args) = parser.parse_args()
 
 path = "auxiliaries/models/out.{MODEL}-8TeV-tanbHigh-nnlo.root".format(MODEL=options.model)
+#path = "auxiliaries/models/out.{MODEL}-8TeV-tanbAll-nnlo.root".format(MODEL=options.model)
 if options.model=="lowmH" :
     for MUE in range(300, 3101, 20) :
         file_name = "{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/data/Higgs125/{MODEL}/higgs_{MASS}.dat".format(CMSSW_BASE=os.environ['CMSSW_BASE'],MODEL=options.model,MASS=MUE)
@@ -23,6 +24,18 @@ if options.model=="lowmH" :
         for tanb in range(15, 96) :
             mssm_scan = mssm_xsec_tools("{CMSSW_BASE}/src/{PATH}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], PATH=path))
             htt_query = mssm_scan.query(MUE, tanb/10., "NeutralMSSM") ; mh = htt_query['higgses']['h']['mass'] ; mH = htt_query['higgses']['H']['mass'] ; mA = htt_query['higgses']['A']['mass']
+            if options.verbosity :
+               print "%f \t%f \t%f \t%f \n" % (tanb/10., mh, mA, mH) ;
+            file.write("%f \t%f \t%f \t%f \n" % (tanb/10., mh, mA, mH))	
+        file.close()
+elif options.model=="low-tb-high" :
+    for mA in range(150, 501, 10) :
+        file_name = "{CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/data/Higgs125/{MODEL}/higgs_{MASS}.dat".format(CMSSW_BASE=os.environ['CMSSW_BASE'],MODEL=options.model,MASS=mA)
+        print "writing file:", file_name
+        file = open(file_name,'w')
+        for tanb in range(5, 96) :
+            mssm_scan = mssm_xsec_tools("{CMSSW_BASE}/src/{PATH}".format(CMSSW_BASE=os.environ['CMSSW_BASE'], PATH=path))
+            htt_query = mssm_scan.query(mA, tanb/10., "NeutralMSSM") ; mh = htt_query['higgses']['h']['mass'] ; mH = htt_query['higgses']['H']['mass'] ; mA = htt_query['higgses']['A']['mass']
             if options.verbosity :
                print "%f \t%f \t%f \t%f \n" % (tanb/10., mh, mA, mH) ;
             file.write("%f \t%f \t%f \t%f \n" % (tanb/10., mh, mA, mH))	
