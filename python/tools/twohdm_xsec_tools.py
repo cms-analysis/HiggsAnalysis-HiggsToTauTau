@@ -88,11 +88,11 @@ class twohdm_xsec_tools():
     def _add_xsec(self, parameter1, tan_beta, input):
         type, type_info = input
         type_info.setdefault('xsec', {})
-        for prod_type, unit in [ ('ggF', self.unit_pb) ]:
-            if type=="h" :
-                type_info['xsec'][prod_type] = 0
-            else :
-                type_info['xsec'][prod_type] = unit*self.lookup_value(parameter1, tan_beta, "gg%s" % type)
+        for prod_type, unit in [ ('ggF', self.unit_pb)]:
+            type_info['xsec'][prod_type] = unit*self.lookup_value(parameter1, tan_beta, "gg%s" % type)
+        for prod_type, unit in [ ('santander', self.unit_pb)]: #this is only 5f scheme, but naming is needed to be picked up correctly
+            type_info['xsec'][prod_type] = unit*self.lookup_value(parameter1, tan_beta, "bb%s" % type)
+
 
     ## def _add_mu(self, parameter1, tan_beta, input):
 ##         type, type_info = input
