@@ -2,21 +2,19 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    #dataset = cms.string("#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                     19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
-    #dataset = cms.string("#scale[1.5]{CMS} (unpublished), h,H,A#rightarrow#tau#tau, 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
-    #dataset = cms.string("#scale[1.5]{CMS} Preliminary, h,H,A#rightarrow#tau#tau, 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
-    #dataset = cms.string("#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                                           18.3 fb^{-1} (8 TeV)"),
-    dataset = cms.string("#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                                           19.7 fb^{-1} (8 TeV)"),
+    dataset = cms.string("#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                     19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
+    #dataset = cms.string("#scale[1.5]{CMS} (unpublished)  h,H,A#rightarrow#tau#tau, 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
+    #dataset = cms.string("#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                                         + 18.3 fb^{-1} (7 TeV)"),
     ## x-axis title
-    xaxis = cms.string("cos(#beta-#alpha)"),
+    xaxis = cms.string("m_{A} [GeV]"),
     ## y-axis title
     yaxis = cms.string("#bf{tan#beta}"),
     ## theory label 
-    theory = cms.string("2HDM"),
+    theory = cms.string("MSSM low-tan#beta-high scenario"),
     ## min for plotting
-    min = cms.double(1),
+    min = cms.double(0.5),
     ## max for plotting
-    max = cms.double(10),
+    max = cms.double(9.5),
     ## min for plotting
     log = cms.int32(0),
     ## print to png
@@ -30,43 +28,43 @@ layout = cms.PSet(
     ## define verbosity level
     verbosity = cms.uint32(3),
     ## define output label
-    outputLabel = cms.string("mA-tanb") ,
+    outputLabel = cms.string("HypoTest") ,
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
-   -1
-   ,-0.9
-   ,-0.8
-   ,-0.7 
-   ,-0.6
-   ,-0.5
-   ,-0.4
-   ,-0.3
-   ,-0.2 
-   ,-0.1 
-   ,0 
-   ,0.1
-   ,0.2
-   ,0.3
-   ,0.4
-   ,0.5
-   ,0.6
-   ,0.7
-   ,0.8
-   ,0.9
-   ,1
+   150.
+   ,160.
+   ,170.
+   ,180.
+   ,190.
+   ,200.
+   ,210.
+   ,220.
+   ,230.
+   ,240.
+   ,250.
+   ,275.
+   ,300.
+   ,325.
+   ,350.
+   ,375.
+   ,400.
+   ,425.
+   ,450.
+   ,475.
+   ,500
      ),
     ## is this mssm?
     mssm = cms.bool(True),
     ## is this MSSMvsSM?
-    MSSMvsSM = cms.bool(False),
+    MSSMvsSM = cms.bool(True),
     ## plot black and white friendly?
     BlackWhite = cms.bool(False),
-    ## plot transparent?
-    transparent = cms.bool(True),
     ## print the 2-sigma band
     outerband = cms.bool(True),
     ## plot expected only
-    expectedOnly = cms.bool(True),
+    expectedOnly = cms.bool(False),
+    ## plot transparent?
+    transparent = cms.bool(True),
     ## print constraints from mH=125GeV
     higgs125 = cms.bool(True),
     ## add arXiv-1211-6956 (ATLAS) to plot
