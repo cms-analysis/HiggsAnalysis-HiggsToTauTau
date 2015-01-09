@@ -197,6 +197,7 @@ def main() :
     card = parseCard(old_file, options)
     old_file.close()
     
+    #neededParameter = mX_to_mA(card)
     neededParameter = options.parameter1   
         
     print options.ana_type
