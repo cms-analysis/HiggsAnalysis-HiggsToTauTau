@@ -475,9 +475,9 @@ for directory in args :
                     mass=mass, user=options.userOpt, toys=options.toys, seed=options.seed, wdir=options.workingdir))
             ## run observed limit in any case if expectedOnly is not specified
             else:
-                print "combine -M GoodnessOfFit --fixedSignalStrength 0 -m {mass} --algo saturated {user} {wdir}/tmp.root".format(
+                print "combine -M GoodnessOfFit -m {mass} --algo saturated {user} {wdir}/tmp.root".format( #removed --fixedSignalStrength 0 -> signal is left floating so that the measure is independent from the presence or absence of a signal.
                     mass=mass, user=options.userOpt, wdir=options.workingdir)
-                os.system("combine -M GoodnessOfFit --fixedSignalStrength 0 -m {mass} --algo saturated {user} {wdir}/tmp.root".format(
+                os.system("combine -M GoodnessOfFit -m {mass} --algo saturated {user} {wdir}/tmp.root".format( #removed --fixedSignalStrength 0 -> signal is left floating so that the measure is independent from the presence or absence of a signal.
                     mass=mass, user=options.userOpt, wdir=options.workingdir))
     ##
     ## MAX-LIKELIHOOD
