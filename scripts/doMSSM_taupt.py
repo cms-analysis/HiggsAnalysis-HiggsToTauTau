@@ -26,7 +26,7 @@ parser.add_option("--SMHasSignal", dest="SMHasSignal", default=False, action="st
                   help="Shift the SM Higgs from background to the signal. This is normally needed for the signal hypothesis separation test. The options SMHasBackground has to be true [Default: False]")
 parser.add_option("--blind-datacards", dest="blind_datacards", default=False, action="store_true",
                   help="Option to blind datacards. Also needs to be turned on to inject SM to datacards. [Default: False]")
-parser.add_option("--extra-templates", dest="extra_templates", default="", type="string", help="List of extra background or signal templates which should be injected to the asimov dataset. Needs to be comma seperated list. Here used to inject SM signal into MSSM datacards. [Default: \"\"]")
+parser.add_option("--extra-templates", dest="extra_templates", default="", type="string", help="List of extra background or signal templates which should be injected to the asimov dataset. Needs to be comma seperated list. Here used to inject SM signal into MSSM datacards. In addition, you can use a scale for each template, e.g. '2.5*ggH_SM125'. The scale number should be left from the template name and is separated from it with a multiplication sign '*'. [Default: \"\"]")
 parser.add_option("--reload", dest="reload", default=False, action="store_true",
                   help="reload all root input files from the github in a setup directory. [Default: False]")
 parser.add_option("--update-all", dest="update_all", default=False, action="store_true",

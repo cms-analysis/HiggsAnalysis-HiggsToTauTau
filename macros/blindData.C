@@ -113,7 +113,16 @@ blinding(TRandom3* rnd, TFile* inputFile, TFile* outputFile, std::string dir, st
   TH1F* blind_data_obs = (TH1F*)buffer->Clone(hist.c_str()); 
   if(!samples.empty()){
     blind_data_obs->Reset();
-    for(std::vector<std::string>::const_iterator sample = samples.begin(); sample!=samples.end(); ++sample){
+    for(std::vector<std::string>::iterator sample = samples.begin(); sample!=samples.end(); ++sample){
+		std::size_t star = (*sample).find('*');
+		if(star!=std::string::npos)
+		{
+			std::string extra_scale = (*sample).substr(0,star);
+			Double_t extra_scalefactor = std::stod(extra_scale);
+			(*sample) = (*sample).substr(star+1);
+			TH1F* extra_template = (TH1F*)inputFile->Get((dir+*(sample)).c_str());
+			extra_template->Scale(extra_scalefactor);
+		}
       // ------------------------------- DEBUG > 1 ------------------------------- //
       if( debug>1 ){ std::cerr << "Looking for histogram: " << (dir+(*sample)) << std::endl; }
       buffer = (TH1F*)inputFile->Get((dir+(*sample)).c_str()); 
