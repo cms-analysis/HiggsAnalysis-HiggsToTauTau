@@ -6,7 +6,9 @@ eleTau_2jet1tag		signal,SM,ZTT,VV  		CMS_eff_t_etau_8TeV			1.08
 eleTau_2jet1tag		signal,SM,ZTT			CMS_scale_t_etau_8TeV          		1.00
 eleTau_2jet1tag     signal,SM,ZTT,ZJ,ZL,TT,VV  	CMS_scale_j_8TeV				1.00
 eleTau_2jet1tag     signal,SM		  	CMS_htt_scale_met_8TeV			0.99
-eleTau_2jet1tag     TT,W,ZL,ZJ	  		CMS_htt_scale_met_8TeV			1.01
+eleTau_2jet1tag     TT	          		CMS_htt_scale_met_8TeV			0.98
+eleTau_2jet1tag     ZL,ZJ	            CMS_htt_scale_met_8TeV			0.96
+eleTau_2jet1tag	    VV	        	    CMS_htt_scale_met_8TeV				0.97
 eleTau_2jet1tag		VV,QCD              CMS_eff_b_8TeV                  	0.97
 eleTau_2jet1tag		W        			CMS_eff_b_8TeV                  	0.99
 eleTau_2jet1tag		ZL        			CMS_fake_b_8TeV                 	1.01

@@ -5,8 +5,11 @@ muTau_2jet0tag		 	signal,SM,ZTT,ZJ,ZL,TT,VV	CMS_eff_m 					1.01
 muTau_2jet0tag		 	signal,SM,ZTT,TT,VV 		CMS_eff_t_mutau_8TeV				1.08
 muTau_2jet0tag		 	signal,SM,ZTT			CMS_scale_t_mutau_8TeV 				1.00
 muTau_2jet0tag        	signal,SM,ZTT,ZJ,ZL,TT,VV    CMS_scale_j_8TeV				1.00
-muTau_2jet0tag	 		signal,SM   			CMS_htt_scale_met_8TeV				0.99
-muTau_2jet0tag	 		TT,ZL,ZJ		    	CMS_htt_scale_met_8TeV				1.01
+muTau_2jet0tag	 		signal,SM   			CMS_htt_scale_met_8TeV				1.01
+muTau_2jet0tag	 		TT      		    	CMS_htt_scale_met_8TeV				0.97
+muTau_2jet0tag	 		ZL		               	CMS_htt_scale_met_8TeV				0.93
+muTau_2jet0tag	 		ZJ		               	CMS_htt_scale_met_8TeV				0.99
+muTau_2jet0tag	 		VV		              	CMS_htt_scale_met_8TeV				1.04
 muTau_2jet0tag			signal 			CMS_eff_b_8TeV 					0.92
 muTau_2jet0tag			VV 				CMS_eff_b_8TeV 					0.99
 muTau_2jet0tag			TT 				CMS_eff_b_8TeV 					0.95
