@@ -311,18 +311,32 @@ for chn in config.channels :
                                     "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per),
                                     options.profile
                                     )
-                elif options.profile:
+                elif options.profile and chn in ['mt','et'] :
                    plots = Analysis(options.analysis, histfile, config.categoryname[chn][per][config.categories[chn][per].index(cat)],
                                     process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
                                     "templates/HHH_{CHN}_X_Profile_template.C".format(CHN=chn.upper()),
                                     "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per),
                                     )
-                else :
+                elif chn in ['mt', 'et'] :
                    plots = Analysis(options.analysis,histfile,config.categoryname[chn][per][config.categories[chn][per].index(cat)],
                                     process_weight,process_shape_weight, process_uncertainties, process_shape_uncertainties,
                                     "templates/HHH_{CHN}_X_template.C".format(CHN=chn.upper()),
                                     "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per),
                                     )
+                elif chn == 'tt' :
+                   if cat in ['1','2'] :
+                       plots = Analysis(options.analysis,histfile,config.categoryname[chn][per][config.categories[chn][per].index(cat)],
+                                        process_weight,process_shape_weight, process_uncertainties, process_shape_uncertainties,
+                                        "templates/HHH_{CHN}_X_1or2tag_template.C".format(CHN=chn.upper()),
+                                        "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per),
+                                        )
+                   elif cat == '0' :
+                       plots = Analysis(options.analysis,histfile,config.categoryname[chn][per][config.categories[chn][per].index(cat)],
+                                        process_weight,process_shape_weight, process_uncertainties, process_shape_uncertainties,
+                                        "templates/HHH_{CHN}_X_notag_template.C".format(CHN=chn.upper()),
+                                        "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per),
+                                        )
+                 
             plots.run()
             scale_file=open("scales_{CHN}_{CAT}_{PER}.py".format(CHN=chn, CAT=cat, PER=per),'w')
             scale_file.write("scales="+str(plots.scale_output))

@@ -135,8 +135,8 @@ void rescale(TH1F* hin, unsigned int idx)
   $TT
   case  3: // W  [EWK1]
   $W
-  case  4: // ZJ [EWK2]
-  $ZJ
+  case  4: // ZLL [EWK2]
+  $ZLL
   case  5: // ZL [EWK3]
   //$ZL
   case  6: // VV [EWK ]
@@ -197,7 +197,7 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
   TH1F* Fakes  = refill((TH1F*)input->Get(TString::Format("%s/QCD"     , directory)), "QCD"); InitHist(Fakes, "", "", TColor::GetColor(250,202,255), 1001);
   TH1F* EWK1   = refill((TH1F*)input->Get(TString::Format("%s/W"       , directory)), "W"  ); InitHist(EWK1 , "", "", TColor::GetColor(222,90,106), 1001);
-  TH1F* EWK2   = refill((TH1F*)input->Get(TString::Format("%s/ZJ"      , directory)), "ZJ" ); InitHist(EWK2 , "", "", TColor::GetColor(222,90,106), 1001);
+  TH1F* EWK2   = refill((TH1F*)input->Get(TString::Format("%s/ZLL"      , directory)), "ZLL" ); InitHist(EWK2 , "", "", TColor::GetColor(222,90,106), 1001);
 //TH1F* EWK3   = refill((TH1F*)input->Get(TString::Format("%s/ZL"      , directory)), "ZL" ); InitHist(EWK3 , "", "", TColor::GetColor(222,90,106), 1001);
   TH1F* EWK    = refill((TH1F*)input->Get(TString::Format("%s/VV"      , directory)), "VV" ); InitHist(EWK  , "", "", TColor::GetColor(222,90,106), 1001);
   TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/TT"      , directory)), "TT" ); InitHist(ttbar, "", "", TColor::GetColor(155,152,204), 1001);
@@ -441,7 +441,7 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   massA->SetTextColor(    1 );
   massA->SetTextFont (   62 );
   massA->AddText("MSSM m^{h}_{mod+} scenario");
-  massA->AddText("m_{A}=$MA GeV, tan#beta=$TANB");
+  massA->AddText("m_{H}=$MA GeV, tan#beta=$TANB");
   massA->Draw();
 #endif
   
@@ -483,10 +483,17 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
     test1->SetBinContent(ibin+1, test1->GetBinContent(ibin+1)*test1->GetBinWidth(ibin+1));
     test1->SetBinError  (ibin+1, test1->GetBinError  (ibin+1)*test1->GetBinWidth(ibin+1));
   }
-  double chi2prob = test1->Chi2Test      (model,"PUW");        std::cout << "chi2prob:" << chi2prob << std::endl;
-  double chi2ndof = test1->Chi2Test      (model,"CHI2/NDFUW"); std::cout << "chi2ndf :" << chi2ndof << std::endl;
-  double ksprob   = test1->KolmogorovTest(model);              std::cout << "ksprob  :" << ksprob   << std::endl;
-  double ksprobpe = test1->KolmogorovTest(model,"DX");         std::cout << "ksprobpe:" << ksprobpe << std::endl;  
+double chi2prob =0.;
+double chi2ndof=0.;
+double ksprob=0.;
+double ksprobpe=0.;
+
+if(!BLIND_DATA){
+  chi2prob = test1->Chi2Test      (model,"PUW");        std::cout << "chi2prob:" << chi2prob << std::endl;
+  chi2ndof = test1->Chi2Test      (model,"CHI2/NDFUW"); std::cout << "chi2ndf :" << chi2ndof << std::endl;
+  ksprob   = test1->KolmogorovTest(model);              std::cout << "ksprob  :" << ksprob   << std::endl;
+  ksprobpe = test1->KolmogorovTest(model,"DX");         std::cout << "ksprobpe:" << ksprobpe << std::endl;  
+}
 
   std::vector<double> edges;
   TH1F* zero = (TH1F*)ref->Clone("zero"); zero->Clear();
@@ -506,11 +513,13 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   }
   float range = 0.1;
   std::sort(edges.begin(), edges.end());
+if(edges.size()>1){
   if (edges[edges.size()-2]>0.1) { range = 0.2; }
   if (edges[edges.size()-2]>0.2) { range = 0.5; }
   if (edges[edges.size()-2]>0.5) { range = 1.0; }
   if (edges[edges.size()-2]>1.0) { range = 1.5; }
   if (edges[edges.size()-2]>1.5) { range = 2.0; }
+}
   rat1->SetLineColor(kBlack);
   rat1->SetFillColor(kGray );
   rat1->SetMaximum(+range);
@@ -533,7 +542,9 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   stat1->SetTextSize ( 0.05 );
   stat1->SetTextColor(    1 );
   stat1->SetTextFont (   62 );
+if(!BLIND_DATA){
   stat1->AddText(TString::Format("#chi^{2}/ndf=%.3f,  P(#chi^{2})=%.3f", chi2ndof, chi2prob));
+}
   //stat1->AddText(TString::Format("#chi^{2}/ndf=%.3f,  P(#chi^{2})=%.3f, P(KS)=%.3f", chi2ndof, chi2prob, ksprob));
   stat1->Draw();
 
@@ -560,11 +571,13 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   }
   range = 0.1;
   std::sort(edges.begin(), edges.end());
+if(edges.size()>1){
   if (edges[edges.size()-2]>0.1) { range = 0.2; }
   if (edges[edges.size()-2]>0.2) { range = 0.5; }
   if (edges[edges.size()-2]>0.5) { range = 1.0; }
   if (edges[edges.size()-2]>1.0) { range = 1.5; }
   if (edges[edges.size()-2]>1.5) { range = 2.0; }
+}
 #if defined MSSM
   if(!log){ rat2->GetXaxis()->SetRange(200, rat2->FindBin(UPPER_EDGE)); } else{ rat2->GetXaxis()->SetRange(200, rat2->FindBin(UPPER_EDGE)); };
 #else

@@ -12,6 +12,8 @@ model_opts.add_option("--parameter1", dest="parameter1", default="", type="strin
                        help="The value of the free parameter in the model. Mue (higgs/higgsino mass parameter) Default: \"\"]")
 model_opts.add_option("--tanb", dest="tanb", default="", type="string",
                        help="The value of tanb in the model. Default: \"\"]")
+model_opts.add_option("--postfit", dest="postfit", default=False, action="store_true",
+                      help="If making postfit plots, parameter1 is mH (not mA) so needs to be transformed to mH")
 model_opts.add_option("--model", dest="modelname", default="mhmodp", type="string",
                        help="The model which should be used (choices are: mhmax-mu+200, mhmodp, mhmodm, lowmH, tauphobic, lightstau1, lightstopmod, low-tb-high, 2HDM_ty1_mA300_mH300, 2HDM_ty2_mA300_mH300). Default: \"mhmdop\"]")
 model_opts.add_option("--ana-type", dest="ana_type", default="Htautau", type="string",
@@ -197,7 +199,7 @@ def main() :
     card = parseCard(old_file, options)
     old_file.close()
     
-    if options.ana_type=="Hhh" and "2HDM" not in options.modelname : #mH has to be translated into mA to get the correct BR and xs from the model file
+    if options.ana_type=="Hhh" and options.postfit : #mH has to be translated into mA to get the correct BR and xs from the model file when making postfit plots
         neededParameter = mX_to_mA(card)
     else :
         neededParameter = options.parameter1   
