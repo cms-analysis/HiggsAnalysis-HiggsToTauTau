@@ -197,8 +197,10 @@ def main() :
     card = parseCard(old_file, options)
     old_file.close()
     
-    #neededParameter = mX_to_mA(card)
-    neededParameter = options.parameter1   
+    if options.ana_type=="Hhh" and "2HDM" not in options.modelname : #mH has to be translated into mA to get the correct BR and xs from the model file
+        neededParameter = mX_to_mA(card)
+    else :
+        neededParameter = options.parameter1   
         
     print options.ana_type
     ## determine MODEL for given datacard.
