@@ -257,7 +257,7 @@ std::string legendEntry(const std::string& channel){
   return title;
 }
 
-void compareDeltaLimit(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., const char* label=" Preliminary, H#rightarrowhh#rightarrow#tau#taubb, 19.8 fb^{-1} at 8TeV")
+void compareDeltaLimitHhh(const char* filename, const char* channelstr, bool expected, bool observed, const char* type, double minimum=0., double maximum=20., const char* label=" Preliminary, H#rightarrowhh#rightarrow#tau#taubb, 19.8 fb^{-1} at 8TeV")
 {
   SetStyle();
 
