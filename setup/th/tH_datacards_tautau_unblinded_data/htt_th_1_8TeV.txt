@@ -12,7 +12,7 @@ observation                                          7
 bin                                                  mmt           mmt           mmt           mmt           mmt           mmt           mmt           mmt            
 process                                              -1            0             1             2             3             4             5             6              
 process                                              tH_YtMinus    tHW           WZ            ZZ            ttW           ttZ           ttH           reducible      
-rate                                                 0.249469      0.0432771     0.278986      0.029147      0.683933      0.244186      0.331925      3.80848        
+rate                                                 0.256748      0.0445462     0.288331      0.0299783     0.700774      0.250344      0.341525      3.8072         
 ------------------------------------------------------------------------------- 
 lumi_8TeV lnN                                        1.026         1.026         1.026         1.026         1.026         1.026         1.026         -              
 CMS_th_sig_trigger_mmt_8TeV lnN                      1.06          1.06          -             -             -             -             -             -              
@@ -41,3 +41,4 @@ CMS_htt_th_mmt_8TeV_reducible_bin_4 shape            -             -            
 CMS_htt_th_mmt_8TeV_reducible_bin_5 shape            -             -             -             -             -             -             -             1.000          
 CMS_htt_th_mmt_8TeV_reducible_bin_6 shape            -             -             -             -             -             -             -             1.000          
 CMS_htt_th_mmt_8TeV_reducible_bin_7 shape            -             -             -             -             -             -             -             1.000          
+CMS_htt_th_mmt_8TeV_reducible_bin_8 shape            -             -             -             -             -             -             -             1.000          
