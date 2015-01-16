@@ -142,7 +142,7 @@ void rescale(TH1F* hin, unsigned int idx)
   $QCD
 #if defined MSSM
   case  8: // ggH
-  $ggHTohhTo2Tau2B$MA
+  $ggHTohhTo2Tau2B$MH
 /*
   case  9: // bbH
   $ggAToZhToLLBB$MA
@@ -200,7 +200,7 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   
   TFile* input = new TFile(inputfile.c_str());
 #ifdef MSSM
-  TFile* input2 = new TFile((inputfile+"_$MA_$TANB").c_str());
+  TFile* input2 = new TFile((inputfile+"_$MH_$TANB").c_str());
 #endif
   TH1F* Fakes  = refill((TH1F*)input->Get(TString::Format("%s/QCD"     , directory)), "QCD"); InitHist(Fakes, "", "", TColor::GetColor(250,202,255), 1001); 
   TH1F* EWK0   = refill((TH1F*)input->Get(TString::Format("%s/VV"      , directory)), "VV" ); InitHist(EWK0 , "", "", TColor::GetColor(222,90,106), 1001);
@@ -214,7 +214,7 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TH1F* ttbar  = refill((TH1F*)input->Get(TString::Format("%s/TT"      , directory)), "TT" ); InitHist(ttbar, "", "", TColor::GetColor(155,152,204), 1001);
   TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/ZTT"     , directory)), "ZTT"); InitHist(Ztt  , "", "", TColor::GetColor(248,206,104), 1001);
 #ifdef MSSM
-  TH1F* ggHTohhTo2Tau2B    = refill((TH1F*)input2->Get(TString::Format("%s/ggHTohhTo2Tau2B$MA" , directory)), "ggHTohhTo2Tau2B"); InitSignal(ggHTohhTo2Tau2B); ggHTohhTo2Tau2B->Scale($TANB*SIGNAL_SCALE);
+  TH1F* ggHTohhTo2Tau2B    = refill((TH1F*)input2->Get(TString::Format("%s/ggHTohhTo2Tau2B$MH" , directory)), "ggHTohhTo2Tau2B"); InitSignal(ggHTohhTo2Tau2B); ggHTohhTo2Tau2B->Scale($TANB*SIGNAL_SCALE);
 /*
   TH1F* ggAToZhToLLTauTau = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLTauTau$MA", directory)), "ggAToZhToLLTauTau"); InitSignal(ggAToZhToLLTauTau); ggAToZhToLLTauTau->Scale(SIGNAL_SCALE);
   TH1F* ggAToZhToLLBB = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLBB$MA", directory)),"ggAToZhToLLBB"); InitSignal(ggAToZhToLLBB); ggAToZhToLLBB->Scale(SIGNAL_SCALE);
@@ -511,7 +511,7 @@ HTT_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   massA->SetTextColor(    1 );
   massA->SetTextFont (   62 );
   massA->AddText("MSSM m^{h}_{mod+} scenario");
-  massA->AddText("m_{H}=$MA GeV, tan#beta=$TANB");
+  massA->AddText("m_{A}=$MA GeV, tan#beta=$TANB");
   massA->Draw();
 #endif
 
