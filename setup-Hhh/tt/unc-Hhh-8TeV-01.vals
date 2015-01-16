@@ -2,9 +2,10 @@ tauTau_2jet1tag			signal,SM,TT,ZLL,VV	        lumi_8TeV            				1.026
 tauTau_2jet1tag 		signal,SM,ZTT,TT,VV		CMS_eff_t_tautau_8TeV 				1.19
 tauTau_2jet1tag			signal,ZTT  			CMS_scale_t_tautau_8TeV 			1.00        
 tauTau_2jet1tag         	signal,SM,TT,VV,ZTT,ZLL		CMS_scale_j_8TeV		   		1.00
-tauTau_2jet1tag			signal 			       	CMS_eff_b_8TeV                  		1.03
-tauTau_2jet1tag			TT 			       	CMS_eff_b_8TeV                  		1.01
-tauTau_2jet1tag			VV      		  	CMS_eff_b_8TeV                  		1.01
+tauTau_2jet1tag			signal 			       	CMS_eff_b_8TeV                  		0.98
+tauTau_2jet1tag			TT 			       	CMS_eff_b_8TeV                  		1.02
+tauTau_2jet1tag			VV      		  	CMS_eff_b_8TeV                  		1.00
+tauTau_2jet0tag			ZLL 				CMS_eff_b_8TeV 					1.00
 tauTau_2jet1tag         	QCD				CMS_htt_QCDSyst_tautau_2jet1tag_8TeV		1.20              
 tauTau_2jet1tag			ZTT,ZLL 		        CMS_htt_zttNorm_8TeV 				1.033           
 tauTau_2jet1tag			ZTT			        CMS_htt_extrap_ztt_tautau_2jet1tag_8TeV		1.05           
