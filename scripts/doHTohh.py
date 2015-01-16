@@ -265,7 +265,6 @@ if options.update_setup :
                             if options.new_merging :
                                 filename='htt_'+chn+'.inputs-Hhh-'+per+'.root'
                                 for cat in config.bbbcat[chn][per][idx].split(',') :
-                                    print cat
                                     ## loop all categories in question for index idx
                                     if len(config.bbbproc[chn][idx].replace('>','+').split('+'))>1 :
                                         ## only get into action if there is more than one sample to do the merging for
@@ -278,19 +277,33 @@ if options.update_setup :
                                             SOURCE=dir+'/'+ana+'/'+chn+'/'+filename,
                                             TARGET=dir+'/'+ana+'/'+chn+'/'+filename,
                                             ))
-                            normalize_bbb = ''
-                            if not options.drop_normalize_bbb :
-                                normalize_bbb = ' --normalize '
-                            os.system("add_bbb_errors.py '{CHN}:{PER}:{CAT}:{PROC}' {NORMALIZE} -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold {THR} --Hhh".format(
-                                DIR=dir,
-                                ANA=ana,
-                                CHN=chn,
-                                PER=per,
-                                NORMALIZE=normalize_bbb,
-                                CAT=config.bbbcat[chn][per][idx],
-                                PROC=config.bbbproc[chn][idx].replace('>',',') if cat==00 else "ZTT,TT,VV,QCD,ZLL",
-                                THR=config.bbbthreshold[chn]
-                                ))                   
+                                normalize_bbb = ''
+                                if not options.drop_normalize_bbb :
+                                    normalize_bbb = ' --normalize '
+                                os.system("add_bbb_errors.py '{CHN}:{PER}:{CAT}:{PROC}' {NORMALIZE} -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold {THR} --Hhh".format(
+                                    DIR=dir,
+                                    ANA=ana,
+                                    CHN=chn,
+                                    PER=per,
+                                    NORMALIZE=normalize_bbb,
+                                    CAT=config.bbbcat[chn][per][idx],
+                                    PROC=config.bbbproc[chn][idx].replace('>',',') if cat==0 else "ZTT,TT,VV,QCD,ZLL",
+                                    THR=config.bbbthreshold[chn]
+                                    ))                   
+                            else :
+                                normalize_bbb = ''
+                                if not options.drop_normalize_bbb :
+                                    normalize_bbb = ' --normalize '
+                                os.system("add_bbb_errors.py '{CHN}:{PER}:{CAT}:{PROC}' {NORMALIZE} -f --in {DIR}/{ANA} --out {DIR}/{ANA}-tmp --threshold {THR} --Hhh".format(
+                                    DIR=dir,
+                                    ANA=ana,
+                                    CHN=chn,
+                                    PER=per,
+                                    NORMALIZE=normalize_bbb,
+                                    CAT=config.bbbcat[chn][per][idx],
+                                    PROC=config.bbbproc[chn][idx].replace('>',','),
+                                    THR=config.bbbthreshold[chn]
+                                    ))                   
 
                         os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                         os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
