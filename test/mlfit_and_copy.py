@@ -9,6 +9,7 @@ parser.add_option("-s", "--skip", dest="skip", default=False, action="store_true
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="string", help="Type of analysis (sm or mssm). Lower case is required. [Default: \"sm\"]")
 parser.add_option("--mm-discriminator", dest="mm_discriminator", default=False, action="store_true", help="Show the actual mm discriminator instead of the more intuitive msvfit plot. [Default: False]")
 parser.add_option("--mA", dest="mA", default="160", type="string", help="Mass of pseudoscalar mA only needed for mssm. [Default: '160']")
+parser.add_option("--mH", dest="mH", default="300", type="string", help="mH only needed for Hhh. [Default: '300']")
 parser.add_option("--tanb", dest="tanb", default="8", type="string", help="Tanb only needed for mssm. [Default: '8']")
 parser.add_option("--profile", dest="profile", default=False, action="store_true", help="Apply profiling of A->Zh and bbH in Hhh. [Default: False]")
 (options, args) = parser.parse_args()
@@ -83,12 +84,22 @@ if options.analysis != "sm" :
     system("combineCards.py -S %s > datacards/tmp.txt" % optcards)
     system("perl -pi -e 's/datacards//g' datacards/{DATACARD}".format(DATACARD="tmp.txt"))
     system("perl -pi -e 's/common/root/g' datacards/{DATACARD}".format(DATACARD="tmp.txt"))
-    system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/python/tanb_grid.py --ana-type {ANA} --model mhmodp --parameter1 {MA} --tanb {TANB} datacards/{PATH}".format(
-        CMSSW_BASE=os.environ['CMSSW_BASE'],
-        ANA=options.analysis,
-        MA=options.mA,
-        TANB=options.tanb,
-        PATH="tmp.txt"
-        ))
+    if options.analysis == "mssm" :
+        system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/python/tanb_grid.py --ana-type {ANA} --model mhmodp --parameter1 {MA} --tanb {TANB} --postfit datacards/{PATH}".format(
+            CMSSW_BASE=os.environ['CMSSW_BASE'],
+            ANA=options.analysis,
+            MA=options.mA,
+            TANB=options.tanb,
+            PATH="tmp.txt"
+            ))
+    elif options.analysis == "Hhh" :
+        system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/python/tanb_grid.py --ana-type {ANA} --model mhmodp --parameter1 {MA} --tanb {TANB} --postfit datacards/{PATH}".format(
+            CMSSW_BASE=os.environ['CMSSW_BASE'],
+            ANA=options.analysis,
+            MA=options.mH,
+            TANB=options.tanb,
+            PATH="tmp.txt"
+            ))
+
     system("rm datacards/tmp*")
 

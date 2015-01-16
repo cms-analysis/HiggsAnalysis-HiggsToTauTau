@@ -13,6 +13,7 @@ parser.add_option("-y", "--yields", dest="yields", default="1", type="int", help
 parser.add_option("-s", "--shapes", dest="shapes", default="1", type="int", help="Shift shape uncertainties. [Default: '1']")
 parser.add_option("--shapes-mm-special", dest="shapes_mm_special", default="0", type="int", help="Shift shape uncertainties in the mm channel. This option is needed to make an estimate on the additional stat. uncertainties in the mm channel when using the msv distribution instead of the actual 2-d discriminator folded to 1 dimonesion, which goes into hte limit calculation in the MSSM analysis. This option automatically switches the option --shapes to 0, as this option is not applicable in this case. [Default: '0']")
 parser.add_option("--mA", dest="mA", default="300", type="float", help="Mass of pseudoscalar mA only needed for mssm. [Default: '300']")
+parser.add_option("--mH", dest="mH", default="300", type="float", help="Mass of mH only needed for mssm. [Default: '300']")
 parser.add_option("--tanb", dest="tanb", default="2.5", type="float", help="Tanb only needed for mssm. [Default: '2.5']")
 parser.add_option("-u", "--uncertainties", dest="uncertainties", default="1", type="int", help="Set uncertainties of backgrounds. [Default: '1']")
 parser.add_option("-o", "--omit", dest="omit", default="0", type="int", help="Do not include uncertainty from original file. [Default: '0']")
@@ -146,6 +147,7 @@ class Analysis:
                  line = line.replace("$WJets", "break;")
              if(options.analysis=="Hhh") :
                  line = line.replace("$MA" , str(int(options.mA)))
+                 line = line.replace("$MH" , str(int(options.mH)))
                  line = line.replace("$TANB", str(int(options.tanb)))
 	     if options.uncertainties and (options.yields or options.shapes):
                  line = line.replace("$DRAW_ERROR", 'if(scaled) errorBand->Draw("e2same");')
@@ -311,18 +313,32 @@ for chn in config.channels :
                                     "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per),
                                     options.profile
                                     )
-                elif options.profile:
+                elif options.profile and chn in ['mt','et'] :
                    plots = Analysis(options.analysis, histfile, config.categoryname[chn][per][config.categories[chn][per].index(cat)],
                                     process_weight, process_shape_weight, process_uncertainties, process_shape_uncertainties,
                                     "templates/HHH_{CHN}_X_Profile_template.C".format(CHN=chn.upper()),
                                     "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per),
                                     )
-                else :
+                elif chn in ['mt', 'et'] :
                    plots = Analysis(options.analysis,histfile,config.categoryname[chn][per][config.categories[chn][per].index(cat)],
                                     process_weight,process_shape_weight, process_uncertainties, process_shape_uncertainties,
                                     "templates/HHH_{CHN}_X_template.C".format(CHN=chn.upper()),
                                     "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per),
                                     )
+                elif chn == 'tt' :
+                   if cat in ['1','2'] :
+                       plots = Analysis(options.analysis,histfile,config.categoryname[chn][per][config.categories[chn][per].index(cat)],
+                                        process_weight,process_shape_weight, process_uncertainties, process_shape_uncertainties,
+                                        "templates/HHH_{CHN}_X_1or2tag_template.C".format(CHN=chn.upper()),
+                                        "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per),
+                                        )
+                   elif cat == '0' :
+                       plots = Analysis(options.analysis,histfile,config.categoryname[chn][per][config.categories[chn][per].index(cat)],
+                                        process_weight,process_shape_weight, process_uncertainties, process_shape_uncertainties,
+                                        "templates/HHH_{CHN}_X_notag_template.C".format(CHN=chn.upper()),
+                                        "htt_{CHN}_{CAT}_{PER}.C".format(CHN=chn, CAT=cat, PER=per),
+                                        )
+                 
             plots.run()
             scale_file=open("scales_{CHN}_{CAT}_{PER}.py".format(CHN=chn, CAT=cat, PER=per),'w')
             scale_file.write("scales="+str(plots.scale_output))

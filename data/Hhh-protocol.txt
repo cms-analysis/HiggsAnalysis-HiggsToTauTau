@@ -28,8 +28,8 @@ limit.py --max-likelihood LIMITS-HTohh/bbb/cmb/300
 
 #postfit plots
 cd HiggsAnalysis/HiggsToTauTau/test
-python mlfit_and_copy.py -a Hhh --mA 300 --tanb 2 [--profile] $CMSSW_BASE/src/LIMITS-label/bbb/cmb/300
-python produce_macros_Hhh.py -a Hhh --mA 300 --tanb 2 [--profile]  --config ../data/limits.config-Hhh
+python mlfit_and_copy.py -a Hhh --mH 300 --tanb 2 [--profile] $CMSSW_BASE/src/LIMITS-label/bbb/cmb/300
+python produce_macros_Hhh.py -a Hhh --mH 300 --tanb 2 [--profile]  --config ../data/limits.config-Hhh
 ./fixmacros.sh
 python run_macros.py -a Hhh --config ../data/limits.config-Hhh
 
