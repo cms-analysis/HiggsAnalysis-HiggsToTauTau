@@ -144,9 +144,9 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       TGraph* graph_plus2sigma = new TGraph();
       TGraph* graph_observed = new TGraph();
       
-      ofstream exclusion;  // saves the exclusion limits within the directory so it can be used to throw toys only in regions near the exclusion limit
+      //ofstream exclusion;  // saves the exclusion limits within the directory so it can be used to throw toys only in regions near the exclusion limit
       //exclusion.open(TString::Format("%s/%d/exclusion_%d.out", directory, (int)mass, (int)mass)); 
-      exclusion.open(TString::Format("%s/%f/exclusion_%f.out", directory, bins_[imass], bins_[imass])); 
+      //exclusion.open(TString::Format("%s/%f/exclusion_%f.out", directory, bins_[imass], bins_[imass])); 
       
       TString fullpath = TString::Format("%s/%d/HypothesisTest.root", directory, (int)mass);
       if (model==TString::Format("2HDM")){ 
@@ -331,13 +331,16 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     canv.Print(std::string(output_).append("_").append(extralabel_).append(label_).append(".pdf").c_str());
     canv.Print(std::string(output_).append("_").append(extralabel_).append(label_).append(".eps").c_str());
   }
- 
-  //txt tex and root output is missing up to now
+  // write txt and tex files
   if(txt_){
     print(std::string(output_).append("_").append(extralabel_).append(label_).c_str(), v_graph_minus2sigma, v_graph_minus1sigma, v_graph_expected, v_graph_plus1sigma, v_graph_plus2sigma, v_graph_observed, tanbLow, tanbHigh, masses, "txt");
     print(std::string(output_).append("_").append(extralabel_).append(label_).c_str(), v_graph_minus2sigma, v_graph_minus1sigma, v_graph_expected, v_graph_plus1sigma, v_graph_plus2sigma, v_graph_observed, tanbLow, tanbHigh, masses, "tex");
   }
-
+  // save exclusion in each msas directory - needed for smart scan!
+  for(unsigned int imass=0; imass<bins_.size(); ++imass){
+    //std::cout << TString::Format("%s/%d/exclusion", directory, (int)bins_[imass]) << std::endl;
+    print(TString::Format("%s/%d/exclusion", directory, (int)bins_[imass]), v_graph_minus2sigma, v_graph_minus1sigma, v_graph_expected, v_graph_plus1sigma, v_graph_plus2sigma, v_graph_observed, tanbLow, tanbHigh, masses, "txt");
+  }
   return;
 }
 

@@ -1171,7 +1171,7 @@ for directory in args :
         ## determine mass value from directory name
         mass  = get_mass(directory)
         ## fetch workspace for each tanb point
-        directoryList = os.listdir(".")       
+        directoryList = os.listdir(".")
         ## produce HybridNew TEV toys and save them
         if not options.optCollect: 
             ## list of all tasks to do
@@ -1193,25 +1193,27 @@ for directory in args :
             print "Running toys for tanb points: ", tanb_list
             if not options.customTanb=="" and not len(custom_tanb)  == len(tanb_list):
                 print "Warning: one or more of supplied custom tanb points not in grid"
-            tanb_low_idx = -999
             tanb_low = 0.0
-            tanb_high_idx = -999
             tanb_high = 0.0
+            tanb_low_idx=-999
+            tanb_high_idx=-999
+            limits2 = [0, 0]
             if options.smartScan :
-                exclusion = open("exclusion_{MASS}.out".format(MASS=mass), 'r')
-                line = exclusion.readlines()
-                highlimits = line[0].rstrip("\n").split(" ")
-                exclusion.close()
-                highlimits.pop(0)
-                lowlimits = line[1].rstrip("\n").split(" ")
-                exclusion.close()
-                lowlimits.pop(0)
-                limits = highlimits+lowlimits #maybe add an option to do the smartScan only for high or low exclusion
-                limits.sort(key=float)
+                exclusion = open(str(os.getenv("CMSSW_BASE"))+"/src/"+directory+"/exclusion.txt", 'r')
+                for line in exclusion:
+                    words=line.split();
+                    if words[0]=="Scanned" :
+                        tanb_low =words[2]
+                        tanb_high=words[4]
+                    if words[0]==str(mass) :
+                        limits=[float(x) for x in line.lstrip(" ").lstrip(str(mass)).replace("-"," ").replace(";"," ").split() ]
+                        limits2 = sorted(limits, key=float)
+                        limits2 = [x for x in limits2 if x != float(tanb_low) ]
+                        limits2 = [x for x in limits2 if x != float(tanb_high)]
                 for idx, point in enumerate(tanb_list) :
-                    if float(point) > float(limits[0]) and tanb_low_idx==-999:
+                    if float(point) > float(limits2[0]) and tanb_low_idx==-999:
                         tanb_low_idx = idx-2
-                    if float(point) > float(limits[-1]) and tanb_high_idx==-999:
+                    if float(point) > float(limits2[-1]) and tanb_high_idx==-999:
                         tanb_high_idx = idx+1
                     if tanb_low_idx<0 :
                         tanb_low = tanb_list[0]
@@ -1220,7 +1222,7 @@ for directory in args :
                     if tanb_high_idx<0 or  tanb_high_idx>len(tanb_list)-1 :
                         tanb_high = tanb_list[-1]
                     else :
-                        tanb_high = tanb_list[tanb_high_idx]                       
+                        tanb_high = tanb_list[tanb_high_idx]
                 print "Tanb range. For all points inbetween toys will be produced:", tanb_low, "to", tanb_high
             for wsp in directoryList :
                 if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) :
