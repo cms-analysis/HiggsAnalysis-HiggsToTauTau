@@ -27,13 +27,13 @@ def fill_root_file(file_in_name, category, triggerSF, file_out_name, option = 'r
   for key in file_in.GetListOfKeys() :
     hist = key.ReadObj()
     print hist, hist.Integral()
-    import pdb ; pdb.set_trace()
 
     if hist.GetName() in names.keys() :
       if names[hist.GetName()] in [hh.GetName() for hh in hists] : continue
       if 'tH_YtMinus' in names[hist.GetName()] or  \
          'tHW'        in names[hist.GetName()] : 
         hist.Scale(triggerSF)
+        hist.SetBinContent(1, 0.) # remove that tiny minuscule emt signal contribution in the first bkg-less bin
       hist.SetName(names[hist.GetName()])
       hist.SetMarkerStyle(9)
       hist.SetMarkerSize(1)

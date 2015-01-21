@@ -14,17 +14,18 @@ from copy import deepcopy as dc
 ROOT.gStyle.SetOptStat(False)
 ROOT.gStyle.SetLegendBorderSize(0)
 
-def grab_tree(folder, mass = '125') : 
+def grab_tree(folder, mass = '125', type = 'exp') : 
   '''
   mass is usually 125 for tHq
   folder looks like LIMITS/example-bin-by-bin/sm/th
+  type can be either exp or obs
   '''
-  limit_file = ROOT.TFile.Open('/'.join([folder,mass,'higgsCombine-exp.Asymptotic.mH{MASS}.root'.format(MASS=mass)]), 'r')
+  limit_file = ROOT.TFile.Open('/'.join([folder,mass,'higgsCombine-{TYPE}.Asymptotic.mH{MASS}.root'.format(TYPE=type,MASS=mass)]), 'r')
   limit_file.cd()
   limit_tree = ROOT.gDirectory.FindObjectAny('limit')
   return limit_tree
 
-def get_values(tree, process) :
+def get_values_exp(tree, process) :
   '''
   process can be: th, emt, mmt
   '''
@@ -72,6 +73,38 @@ def get_values(tree, process) :
   
   return [g2sigma, g1sigma, gCentral]
 
+def get_values_obs(tree, process) :
+  '''
+  process can be: th, emt, mmt
+  '''
+  process_dict = {
+                   'th'  : 0.5,
+                   'emt' : 1.5,
+                   'mmt' : 2.5,
+                 }
+
+  values = []
+
+  for evt in tree : values.append(evt.limit)
+  
+  process_bin = process_dict[process]
+  
+  #import pdb ; pdb.set_trace()
+  
+  xCentral = array('d',[values[0]  , values[0]  ])
+  yCentral = array('d',[process_bin, process_bin])
+    
+  nullErr = array('d',[0.  , 0.  ])
+  width   = array('d',[0.262, 0.262])
+    
+  gCentral = ROOT.TGraphAsymmErrors(2, xCentral, yCentral, nullErr, nullErr, width, width)
+  gCentral.SetLineColor(ROOT.kBlack)
+
+  gCentral.SetMarkerStyle(8)
+  gCentral.SetLineWidth(2 )
+  
+  return [gCentral]
+
 def build_legend(graphs, titles, options = None) :
   
   my_graphs = dc(graphs)
@@ -91,15 +124,9 @@ def build_legend(graphs, titles, options = None) :
   l1.SetFillColor(0)
     
   return l1
-   
-def multigraph(graphs, file_name, legend = False, logX = False) :
-  '''
-  reads a list of TGraph and plot them together.
-  Graphic options are hard coded.
-  '''
 
-  c1 = ROOT.TCanvas('','',700,700)
-  
+def set_style(logX) :
+
   ROOT.gPad.SetLogx(logX)
   ROOT.gPad.SetLeftMargin  (0.18)
   ROOT.gPad.SetBottomMargin(0.18)
@@ -108,7 +135,17 @@ def multigraph(graphs, file_name, legend = False, logX = False) :
   ROOT.gStyle.SetTitleY(0.97 ) 
   ROOT.gStyle.SetTitleW(0.78 ) 
   ROOT.gStyle.SetTitleH(0.06 )
-      
+     
+def multigraph(graphs, file_name, legend = False, logX = False, obs = False) :
+  '''
+  reads a list of TGraph and plot them together.
+  Graphic options are hard coded.
+  '''
+
+  c1 = ROOT.TCanvas('','',700,700)
+  
+  set_style(logX)
+        
   h_support = ROOT.TH2F('','',2,-2,25,3,0,3)
   h_support.GetYaxis().SetBinLabel(3,'#mu#mu#tau')
   h_support.GetYaxis().SetBinLabel(2,'e#mu#tau'  )
@@ -136,19 +173,31 @@ def multigraph(graphs, file_name, legend = False, logX = False) :
   mg.GetXaxis().SetTitle('95% CL Limit on (#sigma#timesBR)/(#sigma#timesBR)_{y_{t}=-1}')
 
   if legend :
-    leg = build_legend(
-                       graphs[:3]                         ,
-                       ['1 #sigma band', '2 #sigma band','Expected'],
-                       ['f'            , 'f'            ,'l'       ],
-                       )
+    
+    #legend_list = 
+    import pdb ; pdb.set_trace()
+    if obs :
+      leg = build_legend(
+                         graphs[:4]                                  ,
+                         ['2 #sigma band', '1 #sigma band','Expected', 'Observed'],
+                         ['f'            , 'f'            ,'l'       , 'l'       ],
+                         )
+    else :
+      leg = build_legend(
+                         graphs[:3]                                   ,
+                         ['2 #sigma band', '1 #sigma band','Expected'],
+                         ['f'            , 'f'            ,'l'       ],
+                         )
     leg.Draw('sameAEPZ')
   
   c1.SaveAs(file_name)
 
-def do_category(folder, process, mass='125') :
+def do_category(folder, process, mass='125', type = 'exp') :
+  #import pdb ; pdb.set_trace()
   graphs = []
-  tree   = grab_tree(folder, mass)
-  graphs.extend( get_values(tree, process) )
+  tree   = grab_tree(folder, mass, type)
+  if type == 'exp' : graphs.extend( get_values_exp(tree, process) )
+  else             : graphs.extend( get_values_obs(tree, process) )
   return graphs
 
 if __name__ == '__main__' :
@@ -166,6 +215,12 @@ if __name__ == '__main__' :
                     dest    = 'file_name',  
                     help    = 'output file name. Default is th_limit.pdf', 
                     default = 'th_limit.pdf')
+
+  parser.add_option('-O', 
+                    '--observed', 
+                    dest    = 'observed',  
+                    help    = 'show observed limit. Default is False', 
+                    default = False)
       
   (options, args) = parser.parse_args()
 
@@ -186,7 +241,12 @@ if __name__ == '__main__' :
       print '\n'
       parser.print_help() 
       sys.exit(0)
-    graphs = do_category( folder, cat )
+    graphs = do_category(folder, cat)
     graphs_tot.extend(graphs)
+    
+    if options.observed :
+      obs_graphs = do_category(folder, cat, type='obs')
+      graphs_tot.extend(obs_graphs)
+      
   
-  multigraph(graphs_tot, options.file_name, legend=True)  
+  multigraph(graphs_tot, options.file_name, legend=True, obs=options.observed)  

@@ -12,7 +12,7 @@ observation                                          5
 bin                                                  emt           emt           emt           emt           emt           emt           emt           emt            
 process                                              -1            0             1             2             3             4             5             6              
 process                                              tH_YtMinus    tHW           WZ            ZZ            ttW           ttZ           ttH           reducible      
-rate                                                 0.420559      0.0615616     0.656881      0.058992      1.30611       0.517087      0.647935      6.26994        
+rate                                                 0.420267      0.0615616     0.656881      0.058992      1.30611       0.517087      0.647935      6.26994        
 ------------------------------------------------------------------------------- 
 lumi_8TeV lnN                                        1.026         1.026         1.026         1.026         1.026         1.026         1.026         -              
 CMS_th_sig_trigger_emt_8TeV lnN                      1.05          1.05          -             -             -             -             -             -              
