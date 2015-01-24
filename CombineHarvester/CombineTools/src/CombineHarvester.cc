@@ -15,12 +15,18 @@ namespace ch {
 
 CombineHarvester::CombineHarvester() : verbosity_(0), log_(&(std::cout)) {
   flags_["zero-negative-bins-on-import"] = true;
+  flags_["allow-missing-shapes"] = true;
+  // std::cout << "[CombineHarvester] Constructor called for " << this << "\n";
 }
 
-CombineHarvester::~CombineHarvester() { }
+CombineHarvester::~CombineHarvester() {
+  // std::cout << "[CombineHarvester] Destructor called for " << this << "\n";
+}
 
 void swap(CombineHarvester& first, CombineHarvester& second) {
   using std::swap;
+  // std::cout << "[CombineHarvester] Swap " << &first << " <-> "
+  //           << &second << "\n";
   swap(first.obs_, second.obs_);
   swap(first.procs_, second.procs_);
   swap(first.systs_, second.systs_);
@@ -32,130 +38,153 @@ void swap(CombineHarvester& first, CombineHarvester& second) {
 }
 
 CombineHarvester::CombineHarvester(CombineHarvester const& other)
-    : obs_(other.obs_.size(), nullptr),
-      procs_(other.procs_.size(), nullptr),
-      systs_(other.systs_.size(), nullptr),
+    : obs_(other.obs_),
+      procs_(other.procs_),
+      systs_(other.systs_),
+      params_(other.params_),
+      wspaces_(other.wspaces_),
       flags_(other.flags_),
       verbosity_(other.verbosity_),
       log_(other.log_) {
-  if (verbosity_ >= 3) {
-    log() << "[CombineHarvester] Copy-constructor called\n";
-  }
+  // std::cout << "[CombineHarvester] Copy-constructor called " << &other
+  //     << " -> " << this << "\n";
+}
+
+CombineHarvester CombineHarvester::deep() {
+  CombineHarvester cpy;
+  // std::cout << "[CombineHarvester] Deep copy called " << this
+  //     << " -> " << &cpy << "\n";
+  cpy.obs_.resize(obs_.size());
+  cpy.procs_.resize(procs_.size());
+  cpy.systs_.resize(systs_.size());
+  cpy.flags_ = flags_;
+  cpy.verbosity_ = verbosity_;
+  cpy.log_ = log_;
 
   // Build a map of workspace object pointers
-  std::map<RooAbsData const*, RooAbsData *> data_map;
-  std::map<RooAbsPdf const*, RooAbsPdf *> pdf_map;
+  std::map<RooAbsData const*, RooAbsData *> dat_map;
+  std::map<RooAbsPdf  const*, RooAbsPdf  *> pdf_map;
   std::map<RooRealVar const*, RooRealVar *> var_map;
-  std::map<RooAbsReal const*, RooAbsReal *> real_map;
+  std::map<RooAbsReal const*, RooAbsReal *> fun_map;
 
-  for (auto const& it : other.wspaces_) {
-    if (it.second) {
-      wspaces_.insert({it.first, std::make_shared<RooWorkspace>(*(it.second))});
-      std::list<RooAbsData *> o_data = it.second->allData();
-      RooArgSet const& o_pdf = it.second->allPdfs();
-      RooArgSet const& o_var = it.second->allVars();
-      RooArgSet const& o_real = it.second->allFunctions();
+  // Loop through each workspace and make a full copy
+  for (auto const& it : wspaces_) {
+    std::string ws_name = it.first;
+    RooWorkspace const& o_wsp = *(it.second.get());
+    cpy.wspaces_.insert({ws_name, std::make_shared<RooWorkspace>(o_wsp)});
+    RooWorkspace & n_wsp = *(cpy.wspaces_.at(ws_name).get());
 
-      std::list<RooAbsData *> n_data = wspaces_.at(it.first)->allData();
-      RooArgSet const& n_pdf = wspaces_.at(it.first)->allPdfs();
-      RooArgSet const& n_var = wspaces_.at(it.first)->allVars();
-      RooArgSet const& n_real = wspaces_.at(it.first)->allFunctions();
-      auto o_iter = o_data.begin();
-      auto n_iter = n_data.begin();
-      for (; o_iter != o_data.end(); ++o_iter, ++n_iter) {
-        data_map[*o_iter] = *n_iter;
+    std::list<RooAbsData *> o_dat = o_wsp.allData();
+    RooArgSet const&        o_pdf = o_wsp.allPdfs();
+    RooArgSet const&        o_var = o_wsp.allVars();
+    RooArgSet const&        o_fun = o_wsp.allFunctions();
+
+    std::list<RooAbsData *> n_dat = n_wsp.allData();
+    RooArgSet const&        n_pdf = n_wsp.allPdfs();
+    RooArgSet const&        n_var = n_wsp.allVars();
+    RooArgSet const&        n_fun = n_wsp.allFunctions();
+
+    auto o_dat_it = o_dat.begin();
+    auto n_dat_it = n_dat.begin();
+    for (; o_dat_it != o_dat.end(); ++o_dat_it, ++n_dat_it) {
+      dat_map[*o_dat_it] = *n_dat_it;
+    }
+
+    auto o_pdf_it = o_pdf.createIterator();
+    auto n_pdf_it = n_pdf.createIterator();
+    do {
+      RooAbsPdf *o_pdf_ptr = static_cast<RooAbsPdf*>(**o_pdf_it);
+      RooAbsPdf *n_pdf_ptr = static_cast<RooAbsPdf*>(**n_pdf_it);
+      if (o_pdf_ptr && n_pdf_ptr) pdf_map[o_pdf_ptr] = n_pdf_ptr;
+      n_pdf_it->Next();
+    } while (o_pdf_it->Next());
+
+    auto o_var_it = o_var.createIterator();
+    auto n_var_it = n_var.createIterator();
+    do {
+      RooRealVar *o_var_ptr = static_cast<RooRealVar*>(**o_var_it);
+      RooRealVar *n_var_ptr = static_cast<RooRealVar*>(**n_var_it);
+      if (o_var_ptr && n_var_ptr) var_map[o_var_ptr] = n_var_ptr;
+      n_var_it->Next();
+    } while (o_var_it->Next());
+
+    auto o_fun_it = o_fun.createIterator();
+    auto n_fun_it = n_fun.createIterator();
+    do {
+      RooAbsReal *o_fun_ptr = static_cast<RooAbsReal*>(**o_fun_it);
+      RooAbsReal *n_fun_ptr = static_cast<RooAbsReal*>(**n_fun_it);
+      if (o_fun_ptr && n_fun_ptr) fun_map[o_fun_ptr] = n_fun_ptr;
+      n_fun_it->Next();
+    } while (o_fun_it->Next());
+  }
+
+
+  for (std::size_t i = 0; i < cpy.obs_.size(); ++i) {
+    if (cpy.obs_[i]) {
+      cpy.obs_[i] = std::make_shared<Observation>(*(obs_[i]));
+      if (cpy.obs_[i]->data())
+        cpy.obs_[i]->set_data(dat_map.at(obs_[i]->data()));
+    }
+  }
+
+  for (std::size_t i = 0; i < cpy.procs_.size(); ++i) {
+    if (cpy.procs_[i]) {
+      cpy.procs_[i] = std::make_shared<Process>(*(procs_[i]));
+      if (cpy.procs_[i]->pdf())
+        cpy.procs_[i]->set_pdf(pdf_map.at(procs_[i]->pdf()));
+      if (cpy.procs_[i]->data())
+        cpy.procs_[i]->set_data(dat_map.at(procs_[i]->data()));
+      if (cpy.procs_[i]->norm())
+        cpy.procs_[i]->set_norm(fun_map.at(procs_[i]->norm()));
+    }
+  }
+
+  for (std::size_t i = 0; i < cpy.systs_.size(); ++i) {
+    if (cpy.systs_[i]) {
+      cpy.systs_[i] = std::make_shared<Systematic>(*(systs_[i]));
+      if (cpy.systs_[i]->data_u() || cpy.systs_[i]->data_d()) {
+        cpy.systs_[i]->set_data(
+            static_cast<RooDataHist*>(dat_map.at(systs_[i]->data_u())),
+            static_cast<RooDataHist*>(dat_map.at(systs_[i]->data_d())),
+            nullptr);
       }
-      auto o_pdf_it = o_pdf.createIterator();
-      auto n_pdf_it = n_pdf.createIterator();
-      do {
-        RooAbsPdf *o_pdf_ptr = dynamic_cast<RooAbsPdf*>(**o_pdf_it);
-        RooAbsPdf *n_pdf_ptr = dynamic_cast<RooAbsPdf*>(**n_pdf_it);
-        if (o_pdf_ptr && n_pdf_ptr) pdf_map[o_pdf_ptr] = n_pdf_ptr;
-        n_pdf_it->Next();
-      } while (o_pdf_it->Next());
-
-      auto o_var_it = o_var.createIterator();
-      auto n_var_it = n_var.createIterator();
-      do {
-        RooRealVar *o_var_ptr = dynamic_cast<RooRealVar*>(**o_var_it);
-        RooRealVar *n_var_ptr = dynamic_cast<RooRealVar*>(**n_var_it);
-        if (o_var_ptr && n_var_ptr) var_map[o_var_ptr] = n_var_ptr;
-        n_var_it->Next();
-      } while (o_var_it->Next());
-
-      auto o_real_it = o_real.createIterator();
-      auto n_real_it = n_real.createIterator();
-      do {
-        RooAbsReal *o_real_ptr = dynamic_cast<RooAbsReal*>(**o_real_it);
-        RooAbsReal *n_real_ptr = dynamic_cast<RooAbsReal*>(**n_real_it);
-        if (o_real_ptr && n_real_ptr) real_map[o_real_ptr] = n_real_ptr;
-        n_real_it->Next();
-      } while (o_real_it->Next());
-    } else {
-      wspaces_.insert({it.first, nullptr});
     }
   }
 
-
-  for (std::size_t i = 0; i < obs_.size(); ++i) {
-    if (other.obs_[i]) {
-      obs_[i] = std::make_shared<Observation>(*(other.obs_[i]));
-      if (obs_[i]->data()) obs_[i]->set_data(data_map.at(obs_[i]->data()));
-    }
-  }
-
-  for (std::size_t i = 0; i < procs_.size(); ++i) {
-    if (other.procs_[i]) {
-      procs_[i] = std::make_shared<Process>(*(other.procs_[i]));
-      if (procs_[i]->pdf()) procs_[i]->set_pdf(pdf_map.at(procs_[i]->pdf()));
-    }
-  }
-
-  // Need to update RooAbsPdf pointers here
-
-  for (std::size_t i = 0; i < systs_.size(); ++i) {
-    if (other.systs_[i]) {
-      systs_[i] = std::make_shared<Systematic>(*(other.systs_[i]));
-    }
-  }
-  for (auto const& it : other.params_) {
+  for (auto const& it : params_) {
     if (it.second) {
-      params_.insert({it.first, std::make_shared<Parameter>(*(it.second))});
+      cpy.params_.insert({it.first, std::make_shared<Parameter>(*(it.second))});
     } else {
       params_.insert({it.first, nullptr});
     }
   }
 
-  // Need to update RooRealVar pointers here
+  for (auto it : cpy.params_) {
+    for (unsigned i = 0; i < it.second->vars().size(); ++i) {
+      it.second->vars()[i] = var_map.at(it.second->vars()[i]);
+    }
+  }
 
+  return cpy;
 }
 
 CombineHarvester::CombineHarvester(CombineHarvester&& other) {
+  // std::cout << "[CombineHarvester] Move-constructor called " <<
+  //     &other << " -> " << this << "\n";
   swap(*this, other);
-  if (verbosity_ >= 3) {
-    log() << "[CombineHarvester] Move-constructor called\n";
-  }
 }
 
 CombineHarvester& CombineHarvester::operator=(CombineHarvester other) {
+  // std::cout << "[CombineHarvester] Assignment operator called " << &other <<
+  // " -> " << this << "\n";
   swap(*this, other);
   return (*this);
 }
 
 CombineHarvester CombineHarvester::cp() {
-  if (verbosity_ >= 2) {
-    log() << "[CombineHarvester] Shallow copy method cp() called\n";
-  }
-  CombineHarvester cpy;
-  cpy.obs_      = obs_;
-  cpy.procs_    = procs_;
-  cpy.systs_    = systs_;
-  cpy.params_   = params_;
-  cpy.wspaces_  = wspaces_;
-  cpy.log_      = log_;
-  cpy.verbosity_ = verbosity_;
-  cpy.flags_     = flags_;
-  return cpy;
+  // std::cout << "[CombineHarvester] Shallow copy method cp() called from " <<
+  // this << "\n";
+  return CombineHarvester(*this);
 }
 
 CombineHarvester & CombineHarvester::PrintAll() {
@@ -318,21 +347,35 @@ void CombineHarvester::LoadShapes(Process* entry,
     // Post-conditions #1 and #2
     entry->set_shape(std::move(h), true);
   } else if (mapping.IsPdf()) {
-    if (verbosity_ >= 2) LOGLINE(log(), "Mapping type is RooAbsPdf");
+    if (verbosity_ >= 2) LOGLINE(log(), "Mapping type is RooAbsPdf/RooAbsData");
     // Pre-condition #3
     // SetupWorkspace will throw if workspace not found
     StrPair res = SetupWorkspace(mapping);
+    // Try and get this as RooAbsData first. If this doesn't work try pdf
+    RooAbsData* data = wspaces_[res.first]->data(res.second.c_str());
     RooAbsPdf* pdf = wspaces_[res.first]->pdf(res.second.c_str());
-    // Pre-condition #3
-    if (!pdf) {
-      throw std::runtime_error(FNERROR("RooAbsPdf not found in workspace"));
+    if (data) {
+      if (verbosity_ >= 2) {
+        data->printStream(log(), data->defaultPrintContents(0),
+                       data->defaultPrintStyle(0), "[LoadShapes] ");
+      }
+      entry->set_data(data);
+      entry->set_rate(data->sumEntries());
+    } else if (pdf) {
+      if (verbosity_ >= 2) {
+        pdf->printStream(log(), pdf->defaultPrintContents(0),
+                       pdf->defaultPrintStyle(0), "[LoadShapes] ");
+      }
+      // Post-condition #1
+      entry->set_pdf(pdf);
+    } else { // Pre-condition #3
+      if (flags_.at("allow-missing-shapes")) {
+        LOGLINE(log(), "Warning, shape missing:");
+        log() << Process::PrintHeader << *entry << "\n";
+      } else {
+        throw std::runtime_error(FNERROR("RooAbsPdf not found in workspace"));
+      }
     }
-    if (verbosity_ >= 2) {
-      pdf->printStream(log(), pdf->defaultPrintContents(0),
-                     pdf->defaultPrintStyle(0), "[LoadShapes] ");
-    }
-    // Post-condition #1
-    entry->set_pdf(pdf);
 
     HistMapping norm_mapping = mapping;
     norm_mapping.pattern += "_norm";
@@ -361,14 +404,14 @@ void CombineHarvester::LoadShapes(Process* entry,
     RooAbsData const* data_obj = FindMatchingData(entry);
     if (data_obj) {
       if (verbosity_ >= 2) LOGLINE(log(), "Matching RooAbsData has been found");
-      ImportParameters(pdf->getParameters(data_obj));
+      if (pdf) ImportParameters(pdf->getParameters(data_obj));
       if (norm) ImportParameters(norm->getParameters(data_obj));
     } else {
       if (verbosity_ >= 2)
         LOGLINE(log(), "No RooAbsData found, assume observable CMS_th1x");
       RooRealVar mx("CMS_th1x" , "CMS_th1x", 0, 1);
       RooArgSet tmp_set(mx);
-      ImportParameters(pdf->getParameters(&tmp_set));
+      if (pdf) ImportParameters(pdf->getParameters(&tmp_set));
       if (norm) ImportParameters(norm->getParameters(&tmp_set));
     }
   }
@@ -376,7 +419,8 @@ void CombineHarvester::LoadShapes(Process* entry,
 
 void CombineHarvester::LoadShapes(Systematic* entry,
                                      std::vector<HistMapping> const& mappings) {
-  if (entry->shape_u() || entry->shape_d()) {
+  if (entry->shape_u() || entry->shape_d() ||
+      entry->data_u() || entry->data_d()) {
     throw std::runtime_error(FNERROR("Systematic already contains a shape"));
   }
 
@@ -389,19 +433,12 @@ void CombineHarvester::LoadShapes(Systematic* entry,
 
   // Pre-condition #2
   // ResolveMapping will throw if this fails
-  HistMapping const& mapping =
+  HistMapping mapping =
       ResolveMapping(entry->process(), entry->bin(), mappings);
-
-  if (!mapping.IsHist()) {
-    throw std::runtime_error(
-        FNERROR("Resolved mapping is not of histogram type"));
-  }
-
-  std::string p = mapping.pattern;
-  boost::replace_all(p, "$CHANNEL", entry->bin());
-  boost::replace_all(p, "$BIN", entry->bin());
-  boost::replace_all(p, "$PROCESS", entry->process());
-  boost::replace_all(p, "$MASS", entry->mass());
+  boost::replace_all(mapping.pattern, "$CHANNEL", entry->bin());
+  boost::replace_all(mapping.pattern, "$BIN", entry->bin());
+  boost::replace_all(mapping.pattern, "$PROCESS", entry->process());
+  boost::replace_all(mapping.pattern, "$MASS", entry->mass());
   std::string p_s = mapping.syst_pattern;
   boost::replace_all(p_s, "$CHANNEL", entry->bin());
   boost::replace_all(p_s, "$BIN", entry->bin());
@@ -411,32 +448,59 @@ void CombineHarvester::LoadShapes(Systematic* entry,
   std::string p_s_lo = p_s;
   boost::replace_all(p_s_hi, "$SYSTEMATIC", entry->name() + "Up");
   boost::replace_all(p_s_lo, "$SYSTEMATIC", entry->name() + "Down");
+  if (mapping.IsHist()) {
+    if (verbosity_ >= 2) LOGLINE(log(), "Mapping type is TH1");
+    std::unique_ptr<TH1> h = GetClonedTH1(mapping.file.get(), mapping.pattern);
+    std::unique_ptr<TH1> h_u = GetClonedTH1(mapping.file.get(), p_s_hi);
+    std::unique_ptr<TH1> h_d = GetClonedTH1(mapping.file.get(), p_s_lo);
 
-  std::unique_ptr<TH1> h = GetClonedTH1(mapping.file.get(), p);
-  std::unique_ptr<TH1> h_u = GetClonedTH1(mapping.file.get(), p_s_hi);
-  std::unique_ptr<TH1> h_d = GetClonedTH1(mapping.file.get(), p_s_lo);
+    if (flags_.at("zero-negative-bins-on-import")) {
+      if (HasNegativeBins(h.get())) {
+        LOGLINE(log(), "Warning: Systematic shape has negative bins");
+        log() << Systematic::PrintHeader << *entry << "\n";
+        // ZeroNegativeBins(h.get());
+      }
 
-  if (flags_.at("zero-negative-bins-on-import")) {
-    if (HasNegativeBins(h.get())) {
-      LOGLINE(log(), "Warning: Systematic shape has negative bins");
-      log() << Systematic::PrintHeader << *entry << "\n";
-      // ZeroNegativeBins(h.get());
+      if (HasNegativeBins(h_u.get())) {
+        LOGLINE(log(), "Warning: Systematic shape_u has negative bins");
+        log() << Systematic::PrintHeader << *entry << "\n";
+        // ZeroNegativeBins(h_u.get());
+      }
+
+      if (HasNegativeBins(h_d.get())) {
+        LOGLINE(log(), "Warning: Systematic shape_d has negative bins");
+        log() << Systematic::PrintHeader << *entry << "\n";
+        // ZeroNegativeBins(h_d.get());
+      }
     }
-
-    if (HasNegativeBins(h_u.get())) {
-      LOGLINE(log(), "Warning: Systematic shape_u has negative bins");
-      log() << Systematic::PrintHeader << *entry << "\n";
-      // ZeroNegativeBins(h_u.get());
+    entry->set_shapes(std::move(h_u), std::move(h_d), h.get());
+  } else if (mapping.IsPdf()) {
+    if (verbosity_ >= 2) LOGLINE(log(), "Mapping type is RooDataHist");
+    StrPair res_nom = SetupWorkspace(mapping);
+    StrPair res_hi = SetupWorkspace(mapping, p_s_hi);
+    StrPair res_lo = SetupWorkspace(mapping, p_s_lo);
+    // Try and get this as RooAbsData first. If this doesn't work try pdf
+    RooDataHist* h = dynamic_cast<RooDataHist*>(
+        wspaces_[res_nom.first]->data(res_nom.second.c_str()));
+    RooDataHist* h_u = dynamic_cast<RooDataHist*>(
+        wspaces_[res_hi.first]->data(res_hi.second.c_str()));
+    RooDataHist* h_d = dynamic_cast<RooDataHist*>(
+        wspaces_[res_lo.first]->data(res_lo.second.c_str()));
+    if (!h || !h_u || !h_d) {
+      if (flags_.at("allow-missing-shapes")) {
+        LOGLINE(log(), "Warning, shape missing:");
+        log() << Systematic::PrintHeader << *entry << "\n";
+      } else {
+        throw std::runtime_error(
+            FNERROR("All shapes must be of type RooDataHist"));
+      }
+    } else {
+      entry->set_data(h_u, h_d, h);
     }
-
-    if (HasNegativeBins(h_d.get())) {
-      LOGLINE(log(), "Warning Systematic shape_d has negative bins");
-      log() << Systematic::PrintHeader << *entry << "\n";
-      // ZeroNegativeBins(h_d.get());
-    }
+  } else {
+    throw std::runtime_error(
+        FNERROR("Resolved mapping is not of TH1 / RooAbsData type"));
   }
-
-  entry->set_shapes(std::move(h_u), std::move(h_d), h.get());
 }
 
 /**
@@ -485,8 +549,8 @@ CombineHarvester::StrPairVec CombineHarvester::GenerateShapeMapAttempts(
 }
 
 std::pair<std::string, std::string> CombineHarvester::SetupWorkspace(
-    HistMapping const& mapping) {
-  std::string p = mapping.pattern;
+    HistMapping const& mapping, std::string alt_mapping) {
+  std::string p = alt_mapping.size() ? alt_mapping : mapping.pattern;
   std::pair<std::string, std::string> res;
   std::size_t colon = p.find_last_of(':');
   if (colon != p.npos) {
