@@ -133,12 +133,12 @@ class mssm_xsec_tools():
     def _add_muHp(self, parameter1, tan_beta, input):
         type, type_info = input
         type_info.setdefault('mu', {})
-        type_info['mu']['HH'] = {
+        type_info['mu']['HpHp'] = {
             -1 : float(0.21),
             +1 : float(0.21),
             0 : 0,
             }
-        type_info['mu']['HW'] = {
+        type_info['mu']['HpW'] = {
             -1 : float(0.21),
             +1 : float(0.21),
             0 : 0,
