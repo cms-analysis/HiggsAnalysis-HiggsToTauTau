@@ -13,7 +13,7 @@
 #include <TString.h>
 #include <TCollection.h>
 
-#include "HiggsAnalysis/HiggsToTauTau/macros/Utils.h"
+#include "./Utils.h"
 
 
 /**
