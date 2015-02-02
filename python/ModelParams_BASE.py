@@ -140,7 +140,8 @@ class ModelParams_BASE:
         For Hhh currently only 'ggAToZhToLLTauTau', 'ggHTohhTo2Tau2B' and 'ggAToZhToLLBB' are supported.
         For Hplus currently only 'HH' and 'HW' are supported.
         """
-        channels = {'ggH':'ggF', 'bbH':'santander', 'ggAToZhToLLBB':'ggF','ggAToZhToLLTauTau':'ggF', 'ggHTohhTo2Tau2B':'ggF', 'AZh':'ggF', 'HH':'HH', 'HW':'HW'} 
+        channels = {'ggH':'ggF', 'bbH':'santander', 'ggAToZhToLLBB':'ggF','ggAToZhToLLTauTau':'ggF', 'ggHTohhTo2Tau2B':'ggF', 'AZh':'ggF', 'CMS_ttHpHp_signal':'HpHp', 'CMS_ttHpW_signal':'HpW'}
+        print "channel", channel
         if channel not in channels:
             exit('ERROR: Production channel \'%s\' not supported'%channel)
         if self.uncert == '':
@@ -176,9 +177,9 @@ class ModelParams_BASE:
             if channel=='AZh' :
                 return str(query['higgses'][higgs][brname[channel]]*query['higgses']['h'][brname['tt']]*0.06729) #BR(Z->ll)=0.03363(ee)+0.03366(mumu) (tautau is not considered)
         elif self.ana_type=='Htaunu':
-            if 'HH' in channel :
+            if 'CMS_ttHpHp_signal' in channel :
                 return str(query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['taunu']]*query['higgses'][higgs][brname['taunu']])
-            elif 'HW' in channel : 
+            elif 'CMS_ttHpW_signal' in channel : 
                return str(2*(1-query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['taunu']])*query['higgses'][higgs][brname['tHpb']]*query['higgses'][higgs][brname['taunu']])
         else : 
             return query['higgses'][higgs][brname[decay[1:]]]

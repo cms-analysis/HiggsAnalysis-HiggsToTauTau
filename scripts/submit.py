@@ -817,7 +817,7 @@ if options.optHypothesisTest :
                             OPTS=options.opt, DIR=dir, cycle=cycle, toys=options.toys, smartscan="--smartScan" if options.smartScan else "", customTanb=options.customTanb )
                     else :
                         os.system("limit.py --HypothesisTest --cycle={cycle} --toys {toys} {smartscan} --customTanb \"{customTanb}\" {OPTS} {DIR}".format(
-                            OPTS=options.opt, DIR=dir, cycle=cycle, toys=options.toys, smartscan="--smartScan" if options.smartScan else "", customTanb=options.customTanb ))
+                            OPTS=options.opt, DIR=dir, cycle=cycle, toys=options.toys, smartscan="--smartScan" if options.smartScan else "", customTanb=options.customTanb))
                 cycle = cycle-1
         else :
             cycle_begin, cycle_end = options.cycles.split("-")
@@ -831,8 +831,8 @@ if options.optHypothesisTest :
                         dirs.append(dir)
                 ## directories and masses per directory
                 struct = directories(args)
-                lxb_submit(struct[0], struct[1], "--HypothesisTest --cycle={cycle} --toys {toys} {smartscan} {customTanb}'{customTanb2}' ".format(
-                    cycle=cycle, toys=options.toys, smartscan="--smartScan" if options.smartScan else "", customTanb="--customTanb=" if options.customTanb!="" else "", customTanb2=options.customTanb if options.customTanb!="" else ""), options.opt, cycle)
+                lxb_submit(struct[0], struct[1], "--HypothesisTest --cycle={cycle} --toys {toys} {smartscan} {customTanb} '{customTanb2}' ".format(
+                    cycle=cycle, toys=options.toys, smartscan="--smartScan" if options.smartScan else "", customTanb="--customTanb", customTanb2=options.customTanb if options.customTanb!="" else ""), options.opt, cycle) # if options.customTanb!="" else ""
                 cycle = cycle-1       
     ## collect Toys and calculate CLs limit
     else:

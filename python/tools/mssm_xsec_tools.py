@@ -133,12 +133,12 @@ class mssm_xsec_tools():
     def _add_muHp(self, parameter1, tan_beta, input):
         type, type_info = input
         type_info.setdefault('mu', {})
-        type_info['mu']['HH'] = {
+        type_info['mu']['HpHp'] = {
             -1 : float(0.21),
             +1 : float(0.21),
             0 : 0,
             }
-        type_info['mu']['HW'] = {
+        type_info['mu']['HpW'] = {
             -1 : float(0.21),
             +1 : float(0.21),
             0 : 0,
@@ -147,20 +147,44 @@ class mssm_xsec_tools():
     def _add_mu(self, parameter1, tan_beta, input):
         type, type_info = input
         type_info.setdefault('mu', {})
-        if(self.inputFileName_.find('mhmax-mu+200')>-1) : #for old mhmax scenario not produced with sushi
-            type_info['mu']['bbH'] = {
-                -1 : self.lookup_value(parameter1, tan_beta, 'h_bbH_mudown_%s' % type)*self.unit_pb,
-                +1 : self.lookup_value(parameter1, tan_beta, 'h_bbH_muup_%s' % type)*self.unit_pb,
+        if(self.inputFileName_.find('7TeV')>-1 or self.inputFileName_.find('8TeV')>-1 ) :
+            if(self.inputFileName_.find('mhmax-mu+200')>-1) : #for old mhmax scenario not produced with sushi
+                type_info['mu']['bbH'] = {
+                    -1 : self.lookup_value(parameter1, tan_beta, 'h_bbH_mudown_%s' % type)*self.unit_pb,
+                    +1 : self.lookup_value(parameter1, tan_beta, 'h_bbH_muup_%s' % type)*self.unit_pb,
+                    0 : 0,
+                    }
+            else :
+                type_info['mu']['bbH'] = {
+                    -1 : (self.lookup_value(parameter1, tan_beta, 'h_bbH_mudown_%s' % type) -
+                          self.lookup_value(parameter1, tan_beta, 'h_bbH_xsec_%s' % type))*self.unit_pb,
+                    +1 : (self.lookup_value(parameter1, tan_beta, 'h_bbH_muup_%s' % type) -
+                          self.lookup_value(parameter1, tan_beta, 'h_bbH_xsec_%s' % type))*self.unit_pb,
+                    0 : 0,
+                    }
+            type_info['mu']['ggF'] = {
+                -1 : (self.lookup_value(parameter1, tan_beta, 'h_ggF_xsec20_%s' % type) -
+                      self.lookup_value(parameter1, tan_beta, 'h_ggF_xsec_%s' % type))*self.unit_pb,
+                +1 : (self.lookup_value(parameter1, tan_beta, 'h_ggF_xsec05_%s' % type) -
+                      self.lookup_value(parameter1, tan_beta, 'h_ggF_xsec_%s' % type))*self.unit_pb,
                 0 : 0,
-            }
-        else :
+                }
+        else:
             type_info['mu']['bbH'] = {
-                -1 : (self.lookup_value(parameter1, tan_beta, 'h_bbH_mudown_%s' % type) -
+                -1 : (self.lookup_value(parameter1, tan_beta, 'h_bbH_xsecDown_%s' % type) -
                       self.lookup_value(parameter1, tan_beta, 'h_bbH_xsec_%s' % type))*self.unit_pb,
-                +1 : (self.lookup_value(parameter1, tan_beta, 'h_bbH_muup_%s' % type) -
+                +1 : (self.lookup_value(parameter1, tan_beta, 'h_bbH_xsecUp_%s' % type) -
                       self.lookup_value(parameter1, tan_beta, 'h_bbH_xsec_%s' % type))*self.unit_pb,
                 0 : 0,
                 }
+            type_info['mu']['ggF'] = {
+                -1 : (self.lookup_value(parameter1, tan_beta, 'h_ggF_xsecDown_%s' % type) -
+                      self.lookup_value(parameter1, tan_beta, 'h_ggF_xsec_%s' % type))*self.unit_pb,
+                +1 : (self.lookup_value(parameter1, tan_beta, 'h_ggF_xsecUp_%s' % type) -
+                      self.lookup_value(parameter1, tan_beta, 'h_ggF_xsec_%s' % type))*self.unit_pb,
+                0 : 0,
+                }
+
         type_info['mu']['bbH4f'] = {
             -1 : (self.lookup_value(parameter1, tan_beta, 'h_bbH4f_xsec_%s_low' % type) -
                   self.lookup_value(parameter1, tan_beta, 'h_bbH4f_xsec_%s' % type))*self.unit_pb,
@@ -168,54 +192,63 @@ class mssm_xsec_tools():
                   self.lookup_value(parameter1, tan_beta, 'h_bbH4f_xsec_%s' % type))*self.unit_pb,
             0 : 0,
             }
-        type_info['mu']['ggF'] = {
-            -1 : (self.lookup_value(parameter1, tan_beta, 'h_ggF_xsec20_%s' % type) -
-                  self.lookup_value(parameter1, tan_beta, 'h_ggF_xsec_%s' % type))*self.unit_pb,
-            +1 : (self.lookup_value(parameter1, tan_beta, 'h_ggF_xsec05_%s' % type) -
-                  self.lookup_value(parameter1, tan_beta, 'h_ggF_xsec_%s' % type))*self.unit_pb,
-            0 : 0,
-            }
+            
+            
 
 
     def _add_pdf(self, parameter1, tan_beta, input):
         type, type_info = input
         type_info.setdefault('pdf', {})
-        if(self.inputFileName_.find('mhmax-mu+200')>-1) : #for old mhmax scenario not produced with sushi
-            type_info['pdf']['bbH'] = {
-                -1 : self.lookup_value(parameter1, tan_beta, 'h_bbH_pdfalphas68down_%s' % type)*self.unit_pb,
-                +1 : self.lookup_value(parameter1, tan_beta, 'h_bbH_pdfalphas68up_%s'   % type)*self.unit_pb,
+        if(self.inputFileName_.find('7TeV')>-1 or self.inputFileName_.find('8TeV')>-1 ) :
+            if(self.inputFileName_.find('mhmax-mu+200')>-1) : #for old mhmax scenario not produced with sushi
+                type_info['pdf']['bbH'] = {
+                    -1 : self.lookup_value(parameter1, tan_beta, 'h_bbH_pdfalphas68down_%s' % type)*self.unit_pb,
+                    +1 : self.lookup_value(parameter1, tan_beta, 'h_bbH_pdfalphas68up_%s'   % type)*self.unit_pb,
+                    0 : 0,
+                    }
+            else :
+                bbH_alphasdown = self.lookup_value(parameter1, tan_beta, 'h_bbH_pdfalphas68down_%s' % type)
+                bbH_pdfdown = self.lookup_value(parameter1, tan_beta, 'h_bbH_pdf68down_%s' % type)
+                
+                bbH_alphasup = self.lookup_value(parameter1, tan_beta, 'h_bbH_pdfalphas68up_%s' % type)
+                bbH_pdfup = self.lookup_value(parameter1, tan_beta, 'h_bbH_pdf68up_%s' % type)
+                
+                type_info['pdf']['bbH'] = {               
+                    -1 : mssm_xsec_tools._add_in_quadrature(bbH_alphasdown, bbH_pdfdown)*self.unit_pb,
+                    +1 : mssm_xsec_tools._add_in_quadrature(bbH_alphasup, bbH_pdfup)*self.unit_pb,
+                    0 : 0,
+                    }
+            
+            ggF_alphasdown = self.lookup_value(parameter1, tan_beta, 'h_ggF_alphasdown_%s' % type)
+            ggF_pdfdown = self.lookup_value(parameter1, tan_beta, 'h_ggF_pdfdown_%s' % type)
+            
+            ggF_alphasup = self.lookup_value(parameter1, tan_beta, 'h_ggF_alphasup_%s' % type)
+            ggF_pdfup = self.lookup_value(parameter1, tan_beta, 'h_ggF_pdfup_%s' % type)
+            
+            type_info['pdf']['ggF'] = {
+                -1 : mssm_xsec_tools._add_in_quadrature(ggF_alphasdown, ggF_pdfdown)*self.unit_pb,
+                +1 : mssm_xsec_tools._add_in_quadrature(ggF_alphasup, ggF_pdfup)*self.unit_pb,
                 0 : 0,
                 }
+            
         else :
-            bbH_alphasdown = self.lookup_value(parameter1, tan_beta, 'h_bbH_pdfalphas68down_%s' % type)
-            bbH_pdfdown = self.lookup_value(parameter1, tan_beta, 'h_bbH_pdf68down_%s' % type)
-            
-            bbH_alphasup = self.lookup_value(parameter1, tan_beta, 'h_bbH_pdfalphas68up_%s' % type)
-            bbH_pdfup = self.lookup_value(parameter1, tan_beta, 'h_bbH_pdf68up_%s' % type)
-            
             type_info['pdf']['bbH'] = {               
-                -1 : mssm_xsec_tools._add_in_quadrature(bbH_alphasdown, bbH_pdfdown)*self.unit_pb,
-                +1 : mssm_xsec_tools._add_in_quadrature(bbH_alphasup, bbH_pdfup)*self.unit_pb,
+                -1 : self.lookup_value(parameter1, tan_beta, 'h_bbH_pdfalphasDown_%s' % type),
+                +1 : self.lookup_value(parameter1, tan_beta, 'h_bbH_pdfalphasUp_%s' % type),
                 0 : 0,
                 }
+            type_info['pdf']['ggF'] = {
+                -1 : self.lookup_value(parameter1, tan_beta, 'h_ggF_pdfalphasDown_%s' % type),
+                +1 : self.lookup_value(parameter1, tan_beta, 'h_ggF_pdfalphasUp_%s' % type),
+                0 : 0,
+                }
+        
         # Supposedly negligble compared to scale
         type_info['pdf']['bbH4f'] = {
-            -1 : 0,
-            +1 : 0,
-            0 : 0,
-            }
-        
-        ggF_alphasdown = self.lookup_value(parameter1, tan_beta, 'h_ggF_alphasdown_%s' % type)
-        ggF_pdfdown = self.lookup_value(parameter1, tan_beta, 'h_ggF_pdfdown_%s' % type)
-
-        ggF_alphasup = self.lookup_value(parameter1, tan_beta, 'h_ggF_alphasup_%s' % type)
-        ggF_pdfup = self.lookup_value(parameter1, tan_beta, 'h_ggF_pdfup_%s' % type)
-
-        type_info['pdf']['ggF'] = {
-            -1 : mssm_xsec_tools._add_in_quadrature(ggF_alphasdown, ggF_pdfdown)*self.unit_pb,
-            +1 : mssm_xsec_tools._add_in_quadrature(ggF_alphasup, ggF_pdfup)*self.unit_pb,
-             0 : 0,
-        }
+               -1 : 0,
+               +1 : 0,
+               0 : 0,
+               }
 
 
     def query(self, parameter1, tan_beta, ana_type): #parameter1 = mu in case of lowmH and mA in all other scenarios 
