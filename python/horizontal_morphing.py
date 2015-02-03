@@ -36,7 +36,10 @@ class Morph:
         Load a histogram with name from input histfile. Issue a warning in case the histogram
         is not available.
         """
-        hist = file.Get(directory+'/'+name)
+        if directory=="" :
+            hist = file.Get(name)
+        else :
+            hist = file.Get(directory+'/'+name)
         if type(hist) == ROOT.TObject :
             print "hist not found: ", file.GetName(), ":", directory+'/'+name
         return hist
