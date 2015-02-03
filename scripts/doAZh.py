@@ -41,6 +41,10 @@ parser.add_option("-c", "--config", dest="config", default="",
                   help="Additional configuration file to be used for the setup [Default: \"\"]")
 parser.add_option("--model",dest="model",default="",
                   help="Setup directory structure for model-dependent limits in bins of a different variable than mass. Possible choices are lowmH and 2HDM [Default:\"\"]")
+parser.add_option("--SMHasBackground", dest="SMHasBackground", default=False, action="store_true",
+                  help="Add the SM Higgs to the background. [Default: False]")
+parser.add_option("--SMHasSignal", dest="SMHasSignal", default=False, action="store_true",
+                  help="Shift the SM Higgs from background to the signal. This is normally needed for the signal hypothesis separation test. The options SMHasBackground has to be true [Default: False]")
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -213,7 +217,17 @@ if options.update_setup :
                             THR=config.bbbthreshold[chn]
                             ))
                         os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
-                        os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))                            
+                        os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+    if options.SMHasBackground : 
+        for ana in analyses :
+            os.system("cp -r {DIR}/{ANA} {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+            cgs_adaptor = UncertAdaptor()
+            if chn in config.channels:
+                for period in config.periods:
+                    for category in config.categories[chn][period]:
+                        filename="{DIR}/{ANA}/{CHN}/cgs-AZh-{PERIOD}-0{CATEGORY}.conf".format(DIR=dir, ANA=ana, CHN=chn, PERIOD=period, CATEGORY=category)
+                        print 'processing file:', filename
+                        cgs_adaptor.cgs_processes(filename,None,['ZH_ww125','ZH_tt125'],None,None)
 
 if options.update_aux :
     print "##"
@@ -245,6 +259,13 @@ if options.update_aux :
                         TWOHDM= '--twohdm' if options.model=="2HDM" else '',
                         MASSES=' '.join(masses)
                         ))
+    if options.SMHasBackground and options.SMHasSignal:
+        os.system("cp -r {DIR}/{ANA} {DIR}/{ANA}".format(DIR=dir,ANA=ana))
+        datacard_adaptor = DatacardAdaptor()
+        for subdir in glob.glob("{DIR}/{ANA}/AZh/*".format(DIR=dir, ANA=ana)) :
+            for datacard in glob.glob("{SUBDIR}/*".format(SUBDIR=subdir)) :
+                if '.txt' in datacard :
+                    datacard_adaptor.simplistic_shift_bg_to_signal(datacard,["ZH_tt125","ZH_ww125"])
 
 if options.update_limits :
     print "##"

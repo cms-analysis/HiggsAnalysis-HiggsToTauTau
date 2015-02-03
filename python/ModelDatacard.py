@@ -95,19 +95,21 @@ class ModelDatacard(DatacardAdaptor) :
                 for bin in card.list_of_bins() :
                     for proc in procs :
                         if not '_SM125' in proc :
-                            if card.path_to_file(bin, proc) == '' :
-                                ## this channel is counting only; NOTE: this does not allow to take acceptance differences due
-                                ## to the different masses of the different higgses into account. THIS IS NOT WORKING CURRENTLY
-                                print "counting only is currently NOT WORKING"; continue
-                                new_rate=0
-                                for higgs in self.model[proc].list_of_higgses :
-                                    new_rate+=float(self.model[proc].xsec[higgs])*float(self.model[proc].brs[higgs])
-                                new_rates[index_order.index(bin+'_'+proc)] = str(new_rate)
-                            else :
-                                ## get signal rate from file
-                                hist_file = ROOT.TFile(path[:path.rfind('/')+1]+card.path_to_file(bin, proc), 'READ')
-                                hist = hist_file.Get(card.path_to_shape(bin, proc).replace('$MASS', mass))
-                                new_rates[index_order.index(bin+'_'+proc)] = str(hist.Integral())
+                            if not '_ww125' in proc :
+                                if not '_tt125' in proc :
+                                    if card.path_to_file(bin, proc) == '' :
+                                        ## this channel is counting only; NOTE: this does not allow to take acceptance differences due
+                                        ## to the different masses of the different higgses into account. THIS IS NOT WORKING CURRENTLY
+                                        print "counting only is currently NOT WORKING"; continue
+                                        new_rate=0
+                                        for higgs in self.model[proc].list_of_higgses :
+                                            new_rate+=float(self.model[proc].xsec[higgs])*float(self.model[proc].brs[higgs])
+                                        new_rates[index_order.index(bin+'_'+proc)] = str(new_rate)
+                                    else :
+                                        ## get signal rate from file
+                                        hist_file = ROOT.TFile(path[:path.rfind('/')+1]+card.path_to_file(bin, proc), 'READ')
+                                        hist = hist_file.Get(card.path_to_shape(bin, proc).replace('$MASS', mass))
+                                        new_rates[index_order.index(bin+'_'+proc)] = str(hist.Integral())
                     if self.ana_type=="Htaunu" : ##felix for tt scale background, but only once!
                         for bkg in card.list_of_backgrounds() :
                             if "tt_" in bkg and bkg!="EWKnontt_faketau" :
