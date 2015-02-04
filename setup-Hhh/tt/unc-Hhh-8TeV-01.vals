@@ -1,6 +1,6 @@
 tauTau_2jet1tag			signal,SM,TT,ZLL,VV	        lumi_8TeV            				1.026
 tauTau_2jet1tag 		signal,SM,ZTT,TT,VV		CMS_eff_t_tautau_8TeV 				1.19
-tauTau_2jet1tag			signal,ZTT  			CMS_scale_t_tautau_8TeV 			1.00        
+tauTau_2jet1tag			signal,SM,ZTT  			CMS_scale_t_tautau_8TeV 			1.00        
 tauTau_2jet1tag         	signal,SM,TT,VV,ZTT,ZLL		CMS_scale_j_8TeV		   		1.00
 tauTau_2jet1tag			signal 			       	CMS_eff_b_8TeV                  		0.98
 tauTau_2jet1tag			TT 			       	CMS_eff_b_8TeV                  		1.02
