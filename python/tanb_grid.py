@@ -88,8 +88,10 @@ class MODEL(object) :
         missing_procs = []
         for proc in procs :
             if not (period,decay,proc) in self.central.keys() :
-                if not '_SM125' in proc :
-                    missing_procs.append(proc)
+                if not '_SM125' in proc:
+                    if not'_ww125' in proc:
+                        if not '_tt125' in proc:
+                            missing_procs.append(proc)
         return missing_procs
         
     def save_float_conversion(self, float_value) :
