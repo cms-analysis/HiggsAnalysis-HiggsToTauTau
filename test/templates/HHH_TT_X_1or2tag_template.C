@@ -146,6 +146,13 @@ void rescale(TH1F* hin, unsigned int idx)
 #if defined MSSM
   case  8: // ggH
   $ggHTohhTo2Tau2B$MH
+/*  case 9:
+  $ggH125
+  case 10:
+  $qqH125
+  case 11:
+  $VH125
+*/
   /*case  9:
   $ggAToZhToLLTauTau$MH
   case 10:
@@ -160,8 +167,8 @@ void rescale(TH1F* hin, unsigned int idx)
 }
 
 void 
-//HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string inputfile="root/$HISTFILE", const char* directory="tauTau_$CATEGORY")
-HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string inputfile="root/$HISTFILE", const char* directory="tauTau_$CATEGORY")
+//HHH_TT_X_1or2tag(bool scaled=true, bool log=true, float min=0.1, float max=-1., string inputfile="root/$HISTFILE", const char* directory="tauTau_$CATEGORY")
+HHH_TT_X_1or2tag(bool scaled=true, bool log=true, float min=0.1, float max=-1., string inputfile="root/$HISTFILE", const char* directory="tauTau_$CATEGORY")
 {
   // defining the common canvas, axes pad styles
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
@@ -204,6 +211,14 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/ZTT"     , directory)), "ZTT"); InitHist(Ztt  , "", "", TColor::GetColor(248,206,104), 1001);
 #ifdef MSSM
   TH1F* ggHTohhTo2Tau2B    = refill((TH1F*)input2->Get(TString::Format("%s/ggHTohhTo2Tau2B$MH" , directory)), "ggHTohhTo2Tau2B"); InitSignal(ggHTohhTo2Tau2B); ggHTohhTo2Tau2B->Scale($TANB*SIGNAL_SCALE);
+ /* if(std::string(directory)=="tauTau_2jet1tag") ggHTohhTo2Tau2B->Scale(0.5);
+  if(std::string(directory)=="tauTau_2jet2tag") ggHTohhTo2Tau2B->Scale(0.3);
+  TH1F* ggH_SM125 = refill((TH1F*)input->Get(TString::Format("%s/ggH_SM125",directory)),"ggH_SM125");InitSignal(ggH_SM125);ggH_SM125->Scale(SIGNAL_SCALE);
+  TH1F* qqH_SM125 = refill((TH1F*)input->Get(TString::Format("%s/qqH_SM125",directory)),"qqH_SM125");InitSignal(qqH_SM125);qqH_SM125->Scale(SIGNAL_SCALE);
+  TH1F* VH_SM125 = refill((TH1F*)input->Get(TString::Format("%s/VH_SM125",directory)),"VH_SM125");InitSignal(VH_SM125);VH_SM125->Scale(SIGNAL_SCALE);
+//  TH1F* WHToBB_SM125 = refill((TH1F*)input->Get(TString::Format("%s/WHToBB_SM125",directory)),"WHToBB_SM125");InitSignal(WHToBB_SM125);WHToBB_SM125->Scale(SIGNAL_SCALE);
+  TH1F* ZHToBB_SM125 = refill((TH1F*)input->Get(TString::Format("%s/ZHToBB_SM125",directory)),"ZHToBB_SM125");InitSignal(ZHToBB_SM125);ZHToBB_SM125->Scale(SIGNAL_SCALE);
+*/
 /*
   TH1F* ggAToZhToLLTauTau = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLTauTau$MH",directory)),"ggAToZhToLLTauTau"); InitSignal(ggAToZhToLLTauTau);
   TH1F* ggAToZhToLLBB = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLBB$MH",directory)),"ggAToZhToLLBB"); InitSignal(ggAToZhToLLBB);
@@ -225,6 +240,7 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   ref->Add(ttbar);
   ref->Add(Ztt  );
 
+
   double unscaled[8];
   unscaled[0] = Fakes->Integral();
   unscaled[1] = EWK  ->Integral();
@@ -235,6 +251,10 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   unscaled[3] = Ztt  ->Integral();
 #ifdef MSSM
   unscaled[4] = ggHTohhTo2Tau2B  ->Integral();
+  /*unscaled[5] = ggH_SM125->Integral();
+  unscaled[5]+= qqH_SM125->Integral();
+  unscaled[5]+= VH_SM125->Integral();
+*/
 /*
   unscaled[5] = ggAToZhToLLTauTau->Integral();
   unscaled[6] = ggAToZhToLLBB->Integral();
@@ -315,6 +335,12 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   EWK  ->Add(EWK2 );
 //  ttbar->Add(EWK  );
   Ztt  ->Add(EWK);
+
+ /*ggH_SM125->Add(qqH_SM125);
+ ggH_SM125->Add(VH_SM125);
+ ggH_SM125->Add(ZHToBB_SM125);
+*/
+// ggH_SM125->Add(WHToBB_SM125);
   //if(log){
 //#ifdef MSSM
  //   ggH->Add(bbH);
@@ -373,6 +399,9 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 //#endif
     $DRAW_ERROR
     ggHTohhTo2Tau2B  ->Draw("histsame");
+    /*ggH_SM125->SetLineColor(kRed);
+    ggH_SM125->Draw("histsame");
+*/
   }
   else{
     Ztt  ->Draw("histsame");
@@ -385,6 +414,10 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
     $DRAW_ERROR
     ggHTohhTo2Tau2B  ->Draw("histsame");
+/*
+    ggH_SM125->SetLineColor(kRed);
+    ggH_SM125->Draw("histsame");
+*/
   }
   data->Draw("esame");
   canv->RedrawAxis();
@@ -449,6 +482,7 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TLegend* leg = new TLegend(0.53, 0.60, 0.95, 0.90);
   SetLegendStyle(leg);
   leg->AddEntry(ggHTohhTo2Tau2B  , TString::Format("%0.f #times H#rightarrowhh#rightarrow#tau#taubb", SIGNAL_SCALE) , "L" );
+//  leg->AddEntry(ggH_SM125, TString::Format("%0.f #times SM H (125 GeV) #rightarrow #tau#tau/bb", SIGNAL_SCALE), "L");
 #endif
 #ifdef ASIMOV
   leg->AddEntry(data , "sum(bkg) + H(125)"              , "LP");

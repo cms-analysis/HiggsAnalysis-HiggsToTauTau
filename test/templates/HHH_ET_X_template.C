@@ -227,16 +227,21 @@ HHH_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/ZTT"     , directory)), "ZTT"); InitHist(Ztt  , "", "", TColor::GetColor(248,206,104), 1001);
 #ifdef MSSM
   TH1F* ggHTohhTo2Tau2B    = refill((TH1F*)input2->Get(TString::Format("%s/ggHTohhTo2Tau2B$MH" , directory)), "ggHTohhTo2Tau2B"); InitSignal(ggHTohhTo2Tau2B); ggHTohhTo2Tau2B->Scale($TANB*SIGNAL_SCALE);
+ /*if(std::string(directory)=="eleTau_2jet0tag") ggHTohhTo2Tau2B->Scale(4);
+ if(std::string(directory)=="eleTau_2jet1tag") ggHTohhTo2Tau2B->Scale(0.5);
+ if(std::string(directory)=="eleTau_2jet2tag") ggHTohhTo2Tau2B->Scale(0.3);
+*/
 /*
   TH1F* ggAToZhToLLTauTau = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLTauTau$MA", directory)), "ggAToZhToLLTauTau"); InitSignal(ggAToZhToLLTauTau); ggAToZhToLLTauTau->Scale(SIGNAL_SCALE);
   TH1F* ggAToZhToLLBB = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLBB$MA", directory)),"ggAToZhToLLBB"); InitSignal(ggAToZhToLLBB); ggAToZhToLLBB->Scale(SIGNAL_SCALE);
   TH1F* bbH    = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA" , directory)), "bbH"); InitSignal(bbH); bbH->Scale(SIGNAL_SCALE);
 */
- TH1F* ggH_SM125= refill((TH1F*)input->Get(TString::Format("%s/ggH_SM125"  , directory)), "ggH_SM125"); InitSignal(ggH_SM125); ggH_SM125->Scale(SIGNAL_SCALE);
+ /*TH1F* ggH_SM125= refill((TH1F*)input->Get(TString::Format("%s/ggH_SM125"  , directory)), "ggH_SM125"); InitSignal(ggH_SM125); ggH_SM125->Scale(SIGNAL_SCALE);
  TH1F* qqH_SM125= refill((TH1F*)input->Get(TString::Format("%s/qqH_SM125"  , directory)), "qqH_SM125"); InitSignal(qqH_SM125); qqH_SM125->Scale(SIGNAL_SCALE);
  TH1F* VH_SM125 = refill((TH1F*)input->Get(TString::Format("%s/VH_SM125"   , directory)), "VH_SM125" ); InitSignal(VH_SM125); VH_SM125->Scale(SIGNAL_SCALE);
  TH1F* ZHToBB_SM125 = refill((TH1F*)input->Get(TString::Format("%s/ZHToBB_SM125",directory)),"ZHToBB_SM125"); InitSignal(ZHToBB_SM125);ZHToBB_SM125->Scale(SIGNAL_SCALE);
  TH1F* WHToBB_SM125 = refill((TH1F*)input->Get(TString::Format("%s/WHToBB_SM125",directory)),"WHToBB_SM125"); InitSignal(WHToBB_SM125);WHToBB_SM125->Scale(SIGNAL_SCALE);
+*/
 /*#else
 #ifndef DROP_SIGNAL
 #endif
@@ -272,11 +277,12 @@ HHH_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #ifdef MSSM
   unscaled[4] = ggHTohhTo2Tau2B->Integral();
 
-  unscaled[5] = ggH_SM125->Integral();
+/*  unscaled[5] = ggH_SM125->Integral();
   unscaled[5] += qqH_SM125->Integral();
   unscaled[5] += VH_SM125->Integral();
   unscaled[5] += ZHToBB_SM125->Integral();
   unscaled[5] += WHToBB_SM125->Integral();
+*/
 
 /*
 #else
@@ -360,8 +366,8 @@ HHH_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #ifdef MSSM
   scales[4] = new TH1F("scales-ggHTohhTo2Tau2B"  , "", 8, 0, 8);
   scales[4]->SetBinContent(5, unscaled[4]>0 ? (ggHTohhTo2Tau2B->Integral()/unscaled[4]-1.) : 0.);
-  scales[5] = new TH1F("scales-ggH","",8,0,8);
-  scales[5]->SetBinContent(6,unscaled[5]>0 ?((ggH_SM125->Integral()+qqH_SM125->Integral()+VH_SM125->Integral()+ZHToBB_SM125->Integral()+WHToBB_SM125->Integral())/unscaled[5]-1.) :0.);
+ // scales[5] = new TH1F("scales-ggH","",8,0,8);
+//  scales[5]->SetBinContent(6,unscaled[5]>0 ?((ggH_SM125->Integral()+qqH_SM125->Integral()+VH_SM125->Integral()+ZHToBB_SM125->Integral()+WHToBB_SM125->Integral())/unscaled[5]-1.) :0.);
 /*
   scales[5] = new TH1F("scales-ggAToZhToLLTauTau"  , "", 8, 0, 8);
   scales[5]->SetBinContent(6, unscaled[5]>0 ? (ggAToZhToLLTauTau ->Integral()/unscaled[5]-1.) : 0.);
@@ -392,10 +398,11 @@ HHH_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   EWK  ->Add(EWK1 );
 #endif
   Ztt  ->Add(EWK);
-  ggH_SM125->Add(qqH_SM125);
+/*  ggH_SM125->Add(qqH_SM125);
   ggH_SM125->Add(VH_SM125);
   ggH_SM125->Add(ZHToBB_SM125);
   ggH_SM125->Add(WHToBB_SM125);
+*/
 /*#ifdef MSSM
 //  ggAToZhToLLBB->Add(ggAToZhToLLTauTau);
  // bbH->Add(ggAToZhToLLBB);
@@ -461,13 +468,15 @@ HHH_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
     EWK1 ->Draw("histsame");
     Fakes->Draw("histsame");
     ttbar->Draw("histsame");
-    //ggH_SM125->Draw("histsame");
 #ifdef MSSM
    // VH_SM125->Draw("histsame");
 #endif   
     $DRAW_ERROR
 #ifndef DROP_SIGNAL
     ggHTohhTo2Tau2B  ->Draw("histsame");
+   /* ggH_SM125->SetLineColor(kRed);
+    ggH_SM125->Draw("histsame");
+*/
 #endif
   }
   else{
@@ -483,8 +492,9 @@ HHH_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
     $DRAW_ERROR
 #ifndef DROP_SIGNAL
     ggHTohhTo2Tau2B->Draw("histsame");
-    ggH_SM125->SetLineColor(kRed);
-    //ggH_SM125->Draw("histsame");
+    /*ggH_SM125->SetLineColor(kRed);
+    ggH_SM125->Draw("histsame");
+*/
 #endif
   }
   data->Draw("esame");
@@ -550,7 +560,7 @@ HHH_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TLegend* leg = new TLegend(0.53, 0.60, 0.95, 0.90);
   SetLegendStyle(leg);
   leg->AddEntry(ggHTohhTo2Tau2B  , TString::Format("%.0f#timesH#rightarrowhh#rightarrow#tau#taubb",SIGNAL_SCALE) , "L" );
-//  leg->AddEntry(ggH_SM125, TString::Format("%.0f#times SM H(125 GeV)#rightarrow#tau#tau/bb",SIGNAL_SCALE),"L");
+//  leg->AddEntry(ggH_SM125, TString::Format("%.0f#times SM H(125 GeV) #rightarrow#tau#tau/bb",SIGNAL_SCALE),"L");
 /*#else
   TLegend* leg = new TLegend(0.52, 0.58, 0.92, 0.89);
   SetLegendStyle(leg);
@@ -741,7 +751,7 @@ if(edges.size()>1){
   scales[0]->GetXaxis()->SetBinLabel(4, "#bf{Ztt}"  );
 #ifdef MSSM
   scales[0]->GetXaxis()->SetBinLabel(5, "#bf{ggHTohhTo2Tau2B}"  );
-  scales[0]->GetXaxis()->SetBinLabel(6, "#bf{SM Higgs}");
+  //scales[0]->GetXaxis()->SetBinLabel(6, "#bf{SM Higgs}");
 /*
   scales[0]->GetXaxis()->SetBinLabel(6, "#bf{ggAToZhToLLTauTau}"  );
   scales[0]->GetXaxis()->SetBinLabel(7, "#bf{ggAToZhToLLBB}"      );
@@ -762,7 +772,7 @@ if(edges.size()>1){
   scales[3]->Draw("same");
 #ifdef MSSM
   scales[4]->Draw("same");
-  scales[5]->Draw("same");
+  //scales[5]->Draw("same");
 /*#else
 #ifndef DROP_SIGNAL
   scales[4]->Draw("same");
@@ -811,7 +821,7 @@ if(edges.size()>1){
   Ztt  ->Write("Ztt"     );
 #ifdef MSSM
   ggHTohhTo2Tau2B  ->Write("ggHTohhTo2Tau2B"     );
-  ggH_SM125->Write("ggH_SM125");
+//  ggH_SM125->Write("ggH_SM125");
 //  qqH_SM125->Write("qqH_SM125");
  // VH_SM125->Write("VH_SM125");
 /*
