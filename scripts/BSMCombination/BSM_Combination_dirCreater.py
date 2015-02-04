@@ -16,7 +16,7 @@ parser.add_option("--label", dest="label", default="", type="string",
                   help="Path to AZh datacards. [Default: \"\"]")
 parser.add_option("--MSSMvsSM", dest="MSSMvsSM", default=False, action="store_true",
                   help="This is needed for the signal hypothesis separation test MSSM vs SM [Default: False]")
-parser.add_option("--model", dest="modelname", default="mhmodp", type="string",
+parser.add_option("--model", dest="model", default="mhmodp", type="string",
                        help="The model which should be used (choices are: mhmax-mu+200, mhmodp, mhmodm, lowmH, tauphobic, lightstau1, lightstopmod, low-tb-high, 2HDM_ty1_mA300_mH300, 2HDM_ty2_mA300_mH300). Default: \"mhmdop\"]")
 # check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -55,117 +55,183 @@ if options.path_hplus != "" :
 #####################################################
 ### lowmH
 if options.model=="lowmH" :
+    print "model", options.model
     for mass in range(300, 3101, 100) :
-        os.system("mkdir LIMITS-BSMCombination{LABEL}/{MASS}".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
-
+        os.system("mkdir LIMITS{LABEL}-BSMCombination/{MASS}".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
         if options.path_htt != "" :
             for file in glob.glob("{HTT}/{MASS}/debug/*0.txt".format(HTT=options.path_htt, MASS=str(mass))) :
                 tanbs=file.rstrip(".txt").split("_")
                 tanb=tanbs[1]
-                os.system("cp {FILE} LIMITS-BSMCombination{LABEL}/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="htt_"+str(tanb)+".txt"))
+                os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="htt_"+str(tanb)+".txt"))
         if options.path_hplus != "" :
             for file in glob.glob("{HPLUS}/{MASS}/debug/*0.txt".format(HPLUS=options.path_hplus, MASS=str(mass))) :
                 tanbs=file.rstrip(".txt").split("_")
                 tanb=tanbs[1]
-                os.system("cp {FILE} LIMITS-BSMCombination{LABEL}/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="hplus_"+str(tanb)+".txt"))
-                os.system("cp {HPLUS}/{MASS}/combine_histograms_hplushadronic_light.root_{MASS}_{TANB} LIMITS-BSMCombination{LABEL}/{MASS}".format(HPLUS=options.path_hplus, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb[:-1])))
-                os.system("cp {HPLUS}/{MASS}/combine_histograms_hplushadronic_light.root LIMITS-BSMCombination{LABEL}/{MASS}".format(HPLUS=options.path_hplus, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
+                os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="hplus_"+str(tanb)+".txt"))
+                os.system("cp {HPLUS}/{MASS}/combine_histograms_hplushadronic_light.root_{MASS}_{TANB} LIMITS{LABEL}-BSMCombination/{MASS}".format(HPLUS=options.path_hplus, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb[:-1])))
+                os.system("cp {HPLUS}/{MASS}/combine_histograms_hplushadronic_light.root LIMITS{LABEL}-BSMCombination/{MASS}".format(HPLUS=options.path_hplus, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
         if options.path_Hhh != "" :
             for file in glob.glob("{Hhh}/{MASS}/debug/*0.txt".format(Hhh=options.path_Hhh, MASS=str(mass))) :
                 tanbs=file.rstrip(".txt").split("_")
                 tanb=tanbs[1]
-                os.system("cp {FILE} LIMITS-BSMCombination{LABEL}/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="Hhh_"+str(tanb)+".txt"))
+                os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="Hhh_"+str(tanb)+".txt"))
         if options.path_AZh != "" :
             for file in glob.glob("{AZh}/{MASS}/debug/*0.txt".format(AZh=options.path_AZh, MASS=str(mass))) :
                 tanbs=file.rstrip(".txt").split("_")
                 tanb=tanbs[1]
-                os.system("cp {FILE} LIMITS-BSMCombination{LABEL}/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="AZh_"+str(tanb)+".txt"))
+                os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="AZh_"+str(tanb)+".txt"))
     ##combine cards
-        os.system("combineCards.py -S LIMITS-BSMCombination{LABEL}/{MASS}/*_{TANB}.txt > LIMITS-BSMCombination{LABEL}/{MASS}/tmp_{TANB}.txt".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
-
+        for file in glob.glob("LIMITS{LABEL}-BSMCombination/{MASS}/*0.txt".format(LABEL="" if options.label=="" else "-"+options.label, AZh=options.path_AZh, MASS=str(mass))) :
+            print "combining cards"
+            tanbs=file.rstrip(".txt").split("_")
+            tanb=tanbs[1]
+            os.system("combineCards.py -S LIMITS{LABEL}-BSMCombination/{MASS}/*_{TANB}.txt > LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
     ##text2workspace either MSSMvsBG or MSSMvsSM
-        if options.MSSMvsSM :
-            os.system("text2workspace.py -m {MASS} LIMITS-BSMCombination{LABEL}/{MASS}/tmp_{TANB}.txt -o LIMITS-BSMCombination{LABEL}/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
-        else :
-            os.system("text2workspace.py -m {MASS} LIMITS-BSMCombination{LABEL}/{MASS}/tmp_{TANB}.txt -o LIMITS-BSMCombination{LABEL}/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
+            print "txt2workspace"
+            if options.MSSMvsSM :
+                os.system("text2workspace.py -m {MASS} LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt -o LIMITS{LABEL}-BSMCombination/{MASS}/fixedMu_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
+            else :
+                os.system("text2workspace.py -m {MASS} LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt -o LIMITS{LABEL}-BSMCombination/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
 
 
 #####################################################
 ### 2HDM
 elif "2HDM" in options.model :
+    print "model", options.model
     for mass in range(-1.0, 1.01, 0.1) :
-        os.system("mkdir LIMITS-BSMCombination{LABEL}/{MASS}".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
-
+        os.system("mkdir LIMITS{LABEL}-BSMCombination/{MASS}".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
         if options.path_htt != "" :
             for file in glob.glob("{HTT}/{MASS}/debug/*0.txt".format(HTT=options.path_htt, MASS=str(mass))) :
                 tanbs=file.rstrip(".txt").split("_")
                 tanb=tanbs[1]
-                os.system("cp {FILE} LIMITS-BSMCombination{LABEL}/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="htt_"+str(tanb)+".txt"))
+                os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="htt_"+str(tanb)+".txt"))
         if options.path_hplus != "" :
             for file in glob.glob("{HPLUS}/{MASS}/debug/*0.txt".format(HPLUS=options.path_hplus, MASS=str(mass))) :
                 tanbs=file.rstrip(".txt").split("_")
                 tanb=tanbs[1]
-                os.system("cp {FILE} LIMITS-BSMCombination{LABEL}/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="hplus_"+str(tanb)+".txt"))
-                os.system("cp {HPLUS}/{MASS}/combine_histograms_hplushadronic_light.root_{MASS}_{TANB} LIMITS-BSMCombination{LABEL}/{MASS}".format(HPLUS=options.path_hplus, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb[:-1])))
-                os.system("cp {HPLUS}/{MASS}/combine_histograms_hplushadronic_light.root LIMITS-BSMCombination{LABEL}/{MASS}".format(HPLUS=options.path_hplus, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
+                os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="hplus_"+str(tanb)+".txt"))
+                os.system("cp {HPLUS}/{MASS}/combine_histograms_hplushadronic_light.root_{MASS}_{TANB} LIMITS{LABEL}-BSMCombination/{MASS}".format(HPLUS=options.path_hplus, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb[:-1])))
+                os.system("cp {HPLUS}/{MASS}/combine_histograms_hplushadronic_light.root LIMITS{LABEL}-BSMCombination/{MASS}".format(HPLUS=options.path_hplus, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
         if options.path_Hhh != "" :
             for file in glob.glob("{Hhh}/{MASS}/debug/*0.txt".format(Hhh=options.path_Hhh, MASS=str(mass))) :
                 tanbs=file.rstrip(".txt").split("_")
                 tanb=tanbs[1]
-                os.system("cp {FILE} LIMITS-BSMCombination{LABEL}/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="Hhh_"+str(tanb)+".txt"))
+                os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="Hhh_"+str(tanb)+".txt"))
         if options.path_AZh != "" :
             for file in glob.glob("{AZh}/{MASS}/debug/*0.txt".format(AZh=options.path_AZh, MASS=str(mass))) :
                 tanbs=file.rstrip(".txt").split("_")
                 tanb=tanbs[1]
-                os.system("cp {FILE} LIMITS-BSMCombination{LABEL}/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="AZh_"+str(tanb)+".txt"))
+                os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="AZh_"+str(tanb)+".txt"))
     ##combine cards
-        os.system("combineCards.py -S LIMITS-BSMCombination{LABEL}/{MASS}/*_{TANB}.txt > LIMITS-BSMCombination{LABEL}/{MASS}/tmp_{TANB}.txt".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
-
+        for file in glob.glob("LIMITS{LABEL}-BSMCombination/{MASS}/*0.txt".format(LABEL="" if options.label=="" else "-"+options.label, AZh=options.path_AZh, MASS=str(mass))) :
+            print "combining cards"
+            tanbs=file.rstrip(".txt").split("_")
+            tanb=tanbs[1]
+            os.system("combineCards.py -S LIMITS{LABEL}-BSMCombination/{MASS}/*_{TANB}.txt > LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
     ##text2workspace either MSSMvsBG or MSSMvsSM
-        if options.MSSMvsSM :
-            os.system("text2workspace.py -m {MASS} LIMITS-BSMCombination{LABEL}/{MASS}/tmp_{TANB}.txt -o LIMITS-BSMCombination{LABEL}/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
-        else :
-            os.system("text2workspace.py -m {MASS} LIMITS-BSMCombination{LABEL}/{MASS}/tmp_{TANB}.txt -o LIMITS-BSMCombination{LABEL}/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
+            print "txt2workspace"
+            if options.MSSMvsSM :
+                os.system("text2workspace.py -m {MASS} LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt -o LIMITS{LABEL}-BSMCombination/{MASS}/fixedMu_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
+            else :
+                os.system("text2workspace.py -m {MASS} LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt -o LIMITS{LABEL}-BSMCombination/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
 
 
 #####################################################
-### mhmax, mhmod, lightstau1, lightstopmod, tauphobic, low-tb-high
-else :
-    for mass in (90, 100, 120, 130, 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000) :
+### low-tb-high
+elif options.model=="low-tb-high" :
+    print "model", options.model
+    for mass in (160, 180, 200, 250, 300, 350, 400, 450, 500) :
+        os.system("mkdir LIMITS{LABEL}-BSMCombination/{MASS}".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
         if options.path_htt != "" :
             for file in glob.glob("{HTT}/{MASS}/debug/*0.txt".format(HTT=options.path_htt, MASS=str(mass))) :
+                print file
                 tanbs=file.rstrip(".txt").split("_")
                 tanb=tanbs[1]
-                os.system("cp {FILE} LIMITS-BSMCombination{LABEL}/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="htt_"+str(tanb)+".txt"))
+                os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="htt_"+str(tanb)+".txt"))
         if options.path_hplus != "" :
             for file in glob.glob("{HPLUS}/{MASS}/debug/*0.txt".format(HPLUS=options.path_hplus, MASS=str(mass))) :
                 tanbs=file.rstrip(".txt").split("_")
                 tanb=tanbs[1]                
                 if mass < 141 and tanb < 10 :
-                    os.system("cp {FILE} LIMITS-BSMCombination{LABEL}/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="hplus_"+str(tanb)+".txt"))
-                    os.system("cp {HPLUS}/{MASS}/combine_histograms_hplushadronic_light.root_{MASS}_{TANB} LIMITS-BSMCombination{LABEL}/{MASS}".format(HPLUS=options.path_hplus, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb[:-1])))
+                    os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="hplus_"+str(tanb)+".txt"))
+                    os.system("cp {HPLUS}/{MASS}/combine_histograms_hplushadronic_light.root_{MASS}_{TANB} LIMITS{LABEL}-BSMCombination/{MASS}".format(HPLUS=options.path_hplus, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb[:-1])))
                     
-                    os.system("cp {HPLUS}/{MASS}/combine_histograms_hplushadronic_light.root LIMITS-BSMCombination{LABEL}/{MASS}".format(HPLUS=options.path_hplus, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
+                    os.system("cp {HPLUS}/{MASS}/combine_histograms_hplushadronic_light.root LIMITS{LABEL}-BSMCombination/{MASS}".format(HPLUS=options.path_hplus, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
         if options.path_Hhh != "" :
             for file in glob.glob("{Hhh}/{MASS}/debug/*0.txt".format(Hhh=options.path_Hhh, MASS=str(mass))) :
                 tanbs=file.rstrip(".txt").split("_")
                 tanb=tanbs[1]
                 if mass < 351 and mass > 249 :                
-                    os.system("cp {FILE} LIMITS-BSMCombination{LABEL}/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="Hhh_"+str(tanb)+".txt"))
+                    os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="Hhh_"+str(tanb)+".txt"))
         if options.path_AZh != "" :
             for file in glob.glob("{AZh}/{MASS}/debug/*0.txt".format(AZh=options.path_AZh, MASS=str(mass))) :
+                print file
                 tanbs=file.rstrip(".txt").split("_")
                 tanb=tanbs[1]
                 if mass < 351 and mass > 219 :    
-                    os.system("cp {FILE} LIMITS-BSMCombination{LABEL}/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="AZh_"+str(tanb)+".txt"))
+                    os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="AZh_"+str(tanb)+".txt"))             
     ##combine cards
-        os.system("combineCards.py -S LIMITS-BSMCombination{LABEL}/{MASS}/*_{TANB}.txt > LIMITS-BSMCombination{LABEL}/{MASS}/tmp_{TANB}.txt".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
-
+        for file in glob.glob("LIMITS{LABEL}-BSMCombination/{MASS}/*0.txt".format(LABEL="" if options.label=="" else "-"+options.label, AZh=options.path_AZh, MASS=str(mass))) :
+            print "combining cards"
+            tanbs=file.rstrip(".txt").split("_")
+            tanb=tanbs[1]
+            print "combineCards.py -S LIMITS{LABEL}-BSMCombination/{MASS}/*_{TANB}.txt > LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb))
+            os.system("combineCards.py -S LIMITS{LABEL}-BSMCombination/{MASS}/*_{TANB}.txt > LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
     ##text2workspace either MSSMvsBG or MSSMvsSM
-        if options.MSSMvsSM :
-            os.system("text2workspace.py -m {MASS} LIMITS-BSMCombination{LABEL}/{MASS}/tmp_{TANB}.txt -o LIMITS-BSMCombination{LABEL}/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
-        else :
-            os.system("text2workspace.py -m {MASS} LIMITS-BSMCombination{LABEL}/{MASS}/tmp_{TANB}.txt -o LIMITS-BSMCombination{LABEL}/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
+            print "txt2workspace"
+            if options.MSSMvsSM :
+                os.system("text2workspace.py -m {MASS} LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt -o LIMITS{LABEL}-BSMCombination/{MASS}/fixedMu_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
+            else :
+                print "text2workspace.py -m {MASS} LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt -o LIMITS{LABEL}-BSMCombination/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb))
+                os.system("text2workspace.py -m {MASS} LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt -o LIMITS{LABEL}-BSMCombination/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
+
+
+#####################################################
+### mhmax, mhmod, lightstau1, lightstopmod, tauphobic
+else :
+    print "model", options.model
+    for mass in (90, 100, 120, 130, 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000) :
+        os.system("mkdir LIMITS{LABEL}-BSMCombination/{MASS}".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
+        if options.path_htt != "" :
+            for file in glob.glob("{HTT}/{MASS}/debug/*0.txt".format(HTT=options.path_htt, MASS=str(mass))) :
+                print file
+                tanbs=file.rstrip(".txt").split("_")
+                tanb=tanbs[1]
+                os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="htt_"+str(tanb)+".txt"))
+        if options.path_hplus != "" :
+            for file in glob.glob("{HPLUS}/{MASS}/debug/*0.txt".format(HPLUS=options.path_hplus, MASS=str(mass))) :
+                tanbs=file.rstrip(".txt").split("_")
+                tanb=tanbs[1]                
+                if mass < 141 and tanb < 10 :
+                    os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="hplus_"+str(tanb)+".txt"))
+                    os.system("cp {HPLUS}/{MASS}/combine_histograms_hplushadronic_light.root_{MASS}_{TANB} LIMITS{LABEL}-BSMCombination/{MASS}".format(HPLUS=options.path_hplus, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb[:-1])))
+                    
+                    os.system("cp {HPLUS}/{MASS}/combine_histograms_hplushadronic_light.root LIMITS{LABEL}-BSMCombination/{MASS}".format(HPLUS=options.path_hplus, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
+        if options.path_Hhh != "" :
+            for file in glob.glob("{Hhh}/{MASS}/debug/*0.txt".format(Hhh=options.path_Hhh, MASS=str(mass))) :
+                tanbs=file.rstrip(".txt").split("_")
+                tanb=tanbs[1]
+                if mass < 351 and mass > 249 :                
+                    os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="Hhh_"+str(tanb)+".txt"))
+        if options.path_AZh != "" :
+            for file in glob.glob("{AZh}/{MASS}/debug/*0.txt".format(AZh=options.path_AZh, MASS=str(mass))) :
+                print file
+                tanbs=file.rstrip(".txt").split("_")
+                tanb=tanbs[1]
+                if mass < 351 and mass > 219 :    
+                    os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="AZh_"+str(tanb)+".txt"))             
+    ##combine cards
+        for file in glob.glob("LIMITS{LABEL}-BSMCombination/{MASS}/*0.txt".format(LABEL="" if options.label=="" else "-"+options.label, AZh=options.path_AZh, MASS=str(mass))) :
+            print "combining cards"
+            tanbs=file.rstrip(".txt").split("_")
+            tanb=tanbs[1]
+            os.system("combineCards.py -S LIMITS{LABEL}-BSMCombination/{MASS}/*_{TANB}.txt > LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
+    ##text2workspace either MSSMvsBG or MSSMvsSM
+            print "txt2workspace"
+            if options.MSSMvsSM :
+                os.system("text2workspace.py -m {MASS} LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt -o LIMITS{LABEL}-BSMCombination/{MASS}/fixedMu_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
+            else :
+                os.system("text2workspace.py -m {MASS} LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt -o LIMITS{LABEL}-BSMCombination/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
 
 
 

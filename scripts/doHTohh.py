@@ -315,7 +315,8 @@ if options.update_setup :
         for ana in analyses :
             os.system("cp -r {DIR}/{ANA} {DIR}/{ANA}".format(DIR=dir, ANA=ana))
             cgs_adaptor = UncertAdaptor()
-            if chn in config.channels:
+            print config.channels
+            for chn in config.channels:
                 for period in config.periods:
                     for category in config.categories[chn][period]:
                         filename="{DIR}/{ANA}/{CHN}/cgs-Hhh-{PERIOD}-0{CATEGORY}.conf".format(DIR=dir, ANA=ana, CHN=chn, PERIOD=period, CATEGORY=category)
