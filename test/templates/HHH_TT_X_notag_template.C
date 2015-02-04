@@ -146,6 +146,13 @@ void rescale(TH1F* hin, unsigned int idx)
 #if defined MSSM
   case  8: // ggH
   $ggHTohhTo2Tau2B$MH
+/*  case 9:
+  $ggH125
+  case 10:
+  $qqH125
+  case 11:
+  $VH125
+*/
   /*case  9:
   $ggAToZhToLLTauTau$MH
   case 10:
@@ -160,8 +167,8 @@ void rescale(TH1F* hin, unsigned int idx)
 }
 
 void 
-//HTT_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string inputfile="root/$HISTFILE", const char* directory="tauTau_$CATEGORY")
-HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string inputfile="root/$HISTFILE", const char* directory="tauTau_$CATEGORY")
+//HHH_TT_X_notag(bool scaled=true, bool log=true, float min=0.1, float max=-1., string inputfile="root/$HISTFILE", const char* directory="tauTau_$CATEGORY")
+HHH_TT_X_notag(bool scaled=true, bool log=true, float min=0.1, float max=-1., string inputfile="root/$HISTFILE", const char* directory="tauTau_$CATEGORY")
 {
   // defining the common canvas, axes pad styles
   SetStyle(); gStyle->SetLineStyleString(11,"20 10");
@@ -204,6 +211,13 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TH1F* Ztt    = refill((TH1F*)input->Get(TString::Format("%s/ZTT"     , directory)), "ZTT"); InitHist(Ztt  , "", "", TColor::GetColor(248,206,104), 1001);
 #ifdef MSSM
   TH1F* ggHTohhTo2Tau2B    = refill((TH1F*)input2->Get(TString::Format("%s/ggHTohhTo2Tau2B$MH" , directory)), "ggHTohhTo2Tau2B"); InitSignal(ggHTohhTo2Tau2B); ggHTohhTo2Tau2B->Scale($TANB*SIGNAL_SCALE);
+ // if(std::string(directory)=="tauTau_2jet0tag") ggHTohhTo2Tau2B->Scale(4);
+/*  TH1F* ggH_SM125 = refill((TH1F*)input->Get(TString::Format("%s/ggH_SM125",directory)),"ggH_SM125");InitSignal(ggH_SM125);ggH_SM125->Scale(SIGNAL_SCALE);
+  TH1F* qqH_SM125 = refill((TH1F*)input->Get(TString::Format("%s/qqH_SM125",directory)),"qqH_SM125");InitSignal(qqH_SM125);qqH_SM125->Scale(SIGNAL_SCALE);
+  TH1F* VH_SM125 = refill((TH1F*)input->Get(TString::Format("%s/VH_SM125",directory)),"VH_SM125");InitSignal(VH_SM125);VH_SM125->Scale(SIGNAL_SCALE);
+  TH1F* WHToBB_SM125 = refill((TH1F*)input->Get(TString::Format("%s/WHToBB_SM125",directory)),"WHToBB_SM125");InitSignal(WHToBB_SM125);WHToBB_SM125->Scale(SIGNAL_SCALE);
+  TH1F* ZHToBB_SM125 = refill((TH1F*)input->Get(TString::Format("%s/ZHToBB_SM125",directory)),"ZHToBB_SM125");InitSignal(ZHToBB_SM125);ZHToBB_SM125->Scale(SIGNAL_SCALE);
+*/
 /*
   TH1F* ggAToZhToLLTauTau = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLTauTau$MH",directory)),"ggAToZhToLLTauTau"); InitSignal(ggAToZhToLLTauTau);
   TH1F* ggAToZhToLLBB = refill((TH1F*)input2->Get(TString::Format("%s/ggAToZhToLLBB$MH",directory)),"ggAToZhToLLBB"); InitSignal(ggAToZhToLLBB);
@@ -225,6 +239,7 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   ref->Add(ttbar);
   ref->Add(Ztt  );
 
+
   double unscaled[8];
   unscaled[0] = Fakes->Integral();
   unscaled[1] = EWK  ->Integral();
@@ -235,6 +250,10 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   unscaled[3] = Ztt  ->Integral();
 #ifdef MSSM
   unscaled[4] = ggHTohhTo2Tau2B  ->Integral();
+/*  unscaled[5] = ggH_SM125->Integral();
+  unscaled[5]+= qqH_SM125->Integral();
+  unscaled[5]+= VH_SM125->Integral();
+*/
 /*
   unscaled[5] = ggAToZhToLLTauTau->Integral();
   unscaled[6] = ggAToZhToLLBB->Integral();
@@ -292,6 +311,9 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #ifdef MSSM
   scales[4] = new TH1F("scales-ggHTohhTo2Tau2B"  , "", 8, 0, 8);
   scales[4]->SetBinContent(5, unscaled[4]>0 ? (ggHTohhTo2Tau2B  ->Integral()/unscaled[4]-1.) : 0.);
+/*  scales[5] = new TH1F("scales-sm","",8,0,8);
+  scales[5]->SetBinContent(6, unscaled[5]>0 ? ((ggH_SM125->Integral()+qqH_SM125->Integral()+VH_SM125->Integral())/unscaled[5]-1.) : 0.);
+*/
 /*
   scales[5] = new TH1F("scales-ggAToZhToLLTauTau"  , "", 8, 0, 8);
   scales[5]->SetBinContent(6, unscaled[5]>0 ? (ggAToZhToLLTauTau  ->Integral()/unscaled[5]-1.) : 0.);
@@ -309,12 +331,18 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 //#endif
   Fakes->Add(ttbar);
   EWK1 ->Add(Fakes);
-  EWK2 ->Add(EWK1 );
+  EWK2 ->Add(Fakes );
 //EWK3 ->Add(EWK2 );
 //EWK  ->Add(EWK3 );
   EWK  ->Add(EWK2 );
 //  ttbar->Add(EWK  );
   Ztt  ->Add(EWK);
+
+ /*ggH_SM125->Add(qqH_SM125);
+ ggH_SM125->Add(VH_SM125);
+ ggH_SM125->Add(ZHToBB_SM125);
+ ggH_SM125->Add(WHToBB_SM125);
+*/
   //if(log){
 //#ifdef MSSM
  //   ggH->Add(bbH);
@@ -373,6 +401,9 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 //#endif
     $DRAW_ERROR
     ggHTohhTo2Tau2B  ->Draw("histsame");
+   /* ggH_SM125->SetLineColor(kRed);
+    ggH_SM125->Draw("histsame");
+*/
   }
   else{
     Ztt  ->Draw("histsame");
@@ -385,6 +416,9 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
     $DRAW_ERROR
     ggHTohhTo2Tau2B  ->Draw("histsame");
+    /*ggH_SM125->SetLineColor(kRed);
+    ggH_SM125->Draw("histsame");
+*/
   }
   data->Draw("esame");
   canv->RedrawAxis();
@@ -449,6 +483,7 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   TLegend* leg = new TLegend(0.53, 0.60, 0.95, 0.90);
   SetLegendStyle(leg);
   leg->AddEntry(ggHTohhTo2Tau2B  , TString::Format("%0.f #times H#rightarrowhh#rightarrow#tau#taubb", SIGNAL_SCALE) , "L" );
+  //leg->AddEntry(ggH_SM125, TString::Format("%0.f #times SM H(125 GeV) #rightarrow #tau#tau/bb", SIGNAL_SCALE), "L");
 #endif
 #ifdef ASIMOV
   leg->AddEntry(data , "sum(bkg) + H(125)"              , "LP");
@@ -483,7 +518,8 @@ HHH_TT_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
     test1->SetBinContent(ibin+1, test1->GetBinContent(ibin+1)*test1->GetBinWidth(ibin+1));
     test1->SetBinError  (ibin+1, test1->GetBinError  (ibin+1)*test1->GetBinWidth(ibin+1));
   }
-double chi2prob =0.;
+
+double chi2prob=0.;
 double chi2ndof=0.;
 double ksprob=0.;
 double ksprobpe=0.;
@@ -494,7 +530,6 @@ if(!BLIND_DATA){
   ksprob   = test1->KolmogorovTest(model);              std::cout << "ksprob  :" << ksprob   << std::endl;
   ksprobpe = test1->KolmogorovTest(model,"DX");         std::cout << "ksprobpe:" << ksprobpe << std::endl;  
 }
-
   std::vector<double> edges;
   TH1F* zero = (TH1F*)ref->Clone("zero"); zero->Clear();
   TH1F* rat1 = (TH1F*)data->Clone("rat1"); 
@@ -513,12 +548,12 @@ if(!BLIND_DATA){
   }
   float range = 0.1;
   std::sort(edges.begin(), edges.end());
-if(edges.size()>1){
+  if(edges.size()>1){
   if (edges[edges.size()-2]>0.1) { range = 0.2; }
-  if (edges[edges.size()-2]>0.2) { range = 0.5; }
-  if (edges[edges.size()-2]>0.5) { range = 1.0; }
-  if (edges[edges.size()-2]>1.0) { range = 1.5; }
-  if (edges[edges.size()-2]>1.5) { range = 2.0; }
+  else if (edges[edges.size()-2]>0.2) { range = 0.5; }
+  else if (edges[edges.size()-2]>0.5) { range = 1.0; }
+  else if (edges[edges.size()-2]>1.0) { range = 1.5; }
+  else if (edges[edges.size()-2]>1.5) { range = 2.0; }
 }
   rat1->SetLineColor(kBlack);
   rat1->SetFillColor(kGray );
