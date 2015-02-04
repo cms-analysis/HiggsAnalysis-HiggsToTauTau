@@ -41,6 +41,10 @@ parser.add_option("--model",dest="model",default="",
                   help="Setup directory structure for model-dependent limits in bins of a different variable than mass. Possible choices are lowmH and 2HDM [Default:\"\"]")
 parser.add_option("--range",dest="range",default="",
                   help="Specify range of variable points when running for lowmH or 2HDM [Default:\"\"]")
+parser.add_option("--SMHasBackground", dest="SMHasBackground", default=False, action="store_true",
+                  help="Add the SM Higgs to the background. [Default: False]")
+parser.add_option("--SMHasSignal", dest="SMHasSignal", default=False, action="store_true",
+                  help="Shift the SM Higgs from background to the signal. This is normally needed for the signal hypothesis separation test. The options SMHasBackground has to be true [Default: False]")
 
 (options, args) = parser.parse_args()
 if len(args) < 1 :
@@ -307,6 +311,20 @@ if options.update_setup :
 
                         os.system("rm -rf {DIR}/{ANA}".format(DIR=dir, ANA=ana))
                         os.system("mv {DIR}/{ANA}-tmp {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+    if options.SMHasBackground : 
+        for ana in analyses :
+            os.system("cp -r {DIR}/{ANA} {DIR}/{ANA}".format(DIR=dir, ANA=ana))
+            cgs_adaptor = UncertAdaptor()
+            if chn in config.channels:
+                for period in config.periods:
+                    for category in config.categories[chn][period]:
+                        filename="{DIR}/{ANA}/{CHN}/cgs-Hhh-{PERIOD}-0{CATEGORY}.conf".format(DIR=dir, ANA=ana, CHN=chn, PERIOD=period, CATEGORY=category)
+                        print 'processing file:', filename
+                        print category, chn
+                        if chn != "tt" or category =="0" : 
+                            cgs_adaptor.cgs_processes(filename,None,['ggH_SM125','qqH_SM125','VH_SM125','ZHToBB_SM125','WHToBB_SM125'],None,None)
+                        else :
+                            cgs_adaptor.cgs_processes(filename,None,['ggH_SM125','qqH_SM125','VH_SM125','ZHToBB_SM125'],None,None)
 
 if options.update_aux :
     print "##"
@@ -350,6 +368,17 @@ if options.update_aux :
                     ANA=ana,
                     CHN='htt_'+chn
                     ))
+    if options.SMHasBackground and options.SMHasSignal:
+        os.system("cp -r {DIR}/{ANA} {DIR}/{ANA}".format(DIR=dir,ANA=ana))
+        datacard_adaptor = DatacardAdaptor()
+        for subdir in glob.glob("{DIR}/{ANA}/Hhh/*".format(DIR=dir, ANA=ana)) :
+            for datacard in glob.glob("{SUBDIR}/*".format(SUBDIR=subdir)) :
+                if '.txt' in datacard :
+                    #if chn != "tt" or category =="0" : 
+                    datacard_adaptor.simplistic_shift_bg_to_signal(datacard,['ggH_SM125','qqH_SM125','VH_SM125','ZHToBB_SM125','WHToBB_SM125'])
+                    #else :
+                    #    datacard_adaptor.simplistic_shift_bg_to_signal(datacard,['ggH_SM125','qqH_SM125','VH_SM125','ZHToBB_SM125'])
+                
 if options.update_limits :
     print "##"
     print "## update LIMITS directory:"

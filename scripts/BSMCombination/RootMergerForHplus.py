@@ -12,7 +12,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 from optparse import OptionParser
 
 parser = OptionParser(usage="usage: %prog [options] ARG",
-                      description="This is a script to merge H+ shape files.")
+                      description="This is a script to merge H+->tau nu shape files. ARG corresponds to the *root files which should get merged.")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true",
                   help="Run in verbose mode")
 (options, args) = parser.parse_args()
@@ -23,11 +23,11 @@ if len(args) < 1 :
 
 hists = []
 
-outputfile = ROOT.TFile("combined.root", "RECREATE")
+outputfile = ROOT.TFile("combine_histograms_hplushadronic_light.root", "RECREATE")
 
 for arg in args :
     print arg
-    
+    mass=arg.rstrip(".root").split("_")[-1].lstrip("m")
     file = ROOT.TFile(arg, "READ")
     if not file :
         print "file not found: ", arg
@@ -41,18 +41,20 @@ for arg in args :
 
         outputfile.cd()
         newname=""
-        if "HH" in name.GetName() :
-            newnames=name.GetName().split("_a")
-            newname=newnames[0]+newnames[-1]
+        if "CMS_ttHpHp_signal" in name.GetName() :
+            newnames=name.GetName().split("signal")
+            newname=newnames[0]+"signal"+mass+newnames[-1]
             if "statBin" in name.GetName() :
-                newname=newnames[0]+"_HH"+newnames[-1]
+                newname=newnames[0]+"signal"+mass+"_"+newnames[0]+"signal"+newnames[-1]
+            #print newname
             hist.SetTitle(newname)
             hist.SetName(newname)
-        if "HW" in name.GetName() :
-            newnames=name.GetName().split("_a")
-            newname=newnames[0]+newnames[-1]
+        if "CMS_ttHpW_signal" in name.GetName() :
+            newnames=name.GetName().split("signal")
+            newname=newnames[0]+"signal"+mass+newnames[-1]
             if "statBin" in name.GetName() :
-                newname=newnames[0]+"_HW"+newnames[-1]
+                newname=newnames[0]+"signal"+mass+"_"+newnames[0]+"signal"+newnames[-1]
+            #print newname
             hist.SetTitle(newname)
             hist.SetName(newname)
         if newname!="":
@@ -61,5 +63,9 @@ for arg in args :
             hist.Write()
             
         hists.append(hist.GetName())
-
+        
+outputfile.Close()
 #print hists
+
+#hoirzontal template morphing needed for 130
+os.system("horizontal-morphing.py --categories='' --samples='CMS_ttHpHp_signal{MASS},CMS_ttHpW_signal{MASS}' --uncerts='' --masses='120,140' --step-size 10. -v combine_histograms_hplushadronic_light.root".format(MASS="{MASS}"))

@@ -172,7 +172,10 @@ class TwoHypotesisHiggs(PhysicsModel):
         "Split in production and decay, and call getHiggsSignalYieldScale; return 1 for backgrounds "
         if not self.DC.isSignal[process]: return 1
 
-        isAlt = (self.SMSignal not in process) #altenative hypothesis if SMSignal not in process name
+        isAlt = (self.SMSignal not in process) and ("ww125" not in process) and ("tt125" not in process) #altenative hypothesis if SMSignal not in process name
+        #isAlt = ("ww125" not in process) #altenative hypothesis if SMSignal not in process name -> for AZh
+        #isAlt = ("tt125" not in process) #altenative hypothesis if SMSignal not in process name -> for AZh
+
 
         if self.pois: ## NOT USED FOR MSSMvsSM 
             target = "%(bin)s/%(process)s" % locals()
