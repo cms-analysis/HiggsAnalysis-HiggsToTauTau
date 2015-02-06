@@ -68,4 +68,6 @@ outputfile.Close()
 #print hists
 
 #hoirzontal template morphing needed for 130
-os.system("horizontal-morphing.py --categories='' --samples='CMS_ttHpHp_signal{MASS},CMS_ttHpW_signal{MASS}' --uncerts='' --masses='120,140' --step-size 10. -v combine_histograms_hplushadronic_light.root".format(MASS="{MASS}"))
+os.system("horizontal-morphing.py --categories='' --samples='CMS_ttHpHp_signal{MASS}' --uncerts='CMS_ttHpHp_signal_statBin10,CMS_ttHpHp_signal_statBin9,CMS_ttHpHp_signal_statBin8,CMS_ttHpHp_signal_statBin7,CMS_ttHpHp_signal_statBin6,CMS_ttHpHp_signal_statBin5,CMS_ttHpHp_signal_statBin4,CMS_ttHpHp_signal_statBin3,CMS_ttHpHp_signal_statBin2,CMS_ttHpHp_signal_statBin1,CMS_btag_CSVT,CMS_scale_t,CMS_eff_t,CMS_fake_eToTauBarrel,CMS_fake_muToTau,CMS_fake_jetToTau' --masses='120,140' --step-size 10. -v combine_histograms_hplushadronic_light.root".format(MASS="{MASS}"))
+
+os.system("horizontal-morphing.py --categories='' --samples='CMS_ttHpW_signal{MASS}' --uncerts='CMS_ttHpW_signal_statBin10,CMS_ttHpW_signal_statBin9,CMS_ttHpW_signal_statBin8,CMS_ttHpW_signal_statBin7,CMS_ttHpW_signal_statBin6,CMS_ttHpW_signal_statBin5,CMS_ttHpW_signal_statBin4,CMS_ttHpW_signal_statBin3,CMS_ttHpW_signal_statBin2,CMS_ttHpW_signal_statBin1,CMS_btag_CSVT,CMS_scale_t,CMS_eff_t,CMS_fake_eToTauBarrel,CMS_fake_muToTau,CMS_fake_jetToTau' --masses='120,140' --step-size 10. -v combine_histograms_hplushadronic_light.root".format(MASS="{MASS}"))

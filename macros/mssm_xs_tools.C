@@ -143,9 +143,9 @@ void mssm_xs_tools::SetInput(char* filename){
   m_h_mH = (TH2F*) m_input->Get("h_mH"); 
 
  
-  std::cout<<"some info about the setup used for your chosen output file:"<<std::endl;
-  TObjString* description=(TObjString*) m_input->Get("description");
-  std::cout<<description->String()<<std::endl;
+  //std::cout<<"some info about the setup used for your chosen output file:"<<std::endl;
+  //TObjString* description=(TObjString*) m_input->Get("description");
+  //std::cout<<description->String()<<std::endl;
 
   return;
 }

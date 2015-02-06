@@ -19,6 +19,8 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   bool mssm_nolog = (PLOT == std::string("MSSM-NOLOG"));
   if (PLOT == std::string("MSSM-LOG_INJECTED")) { mssm_log = true; injected=true; }
   if (PLOT == std::string("MSSM-NOLOG_INJECTED")) { mssm_nolog = true; injected=true; }
+  if (PLOT == std::string("MSSM-LOG_BG_HIGGS")) { mssm_log = true; BG_Higgs=true; }
+  if (PLOT == std::string("MSSM-NOLOG_BG_HIGGS")) { mssm_nolog = true; BG_Higgs=true; }
   // set up styles
   canv.cd();
   //canv.SetGridx(1);
