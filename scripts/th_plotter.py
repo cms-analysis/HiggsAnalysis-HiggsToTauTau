@@ -10,6 +10,7 @@ import os
 from array import array
 from optparse import OptionParser
 from copy import deepcopy as dc
+from CMSStyle import *
 
 ROOT.gStyle.SetOptStat(False)
 ROOT.gStyle.SetLegendBorderSize(0)
@@ -160,7 +161,7 @@ def multigraph(graphs, file_name, legend = False, logX = False, obs = False) :
   
   mg.Draw('AZP')
   
-  mg.SetTitle('CMS Preliminary tH, H#rightarrow#tau#tau, 19.7 fb^{-1} at 8 TeV')
+  #mg.SetTitle('CMS Preliminary tH, H#rightarrow#tau#tau, 19.7 fb^{-1} at 8 TeV')
   
   mg.GetYaxis().SetNdivisions(0)
   mg.GetYaxis().SetLabelSize(0)
@@ -190,6 +191,7 @@ def multigraph(graphs, file_name, legend = False, logX = False, obs = False) :
                          )
     leg.Draw('sameAEPZ')
   
+  CMS_lumi(ROOT.gPad, 2, 0)
   c1.SaveAs(file_name)
 
 def do_category(folder, process, mass='125', type = 'exp') :
