@@ -50,4 +50,6 @@ layout = cms.PSet(
     injectedMass=cms.string("125"),    
     ## print band in different layout for signal injected
     injected=cms.bool(False),
+    ## SM Higgs as bkg (green band)
+    higgsBG = cms.bool(False),
 )
