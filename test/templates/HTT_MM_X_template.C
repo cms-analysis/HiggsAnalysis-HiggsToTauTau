@@ -148,14 +148,14 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   if(std::string(directory) == std::string("mumu_vbf"            )){ category = "#mu#mu";          }
   if(std::string(directory) == std::string("mumu_vbf"            )){ category_extra = "2-jet";              }
   if(std::string(directory) == std::string("mumu_nobtag"               )){ category = "#mu#mu";          }
-  if(std::string(directory) == std::string("mumu_nobtag"               )){ category_extra = "No B-Tag";                        }
+  if(std::string(directory) == std::string("mumu_nobtag"               )){ category_extra = "no b-tag";                        }
   if(std::string(directory) == std::string("mumu_btag"                 )){ category = "#mu#mu";          }
-  if(std::string(directory) == std::string("mumu_btag"                 )){ category_extra = "B-Tag";                           }
+  if(std::string(directory) == std::string("mumu_btag"                 )){ category_extra = "b-tag";                           }
 
   const char* dataset;
 #ifdef MSSM
-  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS, H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV";}
-  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS, H#rightarrow#tau#tau, 19.7 fb^{-1} at 8 TeV";}
+  if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "#scale[1.5]{CMS}  h,H,A#rightarrow#tau#tau                                 4.9 fb^{-1} (7 TeV)";}
+  if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "#scale[1.5]{CMS}  h,H,A#rightarrow#tau#tau                                19.7 fb^{-1} (8 TeV)";}
 #else
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS, 4.9 fb^{-1} at 7 TeV";}
   if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS, 19.7 fb^{-1} at 8 TeV";}
@@ -178,6 +178,12 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #ifdef MSSM
   TH1F* ggH      = refill((TH1F*)input2->Get(TString::Format("%s/ggH$MA"  , directory)), "ggH"     ); InitSignal(ggH); ggH->Scale($TANB);
   TH1F* bbH      = refill((TH1F*)input2->Get(TString::Format("%s/bbH$MA"  , directory)), "bbH"     ); InitSignal(bbH); bbH->Scale($TANB);
+  // TH1F* ggH_SM125= refill((TH1F*)input->Get(TString::Format("%s/ggH_SM125"  , directory)), "ggH_SM125"); InitHist(ggH_SM125, "", "", kGreen+2, 1001);
+//   TH1F* qqH_SM125= refill((TH1F*)input->Get(TString::Format("%s/qqH_SM125"  , directory)), "qqH_SM125"); InitHist(qqH_SM125, "", "", kGreen+2, 1001);
+//   TH1F* VH_SM125 = refill((TH1F*)input->Get(TString::Format("%s/VH_SM125"   , directory)), "VH_SM125" ); InitHist(VH_SM125, "", "", kGreen+2, 1001);
+  TH1F* ggH_SM125= refill((TH1F*)input->Get(TString::Format("%s/ggH125"  , directory)), "ggH_SM125"); InitHist(ggH_SM125, "", "", kGreen+2, 1001); 
+  if(std::string(inputfile).find("7TeV")!=std::string::npos) ggH_SM125->Scale((15.13+1.222+0.3351+0.08632)*0.0632);
+  if(std::string(inputfile).find("8TeV")!=std::string::npos) ggH_SM125->Scale((19.27+1.578+0.7046+0.4153)*0.0632);
 #else
 #ifndef DROP_SIGNAL
   TH1F* ggH      = refill((TH1F*)input ->Get(TString::Format("%s/ggH125"  , directory)), "ggH"     ); InitSignal(ggH); ggH->Scale(SIGNAL_SCALE);
@@ -280,6 +286,12 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #endif
 #endif
 
+#ifdef MSSM
+  // qqH_SM125->Add(ggH_SM125);
+//   VH_SM125->Add(qqH_SM125);
+//   Dibosons->Add(VH_SM125);
+  Dibosons->Add(ggH_SM125);
+#endif
   if(WJets){
     Dibosons->Add(WJets);
   }
@@ -348,6 +360,10 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
     TTJ->Draw("histsame");
     QCD->Draw("histsame");
     Dibosons->Draw("histsame");
+#ifdef MSSM
+    //VH_SM125->Draw("histsame");
+    ggH_SM125->Draw("histsame");
+#endif
     $DRAW_ERROR
 #ifndef DROP_SIGNAL
     ggH->Draw("histsame");
@@ -363,6 +379,10 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
     TTJ->Draw("histsame");
     QCD->Draw("histsame");
     Dibosons->Draw("histsame");
+#ifdef MSSM
+    //VH_SM125->Draw("histsame");
+    ggH_SM125->Draw("histsame");
+#endif
     $DRAW_ERROR
   }
   data->Draw("esame");
@@ -400,22 +420,22 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   cat->Draw();
 */
 #ifdef MSSM
-  TPaveText* massA      = new TPaveText(0.53, 0.49+0.061, 0.95, 0.49+0.151, "NDC");
+  TPaveText* massA      = new TPaveText(0.53, 0.44+0.061, 0.95, 0.44+0.151, "NDC");
   massA->SetBorderSize(   0 );
   massA->SetFillStyle(    0 );
   massA->SetTextAlign(   12 );
   massA->SetTextSize ( 0.03 );
   massA->SetTextColor(    1 );
   massA->SetTextFont (   62 );
-  massA->AddText("MSSM m^{h}_{max} scenario");
+  massA->AddText("MSSM m^{h}_{mod+} scenario");
   massA->AddText("m_{A}=$MA GeV, tan#beta=$TANB");
   massA->Draw();
 #endif
 
 #ifdef MSSM  
-  TLegend* leg = new TLegend(0.53, 0.65, 0.95, 0.90);
+  TLegend* leg = new TLegend(0.53, 0.60, 0.95, 0.90);
   SetLegendStyle(leg);
-  leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau" , "L" );
+  leg->AddEntry(ggH  , "h,H,A#rightarrow#tau#tau" , "L" );
 #else
   TLegend* leg = new TLegend(0.52, 0.58, 0.92, 0.89);
   SetLegendStyle(leg);
@@ -438,6 +458,9 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   leg->AddEntry(TTJ     , "t#bar{t}"                    , "F" );
   leg->AddEntry(QCD     , "QCD"                         , "F" );
   leg->AddEntry(Dibosons, "Electroweak"                 , "F" );
+#ifdef MSSM
+  leg->AddEntry(ggH_SM125, "SM H(125 GeV) #rightarrow #tau#tau", "F" );
+#endif
   $ERROR_LEGEND
   leg->Draw();
 
@@ -662,6 +685,9 @@ HTT_MM_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
 #ifdef MSSM
   ggH  ->Write("ggH");
   bbH  ->Write("bbH");
+  ggH_SM125->Write("ggH_SM125");
+  //qqH_SM125->Write("qqH_SM125");
+  //VH_SM125 ->Write("VH_SM125");
 #else
 #ifndef DROP_SIGNAL
   ggH  ->Write("ggH");

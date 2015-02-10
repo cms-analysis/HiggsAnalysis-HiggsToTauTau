@@ -82,8 +82,10 @@ int main(int argc, char* argv[])
   // show 2D scans (still in developement)
   types.push_back(std::string("--likelihood-scan-mass"));
   types.push_back(std::string("--mass-estimate"));
-  // show 2D scans (still in developement)
+  // show 2D scans done with multidim-fit
   types.push_back(std::string("--multidim-fit"));
+  // show 2D scans done with feldman-cousins
+  types.push_back(std::string("--feldman-cousins"));
   // show limits as of HIG-11-020
   types.push_back(std::string("--HIG-11-020"));
   // show limits as of HIG-11-029
@@ -436,6 +438,13 @@ int main(int argc, char* argv[])
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
     plot.plotMassEstimate(*canv, inner, outer, expected, observed);
+  }
+  // -----------------------------------------------------------------------------------------------------------------------
+  if( std::string(argv[1]) == std::string("--feldman-cousins") ){
+    // make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plot2DScan(*canv, directory, "feldman-cousins");
   }
   // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--multidim-fit") ){

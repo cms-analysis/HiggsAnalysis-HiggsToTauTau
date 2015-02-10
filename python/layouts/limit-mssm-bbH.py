@@ -2,15 +2,19 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string("CMS, H#rightarrow#tau#tau, 19.7 fb^{-1} at 8 TeV"),
-    #dataset = cms.string("CMS Preliminary, H #rightarrow #tau #tau, 18.3 fb^{-1} at 8 TeV"),
+    #dataset = cms.string("#scale[1.5]{CMS}   #phi#rightarrow#tau#tau                                          19.7 fb^{-1} (8 TeV)"),	
+    #dataset = cms.string("#scale[1.5]{CMS} (unpublished)   #phi#rightarrow#tau#tau                 19.7 fb^{-1} (8 TeV)"),
+    #dataset = cms.string("#scale[1.5]{CMS} Preliminary   #phi#rightarrow#tau#tau                 19.7 fb^{-1} (8 TeV)"),
+    #dataset = cms.string("#scale[1.5]{CMS}   Projection       #phi#rightarrow#tau#tau                 300 fb^{-1} (14 TeV)"),
+    #dataset = cms.string("#scale[1.5]{CMS}   #phi#rightarrow#tau#tau                                          18.3 fb^{-1} (8 TeV)"),
+    dataset = cms.string("#phi#rightarrow#tau#tau                 19.7 fb^{-1} (8 TeV)"),
     ## extra labels (below legend)
-    extra = cms.string("gg#phi profiled"),
-    #extra = cms.string("gg#phi set to zero"),
+    #extra = cms.string("gg#phi profiled"),
+    extra = cms.string("bb#phi"),
     ## x-axis title
     xaxis = cms.string("m_{#phi} [GeV]"),
     ## x-axis title
-    yaxis = cms.string("95% CL limit on #sigma(bb#phi)#timesBR(#tau#tau) [pb]"),
+    yaxis = cms.string("95% CL limit on #sigma#font[42]{(bb#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]"),
     ## min for plotting
     min = cms.double(0.01),
     ## max for plotting
@@ -67,4 +71,6 @@ layout = cms.PSet(
     injectedMass=cms.string("125"),    
     ## print band in different layout for signal injected
     injected=cms.bool(False),
+    ## print band in different layout if SM 125GeV Higgs has been added to Background
+    higgsBG=cms.bool(False),
 )

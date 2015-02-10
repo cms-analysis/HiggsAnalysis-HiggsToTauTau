@@ -18,6 +18,7 @@ tauTau_nobtag			VV				CMS_htt_DiBosonNorm_8TeV			1.15
 tauTau_nobtag			VV				CMS_htt_DiBosonNorm_tautau_nobtag_8TeV		1.15
 tauTau_nobtag         		ZJ              		CMS_htt_ZJetFakeTau_tautau_nobtag_8TeV		1.20
 tauTau_nobtag         		ZL              		CMS_htt_ZLeptonFakeTau_tautau_nobtag_8TeV    	1.20
+tauTau_nobtag			SM				CMS_htt_SM125_mu				1.30
 tauTau_nobtag                   ggH_SM125                       pdf_gg                                          1.097                    
 tauTau_nobtag                   qqH_SM125                       pdf_qqbar                                       1.036              
 tauTau_nobtag                   VH_SM125                        pdf_qqbar                                       1.02              
@@ -26,4 +27,3 @@ tauTau_nobtag                   qqH_SM125                       QCDscale_qqH    
 tauTau_nobtag                   VH_SM125                        QCDscale_VH                                     1.04            
 tauTau_nobtag                   qqH_SM125,VH_SM125              UEPS                                            1.025
 tauTau_nobtag                   ggH_SM125                       UEPS                                            0.975
-

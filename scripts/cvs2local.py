@@ -12,11 +12,12 @@ parser.add_option("-o", "--out", dest="out", default="ichep2012", type="string",
 parser.add_option("-p", "--periods", dest="periods", default="7TeV 8TeV", type="string",
                   help="List of run periods for which the datacards are to be copied. [Default: \"7TeV 8TeV\"]")
 parser.add_option("-a", "--analysis", dest="analysis", default="sm", type="choice",
-                  help="Type of analysis (sm or mssm). Lower case is required. [Default: sm]", choices=["sm", "mssm"])
+                  help="Type of analysis (sm or mssm or Hhh or AZh or bbA). Lower case is required. [Default: sm]", choices=["sm", "mssm", "Hhh","AZh", "bbA"])
 parser.add_option("-c", "--channels", dest="channels", default="mm em mt et tt", type="string",
                   help="List of channels, for which the datacards should be copied. The list should be embraced by call-ons and separeted by whitespace or comma. Available channels are ee, mm, em, mt, et, tt, vhtt, hmm, hbb. [Default: \"mm em mt et tt\"]")
 parser.add_option("-u", "--no-update", dest="no_update", default=False, action="store_true",
                   help="If there are already root files in common, do not recopy them. This should be used by other tools only to speed up copy jobs. [Default: False]")
+parser.add_option("--model", dest="model", default="", type="string", help="For some BSM models the dir structure should not be in steps of mass but other parameters. Differences occure for lowmH and 2HDM. [Default: \"\"]")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-ee", dest="ee_sm_categories", default="0 1 2 3 5", type="string",
                  help="List ee of event categories. [Default: \"0 1 2 3 5\"]")
@@ -53,6 +54,32 @@ cats2.add_option("--mssm-categories-tt", dest="tt_mssm_categories", default="8 9
 cats2.add_option("--mssm-categories-hbb", dest="hbb_mssm_categories", default="0 1 2 3 4 5 6", type="string",
                  help="List of hbb event categories. [Default: \"0 1 2 3 4 5 6\"]")
 parser.add_option_group(cats2)
+cats3 = OptionGroup(parser, "Hhh EVENT CATEGORIES", "Event categories to be used for the Hhh analysis.")
+cats3.add_option("--Hhh-categories-ee", dest="ee_Hhh_categories", default="0 1 2", type="string",
+                 help="List ee of event categories. [Default: \"0 1 2\"]")
+cats3.add_option("--Hhh-categories-mm", dest="mm_Hhh_categories", default="0 1 2", type="string",
+                 help="List mm of event categories. [Default: \"0 1 2\"]")
+cats3.add_option("--Hhh-categories-em", dest="em_Hhh_categories", default="0 1 2", type="string",
+                 help="List em of event categories. [Default: \"0 1 2\"]")
+cats3.add_option("--Hhh-categories-mt", dest="mt_Hhh_categories", default="0 1 2", type="string",
+                 help="List mt of event categories. [Default: \"0 1 2\"]")
+cats3.add_option("--Hhh-categories-et", dest="et_Hhh_categories", default="0 1 2", type="string",
+                 help="List et of event categories. [Default: \"0 1 2\"]")
+cats3.add_option("--Hhh-categories-tt", dest="tt_Hhh_categories", default="0 1 2", type="string",
+                 help="List of tt event categories. [Default: \"0 1 2\"]")
+parser.add_option_group(cats3)
+cats4 = OptionGroup(parser, "AZh EVENT CATEGORIES", "Event categories to be used for the AZh analysis.")
+cats4.add_option("--AZh-categories-AZh", dest="AZh_AZh_categories", default="0 1 2 3", type="string",
+                 help="List AZh of event categories. [Default: \"0 1 2 3\"]")
+parser.add_option_group(cats4)
+cats5 = OptionGroup(parser, "bbA EVENT CATEGORIES", "Event categories to be used for the bbA analysis.")
+cats5.add_option("--bbA-categories-mt", dest="mt_bbA_categories", default="0", type="string",
+                 help="List mt of bbA event categories. [Default: \"0\"]")
+cats5.add_option("--bbA-categories-et", dest="et_bbA_categories", default="0", type="string",
+                 help="List mt of bbA event categories. [Default: \"0\"]")
+cats5.add_option("--bbA-categories-em", dest="em_bbA_categories", default="0", type="string",
+                 help="List mt of bbA event categories. [Default: \"0\"]")
+parser.add_option_group(cats5)
 parser.add_option("-4", "--SM4", dest="sm4", default=False, action="store_true",
                   help="Copy SM4 datacards (will add a prefix SM4_ to each file). [Default: False]")
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true",
@@ -78,44 +105,6 @@ channels = options.channels.split()
 for idx in range(len(channels)) : channels[idx] = channels[idx].rstrip(',')
 ## define prefix for SM4
 prefix = "SM4_" if options.sm4 else ""
-
-## add mass point to the list of available masses per channel
-def add_mass(channel, mass) :
-    """
-    add a mass point for a corresponding channel to communicate, which mass points
-    do exist for which decay channel.
-    """
-    ## map of channel to available masses
-    channel_to_mass = {}
-    ## map out already available channels and masses
-    if os.path.exists("{OUTPUT}/common/masses.vals".format(OUTPUT=options.out)) :
-        input  = open("{OUTPUT}/common/masses.vals".format(OUTPUT=options.out), 'r')
-        for line in input :
-            words = line.split()
-            channel_to_mass[words[0]] = words
-        input.close()
-    ## check for the presence of a given channel and mass and depending on that
-    ## append to the list or create a new entry
-    CHANNEL_EXISTS = False
-    for existing_channel, existing_masses in channel_to_mass.iteritems() :
-        if existing_channel == channel :
-            CHANNEL_EXISTS = True
-        MASS_EXISTS = False
-        for existing_mass in existing_masses :
-            if not existing_mass.isdigit() :
-                continue
-            if int(existing_mass) == mass :
-                MASS_EXISTS = True
-        if not MASS_EXISTS :
-            channel_to_mass[existing_channel].append(str(mass))
-    if not CHANNEL_EXISTS :
-        channel_to_mass[channel] = [channel, str(mass)]
-    ## putting everything together again and fan out
-    update = open("{OUTPUT}/common/masses.vals".format(OUTPUT=options.out), 'w')
-    for chn in channel_to_mass :
-        line = '\t'.join(channel_to_mass[chn])+'\n'
-        update.write(line)
-    update.close()
 
 def massdir(mass):
     massdir = str(mass)
@@ -148,6 +137,25 @@ if options.analysis == "mssm" :
         #"hmm"  : options.hmm_mssm_categories.split(),
         "hbb"  : options.hbb_mssm_categories.split(),
         }
+if options.analysis == "Hhh" :
+    categories = {
+        "ee"   : options.ee_Hhh_categories.split(),
+        "mm"   : options.mm_Hhh_categories.split(),
+        "em"   : options.em_Hhh_categories.split(),
+        "mt"   : options.mt_Hhh_categories.split(),
+        "et"   : options.et_Hhh_categories.split(),
+        "tt"   : options.tt_Hhh_categories.split(),
+        }
+if options.analysis == "AZh" :
+    categories = {
+        "AZh"   : options.AZh_AZh_categories.split(),
+        }
+if options.analysis == "bbA" :
+    categories = {
+        "mt"   : options.mt_bbA_categories.split(),
+        "et"   : options.et_bbA_categories.split(),
+        "em"   : options.em_bbA_categories.split(),
+        }
 
 ## valid mass range per category
 if options.analysis == "sm" :
@@ -163,16 +171,79 @@ if options.analysis == "sm" :
         "vhbb" : (110, 145),
     }
 if options.analysis == "mssm" :
-    valid_masses = {
-        "ee"   : ( 90, 1000),
-        "mm"   : ( 90, 1000),
-        "em"   : ( 90, 1000),
-        "mt"   : ( 90, 1000),
-        "et"   : ( 90, 1000),
-        "tt"   : ( 90, 1000),
-        #"hmm"  : (120,  300),
-        "hbb"  : ( 90,  350),
-    }
+    if options.model=="lowmH" :
+        valid_masses = {
+            "ee"   : ( 300, 3100),
+            "mm"   : ( 300, 3100),
+            "em"   : ( 300, 3100),
+            "mt"   : ( 300, 3100),
+            "et"   : ( 300, 3100),
+            "tt"   : ( 300, 3100),
+            }
+    elif options.model=="2HDM" :
+        valid_masses = {
+            "ee"   : ( -1, 1),
+            "mm"   : ( -1, 1),
+            "em"   : ( -1, 1),
+            "mt"   : ( -1, 1),
+            "et"   : ( -1, 1),
+            "tt"   : ( -1, 1),
+            }
+    else :
+        valid_masses = {
+            "ee"   : ( 90, 1000),
+            "mm"   : ( 90, 1000),
+            "em"   : ( 90, 1000),
+            "mt"   : ( 90, 1000),
+            "et"   : ( 90, 1000),
+            "tt"   : ( 90, 1000),
+            #"hmm"  : (120,  300),
+            "hbb"  : ( 90,  350),
+            }
+if options.analysis == "AZh" :
+    if options.model=="2HDM" :
+        valid_masses = {
+            "AZh" : (-1,1),
+            }
+    else :
+        valid_masses = {
+            "AZh"   : ( 220, 350),
+            }
+if options.analysis == "bbA" :
+       valid_masses = {
+            "mt"   : ( 25, 80),
+            "et"   : ( 25, 80),
+            "em"   : ( 25, 80),
+            }
+if options.analysis == "Hhh" :
+    if options.model=="lowmH" :
+        valid_masses = {
+            "ee"   : ( 300, 3100),
+            "mm"   : ( 300, 3100),
+            "em"   : ( 300, 3100),
+            "mt"   : ( 300, 3100),
+            "et"   : ( 300, 3100),
+            "tt"   : ( 300, 3100),
+            }
+    elif options.model=="2HDM" :
+        valid_masses = {
+            "ee"   : ( -1, 1),
+            "mm"   : ( -1, 1),
+            "em"   : ( -1, 1),
+            "mt"   : ( -1, 1),
+            "et"   : ( -1, 1),
+            "tt"   : ( -1, 1),
+            }
+    else :
+        valid_masses = {
+            "ee"   : (250, 350),
+            "mm"   : (250, 350),
+            "em"   : (250, 350),
+            "mt"   : (250, 350),
+            "et"   : (250, 350),
+            "tt"   : (250, 350),
+           }
+
 if options.verbose :
     print "------------------------------------------------------"
     print " Valid mass ranges per channel:"
@@ -196,15 +267,35 @@ if options.analysis == "sm" :
         }
 if options.analysis == "mssm" :
     valid_periods = {
+        "ee"   : "7TeV 8TeV 13TeV 14TeV",
+        "mm"   : "7TeV 8TeV 13TeV 14TeV",
+        "em"   : "7TeV 8TeV 13TeV 14TeV",
+        "mt"   : "7TeV 8TeV 13TeV 14TeV",
+        "et"   : "7TeV 8TeV 13TeV 14TeV",
+        "tt"   :      "8TeV 13TeV 14TeV",
+        #"hmm"  : "7TeV"     ,
+        "hbb"  : "7TeV"     ,
+        }
+if options.analysis == "Hhh" :
+    valid_periods = {
         "ee"   : "7TeV 8TeV",
         "mm"   : "7TeV 8TeV",
         "em"   : "7TeV 8TeV",
         "mt"   : "7TeV 8TeV",
         "et"   : "7TeV 8TeV",
         "tt"   :      "8TeV",
-        #"hmm"  : "7TeV"     ,
-        "hbb"  : "7TeV"     ,
         }
+if options.analysis == "AZh" :
+    valid_periods = {
+        "AZh"   : "8TeV",
+    }
+if options.analysis == "bbA" :
+    valid_periods = {
+        "mt"   : "8TeV",
+        "et"   : "8TeV",
+        "em"   : "8TeV",
+    }
+
 if options.verbose :
     print "------------------------------------------------------"
     print " Valid mass run periods per channel:"
@@ -242,15 +333,14 @@ for period in periods :
                         os.system("cp {INPUT}/{CHN}/{PRE}{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root* {OUTPUT}/common".format(
                             INPUT=input, ANA=options.analysis, CHN=channel, OUTPUT=options.out, PRE=prefix, PERIOD=period, MASSCAT=mass_category(mass,category, channel)))
                         os.system("cp {INPUT}/{CHN}/{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASSDIR}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
-                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, MASSDIR=massdir(mass), OUTPUT=options.out, PRE=prefix))
+                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS='100' if options.model=='lowmH' or options.model=='2HDM' else mass, MASSDIR=massdir(mass), OUTPUT=options.out, PRE=prefix))
                         os.system("perl -pi -e 's/{CHN}.inputs/..\/common\/{PRE}{CHN}.inputs/g' {OUTPUT}/{MASSDIR}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
                             CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, MASSDIR=massdir(mass), CAT=category, PERIOD=period, MASSCAT=mass_category(mass,category,channel)))
-                        add_mass("{CHN}_{CAT}_{PERIOD}".format(CHN=channel, CAT=category, PERIOD=period), mass)
                     else :
                         os.system("cp {INPUT}/{CHN}/{CHN}.inputs-{ANA}-{PERIOD}.root {OUTPUT}/common/{PRE}{CHN}.input_{PERIOD}.root".format(
                             INPUT=input, ANA=options.analysis, CHN=channel, OUTPUT=options.out, PRE=prefix, PERIOD=period))
                         os.system("cp {INPUT}/{CHN}/{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASSDIR}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
-                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, MASSDIR=massdir(mass), OUTPUT=options.out, PRE=prefix))
+                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS='300' if options.model=='lowmH' or options.model=='2HDM' else mass, MASSDIR=massdir(mass), OUTPUT=options.out, PRE=prefix))
                         os.system("perl -pi -e 's/{CHN}.inputs-{ANA}-{PERIOD}.root/..\/common\/{PRE}{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASSDIR}/{PRE}{CHN}_{CAT}_{PERIOD}.txt".format(
                             CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, MASSDIR=massdir(mass), CAT=category, PERIOD=period))
             elif channel == "vhtt":
@@ -276,7 +366,6 @@ for period in periods :
                         #print "drop due to failing mass:" , channel, valid_masses[channel][0], valid_masses[channel][1], ":", mass
                         continue
                     if options.analysis == "mssm" :
-                        add_mass("htt_{CHN}_{CAT}_{PERIOD}".format(CHN=channel, CAT=category, PERIOD=period), mass)
                         if options.no_update:
                             files = ' '.join(os.listdir("{OUTPUT}/common/".format(OUTPUT=options.out)))
                             if not "htt_"+channel+'.inputs-mssm-'+period in files :
@@ -289,7 +378,7 @@ for period in periods :
                             os.system("cp {INPUT}/htt_{CHN}/{PRE}htt_{CHN}.inputs-{ANA}-{PERIOD}-{MASSCAT}.root* {OUTPUT}/common/".format(
                                 INPUT=input, CHN=channel, ANA=options.analysis, PERIOD=period, OUTPUT=options.out, PRE=prefix, MASSCAT=mass_category(mass,category, channel)))
                         os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASSDIR}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
-                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, MASSDIR=massdir(mass), OUTPUT=options.out, PRE=prefix))
+                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS='100' if options.model=='lowmH' or options.model=='2HDM' else mass, MASSDIR=massdir(mass), OUTPUT=options.out, PRE=prefix))
                         os.system("perl -pi -e 's/htt_{CHN}.inputs/..\/common\/{PRE}htt_{CHN}.inputs/g' {OUTPUT}/{MASSDIR}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
                             CHN=channel, PRE=prefix, OUTPUT=options.out, MASS=mass, MASSDIR=massdir(mass), CAT=category, PERIOD=period))
                     else :
@@ -309,7 +398,7 @@ for period in periods :
                             os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}.inputs-{ANA}-{PERIOD}.root {OUTPUT}/common/{PRE}htt_{CHN}.input_{PERIOD}.root".format(
                                 INPUT=input, CHN=channel, ANA=options.analysis, OUTPUT=options.out, PRE=prefix, PERIOD=period))
                         os.system("cp {INPUT}/htt_{CHN}/htt_{CHN}_{CAT}_{PERIOD}-{MASS}.txt {OUTPUT}/{MASSDIR}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
-                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS=mass, MASSDIR=massdir(mass), OUTPUT=options.out, PRE=prefix))
+                            INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS='300' if options.model=='lowmH' or options.model=='2HDM' else mass, MASSDIR=massdir(mass), OUTPUT=options.out, PRE=prefix))
                         os.system("perl -pi -e 's/htt_{CHN}.inputs-{ANA}-{PERIOD}.root/..\/common\/{PRE}htt_{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASSDIR}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
                             CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, MASSDIR=massdir(mass), CAT=category, PERIOD=period))
 

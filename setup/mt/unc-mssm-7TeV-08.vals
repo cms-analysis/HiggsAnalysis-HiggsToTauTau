@@ -21,6 +21,7 @@ muTau_nobtag			ZL				CMS_htt_ZLeptonFakeTau_mutau_7TeV		1.30
 muTau_nobtag			ZL			        CMS_htt_ZLScale_mutau_7TeV       		1.00
 muTau_nobtag			W			        CMS_htt_WShape_mutau_nobtag_7TeV       		1.00
 #[tail]muTau_nobtag		W				tailShape					1.00
+muTau_nobtag	                SM	                        CMS_htt_SM125_mu                                1.30
 muTau_nobtag                    ggH_SM125                       pdf_gg                                          1.097
 muTau_nobtag                    qqH_SM125                       pdf_qqbar                                       1.036
 muTau_nobtag                    VH_SM125                        pdf_qqbar                                       1.04

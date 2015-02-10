@@ -21,6 +21,7 @@
 #include "TLegend.h"
 #include "TPaveText.h"
 #include "TPaveLabel.h"
+#include "TMarker.h"
 #include "TGraphAsymmErrors.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -81,8 +82,11 @@ class PlotLimits {
   void print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* innerBand, TGraph* expected, TGraph* observed, const char* type="txt");
   /// print tabulated limits to a txt file for MSSMvsBG and MSSMvsSM limits
   void print(const char* filename, TGraphAsymmErrors* outerBand_1, TGraphAsymmErrors* innerBand_1, TGraph* expected_1, TGraph* observed_1, TGraphAsymmErrors* outerBand_2, TGraphAsymmErrors* innerBand_2, TGraph* expected_2, TGraph* observed_2, double tanbLow, double tanbHigh, double tanbLowHigh, const char* type="txt");
+  // print tabulated limits to a txt file for MSSMvsBG and MSSMvsSM limits (reworked plotting)
+  void print(const char* filename, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, double tanbLow, double tanbHigh, float *mass, const char* type);
   /// print tabulated limits to a txt file, for inner band, outer band, expected and observed, with inner and outer band
-  void print(const char* filename, std::string& xval, std::string& yval, std::vector<TGraph*> contour, const char* type="txt");
+  void print(const char* filename, std::string& xval, std::string& yval, TGraph* contour, const char* type="txt");
+  //void print(const char* filename, std::string& xval, std::string& yval, std::vector<TGraph*> contour, const char* type="txt");
   /// automatic maximum determination for TGraphs (used for several options)
   float maximum(TGraph* graph); 
   /// automatic minimum determination for TGraphs (used for several options)
@@ -112,7 +116,7 @@ class PlotLimits {
   ///
   void plotGoodnessOfFit(TCanvas& canv, const char* directory="");
   /// plot 2d-scans for several masses on canvases, print out png, pdf, txt, root formats if desired  
-  void plot2DScan(TCanvas& canv, const char* directory="");
+  void plot2DScan(TCanvas& canv, const char* directory="", std::string="multidim-fit");
   /// plot 1d-scans for several masses on canvases, print out png, pdf, root formats if desired  
   void plot1DScan(TCanvas& canv, const char* directory="");
 
@@ -211,6 +215,8 @@ class PlotLimits {
 
   /// indicate whether mssm or sm plots should be made (used fro several options)
   bool mssm_;
+  /// Option to produce mssm-like plots but with linear scale for xaxis
+  bool mssm_nolog_;
   /// indicate whether MSSMvsSM or MSSMvsBG plots should be made (used for MSSMvsSM and MSSMvsBG)
   bool MSSMvsSM_;
   /// indicate plot type as bestfit
@@ -229,6 +235,8 @@ class PlotLimits {
   bool expectedOnly_;
   /// print transparent? (used for option tanb)
   bool transparent_;
+  /// print black and white friendly? (used for option tanb)
+  bool BlackWhite_;
   /// indicate whether the +/- 2 sigma should be shown or not (used for option tanb)
   bool outerband_;
   /// print constraint on mA-tanb plane from Higgs boson at 125 GeV? (used for option tanb)

@@ -82,25 +82,26 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   // switch for MSSM/SM
   bool MSSM = std::string(analysis) == std::string("MSSM");
   // determine label
-  if (std::string(dataset) == std::string("2011"     )){ dataset = "CMS, H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV"; }
-  if (std::string(dataset) == std::string("2012"     )){ dataset = "CMS, H#rightarrow#tau#tau, 19.7 fb^{-1} at 8 TeV"; }
-  if (std::string(dataset) == std::string("2011+2012")){ dataset = "CMS, H#rightarrow#tau#tau, 4.9 fb^{-1} at 7 TeV, 19.7 fb^{-1} at 8 TeV"; }
+  if (std::string(dataset) == std::string("2011"     )){ dataset = "#scale[1.5]{CMS}  h,H,A#rightarrow#tau#tau                                 4.9 fb^{-1} (7 TeV)"; }
+  if (std::string(dataset) == std::string("2012"     )){ dataset = "#scale[1.5]{CMS}  h,H,A#rightarrow#tau#tau                                19.7 fb^{-1} (8 TeV)"; }
+  if (std::string(dataset) == std::string("2011+2012")){ dataset = "#scale[1.5]{CMS}  h,H,A#rightarrow#tau#tau    19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"; }
+  //if (std::string(dataset) == std::string("2011+2012")){ dataset = "h,H,A#rightarrow#tau#tau                19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"; }
   // determine category tag
   const char* category_extra = "";
-  if(std::string(extra2) == std::string("0jet_low"     )){ category_extra = "0 jet, low p_{T}";       }
-  if(std::string(extra2) == std::string("0jet_high"    )){ category_extra = "0 jet, high p_{T}";      }
-  if(std::string(extra2) == std::string("0jet"         )){ category_extra = "0 jet";                  }
-  if(std::string(extra2) == std::string("1jet_low"     )){ category_extra = "1 jet, low p_{T}";       }
-  if(std::string(extra2) == std::string("1jet_high"    )){ category_extra = "1 jet, high p_{T}";      }
-  if(std::string(extra2) == std::string("1jet"         )){ category_extra = "1 jet";                  }
-  if(std::string(extra2) == std::string("vbf"          )){ category_extra = "2 jet (VBF)";            }
-  if(std::string(extra2) == std::string("nobtag"       )){ category_extra = "No B-Tag";               }
-  if(std::string(extra2) == std::string("btag"         )){ category_extra = "B-Tag";                  }
-  if(std::string(extra2) == std::string("nobtag_low"   )){ category_extra = "No B-Tag, low p_{T}";    }
-  if(std::string(extra2) == std::string("nobtag_medium")){ category_extra = "No B-Tag, medium p_{T}"; }
-  if(std::string(extra2) == std::string("nobtag_high"  )){ category_extra = "No B-Tag, high p_{T}";   }
-  if(std::string(extra2) == std::string("btag_low"     )){ category_extra = "B-Tag, low p_{T}";       }
-  if(std::string(extra2) == std::string("btag_high"    )){ category_extra = "B-Tag, high p_{T}";      }
+  if(std::string(extra2) == std::string("0jet_low"  )){ category_extra = "0 jet, low p_{T}";  }
+  if(std::string(extra2) == std::string("0jet_high" )){ category_extra = "0 jet, high p_{T}"; }
+  if(std::string(extra2) == std::string("0jet"      )){ category_extra = "0 jet";             }
+  if(std::string(extra2) == std::string("1jet_low"  )){ category_extra = "1 jet, low p_{T}";  }
+  if(std::string(extra2) == std::string("1jet_high" )){ category_extra = "1 jet, high p_{T}"; }
+  if(std::string(extra2) == std::string("1jet"      )){ category_extra = "1 jet";             }
+  if(std::string(extra2) == std::string("vbf"       )){ category_extra = "2 jet (VBF)";       }
+  if(std::string(extra2) == std::string("nobtag"    )){ category_extra = "no b-tag";          }
+  if(std::string(extra2) == std::string("btag"      )){ category_extra = "b-tag";             }
+  if(std::string(extra2) == std::string("nobtag_low"   )){ category_extra = "no b-tag, low p_{T}";    }
+  if(std::string(extra2) == std::string("nobtag_medium")){ category_extra = "no b-tag, medium p_{T}"; }
+  if(std::string(extra2) == std::string("nobtag_high"  )){ category_extra = "no b-tag, high p_{T}";   }
+  if(std::string(extra2) == std::string("btag_low"     )){ category_extra = "b-tag, low p_{T}";       }
+  if(std::string(extra2) == std::string("btag_high"    )){ category_extra = "b-tag, high p_{T}";      }
 
   TFile* input = new TFile(inputfile);
   TH1F* Fakes  = refill((TH1F*)input->Get("Fakes"   ), "Fakes/QCD"); 
@@ -110,12 +111,15 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   TH1F* Zmm    = refill((TH1F*)input->Get("Zmm"     ), "Zmm"      ); 
   TH1F* Zee    = refill((TH1F*)input->Get("Zee"     ), "Zee"      ); 
   TH1F* ggH    = refill((TH1F*)input->Get("ggH"     ), "ggH"      ); 
+  TH1F* ggH_SM125= refill((TH1F*)input->Get("ggH_SM125"), "ggH_SM125"); 
+  TH1F* VH_SM125 = refill((TH1F*)input->Get("VH_SM125" ), "VH_SM125" ); 
+  //TH1F* qqH_SM125= refill((TH1F*)input->Get("qqH_SM125"), "qqH_SM125"); 
   TH1F* data   = (TH1F*)input->Get("data_obs"); 
-  // determine channel for etau Z->ee (EWK) will be shown separated from the rest (EWK1)
+  /*// determine channel for etau Z->ee (EWK) will be shown separated from the rest (EWK1)
   TH1F* EWK1   = 0;
   if(std::string(extra) == std::string("e#tau_{h}")){
     EWK1 = refill((TH1F*)input->Get("EWK1"),  "EWK1");
-  }
+    }*/
   TH1F* ggH_hww = 0;
   if(std::string(extra) == std::string("e#mu") and HWWBG){
     ggH_hww= refill((TH1F*)input->Get("ggH_hww" ), "ggH_hww"  ); 
@@ -143,6 +147,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       Fakes->Draw("same");
       EWK ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
+      if(ggH_SM125) ggH_SM125->Draw("same");
       if(ggH) ggH  ->Draw("histsame");
     }
   }
@@ -157,6 +162,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       Fakes->Draw("same");
       EWK ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
+      if(VH_SM125) VH_SM125->Draw("same");
       if(ggH) ggH  ->Draw("histsame");
     }
   }
@@ -166,21 +172,23 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     if(log){
       Ztt  ->Draw("same");
       ttbar->Draw("same");
-      EWK  ->SetFillColor(TColor::GetColor(100,182,232));
+      Zee  ->SetFillColor(TColor::GetColor(100,182,232));
+      Zee  ->Draw("same");
+      EWK  ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
-      EWK1 ->SetFillColor(TColor::GetColor(222,90,106));
-      EWK1 ->Draw("same");
       Fakes->Draw("same");
+      if(VH_SM125) VH_SM125->Draw("same");
       if(ggH) ggH  ->Draw("histsame");
     }
     else{
       if(ggH) ggH  ->Draw("histsame");
       Ztt  ->Draw("same");
       ttbar->Draw("same");
-      EWK  ->SetFillColor(TColor::GetColor(100,182,232));
+      Zee  ->SetFillColor(TColor::GetColor(100,182,232));
+      Zee  ->Draw("same");
+      EWK  ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
-      EWK1 ->SetFillColor(TColor::GetColor(222,90,106));
-      EWK1 ->Draw("same");
+      if(VH_SM125) VH_SM125->Draw("same");
       Fakes->Draw("same");
     } 
   }
@@ -194,6 +202,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       EWK ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
       Fakes->Draw("same");
+      if(VH_SM125) VH_SM125->Draw("same");
       if(ggH) ggH  ->Draw("histsame");
     }
     else{
@@ -204,6 +213,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       EWK ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
       Fakes->Draw("same");
+      if(VH_SM125) VH_SM125->Draw("same");
     } 
   }
   else{
@@ -215,6 +225,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       EWK ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
       Fakes->Draw("same");
+      if(VH_SM125) VH_SM125->Draw("same");
       if(ggH) ggH  ->Draw("histsame");
     }
     else{
@@ -224,6 +235,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       EWK ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
       Fakes->Draw("same");
+      if(VH_SM125) VH_SM125->Draw("same");
     } 
   }
   if(errorBand){
@@ -235,7 +247,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
 
 
   //CMSPrelim(dataset, extra, 0.17, 0.835);
-  CMSPrelim(dataset, "", 0.18, 0.835);  
+  CMSPrelim(dataset, "", 0.16, 0.835);  
   TPaveText* chan     = new TPaveText(0.20, 0.74+0.061, 0.32, 0.74+0.161, "tlbrNDC");
   chan->SetBorderSize(   0 );
   chan->SetFillStyle(    0 );
@@ -258,7 +270,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   cat->Draw();
   */
   if(MSSM){
-    float lower_bound = EWK1 ? 0.44 : 0.49;
+    float lower_bound = 0.44;
     TPaveText* massA      = new TPaveText(0.53, lower_bound+0.061, 0.95, lower_bound+0.151, "NDC");
     massA->SetBorderSize(   0 );
     massA->SetFillStyle(    0 );
@@ -270,11 +282,12 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     massA->AddText("m_{A}=$MA GeV, tan#beta=$TANB");
     massA->Draw();
   }    
-  float lower_bound = EWK1 ? 0.60 : 0.65;
+  float lower_bound = 0.60;
   TLegend* leg = new TLegend(MSSM ? 0.53 : 0.50, lower_bound, 0.93, 0.90);
   SetLegendStyle(leg);
+  leg->SetTextSize(0.035);
   if(MSSM){
-    leg->AddEntry(ggH  , "#phi#rightarrow#tau#tau", "L" );
+    leg->AddEntry(ggH  , "h,H,A#rightarrow#tau#tau", "L" );
   }
   else{
     if(ggH){
@@ -294,6 +307,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
     leg->AddEntry(Fakes, "QCD"                 , "F" );
     leg->AddEntry(EWK  , "Electroweak"                  , "F" );
+    if(ggH_SM125) leg->AddEntry(ggH_SM125, "SM H(125 GeV) #rightarrow #tau#tau", "F" );
   }
   else if(std::string(extra) == std::string("ee")){
     leg->AddEntry(Zee  , "Z#rightarrowee"        , "F" );
@@ -301,13 +315,15 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
     leg->AddEntry(Fakes, "QCD"                 , "F" );
     leg->AddEntry(EWK  , "Electroweak"                  , "F" );
+    if(VH_SM125) leg->AddEntry(VH_SM125, "SM H(125 GeV) #rightarrow #tau#tau", "F" );
   }
   else if(std::string(extra) == std::string("e#tau_{h}")){
     leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
-    leg->AddEntry(EWK  , "Z#rightarrow ee"              , "F" );
-    leg->AddEntry(EWK1 , "Electroweak"                  , "F" );
+    leg->AddEntry(Zee  , "Z#rightarrow ee"              , "F" );
+    leg->AddEntry(EWK  , "Electroweak"                  , "F" );
     leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
     leg->AddEntry(Fakes, "QCD"                 , "F" );
+    if(VH_SM125) leg->AddEntry(VH_SM125, "SM H(125 GeV) #rightarrow #tau#tau", "F" );
   }
   else if(std::string(extra) == std::string("e#mu") && HWWBG){
     leg->AddEntry(ggH_hww  , "H(125 GeV)#rightarrowWW" , "F" );
@@ -315,12 +331,14 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
     leg->AddEntry(EWK  , "Electroweak"                  , "F" );
     leg->AddEntry(Fakes, "QCD"                 , "F" );
+    if(VH_SM125) leg->AddEntry(VH_SM125, "SM H(125 GeV) #rightarrow #tau#tau", "F" );
   }
   else{
     leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
     leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
     leg->AddEntry(EWK  , "Electroweak"                  , "F" );
     leg->AddEntry(Fakes, "QCD"                 , "F" );
+    if(VH_SM125) leg->AddEntry(VH_SM125, "SM H(125 GeV) #rightarrow #tau#tau", "F" );
   }
   if(errorBand){
     leg->AddEntry(errorBand, "Bkg. uncertainty" , "F" );

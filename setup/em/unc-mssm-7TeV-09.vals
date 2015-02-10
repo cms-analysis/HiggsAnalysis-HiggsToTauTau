@@ -16,6 +16,7 @@ emu_btag	Fakes				CMS_htt_fakes_em_btag_7TeV		1.12
 emu_btag	ttbar     		  	CMS_htt_ttbar_emb_7TeV 			1.02
 emu_btag	Fakes				CMS_htt_FakeShape_em_btag_7TeV		1.00
 emu_btag	ttbar				CMS_htt_TTbarShape_em_btag_7TeV 	1.00
+emu_btag	SM	                        CMS_htt_SM125_mu                        1.30
 emu_btag    	ggH_SM125                 	pdf_gg                                  1.097
 emu_btag    	qqH_SM125                 	pdf_qqbar                               1.036
 emu_btag    	VH_SM125                   	pdf_qqbar                               1.02
@@ -23,4 +24,3 @@ emu_btag    	ggH_SM125                  	QCDscale_ggH                           
 emu_btag    	qqH_SM125                 	QCDscale_qqH                            1.008
 emu_btag    	VH_SM125               	   	QCDscale_VH                             1.04
 emu_btag    	ggH_SM125            	     	UEPS                                    0.984
-

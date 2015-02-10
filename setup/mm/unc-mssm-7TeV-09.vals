@@ -18,6 +18,7 @@ mumu_btag		ZMM				CMS_htt_mm_zmmNorm_7TeV			1.05
 mumu_btag		QCD				CMS_htt_mm_QCDNorm_btag_7TeV		1.50
 mumu_btag		ZTT				CMS_htt_mm_ztt_extrap_btag_7TeV		1.04
 mumu_btag		ZMM				CMS_htt_mm_zmm_extrap_btag_7TeV		1.05
+mumu_btag	        SM	                        CMS_htt_SM125_mu                        1.30
 mumu_btag               ggH_SM125                       pdf_gg                                  1.097
 mumu_btag               qqH_SM125                       pdf_qqbar                               1.036
 mumu_btag               VH_SM125                        pdf_vh                                  1.01
@@ -26,5 +27,3 @@ mumu_btag               qqH_SM125                       QCDscale_qqH            
 mumu_btag               VH_SM125                        QCDscale_VH                             1.04
 mumu_btag               ggH_SM125                       UEPS                                    0.984
 mumu_btag               qqH_SM125,VH_SM125              UEPS                                    1.000
-
-

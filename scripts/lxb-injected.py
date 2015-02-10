@@ -31,6 +31,8 @@ parser.add_option("--expected", dest="expected", default=False, action="store_tr
                   help="Save the results as the expected rootfiles. [Default: False]")
 parser.add_option("--MSSM", dest="MSSM", default=False, action="store_true",
                   help="Is this MSSM? [Default: \"false\"]")
+parser.add_option("--Hhh", dest="Hhh", default=False, action="store_true",
+                  help="Is this H->hh? [Default: \"false\"]")
 parser.add_option("--model", dest="model", type="string", default="",
                   help="Using a physical model, i.e. 'bbH' or 'ggH' for MSSM. [Default:\"\" ]")
 ## check number of arguments; in case print usage
@@ -65,6 +67,7 @@ print "for directory {PATH}/{DIR}"
 print "for random seed {RND}"
 print "for masses {MASSES}"
 print "for MSSM? {MSSM}"
+print "for H->hh? {Hhh}"
 print "with Model? --model {MODEL}"
 
 os.system("pwd")
@@ -77,7 +80,7 @@ for m in masses :
     os.system("cp {PWD}/{PATH}/{DIR}/%s/{{vhtt,htt}}_* {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/"%(m,m))
 os.system("cp -r {PWD}/{PATH}/{DIR}/common {TMPDIR}/{USER}/{DIR}_{JOBID}/")
 for m in masses :
-    if m and not {MSSM}:
+    if m and not {MSSM} and not {Hhh}:
         if {INJECTEDMH}:
             os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/blindData.py --seed {RND} --injected-mass %s --inject-signal --X-allow-no-signal {TMPDIR}/{USER}/{DIR}_{JOBID}/%s"%(m,m))
         else:
@@ -91,8 +94,13 @@ for m in masses :
                 os.system("cp -v {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/mlfit_result.root {PWD}/{PATH}/{DIR}/%s/higgsCombineMLFIT.Exp.mH%s.root" % (m, m, m))
             else:
                 os.system("cp -v {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/mlfit_result.root {PWD}/{PATH}/{DIR}/%s/higgsCombineMLFIT.mH%s-{OUTPUTLABEL}.root" % (m, m, m))
-    else :
+    elif {MSSM}:
         os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/blindData.py --seed {RND} --extra-templates='ggH_SM125,qqH_SM125,VH_SM125' --X-allow-no-signal {TMPDIR}/{USER}/{DIR}_{JOBID}/%s"%m)
+        print "limit.py {MODEL} {METHOD} {OPTS} {TMPDIR}/{USER}/{DIR}_{JOBID}/%s" % m
+        os.system("limit.py {MODEL} {METHOD} {OPTS} {TMPDIR}/{USER}/{DIR}_{JOBID}/%s" % m)
+        os.system("cp -v {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/higgsCombine{EXTENSION}.mH%s.root {PWD}/{PATH}/{DIR}/%s/higgsCombine{EXTENSION}.mH%s-{OUTPUTLABEL}.root" % (m, m, m, m))
+    elif {Hhh}:
+        os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/blindData.py --seed {RND} --extra-templates='ggH_SM125,qqH_SM125,VH_SM125,WHToBB_SM125,ZHToBB_SM125' --X-allow-no-signal {TMPDIR}/{USER}/{DIR}_{JOBID}/%s"%m)
         print "limit.py {MODEL} {METHOD} {OPTS} {TMPDIR}/{USER}/{DIR}_{JOBID}/%s" % m
         os.system("limit.py {MODEL} {METHOD} {OPTS} {TMPDIR}/{USER}/{DIR}_{JOBID}/%s" % m)
         os.system("cp -v {TMPDIR}/{USER}/{DIR}_{JOBID}/%s/higgsCombine{EXTENSION}.mH%s.root {PWD}/{PATH}/{DIR}/%s/higgsCombine{EXTENSION}.mH%s-{OUTPUTLABEL}.root" % (m, m, m, m))
@@ -192,6 +200,7 @@ with open(submit_name, 'w') as submit_script:
                     EXPECTED='True' if options.expected else 'False',
                     INJECTEDMH='True' if options.injected_mH else 'False',
                     MSSM='True' if options.MSSM else 'False',
+                    Hhh='True' if options.Hhh else 'False',
                     MODEL=options.model
                     ))
             with open(script_file_name.replace('.py', '.sh'), 'w') as sh_file:

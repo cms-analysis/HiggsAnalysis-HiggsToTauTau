@@ -176,7 +176,7 @@ int main(int argc, char* argv[]){
   vals2.SetMarkerStyle(24);
   vals2.SetLineColor(4);
   vals2.SetMarkerColor(4);
-  vals2.Draw("pSAME");
+  if(!draw_first) vals2.Draw("pSAME");
   canv.Update();
 
   TGraphErrors valsd;

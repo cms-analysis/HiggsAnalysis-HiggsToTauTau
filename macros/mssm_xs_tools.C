@@ -63,6 +63,9 @@ void mssm_xs_tools::SetInput(char* filename){
   m_h_brmumu_h = (TH2F*) m_input->Get("h_brmumu_h");	 
   m_h_brmumu_H = (TH2F*) m_input->Get("h_brmumu_H");	 
   m_h_brmumu_A = (TH2F*) m_input->Get("h_brmumu_A");	 
+  
+  m_h_brh0h0_H = (TH2F*) m_input->Get("h_brh0h0_H");	 
+  m_h_brZh0_A = (TH2F*) m_input->Get("h_brZh0_A");	 
  
   //ggF
   m_h_ggF_xsec_h = (TH2F*) m_input->Get("h_ggF_xsec_h");	 
@@ -140,9 +143,9 @@ void mssm_xs_tools::SetInput(char* filename){
   m_h_mH = (TH2F*) m_input->Get("h_mH"); 
 
  
-  std::cout<<"some info about the setup used for your chosen output file:"<<std::endl;
-  TObjString* description=(TObjString*) m_input->Get("description");
-  std::cout<<description->String()<<std::endl;
+  //std::cout<<"some info about the setup used for your chosen output file:"<<std::endl;
+  //TObjString* description=(TObjString*) m_input->Get("description");
+  //std::cout<<description->String()<<std::endl;
 
   return;
 }
@@ -185,6 +188,15 @@ Double_t mssm_xs_tools::Give_BR_H_mumu(Double_t mA, Double_t tanb){
 Double_t mssm_xs_tools::Give_BR_h_mumu(Double_t mA, Double_t tanb){
   int gbin=m_h_brmumu_h->FindBin(mA,tanb);
   return m_h_brmumu_h->GetBinContent(gbin);
+}
+Double_t mssm_xs_tools::Give_BR_H_hh(Double_t mA, Double_t tanb){
+  int gbin=m_h_brh0h0_H->FindBin(mA,tanb);
+  return m_h_brh0h0_H->GetBinContent(gbin);
+}
+
+Double_t mssm_xs_tools::Give_BR_A_Zh(Double_t mA, Double_t tanb){
+  int gbin= m_h_brZh0_A->FindBin(mA,tanb);
+  return m_h_brZh0_A->GetBinContent(gbin);
 }
 
 

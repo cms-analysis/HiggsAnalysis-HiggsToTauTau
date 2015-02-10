@@ -1,12 +1,16 @@
+
 import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string("CMS, H#rightarrow#tau#tau, L = 19.7 fb^{-1} at 8 TeV"),
+    #dataset = cms.string("#scale[1.5]{CMS}   Projection       #phi#rightarrow#tau#tau                 300 fb^{-1} (14 TeV)"),    
+    #dataset = cms.string("#scale[1.5]{CMS}   #phi#rightarrow#tau#tau                                          19.7 fb^{-1} (8 TeV)"),
+    #dataset = cms.string("#scale[1.5]{CMS} (unpublished)   #phi#rightarrow#tau#tau                 19.7 fb^{-1} (8 TeV)"),
+    dataset = cms.string("#phi#rightarrow#tau#tau                                          19.7 fb^{-1} (8 TeV)"),
     ## x-axis title
-    xaxis = cms.string("#sigma(gg#phi)#timesBR(#tau#tau) [pb]"),
+    xaxis = cms.string("#sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]"),
     ## x-axis title
-    yaxis = cms.string("#sigma(bb#phi)#timesBR(#tau#tau) [pb]"),
+    yaxis = cms.string("#sigma#font[42]{(bb#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]"),
     ## min for plotting (for fine tuning)
     min = cms.double(0.),
     ## min for plotting
@@ -27,40 +31,41 @@ layout = cms.PSet(
     masspoints = cms.vdouble(
     90
    ,100
-   ,110
+   #,110
    ,120
+   ,125
    ,130
    ,140
-   ,150
+   #,150
    ,160
-   ,170
+   #,170
    ,180
-   ,190
+   #,190
    ,200
-   ,210
-   ,220
-   ,230
-   ,240
+   #,210
+   #,220
+   #,230
+   #,240
    ,250
-   ,275
+   #,275
    ,300
-   ,325
+   #,325
    ,350
-   ,375
+   #,375
    ,400
-   ,425
+   #,425
    ,450
-   ,475
+   #,475
    ,500
-   ,550
+   #,550
    ,600
-   ,650
+   #,650
    ,700
-   ,750
+   #,750
    ,800
-   ,850
+   #,850
    ,900
-   ,950
+   #,950
    ,1000
     ),
     #masspoints = cms.vdouble(140),
@@ -68,6 +73,8 @@ layout = cms.PSet(
     mssm = cms.bool(True),
     ## make a temperature plot?
     temp = cms.bool(False),
+    ## draw the SM expectation
+    drawSM = cms.bool(False),
     ## apply smoothing before plotting?
     smooth = cms.bool(True),
     ## define physics-model

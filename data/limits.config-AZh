@@ -1,0 +1,33 @@
+[inputs]
+
+AZh = ULB
+
+[AZh]
+
+blind
+
+periods = 8TeV
+channels = AZh
+
+AZh_categories_8TeV = 0 1 2 3
+
+AZh_names_8TeV = llem llmt llet lltt
+
+
+
+[bbb-AZh]
+
+AZh_threshold = 0.1
+
+AZh_categories_8TeV = 00,01,02,03
+
+AZh_processes = Zjets
+
+
+[combination]
+
+periods = 8TeV 
+
+channels_AZh = AZh
+categories_AZh = llem llmt llet lltt
+

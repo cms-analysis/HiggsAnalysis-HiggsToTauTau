@@ -16,7 +16,11 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   bool bestfit  = (PLOT == std::string("BESTFIT" ));
   bool BG_Higgs = (PLOT == std::string("BG_HIGGS"));
   bool mssm_log = (PLOT == std::string("MSSM-LOG"));
+  bool mssm_nolog = (PLOT == std::string("MSSM-NOLOG"));
   if (PLOT == std::string("MSSM-LOG_INJECTED")) { mssm_log = true; injected=true; }
+  if (PLOT == std::string("MSSM-NOLOG_INJECTED")) { mssm_nolog = true; injected=true; }
+  if (PLOT == std::string("MSSM-LOG_BG_HIGGS")) { mssm_log = true; BG_Higgs=true; }
+  if (PLOT == std::string("MSSM-NOLOG_BG_HIGGS")) { mssm_nolog = true; BG_Higgs=true; }
   // set up styles
   canv.cd();
   //canv.SetGridx(1);
@@ -97,6 +101,10 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
       expected->SetLineColor(kRed);
       expected->SetLineWidth(3);
       expected->SetLineStyle(1);
+      if(mssm_log){
+      expected->SetLineColor(kBlack);
+      expected->SetLineStyle(2);
+      }
       expected->Draw("L");
     }
   }
@@ -125,18 +133,22 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   
   TPaveText* extra;
   if(!extra_label.empty()){
-    extra = new TPaveText(legendOnRight ? 0.45 : 0.18, 0.60, legendOnRight ? 0.90 : 0.605, 0.70, "NDC");
+    if(!mssm_log) extra = new TPaveText(legendOnRight ? 0.45 : 0.18, 0.60, legendOnRight ? 0.90 : 0.605, 0.70, "NDC");
+    else extra = new TPaveText(legendOnRight ? 0.35 : 0.18, 0.59, legendOnRight ? 0.90 : 0.605, 0.70, "NDC");
     extra->SetBorderSize(   0 );
     extra->SetFillStyle (   0 );
-    extra->SetTextAlign (  12 );
+    extra->SetTextAlign (  12 ); 
     extra->SetTextSize  (0.04 );
+    if(mssm_log) extra->SetTextSize  (0.05 );
     extra->SetTextColor (   1 );
     extra->SetTextFont  (  62 );
     extra->AddText(extra_label.c_str());
     extra->Draw();
   }
   // add proper legend
-  TLegend* leg = new TLegend(legendOnRight ? 0.45 : 0.18, 0.70, legendOnRight ? 0.95 : (injected ? 0.80 :0.655), 0.90);
+  TLegend* leg;
+  if(!mssm_log) leg = new TLegend(legendOnRight ? 0.45 : 0.18, 0.70, legendOnRight ? 0.95 : (injected ? 0.80 :0.655), 0.90);
+  else leg = new TLegend(legendOnRight ? 0.35 : 0.18, 0.70, legendOnRight ? 0.95 : (injected ? 0.80 :0.655), 0.90);
   leg->SetBorderSize( 0 );
   leg->SetFillStyle( 1001 );
   leg->SetFillColor(kWhite);
@@ -145,7 +157,7 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
     //leg->AddEntry(observed, "Asimov w/ H(125)",  "PL");
   }
   if(expected_injected){
-    if(!mssm_log) leg->AddEntry( expected_injected , TString::Format("SM H(%s GeV) injected", injectedMass.c_str()),  "L" );
+    if(!mssm_log && ! mssm_nolog) leg->AddEntry( expected_injected , TString::Format("SM H(%s GeV) injected", injectedMass.c_str()),  "L" );
     else leg->AddEntry( expected_injected , TString::Format("SM H(%s GeV) injected", injectedMass.c_str()),  "L" );
   }
   if(injected){
