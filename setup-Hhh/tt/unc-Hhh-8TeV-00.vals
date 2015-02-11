@@ -1,8 +1,8 @@
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 tauTau_2jet0tag     SM,signal                           lumi_8TeV                                       1.026
-tauTau_2jet0tag     SM,TT,VV,ZTT,signal                 CMS_eff_t_tautau_8TeV                           1.190
-tauTau_2jet0tag     SM,ZTT,signal                       CMS_scale_t_tautau_8TeV                         1.000
-tauTau_2jet0tag     SM,TT,VV,ZLL,ZTT,signal             CMS_scale_j_8TeV                                1.000
+tauTau_2jet0tag     SM,TT,VV,W,ZTT,signal               CMS_eff_t_tautau_8TeV                           1.190
+tauTau_2jet0tag     SM,W,ZTT,signal                     CMS_scale_t_tautau_8TeV                         1.000
+tauTau_2jet0tag     SM,TT,VV,W,ZLL,ZTT,signal           CMS_scale_j_8TeV                                1.000
 tauTau_2jet0tag     TT                                  CMS_eff_b_8TeV                                  0.944
 tauTau_2jet0tag     signal                              CMS_eff_b_8TeV                                  0.949
 tauTau_2jet0tag     QCD                                 CMS_htt_QCDSyst_tautau_2jet0tag_8TeV            1.100

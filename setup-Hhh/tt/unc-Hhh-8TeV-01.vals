@@ -10,6 +10,7 @@ tauTau_2jet1tag     QCD                                 CMS_htt_QCDSyst_tautau_2
 tauTau_2jet1tag     ZLL,ZTT                             CMS_htt_zttNorm_8TeV                            1.033
 tauTau_2jet1tag     ZTT                                 CMS_htt_extrap_ztt_tautau_2jet1tag_8TeV         1.252
 tauTau_2jet1tag     TT                                  CMS_htt_ttbarNorm_8TeV                          1.100
+tauTau_2jet1tag     ZTT                                 CMS_htt_ttbarNorm_8TeV                          0.949
 tauTau_2jet1tag     VV                                  CMS_htt_DiBosonNorm_8TeV                        1.150
 tauTau_2jet1tag     ZLL                                 CMS_htt_ZLL_FakeTau_tautau_2jet1tag_8TeV        1.515
 tauTau_2jet1tag     ggH_SM125                           pdf_gg                                          1.097
