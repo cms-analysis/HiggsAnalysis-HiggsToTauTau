@@ -48,4 +48,10 @@ plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fi
 ## SM signal injected model independent limits 
 lxb: submit.py --injected --injected-method="--asymptotic" --physics-model='Hhh' --Hhh --toys 1000 --bunch-masses=1 LIMITS-HTohh/mt/*
 lxb: submit.py --injected --injected-method "--asymptotic" --collect --physics-model='Hhh' LIMITS-HTohh/mt/*
+plot --injected HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-ggHTohh.py LIMITS-HTohh/mt/ [expectedOnly=1] injected=1 outputLabel="limit"
+
+## SM as bkg model independent limits 
+python HiggsAnalysis/HiggsToTauTau/scripts/doHTohh.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-Hhh -a bbb --label="SomeLabel" --new-merging --new-merging-threshold 0.5 [--profile] --SMHasBackground
+submit.py --asymptotic --no-prefit [--physics-model="Hhh"] LIMITS-HTohh/*/*
+plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-ggHTohh.py LIMITS-HTohh/cmb higgsBG=True
 
