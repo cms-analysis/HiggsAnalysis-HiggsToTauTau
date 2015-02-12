@@ -83,7 +83,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   transparent_=cfg.existsAs<bool>("transparent") ? cfg.getParameter<bool>("transparent") : false;
   expectedOnly_=cfg.existsAs<bool>("expectedOnly") ? cfg.getParameter<bool>("expectedOnly") : false;
   MSSMvsSM_=cfg.existsAs<bool  >("MSSMvsSM") ? cfg.getParameter<bool  >("MSSMvsSM") : false;
-  BlackWhite_=cfg.existsAs<bool  >("BlackWhite") ? cfg.getParameter<bool  >("BlackWhite") : false;
+  Brazilian_=cfg.existsAs<bool  >("Brazilian") ? cfg.getParameter<bool  >("Brazilian") : false;
 }
 
 
