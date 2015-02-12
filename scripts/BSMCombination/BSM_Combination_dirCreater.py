@@ -81,6 +81,7 @@ if options.model=="lowmH" :
                 tanb=tanbs[1]
                 os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="AZh_"+str(tanb)+".txt"))
     ##combine cards
+        os.system("mkdir LIMITS{LABEL}-BSMCombination/{MASS}/debug".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
         for file in glob.glob("LIMITS{LABEL}-BSMCombination/{MASS}/*0.txt".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass))) :
             print "combining cards"
             tanbs=file.rstrip(".txt").split("_")
@@ -92,6 +93,7 @@ if options.model=="lowmH" :
                 os.system("text2workspace.py -m {MASS} LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt -P HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:twoHypothesisHiggs -o LIMITS{LABEL}-BSMCombination/{MASS}/fixedMu_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
             else :
                 os.system("text2workspace.py -m {MASS} LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt -o LIMITS{LABEL}-BSMCombination/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
+            os.system("mv LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt LIMITS{LABEL}-BSMCombination/{MASS}/debug".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
 
 
 #####################################################
@@ -123,6 +125,7 @@ elif "2HDM" in options.model :
                 tanb=tanbs[1]
                 os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="AZh_"+str(tanb)+".txt"))
     ##combine cards
+        os.system("mkdir LIMITS{LABEL}-BSMCombination/{MASS}/debug".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
         for file in glob.glob("LIMITS{LABEL}-BSMCombination/{MASS}/*0.txt".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass))) :
             print "combining cards"
             tanbs=file.rstrip(".txt").split("_")
@@ -134,6 +137,7 @@ elif "2HDM" in options.model :
                 os.system("text2workspace.py -m {MASS} LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt -P HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:twoHypothesisHiggs -o LIMITS{LABEL}-BSMCombination/{MASS}/fixedMu_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
             else :
                 os.system("text2workspace.py -m {MASS} LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt -o LIMITS{LABEL}-BSMCombination/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
+            os.system("mv LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt LIMITS{LABEL}-BSMCombination/{MASS}/debug".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
 
 
 #####################################################
@@ -171,6 +175,7 @@ elif options.model=="low-tb-high" :
                 if mass < 351 and mass > 219 :    
                     os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="AZh_"+str(tanb)+".txt"))             
     ##combine cards
+        os.system("mkdir LIMITS{LABEL}-BSMCombination/{MASS}/debug".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
         for file in glob.glob("LIMITS{LABEL}-BSMCombination/{MASS}/*0.txt".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass))) :
             print "combining cards"
             tanbs=file.rstrip(".txt").split("_")
@@ -182,13 +187,15 @@ elif options.model=="low-tb-high" :
                 os.system("text2workspace.py -m {MASS} LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt -P HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:twoHypothesisHiggs -o LIMITS{LABEL}-BSMCombination/{MASS}/fixedMu_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
             else :
                 os.system("text2workspace.py -m {MASS} LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt -o LIMITS{LABEL}-BSMCombination/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
+            os.system("mv LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt LIMITS{LABEL}-BSMCombination/{MASS}/debug".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
 
 
 #####################################################
 ### mhmax, mhmod, lightstau1, lightstopmod, tauphobic
 else :
     print "model", options.model
-    for mass in (90, 100, 120, 130, 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000) :
+    #for mass in (90, 100, 120, 130, 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000) :
+    for mass in (130, 140, 350) :    
         os.system("mkdir LIMITS{LABEL}-BSMCombination/{MASS}".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
         if options.path_htt != "" :
             for file in glob.glob("{HTT}/{MASS}/debug/*0.txt".format(HTT=options.path_htt, MASS=str(mass))) :
@@ -219,6 +226,7 @@ else :
                 if mass < 351 and mass > 219 :    
                     os.system("cp {FILE} LIMITS{LABEL}-BSMCombination/{MASS}/{NEWNAME}".format(FILE=file, LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), NEWNAME="AZh_"+str(tanb)+".txt"))             
     ##combine cards
+        os.system("mkdir LIMITS{LABEL}-BSMCombination/{MASS}/debug".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
         for file in glob.glob("LIMITS{LABEL}-BSMCombination/{MASS}/*0.txt".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass))) :
             print "combining cards"
             tanbs=file.rstrip(".txt").split("_")
@@ -230,6 +238,7 @@ else :
                 os.system("text2workspace.py -m {MASS} LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt -P HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:twoHypothesisHiggs -o LIMITS{LABEL}-BSMCombination/{MASS}/fixedMu_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
             else :
                 os.system("text2workspace.py -m {MASS} LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt -o LIMITS{LABEL}-BSMCombination/{MASS}/batch_{TANB}.root".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
+            os.system("mv LIMITS{LABEL}-BSMCombination/{MASS}/tmp_{TANB}.txt LIMITS{LABEL}-BSMCombination/{MASS}/debug".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass), TANB=str(tanb)))
 
 
 

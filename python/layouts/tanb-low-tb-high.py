@@ -3,20 +3,20 @@ import FWCore.ParameterSet.Config as cms
 layout = cms.PSet(
     ## dataset
     #dataset = cms.string("#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                     19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
-    #dataset = cms.string("#scale[1.5]{CMS} (unpublished), h,H,A#rightarrow#tau#tau, 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
+    #dataset = cms.string("#scale[1.5]{CMS} (unpublished), h,H,A#rightarrow#tau#tau, 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)")
     #dataset = cms.string("#scale[1.5]{CMS} Preliminary, h,H,A#rightarrow#tau#tau, 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
     #dataset = cms.string("#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                                           18.3 fb^{-1} (8 TeV)"),
     dataset = cms.string("h,H,A#rightarrow#tau#tau                                      19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
     ## x-axis title
-    xaxis = cms.string("m_{A} [GeV]"),
+    xaxis = cms.string("m_A [GeV]"),
     ## y-axis title
     yaxis = cms.string("#bf{tan#beta}"),
     ## theory label 
-    theory = cms.string("MSSM #scale[1.3]{#bf{#tau}}-phobic scenario"),
+    theory = cms.string("MSSM low-tan#beta-high scenario"),
     ## min for plotting
-    min = cms.double(1.0),
+    min = cms.double(0.5),
     ## max for plotting
-    max = cms.double(50),
+    max = cms.double(9.5),
     ## min for plotting
     log = cms.int32(0),
     ## print to png
@@ -33,33 +33,42 @@ layout = cms.PSet(
     outputLabel = cms.string("mA-tanb") ,
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
-     90.
-   ,100.
-   #,110.
-   ,120.
-   ,130.
-   ,140.
-   #,150.
-   ,160.
-   #,170.
-   ,180.
-   #,190.
-   ,200.
-   #,210.
-   #,220.
-   #,230.
-   #,240.
-   ,250.  
-   ,300.
-   ,350.
-   ,400.
-   ,450.
-   ,500.
-   ,600.
-   ,700.
-   ,800.
-   ,900.
-   ,1000.
+     #150.
+     160.
+     #,170.
+     #,180.
+     #,190.
+     ,200.
+     #,210.
+     #,220.
+     #,230.
+     #,240.
+     ,250.
+     #,260.
+     #,270.
+     #,280.
+     #,290.
+     ,300.
+     #,310.
+     #,320.
+     #,330.
+     #,340.
+     ,350.
+     #,360.
+     #,370.
+     #,380.
+     #,390.
+     ,400.
+     #,410.
+     #,420.
+     #,430.
+     #,440.
+     ,450.
+     #,460.
+     #,470.
+     #,480.
+     #,490.
+     ,500.
      ),
     ## is this mssm?
     mssm = cms.bool(True),

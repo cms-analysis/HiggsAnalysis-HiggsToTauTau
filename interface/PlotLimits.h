@@ -235,8 +235,8 @@ class PlotLimits {
   bool expectedOnly_;
   /// print transparent? (used for option tanb)
   bool transparent_;
-  /// print black and white friendly? (used for option tanb)
-  bool BlackWhite_;
+  /// print mA-tanb plots in brazilian colors (used for option tanb)
+  bool Brazilian_;
   /// indicate whether the +/- 2 sigma should be shown or not (used for option tanb)
   bool outerband_;
   /// print constraint on mA-tanb plane from Higgs boson at 125 GeV? (used for option tanb)
