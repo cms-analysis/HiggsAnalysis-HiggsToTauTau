@@ -5,7 +5,6 @@ tauTau_2jet2tag     SM,ZTT,signal                       CMS_scale_t_tautau_8TeV 
 tauTau_2jet2tag     SM,TT,VV,ZLL,ZTT,signal             CMS_scale_j_8TeV                                1.000
 tauTau_2jet2tag     TT                                  CMS_eff_b_8TeV                                  1.042
 tauTau_2jet2tag     signal                              CMS_eff_b_8TeV                                  1.049
-tauTau_2jet2tag     ZTT                                 CMS_fake_b_8TeV                                 0.946
 tauTau_2jet2tag     QCD                                 CMS_htt_QCDSyst_tautau_2jet2tag_8TeV            1.400
 tauTau_2jet2tag     ZLL,ZTT                             CMS_htt_zttNorm_8TeV                            1.033
 tauTau_2jet2tag     ZTT                                 CMS_htt_extrap_ztt_tautau_2jet2tag_8TeV         2.749
