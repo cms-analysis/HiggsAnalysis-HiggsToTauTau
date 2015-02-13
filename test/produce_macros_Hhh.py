@@ -24,6 +24,7 @@ parser.add_option("--hww-signal", dest="hwwsig", action="store_true", default=Fa
 parser.add_option("-v", "--verbose", dest="verbose", action="store_true", default=False, help="Run in verbose more. [Default: 'False']")
 parser.add_option("-c", "--config", dest="config", default="", help="Additional configuration file for the channels, periods and categories. [Default: '']")
 parser.add_option("--profile",dest="profile",default=False, action="store_true", help="Include A->Zh and bbH (in case of profiling). [Default: False]")
+parser.add_option("--unblind",dest="unblind",default=False, action="store_true", help="Unblind plots [Default: False]")
 
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
@@ -138,7 +139,7 @@ class Analysis:
              line = line.replace("$DEFINE_MSSM", "#define MSSM" if self.analysis == "Hhh" else "")
              line = line.replace("$DEFINE_DROP_SIGNAL", "#define DROP_SIGNAL" if self.drop_signal(self.category) else "")
              line = line.replace("$DEFINE_HWWBG", "#define HWW_BG" if not options.hwwsig else "")
-             line = line.replace("$BLIND", "false" if config.unblind else "true")
+             line = line.replace("$BLIND", "false" if options.unblind else "true")
              line = line.replace("$DEFINE_EXTRA_SAMPLES", "#define EXTRA_SAMPLES" if self.high_stat_category(self.category) else "")
              line = line.replace(template_name, output_name)
              line = line.replace("$HISTFILE", self.histfile)
