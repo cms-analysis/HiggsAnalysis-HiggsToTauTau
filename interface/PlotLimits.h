@@ -82,6 +82,8 @@ class PlotLimits {
   void print(const char* filename, TGraphAsymmErrors* outerBand, TGraphAsymmErrors* innerBand, TGraph* expected, TGraph* observed, const char* type="txt");
   /// print tabulated limits to a txt file for MSSMvsBG and MSSMvsSM limits
   void print(const char* filename, TGraphAsymmErrors* outerBand_1, TGraphAsymmErrors* innerBand_1, TGraph* expected_1, TGraph* observed_1, TGraphAsymmErrors* outerBand_2, TGraphAsymmErrors* innerBand_2, TGraph* expected_2, TGraph* observed_2, double tanbLow, double tanbHigh, double tanbLowHigh, const char* type="txt");
+  // print tabulated limits to a txt file for MSSMvsBG and MSSMvsSM limits (reworked plotting)
+  void print(const char* filename, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, double tanbLow, double tanbHigh, float *mass, const char* type);
   /// print tabulated limits to a txt file, for inner band, outer band, expected and observed, with inner and outer band
   void print(const char* filename, std::string& xval, std::string& yval, TGraph* contour, const char* type="txt");
   //void print(const char* filename, std::string& xval, std::string& yval, std::vector<TGraph*> contour, const char* type="txt");
@@ -233,8 +235,8 @@ class PlotLimits {
   bool expectedOnly_;
   /// print transparent? (used for option tanb)
   bool transparent_;
-  /// print black and white friendly? (used for option tanb)
-  bool BlackWhite_;
+  /// print mA-tanb plots in brazilian colors (used for option tanb)
+  bool Brazilian_;
   /// indicate whether the +/- 2 sigma should be shown or not (used for option tanb)
   bool outerband_;
   /// print constraint on mA-tanb plane from Higgs boson at 125 GeV? (used for option tanb)

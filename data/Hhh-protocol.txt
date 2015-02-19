@@ -1,12 +1,18 @@
-##Example set of commands to setup and run limits for H->hh analysis. Currently available for mt, et, and em, masses 250-350 in steps of 50, 8TeV only. 
+##Example set of commands to setup and run limits for H->hh analysis. Currently available for mt, et, tt,  masses 250 to 350 in steps of 10, 8TeV only. 
 
 #From src directory of CMSSW release, with the CombinedLimits and HiggsTauTau packages added as described on the twiki:
 # https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideHiggs2TauLimits
 #Use of doHTohh.py script to replace the individual scripts
-python HiggsAnalysis/HiggsToTauTau/scripts/doHTohh.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-Hhh -a plain --label="SomeLabel"
+#Note the syntax for bbb processes in the config file;  only the samples before the first comma are merged atm
+python HiggsAnalysis/HiggsToTauTau/scripts/doHTohh.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-Hhh -a bbb --label="SomeLabel" --new-merging --new-merging-threshold 0.5 [--profile]
 
 #The following command applies the correct XS*BR for each tanb point we are interested in for the model-dependent limits 
 lxb-xsec2tanb.py --ana-type="Hhh" --model="mhmodp" --customTanb="1,1.5,2,2.5,3" LIMITS-HTohh-mhmodp/*/*
+
+#To set up model-dependent limits for the 2HD model we need a different directory structure :
+python HiggsAnalysis/HiggsToTauTau/scripts/doHTohh.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-Hhh -a bbb --label="SomeLabel" --model=2HDM --new-merging --new-merging-threshold 0.5
+#Applying the correct XS*BR for each tanb point:
+lxb-xsec2tanb.py --ana-type="Hhh" --model="2HDM_ty2_mA300_mH300" --customTanb="1,2,3,4,5,6,7,8,9,10" LIMITS-HTohh-2HDM/bbb/*/*
 
 #Run model-dependent mA-tanb limits
 limit.py --tanb+ LIMITS-HTohh-mhmodp/*/* 
@@ -15,10 +21,21 @@ submit.py --tanb+ LIMITS-HTohh-mhmodp/*/*
 #Run model-independent mA-tanb limits. While blinded, don't run the prefit to
 #data which is normally used to get the postfit limits (run pre-prefit limits)
 #When running with option --no-prefit, only expected limits are calculated.
-submit.py --asymptotic --no-prefit --physics-model="Hhh" LIMITS-HTohh-ggHTohh/*/*
+submit.py --asymptotic --no-prefit [--physics-model="Hhh"] LIMITS-HTohh-ggHTohh/*/*
+
+#Maximum likelihood fit
+limit.py --max-likelihood LIMITS-HTohh/bbb/cmb/300
+
+#postfit plots
+cd HiggsAnalysis/HiggsToTauTau/test
+./cleanup.py
+python mlfit_and_copy.py -a Hhh --mH 300 --tanb 2 [--profile] $CMSSW_BASE/src/LIMITS-label/bbb/cmb/300
+python produce_macros_Hhh.py -a Hhh --mH 300 --tanb 2 [--profile]  --config ../data/limits.config-Hhh [--unblind]
+python run_macros.py -a Hhh --config ../data/limits.config-Hhh
 
 #Make plots of model dependent 
 plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-mhmodp.py LIMITS-HTohh-mhmodp/mt ## Not yet working for limits from low tanb
+plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-2HDM.py LIMITS-HTohh-2hdm/mt ##For 2HDM
 
 #Make plots of model independent 
 plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-ggHTohh.py LIMITS-HTohh-ggHTohh/mt
@@ -32,4 +49,10 @@ plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fi
 ## SM signal injected model independent limits 
 lxb: submit.py --injected --injected-method="--asymptotic" --physics-model='Hhh' --Hhh --toys 1000 --bunch-masses=1 LIMITS-HTohh/mt/*
 lxb: submit.py --injected --injected-method "--asymptotic" --collect --physics-model='Hhh' LIMITS-HTohh/mt/*
+plot --injected HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-ggHTohh.py LIMITS-HTohh/mt/ [expectedOnly=1] injected=1 outputLabel="limit"
+
+## SM as bkg model independent limits 
+python HiggsAnalysis/HiggsToTauTau/scripts/doHTohh.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-Hhh -a bbb --label="SomeLabel" --new-merging --new-merging-threshold 0.5 [--profile] --SMHasBackground
+submit.py --asymptotic --no-prefit [--physics-model="Hhh"] LIMITS-HTohh/*/*
+plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-ggHTohh.py LIMITS-HTohh/cmb higgsBG=True
 

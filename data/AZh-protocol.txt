@@ -1,0 +1,54 @@
+##Example set of commands to setup and run limits for A->Zh analysis. Currently available for AZh,  masses 220 to 350 in steps of 10, 8TeV only. 
+
+#From src directory of CMSSW release, with the CombinedLimits and HiggsTauTau packages added as described on the twiki:
+# https://twiki.cern.ch/twiki/bin/viewauth/CMS/SWGuideHiggs2TauLimits
+#Use of doAZh.py script to replace the individual scripts
+#Note the syntax for bbb processes in the config file;  only the samples before the first comma are merged atm
+python HiggsAnalysis/HiggsToTauTau/scripts/doAZh.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-AZh -a bbb --label="-AZh" [--new-merging --new-merging-threshold 0.5]
+
+
+#Run model-independent. While blinded, don't run the prefit to
+#data which is normally used to get the postfit limits (run pre-prefit limits)
+#When running with option --no-prefit, only expected limits are calculated.
+submit.py --asymptotic --no-prefit LIMITS-AZh/bbb/*/*
+
+#Maximum likelihood fit
+limit.py --max-likelihood LIMITS-AZh/bbb/cmb/300
+
+#Set up and run 2HDM model-dependent limits:
+python HiggsAnalysis/HiggsToTauTau/scripts/doAZh.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-AZh -a bbb --label="SomeLabel" [--new-merging --new-merging-threshold 0.5]
+#Applying correct XS*BR to each tanb point
+lxb-xsec2tanb.py --ana-type="AZh" --model="2HDM_ty2_mA300_mH300" --customTanb="1,2,3,4,5,6,7,8,9,10" LIMITS-2HDM-AZh/bbb/*/*
+
+#postfit plots
+#cd HiggsAnalysis/HiggsToTauTau/test
+#python mlfit_and_copy.py -a Hhh --mA 300 --tanb 2 [--profile] $CMSSW_BASE/src/LIMITS-label/bbb/cmb/300
+#python produce_macros_Hhh.py -a Hhh --mA 300 --tanb 2 [--profile]  --config ../data/limits.config-Hhh
+#./fixmacros.sh
+#python run_macros.py -a Hhh --config ../data/limits.config-Hhh
+
+#Make plots of model independent 
+plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-AZh.py LIMITS-AZh/bbb/llem
+plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-AZh.py LIMITS-AZh/bbb/llet
+plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-AZh.py LIMITS-AZh/bbb/llem
+plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-AZh.py LIMITS-AZh/bbb/llet
+plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-AZh.py LIMITS-AZh/bbb/AZh
+
+#Run goodness-of-fit:
+## calculation and plotting
+submit.py --goodness-of-fit --toys 100 --cycles 10 LIMITS-AZh/bbb/llem/300
+submit.py --goodness-of-fit --collect LIMITS-AZh/bbb/llem/300
+plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py LIMITS-AZh/bbb/llem masspoints=300
+submit.py --goodness-of-fit --toys 100 --cycles 10 LIMITS-AZh/bbb/llet/300
+submit.py --goodness-of-fit --collect LIMITS-AZh/bbb/llet/300
+plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py LIMITS-AZh/bbb/llet masspoints=300
+submit.py --goodness-of-fit --toys 100 --cycles 10 LIMITS-AZh/bbb/llmt/300
+submit.py --goodness-of-fit --collect LIMITS-AZh/bbb/llmt/300
+plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py LIMITS-AZh/bbb/llmt masspoints=300
+submit.py --goodness-of-fit --toys 100 --cycles 10 LIMITS-AZh/bbb/lltt/300
+submit.py --goodness-of-fit --collect LIMITS-AZh/bbb/lltt/300
+plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py LIMITS-AZh/bbb/lltt masspoints=300
+submit.py --goodness-of-fit --toys 100 --cycles 10 LIMITS-AZh/bbb/AZh/300
+submit.py --goodness-of-fit --collect LIMITS-AZh/bbb/AZh/300
+plot --goodness-of-fit HiggsAnalysis/HiggsToTauTau/python/layouts/goodness-of-fit.py LIMITS-AZh/bbb/AZh masspoints=300
+

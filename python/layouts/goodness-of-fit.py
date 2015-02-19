@@ -2,7 +2,10 @@ import FWCore.ParameterSet.Config as cms
 
 layout = cms.PSet(
     ## dataset
-    dataset = cms.string(" Preliminary, H #rightarrow #tau #tau, L=24.3 fb^{-1}"),
+    #dataset = cms.string("CMS Preliminary, H #rightarrow #tau #tau, 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
+    #dataset = cms.string("CMS Preliminary, H #rightarrow #tau #tau, 4.9 fb^{-1} (7 TeV)"),
+    dataset = cms.string("CMS Preliminary, H #rightarrow #tau #tau, 19.7 fb^{-1} (8 TeV)"),
+    #dataset = cms.string("CMS Preliminary, H #rightarrow #tau #tau, 18.3 fb^{-1} (8 TeV)"),
     ## x-axis title
     xaxis = cms.string("Goodness of Fit"),
     ## x-axis title

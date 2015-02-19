@@ -18,7 +18,7 @@ class ModelTemplate():
     and all available shape uncertainties for each bin (=directory in the root input file) and each available pivotal for
     each bin.
     """
-    def __init__(self, path, mA, ana_type='', hist_label='', verbosity=0) :
+    def __init__(self, path, parameter1, ana_type='', hist_label='', verbosity=0) :
         ## path to root input file
         self.path = path
         ## root input file where to find the raw templates
@@ -34,8 +34,8 @@ class ModelTemplate():
         self.verbosity = verbosity
         ## ana-type
         self.ana_type = ana_type
-        ## mass of A
-        self.mA = mA
+        ## mass of A or in the case of the lowmH scenario its mu
+        self.parameter1 = parameter1
 
     def __del__(self) :
         ## close input root file
@@ -86,7 +86,6 @@ class ModelTemplate():
                 self.fill_pivotals(proc, label, dir.Get(name))
             else :
                 if isinstance(dir.Get(name), ROOT.TH1) :
-                    #print "pivotals3"
                     for pivotal in proc_match.findall(name) :
                         if dir.Get(name).Integral()>0 :
                             if not pivotal in pivotals:
@@ -101,7 +100,7 @@ class ModelTemplate():
         histogram search in the root input file.
         """
         value_str = str(float_value)
-        if re.match('^\d*\.0$', value_str) :
+        if re.match('^[-]?\d*\.0$', value_str) :
             value_str = value_str[:value_str.rfind('.0')]
         return value_str
                             
@@ -167,7 +166,7 @@ class ModelTemplate():
         """
         ## window of closest pivotal masses below/above mass. Window can be None, if no pivotals exist for a given dir. In
         ## this case return None       
-        if self.ana_type=="Hplus" and mass=="" : 
+        if self.ana_type=="Htaunu" and mass=="" : 
             single_template = self.load_hist(dir+'/'+proc+label).Clone(proc+label+'_template'); single_template.Scale(scale)
             return single_template
         window = self.pivotal_mass_window(float(mass), self.pivotals[dir])
@@ -233,7 +232,7 @@ class ModelTemplate():
                     combined_template = None
                     self.pivotals = {}; self.fill_pivotals(proc, label, self.input_file)
                     for higgs in params.list_of_higgses :
-                        if self.ana_type=="Hplus" :
+                        if self.ana_type=="Htaunu" :
                             scale = float(params.brs[higgs])*hist_scale
                         else :
                             scale = float(params.xsecs[higgs])*float(params.brs[higgs])*hist_scale
@@ -246,17 +245,11 @@ class ModelTemplate():
                     ## write combined template to output file
                     output_file.cd('' if dir == '.' else dir)
                     if combined_template :
-                        if self.verbosity>0 :
-                            if self.ana_type=="Hplus" :
-                                print 'write histogram to file: ', dir+'/'+proc+self.save_float_conversion(self.mA)+self.hist_label+label
-                            else :
-                                print 'write histogram to file: ', dir+'/'+proc+self.save_float_conversion(params.masses['A'])+self.hist_label+label
-                        if self.ana_type=="Hplus" :
-                            combined_template.Write(proc+self.save_float_conversion(self.mA)+self.hist_label+label, ROOT.TObject.kOverwrite)
-                        else :
-                            combined_template.Write(proc+self.save_float_conversion(params.masses['A'])+self.hist_label+label, ROOT.TObject.kOverwrite)
+                       if self.verbosity>0 :
+                           print 'write histogram to file: ', dir+'/'+proc+self.save_float_conversion(self.parameter1)+self.hist_label+label
+                       combined_template.Write(proc+self.save_float_conversion(self.parameter1)+self.hist_label+label, ROOT.TObject.kOverwrite)
         ## for Hplus the MC tt background has to be rescaled by params.ttscale (1-BR(t->Hp+b)*BR(Hp->tau+nu))^2
-        if self.ana_type=="Hplus" :
+        if self.ana_type=="Htaunu" :
             self.shape_labels = {}; self.fill_shape_labels("tt_EWK_faketau", self.input_file) #bkg name ugly hardcoded..
             params=reduced_model[0][1] #get ttscale (same for all signals)..
             for dir in self.shape_labels.keys() :

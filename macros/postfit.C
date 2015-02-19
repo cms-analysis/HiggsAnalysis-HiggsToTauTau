@@ -85,6 +85,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   if (std::string(dataset) == std::string("2011"     )){ dataset = "#scale[1.5]{CMS}  h,H,A#rightarrow#tau#tau                                 4.9 fb^{-1} (7 TeV)"; }
   if (std::string(dataset) == std::string("2012"     )){ dataset = "#scale[1.5]{CMS}  h,H,A#rightarrow#tau#tau                                19.7 fb^{-1} (8 TeV)"; }
   if (std::string(dataset) == std::string("2011+2012")){ dataset = "#scale[1.5]{CMS}  h,H,A#rightarrow#tau#tau    19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"; }
+  //if (std::string(dataset) == std::string("2011+2012")){ dataset = "h,H,A#rightarrow#tau#tau                19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"; }
   // determine category tag
   const char* category_extra = "";
   if(std::string(extra2) == std::string("0jet_low"  )){ category_extra = "0 jet, low p_{T}";  }
@@ -110,6 +111,9 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
   TH1F* Zmm    = refill((TH1F*)input->Get("Zmm"     ), "Zmm"      ); 
   TH1F* Zee    = refill((TH1F*)input->Get("Zee"     ), "Zee"      ); 
   TH1F* ggH    = refill((TH1F*)input->Get("ggH"     ), "ggH"      ); 
+  TH1F* ggH_SM125= refill((TH1F*)input->Get("ggH_SM125"), "ggH_SM125"); 
+  TH1F* VH_SM125 = refill((TH1F*)input->Get("VH_SM125" ), "VH_SM125" ); 
+  //TH1F* qqH_SM125= refill((TH1F*)input->Get("qqH_SM125"), "qqH_SM125"); 
   TH1F* data   = (TH1F*)input->Get("data_obs"); 
   /*// determine channel for etau Z->ee (EWK) will be shown separated from the rest (EWK1)
   TH1F* EWK1   = 0;
@@ -143,6 +147,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       Fakes->Draw("same");
       EWK ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
+      if(ggH_SM125) ggH_SM125->Draw("same");
       if(ggH) ggH  ->Draw("histsame");
     }
   }
@@ -157,6 +162,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       Fakes->Draw("same");
       EWK ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
+      if(VH_SM125) VH_SM125->Draw("same");
       if(ggH) ggH  ->Draw("histsame");
     }
   }
@@ -171,6 +177,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       EWK  ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
       Fakes->Draw("same");
+      if(VH_SM125) VH_SM125->Draw("same");
       if(ggH) ggH  ->Draw("histsame");
     }
     else{
@@ -181,6 +188,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       Zee  ->Draw("same");
       EWK  ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
+      if(VH_SM125) VH_SM125->Draw("same");
       Fakes->Draw("same");
     } 
   }
@@ -194,6 +202,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       EWK ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
       Fakes->Draw("same");
+      if(VH_SM125) VH_SM125->Draw("same");
       if(ggH) ggH  ->Draw("histsame");
     }
     else{
@@ -204,6 +213,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       EWK ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
       Fakes->Draw("same");
+      if(VH_SM125) VH_SM125->Draw("same");
     } 
   }
   else{
@@ -215,6 +225,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       EWK ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
       Fakes->Draw("same");
+      if(VH_SM125) VH_SM125->Draw("same");
       if(ggH) ggH  ->Draw("histsame");
     }
     else{
@@ -224,6 +235,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
       EWK ->SetFillColor(TColor::GetColor(222,90,106));
       EWK  ->Draw("same");
       Fakes->Draw("same");
+      if(VH_SM125) VH_SM125->Draw("same");
     } 
   }
   if(errorBand){
@@ -295,6 +307,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
     leg->AddEntry(Fakes, "QCD"                 , "F" );
     leg->AddEntry(EWK  , "Electroweak"                  , "F" );
+    if(ggH_SM125) leg->AddEntry(ggH_SM125, "SM H(125 GeV) #rightarrow #tau#tau", "F" );
   }
   else if(std::string(extra) == std::string("ee")){
     leg->AddEntry(Zee  , "Z#rightarrowee"        , "F" );
@@ -302,6 +315,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
     leg->AddEntry(Fakes, "QCD"                 , "F" );
     leg->AddEntry(EWK  , "Electroweak"                  , "F" );
+    if(VH_SM125) leg->AddEntry(VH_SM125, "SM H(125 GeV) #rightarrow #tau#tau", "F" );
   }
   else if(std::string(extra) == std::string("e#tau_{h}")){
     leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
@@ -309,6 +323,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     leg->AddEntry(EWK  , "Electroweak"                  , "F" );
     leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
     leg->AddEntry(Fakes, "QCD"                 , "F" );
+    if(VH_SM125) leg->AddEntry(VH_SM125, "SM H(125 GeV) #rightarrow #tau#tau", "F" );
   }
   else if(std::string(extra) == std::string("e#mu") && HWWBG){
     leg->AddEntry(ggH_hww  , "H(125 GeV)#rightarrowWW" , "F" );
@@ -316,12 +331,14 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
     leg->AddEntry(EWK  , "Electroweak"                  , "F" );
     leg->AddEntry(Fakes, "QCD"                 , "F" );
+    if(VH_SM125) leg->AddEntry(VH_SM125, "SM H(125 GeV) #rightarrow #tau#tau", "F" );
   }
   else{
     leg->AddEntry(Ztt  , "Z#rightarrow#tau#tau"           , "F" );
     leg->AddEntry(ttbar, "t#bar{t}"                       , "F" );
     leg->AddEntry(EWK  , "Electroweak"                  , "F" );
     leg->AddEntry(Fakes, "QCD"                 , "F" );
+    if(VH_SM125) leg->AddEntry(VH_SM125, "SM H(125 GeV) #rightarrow #tau#tau", "F" );
   }
   if(errorBand){
     leg->AddEntry(errorBand, "Bkg. uncertainty" , "F" );

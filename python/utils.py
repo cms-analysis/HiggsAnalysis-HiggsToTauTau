@@ -10,7 +10,7 @@ def subvec(vec, min, max):
         if re.search(r"^.*/\d+?$", directory) :
             mass = int(directory[directory.rfind("/")+1:])
             if min <= mass and mass <= max:
-                subvec.append(directory)
+                subvec.append(directory)          
     return subvec
 
 def vec2str(vec, delim=" "):
@@ -122,15 +122,15 @@ def parseArgs(args) :
     """
     list = []
     for elem in args :
-        if elem.find("-") > -1 :
+        if elem.rfind("_") > -1 :
             if elem.find(":") > -1 :
                 step = float(elem[elem.find(":")+1:])
-                min = float(elem[:elem.find("-")  ])
-                max = float(elem[elem.find("-")+1:elem.find(":")])
+                min = float(elem[:elem.find("_")  ])
+                max = float(elem[elem.find("_")+1:elem.find(":")])
             else :
                 step = 1
-                min = float(elem[:elem.find("-")  ])
-                max = float(elem[elem.find("-")+1:])
+                min = float(elem[:elem.find("_")  ])
+                max = float(elem[elem.find("_")+1:])
             while min <= max :
                 if is_integer(min):
                     if not int(min) in list :
@@ -158,6 +158,8 @@ def get_channel_dirs(analysis, finalstate, category, period):
         'ee'  : 'ee',
         'tt'  : 'tauTau',
         'vhtt': '',
+        'AZh': '',
+        'bbA': '',
     }
     cat_map = {'sm':
                {
@@ -316,6 +318,33 @@ def get_channel_dirs(analysis, finalstate, category, period):
         '04' : ['1jet1tag' ],
         },
         }, 
+        },
+               'AZh':
+               {
+        '8TeV':
+        {
+        'AZh' : {
+        '00' : ['mmme_zh','eeem_zh'],
+        '01' : ['mmmt_zh','eemt_zh'],
+        '02' : ['mmet_zh','eeet_zh'],
+        '03' : ['mmtt_zh','eett_zh'],
+        },
+        },
+        },
+               'bbA':
+               {
+        '8TeV':
+        {
+        'mt' : {
+        '00' : ['btag'],
+        },
+	'et' : {
+        '00' : ['btag'],
+	},
+	'em' : {
+        '00' : ['btag'],
+        },
+        },
         },
                'mssm':
                {

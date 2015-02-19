@@ -12,7 +12,7 @@ parser.add_option("-c", "--channels", dest="channels", default="mm em mt et", ty
 parser.add_option("-l", "--label", dest="label", default="", type="string", help="Add a label to the subdirectories that belong to each corresponding sub-channel. [Default: \"\"]")
 parser.add_option("-s", "--setup", dest="setup", default="all", type="choice", help="Setup in which to run. Choises are between cmb only (cmb), split by channels (chn), split by event category (cat), all (all). The combiend limit will always be calculated. [Default: all]", choices=["cmb", "chn", "cat", "all"])
 parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="Run in verbose mode. [Default: False]")
-parser.add_option("--lowmH", dest="lowmH", default=False, action="store_true", help="Setup of directory structure for lowmH MSSM scenario. [Default: False]")
+parser.add_option("--model", dest="model", default="", type="string", help="For some BSM models the dir structure should not be in steps of mass but other parameters. Differences occure for lowmH and 2HDM. [Default: \"\"]")
 parser.add_option("--SM4", dest="SM4", default=False, action="store_true", help="Copy datacards for SM4 (for SM only). [Default: False]")
 cats1 = OptionGroup(parser, "SM EVENT CATEGORIES", "Event categories to be picked up for the SM analysis.")
 cats1.add_option("--sm-categories-ee", dest="ee_sm_categories", default="0 1 2 3 4", type="string", help="List of ee event categories. [Default: \"0 1 2 3 4\"]")
@@ -156,29 +156,44 @@ directories_mssm = {
     'et' : {
     '8'  : ['nobtag'       , 'nobtag-et'       ],
     '9'  : ['btag'         , 'btag-et'         ],
-    '10' : ['nobtag_low'   , 'nobtag_low-et'   ],
-    '11' : ['nobtag_medium', 'nobtag_medium-et'],
-    '12' : ['nobtag_high'  , 'nobtag_high-et'  ],
-    '13' : ['btag_low'     , 'btag_low-et'     ],
-    '14' : ['btag_high'    , 'btag_high-et'    ],
+    #'10' : ['nobtag_low'   , 'nobtag_low-et'   ],
+    #'11' : ['nobtag_medium', 'nobtag_medium-et'],
+    #'12' : ['nobtag_high'  , 'nobtag_high-et'  ],
+    #'13' : ['btag_low'     , 'btag_low-et'     ],
+    #'14' : ['btag_high'    , 'btag_high-et'    ],
+    '10' : ['nobtag'       , 'nobtag-et' , 'nobtag_low'   , 'nobtag_low-et'  ],
+    '11' : ['nobtag'       , 'nobtag-et' , 'nobtag_medium', 'nobtag_medium-et'      ],
+    '12' : ['nobtag'       , 'nobtag-et',  'nobtag_high'     , 'nobtag_high-et'         ],
+    '13' : ['btag'         , 'btag-et' , 'btag_low'     , 'btag_low-et'          ],
+    '14' : ['btag'          , 'btag-et'  ,   'btag_high'    , 'btag_high-et'      ],
     },
     'mt' : {
     '8'  : ['nobtag'       , 'nobtag-mt'       ],
     '9'  : ['btag'         , 'btag-mt'         ],
-    '10' : ['nobtag_low'   , 'nobtag_low-mt'   ],
-    '11' : ['nobtag_medium', 'nobtag_medium-mt'],
-    '12' : ['nobtag_high'  , 'nobtag_high-mt'  ],
-    '13' : ['btag_low'     , 'btag_low-mt'     ],
-    '14' : ['btag_high'    , 'btag_high-mt'    ],
+    #'10' : ['nobtag_low'   , 'nobtag_low-mt'   ],
+    #'11' : ['nobtag_medium', 'nobtag_medium-mt'],
+    #'12' : ['nobtag_high'  , 'nobtag_high-mt'  ],
+    #'13' : ['btag_low'     , 'btag_low-mt'     ],
+    #'14' : ['btag_high'    , 'btag_high-mt'    ],
+    '10' : ['nobtag'       , 'nobtag-mt'    , 'nobtag_low'   , 'nobtag_low-mt'   ],
+    '11' : ['nobtag'       , 'nobtag-mt'  , 'nobtag_medium', 'nobtag_medium-mt'    ],
+    '12' : ['nobtag'       , 'nobtag-mt'  , 'nobtag_high'  , 'nobtag_high-mt'     ],
+    '13' : ['btag'         , 'btag-mt'   ,  'btag_low'     , 'btag_low-mt'     ],
+    '14' : ['btag'          , 'btag-mt'   , 'btag_high'    , 'btag_high-mt'    ],
     },
     'tt' : {
     '8'  : ['nobtag'       , 'nobtag-tt'       ],
     '9'  : ['btag'         , 'btag-tt'         ],
-    '10' : ['nobtag_low'   , 'nobtag_low-tt'   ],
-    '11' : ['nobtag_medium', 'nobtag_medium-tt'],
-    '12' : ['nobtag_high'  , 'nobtag_high-tt'  ],
-    '13' : ['btag_low'     , 'btag_low-tt'     ],
-    '14' : ['btag_high'    , 'btag_high-tt'    ],    
+    #'10' : ['nobtag_low'   , 'nobtag_low-tt'   ],
+    #'11' : ['nobtag_medium', 'nobtag_medium-tt'],
+    #'12' : ['nobtag_high'  , 'nobtag_high-tt'  ],
+    #'13' : ['btag_low'     , 'btag_low-tt'     ],
+    #'14' : ['btag_high'    , 'btag_high-tt'    ], 
+    '10' : ['nobtag'       , 'nobtag-tt'    ,  'nobtag_low'   , 'nobtag_low-tt'   ],
+    '11' : ['nobtag'       , 'nobtag-tt'   ,  'nobtag_medium', 'nobtag_medium-tt'  ],
+    '12' : ['nobtag'       , 'nobtag-tt'   ,'nobtag_high'  , 'nobtag_high-tt'    ],
+    '13' : ['btag'         , 'btag-tt'    , 'btag_low'     , 'btag_low-tt'     ],
+    '14' : ['btag'          , 'btag-tt'   ,'btag_high'    , 'btag_high-tt'       ],   
     },
 }
 
@@ -212,32 +227,32 @@ for channel in channels :
     for period in periods :
         for cat in categories[channel] :
             for mass in parseArgs(args) :
-                if options.lowmH :
-                    print "setup lowmH-directory structure for", options.analysis, period, channel, cat, mass
+                if options.model!="" :
+                    print "setup directory structure for", options.analysis, options.model, period, channel, cat, mass
                     ## setup combined
-                    os.system("cvs2local-lowmH.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --no-update --{ANA}-categories-{CHN} {CAT} {VERB} {MASS}".format(
-                        INPUT=options.input, OUTPUT=options.out+"/cmb"+label, PER=period, ANA=options.analysis, CHN=channel, CAT=cat, VERB=verb, MASS=mass))
+                    os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --model={MODEL} --no-update --{ANA}-categories-{CHN} {CAT} {VERB} -- {MASS}".format(
+                        INPUT=options.input, OUTPUT=options.out+"/cmb"+label, PER=period, ANA=options.analysis, CHN=channel, MODEL=options.model, CAT=cat, VERB=verb, MASS=mass))
                     if options.setup == "all" or options.setup == "chn" :
                         ## setup channel-wise
-                        os.system("cvs2local-lowmH.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --no-update --{ANA}-categories-{CHN} {CAT} {VERB} {MASS}".format(
-                            INPUT=options.input, OUTPUT=options.out+"/"+channel+label, PER=period, ANA=options.analysis, CHN=channel, CAT=cat, VERB=verb, MASS=mass))
+                        os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --model={MODEL} --no-update --{ANA}-categories-{CHN} {CAT} {VERB} -- {MASS}".format(
+                            INPUT=options.input, OUTPUT=options.out+"/"+channel+label, PER=period, ANA=options.analysis, CHN=channel, MODEL=options.model, CAT=cat, VERB=verb, MASS=mass))
                     if options.setup == "all" or options.setup == "cat" :
                         ## setup category-wise
                         for category in category_names[channel][cat]:
-                            os.system("cvs2local-lowmH.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --no-update  --{ANA}-categories-{CHN} {CAT} {VERB} {MASS}".format(
-                                INPUT=options.input, OUTPUT=options.out+"/"+category+label, PER=period, ANA=options.analysis, CHN=channel, CAT=cat, VERB=verb, MASS=mass))
+                            os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --model={MODEL} --no-update  --{ANA}-categories-{CHN} {CAT} {VERB} -- {MASS}".format(
+                                INPUT=options.input, OUTPUT=options.out+"/"+category+label, PER=period, ANA=options.analysis, CHN=channel, MODEL=options.model, CAT=cat, VERB=verb, MASS=mass))
                 else :
                     print "setup directory structure for", options.analysis, period, channel, cat, mass
                     ## setup combined
-                    os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --no-update --{ANA}-categories-{CHN} {CAT} {VERB} {MASS}".format(
+                    os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --no-update --{ANA}-categories-{CHN} {CAT} {VERB} -- {MASS}".format(
                         INPUT=options.input, OUTPUT=options.out+"/cmb"+label, PER=period, ANA=options.analysis, CHN=channel, CAT=cat, VERB=verb, MASS=mass))
                     if options.setup == "all" or options.setup == "chn" :
                         ## setup channel-wise
-                        os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --no-update --{ANA}-categories-{CHN} {CAT} {VERB} {MASS}".format(
+                        os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --no-update --{ANA}-categories-{CHN} {CAT} {VERB} -- {MASS}".format(
                             INPUT=options.input, OUTPUT=options.out+"/"+channel+label, PER=period, ANA=options.analysis, CHN=channel, CAT=cat, VERB=verb, MASS=mass))
                     if options.setup == "all" or options.setup == "cat" :
                         ## setup category-wise
                         for category in category_names[channel][cat]:
-                            os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --no-update  --{ANA}-categories-{CHN} {CAT} {VERB} {MASS}".format(
+                            os.system("cvs2local.py -i {INPUT} -o {OUTPUT} -p {PER} -a {ANA} -c {CHN} --no-update  --{ANA}-categories-{CHN} {CAT} {VERB} -- {MASS}".format(
                                 INPUT=options.input, OUTPUT=options.out+"/"+category+label, PER=period, ANA=options.analysis, CHN=channel, CAT=cat, VERB=verb, MASS=mass))
 

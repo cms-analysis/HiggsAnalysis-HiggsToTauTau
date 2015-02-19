@@ -9,8 +9,8 @@ parser.add_option("--lxq", dest="lxq", default=False, action="store_true",
                   help="Specify this option when running on lxq instead of lxb. [Default: False]")
 parser.add_option("--condor", dest="condor", default=False, action="store_true",
                   help="Specify this option when running on condor instead of lxb. [Default: False]")
-parser.add_option("--old", dest="old", default=False, action="store_true",
-                  help="Switch between tanb_grid.py and tanb_grid_new.py. If validated this could be deleted [Default: False]")
+parser.add_option("--batch-options", dest="batch", default="", type="string",
+                  help="Add all options you want to pass to lxb/lxq encapsulated by quotation marks '\"'. [Default: \"\"]")
 parser.add_option("--model", dest="modelname", default="mhmax-mu+200", type="string",
                   help="The model which should be used (choices are: mhmax-mu+200, mhmodp, mhmodm). Default: \"mhmax-mu+200\"]")
 parser.add_option("--ana-type", dest="ana_type", default="NeutralMSSM", type="string",
@@ -43,6 +43,7 @@ name = options.name
 dirglob = args
 ## prepare log file directory
 os.system("mkdir -p log")
+bsubargs = options.batch
 
 ## tamplate for the submission script
 # NB we can't have a line break before #!/bin/bash otherwise condor will
@@ -55,7 +56,7 @@ eval `scram runtime -sh`
 echo "Running submit.py:"
 echo "in directory {directory}"
 
-$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/submit.py --tanb+ --setup {OLD} {SMARTGRID} {directory} --options "--model {MODEL} --ana-type {ANATYPE} {MSSMvsSM}" {customTanb}
+$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/submit.py --tanb+ --setup {SMARTGRID} {directory} --options "--model {MODEL} --ana-type {ANATYPE} {MSSMvsSM}" {customTanb}
 '''
 
 lxq_fragment = '''#!/bin/zsh
@@ -111,7 +112,6 @@ def submit(name, key, masses) :
                 script.write(script_template.format(
                     working_dir = os.getcwd(),
                     directory = dir,
-                    OLD = "--old" if options.old else "",
                     MODEL = options.modelname,
                     ANATYPE = options.ana_type,
                     MSSMvsSM = "--MSSMvsSM" if options.MSSMvsSM else "",
@@ -131,12 +131,12 @@ def submit(name, key, masses) :
                     % (os.getcwd(), script_file_name.replace('.sh', '.stderr')))
                 submit_script.write("queue\n")
             elif options.lxq :
-                submit_script.write('qsub -j y -o /dev/null -l h_vmem=2000M -v cmssw_base %s\n' % script_file_name) 
+                submit_script.write('qsub -j y -o /dev/null -l h_vmem=2000M -v cmssw_base %s %s\n' % (bsubargs, script_file_name)) 
             else :
                 os.system('touch {PWD}/log/{LOG}'.format(
                     PWD=os.getcwd(), LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log')))
-                submit_script.write('bsub -q 8nh -oo {PWD}/log/{LOG} {PWD}/{FILE}\n'.format(
-                    LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log'), PWD=os.getcwd(), FILE=script_file_name))
+                submit_script.write('bsub -q 8nh -oo {BSUBARGS} {PWD}/log/{LOG} {PWD}/{FILE}\n'.format(
+                    BSUBARGS=bsubargs, LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log'), PWD=os.getcwd(), FILE=script_file_name))
     os.system('chmod a+x %s' % submit_name)
 
 def directories(args) :

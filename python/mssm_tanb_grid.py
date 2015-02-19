@@ -18,7 +18,10 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
         custom_tanb = [float(k) for k in customTanb.split(',')]
         idx=0
         while idx < len(custom_tanb) :
-            dirs = vec2str(subvec(args,  90,  1000))
+            #dirs = vec2str(subvec(args,  -1000,  1000))
+            dirs = ""
+            for dir in args :
+                dirs += dir+" "
             if idx < len(custom_tanb)-1 :
                 grid_save = [
                     "{CMD} -n 2 --min {START} --max {END} {SUB} {OPTS} {USER} {DIRS}".format(START=custom_tanb[idx], END=custom_tanb[idx+1], CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
@@ -194,6 +197,23 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
                     ,"{CMD} -n  3 --min 15.0  --max 25.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     ,"{CMD} -n  5 --min 30.0  --max 50.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     ]
+        elif "low-tb-high" in opt :
+            if len(subvec(args,  150, 501))>0 :
+                dirs = vec2str(subvec(args, 150, 501))
+                grid = [
+                    "{CMD} -n  3 --min  0.5 --max 0.9 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ,"{CMD} -n 4 --min  1.5 --max 4.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs) 
+                    ,"{CMD} -n 5 --min  5.5 --max 9.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ]
+        elif "2HDM" in opt :
+            dirs = ""
+            for dir in args :
+                dirs += dir+" "
+            grid = [
+                "{CMD} -n  3 --min  1.0  --max  3.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                ,"{CMD} -n  4 --min  4.0  --max  7.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs) 
+                ,"{CMD} -n  3 --min  8.0  --max 10.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                ]
         else :  #for all other MSSM scenarios except lowmH, lightstopmod and tauphobic
             if len(subvec(args,  90, 249))>0 :
                 dirs = vec2str(subvec(args,  90,  249))

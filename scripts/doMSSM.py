@@ -26,7 +26,7 @@ parser.add_option("--SMHasSignal", dest="SMHasSignal", default=False, action="st
                   help="Shift the SM Higgs from background to the signal. This is normally needed for the signal hypothesis separation test. The options SMHasBackground has to be true [Default: False]")
 parser.add_option("--blind-datacards", dest="blind_datacards", default=False, action="store_true",
                   help="Option to blind datacards. Also needs to be turned on to inject SM to datacards. [Default: False]")
-parser.add_option("--extra-templates", dest="extra_templates", default="", type="string", help="List of extra background or signal templates which should be injected to the asimov dataset. Needs to be comma seperated list. Here used to inject SM signal into MSSM datacards. [Default: \"\"]")
+parser.add_option("--extra-templates", dest="extra_templates", default="", type="string", help="List of extra background or signal templates which should be injected to the asimov dataset. Needs to be comma seperated list. Here used to inject SM signal into MSSM datacards. In addition, you can use a scale for each template, e.g. '2.5*ggH_SM125'. The scale number should be left from the template name and is separated from it with a multiplication sign '*'. [Default: \"\"]")
 parser.add_option("--reload", dest="reload", default=False, action="store_true",
                   help="reload all root input files from the github in a setup directory. [Default: False]")
 parser.add_option("--update-all", dest="update_all", default=False, action="store_true",
@@ -53,10 +53,10 @@ parser.add_option("-c", "--config", dest="config", default="",
 if len(args) < 1 :
     #parser.print_usage()
     if not options.fine_scan:
-        args.append("90 130 100-200:20 250-500:50 600-1000:100")
+        args.append("90 130 100_200:20 250_500:50 600_1000:100")
     else :
-        args.append("90-250:10 275-500:25 550-1000:50 125")
-        #args.append("90 100-180:5 200 250-500:50 600-1000:100")
+        args.append("90_250:10 275_500:25 550_1000:50 125")
+        #args.append("90 100_180:5 200 250_500:50 600_1000:100")
     #exit(1)
 
 import os
@@ -213,7 +213,7 @@ if options.update_setup :
         for per in config.periods :
             if directories[chn][per] == 'None' :
                 continue
-            os.system("scale2accept.py -i {SETUP} -c '{CHN}' -p '{PER}' 90 100-200:20 130 250-500:50 600-1000:100".format(
+            os.system("scale2accept.py -i {SETUP} -c '{CHN}' -p '{PER}' 90 100_200:20 130 250_500:50 600_1000:100".format(
                 SETUP=setup,
                 CHN=chn,
                 PER=per,
