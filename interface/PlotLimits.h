@@ -98,7 +98,7 @@ class PlotLimits {
   /// print 1d uncertainties for a given CL to file (used by scan-2d)
   void band1D(ostream& out, std::string& xval, std::string& yval, TGraph* bestFit, TGraph* band, float xoffset, float yoffset, std::string CL);
   /// fill a graph for the contraints of the H(125) resonance in the mA-tanb exclusion plane (used for option tanb)
-  TGraphAsymmErrors* higgsConstraint(TH2D* plane_expected, double mass=125., double deltaM=1., const char* model="mhmax-mu+200");
+  TGraphAsymmErrors* higgsConstraint(TH2D* plane_expected, double mass=125., double deltaM=1., const char* model="mhmax-mu+200", const char* type="h");
   /// plot limits on canvas, print out png, pdf, txt, root formats if desired
   void plotLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0);
   /// plot limits for tanb on canvas, print out png, pdf, txt, root formats if desired

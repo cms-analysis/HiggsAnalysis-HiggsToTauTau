@@ -324,8 +324,8 @@ PlotLimits::print(const char* filename, std::vector<TGraph*> minus2sigma, std::v
       << std::endl << "\\hline" << std::endl;
   }
 
-  if(std::string(type) == std::string("txt")){
-    file.open (std::string(filename).append(".txt").c_str());
+  if(std::string(type) == std::string("txt") || std::string(type) == std::string("dat")){
+    file.open (std::string(filename).append(".").append(type).c_str());
     file << "Scanned range " << tanbLow << " - " << tanbHigh << std::endl;
     file
       << "#"
