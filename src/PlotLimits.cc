@@ -361,7 +361,7 @@ PlotLimits::minimum(TGraph* graph)
 }
 
 TGraphAsymmErrors* 
-PlotLimits::higgsConstraint(TH2D* plane_expected, double mass, double deltaM, const char* model)
+PlotLimits::higgsConstraint(TH2D* plane_expected, double mass, double deltaM, const char* model, const char* type)
 {
   TGraphAsymmErrors* graph = new TGraphAsymmErrors();
   for(int imass=0, ipoint=0; imass<plane_expected->GetNbinsX(); ++imass){
@@ -378,7 +378,7 @@ PlotLimits::higgsConstraint(TH2D* plane_expected, double mass, double deltaM, co
 	getline(higgs,line);
 	sscanf(line.c_str(),"%f %f %f %f", &tanb, &mh, &mA, &mH);
 	if (TString::Format(model)=="lowmH") {
-	  if(fabs(mH-mass)<deltaM && tanb!=tanb_save){
+	  if(fabs(mh-mass)<deltaM && tanb!=tanb_save){
 	    if(!filled){
 	      graph->SetPoint(ipoint, x_save, tanb); 
 	      graph->SetPointEYlow(ipoint, 0.);
@@ -390,15 +390,29 @@ PlotLimits::higgsConstraint(TH2D* plane_expected, double mass, double deltaM, co
 	  }
 	}
 	else {
-	  if(fabs(mh-mass)<deltaM && tanb!=tanb_save){
-	    if(!filled){
-	      graph->SetPoint(ipoint, x_save, tanb); 
-	      graph->SetPointEYlow(ipoint, 0.);
-	      tanb_save=tanb;
-	      ipoint++; filled = true;
-	      lowerTanb=tanb;
+	  if (TString::Format(type)=="h") {
+	    if(fabs(mh-mass)<deltaM && tanb!=tanb_save){
+	      if(!filled){
+		graph->SetPoint(ipoint, x_save, tanb); 
+		graph->SetPointEYlow(ipoint, 0.);
+		tanb_save=tanb;
+		ipoint++; filled = true;
+		lowerTanb=tanb;
+	      }
+	      upperTanb=tanb;
 	    }
-	    upperTanb=tanb;
+	  }
+	  else if(TString::Format(type)=="H") {
+	    if(fabs(mH-mass)<deltaM && tanb!=tanb_save){
+	      if(!filled){
+		graph->SetPoint(ipoint, x_save, tanb); 
+		graph->SetPointEYlow(ipoint, 0.);
+		tanb_save=tanb;
+		ipoint++; filled = true;
+		lowerTanb=tanb;
+	      }
+	      upperTanb=tanb;
+	    }
 	  }
 	}
       }
