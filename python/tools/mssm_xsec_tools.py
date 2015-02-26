@@ -73,7 +73,6 @@ class mssm_xsec_tools():
         " Lookup the branching ratio for Hp->tau+nu"
         # Unpack
         type, type_info = input
-        print parameter1, tan_beta, self.lookup_value(parameter1, tan_beta, "h_brtaunu_%s" % type)
         type_info['BR-taunu'] = self.lookup_value(parameter1, tan_beta, "h_brtaunu_%s" % type)
 
     def _add_mass(self, parameter1, tan_beta, input):
@@ -301,6 +300,6 @@ class mssm_xsec_tools():
                 self._add_santander((higgs_type, output['higgses'][higgs_type]))
             
 
-        print output
+        #print output
         return output
     

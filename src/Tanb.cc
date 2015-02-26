@@ -130,7 +130,6 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
         else fullpath = TString::Format("%s/%d/HypothesisTest.root",directory,(int)mass);
       }
       std::cout << "open file: " << fullpath << std::endl;
-      
       TFile* file_ = TFile::Open(fullpath); if(!file_){ std::cout << "--> TFile is corrupt: skipping masspoint." << std::endl; continue; }
       TTree* limit = (TTree*) file_->Get("tree"); if(!limit){ std::cout << "--> TTree is corrupt: skipping masspoint." << std::endl; continue; }
       double tanb, exp, obs, plus1sigma, minus1sigma, plus2sigma, minus2sigma;
@@ -272,7 +271,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 //   plane_expected   ->Smooth(1, "k5b");
 //   plane_plus1sigma ->Smooth(1, "k5b");
 //   plane_plus2sigma ->Smooth(1, "k5b");
-//   plane_observed   ->Smooth(11, "k5b");
+//   plane_observed   ->Smooth(11, "k5b")
 
   // Grabbing contours
   std::vector<TGraph*> gr_minus2sigma;
@@ -325,8 +324,8 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   // setup contratins from Higgs mass
   std::map<double, TGraphAsymmErrors*> higgsBands;
   if(higgs125_){
-    higgsBands[3] = higgsConstraint(plane_expected, 125., 3., model);
-    //higgsBands[2] = higgsConstraint(plane_expected, 125., 2., model);
+    higgsBands[3] = higgsConstraint(plane_expected, 125., 3., model, "h");
+    //higgsBands[2] = higgsConstraint(plane_expected, 300., 40., model, "H");
     //higgsBands[1] = higgsConstraint(plane_expected, 125., 1., model);
     //for(unsigned int deltaM=0; deltaM<3; ++deltaM){
     //  higgsBands[3-deltaM] = higgsConstraint(plane_expected, 125., 4-deltaM, model);
