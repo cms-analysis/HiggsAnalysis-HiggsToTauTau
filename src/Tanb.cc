@@ -324,8 +324,9 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   // setup contratins from Higgs mass
   std::map<double, TGraphAsymmErrors*> higgsBands;
   if(higgs125_){
-    higgsBands[3] = higgsConstraint(plane_expected, 125., 3., model, "h");
-    //higgsBands[2] = higgsConstraint(plane_expected, 300., 40., model, "H");
+    higgsBands[3] = higgsConstraint(plane_expected, 125., 3., model, "h",true);
+   higgsBands[2] = higgsConstraint(plane_expected, 125., 3., model, "h",false);
+   higgsBands[1] = higgsConstraint(plane_expected, 305., 45., model, "H",true);
     //higgsBands[1] = higgsConstraint(plane_expected, 125., 1., model);
     //for(unsigned int deltaM=0; deltaM<3; ++deltaM){
     //  higgsBands[3-deltaM] = higgsConstraint(plane_expected, 125., 4-deltaM, model);
