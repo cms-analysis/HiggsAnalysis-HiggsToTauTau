@@ -92,14 +92,16 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
       for(int i=0; i<np; i++){ 
 	if(theory=="MSSM low-tan#beta-high scenario"){
 	  if(band_x[i]==band_x[i-1]){
-	    if(band_ymax[i]>9){
+	    if(band_ymax[i]>9&&band_x[i]<250){
 	      band_max->SetPoint(i-1,band_x[i],0.5);
 	    } else if(band_ymax[i]<9){
 	      band_min->SetPoint(i-1, band_x[i], band_ymin[i]);
 	      band_max->SetPoint(i-1,band_x[i],band_ymax[i]);
 	    }
 	  }
+          if(band_ymax[i]>9&&band_x[i]<250){
 	  band_max->SetPoint(i,band_x[i],0.5);
+ }
 	  if(band_ymax[i]<9){
 	    band_min->SetPoint(i,band_x[i],band_ymin[i]);
 	    band_max->SetPoint(i,band_x[i],band_ymax[i]);
@@ -120,6 +122,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
 	  connection_min->SetPoint(1, band_x[i], band_ymax[i]);
 	}
       }
+      band_max->SetPoint(band_max->GetN(),245,1.5);
       connection_min->SetFillStyle(3005);
       connection_min->SetLineWidth(402);
       connection_min->SetFillColor(backgroundColor->GetNumber());
@@ -149,12 +152,14 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
       //Fill in and max graphs
       for(int i=0; i<np; i++){ 
 	if(theory=="MSSM low-tan#beta-high scenario"){
-	  if(band_x[i]==band_x[i-1]){
+	  if(band_x[i]==band_x[i-1]&&band_x[i]<250){
 	    band_min2->SetPoint(i-1, band_x[i], band_ymin[i]);
 	    band_max2->SetPoint(i-1,band_x[i],band_ymax[i]);
 	  }
+          if(band_x[i]<250){
 	  band_min2->SetPoint(i,band_x[i],band_ymin[i]);
 	  band_max2->SetPoint(i,band_x[i],band_ymax[i]);
+ }
 	}
 	else if(theory!="MSSM low-m_{H} scenario"){band_max2->SetPoint(i, band_x[i], band_ymax[i]);}
 	else{	  
@@ -170,6 +175,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
 	  connection_min2->SetPoint(1, band_x[i], band_ymax[i]);
 	}
       }
+      band_min2->SetPoint(band_min2->GetN(),245,1.5);
       connection_min2->SetFillStyle(3005);
       connection_min2->SetLineWidth(402);
       connection_min2->SetFillColor(backgroundColor->GetNumber());
@@ -341,7 +347,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   if(connection_max3) connection_max3->Draw("Lsame");
   if(band_max3) band_max3->Draw("Lsame");
 
-  connection_min->Draw("Lsame");
+  if(theory!="MSSM low-tan#beta-high scenario") connection_min->Draw("Lsame");
   band_min->Draw("Lsame");
   if(theory!="MSSM low-tan#beta-high scenario") connection_max->Draw("Lsame");
   if(theory=="MSSM low-m_{H} scenario" || theory=="MSSM m_{h}^{max} scenario" || theory=="MSSM low-tan#beta-high scenario")  band_max->Draw("Lsame");
