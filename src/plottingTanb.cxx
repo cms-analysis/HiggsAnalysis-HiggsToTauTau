@@ -17,7 +17,7 @@
 #include <iostream>
 
 void
-plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, std::vector<TGraph*> injected, std::map<double, TGraphAsymmErrors*> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool MSSMvsSM=true, std::string HIG="", bool Brazilian=false)
+plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, std::vector<TGraph*> injected, std::map<double,TGraphAsymmErrors*> higgsBands, std::map<double,std::vector<TGraph*>> higgsBandsLowTb,std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool MSSMvsSM=true, std::string HIG="", bool Brazilian=false)
 {
   // set up styles
   canv.cd();
@@ -73,9 +73,8 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   int coloredBands[] = {kWhite, kWhite, kWhite}; 
   TGraph *band_min=new TGraph(), *band_max=new TGraph(), *connection_min=new TGraph(), *connection_max=new TGraph();
   TGraph *band_min2=0, *band_max2=0, *connection_min2=0, *connection_max2=0;
-  TGraph *band_min3=0, *band_max3=0, *connection_min3=0, *connection_max3=0;
   for(std::map<double,TGraphAsymmErrors*>::reverse_iterator band = higgsBands.rbegin(); band!=higgsBands.rend(); ++band, ++idx){
-    //for(std::map<double,TGraphAsymmErrors*>::const_iterator band = higgsBands.begin(); band!=higgsBands.end(); ++band, ++idx){
+
     band->second->SetLineColor(coloredBands[idx]);
     band->second->SetFillColor(coloredBands[idx]);
     band->second->Draw("3same");
@@ -90,39 +89,23 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
       }
       //Fill in and max graphs
       for(int i=0; i<np; i++){ 
-	if(theory=="MSSM low-tan#beta-high scenario"){
-	  if(band_x[i]==band_x[i-1]){
-	    if(band_ymax[i]>9&&band_x[i]<250){
-	      band_max->SetPoint(i-1,band_x[i],0.5);
-	    } else if(band_ymax[i]<9){
-	      band_min->SetPoint(i-1, band_x[i], band_ymin[i]);
-	      band_max->SetPoint(i-1,band_x[i],band_ymax[i]);
-	    }
-	  }
-          if(band_ymax[i]>9&&band_x[i]<250){
-	  band_max->SetPoint(i,band_x[i],0.5);
- }
-	  if(band_ymax[i]<9){
-	    band_min->SetPoint(i,band_x[i],band_ymin[i]);
-	    band_max->SetPoint(i,band_x[i],band_ymax[i]);
-	  }
-	}
-	else if(theory!="MSSM low-m_{H} scenario"){band_max->SetPoint(i, band_x[i], band_ymax[i]);}
+        band_min->SetPoint(i,band_x[i],band_ymin[i]);
+	if(theory!="MSSM low-m_{H} scenario"){band_max->SetPoint(i, band_x[i], band_ymax[i]);}
 	else{	  
 	  if(i==0) band_max->SetPoint(0, band_x[i], band_ymax[i]);
 	  if(i==np-1) band_max->SetPoint(1, band_x[i], band_ymax[i]); 
 	} 
 
 	if(i==0){
-	  connection_max->SetPoint(i, band_x[i], band_ymin[i]);
-	  connection_max->SetPoint(i+1, band_x[i], band_ymax[i]);
+	  connection_min->SetPoint(i, band_x[i], band_ymin[i]);
+	  connection_min->SetPoint(i+1, band_x[i], band_ymax[i]);
 	}
 	if(i==np-1){
-	  connection_min->SetPoint(0, band_x[i], band_ymin[i]);
-	  connection_min->SetPoint(1, band_x[i], band_ymax[i]);
+	  connection_max->SetPoint(0, band_x[i], band_ymin[i]);
+	  connection_max->SetPoint(1, band_x[i], band_ymax[i]);
 	}
       }
-      band_max->SetPoint(band_max->GetN(),245,1.5);
+
       connection_min->SetFillStyle(3005);
       connection_min->SetLineWidth(402);
       connection_min->SetFillColor(backgroundColor->GetNumber());
@@ -140,62 +123,9 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
       band_max->SetFillColor(backgroundColor->GetNumber());
       band_max->SetLineColor(backgroundColor->GetNumber());
     }
+    
     if(idx==1){
       band_min2=new TGraph(), band_max2=new TGraph(), connection_min2=new TGraph(), connection_max2=new TGraph();
-      int np=band->second->GetN();
-      double band_ymin[np], band_ymax[np];
-      double band_x[np];
-      for(int i=0; i<np; i++){ 
-	band->second->GetPoint(i, band_x[i], band_ymin[i]);
-	band_ymax[i]=band_ymin[i] + band->second->GetErrorYhigh(i);
-      }
-      //Fill in and max graphs
-      for(int i=0; i<np; i++){ 
-	if(theory=="MSSM low-tan#beta-high scenario"){
-	  if(band_x[i]==band_x[i-1]&&band_x[i]<250){
-	    band_min2->SetPoint(i-1, band_x[i], band_ymin[i]);
-	    band_max2->SetPoint(i-1,band_x[i],band_ymax[i]);
-	  }
-          if(band_x[i]<250){
-	  band_min2->SetPoint(i,band_x[i],band_ymin[i]);
-	  band_max2->SetPoint(i,band_x[i],band_ymax[i]);
- }
-	}
-	else if(theory!="MSSM low-m_{H} scenario"){band_max2->SetPoint(i, band_x[i], band_ymax[i]);}
-	else{	  
-	  if(i==0) band_max2->SetPoint(0, band_x[i], band_ymax[i]);
-	  if(i==np-1) band_max2->SetPoint(1, band_x[i], band_ymax[i]); 
-	} 
-	if(i==0){
-	  connection_max2->SetPoint(i, band_x[i], band_ymin[i]);
-	  connection_max2->SetPoint(i+1, band_x[i], band_ymax[i]);
-	}
-	if(i==np-1){
-	  connection_min2->SetPoint(0, band_x[i], band_ymin[i]);
-	  connection_min2->SetPoint(1, band_x[i], band_ymax[i]);
-	}
-      }
-      band_min2->SetPoint(band_min2->GetN(),245,1.5);
-      connection_min2->SetFillStyle(3005);
-      connection_min2->SetLineWidth(402);
-      connection_min2->SetFillColor(backgroundColor->GetNumber());
-      connection_min2->SetLineColor(backgroundColor->GetNumber());
-      band_min2->SetFillStyle(3005);
-      band_min2->SetLineWidth(-402);
-      band_min2->SetFillColor(backgroundColor->GetNumber());
-      band_min2->SetLineColor(backgroundColor->GetNumber());
-      connection_max2->SetFillStyle(3005);
-      connection_max2->SetLineWidth(-402);
-      connection_max2->SetFillColor(backgroundColor->GetNumber());
-      connection_max2->SetLineColor(backgroundColor->GetNumber());
-      band_max2->SetFillStyle(3005);
-      band_max2->SetLineWidth(402);
-      band_max2->SetFillColor(backgroundColor->GetNumber());
-      band_max2->SetLineColor(backgroundColor->GetNumber());
-    }
-
-    if(idx==2){
-      band_min3=new TGraph(), band_max3=new TGraph(), connection_min3=new TGraph(), connection_max3=new TGraph();
       int np=band->second->GetN();
       double band_ymin[np], band_ymax[np];
       double band_x[np];
@@ -205,58 +135,60 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
       }
       //Fill in and max graphs
       for(int i=0; i<np; i++){ 
-	band_min3->SetPoint(i, band_x[i], band_ymin[i]);
-	if(theory!="MSSM low-m_{H} scenario"){band_max3->SetPoint(i, band_x[i], band_ymax[i]);}
+	band_min2->SetPoint(i, band_x[i], band_ymin[i]);
+	if(theory!="MSSM low-m_{H} scenario"){band_max2->SetPoint(i, band_x[i], band_ymax[i]);}
 	else{	  
-	  if(i==0) band_max3->SetPoint(0, band_x[i], band_ymax[i]);
-	  if(i==np-1) band_max3->SetPoint(1, band_x[i], band_ymax[i]); 
+	  if(i==0) band_max2->SetPoint(0, band_x[i], band_ymax[i]);
+	  if(i==np-1) band_max2->SetPoint(1, band_x[i], band_ymax[i]); 
 	} 
 	if(i==0){
-	  connection_min3->SetPoint(i, band_x[i], band_ymin[i]);
-	  connection_min3->SetPoint(i+1, band_x[i], band_ymax[i]);
+	  connection_min2->SetPoint(i, band_x[i], band_ymin[i]);
+	  connection_min2->SetPoint(i+1, band_x[i], band_ymax[i]);
 	}
 	if(i==np-1){
-	  connection_max3->SetPoint(0, band_x[i], band_ymin[i]);
-	  connection_max3->SetPoint(1, band_x[i], band_ymax[i]);
+	  connection_max2->SetPoint(0, band_x[i], band_ymin[i]);
+	  connection_max2->SetPoint(1, band_x[i], band_ymax[i]);
 	}
       }
-      connection_min3->SetLineStyle(2);
-      connection_min3->SetLineWidth(4);
-      connection_min3->SetLineColor(kGray+2);
-      band_min3->SetLineStyle(2);
-      band_min3->SetLineWidth(4);
-      band_min3->SetLineColor(kGray+2);
-      connection_max3->SetLineStyle(2);
-      connection_max3->SetLineWidth(4);
-      connection_max3->SetLineColor(kGray+2);
-      band_max3->SetLineStyle(2);
-      band_max3->SetLineWidth(4);
-      band_max3->SetLineColor(kGray+2);
-      connection_min3->SetFillStyle(1001);
-      connection_min3->SetLineStyle(2);
-      connection_min3->SetLineWidth(9902);
-      connection_min3->SetFillColor(kWhite);
-      connection_min3->SetLineColor(kGray+2);
-      band_min3->SetFillStyle(1001);
-      band_min3->SetLineStyle(2);
-      band_min3->SetLineWidth(-9902);
-      band_min3->SetFillColor(kWhite);
-      band_min3->SetLineColor(kGray+2);
-      connection_max3->SetFillStyle(1001);
-      connection_max3->SetLineStyle(2);
-      connection_max3->SetLineWidth(-9902);
-      connection_max3->SetFillColor(kWhite);
-      connection_max3->SetLineColor(kGray+2);
-      band_max3->SetFillStyle(1001);
-      band_max3->SetLineStyle(2);
-      band_max3->SetLineWidth(9902);
-      band_max3->SetFillColor(kWhite);
-      band_max3->SetLineColor(kGray+2);
+      connection_min2->SetLineStyle(2);
+      connection_min2->SetLineWidth(4);
+      connection_min2->SetLineColor(kGray+2);
+      band_min2->SetLineStyle(2);
+      band_min2->SetLineWidth(4);
+      band_min2->SetLineColor(kGray+2);
+      connection_max2->SetLineStyle(2);
+      connection_max2->SetLineWidth(4);
+      connection_max2->SetLineColor(kGray+2);
+      band_max2->SetLineStyle(2);
+      band_max2->SetLineWidth(4);
+      band_max2->SetLineColor(kGray+2);
+      connection_min2->SetFillStyle(1001);
+      connection_min2->SetLineStyle(2);
+      connection_min2->SetLineWidth(9902);
+      connection_min2->SetFillColor(kWhite);
+      connection_min2->SetLineColor(kGray+2);
+      band_min2->SetFillStyle(1001);
+      band_min2->SetLineStyle(2);
+      band_min2->SetLineWidth(-9902);
+      band_min2->SetFillColor(kWhite);
+      band_min2->SetLineColor(kGray+2);
+      connection_max2->SetFillStyle(1001);
+      connection_max2->SetLineStyle(2);
+      connection_max2->SetLineWidth(-9902);
+      connection_max2->SetFillColor(kWhite);
+      connection_max2->SetLineColor(kGray+2);
+      band_max2->SetFillStyle(1001);
+      band_max2->SetLineStyle(2);
+      band_max2->SetLineWidth(9902);
+      band_max2->SetFillColor(kWhite);
+      band_max2->SetLineColor(kGray+2);
     }
+
   }
 
   //mass constraint (background color)
   TGraphAsymmErrors* background = new TGraphAsymmErrors();
+  TGraphAsymmErrors* mHconstraint = new TGraphAsymmErrors();
   //   background->SetPoint(0, expected[0]->GetX()[0], 50);
   //   background->SetPointEYlow (0, 50);
   //   background->SetPointEYhigh(0, 50); 
@@ -270,6 +202,11 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   //   background->SetPointEYhigh(expected[0]->GetN(), 50); 
   background->SetFillStyle(3005.); //1001  
   background->SetFillColor(backgroundColor->GetNumber());
+  mHconstraint->SetFillStyle(1001);
+  mHconstraint->SetLineStyle(3);
+  mHconstraint->SetLineWidth(2);
+  mHconstraint->SetFillColor(kWhite);
+  mHconstraint->SetLineColor(kGreen+3);
   //background->SetLineColor(ph->GetNumber());
   background->SetLineWidth(2); 
   background->SetLineColor(kWhite); //for legend backgroundColor->GetNumber()
@@ -342,18 +279,43 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
       observed[i]->Draw("CONT SAME"); 
     } 
   }
-  if(connection_min3) connection_min3->Draw("Lsame");
-  if(band_min3) band_min3->Draw("Lsame");
-  if(connection_max3) connection_max3->Draw("Lsame");
-  if(band_max3) band_max3->Draw("Lsame");
-
-  if(theory!="MSSM low-tan#beta-high scenario") connection_min->Draw("Lsame");
-  band_min->Draw("Lsame");
-  if(theory!="MSSM low-tan#beta-high scenario") connection_max->Draw("Lsame");
-  if(theory=="MSSM low-m_{H} scenario" || theory=="MSSM m_{h}^{max} scenario" || theory=="MSSM low-tan#beta-high scenario")  band_max->Draw("Lsame");
-  if(theory!="MSSM low-tan#beta-high scenario"&&connection_min2) connection_min2->Draw("Lsame");
+  if(connection_min2) connection_min2->Draw("Lsame");
   if(band_min2) band_min2->Draw("Lsame");
-  if(theory!="MSSM low-tan#beta-high scenario"&&connection_max2) connection_max2->Draw("Lsame");
+  if(connection_max2) connection_max2->Draw("Lsame");
+  if(band_max2) band_max2->Draw("Lsame");
+
+  if(connection_min) connection_min->Draw("Lsame");
+  if(band_min) band_min->Draw("Lsame");
+  if(connection_max) connection_max->Draw("Lsame");
+  if(band_max&&(theory=="MSSM low-m_{H} scenario" || theory=="MSSM m_{h}^{max} scenario"))  band_max->Draw("Lsame");
+
+idx=0;
+ for(std::map<double,std::vector<TGraph*>>::reverse_iterator band = higgsBandsLowTb.rbegin(); band!=higgsBandsLowTb.rend(); ++band, ++idx){
+   if(idx==0){
+for(unsigned int i=0;i<(band->second).size();i++){
+    (band->second)[i]->SetFillStyle(1001);
+    (band->second)[i]->SetLineStyle(3);
+    (band->second)[i]->SetFillColor(kWhite);
+    (band->second)[i]->SetLineColor(kGreen+3);
+    (band->second)[i]->SetLineWidth(-9902);
+//    (band->second)[i]->Draw("F SAME");
+    (band->second)[i]->Draw("CONT SAME");
+}
+ }
+  if(idx==1){
+ for(unsigned int i=0;i<(band->second).size();i++){
+    (band->second)[i]->SetFillStyle(3005);
+    (band->second)[i]->SetFillColor(kRed);
+    (band->second)[i]->SetLineColor(kRed);
+    (band->second)[i]->SetLineWidth(-402);
+    (band->second)[i]->Draw("CONT SAME");
+}
+ }
+
+
+
+   }
+
 
 
   idx=0;
@@ -476,7 +438,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   }
   else{ 
     if(theory=="MSSM low-m_{H} scenario") leg2 = new TLegend(0.57, 0.78, 0.92, 0.83);
-    else if(theory=="MSSM low-tan#beta-high scenario") leg2 = new TLegend(0.57, 0.48, 0.92, 0.53);//(0.57, 0.81, 0.92, 0.86)Hhh
+    else if(theory=="MSSM low-tan#beta-high scenario") leg2 = new TLegend(0.52, 0.45, 0.92, 0.53);//(0.57, 0.81, 0.92, 0.86)Hhh
     else leg2 = new TLegend(0.57, 0.26, 0.92, 0.31);
   }  
   leg2->SetBorderSize( 1  );
@@ -489,10 +451,12 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   if(log) {
     if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
     else leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
+    if(theory=="MSSM low-tan#beta-high scenario") leg2->AddEntry(mHconstraint," m^{MSSM}_{H} #notin [260,350] GeV","F");
   }
   else {
     if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
     else leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
+    if(theory=="MSSM low-tan#beta-high scenario") leg2->AddEntry(mHconstraint," m^{MSSM}_{H} #notin [260,350] GeV","F");
   }
   if(theory!="2HDM type-I" && theory!="2HDM type-II") leg2->Draw("same");
 
