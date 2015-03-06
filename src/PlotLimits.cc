@@ -87,6 +87,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   HIG_12_052_      =cfg.existsAs<bool>("HIG_12_052"      ) ? cfg.getParameter<bool>("HIG_12_052"      ) : false;
   higgs125_ =cfg.existsAs<bool>("higgs125" ) ? cfg.getParameter<bool>("higgs125" ) : false;
   linearFit_=cfg.existsAs<bool>("linearFit") ? cfg.getParameter<bool>("linearFit") : false;
+  azh_ = cfg.existsAs<bool>("azh")? cfg.getParameter<bool>("azh") : false;
   transparent_=cfg.existsAs<bool>("transparent") ? cfg.getParameter<bool>("transparent") : false;
   expectedOnly_=cfg.existsAs<bool>("expectedOnly") ? cfg.getParameter<bool>("expectedOnly") : false;
   MSSMvsSM_=cfg.existsAs<bool  >("MSSMvsSM") ? cfg.getParameter<bool  >("MSSMvsSM") : false;
@@ -525,7 +526,7 @@ PlotLimits::higgsConstraintLowTb(TH2D* plane_expected, double hmass, double hdel
   //std::cout<< gr_minus2sigma.size() << " " << gr_minus1sigma.size() << " " << gr_expected.size() << " " << gr_plus1sigma.size() << " " << gr_plus2sigma.size() << " " << gr_observed.size() << std::endl;
 
   std::vector<std::vector<TGraph*>> hcontour_bands;
-  hcontour_bands.push_back(gr_hconstraint);
-  hcontour_bands.push_back(gr_Hconstraint); 
+  hcontour_bands.push_back(gr_Hconstraint);
+  hcontour_bands.push_back(gr_hconstraint); 
   return hcontour_bands;
 }

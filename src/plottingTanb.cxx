@@ -17,7 +17,7 @@
 #include <iostream>
 
 void
-plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, std::vector<TGraph*> injected, std::map<double,TGraphAsymmErrors*> higgsBands, std::map<double,std::vector<TGraph*>> higgsBandsLowTb,std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool MSSMvsSM=true, std::string HIG="", bool Brazilian=false)
+plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, std::vector<TGraph*> injected, std::map<double,TGraphAsymmErrors*> higgsBands, std::map<double,std::vector<TGraph*>> higgsBandsLowTb,std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool MSSMvsSM=true, std::string HIG="", bool Brazilian=false, bool azh=false)
 {
   // set up styles
   canv.cd();
@@ -291,7 +291,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
 
 idx=0;
  for(std::map<double,std::vector<TGraph*>>::reverse_iterator band = higgsBandsLowTb.rbegin(); band!=higgsBandsLowTb.rend(); ++band, ++idx){
-   if(idx==0){
+   if(idx==1){
 for(unsigned int i=0;i<(band->second).size();i++){
     (band->second)[i]->SetFillStyle(1001);
     (band->second)[i]->SetLineStyle(3);
@@ -302,7 +302,7 @@ for(unsigned int i=0;i<(band->second).size();i++){
     (band->second)[i]->Draw("CONT SAME");
 }
  }
-  if(idx==1){
+  if(idx==0){
  for(unsigned int i=0;i<(band->second).size();i++){
     (band->second)[i]->SetFillStyle(3005);
     (band->second)[i]->SetFillColor(kRed);
@@ -438,7 +438,8 @@ for(unsigned int i=0;i<(band->second).size();i++){
   }
   else{ 
     if(theory=="MSSM low-m_{H} scenario") leg2 = new TLegend(0.57, 0.78, 0.92, 0.83);
-    else if(theory=="MSSM low-tan#beta-high scenario") leg2 = new TLegend(0.52, 0.45, 0.92, 0.53);//(0.57, 0.81, 0.92, 0.86)Hhh
+    else if(theory=="MSSM low-tan#beta-high scenario"&&!azh) leg2 = new TLegend(0.52, 0.45, 0.92, 0.53);//(0.57, 0.81, 0.92, 0.86)Hhh
+    else if(theory=="MSSM low-tan#beta-high scenario") leg2 = new TLegend(0.17,0.58,0.52,0.63);
     else leg2 = new TLegend(0.57, 0.26, 0.92, 0.31);
   }  
   leg2->SetBorderSize( 1  );
@@ -451,12 +452,12 @@ for(unsigned int i=0;i<(band->second).size();i++){
   if(log) {
     if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
     else leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
-    if(theory=="MSSM low-tan#beta-high scenario") leg2->AddEntry(mHconstraint," m^{MSSM}_{H} #notin [260,350] GeV","F");
+    if(theory=="MSSM low-tan#beta-high scenario"&&!azh) leg2->AddEntry(mHconstraint," m^{MSSM}_{H} #notin [260,350] GeV","F");
   }
   else {
     if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
     else leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
-    if(theory=="MSSM low-tan#beta-high scenario") leg2->AddEntry(mHconstraint," m^{MSSM}_{H} #notin [260,350] GeV","F");
+    if(theory=="MSSM low-tan#beta-high scenario"&&!azh) leg2->AddEntry(mHconstraint," m^{MSSM}_{H} #notin [260,350] GeV","F");
   }
   if(theory!="2HDM type-I" && theory!="2HDM type-II") leg2->Draw("same");
 
