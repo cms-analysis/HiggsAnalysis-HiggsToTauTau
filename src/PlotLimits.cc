@@ -79,7 +79,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   arXiv_1205_5736_ =cfg.existsAs<bool>("arXiv_1205_5736" ) ? cfg.getParameter<bool>("arXiv_1205_5736" ) : false;
   HIG_12_052_      =cfg.existsAs<bool>("HIG_12_052"      ) ? cfg.getParameter<bool>("HIG_12_052"      ) : false;
   higgs125_ =cfg.existsAs<bool>("higgs125" ) ? cfg.getParameter<bool>("higgs125" ) : false;
-  outerband_=cfg.existsAs<bool>("outerband") ? cfg.getParameter<bool>("outerband") : false;
+  linearFit_=cfg.existsAs<bool>("linearFit") ? cfg.getParameter<bool>("linearFit") : false;
   transparent_=cfg.existsAs<bool>("transparent") ? cfg.getParameter<bool>("transparent") : false;
   expectedOnly_=cfg.existsAs<bool>("expectedOnly") ? cfg.getParameter<bool>("expectedOnly") : false;
   MSSMvsSM_=cfg.existsAs<bool  >("MSSMvsSM") ? cfg.getParameter<bool  >("MSSMvsSM") : false;
@@ -360,30 +360,60 @@ PlotLimits::minimum(TGraph* graph)
   return minimum;
 }
 
-TGraphAsymmErrors*  
-PlotLimits::higgsConstraint(const char* directory, double mass, double deltaM, const char* model)
+TGraphAsymmErrors* 
+PlotLimits::higgsConstraint(TH2D* plane_expected, double mass, double deltaM, const char* model, const char* type)
 {
   TGraphAsymmErrors* graph = new TGraphAsymmErrors();
-  for(unsigned int imass=0, ipoint=0; imass<bins_.size(); ++imass){
+  for(int imass=0, ipoint=0; imass<plane_expected->GetNbinsX(); ++imass){
+  //for(int i=300, ipoint=0; i<3101; i=i+100){
     std::string line;
     bool filled = false;
-    float tanb_save=-99.0, tanb, mh, mA, mH, upperTanb=-1., lowerTanb=-1., mhiggs=0;
-    ifstream higgs (TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/%s/higgs_%d.dat", model, (int)bins_[imass])); 
+    float tanb_save=-99.0, tanb, mh, mA, mH, upperTanb=-1., lowerTanb=-1.;
+    double x_save=plane_expected->GetXaxis()->GetBinUpEdge(imass);
+    //double x_save=(int)i;
+    ifstream higgs (TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/%s/higgs_%d.dat", model, (int)x_save)); 
+    //std::cout << TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/%s/higgs_%d.dat", model, (int)x_save) << std::endl;
     if(higgs.is_open()){
       while(higgs.good()){
 	getline(higgs,line);
 	sscanf(line.c_str(),"%f %f %f %f", &tanb, &mh, &mA, &mH);
-	if(TString(model)=="lowmH") mhiggs=mH;
-	else mhiggs=mh;
-	if(fabs(mhiggs-mass)<deltaM && tanb!=tanb_save){
-	  if(!filled){
-	    graph->SetPoint(ipoint, bins_[imass], tanb); 
-	    graph->SetPointEYlow(ipoint, 0.);
-	    tanb_save=tanb;
-	    ipoint++; filled = true;
-	    lowerTanb=tanb;
+	if (TString::Format(model)=="lowmH") {
+	  if(fabs(mh-mass)<deltaM && tanb!=tanb_save){
+	    if(!filled){
+	      graph->SetPoint(ipoint, x_save, tanb); 
+	      graph->SetPointEYlow(ipoint, 0.);
+	      tanb_save=tanb;
+	      ipoint++; filled = true;
+	      lowerTanb=tanb;
+	    }
+	    upperTanb=tanb;
 	  }
-	  upperTanb=tanb;
+	}
+	else {
+	  if (TString::Format(type)=="h") {
+	    if(fabs(mh-mass)<deltaM && tanb!=tanb_save){
+	      if(!filled){
+		graph->SetPoint(ipoint, x_save, tanb); 
+		graph->SetPointEYlow(ipoint, 0.);
+		tanb_save=tanb;
+		ipoint++; filled = true;
+		lowerTanb=tanb;
+	      }
+	      upperTanb=tanb;
+	    }
+	  }
+	  else if(TString::Format(type)=="H") {
+	    if(fabs(mH-mass)<deltaM && tanb!=tanb_save){
+	      if(!filled){
+		graph->SetPoint(ipoint, x_save, tanb); 
+		graph->SetPointEYlow(ipoint, 0.);
+		tanb_save=tanb;
+		ipoint++; filled = true;
+		lowerTanb=tanb;
+	      }
+	      upperTanb=tanb;
+	    }
+	  }
 	}
       }
       if(upperTanb>0){

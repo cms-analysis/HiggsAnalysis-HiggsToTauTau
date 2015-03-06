@@ -108,7 +108,7 @@ TH2D* frameTH2D(TH2D *in, double threshold){
 	Double_t y0 = in->GetYaxis()->GetXmin();
 	Double_t y1 = in->GetYaxis()->GetXmax();
         Double_t xbins[999], ybins[999]; 
-        double eps = 0.1;
+        double eps = 0.01;
 
         xbins[0] = x0 - eps*xw - xw; xbins[1] = x0 + eps*xw - xw;
 	//xbins[0] = x0 - eps*xw - xw; xbins[1] = in->GetXaxis()->GetBinLowEdge(1);
