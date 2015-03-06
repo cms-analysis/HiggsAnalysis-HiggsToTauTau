@@ -10,7 +10,7 @@ layout = cms.PSet(
     ## x-axis title
     xaxis = cms.string("m_{H} [GeV]"),
     ## x-axis title
-    yaxis = cms.string("95% CL limit on #sigma(gg#rightarrowH#rightarrowhh)#timesBR [pb]"),
+    yaxis = cms.string("95% CL limit on #sigma(gg#rightarrowH)#timesBR(H#rightarrow hh#rightarrow #tau#tau bb) [pb]"),
     ## min for plotting
     min = cms.double(0.01),
     ## max for plotting
@@ -45,7 +45,7 @@ layout = cms.PSet(
     ## SM like limit without the line at sigma=1
     mssm_nolog = cms.bool(True),
     ## plot expected only
-    expectedOnly = cms.bool(True),
+    expectedOnly = cms.bool(False),
     ## mass label for the injected signal print band in different layout for signal injected
     injectedMass=cms.string("125"),    
     ## print band in different layout for signal injected

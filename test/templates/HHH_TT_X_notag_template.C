@@ -190,7 +190,7 @@ HHH_TT_X_notag(bool scaled=true, bool log=true, float min=0.1, float max=-1., st
       dataset = "#scale[1.5]{CMS}  h,H,A#rightarrow#tau#tau                                18.3 fb^{-1} (8 TeV)";
     }
     else{
-      dataset = "#scale[1.5]{CMS}  h,H,A#rightarrow#tau#tau                                19.7 fb^{-1} (8 TeV)";
+        dataset = "#scale[1.5]{CMS}  H#rightarrow hh#rightarrow#tau#tau bb                         19.7 fb^{-1} (8 TeV)";
     }
   }
 #else
