@@ -88,6 +88,7 @@ parser.add_option("--ws", dest="ws", help="The input workspace")
 parser.add_option("--poi", dest="targetParam", metavar="POI", default='r', help="The POI for which to calculate the nuisance parameter impact")
 parser.add_option("--mH", dest="mH", default='125', help="The signal mass")
 parser.add_option("--poiRange", dest="poiRange", default='0,2', help="Set the range for the POI")
+parser.add_option("--named", dest="named", default=None, help="Do a single named parameter instead")
 parser.add_option("--doInitialFit", dest="doInitialFit", action='store_true', default=False,
                   help="Perform the initial fits for the POI (only needs to be done once)")
 parser.add_option("--skipFits", dest="skipFits", action='store_true', default=False,
@@ -113,6 +114,7 @@ mH = options.mH
 offset = options.offset
 advance = options.advance
 minimizerTolerance = options.minimizerTolerance
+named = options.named
 
 standardOptions = (('-v -1 -m %(mH)s --minimizerStrategy=0 --minimizerTolerance=%(minimizerTolerance)g'
       ' --cminFallbackAlgo "Minuit2,0:0.1" --cminFallbackAlgo "Minuit2,0:1."'
@@ -126,6 +128,7 @@ resList = []
 
 ### Step 1 - get list of nuisance parameters
 paramList = listFromWorkspace(ws, 'w', 'ModelConfig_NuisParams')
+if named: paramList = [named]
 
 ### Step 2 - establish global best fit and save post-fit snapshot
 ### Note when using saveWorkspace: the global observables will be set to whatever the final state of the NPs is,
