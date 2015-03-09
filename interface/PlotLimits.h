@@ -99,6 +99,8 @@ class PlotLimits {
   void band1D(ostream& out, std::string& xval, std::string& yval, TGraph* bestFit, TGraph* band, float xoffset, float yoffset, std::string CL);
   /// fill a graph for the contraints of the H(125) resonance in the mA-tanb exclusion plane (used for option tanb)
   TGraphAsymmErrors* higgsConstraint(TH2D* plane_expected, double mass=125., double deltaM=1., const char* model="mhmax-mu+200", const char* type="h");
+  /// create H(125) and mH<360&&mH>350 exclusion bands as contours
+  std::vector<std::vector<TGraph*>> higgsConstraintLowTb(TH2D* plane_expected, double hmass=125., double hdeltaM=1., double Hmass=300, double HdeltaM=45, const char* model="low-tb-high");
   /// plot limits on canvas, print out png, pdf, txt, root formats if desired
   void plotLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0);
   /// plot limits for tanb on canvas, print out png, pdf, txt, root formats if desired
@@ -219,6 +221,8 @@ class PlotLimits {
   bool mssm_nolog_;
   /// indicate whether MSSMvsSM or MSSMvsBG plots should be made (used for MSSMvsSM and MSSMvsBG)
   bool MSSMvsSM_;
+  /// indicate if this is azh or not
+  bool azh_;
   /// indicate plot type as bestfit
   bool bestfit_;
   /// indicate whether a marker for the SM should be draw
