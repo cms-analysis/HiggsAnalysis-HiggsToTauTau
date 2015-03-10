@@ -8,7 +8,7 @@ from optparse import OptionParser
 import numpy
 
 def run(command):
-  # print command
+  print command
   os.system(command)
 
 def listFromWorkspace(file, workspace, set):
@@ -93,6 +93,8 @@ parser.add_option("--doInitialFit", dest="doInitialFit", action='store_true', de
                   help="Perform the initial fits for the POI (only needs to be done once)")
 parser.add_option("--skipFits", dest="skipFits", action='store_true', default=False,
                   help="Skip all the nuisance parameter fits, just parse the output")
+parser.add_option("--skipFrozen", dest="skipFrozen", action='store_true', default=False,
+                  help="Don't run the frozen parameter scans or look for the output")
 parser.add_option("--writeTree", dest="writeTree", action='store_true', default=False,
                   help="Write output into a TTree")
 parser.add_option("--offset", dest="offset", type='int', default=0,
@@ -107,6 +109,7 @@ parser.add_option("--minimizerTolerance", dest="minimizerTolerance", type='float
 ws = options.ws
 doInitialFit = options.doInitialFit
 skipFits = options.skipFits
+skipFrozen = options.skipFrozen
 writeTree = options.writeTree
 targetParam = options.targetParam
 poiRange = options.poiRange
@@ -118,6 +121,7 @@ named = options.named
 
 standardOptions = (('-v -1 -m %(mH)s --minimizerStrategy=0 --minimizerTolerance=%(minimizerTolerance)g'
       ' --cminFallbackAlgo "Minuit2,0:0.1" --cminFallbackAlgo "Minuit2,0:1."'
+      ' --cminPreFit 1 --stepSize 0.05'
       ' --robustFit 1 --minimizerAlgoForMinos=Minuit2 --minimizerToleranceForMinos=%(minimizerTolerance)g'
       ' --setPhysicsModelParameterRanges %(targetParam)s=%(poiRange)s'
       ' --X-rtd FITTER_NEW_CROSSING_ALGO --X-rtd FITTER_NEVER_GIVE_UP --X-rtd FITTER_BOUND') % vars())
@@ -186,7 +190,7 @@ while counter < len(paramList):
   paramScanPostRes = getScanResult('higgsCombine_paramFit_%(param)s_POST.MultiDimFit.mH125.root' % vars(), param)
   paramScanPreRes = getScanResult('higgsCombine_paramFit_%(param)s_PRE.MultiDimFit.mH125.root' % vars(), param)
 
-  if not skipFits:
+  if not skipFits and not skipFrozen:
     ### Do "frozen" parameter scans
     run(('combine -M MultiDimFit -n _frozen_%(param)s %(standardOptions)s'
          ' --algo singles --setPhysicsModelParameters %(param)s=%(paramObsBestFit)s --freezeNuisances %(param)s %(ws)s') % vars())
@@ -202,13 +206,16 @@ while counter < len(paramList):
          ' -d higgsCombine_initialFit_PRE.MultiDimFit.mH%(mH)s.123456.root -w w --snapshotName "MultiDimFit"'
          ' --toysFile higgsCombine_initialFit_PRE.MultiDimFit.mH%(mH)s.123456.root'
          ' --freezeNuisances %(param)s') % vars())
+  if not skipFrozen:
+    freezeScanObsRes = getScanResult('higgsCombine_frozen_%(param)s.MultiDimFit.mH%(mH)s.root' % vars(), targetParam)
+    paramRes.update({"param" : param, "frozen" : getDiff(getSymUncert(initialRes), getSymUncert(freezeScanObsRes))})
+    freezeScanPostRes = getScanResult('higgsCombine_frozen_%(param)s_POST.MultiDimFit.mH%(mH)s.root' % vars(), targetParam)
+    paramRes.update({"frozen_post" : getDiff(getSymUncert(initialPostRes), getSymUncert(freezeScanPostRes))})
+    freezeScanPreRes = getScanResult('higgsCombine_frozen_%(param)s_PRE.MultiDimFit.mH%(mH)s.root' % vars(), targetParam)
+    paramRes.update({"frozen_pre" : getDiff(getSymUncert(initialPreRes), getSymUncert(freezeScanPreRes))})
+  else:
+    paramRes.update({"param" : param, "frozen" : -1, "frozen_post" : -1, "frozen_pre" : -1 })
 
-  freezeScanObsRes = getScanResult('higgsCombine_frozen_%(param)s.MultiDimFit.mH%(mH)s.root' % vars(), targetParam)
-  paramRes.update({"param" : param, "frozen" : getDiff(getSymUncert(initialRes), getSymUncert(freezeScanObsRes))})
-  freezeScanPostRes = getScanResult('higgsCombine_frozen_%(param)s_POST.MultiDimFit.mH%(mH)s.root' % vars(), targetParam)
-  paramRes.update({"frozen_post" : getDiff(getSymUncert(initialPostRes), getSymUncert(freezeScanPostRes))})
-  freezeScanPreRes = getScanResult('higgsCombine_frozen_%(param)s_PRE.MultiDimFit.mH%(mH)s.root' % vars(), targetParam)
-  paramRes.update({"frozen_pre" : getDiff(getSymUncert(initialPreRes), getSymUncert(freezeScanPreRes))})
 
   loVal = paramScanObsRes[0]
   hiVal = paramScanObsRes[2]
