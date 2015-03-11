@@ -505,7 +505,6 @@ void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGrap
   canv_minus2sigma->cd();
   canv_minus2sigma->SetGridx(1);
   canv_minus2sigma->SetGridy(1);
-  graph_minus2sigma->SetMaximum(10);
   graph_minus2sigma->GetXaxis()->SetTitle("tan#beta");
   graph_minus2sigma->GetXaxis()->SetLabelFont(62);
   graph_minus2sigma->GetXaxis()->SetTitleFont(62);
@@ -532,7 +531,6 @@ void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGrap
   canv_minus1sigma->cd();
   canv_minus1sigma->SetGridx(1);
   canv_minus1sigma->SetGridy(1);
-  graph_minus1sigma->SetMaximum(10);
   graph_minus1sigma->GetXaxis()->SetTitle("tan#beta");
   graph_minus1sigma->GetXaxis()->SetLabelFont(62);
   graph_minus1sigma->GetXaxis()->SetTitleFont(62);
@@ -559,7 +557,6 @@ void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGrap
   canv_expected->cd();
   canv_expected->SetGridx(1);
   canv_expected->SetGridy(1);
-  graph_expected->SetMaximum(10);
   graph_expected->GetXaxis()->SetTitle("tan#beta");
   graph_expected->GetXaxis()->SetLabelFont(62);
   graph_expected->GetXaxis()->SetTitleFont(62);
@@ -586,7 +583,6 @@ void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGrap
   canv_plus1sigma->cd();
   canv_plus1sigma->SetGridx(1);
   canv_plus1sigma->SetGridy(1);
-  graph_plus1sigma->SetMaximum(10);
   graph_plus1sigma->GetXaxis()->SetTitle("tan#beta");
   graph_plus1sigma->GetXaxis()->SetLabelFont(62);
   graph_plus1sigma->GetXaxis()->SetTitleFont(62);
@@ -613,7 +609,6 @@ void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGrap
   canv_plus2sigma->cd();
   canv_plus2sigma->SetGridx(1);
   canv_plus2sigma->SetGridy(1);
-  graph_plus2sigma->SetMaximum(10);
   graph_plus2sigma->GetXaxis()->SetTitle("tan#beta");
   graph_plus2sigma->GetXaxis()->SetLabelFont(62);
   graph_plus2sigma->GetXaxis()->SetTitleFont(62);
@@ -640,7 +635,6 @@ void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGrap
   canv_observed->cd();
   canv_observed->SetGridx(1);
   canv_observed->SetGridy(1);
-  graph_observed->SetMaximum(10);
   graph_observed->GetXaxis()->SetTitle("tan#beta");
   graph_observed->GetXaxis()->SetLabelFont(62);
   graph_observed->GetXaxis()->SetTitleFont(62);
