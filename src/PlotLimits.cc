@@ -360,67 +360,42 @@ PlotLimits::minimum(TGraph* graph)
   return minimum;
 }
 
-TGraphAsymmErrors* 
-PlotLimits::higgsConstraint(TH2D* plane_expected, double mass, double deltaM, const char* model, const char* type)
+TH2D* 
+PlotLimits::higgsConstraint(const char* model, const char* type)
 {
-  TGraphAsymmErrors* graph = new TGraphAsymmErrors();
-  for(int imass=0, ipoint=0; imass<plane_expected->GetNbinsX(); ++imass){
-  //for(int i=300, ipoint=0; i<3101; i=i+100){
+  int nmass, ntanb;
+  double massstep, masslow, masshigh, tanblow, tanbhigh;
+  if (TString::Format(model)=="lowmH") {massstep=20, masslow=300; masshigh=3100; nmass=int((masshigh-masslow)/massstep-1); tanblow=1.5; tanbhigh=9.5; ntanb=(int)((tanbhigh-tanblow)*10-1);}
+  else if (TString::Format(model)=="low-tb-high") {massstep=10, masslow=150; masshigh=500; nmass=int((masshigh-masslow)/massstep-1); tanblow=0.5; tanbhigh=9.5; ntanb=(int)((tanbhigh-tanblow)*10-1);}
+  else {massstep=10, masslow=90; masshigh=1000; nmass=int((masshigh-masslow)/massstep-1); tanblow=0.5; tanbhigh=60; ntanb=(int)((tanbhigh-tanblow));}//ntanb=(int)((tanbhigh-tanblow)*10-1);}
+
+  TH2D* higgsBand= new TH2D("higgsBand", "higgsBand", nmass, masslow, masshigh, ntanb, tanblow, tanbhigh);
+  for(double mass=masslow; mass<masshigh+1; mass=mass+massstep){
     std::string line;
-    bool filled = false;
-    float tanb_save=-99.0, tanb, mh, mA, mH, upperTanb=-1., lowerTanb=-1.;
-    double x_save=plane_expected->GetXaxis()->GetBinUpEdge(imass);
-    //double x_save=(int)i;
-    ifstream higgs (TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/%s/higgs_%d.dat", model, (int)x_save)); 
-    //std::cout << TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/%s/higgs_%d.dat", model, (int)x_save) << std::endl;
+    float tanb, mh, mA, mH, mHp;
+    ifstream higgs (TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/%s/higgs_%d.dat", model, (int)mass)); 
+    //std::cout << TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/%s/higgs_%d.dat", model, (int)mass) << std::endl;
     if(higgs.is_open()){
       while(higgs.good()){
 	getline(higgs,line);
-	sscanf(line.c_str(),"%f %f %f %f", &tanb, &mh, &mA, &mH);
+	sscanf(line.c_str(),"%f %f %f %f %f", &tanb, &mh, &mA, &mH, &mHp);
 	if (TString::Format(model)=="lowmH") {
-	  if(fabs(mh-mass)<deltaM && tanb!=tanb_save){
-	    if(!filled){
-	      graph->SetPoint(ipoint, x_save, tanb); 
-	      graph->SetPointEYlow(ipoint, 0.);
-	      tanb_save=tanb;
-	      ipoint++; filled = true;
-	      lowerTanb=tanb;
-	    }
-	    upperTanb=tanb;
-	  }
+	  higgsBand->SetBinContent(higgsBand->GetXaxis()->FindBin(mass), higgsBand->GetYaxis()->FindBin(tanb), mH);
 	}
 	else {
 	  if (TString::Format(type)=="h") {
-	    if(fabs(mh-mass)<deltaM && tanb!=tanb_save){
-	      if(!filled){
-		graph->SetPoint(ipoint, x_save, tanb); 
-		graph->SetPointEYlow(ipoint, 0.);
-		tanb_save=tanb;
-		ipoint++; filled = true;
-		lowerTanb=tanb;
-	      }
-	      upperTanb=tanb;
-	    }
+	    higgsBand->SetBinContent(higgsBand->GetXaxis()->FindBin(mass), higgsBand->GetYaxis()->FindBin(tanb), mh);
 	  }
 	  else if(TString::Format(type)=="H") {
-	    if(fabs(mH-mass)<deltaM && tanb!=tanb_save){
-	      if(!filled){
-		graph->SetPoint(ipoint, x_save, tanb); 
-		graph->SetPointEYlow(ipoint, 0.);
-		tanb_save=tanb;
-		ipoint++; filled = true;
-		lowerTanb=tanb;
-	      }
-	      upperTanb=tanb;
-	    }
+	    higgsBand->SetBinContent(higgsBand->GetXaxis()->FindBin(mass), higgsBand->GetYaxis()->FindBin(tanb), mH);
+	  }
+	  else if(TString::Format(type)=="H+") {
+	    higgsBand->SetBinContent(higgsBand->GetXaxis()->FindBin(mass), higgsBand->GetYaxis()->FindBin(tanb), mHp);
 	  }
 	}
-      }
-      if(upperTanb>0){
-	graph->SetPointEYhigh(ipoint-1, upperTanb-lowerTanb);
       }
     }
     higgs.close();
   }
-  return graph;
+  return higgsBand;
 }
