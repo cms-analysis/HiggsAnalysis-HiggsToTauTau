@@ -106,10 +106,16 @@ class ModelDatacard(DatacardAdaptor) :
                                             new_rate+=float(self.model[proc].xsec[higgs])*float(self.model[proc].brs[higgs])
                                         new_rates[index_order.index(bin+'_'+proc)] = str(new_rate)
                                     else :
-                                        ## get signal rate from file
-                                        hist_file = ROOT.TFile(path[:path.rfind('/')+1]+card.path_to_file(bin, proc), 'READ')
-                                        hist = hist_file.Get(card.path_to_shape(bin, proc).replace('$MASS', mass))
-                                        new_rates[index_order.index(bin+'_'+proc)] = str(hist.Integral())
+                                        if self.ana_type=="HhhAndAZh" or self.ana_type=="Hhh" :
+                                            if (proc=="AZh" and "AZh" in bin) or (proc=="ggHTohhTo2Tau2B" and not "AZh" in bin) :
+                                                hist_file = ROOT.TFile(path[:path.rfind('/')+1]+card.path_to_file(bin, proc), 'READ')
+                                                hist = hist_file.Get(card.path_to_shape(bin, proc).replace('$MASS', mass))
+                                                new_rates[index_order.index(bin+'_'+proc)] = str(hist.Integral())
+                                        else :
+                                            ## get signal rate from file
+                                            hist_file = ROOT.TFile(path[:path.rfind('/')+1]+card.path_to_file(bin, proc), 'READ')
+                                            hist = hist_file.Get(card.path_to_shape(bin, proc).replace('$MASS', mass))
+                                            new_rates[index_order.index(bin+'_'+proc)] = str(hist.Integral())
                     if self.ana_type=="Htaunu" : ##felix for tt scale background, but only once!
                         for bkg in card.list_of_backgrounds() :
                             if "tt_" in bkg and bkg!="EWKnontt_faketau" :
@@ -197,17 +203,32 @@ class ModelDatacard(DatacardAdaptor) :
                                     for idx in range(len(index_order)) :
                                         uncerts.append('-')
                                 for idx in range(len(index_order)) :
-                                    if idx == index_order.index(bin+'_'+proc) :
-                                        if type == 'mu' :
-                                            if  value>0 and lower/value!=1 :
-                                                uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.-lower/value), 1.+upper/value)
-                                            else :
-                                                uncerts[idx]=" \t\t 0.1 "
-                                        if type == 'pdf' :
-                                            if value>0 :
-                                                uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.+lower/value), 1.+upper/value)
-                                            else :
-                                                uncerts[idx]=" \t\t 0.1 "
+                                    if self.ana_type=="HhhAndAZh" or self.ana_type=="Hhh" :
+                                        if(proc=="AZh" and "AZh" in bin) or (proc=="ggHTohhTo2Tau2B" and not "AZh" in bin) :
+                                            if idx == index_order.index(bin+'_'+proc) :
+                                                if type == 'mu' :
+                                                    if  value>0 and lower/value!=1 :
+                                                        uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.-lower/value), 1.+upper/value)
+                                                    else :
+                                                        uncerts[idx]=" \t\t 0.1 "
+                                                if type == 'pdf' :
+                                                    if value>0 :
+                                                        uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.+lower/value), 1.+upper/value)
+                                                    else :
+                                                        uncerts[idx]=" \t\t 0.1 "
+
+                                    else :
+                                        if idx == index_order.index(bin+'_'+proc) :
+                                            if type == 'mu' :
+                                                if  value>0 and lower/value!=1 :
+                                                    uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.-lower/value), 1.+upper/value)
+                                                else :
+                                                    uncerts[idx]=" \t\t 0.1 "
+                                            if type == 'pdf' :
+                                                if value>0 :
+                                                    uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.+lower/value), 1.+upper/value)
+                                                else :
+                                                    uncerts[idx]=" \t\t 0.1 "
                 ## in case label is not yet in dict, add uncerts as they are. Otherwise update '-' entries in existing list
                 ## of uncerts
                 if self.ana_type=="Htaunu" :
@@ -284,18 +305,34 @@ class ModelDatacard(DatacardAdaptor) :
                     continue
                 for proc_in_card in card.list_of_signals() :
                     if proc_in_card == proc :
-                        shape_file = card.path_to_file(bin, proc)
-                        if not shape_file in schedule.keys() :
-                            ## define schedule
-                            schedule[shape_file] = [(proc,params)]
-                            ## define morphing mode (per file)
-                            for subchn in morph.keys() :
-                                if subchn in bin :
-                                    if not shape_file in morph_per_file.keys() :
-                                        morph_per_file[shape_file] = morph[subchn]
+                        if(self.ana_type=="HhhAndAZh" or self.ana_type=="Hhh") :
+                            if(proc=="AZh" and "AZh" in bin) or (proc=="ggHTohhTo2Tau2B" and not "AZh" in bin) :
+                                shape_file = card.path_to_file(bin, proc)
+                                if not shape_file in schedule.keys() :
+                                    ## define schedule
+                                    schedule[shape_file] = [(proc,params)]
+                                    ## define morphing mode (per file)
+                                    for subchn in morph.keys() :
+                                        if subchn in bin :
+                                            if not shape_file in morph_per_file.keys() :
+                                                morph_per_file[shape_file] = morph[subchn]
+                                else :
+                                    if not (proc,params) in schedule[shape_file] :
+                                        schedule[shape_file].append((proc,params))
+
                         else :
-                            if not (proc,params) in schedule[shape_file] :
-                                schedule[shape_file].append((proc,params))
+                            shape_file = card.path_to_file(bin, proc)
+                            if not shape_file in schedule.keys() :
+                                ## define schedule
+                                schedule[shape_file] = [(proc,params)]
+                                ## define morphing mode (per file)
+                                for subchn in morph.keys() :
+                                    if subchn in bin :
+                                        if not shape_file in morph_per_file.keys() :
+                                            morph_per_file[shape_file] = morph[subchn]
+                            else :
+                                if not (proc,params) in schedule[shape_file] :
+                                    schedule[shape_file].append((proc,params))
         ## process each file exactly once. Treat all processes in one iteration
         for (shape_file,reduced_model) in schedule.iteritems() :
             print 'creating template(s) :', dir+shape_file, '(morphing mode is', morph_per_file[shape_file]+')'

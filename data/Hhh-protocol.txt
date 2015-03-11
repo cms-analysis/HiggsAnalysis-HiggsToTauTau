@@ -8,6 +8,8 @@ python HiggsAnalysis/HiggsToTauTau/scripts/doHTohh.py --update-all --config=Higg
 
 #The following command applies the correct XS*BR for each tanb point we are interested in for the model-dependent limits 
 lxb-xsec2tanb.py --ana-type="Hhh" --model="mhmodp" --customTanb="1,1.5,2,2.5,3" LIMITS-HTohh-mhmodp/*/*
+#To combine A->Zh and H->hh fo rmodel dependent limits, make a directory with A->Zh and H->hh datacards in the mass folders and both shape files in the common folder and run:
+lxb-xsec2tanb.py --ana-type"HhhAndAZh" --model="low-tb-high" --customTanb="1,1.5,2,2.5,3" LIMITS-HhhAndAZh/*/*
 
 #To set up model-dependent limits for the 2HD model we need a different directory structure :
 python HiggsAnalysis/HiggsToTauTau/scripts/doHTohh.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-Hhh -a bbb --label="SomeLabel" --model=2HDM --new-merging --new-merging-threshold 0.5
