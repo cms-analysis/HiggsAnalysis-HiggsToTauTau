@@ -6,9 +6,9 @@
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, std::vector<TGraph*> injected, std::map<double, TGraphAsymmErrors*> higgsBands,std::map<double,std::vector<TGraph*>> higgsBandsContour, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool MSSMvsSM=true, std::string HIG="", bool Brazilian=false, bool azh=false);
+void plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, std::vector<TGraph*> injected, std::vector<std::vector<TGraph*>> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool MSSMvsSM=true, std::string HIG="", bool Brazilian=false);
 void contour2D(TString xvar, int xbins, float xmin, float xmax, TString yvar, int ybins, float ymin, float ymax, float smx=1.0, float smy=1.0, TFile *fOut=0, TString name="contour2D");
-TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool require_minPoints=true);
+TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool require_minPoints=true, double multip=1);
 
 void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGraph* graph_expected, TGraph* graph_plus1sigma, TGraph* graph_plus2sigma, TGraph* graph_observed, const char* directory, float mass, int max, int ymax, const char* model);
 
@@ -61,7 +61,6 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   int array_number=0;
   if(model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2")) array_number = (int)((bins_[bins_.size()-1]-bins_[0])/0.02)+1;
   else array_number = (int)(bins_[bins_.size()-1]-bins_[0])/10+1; 
-  //else array_number = (int)bins_.size();
   Double_t xbins[array_number];
   
   if(model!=TString::Format("2HDMtyp1") && model!=TString::Format("2HDMtyp2")){
@@ -322,32 +321,30 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   if(HIG_12_052_     ){ comp = new TGraph(); HIG_12_052_upper(comp); comp->SetName("HIG_12_052_upper"); comparisons[std::string("EMPTY")                              ] = comp;}
 
   // setup contratins from Higgs mass
-  std::map<double,TGraphAsymmErrors*> higgsBands;
-  std::map<double,std::vector<TGraph*>> higgsBandsContour;
-  if(higgs125_&&model!=TString::Format("low-tb-high")){
-    higgsBands[3] = higgsConstraint(plane_expected, 125., 3., model, "h");
-//   higgsBands[2] = higgsConstraint(plane_expected, 125., 3., model, "h",false);
-//   higgsBands[3] = higgsConstraint(plane_expected, 305., 45., model, "H",true);
-    //higgsBands[1] = higgsConstraint(plane_expected, 125., 1., model);
-    //for(unsigned int deltaM=0; deltaM<3; ++deltaM){
-    //  higgsBands[3-deltaM] = higgsConstraint(plane_expected, 125., 4-deltaM, model);
-    //}
+  std::vector<TGraph*> gr_higgslow;
+  std::vector<TGraph*> gr_higgshigh;
+  std::vector<std::vector<TGraph*>> gr_higgsBands; 
+  std::vector<TH2D*> plane_higgsBands;
+  if(higgs125_){
+    TH2D* plane_higgsBand = higgsConstraint(model, "h");
+    plane_higgsBand->SaveAs("test.root");
+    plane_higgsBands.push_back(plane_higgsBand);
+    //lower edge entry 0
+    TIter iter_higgslow((TList *)contourFromTH2(plane_higgsBands[0], 122, 20, false));
+    STestFunctor higgsband0 = std::for_each( iter_higgslow.Begin(), TIter::End(), STestFunctor() );
+    for(int i=0; i<higgsband0.sum; i++) {gr_higgslow.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[0], 122, 20, false, 200))->At(i));}
+    gr_higgsBands.push_back(gr_higgslow);
+    //upper edge entry 1
+    TIter iter_higgshigh((TList *)contourFromTH2(plane_higgsBands[0], 128, 20, false));
+    STestFunctor higgsband1 = std::for_each( iter_higgshigh.Begin(), TIter::End(), STestFunctor() );
+    for(int i=0; i<higgsband1.sum; i++) {gr_higgshigh.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[0], 128, 20, false, 200))->At(i));} 
+    gr_higgsBands.push_back(gr_higgshigh);
+    // possible to push back more curves to gr_higgsBands for Hhh need to call different higgsConstraint with model "H" 
   }  
-else if(higgs125_&&model==TString::Format("low-tb-high")){
- std::vector<std::vector<TGraph*>> higgsBandVec = higgsConstraintLowTb(plane_expected,125.,3.,305.,45.,model);
-   if(!azh_){
-    for(unsigned int ii=0;ii<higgsBandVec.size();ii++){
-      higgsBandsContour[ii]=higgsBandVec.at(ii);
-     }
-    }
-   else if(azh_){
-    higgsBandsContour[0]=higgsBandVec.at(1);
-   }
-  }
 
-  
+
   // do the plotting
-  plottingTanb(canv, plane_expected, gr_minus2sigma, gr_minus1sigma, gr_expected, gr_plus1sigma, gr_plus2sigma, gr_observed, gr_injected, higgsBands,higgsBandsContour, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, expectedOnly_, MSSMvsSM_, HIG, Brazilian_,azh_); 
+  plottingTanb(canv, plane_expected, gr_minus2sigma, gr_minus1sigma, gr_expected, gr_plus1sigma, gr_plus2sigma, gr_observed, gr_injected, gr_higgsBands, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, expectedOnly_, MSSMvsSM_, HIG, Brazilian_); 
   /// setup the CMS Preliminary
   //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
   //TPaveText* cmsprel = new TPaveText(0.145, 0.835+0.06, 0.145+0.30, 0.835+0.16, "NDC");
