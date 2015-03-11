@@ -39,12 +39,17 @@ ifndef BOOSTSYS
 	BOOSTSYS := $(shell scram tool tag boost BOOST_BASE)
 endif
 
+ifndef PYSYS
+	PYSYS := $(shell scram tool tag python INCLUDE)
+endif
+
 USERINCLUDES += -I$(TOP)
 USERINCLUDES += -I$(TOP)/../../..
 
 USERINCLUDES += -isystem $(ROOTSYS)/include
 USERINCLUDES += -isystem $(ROOFITSYS)/include
 USERINCLUDES += -isystem $(BOOSTSYS)/include
+USERINCLUDES += -isystem $(PYSYS)
 
 USERLIBS += $(shell $(ROOTSYS)/bin/root-config --glibs) -lGenVector -lTreePlayer -lTMVA
 USERLIBS += -L$(ROOFITSYS)/lib -lRooFit -lRooFitCore
@@ -71,7 +76,7 @@ LDFLAGS= -shared -Wall -Wextra
 CXXFLAGS += $(USERINCLUDES)
 LIBS += $(USERLIBS)
 
-.PHONY: dir tree all clean clean_all clean_tree dist_clean
+.PHONY: dir tree all clean clean_all clean_tree dist_clean env
 
 # Default target when nothing is given on the command line.  Reasonable
 # options are:
@@ -93,6 +98,9 @@ all : all_proxy
 clean : clean_$(RUNDIR)
 
 clean_tree : clean_tree_$(RUNDIR)
+
+env :
+	@echo -e 'export CHPATH='$(TOP)';\nexport PYTHONPATH='$(ALL_LIB_DIRS)':$$PYTHONPATH;'
 
 # $(d) keeps the path of "current" directory during tree traversal and
 # $(dir_stack) is used for backtracking during traversal

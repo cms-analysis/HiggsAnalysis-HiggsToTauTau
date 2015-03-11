@@ -219,6 +219,8 @@ class PlotLimits {
   bool mssm_nolog_;
   /// indicate whether MSSMvsSM or MSSMvsBG plots should be made (used for MSSMvsSM and MSSMvsBG)
   bool MSSMvsSM_;
+  /// indicate if this is azh or not
+  bool azh_;
   /// indicate plot type as bestfit
   bool bestfit_;
   /// indicate whether a marker for the SM should be draw

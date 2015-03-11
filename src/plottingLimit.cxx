@@ -52,7 +52,9 @@ plottingLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* ou
   hr->GetYaxis()->SetLabelFont(62);
   hr->GetYaxis()->SetTitleFont(62);
   hr->GetYaxis()->SetTitleOffset(1.30);
+  if(mssm_nolog) hr->GetYaxis()->SetTitleOffset(1.4);
   hr->GetYaxis()->SetLabelSize(0.045);
+  if(mssm_nolog) hr->GetYaxis()->SetTitleSize(0.040);
   hr->SetNdivisions(505, "X");
   if(mssm_log){
     hr->SetNdivisions(50005, "X");

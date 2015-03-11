@@ -4,7 +4,7 @@ layout = cms.PSet(
     ## dataset
     #dataset = cms.string("#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                     19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
     #dataset = cms.string("#scale[1.5]{CMS} (unpublished), h,H,A#rightarrow#tau#tau, 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
-    dataset = cms.string("#scale[1.5]{CMS} Preliminary, H#rightarrowhh#rightarrowbb#tau#tau, 19.7 fb^{-1} (8 TeV)"),
+    dataset = cms.string("#scale[1.5]{CMS} Preliminary, A#rightarrowZh#rightarrowll#tau#tau, 19.7 fb^{-1} (8 TeV)"),
     #dataset = cms.string("#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                                           18.3 fb^{-1} (8 TeV)"),
     ## x-axis title
     xaxis = cms.string("m_{A} [GeV]"),
@@ -29,16 +29,16 @@ layout = cms.PSet(
     ## define verbosity level
     verbosity = cms.uint32(3),
     ## define output label
-    outputLabel = cms.string("mA-tanb") ,
+    outputLabel = cms.string("mA-tanb-AZh") ,
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
-    160.
-   ,170.
-   ,180.
-   ,190.
-   ,200.
-   ,210.
-   ,220.
+#    160.
+#   ,170.
+#   ,180.
+#   ,190.
+#   200.
+#   ,210.
+   220.
    ,230.
    ,240.
    ,250.  
@@ -55,6 +55,7 @@ layout = cms.PSet(
       ),
     ## is this mssm?
     mssm = cms.bool(True),
+    azh = cms.bool(True),
     ## is this MSSMvsSM?
     MSSMvsSM = cms.bool(False),
     ## plot black and white friendly?
@@ -65,8 +66,8 @@ layout = cms.PSet(
     outerband = cms.bool(True),
     ## plot expected only
     expectedOnly = cms.bool(True),
-    ## print constraints from mH=125GeV
     linearFit = cms.bool(True),
+    ## print constraints from mH=125GeV
     higgs125 = cms.bool(True),
     ## add arXiv-1211-6956 (ATLAS) to plot
     arXiv_1211_6956 = cms.bool(False),
