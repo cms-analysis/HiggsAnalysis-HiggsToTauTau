@@ -3,7 +3,7 @@
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
 void contour2D(TString xvar, int xbins, float xmin, float xmax, TString yvar, int ybins, float ymin, float ymax, float smx=1.0, float smy=1.0, TFile *fOut=0, TString name="contour2D");
-TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool require_minPoints=true);
+TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool require_minPoints=true,double multip=1.);
 void plottingScan2D(TCanvas& canv, TH2D* plot2D, TGraph* bestfit, TGraph* c68, TGraph* c95, TString file, TMarker* SMexpected, TMarker* SMexpectedLayer, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp, bool log);
 
 void 

@@ -213,6 +213,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   //background->Draw("3"); 
 
   //exclusion graphs
+
   for(unsigned int i=0; i<minus2sigma.size(); i++){
     minus2sigma[i]->SetFillStyle(1001);
     minus2sigma[i]->SetFillColor(twosigma->GetNumber()); 
@@ -252,7 +253,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     expected[i]->SetLineColor(kBlack); 
     expected[i]->SetLineWidth(2);
     expected[i]->SetLineStyle(2); 
-    expected[i]->Draw("CONT SAME");
+    expected[i]->Draw("L SAME");
   }  
 
   if(injected[0]){
@@ -276,7 +277,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
       if(Brazilian) observed[i]->SetFillColor(kBlack); 
       if(Brazilian) observed[i]->SetFillStyle(3004);  
       observed[i]->Draw("F SAME"); 
-      observed[i]->Draw("CONT SAME"); 
+      observed[i]->Draw("L SAME"); 
     } 
   }
   if(connection_min2) connection_min2->Draw("Lsame");
@@ -353,15 +354,18 @@ for(unsigned int i=0;i<(band->second).size();i++){
     else if(theory=="MSSM m_{h}^{mod+} scenario") theory1= new TPaveText(0.59, 0.20, 0.91, 0.26, "NDC"); 
     else if(theory=="MSSM light-stop scenario") theory1= new TPaveText(0.51, 0.20, 0.91, 0.26, "NDC"); //for loglog
     else if(theory=="MSSM light-stau scenario") theory1= new TPaveText(0.51, 0.20, 0.91, 0.26, "NDC");
-    else if(theory=="MSSM low-tan#beta-high scenario") theory1 = new TPaveText(0.15, 0.85, 0.61, 0.91, "NDC"); //(0.45, 0.75, 0.91, 0.81, "NDC")Hhh
+    else if(theory=="MSSM low-tan#beta-high scenario") theory1 = new TPaveText(0.15, 0.80, 0.55, 0.91, "NDC"); //(0.45, 0.75, 0.91, 0.81, "NDC")Hhh
     else if(theory=="2HDM type-I") theory1 = new TPaveText(0.65, 0.20, 0.91, 0.26, "NDC");
-    else if(theory=="2HDM type-II") theory1 = new TPaveText(0.65, 0.20, 0.91, 0.26, "NDC");
+    else if(theory=="2HDM type-II") theory1 = new TPaveText(0.45, 0.50, 0.75, 0.56, "NDC");
     else theory1= new TPaveText(0.51, 0.20, 0.91, 0.26, "NDC");
   }
   theory1->SetBorderSize(   0 );
   theory1->SetFillStyle(    0 );
   theory1->SetTextAlign(   12 );
+  if(theory=="MSSM low-tan#beta-high scenario") theory1->SetTextSize(0.030);
+  else{
   theory1->SetTextSize ( 0.035);
+ }
   theory1->SetTextColor(    1 );
   theory1->SetTextFont (   62 );
   theory1->AddText(theory.c_str());
@@ -385,9 +389,9 @@ for(unsigned int i=0;i<(band->second).size();i++){
     }
     else{
       if(theory=="MSSM low-m_{H} scenario") leg = new TLegend(0.175, 0.155, 0.62, 0.30);
-      else if(theory=="MSSM low-tan#beta-high scenario") leg = new TLegend(0.58, 0.54, 0.90, 0.84); //(0.18, 0.59, 0.45, 0.89)Hhh 
+      else if(theory=="MSSM low-tan#beta-high scenario") leg = new TLegend(0.58, 0.58, 0.90, 0.88); //(0.18, 0.59, 0.45, 0.89)Hhh 
       else if(theory=="MSSM light-stop scenario") leg = new TLegend(0.28, (!higgsBands.empty() || !comparisons.empty()) ? 0.57 :0.69, (!higgsBands.empty() || !comparisons.empty()) ? 0.53: 0.56, 0.89);
-      else if(theory=="2HDM type-I" || theory=="2HDM type-II") leg = new TLegend(0.43, 0.19, 0.45, 0.89); 
+      else if(theory=="2HDM type-I" || theory=="2HDM type-II") leg = new TLegend(0.42, 0.59, 0.75, 0.89); 
       else leg = new TLegend(0.23, (!higgsBands.empty() || !comparisons.empty()) ? 0.57 : 0.69, (!higgsBands.empty() || !comparisons.empty()) ? 0.47: 0.50, 0.89);
     }
   }
@@ -438,13 +442,14 @@ for(unsigned int i=0;i<(band->second).size();i++){
   }
   else{ 
     if(theory=="MSSM low-m_{H} scenario") leg2 = new TLegend(0.57, 0.78, 0.92, 0.83);
-    else if(theory=="MSSM low-tan#beta-high scenario"&&!azh) leg2 = new TLegend(0.52, 0.45, 0.92, 0.53);//(0.57, 0.81, 0.92, 0.86)Hhh
-    else if(theory=="MSSM low-tan#beta-high scenario") leg2 = new TLegend(0.17,0.58,0.52,0.63);
+    else if(theory=="MSSM low-tan#beta-high scenario"&&!azh) leg2 = new TLegend(0.17,0.75,0.52,0.83);
+    else if(theory=="MSSM low-tan#beta-high scenario") leg2 = new TLegend(0.17,0.78,0.52,0.83);
     else leg2 = new TLegend(0.57, 0.26, 0.92, 0.31);
   }  
   leg2->SetBorderSize( 1  );
   leg2->SetFillStyle (1001);
-  leg2->SetTextSize  (0.03);
+  if(!azh) leg2->SetTextSize  (0.027);
+  else leg2->SetTextSize(0.03);
   leg2->SetTextFont  ( 62 ); 
   leg2->SetFillColor (kWhite);
   leg2->SetLineWidth (2);

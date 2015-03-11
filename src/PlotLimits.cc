@@ -1,5 +1,5 @@
 #include "HiggsAnalysis/HiggsToTauTau/interface/PlotLimits.h"
-TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool require_minPoints=true);
+TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool require_minPoints=true, double multip=1.);
 struct STestFunctor{
   STestFunctor() { sum = 0; }
   void operator() (TObject *aObj) {sum +=1;}
@@ -87,6 +87,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   HIG_12_052_      =cfg.existsAs<bool>("HIG_12_052"      ) ? cfg.getParameter<bool>("HIG_12_052"      ) : false;
   higgs125_ =cfg.existsAs<bool>("higgs125" ) ? cfg.getParameter<bool>("higgs125" ) : false;
   linearFit_=cfg.existsAs<bool>("linearFit") ? cfg.getParameter<bool>("linearFit") : false;
+  graphInterpolate_=cfg.existsAs<bool>("graphInterpolate") ? cfg.getParameter<bool>("graphInterpolate") : false;
   azh_ = cfg.existsAs<bool>("azh")? cfg.getParameter<bool>("azh") : false;
   transparent_=cfg.existsAs<bool>("transparent") ? cfg.getParameter<bool>("transparent") : false;
   expectedOnly_=cfg.existsAs<bool>("expectedOnly") ? cfg.getParameter<bool>("expectedOnly") : false;
