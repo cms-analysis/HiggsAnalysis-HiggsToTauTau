@@ -339,7 +339,6 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 
   int n_m2s, n_m1s, n_exp, n_p1s, n_p2s, n_obs;
   if(graphInterpolate_){
-    std::cout<<"AAA"<<std::endl;
     TIter iterm2s((TList *)contourFromTH2(minus2sigma_th2d, 1.0, 20, false,5));
     STestFunctor m2s = std::for_each( iterm2s.Begin(), TIter::End(), STestFunctor() );
     n_m2s=m2s.sum; 
