@@ -292,30 +292,50 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
 
 idx=0;
  for(std::map<double,std::vector<TGraph*>>::reverse_iterator band = higgsBandsLowTb.rbegin(); band!=higgsBandsLowTb.rend(); ++band, ++idx){
-   if(idx==1){
-for(unsigned int i=0;i<(band->second).size();i++){
-    (band->second)[i]->SetFillStyle(1001);
-    (band->second)[i]->SetLineStyle(3);
-    (band->second)[i]->SetFillColor(kWhite);
-    (band->second)[i]->SetLineColor(kGreen+3);
-    (band->second)[i]->SetLineWidth(-9902);
+}
+if(idx>1){
+ idx=0;
+ for(std::map<double,std::vector<TGraph*>>::iterator band = higgsBandsLowTb.begin();band!=higgsBandsLowTb.end(); ++band,++idx){
+   if(idx==0){
+    for(unsigned int i=0;i<(band->second).size();i++){
+      (band->second)[i]->SetFillStyle(1001);
+      (band->second)[i]->SetLineStyle(3);
+      (band->second)[i]->SetFillColor(kWhite);
+      (band->second)[i]->SetLineColor(kGreen+3);
+      (band->second)[i]->SetLineWidth(-9902);
 //    (band->second)[i]->Draw("F SAME");
-    (band->second)[i]->Draw("CONT SAME");
-}
- }
-  if(idx==0){
- for(unsigned int i=0;i<(band->second).size();i++){
-    (band->second)[i]->SetFillStyle(3005);
-    (band->second)[i]->SetFillColor(kRed);
-    (band->second)[i]->SetLineColor(kRed);
-    (band->second)[i]->SetLineWidth(-402);
-    (band->second)[i]->Draw("CONT SAME");
-}
- }
-
-
-
+      (band->second)[i]->Draw("L SAME");
+    }
    }
+
+  if(idx==1){
+    for(unsigned int i=0;i<(band->second).size();i++){
+      (band->second)[i]->SetFillStyle(3005);
+      (band->second)[i]->SetFillColor(kRed);
+      (band->second)[i]->SetLineColor(kRed);
+      (band->second)[i]->SetLineWidth(-402);
+      (band->second)[i]->Draw("L SAME");
+       }
+     }
+   }
+ }
+
+ else{
+ idx=0;
+ for(std::map<double,std::vector<TGraph*>>::iterator band = higgsBandsLowTb.begin();band!=higgsBandsLowTb.end(); ++band,++idx){
+   if(idx==0){
+    for(unsigned int i=0;i<(band->second).size();i++){
+      (band->second)[i]->SetFillStyle(3005);
+      (band->second)[i]->SetFillColor(kRed);
+      (band->second)[i]->SetLineColor(kRed);
+      (band->second)[i]->SetLineWidth(-402);
+      (band->second)[i]->Draw("L SAME");
+       }
+     }
+   }
+}
+ 
+
 
 
 

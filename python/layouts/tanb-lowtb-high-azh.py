@@ -31,7 +31,7 @@ layout = cms.PSet(
     ## Plotting A->Zh or combination? (don't draw mH excluded band)
     azh=cms.bool(True),
     ## define output label
-    outputLabel = cms.string("mA-tanb-cmb") ,
+    outputLabel = cms.string("mA-tanb-azh") ,
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
     #160.
