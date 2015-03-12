@@ -119,9 +119,9 @@ advance = options.advance
 minimizerTolerance = options.minimizerTolerance
 named = options.named
 
-standardOptions = (('-v -1 -m %(mH)s --minimizerStrategy=0 --minimizerTolerance=%(minimizerTolerance)g'
+standardOptions = (('-m %(mH)s --minimizerStrategy=0 --minimizerTolerance=%(minimizerTolerance)g'
       ' --cminFallbackAlgo "Minuit2,0:0.1" --cminFallbackAlgo "Minuit2,0:1."'
-      ' --cminPreFit 1 --stepSize 0.05'
+      ' --cminPreScan --cminPreFit 1 --stepSize 0.05'
       ' --robustFit 1 --minimizerAlgoForMinos=Minuit2 --minimizerToleranceForMinos=%(minimizerTolerance)g'
       ' --setPhysicsModelParameterRanges %(targetParam)s=%(poiRange)s'
       ' --X-rtd FITTER_NEW_CROSSING_ALGO --X-rtd FITTER_NEVER_GIVE_UP --X-rtd FITTER_BOUND') % vars())
