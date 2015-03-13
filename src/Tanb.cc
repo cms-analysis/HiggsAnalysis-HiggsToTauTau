@@ -22,7 +22,7 @@ struct myclass {
   bool operator() (int i,int j) { return (i<j);}
 } myobject;
 
-void
+  void
 PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 {
   //separate between MSSMvsSM and MSSMvsBG
@@ -44,7 +44,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   if(theory_=="MSSM low-tan#beta-high scenario") {extralabel_= "low-tb-high-"; model = "low-tb-high"; tanbHigh=9.5; tanbLow=0.5; tanbLowHigh=2;}
   if(theory_=="2HDM type-I") {extralabel_= "2HDMtyp1-"; model = "2HDMtyp1"; tanbHigh=10; tanbLow=1; tanbLowHigh=2;}
   if(theory_=="2HDM type-II") {extralabel_= "2HDMtyp2-"; model = "2HDMtyp2"; tanbHigh=10; tanbLow=1; tanbLowHigh=2;}
- 
+
   // set up styles
   SetStyle();
 
@@ -62,7 +62,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   if(model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2")) array_number = (int)((bins_[bins_.size()-1]-bins_[0])/0.02)+1;
   else array_number = (int)(bins_[bins_.size()-1]-bins_[0])/10+1; 
   Double_t xbins[array_number];
-  
+
   if(model!=TString::Format("2HDMtyp1") && model!=TString::Format("2HDMtyp2")){
     for(float mass=bins_[0]; mass<bins_[bins_.size()-1]+1; mass=mass+10){
       xbins[nxbins]=mass;
@@ -79,6 +79,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   }
 
   TH2D *plane_minus2sigma = 0, *plane_minus1sigma = 0, *plane_expected = 0, *plane_plus1sigma = 0, *plane_plus2sigma = 0, *plane_observed = 0;
+
   if(model!=TString::Format("lowmH")) {
     plane_minus2sigma = new TH2D("minus2sigma","minus2sigma", nxbins, xbins, (int)((tanbHigh-tanbLow)*10-1), tanbLow, tanbHigh);
     plane_minus1sigma = new TH2D("minus1sigma","minus1sigma", nxbins, xbins, (int)((tanbHigh-tanbLow)*10-1), tanbLow, tanbHigh);
@@ -95,6 +96,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     plane_plus2sigma  = new TH2D("plus2sigma","plus2sigma",   29, 300, 3100, (int)((tanbHigh-tanbLow)*10-1), tanbLow, tanbHigh);
     plane_observed    = new TH2D("observed","observed",       29, 300, 3100, (int)((tanbHigh-tanbLow)*10-1), tanbLow, tanbHigh);
   }
+
 
   for(int idx=1; idx<plane_minus2sigma->GetNbinsX()+1; idx++){
     for(int idy=1; idy<plane_minus2sigma->GetNbinsY()+1; idy++){
@@ -127,6 +129,28 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   TH2D *observed_th2d =new TH2D("observed_th2d","observed_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
 
 
+  TGraph2D* graph_minus2sigma_2d = new TGraph2D();
+  TGraph2D* graph_minus1sigma_2d = new TGraph2D();
+  TGraph2D* graph_expected_2d = new TGraph2D();
+  TGraph2D* graph_plus1sigma_2d = new TGraph2D();
+  TGraph2D* graph_plus2sigma_2d = new TGraph2D();
+  TGraph2D* graph_observed_2d = new TGraph2D();
+  graph_minus2sigma_2d->SetTitle("");
+  graph_minus1sigma_2d->SetTitle("");
+  graph_expected_2d->SetTitle("");
+  graph_plus1sigma_2d->SetTitle("");
+  graph_plus2sigma_2d->SetTitle("");
+  graph_observed_2d->SetTitle("");
+
+  TH2D *minus2sigma_th2d =new TH2D("minus2sigma_th2d","minus2sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
+  TH2D *minus1sigma_th2d =new TH2D("minus1sigma_th2d","minus1sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
+  TH2D *expected_th2d =new TH2D("expected_th2d","expected_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
+  TH2D *plus1sigma_th2d =new TH2D("plus1sigma_th2d","plus1sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
+  TH2D *plus2sigma_th2d =new TH2D("plus2sigma_th2d","plus2sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
+  TH2D *observed_th2d =new TH2D("observed_th2d","observed_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
+
+
+
   if(HIG != ""){
     std::cout << "NO LONGER SUPPORTED" << std::endl;
   }
@@ -134,6 +158,8 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   else{
     int kTwod=0;
     //int ipoint_exp=0, ipoint_obs=0;
+    int kTwod=0;
+
     for(unsigned int imass=0; imass<bins_.size(); ++imass){
       // buffer mass value
       float mass = bins_[imass];    
@@ -144,11 +170,11 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       TGraph* graph_plus1sigma = new TGraph();
       TGraph* graph_plus2sigma = new TGraph();
       TGraph* graph_observed = new TGraph();
-      
+
       TString fullpath = TString::Format("%s/%d/HypothesisTest.root", directory, (int)mass);
       if (model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2")){ 
-        if(bins_[imass]!=(int)bins_[imass]) fullpath = TString::Format("%s/%0.1f/HypothesisTest.root", directory, bins_[imass]);
-        else fullpath = TString::Format("%s/%d/HypothesisTest.root",directory,(int)mass);
+	if(bins_[imass]!=(int)bins_[imass]) fullpath = TString::Format("%s/%0.1f/HypothesisTest.root", directory, bins_[imass]);
+	else fullpath = TString::Format("%s/%d/HypothesisTest.root",directory,(int)mass);
       }
       std::cout << "open file: " << fullpath << std::endl;
       TFile* file_ = TFile::Open(fullpath); if(!file_){ std::cout << "--> TFile is corrupt: skipping masspoint." << std::endl; continue; }
@@ -184,6 +210,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 	for(int j=0; j<graph_minus2sigma->GetN(); j++){ 
 	  if(graph_minus2sigma->GetY()[j]>ymax && graph_minus2sigma->GetX()[j]>=1) {ymax=graph_minus2sigma->GetY()[j]; xmax=graph_minus2sigma->GetX()[j]; tanbLowHigh=xmax;} //tanb>=1 hardcoded to fix that point 	  
 	}
+
 	// Fill TH2D with calculated limit points
 	plane_minus2sigma->SetBinContent(plane_minus2sigma->GetXaxis()->FindBin(mass), plane_minus2sigma->GetYaxis()->FindBin(tanb), minus2sigma/exclusion_);
 	plane_minus1sigma->SetBinContent(plane_minus1sigma->GetXaxis()->FindBin(mass), plane_minus1sigma->GetYaxis()->FindBin(tanb), minus1sigma/exclusion_);
@@ -277,25 +304,26 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       graph_observed_tanb   ->SetPoint(imass, mass, plane_observed   ->GetBinContent(plane_observed   ->GetXaxis()->FindBin(mass), idy));
     }
     for(int idx=0; idx<plane_minus2sigma->GetNbinsX()+1; idx++)
-      {
-	if(linearFit_){
-	  plane_minus2sigma->SetBinContent(idx, idy, graph_minus2sigma_tanb->Eval(plane_minus2sigma->GetXaxis()->GetBinCenter(idx)));
-	  plane_minus1sigma->SetBinContent(idx, idy, graph_minus1sigma_tanb->Eval(plane_minus1sigma->GetXaxis()->GetBinCenter(idx)));
-	  plane_expected   ->SetBinContent(idx, idy, graph_expected_tanb   ->Eval(plane_expected   ->GetXaxis()->GetBinCenter(idx)));
-	  plane_plus1sigma ->SetBinContent(idx, idy, graph_plus1sigma_tanb ->Eval(plane_plus1sigma ->GetXaxis()->GetBinCenter(idx)));
-	  plane_plus2sigma ->SetBinContent(idx, idy, graph_plus2sigma_tanb ->Eval(plane_plus2sigma ->GetXaxis()->GetBinCenter(idx)));
-	  plane_observed   ->SetBinContent(idx, idy, graph_observed_tanb   ->Eval(plane_observed   ->GetXaxis()->GetBinCenter(idx)));
-	}
-	else{
-	  plane_minus2sigma->SetBinContent(idx, idy, graph_minus2sigma_tanb->Eval(plane_minus2sigma->GetXaxis()->GetBinCenter(idx), 0, "S"));
-	  plane_minus1sigma->SetBinContent(idx, idy, graph_minus1sigma_tanb->Eval(plane_minus1sigma->GetXaxis()->GetBinCenter(idx), 0, "S"));
-	  plane_expected   ->SetBinContent(idx, idy, graph_expected_tanb   ->Eval(plane_expected   ->GetXaxis()->GetBinCenter(idx), 0, "S"));
-	  plane_plus1sigma ->SetBinContent(idx, idy, graph_plus1sigma_tanb ->Eval(plane_plus1sigma ->GetXaxis()->GetBinCenter(idx), 0, "S"));
-	  plane_plus2sigma ->SetBinContent(idx, idy, graph_plus2sigma_tanb ->Eval(plane_plus2sigma ->GetXaxis()->GetBinCenter(idx), 0, "S"));
-	  plane_observed   ->SetBinContent(idx, idy, graph_observed_tanb   ->Eval(plane_observed   ->GetXaxis()->GetBinCenter(idx), 0, "S"));
-	}
+    {
+      if(linearFit_){
+	plane_minus2sigma->SetBinContent(idx, idy, graph_minus2sigma_tanb->Eval(plane_minus2sigma->GetXaxis()->GetBinCenter(idx)));
+	plane_minus1sigma->SetBinContent(idx, idy, graph_minus1sigma_tanb->Eval(plane_minus1sigma->GetXaxis()->GetBinCenter(idx)));
+	plane_expected   ->SetBinContent(idx, idy, graph_expected_tanb   ->Eval(plane_expected   ->GetXaxis()->GetBinCenter(idx)));
+	plane_plus1sigma ->SetBinContent(idx, idy, graph_plus1sigma_tanb ->Eval(plane_plus1sigma ->GetXaxis()->GetBinCenter(idx)));
+	plane_plus2sigma ->SetBinContent(idx, idy, graph_plus2sigma_tanb ->Eval(plane_plus2sigma ->GetXaxis()->GetBinCenter(idx)));
+	plane_observed   ->SetBinContent(idx, idy, graph_observed_tanb   ->Eval(plane_observed   ->GetXaxis()->GetBinCenter(idx)));
       }
+      else{
+	plane_minus2sigma->SetBinContent(idx, idy, graph_minus2sigma_tanb->Eval(plane_minus2sigma->GetXaxis()->GetBinCenter(idx), 0, "S"));
+	plane_minus1sigma->SetBinContent(idx, idy, graph_minus1sigma_tanb->Eval(plane_minus1sigma->GetXaxis()->GetBinCenter(idx), 0, "S"));
+	plane_expected   ->SetBinContent(idx, idy, graph_expected_tanb   ->Eval(plane_expected   ->GetXaxis()->GetBinCenter(idx), 0, "S"));
+	plane_plus1sigma ->SetBinContent(idx, idy, graph_plus1sigma_tanb ->Eval(plane_plus1sigma ->GetXaxis()->GetBinCenter(idx), 0, "S"));
+	plane_plus2sigma ->SetBinContent(idx, idy, graph_plus2sigma_tanb ->Eval(plane_plus2sigma ->GetXaxis()->GetBinCenter(idx), 0, "S"));
+	plane_observed   ->SetBinContent(idx, idy, graph_observed_tanb   ->Eval(plane_observed   ->GetXaxis()->GetBinCenter(idx), 0, "S"));
+      }
+    }
   }
+
   if(graphInterpolate_){
     for(int i=0; i<expected_th2d->GetXaxis()->GetNbins();i++){
       for(int j=0; j<expected_th2d->GetYaxis()->GetNbins();j++){
@@ -310,15 +338,16 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     }
 
   }
-
-//   plane_minus2sigma->Smooth(1, "k5b");
-//   plane_minus1sigma->Smooth(1, "k5b");
-//   plane_expected   ->Smooth(1, "k5b");
-//   plane_plus1sigma ->Smooth(1, "k5b");
-//   plane_plus2sigma ->Smooth(1, "k5b");
-//   plane_observed   ->Smooth(11, "k5b")
+  //   plane_minus2sigma->Smooth(1, "k5b");
+  //   plane_minus1sigma->Smooth(1, "k5b");
+  //   plane_expected   ->Smooth(1, "k5b");
+  //   plane_plus1sigma ->Smooth(1, "k5b");
+  //   plane_plus2sigma ->Smooth(1, "k5b");
+  //   plane_observed   ->Smooth(11, "k5b")
 
   // Grabbing contours
+
+
   std::vector<TGraph*> gr_minus2sigma;
   std::vector<TGraph*> gr_minus1sigma;
   std::vector<TGraph*> gr_expected;
@@ -327,7 +356,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   std::vector<TGraph*> gr_observed;
   std::vector<TGraph*> gr_injected;
   gr_injected.push_back(0);
-  
+
   int n_m2s, n_m1s, n_exp, n_p1s, n_p2s, n_obs;
   if(graphInterpolate_){
     TIter iterm2s((TList *)contourFromTH2(minus2sigma_th2d, 1.0, 20, false,5));
@@ -382,8 +411,9 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   for(int i=0; i<n_p2s; i++) {gr_plus2sigma.push_back( (TGraph *)((TList *)contourFromTH2(plane_plus2sigma,  1.0, 20, false))->At(i));}
   for(int i=0; i<n_obs; i++) {gr_observed.push_back(   (TGraph *)((TList *)contourFromTH2(plane_observed,    1.0, 20, false))->At(i));}
  }
-  //std::cout<< gr_minus2sigma.size() << " " << gr_minus1sigma.size() << " " << gr_expected.size() << " " << gr_plus1sigma.size() << " " << gr_plus2sigma.size() << " " << gr_observed.size() << std::endl;
-  
+
+   //std::cout<< gr_minus2sigma.size() << " " << gr_minus1sigma.size() << " " << gr_expected.size() << " " << gr_plus1sigma.size() << " " << gr_plus2sigma.size() << " " << gr_observed.size() << std::endl;
+
   //gr_expected[1]->SaveAs("exp_graph.root");
   // create plots for additional comparisons
   std::map<std::string, TGraph*> comparisons; TGraph* comp=0;
@@ -502,163 +532,163 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 
 
 void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGraph* graph_expected, TGraph* graph_plus1sigma, TGraph* graph_plus2sigma, TGraph* graph_observed, const char* directory, float mass, int xmax, int ymax, const char* model){
-//control plots showing the CLs value over tanb for each mass
-    //minus2sigma
-    TCanvas* canv_minus2sigma = new TCanvas();
-    if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_minus2sigma = new TCanvas(TString::Format("tanb-CLs_025_%0.1f", mass), "", 600, 600);
-    else canv_minus2sigma = new TCanvas(TString::Format("tanb-CLs_025_%d", (int)mass), "", 600, 600);
-    canv_minus2sigma->cd();
-    canv_minus2sigma->SetGridx(1);
-    canv_minus2sigma->SetGridy(1);
-    graph_minus2sigma->GetXaxis()->SetTitle("tan#beta");
-    graph_minus2sigma->GetXaxis()->SetLabelFont(62);
-    graph_minus2sigma->GetXaxis()->SetTitleFont(62);
-    graph_minus2sigma->GetXaxis()->SetTitleColor(1);
-    graph_minus2sigma->GetXaxis()->SetTitleOffset(1.05);
-    graph_minus2sigma->GetYaxis()->SetTitle("CL_{s}");
-    graph_minus2sigma->GetYaxis()->SetLabelFont(62);
-    graph_minus2sigma->GetYaxis()->SetTitleFont(62);
-    graph_minus2sigma->GetYaxis()->SetTitleOffset(1.05);
-    graph_minus2sigma->GetYaxis()->SetLabelSize(0.03);
-    graph_minus2sigma->SetMarkerStyle(20);
-    graph_minus2sigma->SetMarkerSize(1.3);
-    ymax=0; ymax=0;
-    for(int j=0; j<graph_minus2sigma->GetN(); j++){ 
-      if(graph_minus2sigma->GetY()[j]>ymax) {ymax=graph_minus2sigma->GetY()[j]; xmax=graph_minus2sigma->GetX()[j];}
-    }
-    graph_minus2sigma->Draw("AP");
-    if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_minus2sigma->Print(TString::Format("%s/%0.1f/tanb-CLs_025_%0.1f.png", directory, mass, mass));
-    else canv_minus2sigma->Print(TString::Format("%s/%d/tanb-CLs_025_%d.png", directory, (int)mass, (int)mass));
-    //minus1sigma
-    TCanvas* canv_minus1sigma = new TCanvas();
-    if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_minus1sigma = new TCanvas(TString::Format("tanb-CLs_160_%0.1f", mass), "", 600, 600);
-    else canv_minus1sigma = new TCanvas(TString::Format("tanb-CLs_160_%d", (int)mass), "", 600, 600);
-    canv_minus1sigma->cd();
-    canv_minus1sigma->SetGridx(1);
-    canv_minus1sigma->SetGridy(1);
-    graph_minus1sigma->GetXaxis()->SetTitle("tan#beta");
-    graph_minus1sigma->GetXaxis()->SetLabelFont(62);
-    graph_minus1sigma->GetXaxis()->SetTitleFont(62);
-    graph_minus1sigma->GetXaxis()->SetTitleColor(1);
-    graph_minus1sigma->GetXaxis()->SetTitleOffset(1.05);
-    graph_minus1sigma->GetYaxis()->SetTitle("CL_{s}");
-    graph_minus1sigma->GetYaxis()->SetLabelFont(62);
-    graph_minus1sigma->GetYaxis()->SetTitleFont(62);
-    graph_minus1sigma->GetYaxis()->SetTitleOffset(1.05);
-    graph_minus1sigma->GetYaxis()->SetLabelSize(0.03);
-    graph_minus1sigma->SetMarkerStyle(20);
-    graph_minus1sigma->SetMarkerSize(1.3);
-    ymax=0; ymax=0;
-    for(int j=0; j<graph_minus1sigma->GetN(); j++){ 
-      if(graph_minus1sigma->GetY()[j]>ymax) {ymax=graph_minus1sigma->GetY()[j]; xmax=graph_minus1sigma->GetX()[j];}
-    }
-    graph_minus1sigma->Draw("AP");
-    if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_minus1sigma->Print(TString::Format("%s/%0.1f/tanb-CLs_160_%0.1f.png", directory, mass, mass));
-    else canv_minus1sigma->Print(TString::Format("%s/%d/tanb-CLs_160_%d.png", directory, (int)mass, (int)mass));
-    //expected
-    TCanvas* canv_expected = new TCanvas();
-    if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_expected = new TCanvas(TString::Format("tanb-CLs_EXP_%0.1f", mass), "", 600, 600);
-    else canv_expected = new TCanvas(TString::Format("tanb-CLs_EXP_%d", (int)mass), "", 600, 600);
-    canv_expected->cd();
-    canv_expected->SetGridx(1);
-    canv_expected->SetGridy(1);
-    graph_expected->GetXaxis()->SetTitle("tan#beta");
-    graph_expected->GetXaxis()->SetLabelFont(62);
-    graph_expected->GetXaxis()->SetTitleFont(62);
-    graph_expected->GetXaxis()->SetTitleColor(1);
-    graph_expected->GetXaxis()->SetTitleOffset(1.05);
-    graph_expected->GetYaxis()->SetTitle("CL_{s}");
-    graph_expected->GetYaxis()->SetLabelFont(62);
-    graph_expected->GetYaxis()->SetTitleFont(62);
-    graph_expected->GetYaxis()->SetTitleOffset(1.05);
-    graph_expected->GetYaxis()->SetLabelSize(0.03);
-    graph_expected->SetMarkerStyle(20);
-    graph_expected->SetMarkerSize(1.3);
-    ymax=0; ymax=0;
-    for(int j=0; j<graph_expected->GetN(); j++){ 
-      if(graph_expected->GetY()[j]>ymax) {ymax=graph_expected->GetY()[j]; xmax=graph_expected->GetX()[j];}
-    }
-    graph_expected->Draw("AP");
-    if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_expected->Print(TString::Format("%s/%0.1f/tanb-CLs_EXP_%0.1f.png", directory, mass, mass));
-    else canv_expected->Print(TString::Format("%s/%d/tanb-CLs_EXP_%d.png", directory, (int)mass, (int)mass));
-    //plus1sigma
-    TCanvas* canv_plus1sigma = new TCanvas();
-    if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_plus1sigma = new TCanvas(TString::Format("tanb-CLs_860_%0.1f", mass), "", 600, 600);
-    else canv_plus1sigma = new TCanvas(TString::Format("tanb-CLs_860_%d", (int)mass), "", 600, 600);
-    canv_plus1sigma->cd();
-    canv_plus1sigma->SetGridx(1);
-    canv_plus1sigma->SetGridy(1);
-    graph_plus1sigma->GetXaxis()->SetTitle("tan#beta");
-    graph_plus1sigma->GetXaxis()->SetLabelFont(62);
-    graph_plus1sigma->GetXaxis()->SetTitleFont(62);
-    graph_plus1sigma->GetXaxis()->SetTitleColor(1);
-    graph_plus1sigma->GetXaxis()->SetTitleOffset(1.05);
-    graph_plus1sigma->GetYaxis()->SetTitle("CL_{s}");
-    graph_plus1sigma->GetYaxis()->SetLabelFont(62);
-    graph_plus1sigma->GetYaxis()->SetTitleFont(62);
-    graph_plus1sigma->GetYaxis()->SetTitleOffset(1.05);
-    graph_plus1sigma->GetYaxis()->SetLabelSize(0.03);
-    graph_plus1sigma->SetMarkerStyle(20);
-    graph_plus1sigma->SetMarkerSize(1.3);
-    ymax=0; ymax=0;
-    for(int j=0; j<graph_plus1sigma->GetN(); j++){ 
-      if(graph_plus1sigma->GetY()[j]>ymax) {ymax=graph_plus1sigma->GetY()[j]; xmax=graph_plus1sigma->GetX()[j];}
-    }
-    graph_plus1sigma->Draw("AP");
-    if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_plus1sigma->Print(TString::Format("%s/%0.1f/tanb-CLs_860_%0.1f.png", directory, mass, mass));
-    else canv_plus1sigma->Print(TString::Format("%s/%d/tanb-CLs_860_%d.png", directory, (int)mass, (int)mass));
-    //plus2sigma
-    TCanvas* canv_plus2sigma = new TCanvas();
-    if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_plus2sigma = new TCanvas(TString::Format("tanb-CLs_975_%0.1f", mass), "", 600, 600);
-    else canv_plus2sigma = new TCanvas(TString::Format("tanb-CLs_975_%d", (int)mass), "", 600, 600);
-    canv_plus2sigma->cd();
-    canv_plus2sigma->SetGridx(1);
-    canv_plus2sigma->SetGridy(1);
-    graph_plus2sigma->GetXaxis()->SetTitle("tan#beta");
-    graph_plus2sigma->GetXaxis()->SetLabelFont(62);
-    graph_plus2sigma->GetXaxis()->SetTitleFont(62);
-    graph_plus2sigma->GetXaxis()->SetTitleColor(1);
-    graph_plus2sigma->GetXaxis()->SetTitleOffset(1.05);
-    graph_plus2sigma->GetYaxis()->SetTitle("CL_{s}");
-    graph_plus2sigma->GetYaxis()->SetLabelFont(62);
-    graph_plus2sigma->GetYaxis()->SetTitleFont(62);
-    graph_plus2sigma->GetYaxis()->SetTitleOffset(1.05);
-    graph_plus2sigma->GetYaxis()->SetLabelSize(0.03);
-    graph_plus2sigma->SetMarkerStyle(20);
-    graph_plus2sigma->SetMarkerSize(1.3);
-    ymax=0; ymax=0;
-    for(int j=0; j<graph_plus2sigma->GetN(); j++){ 
-      if(graph_plus2sigma->GetY()[j]>ymax) {ymax=graph_plus2sigma->GetY()[j]; xmax=graph_plus2sigma->GetX()[j];}
-    }
-    graph_plus2sigma->Draw("AP");
-    if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_plus2sigma->Print(TString::Format("%s/%0.1f/tanb-CLs_975_%0.1f.png", directory, mass, mass));
-    else canv_plus2sigma->Print(TString::Format("%s/%d/tanb-CLs_975_%d.png", directory, (int)mass, (int)mass));
-    //observed
-    TCanvas* canv_observed = new TCanvas();
-    if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_observed = new TCanvas(TString::Format("tanb-CLs_OBS_%0.1f", mass), "", 600, 600);
-    else canv_observed = new TCanvas(TString::Format("tanb-CLs_OBS_%d", (int)mass), "", 600, 600);
-    canv_observed->cd();
-    canv_observed->SetGridx(1);
-    canv_observed->SetGridy(1);
-    graph_observed->GetXaxis()->SetTitle("tan#beta");
-    graph_observed->GetXaxis()->SetLabelFont(62);
-    graph_observed->GetXaxis()->SetTitleFont(62);
-    graph_observed->GetXaxis()->SetTitleColor(1);
-    graph_observed->GetXaxis()->SetTitleOffset(1.05);
-    graph_observed->GetYaxis()->SetTitle("CL_{s}");
-    graph_observed->GetYaxis()->SetLabelFont(62);
-    graph_observed->GetYaxis()->SetTitleFont(62);
-    graph_observed->GetYaxis()->SetTitleOffset(1.05);
-    graph_observed->GetYaxis()->SetLabelSize(0.03);
-    graph_observed->SetMarkerStyle(20);
-    graph_observed->SetMarkerSize(1.3);
-    ymax=0; ymax=0;
-    for(int j=0; j<graph_observed->GetN(); j++){ 
-      if(graph_observed->GetY()[j]>ymax) {ymax=graph_observed->GetY()[j]; xmax=graph_observed->GetX()[j];}
-    }
-    graph_observed->Draw("AP");
-    if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_observed->Print(TString::Format("%s/%0.1f/tanb-CLs_OBS_%0.1f.png", directory, mass, mass));
-    else canv_observed->Print(TString::Format("%s/%d/tanb-CLs_OBS_%d.png", directory, (int)mass, (int)mass));
-    return;
+  //control plots showing the CLs value over tanb for each mass
+  //minus2sigma
+  TCanvas* canv_minus2sigma = new TCanvas();
+  if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_minus2sigma = new TCanvas(TString::Format("tanb-CLs_025_%0.1f", mass), "", 600, 600);
+  else canv_minus2sigma = new TCanvas(TString::Format("tanb-CLs_025_%d", (int)mass), "", 600, 600);
+  canv_minus2sigma->cd();
+  canv_minus2sigma->SetGridx(1);
+  canv_minus2sigma->SetGridy(1);
+  graph_minus2sigma->GetXaxis()->SetTitle("tan#beta");
+  graph_minus2sigma->GetXaxis()->SetLabelFont(62);
+  graph_minus2sigma->GetXaxis()->SetTitleFont(62);
+  graph_minus2sigma->GetXaxis()->SetTitleColor(1);
+  graph_minus2sigma->GetXaxis()->SetTitleOffset(1.05);
+  graph_minus2sigma->GetYaxis()->SetTitle("CL_{s}");
+  graph_minus2sigma->GetYaxis()->SetLabelFont(62);
+  graph_minus2sigma->GetYaxis()->SetTitleFont(62);
+  graph_minus2sigma->GetYaxis()->SetTitleOffset(1.05);
+  graph_minus2sigma->GetYaxis()->SetLabelSize(0.03);
+  graph_minus2sigma->SetMarkerStyle(20);
+  graph_minus2sigma->SetMarkerSize(1.3);
+  ymax=0; ymax=0;
+  for(int j=0; j<graph_minus2sigma->GetN(); j++){ 
+    if(graph_minus2sigma->GetY()[j]>ymax) {ymax=graph_minus2sigma->GetY()[j]; xmax=graph_minus2sigma->GetX()[j];}
+  }
+  graph_minus2sigma->Draw("AP");
+  if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_minus2sigma->Print(TString::Format("%s/%0.1f/tanb-CLs_025_%0.1f.png", directory, mass, mass));
+  else canv_minus2sigma->Print(TString::Format("%s/%d/tanb-CLs_025_%d.png", directory, (int)mass, (int)mass));
+  //minus1sigma
+  TCanvas* canv_minus1sigma = new TCanvas();
+  if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_minus1sigma = new TCanvas(TString::Format("tanb-CLs_160_%0.1f", mass), "", 600, 600);
+  else canv_minus1sigma = new TCanvas(TString::Format("tanb-CLs_160_%d", (int)mass), "", 600, 600);
+  canv_minus1sigma->cd();
+  canv_minus1sigma->SetGridx(1);
+  canv_minus1sigma->SetGridy(1);
+  graph_minus1sigma->GetXaxis()->SetTitle("tan#beta");
+  graph_minus1sigma->GetXaxis()->SetLabelFont(62);
+  graph_minus1sigma->GetXaxis()->SetTitleFont(62);
+  graph_minus1sigma->GetXaxis()->SetTitleColor(1);
+  graph_minus1sigma->GetXaxis()->SetTitleOffset(1.05);
+  graph_minus1sigma->GetYaxis()->SetTitle("CL_{s}");
+  graph_minus1sigma->GetYaxis()->SetLabelFont(62);
+  graph_minus1sigma->GetYaxis()->SetTitleFont(62);
+  graph_minus1sigma->GetYaxis()->SetTitleOffset(1.05);
+  graph_minus1sigma->GetYaxis()->SetLabelSize(0.03);
+  graph_minus1sigma->SetMarkerStyle(20);
+  graph_minus1sigma->SetMarkerSize(1.3);
+  ymax=0; ymax=0;
+  for(int j=0; j<graph_minus1sigma->GetN(); j++){ 
+    if(graph_minus1sigma->GetY()[j]>ymax) {ymax=graph_minus1sigma->GetY()[j]; xmax=graph_minus1sigma->GetX()[j];}
+  }
+  graph_minus1sigma->Draw("AP");
+  if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_minus1sigma->Print(TString::Format("%s/%0.1f/tanb-CLs_160_%0.1f.png", directory, mass, mass));
+  else canv_minus1sigma->Print(TString::Format("%s/%d/tanb-CLs_160_%d.png", directory, (int)mass, (int)mass));
+  //expected
+  TCanvas* canv_expected = new TCanvas();
+  if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_expected = new TCanvas(TString::Format("tanb-CLs_EXP_%0.1f", mass), "", 600, 600);
+  else canv_expected = new TCanvas(TString::Format("tanb-CLs_EXP_%d", (int)mass), "", 600, 600);
+  canv_expected->cd();
+  canv_expected->SetGridx(1);
+  canv_expected->SetGridy(1);
+  graph_expected->GetXaxis()->SetTitle("tan#beta");
+  graph_expected->GetXaxis()->SetLabelFont(62);
+  graph_expected->GetXaxis()->SetTitleFont(62);
+  graph_expected->GetXaxis()->SetTitleColor(1);
+  graph_expected->GetXaxis()->SetTitleOffset(1.05);
+  graph_expected->GetYaxis()->SetTitle("CL_{s}");
+  graph_expected->GetYaxis()->SetLabelFont(62);
+  graph_expected->GetYaxis()->SetTitleFont(62);
+  graph_expected->GetYaxis()->SetTitleOffset(1.05);
+  graph_expected->GetYaxis()->SetLabelSize(0.03);
+  graph_expected->SetMarkerStyle(20);
+  graph_expected->SetMarkerSize(1.3);
+  ymax=0; ymax=0;
+  for(int j=0; j<graph_expected->GetN(); j++){ 
+    if(graph_expected->GetY()[j]>ymax) {ymax=graph_expected->GetY()[j]; xmax=graph_expected->GetX()[j];}
+  }
+  graph_expected->Draw("AP");
+  if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_expected->Print(TString::Format("%s/%0.1f/tanb-CLs_EXP_%0.1f.png", directory, mass, mass));
+  else canv_expected->Print(TString::Format("%s/%d/tanb-CLs_EXP_%d.png", directory, (int)mass, (int)mass));
+  //plus1sigma
+  TCanvas* canv_plus1sigma = new TCanvas();
+  if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_plus1sigma = new TCanvas(TString::Format("tanb-CLs_860_%0.1f", mass), "", 600, 600);
+  else canv_plus1sigma = new TCanvas(TString::Format("tanb-CLs_860_%d", (int)mass), "", 600, 600);
+  canv_plus1sigma->cd();
+  canv_plus1sigma->SetGridx(1);
+  canv_plus1sigma->SetGridy(1);
+  graph_plus1sigma->GetXaxis()->SetTitle("tan#beta");
+  graph_plus1sigma->GetXaxis()->SetLabelFont(62);
+  graph_plus1sigma->GetXaxis()->SetTitleFont(62);
+  graph_plus1sigma->GetXaxis()->SetTitleColor(1);
+  graph_plus1sigma->GetXaxis()->SetTitleOffset(1.05);
+  graph_plus1sigma->GetYaxis()->SetTitle("CL_{s}");
+  graph_plus1sigma->GetYaxis()->SetLabelFont(62);
+  graph_plus1sigma->GetYaxis()->SetTitleFont(62);
+  graph_plus1sigma->GetYaxis()->SetTitleOffset(1.05);
+  graph_plus1sigma->GetYaxis()->SetLabelSize(0.03);
+  graph_plus1sigma->SetMarkerStyle(20);
+  graph_plus1sigma->SetMarkerSize(1.3);
+  ymax=0; ymax=0;
+  for(int j=0; j<graph_plus1sigma->GetN(); j++){ 
+    if(graph_plus1sigma->GetY()[j]>ymax) {ymax=graph_plus1sigma->GetY()[j]; xmax=graph_plus1sigma->GetX()[j];}
+  }
+  graph_plus1sigma->Draw("AP");
+  if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_plus1sigma->Print(TString::Format("%s/%0.1f/tanb-CLs_860_%0.1f.png", directory, mass, mass));
+  else canv_plus1sigma->Print(TString::Format("%s/%d/tanb-CLs_860_%d.png", directory, (int)mass, (int)mass));
+  //plus2sigma
+  TCanvas* canv_plus2sigma = new TCanvas();
+  if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_plus2sigma = new TCanvas(TString::Format("tanb-CLs_975_%0.1f", mass), "", 600, 600);
+  else canv_plus2sigma = new TCanvas(TString::Format("tanb-CLs_975_%d", (int)mass), "", 600, 600);
+  canv_plus2sigma->cd();
+  canv_plus2sigma->SetGridx(1);
+  canv_plus2sigma->SetGridy(1);
+  graph_plus2sigma->GetXaxis()->SetTitle("tan#beta");
+  graph_plus2sigma->GetXaxis()->SetLabelFont(62);
+  graph_plus2sigma->GetXaxis()->SetTitleFont(62);
+  graph_plus2sigma->GetXaxis()->SetTitleColor(1);
+  graph_plus2sigma->GetXaxis()->SetTitleOffset(1.05);
+  graph_plus2sigma->GetYaxis()->SetTitle("CL_{s}");
+  graph_plus2sigma->GetYaxis()->SetLabelFont(62);
+  graph_plus2sigma->GetYaxis()->SetTitleFont(62);
+  graph_plus2sigma->GetYaxis()->SetTitleOffset(1.05);
+  graph_plus2sigma->GetYaxis()->SetLabelSize(0.03);
+  graph_plus2sigma->SetMarkerStyle(20);
+  graph_plus2sigma->SetMarkerSize(1.3);
+  ymax=0; ymax=0;
+  for(int j=0; j<graph_plus2sigma->GetN(); j++){ 
+    if(graph_plus2sigma->GetY()[j]>ymax) {ymax=graph_plus2sigma->GetY()[j]; xmax=graph_plus2sigma->GetX()[j];}
+  }
+  graph_plus2sigma->Draw("AP");
+  if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_plus2sigma->Print(TString::Format("%s/%0.1f/tanb-CLs_975_%0.1f.png", directory, mass, mass));
+  else canv_plus2sigma->Print(TString::Format("%s/%d/tanb-CLs_975_%d.png", directory, (int)mass, (int)mass));
+  //observed
+  TCanvas* canv_observed = new TCanvas();
+  if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_observed = new TCanvas(TString::Format("tanb-CLs_OBS_%0.1f", mass), "", 600, 600);
+  else canv_observed = new TCanvas(TString::Format("tanb-CLs_OBS_%d", (int)mass), "", 600, 600);
+  canv_observed->cd();
+  canv_observed->SetGridx(1);
+  canv_observed->SetGridy(1);
+  graph_observed->GetXaxis()->SetTitle("tan#beta");
+  graph_observed->GetXaxis()->SetLabelFont(62);
+  graph_observed->GetXaxis()->SetTitleFont(62);
+  graph_observed->GetXaxis()->SetTitleColor(1);
+  graph_observed->GetXaxis()->SetTitleOffset(1.05);
+  graph_observed->GetYaxis()->SetTitle("CL_{s}");
+  graph_observed->GetYaxis()->SetLabelFont(62);
+  graph_observed->GetYaxis()->SetTitleFont(62);
+  graph_observed->GetYaxis()->SetTitleOffset(1.05);
+  graph_observed->GetYaxis()->SetLabelSize(0.03);
+  graph_observed->SetMarkerStyle(20);
+  graph_observed->SetMarkerSize(1.3);
+  ymax=0; ymax=0;
+  for(int j=0; j<graph_observed->GetN(); j++){ 
+    if(graph_observed->GetY()[j]>ymax) {ymax=graph_observed->GetY()[j]; xmax=graph_observed->GetX()[j];}
+  }
+  graph_observed->Draw("AP");
+  if((model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2"))&&(int)mass!=mass) canv_observed->Print(TString::Format("%s/%0.1f/tanb-CLs_OBS_%0.1f.png", directory, mass, mass));
+  else canv_observed->Print(TString::Format("%s/%d/tanb-CLs_OBS_%d.png", directory, (int)mass, (int)mass));
+  return;
 }
 

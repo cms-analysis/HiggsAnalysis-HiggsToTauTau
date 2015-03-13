@@ -73,8 +73,9 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   mHconstraint->SetLineStyle(3);
   mHconstraint->SetLineColor(kGreen+3);  
 
-  
+ 
 //exclusion graphs
+
   for(unsigned int i=0; i<minus2sigma.size(); i++){
     minus2sigma[i]->SetFillStyle(1001);
     minus2sigma[i]->SetFillColor(twosigma->GetNumber()); 
@@ -159,6 +160,7 @@ if(!azh){
     higgsBands[3][i]->Draw("L SAME");
   }
 
+
 }
   for(unsigned int i=0; i<higgsBands[0].size(); i++){
     higgsBands[0][i]->SetLineWidth(402);
@@ -178,6 +180,54 @@ if(!azh){
     higgsBands[1][i]->Draw("L SAME");
   }
 
+=======
+idx=0;
+ for(std::map<double,std::vector<TGraph*>>::reverse_iterator band = higgsBandsLowTb.rbegin(); band!=higgsBandsLowTb.rend(); ++band, ++idx){
+}
+if(idx>1){
+ idx=0;
+ for(std::map<double,std::vector<TGraph*>>::iterator band = higgsBandsLowTb.begin();band!=higgsBandsLowTb.end(); ++band,++idx){
+   if(idx==0){
+    for(unsigned int i=0;i<(band->second).size();i++){
+      (band->second)[i]->SetFillStyle(1001);
+      (band->second)[i]->SetLineStyle(3);
+      (band->second)[i]->SetFillColor(kWhite);
+      (band->second)[i]->SetLineColor(kGreen+3);
+      (band->second)[i]->SetLineWidth(-9902);
+//    (band->second)[i]->Draw("F SAME");
+      (band->second)[i]->Draw("L SAME");
+    }
+   }
+
+  if(idx==1){
+    for(unsigned int i=0;i<(band->second).size();i++){
+      (band->second)[i]->SetFillStyle(3005);
+      (band->second)[i]->SetFillColor(kRed);
+      (band->second)[i]->SetLineColor(kRed);
+      (band->second)[i]->SetLineWidth(-402);
+      (band->second)[i]->Draw("L SAME");
+       }
+     }
+   }
+ }
+
+ else{
+ idx=0;
+ for(std::map<double,std::vector<TGraph*>>::iterator band = higgsBandsLowTb.begin();band!=higgsBandsLowTb.end(); ++band,++idx){
+   if(idx==0){
+    for(unsigned int i=0;i<(band->second).size();i++){
+      (band->second)[i]->SetFillStyle(3005);
+      (band->second)[i]->SetFillColor(kRed);
+      (band->second)[i]->SetLineColor(kRed);
+      (band->second)[i]->SetLineWidth(-402);
+      (band->second)[i]->Draw("L SAME");
+       }
+     }
+   }
+}
+ 
+
+>>>>>>> 7c6c10d76cc3959414422191d34452d49bf1ea0d
 
 
 
@@ -253,7 +303,7 @@ if(!azh){
       if(theory=="MSSM low-m_{H} scenario") leg = new TLegend(0.175, 0.155, 0.62, 0.30);
       else if(theory=="MSSM low-tan#beta-high scenario") leg = new TLegend(0.58, 0.58, 0.90, 0.88); //(0.18, 0.59, 0.45, 0.89)Hhh 
       else if(theory=="MSSM light-stop scenario") leg = new TLegend(0.28, (!higgsBands.empty() || !comparisons.empty()) ? 0.57 :0.69, (!higgsBands.empty() || !comparisons.empty()) ? 0.53: 0.56, 0.89);
-      else if(theory=="2HDM type-I" || theory=="2HDM type-II") leg = new TLegend(0.43, 0.19, 0.45, 0.89); 
+      else if(theory=="2HDM type-I" || theory=="2HDM type-II") leg = new TLegend(0.42, 0.59, 0.75, 0.89); 
       else leg = new TLegend(0.23, (!higgsBands.empty() || !comparisons.empty()) ? 0.57 : 0.69, (!higgsBands.empty() || !comparisons.empty()) ? 0.47: 0.50, 0.89);
     }
   }
@@ -310,7 +360,8 @@ if(!azh){
   }  
   leg2->SetBorderSize( 1  );
   leg2->SetFillStyle (1001);
-  leg2->SetTextSize  (0.03);
+  if(!azh) leg2->SetTextSize  (0.027);
+  else leg2->SetTextSize(0.03);
   leg2->SetTextFont  ( 62 ); 
   leg2->SetFillColor (kWhite);
   leg2->SetLineWidth (2);

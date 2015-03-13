@@ -48,7 +48,11 @@ TH2 *treeToHist2D(TTree *t, TString x, TString y, TString name, TCut cut, double
     return h2d;
 }
 
+<<<<<<< HEAD
 TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool require_minPoints=true, double multip=1) {
+=======
+TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool require_minPoints=true,double multip=1.) {
+>>>>>>> 7c6c10d76cc3959414422191d34452d49bf1ea0d
     std::cout << "Getting contour at threshold " << threshold << " from " << h2in->GetName() << std::endl;
     //http://root.cern.ch/root/html/tutorials/hist/ContourList.C.html
     Double_t contours[1];
@@ -56,7 +60,11 @@ TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool requir
     if (h2in->GetNbinsX() * h2in->GetNbinsY() > 10000) minPoints = 50;
     if (h2in->GetNbinsX() * h2in->GetNbinsY() <= 100) minPoints = 10;
 
+<<<<<<< HEAD
     TH2D *h2 = frameTH2D((TH2D*)h2in,threshold, multip);
+=======
+    TH2D *h2 = frameTH2D((TH2D*)h2in,threshold,multip);
+>>>>>>> 7c6c10d76cc3959414422191d34452d49bf1ea0d
 
     h2->SetContour(1, contours);
 
@@ -89,7 +97,11 @@ TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool requir
     return ret;
 }
 
+<<<<<<< HEAD
 TH2D* frameTH2D(TH2D *in, double threshold, double mult){
+=======
+TH2D* frameTH2D(TH2D *in, double threshold,double mult){
+>>>>>>> 7c6c10d76cc3959414422191d34452d49bf1ea0d
         // NEW LOGIC:
         //   - pretend that the center of the last bin is on the border of the frame
         //   - add one tiny frame with huge values
