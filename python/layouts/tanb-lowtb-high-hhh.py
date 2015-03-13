@@ -68,6 +68,7 @@ layout = cms.PSet(
     ## print constraints from mH=125GeV
     linearFit = cms.bool(True),
     higgs125 = cms.bool(True),
+    graphInterpolate = cms.bool(True),
     ## add arXiv-1211-6956 (ATLAS) to plot
     arXiv_1211_6956 = cms.bool(False),
     ## add arXiv-1204-2760 (ATLAS) to plot

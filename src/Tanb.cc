@@ -6,7 +6,7 @@
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, std::vector<TGraph*> injected, std::vector<std::vector<TGraph*>> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool MSSMvsSM=true, std::string HIG="", bool Brazilian=false);
+void plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, std::vector<TGraph*> injected, std::vector<std::vector<TGraph*>> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool MSSMvsSM=true, std::string HIG="", bool Brazilian=false, bool azh=false);
 void contour2D(TString xvar, int xbins, float xmin, float xmax, TString yvar, int ybins, float ymin, float ymax, float smx=1.0, float smy=1.0, TFile *fOut=0, TString name="contour2D");
 TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool require_minPoints=true, double multip=1);
 
@@ -106,11 +106,33 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       plane_observed   ->SetBinContent(idx, idy, 1.1);
     }
   }
+  TGraph2D* graph_minus2sigma_2d = new TGraph2D();
+  TGraph2D* graph_minus1sigma_2d = new TGraph2D();
+  TGraph2D* graph_expected_2d = new TGraph2D();
+  TGraph2D* graph_plus1sigma_2d = new TGraph2D();
+  TGraph2D* graph_plus2sigma_2d = new TGraph2D();
+  TGraph2D* graph_observed_2d = new TGraph2D();
+  graph_minus2sigma_2d->SetTitle("");
+  graph_minus1sigma_2d->SetTitle("");
+  graph_expected_2d->SetTitle("");
+  graph_plus1sigma_2d->SetTitle("");
+  graph_plus2sigma_2d->SetTitle("");
+  graph_observed_2d->SetTitle("");
+
+  TH2D *minus2sigma_th2d =new TH2D("minus2sigma_th2d","minus2sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
+  TH2D *minus1sigma_th2d =new TH2D("minus1sigma_th2d","minus1sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
+  TH2D *expected_th2d =new TH2D("expected_th2d","expected_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
+  TH2D *plus1sigma_th2d =new TH2D("plus1sigma_th2d","plus1sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
+  TH2D *plus2sigma_th2d =new TH2D("plus2sigma_th2d","plus2sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
+  TH2D *observed_th2d =new TH2D("observed_th2d","observed_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
+
 
   if(HIG != ""){
     std::cout << "NO LONGER SUPPORTED" << std::endl;
   }
+
   else{
+    int kTwod=0;
     //int ipoint_exp=0, ipoint_obs=0;
     for(unsigned int imass=0; imass<bins_.size(); ++imass){
       // buffer mass value
@@ -169,6 +191,15 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 	plane_plus1sigma ->SetBinContent(plane_plus1sigma ->GetXaxis()->FindBin(mass), plane_plus1sigma ->GetYaxis()->FindBin(tanb), plus1sigma/exclusion_);
 	plane_plus2sigma ->SetBinContent(plane_plus2sigma ->GetXaxis()->FindBin(mass), plane_plus2sigma ->GetYaxis()->FindBin(tanb), plus2sigma/exclusion_);
 	plane_observed   ->SetBinContent(plane_observed   ->GetXaxis()->FindBin(mass), plane_observed   ->GetYaxis()->FindBin(tanb), obs/exclusion_);
+	if(graphInterpolate_){
+	  graph_minus2sigma_2d->SetPoint(kTwod,mass,tanb,minus2sigma/exclusion_);
+	  graph_minus1sigma_2d->SetPoint(kTwod,mass,tanb,minus1sigma/exclusion_);
+	  graph_expected_2d->SetPoint(kTwod,mass,tanb,exp/exclusion_);
+	  graph_plus1sigma_2d->SetPoint(kTwod,mass,tanb,plus1sigma/exclusion_);
+	  graph_plus2sigma_2d->SetPoint(kTwod,mass,tanb,plus2sigma/exclusion_);
+	  graph_observed_2d->SetPoint(kTwod,mass,tanb,obs/exclusion_);
+	  kTwod++;
+	}
       }	
 
       //control plot plotting
@@ -265,6 +296,21 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 	}
       }
   }
+  if(graphInterpolate_){
+    for(int i=0; i<expected_th2d->GetXaxis()->GetNbins();i++){
+      for(int j=0; j<expected_th2d->GetYaxis()->GetNbins();j++){
+	minus2sigma_th2d->SetBinContent(i,j,graph_minus2sigma_2d->Interpolate(minus2sigma_th2d->GetXaxis()->GetBinCenter(i),minus2sigma_th2d->GetYaxis()->GetBinCenter(j)));
+	minus1sigma_th2d->SetBinContent(i,j,graph_minus1sigma_2d->Interpolate(minus1sigma_th2d->GetXaxis()->GetBinCenter(i),minus1sigma_th2d->GetYaxis()->GetBinCenter(j)));
+	expected_th2d->SetBinContent(i,j,graph_expected_2d->Interpolate(expected_th2d->GetXaxis()->GetBinCenter(i),expected_th2d->GetYaxis()->GetBinCenter(j)));
+	plus1sigma_th2d->SetBinContent(i,j,graph_plus1sigma_2d->Interpolate(plus1sigma_th2d->GetXaxis()->GetBinCenter(i),plus1sigma_th2d->GetYaxis()->GetBinCenter(j)));
+	plus2sigma_th2d->SetBinContent(i,j,graph_plus2sigma_2d->Interpolate(plus2sigma_th2d->GetXaxis()->GetBinCenter(i),plus2sigma_th2d->GetYaxis()->GetBinCenter(j)));
+	observed_th2d->SetBinContent(i,j,graph_observed_2d->Interpolate(observed_th2d->GetXaxis()->GetBinCenter(i),observed_th2d->GetYaxis()->GetBinCenter(j)));
+      }
+
+    }
+
+  }
+
 //   plane_minus2sigma->Smooth(1, "k5b");
 //   plane_minus1sigma->Smooth(1, "k5b");
 //   plane_expected   ->Smooth(1, "k5b");
@@ -283,6 +329,33 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   gr_injected.push_back(0);
   
   int n_m2s, n_m1s, n_exp, n_p1s, n_p2s, n_obs;
+  if(graphInterpolate_){
+    TIter iterm2s((TList *)contourFromTH2(minus2sigma_th2d, 1.0, 20, false,5));
+    STestFunctor m2s = std::for_each( iterm2s.Begin(), TIter::End(), STestFunctor() );
+    n_m2s=m2s.sum; 
+    TIter iterm1s((TList *)contourFromTH2(minus1sigma_th2d, 1.0, 20, false,5));
+    STestFunctor m1s = std::for_each( iterm1s.Begin(), TIter::End(), STestFunctor() );
+    n_m1s=m1s.sum; 
+    TIter iterexp((TList *)contourFromTH2(expected_th2d, 1.0, 20, false,5));
+    STestFunctor exp = std::for_each( iterexp.Begin(), TIter::End(), STestFunctor() );
+    n_exp=exp.sum; 
+    TIter iterp1s((TList *)contourFromTH2(plus1sigma_th2d, 1.0, 20, false,5));
+    STestFunctor p1s = std::for_each( iterp1s.Begin(), TIter::End(), STestFunctor() );
+    n_p1s=p1s.sum; 
+    TIter iterp2s((TList *)contourFromTH2(plus2sigma_th2d, 1.0, 20, false,5));
+    STestFunctor p2s = std::for_each( iterp2s.Begin(), TIter::End(), STestFunctor() );
+    n_p2s=p2s.sum; 
+    TIter iterobs((TList *)contourFromTH2(observed_th2d, 1.0, 20, false,5));
+    STestFunctor obs = std::for_each( iterobs.Begin(), TIter::End(), STestFunctor() );
+    n_obs=obs.sum; 
+    for(int i=0; i<n_m2s; i++) {gr_minus2sigma.push_back((TGraph *)((TList *)contourFromTH2(minus2sigma_th2d, 1.0, 20, false,5))->At(i));}
+    for(int i=0; i<n_m1s; i++) {gr_minus1sigma.push_back((TGraph *)((TList *)contourFromTH2(minus1sigma_th2d, 1.0, 20, false,5))->At(i));}
+    for(int i=0; i<n_exp; i++) {gr_expected.push_back(   (TGraph *)((TList *)contourFromTH2(expected_th2d,    1.0, 20, false,5))->At(i));}
+    for(int i=0; i<n_p1s; i++) {gr_plus1sigma.push_back( (TGraph *)((TList *)contourFromTH2(plus1sigma_th2d,  1.0, 20, false,5))->At(i));}
+    for(int i=0; i<n_p2s; i++) {gr_plus2sigma.push_back( (TGraph *)((TList *)contourFromTH2(plus2sigma_th2d,  1.0, 20, false,5))->At(i));}
+    for(int i=0; i<n_obs; i++) {gr_observed.push_back(   (TGraph *)((TList *)contourFromTH2(observed_th2d,    1.0, 20, false,5))->At(i));}
+  }
+  else{
   TIter iterm2s((TList *)contourFromTH2(plane_minus2sigma, 1.0, 20, false));
   STestFunctor m2s = std::for_each( iterm2s.Begin(), TIter::End(), STestFunctor() );
   n_m2s=m2s.sum; 
@@ -308,6 +381,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   for(int i=0; i<n_p1s; i++) {gr_plus1sigma.push_back( (TGraph *)((TList *)contourFromTH2(plane_plus1sigma,  1.0, 20, false))->At(i));}
   for(int i=0; i<n_p2s; i++) {gr_plus2sigma.push_back( (TGraph *)((TList *)contourFromTH2(plane_plus2sigma,  1.0, 20, false))->At(i));}
   for(int i=0; i<n_obs; i++) {gr_observed.push_back(   (TGraph *)((TList *)contourFromTH2(plane_observed,    1.0, 20, false))->At(i));}
+ }
   //std::cout<< gr_minus2sigma.size() << " " << gr_minus1sigma.size() << " " << gr_expected.size() << " " << gr_plus1sigma.size() << " " << gr_plus2sigma.size() << " " << gr_observed.size() << std::endl;
   
   //gr_expected[1]->SaveAs("exp_graph.root");
@@ -323,6 +397,8 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   // setup contratins from Higgs mass
   std::vector<TGraph*> gr_higgslow;
   std::vector<TGraph*> gr_higgshigh;
+  std::vector<TGraph*> gr_higgsHlow;
+  std::vector<TGraph*> gr_higgsHhigh;
   std::vector<std::vector<TGraph*>> gr_higgsBands; 
   std::vector<TH2D*> plane_higgsBands;
   if(higgs125_){
@@ -340,11 +416,26 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     for(int i=0; i<higgsband1.sum; i++) {gr_higgshigh.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[0], 128, 20, false, 200))->At(i));} 
     gr_higgsBands.push_back(gr_higgshigh);
     // possible to push back more curves to gr_higgsBands for Hhh need to call different higgsConstraint with model "H" 
+    if(TString::Format(model)=="low-tb-high"){
+    TH2D* plane_higgsHBand = higgsConstraint(model, "H");
+    plane_higgsBands.push_back(plane_higgsHBand);
+    //lower edge entry 0
+    TIter iter_higgsHlow((TList *)contourFromTH2(plane_higgsBands[1], 260, 20, false));
+    STestFunctor higgsHband0 = std::for_each( iter_higgsHlow.Begin(), TIter::End(), STestFunctor() );
+    for(int i=0; i<higgsHband0.sum; i++) {gr_higgsHlow.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[1], 260, 20, false, 200))->At(i));}
+    gr_higgsBands.push_back(gr_higgsHlow);
+    //upper edge entry 1
+    TIter iter_higgsHhigh((TList *)contourFromTH2(plane_higgsBands[1], 350, 20, false));
+    STestFunctor higgsHband1 = std::for_each( iter_higgsHhigh.Begin(), TIter::End(), STestFunctor() );
+    for(int i=0; i<higgsHband1.sum; i++) {gr_higgsHhigh.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[1], 350, 20, false, 200))->At(i));} 
+    gr_higgsBands.push_back(gr_higgsHhigh);
+    }
+   
   }  
 
 
   // do the plotting
-  plottingTanb(canv, plane_expected, gr_minus2sigma, gr_minus1sigma, gr_expected, gr_plus1sigma, gr_plus2sigma, gr_observed, gr_injected, gr_higgsBands, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, expectedOnly_, MSSMvsSM_, HIG, Brazilian_); 
+  plottingTanb(canv, plane_expected, gr_minus2sigma, gr_minus1sigma, gr_expected, gr_plus1sigma, gr_plus2sigma, gr_observed, gr_injected, gr_higgsBands, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, expectedOnly_, MSSMvsSM_, HIG, Brazilian_,azh_); 
   /// setup the CMS Preliminary
   //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
   //TPaveText* cmsprel = new TPaveText(0.145, 0.835+0.06, 0.145+0.30, 0.835+0.16, "NDC");

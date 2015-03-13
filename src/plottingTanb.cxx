@@ -65,6 +65,14 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   background->SetFillColor(backgroundColor->GetNumber());
   background->SetLineWidth(2);
   background->SetLineColor(kWhite);  
+
+  TGraphAsymmErrors* mHconstraint = new TGraphAsymmErrors();
+  mHconstraint->SetFillStyle(1001.); //1001
+  mHconstraint->SetFillColor(kWhite);
+  mHconstraint->SetLineWidth(2);
+  mHconstraint->SetLineStyle(3);
+  mHconstraint->SetLineColor(kGreen+3);  
+
   
 //exclusion graphs
   for(unsigned int i=0; i<minus2sigma.size(); i++){
@@ -99,29 +107,12 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     plus2sigma[i]->Draw("F SAME"); 
   }
     
-  for(unsigned int i=0; i<higgsBands[0].size(); i++){
-    higgsBands[0][i]->SetLineWidth(402);
-    higgsBands[0][i]->SetFillStyle(3005);
-    higgsBands[0][i]->SetFillColor(backgroundColor->GetNumber()); 
-    higgsBands[0][i]->SetLineColor(backgroundColor->GetNumber());
-    //higgsBands[0][i]->Draw("CONT SAME"); 
-    higgsBands[0][i]->Draw("L SAME"); 
-  }
-  higgsBands[0][0]->SaveAs("higgs.root");
-  for(unsigned int i=0; i<higgsBands[1].size(); i++){
-    higgsBands[1][i]->SetLineWidth(-402);
-    higgsBands[1][i]->SetFillStyle(3005);
-    higgsBands[1][i]->SetFillColor(backgroundColor->GetNumber()); 
-    higgsBands[1][i]->SetLineColor(backgroundColor->GetNumber());
-    //higgsBands[1][i]->Draw("CONT SAME"); 
-    higgsBands[1][i]->Draw("L SAME");
-  }
   
   for(unsigned int i=0; i<expected.size(); i++){
     expected[i]->SetLineColor(kBlack); 
     expected[i]->SetLineWidth(2);
     expected[i]->SetLineStyle(2); 
-    expected[i]->Draw("CONT SAME");
+    expected[i]->Draw("L SAME");
   }  
 
   if(injected[0]){
@@ -145,9 +136,50 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
       if(Brazilian) observed[i]->SetFillColor(kBlack); 
       if(Brazilian) observed[i]->SetFillStyle(3004);  
       observed[i]->Draw("F SAME"); 
-      observed[i]->Draw("CONT SAME"); 
+      observed[i]->Draw("L SAME"); 
     } 
   }
+if(!azh){
+  for(unsigned int i=0; i<higgsBands[2].size(); i++){
+    higgsBands[2][i]->SetLineWidth(9902);
+    higgsBands[2][i]->SetFillStyle(1001);
+    higgsBands[2][i]->SetFillColor(kWhite); 
+    higgsBands[2][i]->SetLineColor(kGreen+3);
+    higgsBands[2][i]->SetLineStyle(3);
+    //higgsBands[0][i]->Draw("CONT SAME"); 
+    higgsBands[2][i]->Draw("L SAME"); 
+  }
+  for(unsigned int i=0; i<higgsBands[3].size(); i++){
+    higgsBands[3][i]->SetLineWidth(-9902);
+    higgsBands[3][i]->SetFillStyle(1001);
+    higgsBands[3][i]->SetFillColor(kWhite);
+    higgsBands[3][i]->SetLineColor(kGreen+3);
+    higgsBands[3][i]->SetLineStyle(3);
+    //higgsBands[1][i]->Draw("CONT SAME"); 
+    higgsBands[3][i]->Draw("L SAME");
+  }
+
+}
+  for(unsigned int i=0; i<higgsBands[0].size(); i++){
+    higgsBands[0][i]->SetLineWidth(402);
+    higgsBands[0][i]->SetFillStyle(3005);
+    higgsBands[0][i]->SetFillColor(backgroundColor->GetNumber()); 
+    higgsBands[0][i]->SetLineColor(backgroundColor->GetNumber());
+    //higgsBands[0][i]->Draw("CONT SAME"); 
+    higgsBands[0][i]->Draw("L SAME"); 
+  }
+  higgsBands[0][0]->SaveAs("higgs.root");
+  for(unsigned int i=0; i<higgsBands[1].size(); i++){
+    higgsBands[1][i]->SetLineWidth(-402);
+    higgsBands[1][i]->SetFillStyle(3005);
+    higgsBands[1][i]->SetFillColor(backgroundColor->GetNumber()); 
+    higgsBands[1][i]->SetLineColor(backgroundColor->GetNumber());
+    //higgsBands[1][i]->Draw("CONT SAME"); 
+    higgsBands[1][i]->Draw("L SAME");
+  }
+
+
+
 
   int idx=0;
   std::map<std::string,int> coloredComps;

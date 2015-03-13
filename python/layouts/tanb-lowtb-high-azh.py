@@ -29,7 +29,7 @@ layout = cms.PSet(
     ## define verbosity level
     verbosity = cms.uint32(3),
     ## define output label
-    outputLabel = cms.string("mA-tanb-AZh") ,
+    outputLabel = cms.string("mA-tanb-azh") ,
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
 #    160.
@@ -64,6 +64,7 @@ layout = cms.PSet(
     transparent = cms.bool(True),
     ## print the 2-sigma band
     outerband = cms.bool(True),
+    graphInterpolate = cms.bool(True),
     ## plot expected only
     expectedOnly = cms.bool(True),
     linearFit = cms.bool(True),

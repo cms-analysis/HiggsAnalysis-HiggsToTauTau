@@ -14,7 +14,7 @@
 #include "TH2D.h"
 #include "TPad.h"
 
-TH2D* frameTH2D(TH2D *in, double threshold);
+TH2D* frameTH2D(TH2D *in, double threshold, double mult);
 
 TGraph* bestFit(TTree *t, TString x, TString y, TCut cut) {
     int nfind = t->Draw(y+":"+x, cut + "deltaNLL == 0");
@@ -48,7 +48,7 @@ TH2 *treeToHist2D(TTree *t, TString x, TString y, TString name, TCut cut, double
     return h2d;
 }
 
-TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool require_minPoints=true) {
+TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool require_minPoints=true, double multip=1) {
     std::cout << "Getting contour at threshold " << threshold << " from " << h2in->GetName() << std::endl;
     //http://root.cern.ch/root/html/tutorials/hist/ContourList.C.html
     Double_t contours[1];
@@ -56,7 +56,7 @@ TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool requir
     if (h2in->GetNbinsX() * h2in->GetNbinsY() > 10000) minPoints = 50;
     if (h2in->GetNbinsX() * h2in->GetNbinsY() <= 100) minPoints = 10;
 
-    TH2D *h2 = frameTH2D((TH2D*)h2in,threshold);
+    TH2D *h2 = frameTH2D((TH2D*)h2in,threshold, multip);
 
     h2->SetContour(1, contours);
 
@@ -89,7 +89,7 @@ TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool requir
     return ret;
 }
 
-TH2D* frameTH2D(TH2D *in, double threshold){
+TH2D* frameTH2D(TH2D *in, double threshold, double mult){
         // NEW LOGIC:
         //   - pretend that the center of the last bin is on the border of the frame
         //   - add one tiny frame with huge values
@@ -110,15 +110,15 @@ TH2D* frameTH2D(TH2D *in, double threshold){
         Double_t xbins[999], ybins[999]; 
         double eps = 0.01;
 
-        xbins[0] = x0 - eps*xw - xw; xbins[1] = x0 + eps*xw - xw;
+        xbins[0] = x0 - eps*xw - xw*mult; xbins[1] = x0 + eps*xw - xw*mult;
 	//xbins[0] = x0 - eps*xw - xw; xbins[1] = in->GetXaxis()->GetBinLowEdge(1);
 	for (int ix = 2; ix <= nx; ++ix) xbins[ix] = in->GetXaxis()->GetBinLowEdge(ix);
-        xbins[nx+1] = x1 - eps*xw + 0.5*xw; xbins[nx+2] = x1 + eps*xw + xw;
+        xbins[nx+1] = x1 - eps*xw + 0.5*xw*mult; xbins[nx+2] = x1 + eps*xw + xw*mult;
 	//xbins[nx+1] = in->GetXaxis()->GetBinLowEdge(nx+1); xbins[nx+2] = x1 + eps*xw + xw;
 
-        ybins[0] = y0 - eps*yw - yw; ybins[1] = y0 + eps*yw - yw;
+        ybins[0] = y0 - eps*yw - yw*mult; ybins[1] = y0 + eps*yw - yw*mult;
 	for (int iy = 2; iy <= ny; ++iy) ybins[iy] = in->GetYaxis()->GetBinLowEdge(iy);
-        ybins[ny+1] = y1 - eps*yw + yw; ybins[ny+2] = y1 + eps*yw + yw;
+        ybins[ny+1] = y1 - eps*yw + yw*mult; ybins[ny+2] = y1 + eps*yw + yw*mult;
         
 	TH2D *framed = new TH2D(
 			Form("%s framed",in->GetName()),
