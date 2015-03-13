@@ -17,7 +17,7 @@
 #include <iostream>
 
 void
-plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, std::vector<TGraph*> injected, std::vector<std::vector<TGraph*>> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool MSSMvsSM=true, std::string HIG="", bool Brazilian=false)
+plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, std::vector<TGraph*> injected, std::vector<std::vector<TGraph*>> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool MSSMvsSM=true, std::string HIG="", bool Brazilian=false, bool azh=false)
 {
   // set up styles
   canv.cd();
@@ -184,15 +184,18 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     else if(theory=="MSSM m_{h}^{mod+} scenario") theory1= new TPaveText(0.59, 0.20, 0.91, 0.26, "NDC"); 
     else if(theory=="MSSM light-stop scenario") theory1= new TPaveText(0.51, 0.20, 0.91, 0.26, "NDC"); //for loglog
     else if(theory=="MSSM light-stau scenario") theory1= new TPaveText(0.51, 0.20, 0.91, 0.26, "NDC");
-    else if(theory=="MSSM low-tan#beta-high scenario") theory1 = new TPaveText(0.45, 0.65, 0.91, 0.71, "NDC"); //(0.45, 0.75, 0.91, 0.81, "NDC")Hhh
+    else if(theory=="MSSM low-tan#beta-high scenario") theory1 = new TPaveText(0.15, 0.80, 0.55, 0.91, "NDC"); //(0.45, 0.75, 0.91, 0.81, "NDC")Hhh
     else if(theory=="2HDM type-I") theory1 = new TPaveText(0.65, 0.20, 0.91, 0.26, "NDC");
-    else if(theory=="2HDM type-II") theory1 = new TPaveText(0.65, 0.20, 0.91, 0.26, "NDC");
+    else if(theory=="2HDM type-II") theory1 = new TPaveText(0.45, 0.50, 0.75, 0.56, "NDC");
     else theory1= new TPaveText(0.51, 0.20, 0.91, 0.26, "NDC");
   }
   theory1->SetBorderSize(   0 );
   theory1->SetFillStyle(    0 );
   theory1->SetTextAlign(   12 );
+  if(theory=="MSSM low-tan#beta-high scenario") theory1->SetTextSize(0.030);
+  else{
   theory1->SetTextSize ( 0.035);
+ }
   theory1->SetTextColor(    1 );
   theory1->SetTextFont (   62 );
   theory1->AddText(theory.c_str());
@@ -216,7 +219,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     }
     else{
       if(theory=="MSSM low-m_{H} scenario") leg = new TLegend(0.175, 0.155, 0.62, 0.30);
-      else if(theory=="MSSM low-tan#beta-high scenario") leg = new TLegend(0.58, 0.34, 0.90, 0.64); //(0.18, 0.59, 0.45, 0.89)Hhh 
+      else if(theory=="MSSM low-tan#beta-high scenario") leg = new TLegend(0.58, 0.58, 0.90, 0.88); //(0.18, 0.59, 0.45, 0.89)Hhh 
       else if(theory=="MSSM light-stop scenario") leg = new TLegend(0.28, (!higgsBands.empty() || !comparisons.empty()) ? 0.57 :0.69, (!higgsBands.empty() || !comparisons.empty()) ? 0.53: 0.56, 0.89);
       else if(theory=="2HDM type-I" || theory=="2HDM type-II") leg = new TLegend(0.43, 0.19, 0.45, 0.89); 
       else leg = new TLegend(0.23, (!higgsBands.empty() || !comparisons.empty()) ? 0.57 : 0.69, (!higgsBands.empty() || !comparisons.empty()) ? 0.47: 0.50, 0.89);
@@ -269,7 +272,8 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   }
   else{ 
     if(theory=="MSSM low-m_{H} scenario") leg2 = new TLegend(0.57, 0.78, 0.92, 0.83);
-    else if(theory=="MSSM low-tan#beta-high scenario") leg2 = new TLegend(0.57, 0.18, 0.92, 0.23);//(0.57, 0.81, 0.92, 0.86)Hhh
+    else if(theory=="MSSM low-tan#beta-high scenario"&&!azh) leg2 = new TLegend(0.17,0.75,0.52,0.83);
+    else if(theory=="MSSM low-tan#beta-high scenario") leg2 = new TLegend(0.17,0.78,0.52,0.83);
     else leg2 = new TLegend(0.57, 0.26, 0.92, 0.31);
   }  
   leg2->SetBorderSize( 1  );
@@ -282,6 +286,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   if(log) {
     if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
     else leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
+    if(theory=="MSSM low-tan#beta-high scenario"&&!azh) leg2->AddEntry(mHconstraint," m^{MSSM}_{H} #notin [260,350] GeV","F");
   }
   else {
     if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
