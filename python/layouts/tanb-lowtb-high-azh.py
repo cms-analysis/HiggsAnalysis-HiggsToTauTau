@@ -65,7 +65,6 @@ layout = cms.PSet(
     transparent = cms.bool(True),
     ## print the 2-sigma band
     outerband = cms.bool(True),
-    graphInterpolate = cms.bool(True),
     ## plot expected only
     expectedOnly = cms.bool(True),
     ## use linear fit rather than TSpline (only used if not using TGraph 2D interpolation)

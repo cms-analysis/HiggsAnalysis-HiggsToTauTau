@@ -129,28 +129,6 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   TH2D *observed_th2d =new TH2D("observed_th2d","observed_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
 
 
-  TGraph2D* graph_minus2sigma_2d = new TGraph2D();
-  TGraph2D* graph_minus1sigma_2d = new TGraph2D();
-  TGraph2D* graph_expected_2d = new TGraph2D();
-  TGraph2D* graph_plus1sigma_2d = new TGraph2D();
-  TGraph2D* graph_plus2sigma_2d = new TGraph2D();
-  TGraph2D* graph_observed_2d = new TGraph2D();
-  graph_minus2sigma_2d->SetTitle("");
-  graph_minus1sigma_2d->SetTitle("");
-  graph_expected_2d->SetTitle("");
-  graph_plus1sigma_2d->SetTitle("");
-  graph_plus2sigma_2d->SetTitle("");
-  graph_observed_2d->SetTitle("");
-
-  TH2D *minus2sigma_th2d =new TH2D("minus2sigma_th2d","minus2sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
-  TH2D *minus1sigma_th2d =new TH2D("minus1sigma_th2d","minus1sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
-  TH2D *expected_th2d =new TH2D("expected_th2d","expected_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
-  TH2D *plus1sigma_th2d =new TH2D("plus1sigma_th2d","plus1sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
-  TH2D *plus2sigma_th2d =new TH2D("plus2sigma_th2d","plus2sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
-  TH2D *observed_th2d =new TH2D("observed_th2d","observed_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
-
-
-
   if(HIG != ""){
     std::cout << "NO LONGER SUPPORTED" << std::endl;
   }
@@ -158,8 +136,6 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   else{
     int kTwod=0;
     //int ipoint_exp=0, ipoint_obs=0;
-    int kTwod=0;
-
     for(unsigned int imass=0; imass<bins_.size(); ++imass){
       // buffer mass value
       float mass = bins_[imass];    

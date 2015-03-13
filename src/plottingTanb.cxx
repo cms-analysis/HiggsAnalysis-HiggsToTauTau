@@ -180,55 +180,6 @@ if(!azh){
     higgsBands[1][i]->Draw("L SAME");
   }
 
-=======
-idx=0;
- for(std::map<double,std::vector<TGraph*>>::reverse_iterator band = higgsBandsLowTb.rbegin(); band!=higgsBandsLowTb.rend(); ++band, ++idx){
-}
-if(idx>1){
- idx=0;
- for(std::map<double,std::vector<TGraph*>>::iterator band = higgsBandsLowTb.begin();band!=higgsBandsLowTb.end(); ++band,++idx){
-   if(idx==0){
-    for(unsigned int i=0;i<(band->second).size();i++){
-      (band->second)[i]->SetFillStyle(1001);
-      (band->second)[i]->SetLineStyle(3);
-      (band->second)[i]->SetFillColor(kWhite);
-      (band->second)[i]->SetLineColor(kGreen+3);
-      (band->second)[i]->SetLineWidth(-9902);
-//    (band->second)[i]->Draw("F SAME");
-      (band->second)[i]->Draw("L SAME");
-    }
-   }
-
-  if(idx==1){
-    for(unsigned int i=0;i<(band->second).size();i++){
-      (band->second)[i]->SetFillStyle(3005);
-      (band->second)[i]->SetFillColor(kRed);
-      (band->second)[i]->SetLineColor(kRed);
-      (band->second)[i]->SetLineWidth(-402);
-      (band->second)[i]->Draw("L SAME");
-       }
-     }
-   }
- }
-
- else{
- idx=0;
- for(std::map<double,std::vector<TGraph*>>::iterator band = higgsBandsLowTb.begin();band!=higgsBandsLowTb.end(); ++band,++idx){
-   if(idx==0){
-    for(unsigned int i=0;i<(band->second).size();i++){
-      (band->second)[i]->SetFillStyle(3005);
-      (band->second)[i]->SetFillColor(kRed);
-      (band->second)[i]->SetLineColor(kRed);
-      (band->second)[i]->SetLineWidth(-402);
-      (band->second)[i]->Draw("L SAME");
-       }
-     }
-   }
-}
- 
-
->>>>>>> 7c6c10d76cc3959414422191d34452d49bf1ea0d
-
 
 
   int idx=0;
@@ -374,6 +325,7 @@ if(idx>1){
   else {
     if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
     else leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
+    if(theory=="MSSM low-tan#beta-high scenario"&&!azh) leg2->AddEntry(mHconstraint," m^{MSSM}_{H} #notin [260,350] GeV","F");
   }
   if(theory!="2HDM type-I" && theory!="2HDM type-II") leg2->Draw("same");
 
