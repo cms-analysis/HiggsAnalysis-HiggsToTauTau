@@ -1,4 +1,4 @@
-
+ 
 #include <map>
 #include <vector>
 #include "TH1F.h"
@@ -25,6 +25,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     canv.SetLogy(1); 
    //  canv.SetLogx(1); 
   }
+  canv.SetTopMargin(0.25);
   // setup the CMS colors
   TColor* obs = new TColor(1501, 0.463, 0.867, 0.957);
   if(transparent && !Brazilian) obs->SetAlpha(0.5); 
@@ -107,7 +108,6 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     //higgsBands[0][i]->Draw("CONT SAME"); 
     higgsBands[0][i]->Draw("L SAME"); 
   }
-  higgsBands[0][0]->SaveAs("higgs.root");
   for(unsigned int i=0; i<higgsBands[1].size(); i++){
     higgsBands[1][i]->SetLineWidth(-402);
     higgsBands[1][i]->SetFillStyle(3005);
@@ -172,59 +172,19 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   }
   
   TPaveText* theory1;
-  if(log){
-    //if(theory=="MSSM light-stop scenario") theory1= new TPaveText(0.375, 0.69, 0.9, 0.75, "NDC"); //for loglog
-    //else theory1= new TPaveText(0.14, 0.85, 0.9, 0.90, "NDC");
-    theory1= new TPaveText(0.14, 0.85, 0.9, 0.90, "NDC");
-  }
-  else{
-    if(theory=="MSSM low-m_{H} scenario") theory1= new TPaveText(0.55, 0.84, 0.91, 0.90, "NDC");
-    else if(theory=="MSSM m_{h}^{max} scenario") theory1= new TPaveText(0.59, 0.165, 0.91, 0.225, "NDC");
-    else if(theory=="MSSM m_{h}^{mod-} scenario") theory1= new TPaveText(0.59, 0.20, 0.91, 0.26, "NDC");
-    else if(theory=="MSSM m_{h}^{mod+} scenario") theory1= new TPaveText(0.59, 0.20, 0.91, 0.26, "NDC"); 
-    else if(theory=="MSSM light-stop scenario") theory1= new TPaveText(0.51, 0.20, 0.91, 0.26, "NDC"); //for loglog
-    else if(theory=="MSSM light-stau scenario") theory1= new TPaveText(0.51, 0.20, 0.91, 0.26, "NDC");
-    else if(theory=="MSSM low-tan#beta-high scenario") theory1 = new TPaveText(0.45, 0.65, 0.91, 0.71, "NDC"); //(0.45, 0.75, 0.91, 0.81, "NDC")Hhh
-    else if(theory=="2HDM type-I") theory1 = new TPaveText(0.65, 0.20, 0.91, 0.26, "NDC");
-    else if(theory=="2HDM type-II") theory1 = new TPaveText(0.65, 0.20, 0.91, 0.26, "NDC");
-    else theory1= new TPaveText(0.51, 0.20, 0.91, 0.26, "NDC");
-  }
+  theory1= new TPaveText(0.24, 0.95, 0.76, 0.985, "NDC");
   theory1->SetBorderSize(   0 );
   theory1->SetFillStyle(    0 );
   theory1->SetTextAlign(   12 );
-  theory1->SetTextSize ( 0.035);
+  theory1->SetTextSize ( 0.04);
   theory1->SetTextColor(    1 );
   theory1->SetTextFont (   62 );
   theory1->AddText(theory.c_str());
-  theory1->Draw();
 
   /// add the proper legend
-  TLegend* leg;
-  if(log){
-    if(theory=="MSSM #scale[1.3]{#bf{#tau}}-phobic scenario") leg = new TLegend(0.635, 0.16, 0.92, 0.41);
-    //else if(theory=="MSSM light-stop scenario") leg = new TLegend(0.36, 0.745, 0.84, 0.905); // for loglog
-    // else leg = new TLegend(0.635, (!higgsBands.empty() || !comparisons.empty()) ? 0.15 : 0.32, (!higgsBands.empty() || !comparisons.empty()) ? 0.92: 0.92, 0.44); // for loglog
-    else leg = new TLegend(0.635, (!higgsBands.empty() || !comparisons.empty()) ? 0.16 : 0.32, (!higgsBands.empty() || !comparisons.empty()) ? 0.92: 0.92, 0.44); //for log
-  }
-  else{ 
-    if(MSSMvsSM){
-      if(theory=="MSSM low-m_{H} scenario") leg = new TLegend(0.175, 0.155, 0.59, 0.29);
-      else if(theory=="MSSM low-tan#beta-high scenario") leg = new TLegend(0.58, 0.34, 0.90, 0.64);
-      else if(theory=="MSSM light-stop scenario") leg = new TLegend(0.28, (!higgsBands.empty() || !comparisons.empty()) ? 0.57 :0.69, (!higgsBands.empty() || !comparisons.empty()) ? 0.57: 0.60, 0.89);
-      else if(theory=="2HDM type-I" || theory=="2HDM type-II") leg = new TLegend(0.18, 0.19, 0.45, 0.49);
-      else leg = new TLegend(0.21, (!higgsBands.empty() || !comparisons.empty()) ? 0.59 : 0.71, (!higgsBands.empty() || !comparisons.empty()) ? 0.49: 0.52, 0.89);
-    }
-    else{
-      if(theory=="MSSM low-m_{H} scenario") leg = new TLegend(0.175, 0.155, 0.62, 0.30);
-      else if(theory=="MSSM low-tan#beta-high scenario") leg = new TLegend(0.58, 0.34, 0.90, 0.64); //(0.18, 0.59, 0.45, 0.89)Hhh 
-      else if(theory=="MSSM light-stop scenario") leg = new TLegend(0.28, (!higgsBands.empty() || !comparisons.empty()) ? 0.57 :0.69, (!higgsBands.empty() || !comparisons.empty()) ? 0.53: 0.56, 0.89);
-      else if(theory=="2HDM type-I" || theory=="2HDM type-II") leg = new TLegend(0.43, 0.19, 0.45, 0.89); 
-      else leg = new TLegend(0.23, (!higgsBands.empty() || !comparisons.empty()) ? 0.57 : 0.69, (!higgsBands.empty() || !comparisons.empty()) ? 0.47: 0.50, 0.89);
-    }
-  }
-  if(theory=="MSSM low-m_{H} scenario") leg->SetNColumns(2);
-  //if(theory=="MSSM light-stop scenario" && log) leg->SetNColumns(2); //for loglog
-  leg->SetBorderSize(  1 );
+  TLegend* leg = new TLegend(0.08, 0.79, 0.61, 0.945);
+  leg->SetNColumns(2);
+  leg->SetBorderSize(  0 );
   leg->SetFillStyle (1001);
   leg->SetTextSize  (0.03);
   leg->SetTextFont  ( 62 ); 
@@ -238,17 +198,10 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     }
     if(observed[0]) leg->AddEntry(observed[0], "Observed", "FL");
   }
-  if(theory=="MSSM low-m_{H} scenario") {
-    if(minus1sigma[0]) leg->AddEntry(minus1sigma[0], "#pm 1#sigma Expected","F");
-    if(expected[0]) leg->AddEntry(expected[0], "Expected", "L");
-  }
-  else{
-    if(injected[0]) leg->AddEntry(injected[0], "h_{SM} injected", "L");
-    if(expected[0]) leg->AddEntry(expected[0], "Expected", "L");
-    if(minus1sigma[0]) leg->AddEntry(minus1sigma[0], "#pm 1#sigma Expected","F");
-  }
+  if(minus1sigma[0]) leg->AddEntry(minus1sigma[0], "#pm 1#sigma Expected","F");
+  if(expected[0]) leg->AddEntry(expected[0], "Expected", "L");
   if(minus2sigma[0]) leg->AddEntry(minus2sigma[0], "#pm 2#sigma Expected", "F"); 
-  if(theory=="MSSM low-m_{H} scenario" && injected[0]) leg->AddEntry(injected[0], "h_{SM} injected", "L");
+  if(injected[0]) leg->AddEntry(injected[0], "h_{SM} injected", "L");
   for(std::map<std::string,TGraph*>::const_iterator comp = comparisons.begin(); comp!=comparisons.end(); ++comp){
     if(std::string(comp->first) == std::string("EMPTY")) { continue; }
     else if(std::string(comp->first) == std::string("HIG-12-050 exp")) {
@@ -260,32 +213,22 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   }
   leg->Draw("same");
 
-  TLegend* leg2;
-  if(log){
-    //if(theory=="MSSM light-stop scenario") leg2 = new TLegend(0.55, 0.15, 0.92, 0.20); //for loglog
-    if(theory=="MSSM light-stop scenario") leg2 = new TLegend(0.57, 0.47, 0.92, 0.52); //for log
-    //else leg2 = new TLegend(0.31, 0.79, 0.65, 0.84); //for loglog
-    else leg2 = new TLegend(0.57, 0.60, 0.92, 0.65);
-  }
-  else{ 
-    if(theory=="MSSM low-m_{H} scenario") leg2 = new TLegend(0.57, 0.78, 0.92, 0.83);
-    else if(theory=="MSSM low-tan#beta-high scenario") leg2 = new TLegend(0.57, 0.18, 0.92, 0.23);//(0.57, 0.81, 0.92, 0.86)Hhh
-    else leg2 = new TLegend(0.57, 0.26, 0.92, 0.31);
-  }  
-  leg2->SetBorderSize( 1  );
+  TLegend* leg2 = new TLegend(0.60, 0.845, 0.95, 0.945);
+  leg2->SetBorderSize( 0  );
   leg2->SetFillStyle (1001);
   leg2->SetTextSize  (0.03);
   leg2->SetTextFont  ( 62 ); 
   leg2->SetFillColor (kWhite);
   leg2->SetLineWidth (2);
   leg2->SetLineColor (kBlack);
+  leg2->SetHeader("Mass constraint:");
   if(log) {
     if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
     else leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
   }
   else {
     if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
-    else leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
+    else leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{ #neq}} 125#pm3 GeV", "F");
   }
   if(theory!="2HDM type-I" && theory!="2HDM type-II") leg2->Draw("same");
 
@@ -293,7 +236,10 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   legline = new TLine(605, 13, 680, 13);
   legline->SetLineWidth(3);
   legline->SetLineColor(backgroundColor->GetNumber());
-  if(theory!="2HDM type-I" && theory!="2HDM type-II") legline->DrawLineNDC(leg2->GetX1()+0.015, leg2->GetY2()-0.01, leg2->GetX1()+0.072, leg2->GetY2()-0.01);
+  //if(theory!="2HDM type-I" && theory!="2HDM type-II") legline->DrawLineNDC(leg2->GetX1()+0.015, leg2->GetY2()-0.01, leg2->GetX1()+0.072, leg2->GetY2()-0.01);
+  if(theory!="2HDM type-I" && theory!="2HDM type-II") legline->DrawLineNDC(leg2->GetX1()+0.015, leg2->GetY2()-0.055, leg2->GetX1()+0.072, leg2->GetY2()-0.055);
+
+  theory1->Draw("same");
 
   canv.RedrawAxis();
   return;
