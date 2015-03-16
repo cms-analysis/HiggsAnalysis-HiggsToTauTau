@@ -66,11 +66,11 @@ layout = cms.PSet(
     ## print the 2-sigma band
     outerband = cms.bool(True),
     ## plot expected only
-    expectedOnly = cms.bool(True),
+    expectedOnly = cms.bool(False),
     ## use linear fit rather than TSpline (only used if not using TGraph 2D interpolation)
     linearFit = cms.bool(True),
     ## use TGraph2D interpolation
-    graphInterpolate = cms.bool(True),
+    fitModel = cms.uint32(2),
     ## print constraints from mH=125GeV
     higgs125 = cms.bool(True),
     ## add arXiv-1211-6956 (ATLAS) to plot
