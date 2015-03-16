@@ -239,10 +239,8 @@ class PlotLimits {
   bool transparent_;
   /// print mA-tanb plots in brazilian colors (used for option tanb)
   bool Brazilian_;
-  /// use linear or TSpline3 fitting between calculated limit points (used for option tanb)
-  bool linearFit_;
-  /// use TGraph2D interpolation or old method (used for option tanb)
-  bool graphInterpolate_;
+  /// fit method for fitting between calculated limit points 0=linear, 1=spline, 2=TGraph2D interpolation(used for option tanb)
+  int FitMethod_;
   /// print constraint on mA-tanb plane from Higgs boson at 125 GeV? (used for option tanb)
   bool higgs125_;
   /// add ATLAS(htt) in MSSM mA-tanb plot

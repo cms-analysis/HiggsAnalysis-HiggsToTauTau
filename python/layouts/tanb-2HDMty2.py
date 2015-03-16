@@ -7,7 +7,9 @@ layout = cms.PSet(
     #dataset = cms.string("#scale[1.5]{CMS} Preliminary, h,H,A#rightarrow#tau#tau, 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
     #dataset = cms.string("#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                                           18.3 fb^{-1} (8 TeV)"),
     #dataset = cms.string("#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                                           19.7 fb^{-1} (8 TeV)"),
-    dataset = cms.string("h,H,A#rightarrow#tau#tau                                      19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
+    #dataset = cms.string("h,H,A#rightarrow#tau#tau                                 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
+    dataset = cms.string("H#rightarrowhh#rightarrowbb#tau#tau                                                          19.7 fb^{-1} (8 TeV)"),
+    #dataset = cms.string("A#rightarrowZh#rightarrowll#tau#tau                                                          19.7 fb^{-1} (8 TeV)"),
     ## x-axis title
     xaxis = cms.string("cos(#beta-#alpha)"),
     ## y-axis title
@@ -64,8 +66,8 @@ layout = cms.PSet(
     Brazilian = cms.bool(True),
     ## plot transparent?
     transparent = cms.bool(True),
-    ## print the 2-sigma band
-    outerband = cms.bool(True),
+    ## Fit method: 0=linear, 1=spline, 2=TGraph2D interpolation
+    FitMethod =	cms.int32(2),
     ## plot expected only
     expectedOnly = cms.bool(False),
     ## print constraints from mH=125GeV

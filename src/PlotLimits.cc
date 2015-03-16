@@ -78,14 +78,13 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   arXiv_1302_2892_ =cfg.existsAs<bool>("arXiv_1302_2892" ) ? cfg.getParameter<bool>("arXiv_1302_2892" ) : false;
   arXiv_1205_5736_ =cfg.existsAs<bool>("arXiv_1205_5736" ) ? cfg.getParameter<bool>("arXiv_1205_5736" ) : false;
   HIG_12_052_      =cfg.existsAs<bool>("HIG_12_052"      ) ? cfg.getParameter<bool>("HIG_12_052"      ) : false;
-  higgs125_ =cfg.existsAs<bool>("higgs125" ) ? cfg.getParameter<bool>("higgs125" ) : false;
-  linearFit_=cfg.existsAs<bool>("linearFit") ? cfg.getParameter<bool>("linearFit") : false;
-  graphInterpolate_=cfg.existsAs<bool>("graphInterpolate") ? cfg.getParameter<bool>("graphInterpolate") : false;
+  higgs125_        =cfg.existsAs<bool>("higgs125"        ) ? cfg.getParameter<bool>("higgs125"        ) : false;
+  FitMethod_       =cfg.existsAs<int >("FitMethod"       ) ? cfg.getParameter<int >("FitMethod"       ) : 0;
+  transparent_     =cfg.existsAs<bool>("transparent"     ) ? cfg.getParameter<bool>("transparent"     ) : false;
+  expectedOnly_    =cfg.existsAs<bool>("expectedOnly"    ) ? cfg.getParameter<bool>("expectedOnly"    ) : false;
+  MSSMvsSM_        =cfg.existsAs<bool>("MSSMvsSM"        ) ? cfg.getParameter<bool>("MSSMvsSM"        ) : false;
+  Brazilian_       =cfg.existsAs<bool>("Brazilian"       ) ? cfg.getParameter<bool>("Brazilian"       ) : false;
   azh_ = cfg.existsAs<bool>("azh")? cfg.getParameter<bool>("azh") : false;
-  transparent_=cfg.existsAs<bool>("transparent") ? cfg.getParameter<bool>("transparent") : false;
-  expectedOnly_=cfg.existsAs<bool>("expectedOnly") ? cfg.getParameter<bool>("expectedOnly") : false;
-  MSSMvsSM_=cfg.existsAs<bool  >("MSSMvsSM") ? cfg.getParameter<bool  >("MSSMvsSM") : false;
-  Brazilian_=cfg.existsAs<bool  >("Brazilian") ? cfg.getParameter<bool  >("Brazilian") : false;
 }
 
 
