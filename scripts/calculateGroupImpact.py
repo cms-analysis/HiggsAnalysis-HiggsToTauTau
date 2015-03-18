@@ -78,7 +78,7 @@ baseOptions = (('-m %(mH)s --minimizerStrategy=0 --minimizerTolerance=%(minimize
       ' --cminFallbackAlgo "Minuit2,0:0.1" --cminFallbackAlgo "Minuit2,0:1." --cminPreScan'
       ' --setPhysicsModelParameterRanges %(targetParam)s=%(poiRange)s') % vars())
 
-standardOptions = (baseOptions + (' --cminPreFit 1 --stepSize 0.05'
+standardOptions = (baseOptions + (' --stepSize 0.05'
       ' --robustFit 1 --minimizerAlgoForMinos=Minuit2 --minimizerToleranceForMinos=%(minimizerTolerance)g'
       ' --X-rtd FITTER_NEW_CROSSING_ALGO --X-rtd FITTER_NEVER_GIVE_UP --X-rtd FITTER_BOUND') % vars())
 
@@ -97,6 +97,7 @@ if doInitialFit:
        ' --algo grid --points 100 %(ws)s') % vars())
   run(('combine -M MultiDimFit -n _initialFit %(standardOptions)s'
        ' --saveWorkspace %(ws)s') % vars())
+  sys.exit()
 initialRes = getScanResult('higgsCombine_initialFitSingles.MultiDimFit.mH%(mH)s.root' % vars(), targetParam)
 
 if not skipFits:
