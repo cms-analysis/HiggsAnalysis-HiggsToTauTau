@@ -551,7 +551,7 @@ HHH_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   massA->SetTextSize ( 0.03 );
   massA->SetTextColor(    1 );
   massA->SetTextFont (   62 );
-  massA->AddText("MSSM m^{h}_{mod+} scenario");
+  massA->AddText("MSSM low-tan#beta-high scenario");
   massA->AddText("m_{H}=$MH GeV, tan#beta=$TANB");
   massA->Draw();
 #endif

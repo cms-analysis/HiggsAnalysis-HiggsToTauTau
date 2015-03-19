@@ -6,6 +6,8 @@
 #Note the syntax for bbb processes in the config file;  only the samples before the first comma are merged atm
 python HiggsAnalysis/HiggsToTauTau/scripts/doHTohh.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-Hhh -a bbb --label="SomeLabel" --new-merging --new-merging-threshold 0.5 [--profile]
 
+#For H->hh in the low-tb-high scenario, set up low mA directories before applying xs*br
+HiggsAnalysis/HiggsToTauTau/scripts/setup_lowtb_dirs.sh LIMITS-HTohh-low-tb-high/bbb/cmb/
 #The following command applies the correct XS*BR for each tanb point we are interested in for the model-dependent limits 
 lxb-xsec2tanb.py --ana-type="Hhh" --model="low-tb-high" --customTanb="1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2,2.1,2.2,2.3,2.4,2.5,3,3.5,4" LIMITS-HTohh-low-tb-high/*/*
 #To combine A->Zh and H->hh fo rmodel dependent limits, make a directory with A->Zh and H->hh datacards in the mass folders and both shape files in the common folder,then:
@@ -36,8 +38,8 @@ python produce_macros_Hhh.py -a Hhh --mH 300 --tanb 2 [--profile]  --config ../d
 python run_macros.py -a Hhh --config ../data/limits.config-Hhh
 
 #Make plots of model dependent 
-plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-mhmodp.py LIMITS-HTohh-mhmodp/mt ## Not yet working for limits from low tanb
-plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-2HDM.py LIMITS-HTohh-2hdm/mt ##For 2HDM
+plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-lowtb-high-hhh.py LIMITS-HTohh-low-tb-high/cmb/ ## or hhh->cmb for Hhh+AZh
+plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-2HDMty2-hhh.py LIMITS-HTohh-2hdm/cmb ##For 2HDM. hhh->cmb for Hhh+AZh
 
 #Make plots of model independent 
 plot --asymptotic HiggsAnalysis/HiggsToTauTau/python/layouts/limit-mssm-ggHTohh.py LIMITS-HTohh-ggHTohh/mt

@@ -140,10 +140,13 @@ def mX_to_mA(card) :
                 per = match.match(path[path.rfind('/')+1:]).group('PER')
         if options.ana_type=="Hhh" :
             tanbregion = ''
-            if float(options.tanb) < 1:
-                tanbregion = 'tanbLow'
-            else:
-                tanbregion = 'tanbHigh'
+            if options.modelname=="low-tb-high" :
+                tanbregion='tanbAll'
+            else :
+                if float(options.tanb) < 1:
+                    tanbregion = 'tanbLow'
+                else:
+                    tanbregion = 'tanbHigh'
             mssm_xsec_tools_path = os.getenv('CMSSW_BASE')+'/src/auxiliaries/models/out.'+options.modelname+'-'+per+'-'+tanbregion+'-nnlo.root'
             prescan = mssm_xsec_tools(mssm_xsec_tools_path)
             Spline_input = ROOT.TGraph()

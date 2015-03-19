@@ -15,10 +15,18 @@ submit.py --asymptotic --no-prefit LIMITS-AZh/bbb/*/*
 #Maximum likelihood fit
 limit.py --max-likelihood LIMITS-AZh/bbb/cmb/300
 
+#Applying correct XS*BR to each tanb point for low-tb-high scenario:
+lxb-xsec2tanb.py --ana-type="AZh" --model="low-tb-high" --customTanb="1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2,2.1,2.2,2.3,2.4,2.5,3,3.5,4" LIMITS-AZh-low-tb-high/*/*
+
 #Set up and run 2HDM model-dependent limits:
 python HiggsAnalysis/HiggsToTauTau/scripts/doAZh.py --update-all --config=HiggsAnalysis/HiggsToTauTau/data/limits.config-AZh -a bbb --label="SomeLabel" [--new-merging --new-merging-threshold 0.5]
 #Applying correct XS*BR to each tanb point
 lxb-xsec2tanb.py --ana-type="AZh" --model="2HDM_ty2_mA300_mH300" --customTanb="1,2,3,4,5,6,7,8,9,10" LIMITS-2HDM-AZh/bbb/*/*
+
+#Make plots of model dependent 
+plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-lowtb-high-azh.py LIMITS-AZh-low-tb-high/cmb/ ## 
+plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-2HDMty2-azh.py LIMITS-AZh-2hdm/cmb ##For 2HDM 
+
 
 #postfit plots
 #cd HiggsAnalysis/HiggsToTauTau/test

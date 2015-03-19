@@ -555,7 +555,7 @@ ggH_SM125->Add(WHToBB_SM125);
   massA->SetTextSize ( 0.03 );
   massA->SetTextColor(    1 );
   massA->SetTextFont (   62 );
-  massA->AddText("MSSM m^{h}_{mod+} scenario");
+  massA->AddText("MSSM low-tan#beta-high scenario");
   massA->AddText("m_{H}=$MH GeV, tan#beta=$TANB");
   massA->Draw();
 #endif
