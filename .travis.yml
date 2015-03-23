@@ -13,7 +13,7 @@ git:
     submodules: false
 env:
   global:
-    - secure: "UhE5JjZ0ivkVA2+IJ1KY5xoDgmhBnT/iNPm0kjP4TbLfENdhqTO0/A1Fk66lxFX3eSiadpDmnZFNUF9eZm/f0iESRVtdnwxcKVfxEDX+OiQzEHFB6NmaHNBXtw1RvPzMJOvkdbPl7XXp11WvsdJf05Sb8Ij9nB+35ABHXcjN49s="
+    - secure: "DNbbwoJnY6yhOn3BTyuR8SMUO1/uKg70NshGwSdnP0P1ICBj1dp/Q6pMAvx3BSuCeiRZXRSj4Vjnx68+shljO4rD6KGQao25hR+RW1dNeAw9kAC5fXB2FTgLoo+oskwF9S13RTb1bEtENdyy56+tKbPkwGrAC78SfJM3yjtX6bg="
 # whitelist
 branches:
   only:
