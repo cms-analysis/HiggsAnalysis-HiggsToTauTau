@@ -195,16 +195,17 @@ HHH_ET_X(bool scaled=true, bool log=true, float min=0.1, float max=-1., string i
   // determine category tag
   const char* category = ""; const char* category_extra = ""; const char* category_extra2 = "";
   if(std::string(directory) == std::string("eleTau_2jet0tag"             )){ category = "e#tau_{h}";          }
-  if(std::string(directory) == std::string("eleTau_2jet0tag"             )){ category_extra = "2-jet 0 b-tag";          }
+  if(std::string(directory) == std::string("eleTau_2jet0tag"             )){ category_extra = "2jet-0tag";          }
   if(std::string(directory) == std::string("eleTau_2jet1tag"             )){ category = "e#tau_{h}";          }
-  if(std::string(directory) == std::string("eleTau_2jet1tag"             )){ category_extra = "2-jet 1 b-tag";       }
+  if(std::string(directory) == std::string("eleTau_2jet1tag"             )){ category_extra = "2jet-1tag";       }
   if(std::string(directory) == std::string("eleTau_2jet2tag"             )){ category = "e#tau_{h}";          }
-  if(std::string(directory) == std::string("eleTau_2jet2tag"             )){ category_extra = "2-jet 2 b-tag";         }
+  if(std::string(directory) == std::string("eleTau_2jet2tag"             )){ category_extra = "2jet-2tag";         }
 
   const char* dataset;
 #ifdef MSSM
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "#scale[1.5]{CMS}  H#rightarrow hh#rightarrow#tau#tau bb                         4.9 fb^{-1} (7 TeV)";}
   if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "#scale[1.5]{CMS}  H#rightarrow hh#rightarrow#tau#tau bb                         19.7 fb^{-1} (8 TeV)";}
+  //if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "H#rightarrow hh#rightarrow#tau#tau bb                                       19.7 fb^{-1} (8 TeV)";}
 #else
   if(std::string(inputfile).find("7TeV")!=std::string::npos){dataset = "CMS, 4.9 fb^{-1} at 7 TeV";}
   if(std::string(inputfile).find("8TeV")!=std::string::npos){dataset = "CMS, 19.7 fb^{-1} at 8 TeV";}
