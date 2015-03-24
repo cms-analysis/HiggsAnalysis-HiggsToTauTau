@@ -278,7 +278,7 @@ postfit_use(const char* inputfile, const char* analysis = "SM", const char* data
     massA->SetTextSize ( 0.03 );
     massA->SetTextColor(    1 );
     massA->SetTextFont (   62 );
-    massA->AddText("MSSM m^{h}_{max} scenario");
+    massA->AddText("MSSM m^{h}_{mod+} scenario");
     massA->AddText("m_{A}=$MA GeV, tan#beta=$TANB");
     massA->Draw();
   }    
