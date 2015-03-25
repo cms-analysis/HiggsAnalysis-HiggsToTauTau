@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 #include "TFile.h"
 #include "TGraph.h"
@@ -15,58 +16,43 @@
 #include "HiggsAnalysis/HiggsToTauTau/src/HttStyles.cc"
 #include "HiggsAnalysis/HiggsToTauTau/src/plottingTanb.cxx"
 
-//#include "HiggsAnalysis/HiggsToTauTau/interface/PlotLimits.h"
-
-TGraphAsymmErrors* higgsConstraint(TH2D* plane_expected, double mass, double deltaM, const char* model)
+TH2D* higgsConstraint(const char* model, const char* type)
 {
-  TGraphAsymmErrors* graph = new TGraphAsymmErrors();
-  for(unsigned int imass=0, ipoint=0; imass<plane_expected->GetNbinsX(); ++imass){
-  //for(int i=300, ipoint=0; i<3101; i=i+100){
+  int nmass, ntanb;
+  double massstep, masslow, masshigh, tanblow, tanbhigh;
+  if (TString::Format(model)=="lowmH") {massstep=20, masslow=300; masshigh=3100; nmass=int((masshigh-masslow)/massstep-1); tanblow=1.5; tanbhigh=9.5; ntanb=(int)((tanbhigh-tanblow)*10-1);}
+  else if (TString::Format(model)=="low-tb-high") {massstep=10, masslow=150; masshigh=500; nmass=int((masshigh-masslow)/massstep-1); tanblow=0.5; tanbhigh=9.5; ntanb=(int)((tanbhigh-tanblow)*10-1);}
+  else {massstep=10, masslow=90; masshigh=1000; nmass=int((masshigh-masslow)/massstep-1); tanblow=0.5; tanbhigh=60; ntanb=(int)((tanbhigh-tanblow));}//ntanb=(int)((tanbhigh-tanblow)*10-1);}
+
+  TH2D* higgsBand= new TH2D("higgsBand", "higgsBand", nmass, masslow, masshigh, ntanb, tanblow, tanbhigh);
+  for(double mass=masslow; mass<masshigh+1; mass=mass+massstep){
     std::string line;
-    bool filled = false;
-    float tanb_save=-99.0, tanb, mh, mA, mH, upperTanb=-1., lowerTanb=-1.;
-    double x_save=plane_expected->GetXaxis()->GetBinUpEdge(imass);
-    //double x_save=(int)i;
-    ifstream higgs (TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/%s/higgs_%d.dat", model, (int)x_save)); 
-    std::cout << TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/%s/higgs_%d.dat", model, (int)x_save) << std::endl;
+    float tanb, mh, mA, mH, mHp;
+    ifstream higgs (TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/%s/higgs_%d.dat", model, (int)mass)); 
     if(higgs.is_open()){
       while(higgs.good()){
 	getline(higgs,line);
-	sscanf(line.c_str(),"%f %f %f %f", &tanb, &mh, &mA, &mH);
-	if (model=="lowmH") {
-	  if(fabs(mH-mass)<deltaM && tanb!=tanb_save){
-	    if(!filled){
-	      graph->SetPoint(ipoint, x_save, tanb); 
-	      graph->SetPointEYlow(ipoint, 0.);
-	      tanb_save=tanb;
-	      ipoint++; filled = true;
-	      lowerTanb=tanb;
-	    }
-	    upperTanb=tanb;
-	  }
+	sscanf(line.c_str(),"%f %f %f %f %f", &tanb, &mh, &mA, &mH, &mHp);
+	if (TString::Format(model)=="lowmH") {
+	  higgsBand->SetBinContent(higgsBand->GetXaxis()->FindBin(mass), higgsBand->GetYaxis()->FindBin(tanb), mH);
 	}
 	else {
-	  if(fabs(mh-mass)<deltaM && tanb!=tanb_save){
-	    if(!filled){
-	      graph->SetPoint(ipoint, x_save, tanb); 
-	      graph->SetPointEYlow(ipoint, 0.);
-	      tanb_save=tanb;
-	      ipoint++; filled = true;
-	      lowerTanb=tanb;
-	    }
-	    upperTanb=tanb;
+	  if (TString::Format(type)=="h") {
+	    higgsBand->SetBinContent(higgsBand->GetXaxis()->FindBin(mass), higgsBand->GetYaxis()->FindBin(tanb), mh);
+	  }
+	  else if(TString::Format(type)=="H") {
+	    higgsBand->SetBinContent(higgsBand->GetXaxis()->FindBin(mass), higgsBand->GetYaxis()->FindBin(tanb), mH);
+	  }
+	  else if(TString::Format(type)=="H+") {
+	    higgsBand->SetBinContent(higgsBand->GetXaxis()->FindBin(mass), higgsBand->GetYaxis()->FindBin(tanb), mHp);
 	  }
 	}
-      }
-      if(upperTanb>0){
-	graph->SetPointEYhigh(ipoint-1, upperTanb-lowerTanb);
       }
     }
     higgs.close();
   }
-  return graph;
+  return higgsBand;
 }
-
 
 void
 plotTanb(const char* filename, const char* channel, bool draw_injected_=false, double min_=0.5, double max_=60., bool MSSMvsSM_=false, bool log_=false, bool transparent_=false,  std::string dataset_="#scale[1.5]{CMS}   H#rightarrow#tau#tau                            19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)", std::string xaxis_="m_{A} [GeV]", std::string yaxis_="#bf{tan#beta}", std::string theory_="MSSM m_{h}^{max} scenario")
@@ -80,16 +66,16 @@ plotTanb(const char* filename, const char* channel, bool draw_injected_=false, d
   std::vector<TGraph*> gr_plus1sigma;
   std::vector<TGraph*> gr_plus2sigma;
   std::vector<TGraph*> gr_observed;
+  std::vector<TGraph*> gr_higgslow;
+  std::vector<TGraph*> gr_higgshigh;
+  std::vector<std::vector<TGraph*>> gr_higgsBands; 
   std::vector<TGraph*> gr_injected;
   // retrieve TGraphs from file 
   plane_expected=(TH2D *)file->Get(TString::Format("%s/plane_expected", channel)); 
   for(unsigned int i=0; i<10; i++){
     if((TGraph *)file->Get(TString::Format("%s/gr_minus2sigma_%d", channel, i))) gr_minus2sigma.push_back((TGraph *)file->Get(TString::Format("%s/gr_minus2sigma_%d", channel, i)));
-    //if((TGraph *)file->FindObject(TString::Format("%s/gr_expected_%d", channel, i))) std::cout<< i << " hello" << std::endl;
     else break;
   }
-  //std::cout<< TString::Format("%s/expected_%d", channel, 0) << std::endl;
-  //std::cout<< "finish" << std::endl;
   for(unsigned int i=0; i<10; i++){
     if((TGraph *)file->Get(TString::Format("%s/gr_minus1sigma_%d", channel, i))) gr_minus1sigma.push_back((TGraph *)file->Get(TString::Format("%s/gr_minus1sigma_%d", channel, i)));
     else break;
@@ -113,7 +99,17 @@ plotTanb(const char* filename, const char* channel, bool draw_injected_=false, d
   for(unsigned int i=0; i<10; i++){
     if((TGraph *)file->Get(TString::Format("%s/gr_observed_%d", channel, i))) gr_observed.push_back((TGraph *)file->Get(TString::Format("%s/gr_observed_%d", channel, i)));
     else break;
+  } 
+  for(unsigned int i=0; i<10; i++){
+    if((TGraph *)file->Get(TString::Format("%s/gr_higgslow_%d", channel, i))) gr_higgslow.push_back((TGraph *)file->Get(TString::Format("%s/gr_higgslow_%d", channel, i)));
+    else break;
   }
+  gr_higgsBands.push_back(gr_higgslow);
+  for(unsigned int i=0; i<10; i++){
+    if((TGraph *)file->Get(TString::Format("%s/gr_higgshigh_%d", channel, i))) gr_higgshigh.push_back((TGraph *)file->Get(TString::Format("%s/gr_higgshigh_%d", channel, i)));
+    else break;
+  } 
+  gr_higgsBands.push_back(gr_higgshigh);
   
   // this is new for injected plot together with observed
   if(draw_injected_) {
@@ -122,14 +118,6 @@ plotTanb(const char* filename, const char* channel, bool draw_injected_=false, d
       else break;
     }
   }
-
-  //if(draw_injected_){
-  //  for( int i=0; i<expected->GetN(); i++){
-  //    double shift = injected->GetY()[i]-expected->GetY()[i];
-  //    innerBand->SetPoint(i, innerBand->GetX()[i], innerBand->GetY()[i]+shift);
-  //    outerBand->SetPoint(i, outerBand->GetX()[i], outerBand->GetY()[i]+shift);
-  //  }
-  //}
 
   const char* model;
   if(theory_=="MSSM m_{h}^{max} scenario") {model = "mhmax-mu+200";}
@@ -143,29 +131,20 @@ plotTanb(const char* filename, const char* channel, bool draw_injected_=false, d
   if(theory_=="2HDM type-I") {model = "2HDMtyp1";}
   if(theory_=="2HDM type-II") {model = "2HDMtyp2";}
 
-  // setup contraints from Higgs mass
-  std::map<double, TGraphAsymmErrors*> higgsBands;
-  higgsBands[3] = higgsConstraint(plane_expected, 125., 3., model);
-  //for(unsigned int deltaM=0; deltaM<3; ++deltaM){
-  //  higgsBands[3-deltaM] = higgsConstraint(expected_1, 125., 4-deltaM, model);
-  //}
   // this functionality is not yet supported
   std::map<std::string, TGraph*> comparisons;
 
   // set up styles
   SetStyle();
   // do the plotting 
-  TCanvas canv = TCanvas("canv", "Limits", 600, 600);
-  // do the plotting 
-  plottingTanb(canv, plane_expected, gr_minus2sigma, gr_minus1sigma, gr_expected, gr_plus1sigma, gr_plus2sigma, gr_observed, gr_injected, higgsBands, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, false, true, MSSMvsSM_, "", true); 
+  TCanvas canv = TCanvas("canv", "Limits", 600, 800);
+  plottingTanb(canv, plane_expected, gr_minus2sigma, gr_minus1sigma, gr_expected, gr_plus1sigma, gr_plus2sigma, gr_observed, gr_injected, gr_higgsBands, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, false, MSSMvsSM_, "", true); 
 
   /// setup the CMS Preliminary
-  //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
-  // TPaveText* cmsprel  = new TPaveText(0.145, 0.835+0.06, 0.145+0.30, 0.835+0.16, "NDC");
-  TPaveText* cmsprel  = new TPaveText(0.135, 0.835+0.06, 0.145+0.30, 0.835+0.16, "NDC"); //for unpublished plots
+  TPaveText* cmsprel = new TPaveText(0.135, 0.735, 0.145+0.30, 0.785, "NDC"); 
   cmsprel->SetBorderSize(   0 );
   cmsprel->SetFillStyle(    0 );
-  cmsprel->SetTextAlign(   12 );
+  cmsprel->SetTextAlign(   11 );
   cmsprel->SetTextSize ( 0.03 );
   cmsprel->SetTextColor(    1 );
   cmsprel->SetTextFont (   62 );
