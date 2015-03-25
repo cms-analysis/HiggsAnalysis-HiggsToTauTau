@@ -411,7 +411,9 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   std::vector<TGraph*> gr_higgslow;
   std::vector<TGraph*> gr_higgshigh;
   std::vector<TGraph*> gr_higgsHlow;
+  gr_higgsHlow.push_back(0);
   std::vector<TGraph*> gr_higgsHhigh;
+  gr_higgsHhigh.push_back(0);
   std::vector<std::vector<TGraph*>> gr_higgsBands; 
   std::vector<TH2D*> plane_higgsBands;
   if(higgs125_){
@@ -428,26 +430,27 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     for(int i=0; i<higgsband1.sum; i++) {gr_higgshigh.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[0], 128, 20, false, 200))->At(i));} 
     gr_higgsBands.push_back(gr_higgshigh);
     // possible to push back more curves to gr_higgsBands for Hhh need to call different higgsConstraint with model "H" 
-    if(TString::Format(model)=="low-tb-high"){
-    TH2D* plane_higgsHBand = higgsConstraint(model, "H");
-    plane_higgsBands.push_back(plane_higgsHBand);
-    //lower edge entry 0
-    TIter iter_higgsHlow((TList *)contourFromTH2(plane_higgsBands[1], 260, 20, false));
-    STestFunctor higgsHband0 = std::for_each( iter_higgsHlow.Begin(), TIter::End(), STestFunctor() );
-    for(int i=0; i<higgsHband0.sum; i++) {gr_higgsHlow.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[1], 260, 20, false, 200))->At(i));}
-    gr_higgsBands.push_back(gr_higgsHlow);
-    //upper edge entry 1
-    TIter iter_higgsHhigh((TList *)contourFromTH2(plane_higgsBands[1], 350, 20, false));
-    STestFunctor higgsHband1 = std::for_each( iter_higgsHhigh.Begin(), TIter::End(), STestFunctor() );
-    for(int i=0; i<higgsHband1.sum; i++) {gr_higgsHhigh.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[1], 350, 20, false, 200))->At(i));} 
     gr_higgsBands.push_back(gr_higgsHhigh);
+    gr_higgsBands.push_back(gr_higgsHhigh);
+    if(TString::Format(model)=="low-tb-high"){
+      gr_higgsHlow.pop_back();  gr_higgsHlow.pop_back(); gr_higgsBands.pop_back(); gr_higgsBands.pop_back(); 
+      TH2D* plane_higgsHBand = higgsConstraint(model, "H");
+      plane_higgsBands.push_back(plane_higgsHBand);
+      //lower edge entry 2
+      TIter iter_higgsHlow((TList *)contourFromTH2(plane_higgsBands[1], 260, 20, false));
+      STestFunctor higgsHband0 = std::for_each( iter_higgsHlow.Begin(), TIter::End(), STestFunctor() );
+      for(int i=0; i<higgsHband0.sum; i++) {gr_higgsHlow.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[1], 260, 20, false, 200))->At(i));}
+      gr_higgsBands.push_back(gr_higgsHlow);
+      //upper edge entry 3
+      TIter iter_higgsHhigh((TList *)contourFromTH2(plane_higgsBands[1], 350, 20, false));
+      STestFunctor higgsHband1 = std::for_each( iter_higgsHhigh.Begin(), TIter::End(), STestFunctor() );
+      for(int i=0; i<higgsHband1.sum; i++) {gr_higgsHhigh.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[1], 350, 20, false, 200))->At(i));} 
+      gr_higgsBands.push_back(gr_higgsHhigh);
     }
-   
   }  
-
-
+  
   // do the plotting
-  plottingTanb(canv, plane_expected, gr_minus2sigma, gr_minus1sigma, gr_expected, gr_plus1sigma, gr_plus2sigma, gr_observed, gr_injected, gr_higgsBands, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, expectedOnly_, MSSMvsSM_, HIG, Brazilian_,azh_); 
+  plottingTanb(canv, plane_expected, gr_minus2sigma, gr_minus1sigma, gr_expected, gr_plus1sigma, gr_plus2sigma, gr_observed, gr_injected, gr_higgsBands, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, expectedOnly_, MSSMvsSM_, HIG, Brazilian_, azh_); 
   /// setup the CMS Preliminary
   //TPaveText* cmsprel = new TPaveText(0.145, 0.835+0.06, 0.145+0.30, 0.835+0.16, "NDC");
   TPaveText* cmsprel = new TPaveText(0.135, 0.735, 0.145+0.30, 0.785, "NDC"); // for "unpublished" in header
@@ -480,7 +483,13 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       output->mkdir(output_.c_str());
       output->cd(output_.c_str());
     }
-    plane_expected->Write("plane_expected"); 
+    plane_expected->Write("plane_expected");  
+    for(unsigned int i=0; i<gr_higgslow.size(); i++){
+      gr_higgslow[i]   ->Write(TString::Format("gr_higgslow_%d", i)  ); 
+    }
+    for(unsigned int i=0; i<gr_higgshigh.size(); i++){
+      gr_higgshigh[i]   ->Write(TString::Format("gr_higgshigh_%d", i)  ); 
+    }   
     for(unsigned int i=0; i<gr_observed.size(); i++){
       gr_observed[i]   ->Write(TString::Format("gr_observed_%d", i)  ); 
     }

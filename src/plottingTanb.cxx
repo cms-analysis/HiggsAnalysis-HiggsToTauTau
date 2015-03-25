@@ -1,4 +1,4 @@
- 
+
 #include <map>
 #include <vector>
 #include "TH1F.h"
@@ -74,14 +74,13 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   mHconstraint->SetLineStyle(3);
   mHconstraint->SetLineColor(kGreen+3);  
 
- TGraphAsymmErrors* emptybackground = new TGraphAsymmErrors();
- emptybackground->SetFillStyle(1001.);
- emptybackground->SetFillColor(kWhite);
- emptybackground->SetLineColor(kWhite);
-
- 
-//exclusion graphs
-
+  TGraphAsymmErrors* emptybackground = new TGraphAsymmErrors();
+  emptybackground->SetFillStyle(1001.);
+  emptybackground->SetFillColor(kWhite);
+  emptybackground->SetLineColor(kWhite);
+  
+  
+  //exclusion graphs
   for(unsigned int i=0; i<minus2sigma.size(); i++){
     minus2sigma[i]->SetFillStyle(1001);
     minus2sigma[i]->SetFillColor(twosigma->GetNumber()); 
@@ -113,13 +112,12 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     plus2sigma[i]->SetLineWidth(1);
     plus2sigma[i]->Draw("F SAME"); 
   }
-    
-  
+      
   for(unsigned int i=0; i<expected.size(); i++){
     expected[i]->SetLineColor(kBlack); 
     expected[i]->SetLineWidth(2);
     expected[i]->SetLineStyle(2); 
-    expected[i]->Draw("L SAME");
+    expected[i]->Draw("L SAME"); //CONT
   }  
 
   if(injected[0]){
@@ -143,31 +141,31 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
       if(Brazilian) observed[i]->SetFillColor(kBlack); 
       if(Brazilian) observed[i]->SetFillStyle(3004);  
       observed[i]->Draw("F SAME"); 
-      observed[i]->Draw("L SAME"); 
+      observed[i]->Draw("L SAME");  //CONT
     } 
   }
 
-if(theory!="2HDM type-I" && theory!="2HDM type-II"){
-  if(!azh){
-    for(unsigned int i=0; i<higgsBands[2].size(); i++){
-      higgsBands[2][i]->SetLineWidth(9902);
-      higgsBands[2][i]->SetFillStyle(1001);
-      higgsBands[2][i]->SetFillColor(kWhite); 
-      higgsBands[2][i]->SetLineColor(kGreen+3);
-      higgsBands[2][i]->SetLineStyle(3);
-      higgsBands[2][i]->Draw("L SAME"); 
+  //Constraint for Hhh
+  if(theory!="2HDM type-I" && theory!="2HDM type-II"){
+    if(!azh && higgsBands[2][0]!=0 && higgsBands[3][0]!=0){
+      for(unsigned int i=0; i<higgsBands[2].size(); i++){
+	higgsBands[2][i]->SetLineWidth(9902);
+	higgsBands[2][i]->SetFillStyle(1001);
+	higgsBands[2][i]->SetFillColor(kWhite); 
+	higgsBands[2][i]->SetLineColor(kGreen+3);
+	higgsBands[2][i]->SetLineStyle(3);
+	higgsBands[2][i]->Draw("L SAME"); 
+      }
+      for(unsigned int i=0; i<higgsBands[3].size(); i++){
+	higgsBands[3][i]->SetLineWidth(-9902);
+	higgsBands[3][i]->SetFillStyle(1001);
+	higgsBands[3][i]->SetFillColor(kWhite);
+	higgsBands[3][i]->SetLineColor(kGreen+3);
+	higgsBands[3][i]->SetLineStyle(3);
+	higgsBands[3][i]->Draw("L SAME");
+      }
     }
-    for(unsigned int i=0; i<higgsBands[3].size(); i++){
-      higgsBands[3][i]->SetLineWidth(-9902);
-      higgsBands[3][i]->SetFillStyle(1001);
-      higgsBands[3][i]->SetFillColor(kWhite);
-      higgsBands[3][i]->SetLineColor(kGreen+3);
-      higgsBands[3][i]->SetLineStyle(3);
-      higgsBands[3][i]->Draw("L SAME");
-    }
-
-
-  }
+    //Mass constraint
     for(unsigned int i=0; i<higgsBands[0].size(); i++){
       higgsBands[0][i]->SetLineWidth(402);
       higgsBands[0][i]->SetFillStyle(3005);
@@ -183,8 +181,6 @@ if(theory!="2HDM type-I" && theory!="2HDM type-II"){
       higgsBands[1][i]->Draw("L SAME");
     }
  }
-
-
 
   int idx=0;
   std::map<std::string,int> coloredComps;
@@ -254,7 +250,7 @@ if(theory!="2HDM type-I" && theory!="2HDM type-II"){
   TLegend* leg2 = new TLegend(0.60, 0.79, 0.95, 0.945);
   leg2->SetBorderSize( 0  );
   leg2->SetFillStyle (1001);
-  leg2->SetTextSize(0.03);
+  leg2->SetTextSize  (0.03);
   leg2->SetTextFont  ( 62 ); 
   leg2->SetFillColor (kWhite);
   leg2->SetLineWidth (2);
