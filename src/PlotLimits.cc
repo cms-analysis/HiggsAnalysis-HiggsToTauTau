@@ -84,6 +84,7 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   expectedOnly_    =cfg.existsAs<bool>("expectedOnly"    ) ? cfg.getParameter<bool>("expectedOnly"    ) : false;
   MSSMvsSM_        =cfg.existsAs<bool>("MSSMvsSM"        ) ? cfg.getParameter<bool>("MSSMvsSM"        ) : false;
   Brazilian_       =cfg.existsAs<bool>("Brazilian"       ) ? cfg.getParameter<bool>("Brazilian"       ) : false;
+  azh_             =cfg.existsAs<bool>("azh"             ) ? cfg.getParameter<bool>("azh"             ) : false;
 }
 
 

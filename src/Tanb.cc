@@ -6,7 +6,7 @@
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, std::vector<TGraph*> injected, std::vector<std::vector<TGraph*>> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool MSSMvsSM=true, std::string HIG="", bool Brazilian=false);
+void plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, std::vector<TGraph*> injected, std::vector<std::vector<TGraph*>> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool MSSMvsSM=true, std::string HIG="", bool Brazilian=false, bool azh=false);
 void contour2D(TString xvar, int xbins, float xmin, float xmax, TString yvar, int ybins, float ymin, float ymax, float smx=1.0, float smy=1.0, TFile *fOut=0, TString name="contour2D");
 TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool require_minPoints=true, double multip=1);
 
@@ -22,7 +22,7 @@ struct myclass {
   bool operator() (int i,int j) { return (i<j);}
 } myobject;
 
-void
+  void
 PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 {
   //separate between MSSMvsSM and MSSMvsBG
@@ -44,7 +44,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   if(theory_=="MSSM low-tan#beta-high scenario") {extralabel_= "low-tb-high-"; model = "low-tb-high"; tanbHigh=9.5; tanbLow=0.5; tanbLowHigh=2;}
   if(theory_=="2HDM type-I") {extralabel_= "2HDMtyp1-"; model = "2HDMtyp1"; tanbHigh=10; tanbLow=1; tanbLowHigh=2;}
   if(theory_=="2HDM type-II") {extralabel_= "2HDMtyp2-"; model = "2HDMtyp2"; tanbHigh=10; tanbLow=1; tanbLowHigh=2;}
- 
+
   // set up styles
   SetStyle();
 
@@ -87,6 +87,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   }
 
   TH2D *plane_minus2sigma = 0, *plane_minus1sigma = 0, *plane_expected = 0, *plane_plus1sigma = 0, *plane_plus2sigma = 0, *plane_observed = 0;
+
   if(model!=TString::Format("lowmH")) {
     plane_minus2sigma = new TH2D("minus2sigma","minus2sigma", nxbins, xbins, (int)((tanbHigh-tanbLow)*10-1), tanbLow, tanbHigh);
     plane_minus1sigma = new TH2D("minus1sigma","minus1sigma", nxbins, xbins, (int)((tanbHigh-tanbLow)*10-1), tanbLow, tanbHigh);
@@ -104,6 +105,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     plane_observed    = new TH2D("observed","observed",       29, 300, 3100, (int)((tanbHigh-tanbLow)*10-1), tanbLow, tanbHigh);
   }
 
+
   for(int idx=1; idx<plane_minus2sigma->GetNbinsX()+1; idx++){
     for(int idy=1; idy<plane_minus2sigma->GetNbinsY()+1; idy++){
       plane_minus2sigma->SetBinContent(idx, idy, 1.1);
@@ -114,7 +116,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       plane_observed   ->SetBinContent(idx, idy, 1.1);
     }
   }
-
+  
   TGraph2D* graph_minus2sigma_2d = 0;
   TGraph2D* graph_minus1sigma_2d = 0;
   TGraph2D* graph_expected_2d = 0;
@@ -131,6 +133,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   if(HIG != ""){
     std::cout << "NO LONGER SUPPORTED" << std::endl;
   }
+
   else{
     //2D Graphs 
     int kTwod=0;
@@ -151,11 +154,11 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       TGraph* graph_plus1sigma = new TGraph();
       TGraph* graph_plus2sigma = new TGraph();
       TGraph* graph_observed = new TGraph();
-      
+
       TString fullpath = TString::Format("%s/%d/HypothesisTest.root", directory, (int)mass);
       if (model==TString::Format("2HDMtyp1") || model==TString::Format("2HDMtyp2")){ 
-        if(bins_[imass]!=(int)bins_[imass]) fullpath = TString::Format("%s/%0.1f/HypothesisTest.root", directory, bins_[imass]);
-        else fullpath = TString::Format("%s/%d/HypothesisTest.root",directory,(int)mass);
+	if(bins_[imass]!=(int)bins_[imass]) fullpath = TString::Format("%s/%0.1f/HypothesisTest.root", directory, bins_[imass]);
+	else fullpath = TString::Format("%s/%d/HypothesisTest.root",directory,(int)mass);
       }
       std::cout << "open file: " << fullpath << std::endl;
       TFile* file_ = TFile::Open(fullpath); if(!file_){ std::cout << "--> TFile is corrupt: skipping masspoint." << std::endl; continue; }
@@ -191,6 +194,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 	for(int j=0; j<graph_minus2sigma->GetN(); j++){ 
 	  if(graph_minus2sigma->GetY()[j]>ymax && graph_minus2sigma->GetX()[j]>=1) {ymax=graph_minus2sigma->GetY()[j]; xmax=graph_minus2sigma->GetX()[j]; tanbLowHigh=xmax;} //tanb>=1 hardcoded to fix that point 	  
 	}
+
 	// Fill TH2D with calculated limit points
 	if(FitMethod_==0 || FitMethod_==1){ //linear fit=0; spline=1
 	  plane_minus2sigma->SetBinContent(plane_minus2sigma->GetXaxis()->FindBin(mass), plane_minus2sigma->GetYaxis()->FindBin(tanb), minus2sigma/exclusion_);
@@ -329,6 +333,8 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 //   plane_observed   ->Smooth(1, "k5b")
 
   // Grabbing contours
+
+
   std::vector<TGraph*> gr_minus2sigma;
   std::vector<TGraph*> gr_minus1sigma;
   std::vector<TGraph*> gr_expected;
@@ -404,6 +410,8 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   // setup contratins from Higgs mass
   std::vector<TGraph*> gr_higgslow;
   std::vector<TGraph*> gr_higgshigh;
+  std::vector<TGraph*> gr_higgsHlow;
+  std::vector<TGraph*> gr_higgsHhigh;
   std::vector<std::vector<TGraph*>> gr_higgsBands; 
   std::vector<TH2D*> plane_higgsBands;
   if(higgs125_){
@@ -420,11 +428,26 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     for(int i=0; i<higgsband1.sum; i++) {gr_higgshigh.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[0], 128, 20, false, 200))->At(i));} 
     gr_higgsBands.push_back(gr_higgshigh);
     // possible to push back more curves to gr_higgsBands for Hhh need to call different higgsConstraint with model "H" 
+    if(TString::Format(model)=="low-tb-high"){
+    TH2D* plane_higgsHBand = higgsConstraint(model, "H");
+    plane_higgsBands.push_back(plane_higgsHBand);
+    //lower edge entry 0
+    TIter iter_higgsHlow((TList *)contourFromTH2(plane_higgsBands[1], 260, 20, false));
+    STestFunctor higgsHband0 = std::for_each( iter_higgsHlow.Begin(), TIter::End(), STestFunctor() );
+    for(int i=0; i<higgsHband0.sum; i++) {gr_higgsHlow.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[1], 260, 20, false, 200))->At(i));}
+    gr_higgsBands.push_back(gr_higgsHlow);
+    //upper edge entry 1
+    TIter iter_higgsHhigh((TList *)contourFromTH2(plane_higgsBands[1], 350, 20, false));
+    STestFunctor higgsHband1 = std::for_each( iter_higgsHhigh.Begin(), TIter::End(), STestFunctor() );
+    for(int i=0; i<higgsHband1.sum; i++) {gr_higgsHhigh.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[1], 350, 20, false, 200))->At(i));} 
+    gr_higgsBands.push_back(gr_higgsHhigh);
+    }
+   
   }  
 
 
   // do the plotting
-  plottingTanb(canv, plane_expected, gr_minus2sigma, gr_minus1sigma, gr_expected, gr_plus1sigma, gr_plus2sigma, gr_observed, gr_injected, gr_higgsBands, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, expectedOnly_, MSSMvsSM_, HIG, Brazilian_); 
+  plottingTanb(canv, plane_expected, gr_minus2sigma, gr_minus1sigma, gr_expected, gr_plus1sigma, gr_plus2sigma, gr_observed, gr_injected, gr_higgsBands, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, expectedOnly_, MSSMvsSM_, HIG, Brazilian_,azh_); 
   /// setup the CMS Preliminary
   //TPaveText* cmsprel = new TPaveText(0.145, 0.835+0.06, 0.145+0.30, 0.835+0.16, "NDC");
   TPaveText* cmsprel = new TPaveText(0.135, 0.735, 0.145+0.30, 0.785, "NDC"); // for "unpublished" in header

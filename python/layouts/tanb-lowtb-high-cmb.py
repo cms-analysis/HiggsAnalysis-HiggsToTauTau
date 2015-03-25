@@ -4,7 +4,7 @@ layout = cms.PSet(
     ## dataset
     #dataset = cms.string("#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                     19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
     #dataset = cms.string("#scale[1.5]{CMS} (unpublished), h,H,A#rightarrow#tau#tau, 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
-    dataset = cms.string("#scale[1.5]{CMS} Preliminary,H#rightarrowhh#rightarrow#tau#taubb, 19.7 fb^{-1} (8 TeV)"),
+    dataset = cms.string("#scale[1.5]{CMS} Preliminary,H#rightarrowhh#rightarrow#tau#taubb + A#rightarrowZh#rightarrowll#tau#tau, 19.7 fb^{-1} (8 TeV)"),
     #dataset = cms.string("#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                                           18.3 fb^{-1} (8 TeV)"),
     ## x-axis title
     xaxis = cms.string("m_{A} [GeV]"),
@@ -29,18 +29,18 @@ layout = cms.PSet(
     ## define verbosity level
     verbosity = cms.uint32(3),
     ## Plotting A->Zh or combination? (don't draw mH excluded band)
-    azh=cms.bool(False),
+    azh=cms.bool(True),
     ## define output label
-    outputLabel = cms.string("mA-tanb-hhh") ,
+    outputLabel = cms.string("mA-tanb-cmb") ,
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
-    160.
-   ,170.
-   ,180.
-   ,190.
-   ,200.
-   ,210.
-   ,220.
+    #160.
+   #,170.
+   #,180.
+   #,190.
+   #,200.
+   #,210.
+   220.
    ,230.
    ,240.
    ,250.  
@@ -70,7 +70,7 @@ layout = cms.PSet(
     ## use linear fit rather than TSpline (only used if not using TGraph 2D interpolation)
     linearFit = cms.bool(True),
     ## use TGraph2D interpolation
-    fitModel = cms.uint32(2),
+    fitModel  = cms.uint32(2),
     ## print constraints from mH=125GeV
     higgs125 = cms.bool(True),
     ## add arXiv-1211-6956 (ATLAS) to plot

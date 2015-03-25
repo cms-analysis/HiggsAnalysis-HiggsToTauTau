@@ -93,7 +93,7 @@ if options.analysis != "sm" :
             PATH="tmp.txt"
             ))
     elif options.analysis == "Hhh" :
-        system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/python/tanb_grid.py --ana-type {ANA} --model mhmodp --parameter1 {MA} --tanb {TANB} --postfit datacards/{PATH}".format(
+        system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/python/tanb_grid.py --ana-type {ANA} --model low-tb-high --parameter1 {MA} --tanb {TANB} --postfit datacards/{PATH}".format(
             CMSSW_BASE=os.environ['CMSSW_BASE'],
             ANA=options.analysis,
             MA=options.mH,

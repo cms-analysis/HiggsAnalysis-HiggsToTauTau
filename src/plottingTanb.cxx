@@ -17,7 +17,7 @@
 #include <iostream>
 
 void
-plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, std::vector<TGraph*> injected, std::vector<std::vector<TGraph*>> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool MSSMvsSM=true, std::string HIG="", bool Brazilian=false)
+plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, std::vector<TGraph*> injected, std::vector<std::vector<TGraph*>> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool MSSMvsSM=true, std::string HIG="", bool Brazilian=false, bool azh=false)
 {
   // set up styles
   canv.cd();
@@ -66,8 +66,22 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   background->SetFillColor(backgroundColor->GetNumber());
   background->SetLineWidth(2);
   background->SetLineColor(kWhite);  
-  
+
+  TGraphAsymmErrors* mHconstraint = new TGraphAsymmErrors();
+  mHconstraint->SetFillStyle(1001.); //1001
+  mHconstraint->SetFillColor(kWhite);
+  mHconstraint->SetLineWidth(2);
+  mHconstraint->SetLineStyle(3);
+  mHconstraint->SetLineColor(kGreen+3);  
+
+ TGraphAsymmErrors* emptybackground = new TGraphAsymmErrors();
+ emptybackground->SetFillStyle(1001.);
+ emptybackground->SetFillColor(kWhite);
+ emptybackground->SetLineColor(kWhite);
+
+ 
 //exclusion graphs
+
   for(unsigned int i=0; i<minus2sigma.size(); i++){
     minus2sigma[i]->SetFillStyle(1001);
     minus2sigma[i]->SetFillColor(twosigma->GetNumber()); 
@@ -100,28 +114,12 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     plus2sigma[i]->Draw("F SAME"); 
   }
     
-  for(unsigned int i=0; i<higgsBands[0].size(); i++){
-    higgsBands[0][i]->SetLineWidth(402);
-    higgsBands[0][i]->SetFillStyle(3005);
-    higgsBands[0][i]->SetFillColor(backgroundColor->GetNumber()); 
-    higgsBands[0][i]->SetLineColor(backgroundColor->GetNumber());
-    //higgsBands[0][i]->Draw("CONT SAME"); 
-    higgsBands[0][i]->Draw("L SAME"); 
-  }
-  for(unsigned int i=0; i<higgsBands[1].size(); i++){
-    higgsBands[1][i]->SetLineWidth(-402);
-    higgsBands[1][i]->SetFillStyle(3005);
-    higgsBands[1][i]->SetFillColor(backgroundColor->GetNumber()); 
-    higgsBands[1][i]->SetLineColor(backgroundColor->GetNumber());
-    //higgsBands[1][i]->Draw("CONT SAME"); 
-    higgsBands[1][i]->Draw("L SAME");
-  }
   
   for(unsigned int i=0; i<expected.size(); i++){
     expected[i]->SetLineColor(kBlack); 
     expected[i]->SetLineWidth(2);
     expected[i]->SetLineStyle(2); 
-    expected[i]->Draw("CONT SAME");
+    expected[i]->Draw("L SAME");
   }  
 
   if(injected[0]){
@@ -145,9 +143,48 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
       if(Brazilian) observed[i]->SetFillColor(kBlack); 
       if(Brazilian) observed[i]->SetFillStyle(3004);  
       observed[i]->Draw("F SAME"); 
-      observed[i]->Draw("CONT SAME"); 
+      observed[i]->Draw("L SAME"); 
     } 
   }
+
+if(theory!="2HDM type-I" && theory!="2HDM type-II"){
+  if(!azh){
+    for(unsigned int i=0; i<higgsBands[2].size(); i++){
+      higgsBands[2][i]->SetLineWidth(9902);
+      higgsBands[2][i]->SetFillStyle(1001);
+      higgsBands[2][i]->SetFillColor(kWhite); 
+      higgsBands[2][i]->SetLineColor(kGreen+3);
+      higgsBands[2][i]->SetLineStyle(3);
+      higgsBands[2][i]->Draw("L SAME"); 
+    }
+    for(unsigned int i=0; i<higgsBands[3].size(); i++){
+      higgsBands[3][i]->SetLineWidth(-9902);
+      higgsBands[3][i]->SetFillStyle(1001);
+      higgsBands[3][i]->SetFillColor(kWhite);
+      higgsBands[3][i]->SetLineColor(kGreen+3);
+      higgsBands[3][i]->SetLineStyle(3);
+      higgsBands[3][i]->Draw("L SAME");
+    }
+
+
+  }
+    for(unsigned int i=0; i<higgsBands[0].size(); i++){
+      higgsBands[0][i]->SetLineWidth(402);
+      higgsBands[0][i]->SetFillStyle(3005);
+      higgsBands[0][i]->SetFillColor(backgroundColor->GetNumber()); 
+      higgsBands[0][i]->SetLineColor(backgroundColor->GetNumber());
+      higgsBands[0][i]->Draw("L SAME"); 
+    }
+    for(unsigned int i=0; i<higgsBands[1].size(); i++){
+      higgsBands[1][i]->SetLineWidth(-402);
+      higgsBands[1][i]->SetFillStyle(3005);
+      higgsBands[1][i]->SetFillColor(backgroundColor->GetNumber()); 
+      higgsBands[1][i]->SetLineColor(backgroundColor->GetNumber());
+      higgsBands[1][i]->Draw("L SAME");
+    }
+ }
+
+
 
   int idx=0;
   std::map<std::string,int> coloredComps;
@@ -198,6 +235,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     }
     if(observed[0]) leg->AddEntry(observed[0], "Observed", "FL");
   }
+  else leg->AddEntry(emptybackground,"","F");
   if(minus1sigma[0]) leg->AddEntry(minus1sigma[0], "#pm 1#sigma Expected","F");
   if(expected[0]) leg->AddEntry(expected[0], "Expected", "L");
   if(minus2sigma[0]) leg->AddEntry(minus2sigma[0], "#pm 2#sigma Expected", "F"); 
@@ -213,10 +251,10 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   }
   leg->Draw("same");
 
-  TLegend* leg2 = new TLegend(0.60, 0.845, 0.95, 0.945);
+  TLegend* leg2 = new TLegend(0.60, 0.79, 0.95, 0.945);
   leg2->SetBorderSize( 0  );
   leg2->SetFillStyle (1001);
-  leg2->SetTextSize  (0.03);
+  leg2->SetTextSize(0.03);
   leg2->SetTextFont  ( 62 ); 
   leg2->SetFillColor (kWhite);
   leg2->SetLineWidth (2);
@@ -225,10 +263,14 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   if(log) {
     if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
     else leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
+    if(theory=="MSSM low-tan#beta-high scenario"&&!azh) leg2->AddEntry(mHconstraint," m^{MSSM}_{H} #notin [260,350] GeV","F");
+    else leg2->AddEntry(emptybackground,"","F");
   }
   else {
     if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
-    else leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{ #neq}} 125#pm3 GeV", "F");
+    else leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{ #neq}} 125#pm3 GeV", "FL");
+    if(theory=="MSSM low-tan#beta-high scenario"&&!azh) leg2->AddEntry(mHconstraint," m^{MSSM}_{H} #notin [260,350] GeV","F");
+    else leg2->AddEntry(emptybackground,"","F");
   }
   if(theory!="2HDM type-I" && theory!="2HDM type-II") leg2->Draw("same");
 

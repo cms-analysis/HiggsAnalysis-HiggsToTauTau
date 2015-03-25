@@ -97,19 +97,19 @@ class ModelDatacard(DatacardAdaptor) :
                         if not '_SM125' in proc :
                             if not '_ww125' in proc :
                                 if not '_tt125' in proc :
-                                    if card.path_to_file(bin, proc) == '' :
-                                        ## this channel is counting only; NOTE: this does not allow to take acceptance differences due
-                                        ## to the different masses of the different higgses into account. THIS IS NOT WORKING CURRENTLY
-                                        print "counting only is currently NOT WORKING"; continue
-                                        new_rate=0
-                                        for higgs in self.model[proc].list_of_higgses :
-                                            new_rate+=float(self.model[proc].xsec[higgs])*float(self.model[proc].brs[higgs])
-                                        new_rates[index_order.index(bin+'_'+proc)] = str(new_rate)
-                                    else :
-                                        ## get signal rate from file
-                                        hist_file = ROOT.TFile(path[:path.rfind('/')+1]+card.path_to_file(bin, proc), 'READ')
-                                        hist = hist_file.Get(card.path_to_shape(bin, proc).replace('$MASS', mass))
-                                        new_rates[index_order.index(bin+'_'+proc)] = str(hist.Integral())
+                                    if(bin+'_'+proc) in index_order :
+                                        if card.path_to_file(bin, proc) == '' :
+                                            ## this channel is counting only; NOTE: this does not allow to take acceptance differences due
+                                            ## to the different masses of the different higgses into account. THIS IS NOT WORKING CURRENTLY
+                                            print "counting only is currently NOT WORKING"; continue
+                                            new_rate=0
+                                            for higgs in self.model[proc].list_of_higgses :
+                                                new_rate+=float(self.model[proc].xsec[higgs])*float(self.model[proc].brs[higgs])
+                                            new_rates[index_order.index(bin+'_'+proc)] = str(new_rate)
+                                        else :
+                                            hist_file = ROOT.TFile(path[:path.rfind('/')+1]+card.path_to_file(bin, proc), 'READ')
+                                            hist = hist_file.Get(card.path_to_shape(bin, proc).replace('$MASS', mass))
+                                            new_rates[index_order.index(bin+'_'+proc)] = str(hist.Integral())
                     if self.ana_type=="Htaunu" : ##felix for tt scale background, but only once!
                         for bkg in card.list_of_backgrounds() :
                             if "tt_" in bkg and bkg!="EWKnontt_faketau" :
@@ -197,17 +197,19 @@ class ModelDatacard(DatacardAdaptor) :
                                     for idx in range(len(index_order)) :
                                         uncerts.append('-')
                                 for idx in range(len(index_order)) :
-                                    if idx == index_order.index(bin+'_'+proc) :
-                                        if type == 'mu' :
-                                            if  value>0 and lower/value!=1 :
-                                                uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.-lower/value), 1.+upper/value)
-                                            else :
-                                                uncerts[idx]=" \t\t 0.1 "
-                                        if type == 'pdf' :
-                                            if value>0 :
-                                                uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.+lower/value), 1.+upper/value)
-                                            else :
-                                                uncerts[idx]=" \t\t 0.1 "
+                                    if((bin+'_'+proc) in index_order) :
+                                        if idx == index_order.index(bin+'_'+proc) :
+                                            if type == 'mu' :
+                                                if  value>0 and lower/value!=1 :
+                                                    uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.-lower/value), 1.+upper/value)
+                                                else :
+                                                    uncerts[idx]=" \t\t 0.1 "
+                                            if type == 'pdf' :
+                                                if value>0 :
+                                                    uncerts[idx]=" \t\t %.3f/%.3f " % (1./(1.+lower/value), 1.+upper/value)
+                                                else :
+                                                    uncerts[idx]=" \t\t 0.1 "
+
                 ## in case label is not yet in dict, add uncerts as they are. Otherwise update '-' entries in existing list
                 ## of uncerts
                 if self.ana_type=="Htaunu" :
@@ -274,6 +276,7 @@ class ModelDatacard(DatacardAdaptor) :
         ## determine schedule for the files and procs that need to be processed. Schedule is of type {'file_name':['proc']}
         schedule = {}
         morph_per_file = {}
+        index_order=self.columns(path,card)
         for (key,params) in model.central.iteritems() :
             ## expected key elements are (period,decay,proc)
             period = key[0]; decay = key[1]; proc = key[2]
@@ -284,18 +287,20 @@ class ModelDatacard(DatacardAdaptor) :
                     continue
                 for proc_in_card in card.list_of_signals() :
                     if proc_in_card == proc :
-                        shape_file = card.path_to_file(bin, proc)
-                        if not shape_file in schedule.keys() :
-                            ## define schedule
-                            schedule[shape_file] = [(proc,params)]
-                            ## define morphing mode (per file)
-                            for subchn in morph.keys() :
-                                if subchn in bin :
-                                    if not shape_file in morph_per_file.keys() :
-                                        morph_per_file[shape_file] = morph[subchn]
-                        else :
-                            if not (proc,params) in schedule[shape_file] :
-                                schedule[shape_file].append((proc,params))
+                         if(bin+'_'+proc) in index_order :
+                            shape_file = card.path_to_file(bin, proc)
+                            if not shape_file in schedule.keys() :
+                                ## define schedule
+                                schedule[shape_file] = [(proc,params)]
+                                ## define morphing mode (per file)
+                                for subchn in morph.keys() :
+                                    if subchn in bin :
+                                        if not shape_file in morph_per_file.keys() :
+                                            morph_per_file[shape_file] = morph[subchn]
+                            else :
+                                if not (proc,params) in schedule[shape_file] :
+                                    schedule[shape_file].append((proc,params))
+
         ## process each file exactly once. Treat all processes in one iteration
         for (shape_file,reduced_model) in schedule.iteritems() :
             print 'creating template(s) :', dir+shape_file, '(morphing mode is', morph_per_file[shape_file]+')'
