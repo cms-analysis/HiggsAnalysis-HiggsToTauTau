@@ -176,11 +176,11 @@ HHH_TT_X_notag(bool scaled=true, bool log=true, float min=0.1, float max=-1., st
   // determine category tag
   const char* category = ""; const char* category_extra = ""; const char* category_extra2 = "";
   if(std::string(directory) == std::string("tauTau_2jet0tag")){ category = "#tau_{h}#tau_{h}";           }
-  if(std::string(directory) == std::string("tauTau_2jet0tag")){ category_extra= "2-jet 0 b-tag";           }
+  if(std::string(directory) == std::string("tauTau_2jet0tag")){ category_extra= "2jet-0tag";           }
   if(std::string(directory) == std::string("tauTau_2jet1tag"  )){ category = "#tau_{h}#tau_{h}";           }
-  if(std::string(directory) == std::string("tauTau_2jet1tag"  )){ category_extra= "2-jet 1 b-tag";     }
+  if(std::string(directory) == std::string("tauTau_2jet1tag"  )){ category_extra= "2jet-1tag";     }
   if(std::string(directory) == std::string("tauTau_2jet2tag"  )){ category = "#tau_{h}#tau_{h}";           }
-  if(std::string(directory) == std::string("tauTau_2jet2tag"  )){ category_extra = "2-jet 2 b-tag";              }
+  if(std::string(directory) == std::string("tauTau_2jet2tag"  )){ category_extra = "2jet-2tag";              }
 
   const char* dataset;
 #ifdef MSSM
