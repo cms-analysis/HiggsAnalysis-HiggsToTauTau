@@ -6,9 +6,10 @@
 #include "TCanvas.h"
 #include "TLegend.h"
 #include "TPaveText.h"
+#include <iostream>
 
 void
-plottingGoodnessOfFit(TCanvas& canv, TH1F* exp, TGraph* obs, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double min, double max, int lowerBin, int upperBin, bool log=false)
+plottingGoodnessOfFit(TCanvas& canv, TH1F* exp, TGraph* obs, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double min, double max, int lowerBin, int upperBin, bool log=false, double p_value=0.5)
 {
   // set up styles
   canv.cd();
@@ -22,12 +23,12 @@ plottingGoodnessOfFit(TCanvas& canv, TH1F* exp, TGraph* obs, std::string& xaxis,
   exp->GetXaxis()->SetLabelFont(62);
   exp->GetXaxis()->SetTitleColor(1);
   exp->GetXaxis()->SetTitleOffset(1.05);
+  exp->GetXaxis()->SetRange(lowerBin+1, upperBin);
   exp->SetYTitle(yaxis.c_str());
   exp->GetYaxis()->SetLabelFont(62);
   exp->GetYaxis()->SetTitleSize(0.05);
   exp->GetYaxis()->SetTitleOffset(1.4);
   exp->GetYaxis()->SetLabelSize(0.04);
-  exp->GetXaxis()->SetRange(lowerBin+1, upperBin);
   exp->SetMinimum(min);
   if(max>0){
     exp->SetMaximum(max);
@@ -39,11 +40,11 @@ plottingGoodnessOfFit(TCanvas& canv, TH1F* exp, TGraph* obs, std::string& xaxis,
   exp->SetLineColor(kBlack); 
   exp->Draw();
 
-  TArrow* arr = new TArrow(obs->GetX()[0], 0.15, obs->GetX()[0], exp->GetMaximum()/10, 0.02, "<|");
+  TArrow* arr = new TArrow(obs->GetX()[0], 0.001, obs->GetX()[0], exp->GetMaximum()/8, 0.02, "<|");
   arr->SetLineColor(kBlue);
   arr->SetFillColor(kBlue);
   arr->SetFillStyle(1001);
-  arr->SetLineWidth(5.);
+  arr->SetLineWidth(6.);
   arr->SetLineStyle(1.);
   arr->SetAngle(60);
   arr->Draw("<|same");
@@ -65,6 +66,16 @@ plottingGoodnessOfFit(TCanvas& canv, TH1F* exp, TGraph* obs, std::string& xaxis,
   textlabel->SetTextFont  (  62 );
   textlabel->AddText(label);
   textlabel->Draw();
+
+  TPaveText* pvalue = new TPaveText(0.18, 0.75, 0.50, 0.80, "NDC");
+  pvalue->SetBorderSize(   0 );
+  pvalue->SetFillStyle (   0 );
+  pvalue->SetTextAlign (  12 );
+  pvalue->SetTextSize  (0.04 );
+  pvalue->SetTextColor (   1 );
+  pvalue->SetTextFont  (  62 );
+  pvalue->AddText(TString::Format( "p-value = %0.3f", p_value ));
+  pvalue->Draw();
   
   canv.RedrawAxis();
   return;
