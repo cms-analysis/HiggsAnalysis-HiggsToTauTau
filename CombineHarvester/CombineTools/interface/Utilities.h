@@ -29,17 +29,11 @@ std::vector<ch::Parameter> ExtractSampledFitParameters(RooFitResult const& res);
 // ---------------------------------------------------------------------------
 // Property matching & editing
 // ---------------------------------------------------------------------------
-void SetStandardBinNames(CombineHarvester & cb);
+void SetStandardBinNames(
+    CombineHarvester& cb,
+    std::string const& pattern = "$ANALYSIS_$CHANNEL_$BINID_$ERA");
 
-template<class T>
-void SetStandardBinName(T *input) {
-  std::string newname;
-  newname = input->analysis() + "_"
-    + input->channel() + "_"
-    + boost::lexical_cast<std::string>(input->bin_id()) + "_"
-    + input->era();
-  input->set_bin(newname);
-}
+void SetStandardBinName(ch::Object* obj, std::string pattern);
 
 template<class T, class U>
 bool MatchingProcess(T const& first, U const& second) {
@@ -69,28 +63,7 @@ void SetProperties(T * first, U const* second) {
   first->set_mass(second->mass());
 }
 
-
-template<class T>
-void SetFromBinName(T *input, std::string parse_rules) {
-  boost::replace_all(parse_rules, "$ANALYSIS",  "(?<ANALYSIS>\\w+)");
-  boost::replace_all(parse_rules, "$ERA",       "(?<ERA>\\w+)");
-  boost::replace_all(parse_rules, "$CHANNEL",   "(?<CHANNEL>\\w+)");
-  boost::replace_all(parse_rules, "$BINID",     "(?<BINID>\\w+)");
-  boost::replace_all(parse_rules, "$MASS",      "(?<MASS>\\w+)");
-  boost::regex rgx(parse_rules);
-  boost::smatch matches;
-  boost::regex_search(input->bin(), matches, rgx);
-  if (matches.str("ANALYSIS").length())
-    input->set_analysis(matches.str("ANALYSIS"));
-  if (matches.str("ERA").length())
-    input->set_era(matches.str("ERA"));
-  if (matches.str("CHANNEL").length())
-    input->set_channel(matches.str("CHANNEL"));
-  if (matches.str("BINID").length())
-    input->set_bin_id(boost::lexical_cast<int>(matches.str("BINID")));
-  if (matches.str("MASS").length())
-    input->set_mass(matches.str("MASS"));
-}
+void SetFromBinName(ch::Object *input, std::string parse_rules);
 
 // ---------------------------------------------------------------------------
 // Rate scaling
@@ -143,8 +116,51 @@ std::vector<std::vector<unsigned>> GenerateCombinations(
 
 std::vector<std::string> ParseFileLines(std::string const& file_name);
 
+/**
+ * Generate a vector of mass values using ranges and intervals specified in a
+ * string
+ *
+ * The input string should be of the format:
+ *
+ *     m1-m2:r1,m3,m4,m5-m6:r2,...
+ *
+ * where mi and ri must both be positive. A term like mi-mj:r (where mi must
+ * be < mj) genrates masses starting at mi and increasing by an interval r up
+ * to mj.
+ *
+ * This function returns a vector of ordered mass values converted to strings.
+ *
+ * \note Use the function ch::ValsFromRange if you need to include negative
+ * numbers - this uses a different syntax for the ranges so doesn't suffer
+ * from the amiguity of the `-` sign
+ *
+ * @param input The input string to decode
+ * @param fmt The format specifier for converting floating-point mass values
+ * to strings
+ */
 std::vector<std::string> MassesFromRange(std::string const& input,
                                          std::string const& fmt = "%.0f");
+
+/**
+ * Generate a vector of values using ranges and intervals specified in a
+ * string
+ *
+ * The input string should be of the format:
+ *
+ *     m1:m2|r1,m3,m4,m5:m6|r2,...
+ *
+ * where mi and ri can be positive or negative. A term like mi-mj:r (where mi
+ * must be < mj) genrates values starting at mi and increasing by an interval
+ * r up to mj.
+ *
+ * This function returns a vector of ordered values converted to strings.
+ *
+ * @param input The input string to decode
+ * @param fmt The format specifier for converting floating-point values to
+ * strings
+ */
+std::vector<std::string> ValsFromRange(std::string const& input,
+                                       std::string const& fmt = "%.0f");
 
 bool HasNegativeBins(TH1 const* h);
 
