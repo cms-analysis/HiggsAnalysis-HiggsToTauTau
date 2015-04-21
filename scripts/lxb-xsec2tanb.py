@@ -21,6 +21,7 @@ parser.add_option("--smartGrid", dest="smartGrid", default=False, action="store_
                   help="Produce grid points depending on the exclusion limits. This option is only valid for hypothesis tests. Note that all grid points will be deleted before producing the new clever grid. [Default: False]")
 parser.add_option("--customTanb", dest="customTanb", default="", type="string",
                   help="Specify some extra tanb points to generate grid points for. Points should be in form e.g. '40,45,50'")
+parser.add_option("--fineGrid", dest="fineGrid", default=False, action="store_true", help="Using a finer granularity for the tanb values in the (m_A, tanb) plane. The grid itself is specified in mssm_tanb_grid.py")
 ## check number of arguments; in case print usage
 (options, args) = parser.parse_args()
 if len(args) < 1 :
@@ -56,11 +57,11 @@ eval `scram runtime -sh`
 echo "Running submit.py:"
 echo "in directory {directory}"
 
-$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/submit.py --tanb+ --setup {SMARTGRID} {directory} --options "--model {MODEL} --ana-type {ANATYPE} {MSSMvsSM}" {customTanb}
+$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/submit.py --tanb+ --setup {SMARTGRID} {directory} --options "{FINEGRID} --model {MODEL} --ana-type {ANATYPE} {MSSMvsSM}" {customTanb}
 '''
 
 lxq_fragment = '''#!/bin/zsh
-#$ -l h_rt=01:00:00
+#$ -l h_rt=04:00:00
 export CMSSW_BASE=$cmssw_base
 linux_ver=`lsb_release -s -r`
 echo $linux_ver
@@ -116,8 +117,8 @@ def submit(name, key, masses) :
                     ANATYPE = options.ana_type,
                     MSSMvsSM = "--MSSMvsSM" if options.MSSMvsSM else "",
                     SMARTGRID= "--smartGrid" if options.smartGrid else "",
-                    customTanb = ("--customTanb " + options.customTanb) if not options.customTanb == "" else "" 
-                    ))
+                    customTanb = ("--customTanb " + options.customTanb) if not options.customTanb == "" else "", 
+						  FINEGRID = "fineGrid" if options.fineGrid else ""))
             os.system('chmod a+x %s' % script_file_name)
             if options.condor :
                 submit_script.write("\n")
@@ -131,7 +132,7 @@ def submit(name, key, masses) :
                     % (os.getcwd(), script_file_name.replace('.sh', '.stderr')))
                 submit_script.write("queue\n")
             elif options.lxq :
-                submit_script.write('qsub -j y -o /dev/null -l h_vmem=2000M -v cmssw_base %s %s\n' % (bsubargs, script_file_name)) 
+                submit_script.write('qsub -j y -o /dev/null -l h_vmem=4000M -v cmssw_base %s %s\n' % (bsubargs, script_file_name)) 
             else :
                 os.system('touch {PWD}/log/{LOG}'.format(
                     PWD=os.getcwd(), LOG=script_file_name[script_file_name.rfind('/')+1:].replace('.sh', '.log')))

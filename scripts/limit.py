@@ -38,6 +38,7 @@ agroup.add_option("--tanb", dest="optTanb", default=False, action="store_true",
                   help="Calculate the observed and expected limits directly in the MSSM mA-tanb plane based on full CLs limits. This method is completely toy based. It requires that the toys have been run beforehand using the script submit.py with option --tanb. This script will submit toys to a batch system or to the grid via crab. This action will require a grid certificate. You can monitor and receive the results of your jobs once finished using the command options explained in section COMMON CRAB COMMAND OPTIONS of this parameter description. [Default: False]")
 agroup.add_option("--tanb+", dest="optTanbPlus", default=False, action="store_true",
                   help="Calculate the observed and expected limits directly in the MSSM mA-tanb plane based on asymptotic CLs limits. This method requires that the directory structure to calculate these limits has been set up beforehand using the script submit.py with option --tanb+. [Default: False]")
+agroup.add_option("--tanbNLL", dest="optTanbNLL", default=False, action="store_true", help="")
 agroup.add_option("--HypothesisTest", dest="optHypothesisTest", default=False, action="store_true",
                   help="Calculate the Signal Hypothesis separation test for two hypothesis based on the CLs with a tevatron test statistic. This method requires that the directory structure to calculate these limits has been set up beforehand using the script submit.py with option --tanb+. [Default: False]")
 ## agroup.add_option("--injected-internal", dest="optInject", default=False, action="store_true",
@@ -1163,7 +1164,13 @@ for directory in args :
             if re.match(r"batch_\d+(.\d\d)?.root", wsp) :
                 tanb_string = wsp[wsp.rfind("_")+1:]
                 os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/extractSignificanceStats.py --MSSMvsBG --filename point_{TANB}".format(CMSSW_BASE=os.environ["CMSSW_BASE"], TANB=tanb_string))
-        os.system("hadd HypothesisTest.root HypothesisTest_*.root") 
+        os.system("hadd HypothesisTest.root HypothesisTest_*.root")
+    ##
+    ## TANBNLL
+    ##
+    if options.optTanbNLL :
+		 os.system("cp {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/scriptNLL.py .".format(CMSSW_BASE=os.environ["CMSSW_BASE"]))
+		 os.system("python scriptNLL.py")
     ##
     ## HYPO-TEST
     ##

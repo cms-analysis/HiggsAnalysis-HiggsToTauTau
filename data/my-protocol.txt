@@ -1,0 +1,141 @@
+test data samples: 150123 ---> 0.025pb m=500; 2.5pb m=120
+model mhmodp samples: 150127
+model mhmodp samples 120 ONLY: 150206
+model mhmodp samples 500 ONLY: 150207
+SM vs MSSM samples: 150209
+model mhmodp with NLL: 
+-----------------
+Injecting signals:
+
+
+python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM_taupt.py -a bbb --label='-150127-mssm-taupt' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-141121-mssm-taupt.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-taupt-150122" --update-all --blind-datacards --extra-templates='0.007354608*ggH500, 1.166089265*ggH120, 0.080838097*bbH500, 0.016368334*bbH120'
+
+-----------------
+test for injecting datacards:
+python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM_taupt.py -a bbb --label='-150123-mssm-taupt-TEST' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-141121-mssm-taupt.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-taupt-150123" --update-all --blind-datacards --extra-templates='1.5*ggH120, 0.02*bbH120'
+
+------------------
+SM vs. MSSM injecting signals:
+
+python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM_taupt.py -a bbb --label='-150209-mssm-taupt' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-141121-mssm-taupt.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-taupt-150122" --update-all --blind-datacards --SMHasBackground --SMHasSignal --extra-templates='0.007354608*ggH500, 1.166089265*ggH120, 0.080838097*bbH500, 0.016368334*bbH120'
+
+------------------
+SM vs. MSSM tanb vs m_A:
+
+lxb-xsec2tanb.py LIMITS-150209-mssm-taupt/bbb-MSSMvsSM-asimov-mhmodp/cmb/* --MSSMvsSM  --model mhmodp --lxq
+
+submit.py --HypothesisTest --cycles 51-100 --toys 200 LIMITS-150209-mssm-taupt/bbb-MSSMvsSM-asimov-mhmodp/cmb/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null" --options="--userOpt '-v -1  > /dev/null'"
+
+submit.py --HypothesisTest --collect LIMITS-150209-mssm-taupt/bbb-MSSMvsSM-asimov-mhmodp/cmb/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null" --options=''
+
+plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/hypo-test-mhmodp.py LIMITS-150209-mssm-taupt/bbb-MSSMvsSM-asimov-mhmodp/cmb
+
+
+
+tanb=30, m_A=500, mhmodp -> m_H=500 , m_h=120 
+-----------------
+Xs and BR calculation for these parameters
+root -l
+.x HiggsAnalysis/HiggsToTauTau/macros/mssm_xs.C("$CMSSW_BASE/src/auxiliaries/models/out.mhmodp-8TeV-tanbHigh-nnlo.root", 500, 30)
+
+-----------------
+crosssection*BR in pb 
+Xs*Br(ggA->TauTau) = 4.07339752679999976e-03 = 0.004073398
+Xs*Br(ggH->TauTau) = 3.28121001949999982e-03 = 0.003281210 --> sum of heavy Higgses: 7.35460754629999915e-03 = 0.007354608
+Xs*Br(ggh->TauTau) = 1.16608926489999987e+00 = 1.166089265
+Xs*Br(bbA->TauTau) = 4.44335636639999962e-02 = 0.044433564
+Xs*Br(bbH->TauTau) = 4.36045331399999986e-02 = 0.043604533 --> sum of heavy Higgses: 8.80380968039999878e-02 = 0.080838097
+Xs*Br(bbh->TauTau) = 1.63683335438000004e-02 = 0.016368334  
+-----------------
+boundaries 
+
+m=120: ggH: 2.5, bbH: 0.04
+m=500: ggH: 0.02, bbH: 0.2 
+
+-----------------
+multidim-fit:
+
+cvs2local.py -i aux-150127-mssm-taupt/bbb-asimov -o LIMITS-150127-mssm-taupt/bbb-asimov-ggH-bbH -p 8TeV -a mssm -c 'mt et em mm tt' --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 90 130 100_200:20 250_500:50 600_1000:100
+
+Zoomed for 90-120-130-140, 400-450-500-600 ---> adjust mssm multidim fit boundaries!!!
+submit.py --multidim-fit --stable --physics-model='ggH-bbH' LIMITS-150127-mssm-taupt/bbb-asimov-ggH-bbH/120 LIMITS-150127-mssm-taupt/bbb-asimov-ggH-bbH/130 LIMITS-150127-mssm-taupt/bbb-asimov-ggH-bbH/500 LIMITS-150127-mssm-taupt/bbb-asimov-ggH-bbH/90 LIMITS-150127-mssm-taupt/bbb-asimov-ggH-bbH/140 LIMITS-150127-mssm-taupt/bbb-asimov-ggH-bbH/450 LIMITS-150127-mssm-taupt/bbb-asimov-ggH-bbH/400 LIMITS-150127-mssm-taupt/bbb-asimov-ggH-bbH/600 --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
+
+-----------------
+multidim-fit resubmission
+python HiggsAnalysis/HiggsToTauTau/python/lxb-multidimfit-resubmit.py LIMITS-150127-mssm-taupt-bbb-asimov-ggH-bbH-GGH-BBH-120 -o LIMITS-150127-mssm-taupt/bbb-asimov-ggH-bbH/ -m '90,120,130,140,400,450,500,600'
+
+-----------------
+multidim-fit plotting
+
+limit.py --collect --multidim-fit --physics-model="ggH-bbH" LIMITS-150127-mssm-taupt/bbb-asimov-ggH-bbH/*
+
+plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-bbH.py LIMITS-150127-mssm-taupt/bbb-asimov-ggH-bbH
+
+------------------
+tanb vs m_A for combined 8TeV:
+
+setup-htt.py -i aux-150127-mssm-taupt/bbb-asimov -o LIMITS-150127-mssm-taupt/bbb-asimov-mhmodp -a mssm -c 'mt et em mm tt' -p 8TeV --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 90 130 100_200:20 250_500:50 600_1000:100
+
+Need here 4h and 4000MB for a job!!!
+lxb-xsec2tanb.py LIMITS-150127-mssm-taupt/bbb-asimov-mhmodp/cmb/* --model mhmodp --lxq
+
+submit.py --tanb+  LIMITS-150127-mssm-taupt/bbb-asimov-mhmodp/cmb/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null" --options='--multi-core=4'
+
+plot --tanb HiggsAnalysis/HiggsToTauTau/python/layouts/tanb-mhmodp.py LIMITS-150127-mssm-taupt/bbb-asimov-mhmodp/cmb
+
+--------------------
+tanb vs m_A for combined 8TeV FULL NLL: 
+
+setup-htt.py -i aux-150127-mssm-taupt/bbb-asimov -o LIMITS-150127-mssm-taupt/bbb-asimov-mhmodp-NLL -a mssm -c 'mt et em mm tt' -p 8TeV --mssm-categories-mt="10 11 12 13 14" --mssm-categories-tt="10 11 12 13 14" --mssm-categories-et="10 11 12 13 14" 90 130 100_200:20 250_500:50 600_1000:100
+
+Need here 4h and 4000MB for a job!!!
+lxb-xsec2tanb.py LIMITS-150127-mssm-taupt/bbb-asimov-mhmodp-NLL/mt/* --model mhmodp --lxq --fineGrid
+
+submit.py --tanbNLL  LIMITS-150127-mssm-taupt/bbb-asimov-mhmodp-NLL/mt/*0 --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null"
+
+hadd LIMITS-150127-mssm-taupt/bbb-asimov-mhmodp-NLL/cmb/NLLHistogramFull.root LIMITS-150127-mssm-taupt/bbb-asimov-mhmodp-NLL/cmb/*/NLLHistogram*.root
+
+clean up:
+
+rm LIMITS-150127-mssm-taupt/bbb-asimov-mhmodp-NLL/cmb/*0/higgsCombine*.root LIMITS-150127-mssm-taupt/bbb-asimov-mhmodp-NLL/cmb/*0/NLLHistogram*.root
+
+
+
+-----------------------(mA,tanb)=(900,30)----(mhmodp)--------------------------------------------------------
+Xs & BR calculation (mA,tanb)=(900,30):
+----------------
+root -l
+.x HiggsAnalysis/HiggsToTauTau/macros/mssm_xs.C("$CMSSW_BASE/src/auxiliaries/models/out.mhmodp-8TeV-tanbHigh-nnlo.root", 500, 30)
+
+output:
+
+
+MSSM Cross Section [ggH](tautau) (pb):
+ -> xsec(ggA)(tautau):  0.000812921      ---    0.0789586        at mass: 900
+ -> xsec(ggH)(tautau):  0.000410751      ---    0.079656         at mass: 899.785
+ -> xsec(ggh)(tautau):  17.6056  ---    0.0625216        at mass: 126.014
+ -> xsec(cmb)(tautau):  1.10083
+MSSM Cross Section [bbH -Santander-](tautau) (pb):
+ -> xsec(bbA)(tautau):  0.0161615        ---    0.0789586
+ -> xsec(bbH)(tautau):  0.0160298        ---    0.079656
+ -> xsec(bbh)(tautau):  0.212571         ---    0.0625216
+ -> xsec(cmb)(tautau):  0.0158432
+
+xsec*BR for 900 signal (ggH): 0.0000969059
+xsec*BR for 900 signal (bbH): 0.0025529529
+
+xsec*BR for 120 signal (ggH): 1.1007300507
+xsec*Br for 120 signal (bbH): 0.0132902775
+
+injection of signals:
+--------------------------
+python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM_taupt.py -a bbb --label='-150417-mssm-taupt' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-141121-mssm-taupt.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-taupt-150417" --update-all --blind-datacards --extra-templates='0.0000969059*ggH900, 1.1007300507*ggH120, 0.0025529529*bbH900, 0.0132902775*bbH120'
+
+---mA tanb NLL------
+setup-htt.py -i aux-150417-mssm-taupt/bbb-asimov -o LIMITS-150417-mssm-taupt/bbb-asimov-mhmodp-NLL -a mssm -c 'mt' -p 8TeV --mssm-categories-mt="10 11 12 13 14" 90 130 100_200:20 250_500:50 600_1000:100
+
+lxb-xsec2tanb.py LIMITS-150417-mssm-taupt/bbb-asimov-mhmodp-NLL/cmb/* --model mhmodp --lxq --fineGrid
+
+submit.py --tanbNLL  LIMITS-150417-mssm-taupt/bbb-asimov-mhmodp-NLL/cmb/*0 --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null"
+
+rm LIMITS-150417-mssm-taupt/bbb-asimov-mhmodp-NLL/cmb/*0/higgsCombine*.root LIMITS-150417-mssm-taupt/bbb-asimov-mhmodp-NLL/cmb/*0/NLLHistogram*.root
