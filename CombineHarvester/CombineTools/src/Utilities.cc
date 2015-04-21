@@ -47,11 +47,45 @@ std::vector<ch::Parameter> ExtractSampledFitParameters(
 // ---------------------------------------------------------------------------
 // Property matching & editing
 // ---------------------------------------------------------------------------
-void SetStandardBinNames(CombineHarvester & cb) {
-  cb.ForEachObs(ch::SetStandardBinName<ch::Observation>);
-  cb.ForEachProc(ch::SetStandardBinName<ch::Process>);
-  cb.ForEachSyst(ch::SetStandardBinName<ch::Systematic>);
+void SetStandardBinNames(CombineHarvester& cb, std::string const& pattern) {
+  cb.ForEachObj([&](ch::Object* obj) {
+    ch::SetStandardBinName(obj, pattern);
+  });
 }
+
+void SetStandardBinName(ch::Object* obj, std::string pattern) {
+  boost::replace_all(pattern, "$BINID",
+                     boost::lexical_cast<std::string>(obj->bin_id()));
+  boost::replace_all(pattern, "$BIN", obj->bin());
+  boost::replace_all(pattern, "$PROCESS", obj->process());
+  boost::replace_all(pattern, "$MASS", obj->mass());
+  boost::replace_all(pattern, "$ERA", obj->era());
+  boost::replace_all(pattern, "$CHANNEL", obj->channel());
+  boost::replace_all(pattern, "$ANALYSIS", obj->analysis());
+  obj->set_bin(pattern);
+}
+
+void SetFromBinName(ch::Object *input, std::string parse_rules) {
+  boost::replace_all(parse_rules, "$ANALYSIS",  "(?<ANALYSIS>\\w+)");
+  boost::replace_all(parse_rules, "$ERA",       "(?<ERA>\\w+)");
+  boost::replace_all(parse_rules, "$CHANNEL",   "(?<CHANNEL>\\w+)");
+  boost::replace_all(parse_rules, "$BINID",     "(?<BINID>\\w+)");
+  boost::replace_all(parse_rules, "$MASS",      "(?<MASS>\\w+)");
+  boost::regex rgx(parse_rules);
+  boost::smatch matches;
+  boost::regex_search(input->bin(), matches, rgx);
+  if (matches.str("ANALYSIS").length())
+    input->set_analysis(matches.str("ANALYSIS"));
+  if (matches.str("ERA").length())
+    input->set_era(matches.str("ERA"));
+  if (matches.str("CHANNEL").length())
+    input->set_channel(matches.str("CHANNEL"));
+  if (matches.str("BINID").length())
+    input->set_bin_id(boost::lexical_cast<int>(matches.str("BINID")));
+  if (matches.str("MASS").length())
+    input->set_mass(matches.str("MASS"));
+}
+
 
 // ---------------------------------------------------------------------------
 // Rate scaling
@@ -206,6 +240,38 @@ std::vector<std::string> MassesFromRange(std::string const& input,
             "[MassesFromRange] High mass is smaller than low mass!");
       double start = lo;
       while (start < hi + 0.001) {
+        mass_set.insert(start);
+        start += step;
+      }
+    }
+  }
+  std::vector<std::string> result;
+  for (auto const& m : mass_set) {
+    result.push_back((boost::format(fmt) % m).str());
+  }
+  return result;
+}
+
+std::vector<std::string> ValsFromRange(std::string const& input,
+                                       std::string const& fmt) {
+  std::set<double> mass_set;
+  std::vector<std::string> tokens;
+  boost::split(tokens, input, boost::is_any_of(","));
+  for (auto const& t : tokens) {
+    std::vector<std::string> sub_tokens;
+    boost::split(sub_tokens, t, boost::is_any_of(":|"));
+    if (sub_tokens.size() == 1) {
+      double mass_val = boost::lexical_cast<double>(sub_tokens[0]);
+      mass_set.insert(mass_val);
+    } else if (sub_tokens.size() == 3) {
+      double lo = boost::lexical_cast<double>(sub_tokens[0]);
+      double hi = boost::lexical_cast<double>(sub_tokens[1]);
+      double step = boost::lexical_cast<double>(sub_tokens[2]);
+      if (hi <= lo)
+        throw std::runtime_error(
+            "[ValsFromRange] High mass is smaller than low mass!");
+      double start = lo;
+      while (start < hi + 1E-4) {
         mass_set.insert(start);
         start += step;
       }

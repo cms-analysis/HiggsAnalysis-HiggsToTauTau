@@ -98,9 +98,7 @@ class PlotLimits {
   /// print 1d uncertainties for a given CL to file (used by scan-2d)
   void band1D(ostream& out, std::string& xval, std::string& yval, TGraph* bestFit, TGraph* band, float xoffset, float yoffset, std::string CL);
   /// fill a graph for the contraints of the H(125) resonance in the mA-tanb exclusion plane (used for option tanb)
-  TGraphAsymmErrors* higgsConstraint(TH2D* plane_expected, double mass=125., double deltaM=1., const char* model="mhmax-mu+200", const char* type="h");
-  /// create H(125) and mH<360&&mH>350 exclusion bands as contours
-  std::vector<std::vector<TGraph*>> higgsConstraintLowTb(TH2D* plane_expected, double hmass=125., double hdeltaM=1., double Hmass=300, double HdeltaM=45, const char* model="low-tb-high");
+  TH2D* higgsConstraint(const char* model="mhmax-mu+200", const char* type="h");
   /// plot limits on canvas, print out png, pdf, txt, root formats if desired
   void plotLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0);
   /// plot limits for tanb on canvas, print out png, pdf, txt, root formats if desired
@@ -241,8 +239,8 @@ class PlotLimits {
   bool transparent_;
   /// print mA-tanb plots in brazilian colors (used for option tanb)
   bool Brazilian_;
-  /// use linear or TSpline3 fitting between calculated limit points (used for option tanb)
-  bool linearFit_;
+  /// fit method for fitting between calculated limit points 0=linear, 1=spline, 2=TGraph2D interpolation(used for option tanb)
+  int FitMethod_;
   /// print constraint on mA-tanb plane from Higgs boson at 125 GeV? (used for option tanb)
   bool higgs125_;
   /// add ATLAS(htt) in MSSM mA-tanb plot

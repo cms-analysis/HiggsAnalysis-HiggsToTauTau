@@ -177,49 +177,10 @@ int main(int argc, char* argv[])
     plot.plotLimit(*canv, inner, outer, expected, observed);
   }
   // -----------------------------------------------------------------------------------------------------------------------
-  /*if( std::string(argv[1]) == std::string("--tanb") ){
-    // observed limit
-    TGraph* observed  = 0;
-    if(!expectedOnly){
-      observed = new TGraph();
-      plot.fillCentral(directory, observed, "higgsCombineTest.HybridNew.mH$MASS");
-    }
-    // expected limit
-    TGraph* expected  = new TGraph();
-    plot.fillCentral(directory, expected, "higgsCombineTest.HybridNew.mH$MASS.quant0.500");
-    // 2-sigma uncertainty band
-    TGraphAsymmErrors* outer  = new TGraphAsymmErrors();
-    plot.fillBand(directory, outer, "CLs", false);
-    // 1-sigma uncertainty band
-    TGraphAsymmErrors* inner  = new TGraphAsymmErrors();
-    plot.fillBand(directory, inner, "CLs", true);
-
-    // low observed limit
-    TGraph* observed_low  = 0;
-    if(!expectedOnly){
-      observed_low = new TGraph();
-      plot.fillCentral(directory, observed_low, "higgsCombineTest.HybridNew.mH$MASS", "low");
-    }
-    // low expected limit
-    TGraph* expected_low  = new TGraph();
-    plot.fillCentral(directory, expected_low, "higgsCombineTest.HybridNew.mH$MASS.quant0.500", "low");
-    // low 2-sigma uncertainty band
-    TGraphAsymmErrors* outer_low  = new TGraphAsymmErrors();
-    plot.fillBand(directory, outer_low, "CLs", false, "low");
-    // low 1-sigma uncertainty band
-    TGraphAsymmErrors* inner_low  = new TGraphAsymmErrors();
-    plot.fillBand(directory, inner_low, "CLs", true, "low");
-
-    // make the plot
-    SetStyle();
-    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
-    plot.plotTanb(*canv, inner, inner_low, outer, outer_low, expected, expected_low, observed, observed_low, directory);
-  }*/
-   // ----------------------------------------------------------------------------------------------------------------------- NEW
   if( std::string(argv[1]) == std::string("--tanb") ){
     // make the plot
     SetStyle();
-    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 800);
     plot.plotTanb(*canv, directory, std::string(""));
   }
   // -----------------------------------------------------------------------------------------------------------------------

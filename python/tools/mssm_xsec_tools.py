@@ -290,7 +290,7 @@ class mssm_xsec_tools():
                 self._add_br_htt(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
                 self._add_br_hmm(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
                 self._add_br_hbb(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
-                if ana_type=='Hhh' or ana_type=='AZh' :
+                if ana_type=='Hhh' or ana_type=='AZh' or ana_type=='HhhAndAZh' :
                     self._add_br_Hhh(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
                     self._add_br_AZh(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))
                 self._add_mass(parameter1, tan_beta, (higgs_type, output['higgses'][higgs_type]))

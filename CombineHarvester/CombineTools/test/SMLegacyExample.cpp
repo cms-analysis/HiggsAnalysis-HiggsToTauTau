@@ -9,6 +9,7 @@
 #include "CombineTools/interface/CombineHarvester.h"
 #include "CombineTools/interface/Utilities.h"
 #include "CombineTools/interface/HttSystematics.h"
+#include "CombineTools/interface/CardWriter.h"
 
 using namespace std;
 
@@ -93,7 +94,7 @@ int main() {
       {0, "tauTau_1jet_high_mediumhiggs"}, {1, "tauTau_1jet_high_highhiggs"},
       {2, "tauTau_vbf"}};
 
-  vector<string> masses = ch::MassesFromRange("110-145:5");
+  vector<string> masses = ch::ValsFromRange("110:145|5");
 
   cout << ">> Creating processes and observations...\n";
   for (string era : {"7TeV", "8TeV"}) {
@@ -273,11 +274,11 @@ int main() {
   //   cout << " - " << x << "\n";
   // }
 
-  string folder = "output/sm_cards";
+  string folder = "output/sm_cards/LIMITS";
   boost::filesystem::create_directories(folder);
-  boost::filesystem::create_directories(folder+"/common");
+  boost::filesystem::create_directories(folder + "/common");
   for (auto m : masses) {
-    boost::filesystem::create_directories(folder+"/"+m);
+    boost::filesystem::create_directories(folder + "/" + m);
   }
 
   for (string chn : chns) {
@@ -292,10 +293,26 @@ int main() {
             folder + "/" + m + "/" + b + ".txt", output);
       }
     }
-    cb.cp().channel({chn}).mass({"125", "*"}).WriteDatacard(
-        folder+"/htt_" + chn + "_125.txt", output);
     output.Close();
   }
 
+  /*
+  Alternatively use the ch::CardWriter class to automate the datacard writing.
+  This makes it simple to re-produce the LIMITS directory format employed during
+  the Run I analyses.
+  Uncomment the code below to test:
+  */
+
+  /*
+  // Here we define a CardWriter with a template for how the text datacard
+  // and the root files should be named.
+  ch::CardWriter writer("$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt",
+                        "$TAG/common/$ANALYSIS_$CHANNEL.input_$ERA.root");
+  writer.SetVerbosity(1);
+  writer.WriteCards("output/sm_cards/LIMITS/cmb", cb);
+  for (auto chn : cb.channel_set()) {
+    writer.WriteCards("output/sm_cards/LIMITS/" + chn, cb.cp().channel({chn}));
+  }
+  */
   cout << "\n>> Done!\n";
 }

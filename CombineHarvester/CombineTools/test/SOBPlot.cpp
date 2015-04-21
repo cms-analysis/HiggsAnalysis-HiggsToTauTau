@@ -147,9 +147,7 @@ int main(int argc, char* argv[]){
   for (auto const& d : datacards) {
     cmb.ParseDatacard(d, parse_rule);
   }
-  cmb.ForEachSyst(ch::SetStandardBinName<ch::Systematic>);
-  cmb.ForEachObs(ch::SetStandardBinName<ch::Observation>);
-  cmb.ForEachProc(ch::SetStandardBinName<ch::Process>);
+  ch::SetStandardBinNames(cmb);
 
   RooFitResult *fitresult = nullptr;
   if (fitresult_file.length() && postfit) {
@@ -158,7 +156,7 @@ int main(int argc, char* argv[]){
     cmb.UpdateParameters(fitparams);
   }
 
-  auto bins = cmb.GenerateSetFromObs<string>(std::mem_fn(&ch::Observation::bin));
+  auto bins = cmb.SetFromObs(std::mem_fn(&ch::Observation::bin));
   map<string, ch::SOverBInfo> weights;
   for (auto const& bin : bins) {
     TH1F sig = cmb.cp().bin({bin}).signals().GetShape();

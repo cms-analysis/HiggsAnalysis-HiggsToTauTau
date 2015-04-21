@@ -10,6 +10,15 @@ TOP := $(shell \
 endif
 
 # Define some useful colours
+ifeq ($(NOCOL),1)
+COLOR_RE :
+COLOR_GR :
+COLOR_YE :
+COLOR_BL :
+COLOR_PU :
+COLOR_CY :
+NOCOLOR :=
+else
 COLOR_RE := \033[31m
 COLOR_GR := \033[32m
 COLOR_YE := \033[33m
@@ -17,6 +26,7 @@ COLOR_BL := \033[34m
 COLOR_PU := \033[35m
 COLOR_CY := \033[36m
 NOCOLOR := \033[0m
+endif
 
 # Folder containing ancillary makefile inputs
 MK := $(TOP)/mk
@@ -49,7 +59,6 @@ USERINCLUDES += -I$(TOP)/../../..
 USERINCLUDES += -isystem $(ROOTSYS)/include
 USERINCLUDES += -isystem $(ROOFITSYS)/include
 USERINCLUDES += -isystem $(BOOSTSYS)/include
-USERINCLUDES += -isystem $(PYSYS)
 
 USERLIBS += $(shell $(ROOTSYS)/bin/root-config --glibs) -lGenVector -lTreePlayer -lTMVA
 USERLIBS += -L$(ROOFITSYS)/lib -lRooFit -lRooFitCore
@@ -65,10 +74,13 @@ ifneq ($(CMSSW), 0)
 endif
 # Analysis area
 
+USERINCLUDES += -isystem $(PYSYS)
+
 CXX=g++
 LD=g++
 CXXFLAGS= -Wall -Wextra -O2 -std=c++0x
 LDFLAGS= -shared -Wall -Wextra
+CXXFLAGS += $(EXTRAFLAGS)
 
 # Extra gcc flags that will generate A LOT of warnings
 # -pedantic -Weffc++

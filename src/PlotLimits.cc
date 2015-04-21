@@ -1,11 +1,4 @@
 #include "HiggsAnalysis/HiggsToTauTau/interface/PlotLimits.h"
-TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool require_minPoints=true);
-struct STestFunctor{
-  STestFunctor() { sum = 0; }
-  void operator() (TObject *aObj) {sum +=1;}
-  int sum;
-} stestfunctorpl; 
-
 
 PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) : 
   output_(output),
@@ -85,17 +78,17 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   arXiv_1302_2892_ =cfg.existsAs<bool>("arXiv_1302_2892" ) ? cfg.getParameter<bool>("arXiv_1302_2892" ) : false;
   arXiv_1205_5736_ =cfg.existsAs<bool>("arXiv_1205_5736" ) ? cfg.getParameter<bool>("arXiv_1205_5736" ) : false;
   HIG_12_052_      =cfg.existsAs<bool>("HIG_12_052"      ) ? cfg.getParameter<bool>("HIG_12_052"      ) : false;
-  higgs125_ =cfg.existsAs<bool>("higgs125" ) ? cfg.getParameter<bool>("higgs125" ) : false;
-  linearFit_=cfg.existsAs<bool>("linearFit") ? cfg.getParameter<bool>("linearFit") : false;
-  azh_ = cfg.existsAs<bool>("azh")? cfg.getParameter<bool>("azh") : false;
-  transparent_=cfg.existsAs<bool>("transparent") ? cfg.getParameter<bool>("transparent") : false;
-  expectedOnly_=cfg.existsAs<bool>("expectedOnly") ? cfg.getParameter<bool>("expectedOnly") : false;
-  MSSMvsSM_=cfg.existsAs<bool  >("MSSMvsSM") ? cfg.getParameter<bool  >("MSSMvsSM") : false;
-  Brazilian_=cfg.existsAs<bool  >("Brazilian") ? cfg.getParameter<bool  >("Brazilian") : false;
+  higgs125_        =cfg.existsAs<bool>("higgs125"        ) ? cfg.getParameter<bool>("higgs125"        ) : false;
+  FitMethod_       =cfg.existsAs<int >("FitMethod"       ) ? cfg.getParameter<int >("FitMethod"       ) : 0;
+  transparent_     =cfg.existsAs<bool>("transparent"     ) ? cfg.getParameter<bool>("transparent"     ) : false;
+  expectedOnly_    =cfg.existsAs<bool>("expectedOnly"    ) ? cfg.getParameter<bool>("expectedOnly"    ) : false;
+  MSSMvsSM_        =cfg.existsAs<bool>("MSSMvsSM"        ) ? cfg.getParameter<bool>("MSSMvsSM"        ) : false;
+  Brazilian_       =cfg.existsAs<bool>("Brazilian"       ) ? cfg.getParameter<bool>("Brazilian"       ) : false;
+  azh_             =cfg.existsAs<bool>("azh"             ) ? cfg.getParameter<bool>("azh"             ) : false;
 }
 
 
-  TGraph*
+TGraph*
 PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filename, const char* low_tanb /*=""*/)
 {
   std::vector<double> central;
@@ -215,7 +208,7 @@ PlotLimits::fillCentral(const char* directory, TGraph* plot, const char* filenam
   }
   return plot;
 }
-  TGraphAsymmErrors*
+TGraphAsymmErrors*
 PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char* method, bool innerBand, const char* low_tanb /*=""*/)
 {
   std::vector<double> upper, lower, expected;
@@ -330,7 +323,7 @@ PlotLimits::fillBand(const char* directory, TGraphAsymmErrors* plot, const char*
   return plot;
 }
 
-  float
+float
 PlotLimits::maximum(TGraph* graph)
 {
   float maximum = -1;
@@ -349,7 +342,7 @@ PlotLimits::maximum(TGraph* graph)
   return maximum;
 }
 
-  float
+float
 PlotLimits::minimum(TGraph* graph)
 {
   float minimum = 99999.;
@@ -368,165 +361,42 @@ PlotLimits::minimum(TGraph* graph)
   return minimum;
 }
 
-  TGraphAsymmErrors* 
-PlotLimits::higgsConstraint(TH2D* plane_expected, double mass, double deltaM, const char* model, const char* type)
+TH2D* 
+PlotLimits::higgsConstraint(const char* model, const char* type)
 {
-  TGraphAsymmErrors* graph = new TGraphAsymmErrors();
+  int nmass, ntanb;
+  double massstep, masslow, masshigh, tanblow, tanbhigh;
+  if (TString::Format(model)=="lowmH") {massstep=20, masslow=300; masshigh=3100; nmass=int((masshigh-masslow)/massstep-1); tanblow=1.5; tanbhigh=9.5; ntanb=(int)((tanbhigh-tanblow)*10-1);}
+  else if (TString::Format(model)=="low-tb-high") {massstep=10, masslow=150; masshigh=500; nmass=int((masshigh-masslow)/massstep-1); tanblow=0.5; tanbhigh=9.5; ntanb=(int)((tanbhigh-tanblow)*10-1);}
+  else {massstep=10, masslow=90; masshigh=1000; nmass=int((masshigh-masslow)/massstep-1); tanblow=0.5; tanbhigh=60; ntanb=(int)((tanbhigh-tanblow));}//ntanb=(int)((tanbhigh-tanblow)*10-1);}
 
-  for(int imass=0, ipoint=0; imass<plane_expected->GetNbinsX(); ++imass){
-    //for(int i=300, ipoint=0; i<3101;i=1+100){
+  TH2D* higgsBand= new TH2D("higgsBand", "higgsBand", nmass, masslow, masshigh, ntanb, tanblow, tanbhigh);
+  for(double mass=masslow; mass<masshigh+1; mass=mass+massstep){
     std::string line;
-    bool filled = false;
-    float tanb_save=-99.0, tanb, mh, mA, mH, upperTanb=-1., lowerTanb=-1.;
-    double x_save=plane_expected->GetXaxis()->GetBinUpEdge(imass);
-
-    //double x_save=(int)i;
-    ifstream higgs (TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/%s/higgs_%d.dat", model, (int)x_save)); 
-    //std::cout << TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/%s/higgs_%d.dat", model, (int)x_save) << std::endl;
+    float tanb, mh, mA, mH, mHp;
+    ifstream higgs (TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/%s/higgs_%d.dat", model, (int)mass)); 
+    //std::cout << TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/%s/higgs_%d.dat", model, (int)mass) << std::endl;
     if(higgs.is_open()){
       while(higgs.good()){
 	getline(higgs,line);
-	sscanf(line.c_str(),"%f %f %f %f", &tanb, &mh, &mA, &mH);
+	sscanf(line.c_str(),"%f %f %f %f %f", &tanb, &mh, &mA, &mH, &mHp);
 	if (TString::Format(model)=="lowmH") {
-	  if(fabs(mh-mass)<deltaM && tanb!=tanb_save){
-	    if(!filled){
-	      graph->SetPoint(ipoint, x_save, tanb); 
-	      graph->SetPointEYlow(ipoint, 0.);
-	      tanb_save=tanb;
-	      ipoint++; filled = true;
-	      lowerTanb=tanb;
-	    }
-	    upperTanb=tanb;
-	  }
+	  higgsBand->SetBinContent(higgsBand->GetXaxis()->FindBin(mass), higgsBand->GetYaxis()->FindBin(tanb), mH);
 	}
-	else{
+	else {
 	  if (TString::Format(type)=="h") {
-	    if(fabs(mh-mass)<deltaM && tanb!=tanb_save){
-	      if(!filled){
-		graph->SetPoint(ipoint, x_save, tanb); 
-		graph->SetPointEYlow(ipoint, 0.);
-		tanb_save=tanb;
-		ipoint++; filled = true;
-		lowerTanb=tanb;
-	      }
-	      upperTanb=tanb;
-	    }
+	    higgsBand->SetBinContent(higgsBand->GetXaxis()->FindBin(mass), higgsBand->GetYaxis()->FindBin(tanb), mh);
 	  }
 	  else if(TString::Format(type)=="H") {
-	    if(fabs(mH-mass)<deltaM && tanb!=tanb_save){
-	      if(!filled){
-		graph->SetPoint(ipoint, x_save, tanb); 
-		graph->SetPointEYlow(ipoint, 0.);
-		tanb_save=tanb;
-		ipoint++; filled = true;
-		lowerTanb=tanb;
-	      }
-	      upperTanb=tanb;
-	    }
+	    higgsBand->SetBinContent(higgsBand->GetXaxis()->FindBin(mass), higgsBand->GetYaxis()->FindBin(tanb), mH);
+	  }
+	  else if(TString::Format(type)=="H+") {
+	    higgsBand->SetBinContent(higgsBand->GetXaxis()->FindBin(mass), higgsBand->GetYaxis()->FindBin(tanb), mHp);
 	  }
 	}
-      }
-      if(upperTanb>0){
-	graph->SetPointEYhigh(ipoint-1, upperTanb-lowerTanb);
       }
     }
     higgs.close();
-  } 
-
-  return graph;
-}
-
-  std::vector<std::vector<TGraph*>>
-PlotLimits::higgsConstraintLowTb(TH2D* plane_expected, double hmass, double hdeltaM, double Hmass, double HdeltaM, const char* model)
-{
-  TH2D* plane_hconstraint= new TH2D("hconstraint","hconstraint",21,145,355,86,0.95,9.55);
-  TH2D* plane_Hconstraint= new TH2D("Hconstraint","Hconstraint",21,145,355,86,0.95,9.55);
-  for(int idx=1; idx<plane_hconstraint->GetNbinsX()+1; idx++){
-    for(int idy=1; idy<plane_hconstraint->GetNbinsY()+1; idy++){
-      plane_hconstraint->SetBinContent(idx, idy, 1.1);
-      plane_Hconstraint->SetBinContent(idx, idy, 1.1);
-    }
   }
-
-  for(int imass=0 ; imass<plane_expected->GetNbinsX(); ++imass){
-    std::string line;
-    float tanb_save=-99.0, tanb, mh, mA, mH;
-    double x_save=plane_expected->GetXaxis()->GetBinUpEdge(imass);
-
-    TGraph *graph_hconstraint = new TGraph();
-    TGraph *graph_Hconstraint = new TGraph();
-
-    //double x_save=(int)i;
-    ifstream higgs (TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/%s/higgs_%d.dat", model, (int)x_save)); 
-    //std::cout << TString::Format("HiggsAnalysis/HiggsToTauTau/data/Higgs125/%s/higgs_%d.dat", model, (int)x_save) << std::endl;
-    if(higgs.is_open()){
-      int k=0;
-      int l=0;
-      while(higgs.good()){
-	getline(higgs,line);
-	sscanf(line.c_str(),"%f %f %f %f", &tanb, &mh, &mA, &mH);
-	if(fabs(mh-hmass)<hdeltaM&&tanb!=tanb_save){
-	  plane_hconstraint->SetBinContent(plane_hconstraint->GetXaxis()->FindBin(x_save),plane_hconstraint->GetYaxis()->FindBin(tanb), (fabs(mh-hmass)-hdeltaM+1));
-	  graph_hconstraint->SetPoint(k,tanb,(fabs(mh-hmass)-hdeltaM+1));
-	  k++;
-	}
-	else if(tanb!=tanb_save){
-	  graph_hconstraint->SetPoint(k,tanb,(fabs(mh-hmass)-hdeltaM+1));
-	  k++;
-	}
-	if(fabs(mH-Hmass)<HdeltaM&&tanb!=tanb_save){
-	  plane_Hconstraint->SetBinContent(plane_hconstraint->GetXaxis()->FindBin(x_save),plane_hconstraint->GetYaxis()->FindBin(tanb), (fabs(mH-Hmass)-HdeltaM+1));
-	  graph_Hconstraint->SetPoint(l,tanb,(fabs(mH-Hmass)-HdeltaM+1));
-	  l++;
-	}
-	else if(tanb!=tanb_save){
-	  graph_Hconstraint->SetPoint(l,tanb,(fabs(mH-Hmass)-HdeltaM+1));
-	  l++;
-	}
-
-      }
-
-      higgs.close();
-    }
-    for(int idy=1; idy<plane_hconstraint->GetNbinsY()+1; idy++){
-      plane_hconstraint->SetBinContent(plane_hconstraint->GetXaxis()->FindBin(x_save), idy, graph_hconstraint->Eval(plane_hconstraint->GetYaxis()->GetBinCenter(idy)));
-      plane_Hconstraint->SetBinContent(plane_Hconstraint->GetXaxis()->FindBin(x_save), idy, graph_Hconstraint->Eval(plane_Hconstraint->GetYaxis()->GetBinCenter(idy)));
-    }
-
-  }
-  for(int idy=0; idy<plane_hconstraint->GetNbinsY()+1; idy++){
-    TGraph* graph_hconstraint_tanb = new TGraph();
-    TGraph* graph_Hconstraint_tanb = new TGraph();
-    for(int imass=0; imass<plane_expected->GetNbinsX(); ++imass){
-      // buffer mass value
-      float mass = plane_expected->GetXaxis()->GetBinUpEdge(imass);
-      graph_hconstraint_tanb   ->SetPoint(imass, mass, plane_hconstraint->GetBinContent(plane_hconstraint->GetXaxis()->FindBin(mass), idy));
-      graph_Hconstraint_tanb   ->SetPoint(imass, mass, plane_Hconstraint->GetBinContent(plane_Hconstraint->GetXaxis()->FindBin(mass), idy));
-    }
-    for(int idx=0; idx<plane_hconstraint->GetNbinsX()+1; idx++)
-    {
-      plane_hconstraint->SetBinContent(idx, idy, graph_hconstraint_tanb->Eval(plane_hconstraint->GetXaxis()->GetBinCenter(idx)));
-      plane_Hconstraint->SetBinContent(idx, idy, graph_Hconstraint_tanb->Eval(plane_Hconstraint->GetXaxis()->GetBinCenter(idx)));
-    }
-  }
-  std::vector<TGraph*> gr_hconstraint;
-  std::vector<TGraph*> gr_Hconstraint;
-
-  int  n_hc;
-  TIter iterhc((TList *)contourFromTH2(plane_hconstraint, 1.0, 20, false));
-  STestFunctor hc = std::for_each( iterhc.Begin(), TIter::End(), STestFunctor() );
-  n_hc=hc.sum; 
-  int  n_Hc;
-  TIter iterHc((TList *)contourFromTH2(plane_Hconstraint, 1.0, 20, false));
-  STestFunctor Hc = std::for_each( iterHc.Begin(), TIter::End(), STestFunctor() );
-  n_Hc=Hc.sum; 
-
-  for(int i=0; i<n_hc; i++) {gr_hconstraint.push_back(   (TGraph *)((TList *)contourFromTH2(plane_hconstraint,    1.0, 20, false))->At(i));}
-  for(int i=0; i<n_Hc; i++) {gr_Hconstraint.push_back(   (TGraph *)((TList *)contourFromTH2(plane_Hconstraint,    1.0, 20, false))->At(i));}
-  //std::cout<< gr_minus2sigma.size() << " " << gr_minus1sigma.size() << " " << gr_expected.size() << " " << gr_plus1sigma.size() << " " << gr_plus2sigma.size() << " " << gr_observed.size() << std::endl;
-
-  std::vector<std::vector<TGraph*>> hcontour_bands;
-  hcontour_bands.push_back(gr_Hconstraint);
-  hcontour_bands.push_back(gr_hconstraint); 
-  return hcontour_bands;
+  return higgsBand;
 }

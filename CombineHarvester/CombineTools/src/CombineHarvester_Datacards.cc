@@ -1,4 +1,5 @@
 #include "CombineTools/interface/CombineHarvester.h"
+#include <cmath>
 #include <vector>
 #include <map>
 #include <string>
@@ -8,8 +9,6 @@
 #include <fstream>
 #include "boost/lexical_cast.hpp"
 #include "boost/algorithm/string.hpp"
-#include "boost/range/algorithm_ext/erase.hpp"
-#include "boost/range/algorithm/find.hpp"
 #include "boost/format.hpp"
 #include "boost/regex.hpp"
 #include "boost/filesystem.hpp"
@@ -24,6 +23,7 @@
 #include "CombineTools/interface/Utilities.h"
 #include "CombineTools/interface/TFileIO.h"
 #include "CombineTools/interface/Algorithm.h"
+#include "CombineTools/interface/GitVersion.h"
 
 namespace ch {
 
@@ -31,11 +31,11 @@ namespace ch {
 // ".*{MASS}/{ANALYSIS}_{CHANNEL}_{BINID}_{ERA}.txt"
 int CombineHarvester::ParseDatacard(std::string const& filename,
     std::string parse_rules) {
-  boost::replace_all(parse_rules, "$ANALYSIS",  "(?<ANALYSIS>\\w+)");
-  boost::replace_all(parse_rules, "$ERA",       "(?<ERA>\\w+)");
-  boost::replace_all(parse_rules, "$CHANNEL",   "(?<CHANNEL>\\w+)");
-  boost::replace_all(parse_rules, "$BINID",     "(?<BINID>\\w+)");
-  boost::replace_all(parse_rules, "$MASS",      "(?<MASS>\\w+)");
+  boost::replace_all(parse_rules, "$ANALYSIS",  "(?<ANALYSIS>[\\w\\.]+)");
+  boost::replace_all(parse_rules, "$ERA",       "(?<ERA>[\\w\\.]+)");
+  boost::replace_all(parse_rules, "$CHANNEL",   "(?<CHANNEL>[\\w\\.]+)");
+  boost::replace_all(parse_rules, "$BINID",     "(?<BINID>[\\w\\.]+)");
+  boost::replace_all(parse_rules, "$MASS",      "(?<MASS>[\\w\\.]+)");
   boost::regex rgx(parse_rules);
   boost::smatch matches;
   boost::regex_search(filename, matches, rgx);
@@ -347,8 +347,8 @@ void CombineHarvester::FillHistMappings(std::vector<HistMapping> & mappings) {
 
     CombineHarvester ch_signals =
         std::move(this->cp().bin({bin}).signals().histograms());
-    auto sig_proc_set = ch_signals.GenerateSetFromProcs<std::string>(
-        std::mem_fn(&ch::Process::process));
+    auto sig_proc_set =
+        ch_signals.SetFromProcs(std::mem_fn(&ch::Process::process));
     for (auto sig_proc : sig_proc_set) {
       mappings.push_back({sig_proc, bin, nullptr,
                           bin + "/" + sig_proc + "$MASS",
@@ -438,17 +438,24 @@ void CombineHarvester::FillHistMappings(std::vector<HistMapping> & mappings) {
 
 void CombineHarvester::WriteDatacard(std::string const& name,
                                      TFile& root_file) {
+  if (!root_file.IsOpen()) {
+    throw std::runtime_error(FNERROR(
+        std::string("Output ROOT file is not open: ") + root_file.GetName()));
+  }
   std::ofstream txt_file;
   txt_file.open(name);
+  if (!txt_file.is_open()) {
+    throw std::runtime_error(FNERROR("Unable to create file: " + name));
+  }
+
+  txt_file << "# Datacard produced by CombineHarvester with git status: "
+           << ch::GitVersion() << "\n";
 
   std::string dashes(80, '-');
 
-  auto bin_set =
-      this->GenerateSetFromObs<std::string>(std::mem_fn(&ch::Observation::bin));
-  auto proc_set =
-      this->GenerateSetFromProcs<std::string>(std::mem_fn(&ch::Process::process));
-  auto sys_set =
-      this->GenerateSetFromSysts<std::string>(std::mem_fn(&ch::Systematic::name));
+  auto bin_set = this->SetFromObs(std::mem_fn(&ch::Observation::bin));
+  auto proc_set = this->SetFromProcs(std::mem_fn(&ch::Process::process));
+  auto sys_set = this->SetFromSysts(std::mem_fn(&ch::Systematic::name));
   txt_file << "imax    " << bin_set.size()
             << " number of bins\n";
   txt_file << "jmax    " << proc_set.size() - 1
@@ -460,8 +467,7 @@ void CombineHarvester::WriteDatacard(std::string const& name,
   std::vector<HistMapping> mappings;
   FillHistMappings(mappings);
 
-  auto bins =
-      this->GenerateSetFromObs<std::string>(std::mem_fn(&ch::Observation::bin));
+  auto bins = this->SetFromObs(std::mem_fn(&ch::Observation::bin));
 
   auto proc_sys_map = this->GenerateProcSystMap();
 
@@ -539,8 +545,17 @@ void CombineHarvester::WriteDatacard(std::string const& name,
   }
   txt_file << "\n";
   txt_file << "observation  ";
+  // On the precision of the observation yields: .1f is not sufficient for
+  // combine to be happy if we have some asimov dataset with non-integer values.
+  // We could just always give .4f but this doesn't look nice for the majority
+  // of cards that have real data. Instead we'll check...
+  std::string obs_fmt_int = "%-15.1f ";
+  std::string obs_fmt_flt = "%-15.4f ";
   for (auto const& obs : obs_) {
-    txt_file << boost::format("%-15.1f ") % obs->rate();
+    bool is_float =
+        std::fabs(obs->rate() - std::round(obs->rate())) > 1E-4;
+    txt_file << boost::format(is_float ? obs_fmt_flt : obs_fmt_int)
+        % obs->rate();
   }
   txt_file << "\n";
   txt_file << dashes << "\n";
@@ -595,7 +610,7 @@ void CombineHarvester::WriteDatacard(std::string const& name,
 
   txt_file << boost::format("%-"+sys_str_long+"s") % "rate";
   for (auto const& proc : procs_) {
-    txt_file << boost::format("%-15.4f ") % proc->no_norm_rate();
+    txt_file << boost::format("%-15.4g ") % proc->no_norm_rate();
   }
   txt_file << "\n";
   txt_file << dashes << "\n";
