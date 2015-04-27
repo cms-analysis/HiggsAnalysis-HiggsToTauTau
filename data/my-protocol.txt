@@ -1,3 +1,7 @@
+-----------------------------------
+Analysis with MSSM update datacards
+-----------------------------------
+
 test data samples: 150123 ---> 0.025pb m=500; 2.5pb m=120
 model mhmodp samples: 150127
 model mhmodp samples 120 ONLY: 150206
@@ -139,3 +143,38 @@ lxb-xsec2tanb.py LIMITS-150417-mssm-taupt/bbb-asimov-mhmodp-NLL/cmb/* --model mh
 submit.py --tanbNLL  LIMITS-150417-mssm-taupt/bbb-asimov-mhmodp-NLL/cmb/*0 --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null"
 
 rm LIMITS-150417-mssm-taupt/bbb-asimov-mhmodp-NLL/cmb/*0/higgsCombine*.root LIMITS-150417-mssm-taupt/bbb-asimov-mhmodp-NLL/cmb/*0/NLLHistogram*.root
+
+
+-----------------------------------
+Analysis with former MSSM datacards
+-----------------------------------
+
+---------
+standard (900,30):
+---------
+python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM.py -a bbb --label='150421-mssm-taupt' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-131013-mssm.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-131013-v2" --update-all --blind-datacards --extra-templates='0.0000969059*ggH900, 1.1007300507*ggH120, 0.0025529529*bbH900, 0.0132902775*bbH120' --fine-scan
+
+mA vs. tanb NLL:
+----------------
+setup-htt.py -i aux150421-mssm-taupt/bbb-asimov -o LIMITS150421-mssm-taupt/bbb-asimov-mhmodp-NLL -a mssm -c 'mt' -p 8TeV --mssm-categories-mt="8 9" 90_250:10 125 275_500:25 550_1000:50
+
+lxb-xsec2tanb.py LIMITS150421-mssm-taupt/bbb-asimov-mhmodp-NLL/mt/* --model mhmodp --lxq --fineGrid
+
+submit.py --tanbNLL  LIMITS150421-mssm-taupt/bbb-asimov-mhmodp-NLL/mt/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null"
+
+rm LIMITS150421-mssm-taupt/bbb-asimov-mhmodp-NLL/mt/*/higgsCombine*.root LIMITS150421-mssm-taupt/bbb-asimov-mhmodp-NLL/mt/*/NLLHistogram*.root
+
+---------
+(500,30):
+---------
+python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM.py -a bbb --label='150425-mssm-taupt' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-131013-mssm.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-150425" --update-all --blind-datacards --extra-templates='0.007354608*ggH500, 1.166089265*ggH120, 0.080838097*bbH500, 0.016368334*bbH120' --fine-scan
+
+mA vs. tanb NLL:
+----------------
+setup-htt.py -i aux150425-mssm-taupt/bbb-asimov -o LIMITS150425-mssm-taupt/bbb-asimov-mhmodp-NLL -a mssm -c 'mt' -p 8TeV --mssm-categories-mt="8 9" 90_1000:10
+
+lxb-xsec2tanb.py LIMITS150425-mssm-taupt/bbb-asimov-mhmodp-NLL/mt/* --model mhmodp --lxq --fineGrid
+
+submit.py --tanbNLL  LIMITS150425-mssm-taupt/bbb-asimov-mhmodp-NLL/mt/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null"
+
+rm LIMITS150425-mssm-taupt/bbb-asimov-mhmodp-NLL/mt/*/higgsCombine*.root LIMITS150425-mssm-taupt/bbb-asimov-mhmodp-NLL/mt/*/NLLHistogram*.root

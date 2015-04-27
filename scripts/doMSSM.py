@@ -55,8 +55,9 @@ if len(args) < 1 :
     if not options.fine_scan:
         args.append("90 130 100_200:20 250_500:50 600_1000:100")
     else :
-        args.append("90_250:10 275_500:25 550_1000:50 125")
+        #args.append("90_250:10 275_500:25 550_1000:50 125")
         #args.append("90 100_180:5 200 250_500:50 600_1000:100")
+        args.append("90_1000:10")
     #exit(1)
 
 import os
@@ -220,7 +221,7 @@ if options.update_setup :
                 ))
     ## apply horizontal template morphing for finer step sizes for limit calculation
     if options.fine_scan :
-        ##em
+        '''##em
         os.system("horizontal-morphing.py --categories='emu_btag,emu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_e_7TeV' --masses='120,130' --step-size 5. -v {SETUP}/em/htt_em.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
         os.system("horizontal-morphing.py --categories='emu_btag,emu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_e_8TeV' --masses='120,130' --step-size 5. -v {SETUP}/em/htt_em.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
         os.system("horizontal-morphing.py --categories='emu_btag,emu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_e_7TeV' --masses='100,120,130,140,160,180,200,250' --step-size 10. -v {SETUP}/em/htt_em.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
@@ -260,7 +261,9 @@ if options.update_setup :
         os.system("horizontal-morphing.py --trivial --categories='mumu_btag,mumu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='' --masses='250,300,350,400,450,500' --step-size 25. -v {SETUP}/mm/htt_mm.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
         os.system("horizontal-morphing.py --trivial --categories='mumu_btag,mumu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='' --masses='250,300,350,400,450,500' --step-size 25. -v {SETUP}/mm/htt_mm.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
         os.system("horizontal-morphing.py --trivial --categories='mumu_btag,mumu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='' --masses='500,600,700,800,900,1000' --step-size 50. -v {SETUP}/mm/htt_mm.inputs-mssm-7TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
-        os.system("horizontal-morphing.py --trivial --categories='mumu_btag,mumu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='' --masses='500,600,700,800,900,1000' --step-size 50. -v {SETUP}/mm/htt_mm.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
+        os.system("horizontal-morphing.py --trivial --categories='mumu_btag,mumu_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='' --masses='500,600,700,800,900,1000' --step-size 50. -v {SETUP}/mm/htt_mm.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))'''
+        #my mt
+        os.system("horizontal-morphing.py --categories='muTau_btag,muTau_nobtag' --samples='ggH{MASS},bbH{MASS}' --uncerts='CMS_scale_t_mutau_8TeV,CMS_eff_t_mssmHigh_mutau_8TeV' --masses='100,120,130,140,160,180,200,250,300,350,400,450,500,600,700,800,900,1000' --step-size 10. -v {SETUP}/mt/htt_mt.inputs-mssm-8TeV-0.root".format(SETUP=setup, MASS="{MASS}"))
     ## setup directory structure
     dir = "{CMSSW_BASE}/src/setups{LABEL}".format(CMSSW_BASE=cmssw_base, LABEL=options.label)
     if os.path.exists(dir) :

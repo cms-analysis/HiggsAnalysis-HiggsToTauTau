@@ -218,7 +218,7 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
             for dir in args :
 					dirs +=dir+" "
             opt = opt.replace('fineGrid','')
-            grid = ["{CMD} -n 120 --min 0.5 --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)]
+            grid = ["{CMD} -n 60 --min 1.0 --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)]
         else :  #for all other MSSM scenarios except lowmH, lightstopmod and tauphobic
             if len(subvec(args,  90, 249))>0 :
                 dirs = vec2str(subvec(args,  90,  249))
