@@ -752,10 +752,10 @@ for directory in args :
                     os.system("touch signal-strength.output")             
                 fitresults = " | grep '(i,j)' >> signal-strength.output"
             ## do the fit/scan
-            print "combine -M MultiDimFit -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} {wdir}/{input}.root {result}".format(
+            print "combine -M MultiDimFit --saveNLL -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} {wdir}/{input}.root {result}".format(
                 mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt,
                 wdir=options.workingdir, input=model[0], result=fitresults)
-            os.system("combine -M MultiDimFit -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} {wdir}/{input}.root {result}".format(
+            os.system("combine -M MultiDimFit --saveNLL -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} {wdir}/{input}.root {result}".format(
                 mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt,
                 wdir=options.workingdir, input=model[0], result=fitresults))
             if not options.firstPoint == "":

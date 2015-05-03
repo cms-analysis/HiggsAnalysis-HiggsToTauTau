@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "HiggsAnalysis/HiggsToTauTau/macros/mssm_xs_tools.h"
-#include "HiggsAnalysis/HiggsToTauTau/macros/mssm_xs_tools.C"
+#include "/nfs/dust/cms/user/aakhmets/CMSSW_6_1_1/src/HiggsAnalysis/HiggsToTauTau/macros/mssm_xs_tools.h"
+#include "/nfs/dust/cms/user/aakhmets/CMSSW_6_1_1/src/HiggsAnalysis/HiggsToTauTau/macros/mssm_xs_tools.C"
 
 void 
 mssm_xs(char* path, double mA, double tanb)
@@ -9,7 +9,25 @@ mssm_xs(char* path, double mA, double tanb)
   mssm_xs_tools xs;
   xs.SetInput(path);
 
-  double xs_eff_ggH_tautau[4];
+  double xs_eff_ggH_tautau[3];
+  std::cout << "MSSM Cross Section [ggH](tautau) (pb):" << std::endl;
+  xs_eff_ggH_tautau[0] = xs.Give_Xsec_ggFA(mA, tanb)*xs.Give_BR_A_tautau(mA, tanb);
+  xs_eff_ggH_tautau[1] = xs.Give_Xsec_ggFH(mA, tanb)*xs.Give_BR_H_tautau(mA, tanb);
+  xs_eff_ggH_tautau[2] = xs.Give_Xsec_ggFh(mA, tanb)*xs.Give_BR_h_tautau(mA, tanb);
+  std::cout << " -> xsec(ggA)(tautau): " << xs_eff_ggH_tautau[0] << std::endl;
+  std::cout << " -> xsec(ggH)(tautau): " << xs_eff_ggH_tautau[1] << std::endl;
+  std::cout << " -> xsec(ggh)(tautau): " << xs_eff_ggH_tautau[2] << std::endl;
+  double xs_eff_bbH_tautau[3];
+  std::cout << "MSSM Cross Section [bbH -Santander-](tautau) (pb):" << std::endl;
+  xs_eff_bbH_tautau[0] = xs.GiveXsec_Santander_A(mA, tanb)*xs.Give_BR_A_tautau(mA, tanb);
+  xs_eff_bbH_tautau[1] = xs.GiveXsec_Santander_H(mA, tanb)*xs.Give_BR_H_tautau(mA, tanb);
+  xs_eff_bbH_tautau[2] = xs.GiveXsec_Santander_h(mA, tanb)*xs.Give_BR_h_tautau(mA, tanb);
+  std::cout << " -> xsec(bbA)(tautau): " << xs_eff_bbH_tautau[0] << std::endl;
+  std::cout << " -> xsec(bbH)(tautau): " << xs_eff_bbH_tautau[1] << std::endl;
+  std::cout << " -> xsec(bbh)(tautau): " << xs_eff_bbH_tautau[2] << std::endl; 
+  std::cout << "Mass H: " << xs.Give_Mass_H(mA, tanb) << std::endl;
+  std::cout << "Mass h: " << xs.Give_Mass_h(mA, tanb) << std::endl;
+  /*double xs_eff_ggH_tautau[4];
   std::cout << "MSSM Cross Section [ggH](tautau) (pb):" << std::endl;
   xs_eff_ggH_tautau[0] = xs.Give_Xsec_ggFA(mA, tanb)*xs.Give_BR_A_tautau(mA, tanb);
   std::cout << " -> xsec(ggA)(tautau):\t" << xs.Give_Xsec_ggFA(mA, tanb) << "\t --- \t" << xs.Give_BR_A_tautau(mA, tanb) << "\t at mass: "  <<  mA << std::endl;
@@ -29,7 +47,7 @@ mssm_xs(char* path, double mA, double tanb)
   std::cout << " -> xsec(bbh)(tautau):\t" << xs.GiveXsec_Santander_h(mA, tanb) << "\t --- \t" << xs.Give_BR_h_tautau(mA, tanb) << std::endl;
   xs_eff_bbH_tautau[3] = xs_eff_bbH_tautau[0]+xs_eff_bbH_tautau[1]+xs_eff_bbH_tautau[2];
   std::cout << " -> xsec(cmb)(tautau):\t" << xs_eff_bbH_tautau[3] << std::endl;
-  std::cout << std::endl;
+  std::cout << std::endl;*/
 
   /*
   double xs_eff_ggH_mumu[4];

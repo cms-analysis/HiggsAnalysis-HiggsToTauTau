@@ -8,7 +8,7 @@ import math
 from HiggsAnalysis.HiggsToTauTau.utils import get_mass
 ### Creating 2-dim histogram in the (mA, tanb) plane
 #masslist = array('d',(90, 100, 110, 120, 125, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 275, 300, 325, 350, 375, 400, 425, 450, 475, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1050) )
-masslist = array('d', (90+10*m for m in range(92)))
+masslist = array('d', (90+10*m for m in range(93)))
 #fulltanblist = array('d', (0.50, 0.60, 0.70, 0.80, 0.90, 1.00, 2.00, 3.00, 4.00, 6.00, 8.00, 9.00, 10.00, 12.00, 13.00, 15.00, 16.00, 19.00, 20.00, 22.00, 25.00, 30.00, 35.00, 40.00, 45.00, 50.00, 55.00, 60.00, 65.00))
 fulltanblist = array('d', (x for x in range(1,62)))
 masspoints = len(masslist)-1
@@ -29,6 +29,24 @@ CLbHist2D = r.TH2D('CLbHist2D', r'CL_{b} values for (m_{A}, tan#beta) plane; m_{
 qmuHist2D = r.TH2D('qmuHist2D', r'q_{#mu} values for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
 qAHist2D = r.TH2D('qAHist2D', r'q_{A} values for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
 
+NLLmuFixedforqmu = r.TH2D('NLLmuFixedforqmu', r'NLL values of q_{#mu} with #mu fixed for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+NLLmuFixedforqA = r.TH2D('NLLmuFixedforqA', r'NLL values of q_{A} with #mu fixed for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+
+# histograms with Crossection x BR values for ggH & bbH production mode and the Higgses A, H, h
+
+ggAXsBR = r.TH2D('ggAXsBR', r'#sigma(ggA)#upointBR(A#rightarrow#tau#tau) [pb] for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+ggHXsBR = r.TH2D('ggHXsBR', r'#sigma(ggH)#upointBR(H#rightarrow#tau#tau) [pb] for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+gghXsBR = r.TH2D('gghXsBR', r'#sigma(ggh)#upointBR(h#rightarrow#tau#tau) [pb] for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+
+bbAXsBR = r.TH2D('bbAXsBR', r'#sigma(bbA)#upointBR(A#rightarrow#tau#tau) [pb] for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+bbHXsBR = r.TH2D('bbHXsBR', r'#sigma(bbH)#upointBR(H#rightarrow#tau#tau) [pb] for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+bbhXsBR = r.TH2D('bbhXsBR', r'#sigma(bbh)#upointBR(h#rightarrow#tau#tau) [pb] for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+
+# histograms for mass differences between the scalar Higgses h, H and the pseudoscalar Higgs A
+
+massDiffh = r.TH2D('massDiffh', '|(m_{A}-m_{h})/m_{A}| for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+massDiffH = r.TH2D('massDiffH', '|(m_{A}-m_{H})/m_{A}| for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+
 ### Searching for relevant files: batch_*.root
 filelist = g.glob('batch_*.root')
 tanblist = []
@@ -37,7 +55,7 @@ for filename in filelist:
 	filename = (filename.replace('batch_', '')).replace('.root','')
 	tanblist.append(filename)
 
-logfile = open('logfile.txt', 'w+')
+#logfile = open('logfile.txt', 'w+')
 
 ### Determining mass from directory
 directory = os.getcwd()
@@ -56,8 +74,8 @@ for i in range(len(tanblist)):
 	for line in as_data:
 		if (line.find('At r =') > -1): quantities_line = line
 	
-	print "Current tanb value: ", tanb
-	print quantities_line
+	#print "Current tanb value: ", tanb
+	#print quantities_line
 	if not (quantities_line.find('nan') > -1):
 		qmu_as_string = quantities_line[quantities_line.find('q_mu'):quantities_line.find('q_A')]
 		qA_as_string = quantities_line[quantities_line.find('q_A'):quantities_line.find('CLsb')]
@@ -72,20 +90,20 @@ for i in range(len(tanblist)):
 		CLb_as = float(CLb_as_string.replace(' ', '').split('=')[1])
 		CLs_as = float(CLs_as_string.replace(' ', '').split('=')[1])
 
-		print qmu_as
-		print qA_as
-		print CLsb_as
-		print CLb_as
-		print CLs_as
+		#print qmu_as
+		#print qA_as
+		#print CLsb_as
+		#print CLb_as
+		#print CLs_as
 
 		qmuHist2D_as.Fill(float(mass), float(tanb), qmu_as)
 		qAHist2D_as.Fill(float(mass), float(tanb), qA_as)
 		CLsbHist2D_as.Fill(float(mass), float(tanb), CLsb_as)
 		CLbHist2D_as.Fill(float(mass), float(tanb), CLb_as)
 		CLsHist2D_as.Fill(float(mass), float(tanb), CLs_as)
-	else:
-		logfile.write("There are NaN values during asymptotic calculation at point ({mass},{tanb}). Skipping also the by hand calculation.\n".format(mass=mass, tanb=tanb))
-		continue
+		#logfile.write("There are NaN values during asymptotic calculation at point ({mass},{tanb}). Skipping also the by hand calculation.#\n".format(mass=mass, tanb=tanb))
+	#else: 
+	#	continue
 	### Calculation of CLs by hand.
 
 	# First: CLsb calculation from data set
@@ -114,11 +132,12 @@ for i in range(len(tanblist)):
 		r_list_data.append(event.r)
 
 	global_NLL_mu_data = nll0_list_data[1]
-	print "global NLL(mu): ", global_NLL_mu_data
+	#print "global NLL(mu): ", global_NLL_mu_data
 
 
 	NLL_mu1_data = nll_list_data[1]
-	print "NLL(mu) for mu: ", NLL_mu1_data
+	NLLmuFixedforqmu.Fill(float(mass), float(tanb), NLL_mu1_data)
+	#print "NLL(mu) for mu: ", NLL_mu1_data
 
 	# Asimov
 
@@ -136,12 +155,15 @@ for i in range(len(tanblist)):
 
 
 	NLL_mu1_asimov = nll_list_asimov[1]
+	NLLmuFixedforqA.Fill(float(mass), float(tanb), NLL_mu1_asimov)
 	#print "NLL(mu) for mu=1.0 for asimov: ", NLL_mu1_asimov
 
 	### Calculation of values for CLs
 
 	# q_mu for data
 	q_mu = 2*(NLL_mu1_data - global_NLL_mu_data)
+	if abs(q_mu) < 0.1 and q_mu < 0: q_mu = 0
+	#if q_mu < 0: q_mu = 0
 	#print "q_mu = ", q_mu
 	qmuHist2D.Fill(float(mass), float(tanb), q_mu)
 	# CLsb for data using asymptotic formula
@@ -151,6 +173,8 @@ for i in range(len(tanblist)):
 
 	#q_A for asimov
 	q_A = 2*(NLL_mu1_asimov - global_NLL_mu_asimov)
+	if abs(q_A) < 0.1 and q_A < 0: q_A = 0
+	#if q_A < 0: q_A = 0
 	#print "q_A = ", q_A
 	qAHist2D.Fill(float(mass), float(tanb), q_A)
 	# CLb for asimov using asymptotic formula
@@ -165,9 +189,60 @@ for i in range(len(tanblist)):
 		CL_S = CL_SplusB/CL_B
 	#print "CLs = ", CL_S
 	CLsHist2D.Fill(float(mass), float(tanb), CL_S)
-	if math.isnan(CL_S):
-		logfile.write("NaN value for CLs at the point ({mass},{tanb})\n".format(mass=mass, tanb=tanb))
-### Creating a file containing the 2-dim histogram
+	#if math.isnan(CL_S):
+		#logfile.write("NaN value for CLs at the point ({mass},{tanb})\n".format(mass=mass, tanb=tanb))
+
+	### Filling the Crossection x BR histograms
+	os.system("root -l -b -q '$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/macros/mssm_xs.C(\"$CMSSW_BASE/src/auxiliaries/models/out.mhmodp-8TeV-tanbHigh-nnlo.root\", {mass}, {tanb})' > XsBr.txt".format(mass=mass, tanb=tanb))
+	File2 = open('XsBr.txt', 'r')
+	xs_data = File2.readlines()
+
+	ggA_string = ''
+	ggH_string = ''
+	ggh_string = ''
+
+	bbA_string = ''
+	bbH_string = ''
+	bbh_string = ''
+	
+	massH_string = ''
+	massh_string = ''
+	
+	for line in xs_data:
+		if (line.find('-> xsec(ggA)(tautau): ') > -1): ggA_string = line
+		elif (line.find('-> xsec(ggH)(tautau): ') > -1): ggH_string = line
+		elif (line.find('-> xsec(ggh)(tautau): ') > -1): ggh_string = line
+		elif (line.find('-> xsec(bbA)(tautau): ') > -1): bbA_string = line
+		elif (line.find('-> xsec(bbH)(tautau): ') > -1): bbH_string = line
+		elif (line.find('-> xsec(bbh)(tautau): ') > -1): bbh_string = line
+		elif (line.find('Mass H: ') > -1): massH_string = line
+		elif (line.find('Mass h: ') > -1): massh_string = line
+
+	ggA = float(ggA_string.replace('-> xsec(ggA)(tautau): ', ''))
+	ggH = float(ggH_string.replace('-> xsec(ggH)(tautau): ', ''))
+	ggh = float(ggh_string.replace('-> xsec(ggh)(tautau): ', ''))
+
+	bbA = float(bbA_string.replace('-> xsec(bbA)(tautau): ', ''))
+	bbH = float(bbH_string.replace('-> xsec(bbH)(tautau): ', ''))
+	bbh = float(bbh_string.replace('-> xsec(bbh)(tautau): ', ''))
+	
+	massH = float(massH_string.replace('Mass H: ',''))
+	massh = float(massh_string.replace('Mass h: ',''))
+	
+	mdiffH = abs((float(mass)-massH)/float(mass))
+	mdiffh = abs((float(mass)-massh)/float(mass))
+
+	ggAXsBR.Fill(float(mass), float(tanb), ggA)
+	ggHXsBR.Fill(float(mass), float(tanb), ggH)
+	gghXsBR.Fill(float(mass), float(tanb), ggh)
+
+	bbAXsBR.Fill(float(mass), float(tanb), bbA)
+	bbHXsBR.Fill(float(mass), float(tanb), bbH)
+	bbhXsBR.Fill(float(mass), float(tanb), bbh)
+	
+	massDiffH.Fill(float(mass), float(tanb), mdiffH)
+	massDiffh.Fill(float(mass), float(tanb), mdiffh)
+### Creating a file containing the 2-dim histograms
 histFile = r.TFile("NLLHistogram.mA{mass}.root".format(mass=mass), "RECREATE")
 
 CLsHist2D.Write()
@@ -176,11 +251,25 @@ CLbHist2D.Write()
 qmuHist2D.Write()
 qAHist2D.Write()
 
+NLLmuFixedforqmu.Write()
+NLLmuFixedforqA.Write()
+
 CLsHist2D_as.Write()
 CLsbHist2D_as.Write()
 CLbHist2D_as.Write()
 qmuHist2D_as.Write()
 qAHist2D_as.Write()
 
+ggAXsBR.Write()
+ggHXsBR.Write()
+gghXsBR.Write()
+
+bbAXsBR.Write()
+bbHXsBR.Write()
+bbhXsBR.Write()
+
+massDiffH.Write()
+massDiffh.Write()
+
 histFile.Close()
-logfile.close()
+#logfile.close()

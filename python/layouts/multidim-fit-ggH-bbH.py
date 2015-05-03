@@ -72,7 +72,7 @@ layout = cms.PSet(
     ## is this mssm?
     mssm = cms.bool(True),
     ## make a temperature plot?
-    temp = cms.bool(False),
+    temp = cms.bool(True),
     ## draw the SM expectation
     drawSM = cms.bool(False),
     ## apply smoothing before plotting?
