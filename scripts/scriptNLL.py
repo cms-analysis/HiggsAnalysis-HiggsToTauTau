@@ -29,8 +29,10 @@ CLbHist2D = r.TH2D('CLbHist2D', r'CL_{b} values for (m_{A}, tan#beta) plane; m_{
 qmuHist2D = r.TH2D('qmuHist2D', r'q_{#mu} values for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
 qAHist2D = r.TH2D('qAHist2D', r'q_{A} values for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
 
-NLLmuFixedforqmu = r.TH2D('NLLmuFixedforqmu', r'NLL values of q_{#mu} with #mu fixed for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-NLLmuFixedforqA = r.TH2D('NLLmuFixedforqA', r'NLL values of q_{A} with #mu fixed for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+NLLmuFixedforqmu = r.TH2D('NLLmuFixedforqmu', r'full NLL values of q_{#mu} with #mu fixed for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+NLLmuGlobalforqmu = r.TH2D('NLLmuGlobalforqmu', r'global fit NLL values of q_{#mu} for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+NLLmuFixedforqA = r.TH2D('NLLmuFixedforqA', r'full NLL values of q_{A} with #mu fixed for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+NLLmuGlobalforqA = r.TH2D('NLLmuGlobalforqA', r'global fit NLL values of q_{A} for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
 
 # histograms with Crossection x BR values for ggH & bbH production mode and the Higgses A, H, h
 
@@ -132,11 +134,12 @@ for i in range(len(tanblist)):
 		r_list_data.append(event.r)
 
 	global_NLL_mu_data = nll0_list_data[1]
+	if not math.isnan(global_NLL_mu_data): NLLmuGlobalforqmu.Fill(float(mass), float(tanb), global_NLL_mu_data)
 	#print "global NLL(mu): ", global_NLL_mu_data
 
 
 	NLL_mu1_data = nll_list_data[1]
-	NLLmuFixedforqmu.Fill(float(mass), float(tanb), NLL_mu1_data)
+	if not math.isnan(NLL_mu1_data): NLLmuFixedforqmu.Fill(float(mass), float(tanb), NLL_mu1_data)
 	#print "NLL(mu) for mu: ", NLL_mu1_data
 
 	# Asimov
@@ -151,11 +154,12 @@ for i in range(len(tanblist)):
 		r_list_asimov.append(event.r)
 
 	global_NLL_mu_asimov = nll0_list_asimov[1]
+	if not math.isnan(global_NLL_mu_asimov): NLLmuGlobalforqA.Fill(float(mass), float(tanb), global_NLL_mu_asimov)
 	#print "global NLL(mu) for asimov: ", global_NLL_mu_asimov
 
 
 	NLL_mu1_asimov = nll_list_asimov[1]
-	NLLmuFixedforqA.Fill(float(mass), float(tanb), NLL_mu1_asimov)
+	if not math.isnan(NLL_mu1_asimov): NLLmuFixedforqA.Fill(float(mass), float(tanb), NLL_mu1_asimov)
 	#print "NLL(mu) for mu=1.0 for asimov: ", NLL_mu1_asimov
 
 	### Calculation of values for CLs
@@ -165,10 +169,10 @@ for i in range(len(tanblist)):
 	if abs(q_mu) < 0.1 and q_mu < 0: q_mu = 0
 	#if q_mu < 0: q_mu = 0
 	#print "q_mu = ", q_mu
-	qmuHist2D.Fill(float(mass), float(tanb), q_mu)
+	if not math.isnan(q_mu): qmuHist2D.Fill(float(mass), float(tanb), q_mu)
 	# CLsb for data using asymptotic formula
 	CL_SplusB = 1 - r.Math.normal_cdf(r.TMath.Sqrt(q_mu))
-	CLsbHist2D.Fill(float(mass), float(tanb), CL_SplusB)
+	if not math.isnan(CL_SplusB): CLsbHist2D.Fill(float(mass), float(tanb), CL_SplusB)
 	#print "CLsb = ", CL_SplusB
 
 	#q_A for asimov
@@ -176,10 +180,10 @@ for i in range(len(tanblist)):
 	if abs(q_A) < 0.1 and q_A < 0: q_A = 0
 	#if q_A < 0: q_A = 0
 	#print "q_A = ", q_A
-	qAHist2D.Fill(float(mass), float(tanb), q_A)
+	if not math.isnan(q_A): qAHist2D.Fill(float(mass), float(tanb), q_A)
 	# CLb for asimov using asymptotic formula
 	CL_B = r.Math.normal_cdf(r.TMath.Sqrt(q_A)-r.TMath.Sqrt(q_mu))
-	CLbHist2D.Fill(float(mass), float(tanb), CL_B)
+	if not math.isnan(CL_B): CLbHist2D.Fill(float(mass), float(tanb), CL_B)
 	#print "CLb = ", CL_B
 
 	# CLs value
@@ -188,7 +192,7 @@ for i in range(len(tanblist)):
 	else:
 		CL_S = CL_SplusB/CL_B
 	#print "CLs = ", CL_S
-	CLsHist2D.Fill(float(mass), float(tanb), CL_S)
+	if not math.isnan(CL_S): CLsHist2D.Fill(float(mass), float(tanb), CL_S)
 	#if math.isnan(CL_S):
 		#logfile.write("NaN value for CLs at the point ({mass},{tanb})\n".format(mass=mass, tanb=tanb))
 
@@ -252,7 +256,9 @@ qmuHist2D.Write()
 qAHist2D.Write()
 
 NLLmuFixedforqmu.Write()
+NLLmuGlobalforqmu.Write()
 NLLmuFixedforqA.Write()
+NLLmuGlobalforqA.Write()
 
 CLsHist2D_as.Write()
 CLsbHist2D_as.Write()

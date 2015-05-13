@@ -208,6 +208,40 @@ multidimfit (plotting):
 
 plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-bbH.py LIMITS150428-mssm/bbb-asimov-ggH-bbH
 
+
+Extracting NLL values from multidimfit (multidimNLL.py)
+
+python HiggsAnalysis/HiggsToTauTau/scripts/multidimNLL.py --nll-path="$CMSSW_BASE/src/LIMITS150428-mssm/bbb-asimov-mhmodp-NLL/mt/NLLHistogram.Full.root" --ggH-bbH-path="$CMSSW_BASE/src/LIMITS150428-mssm/bbb-asimov-ggH-bbH/"
+
 combine command:
 
 combine -M MultiDimFit -m 500 --algo=grid -n RL04NI4F22 --cl 0.95 --points 40000 --firstPoint 1 --lastPoint 800    --minimizerStrategy=0 --minimizerTolerance=0.1 --cminPreScan --cminFallbackAlgo "Minuit2,0:1.0" --cminFallbackAlgo "Minuit2,0:10.0" --cminFallbackAlgo "Minuit2,0:50.0" ./ggH-bbH.root
+
+
+-------
+BG only
+-------
+
+python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM.py -a bbb --label='150512-mssm' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-131013-mssm.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-150425" --update-all --blind-datacards --fine-scan
+
+multidimfit (directory setup):
+------------------------------
+cvs2local.py -i aux150512-mssm/bbb-asimov -o LIMITS150512-mssm/bbb-asimov-ggH-bbH -p 8TeV -a mssm -c 'mt' --mssm-categories-mt="8 9" 90_1000:10
+
+multidimfit (calculation):
+--------------------------
+submit.py --multidim-fit --stable --physics-model='ggH-bbH' LIMITS150512-mssm/bbb-asimov-ggH-bbH/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
+
+multidimfit (resubmission):
+---------------------------
+python HiggsAnalysis/HiggsToTauTau/python/lxb-multidimfit-resubmit.py LIMITS150512-mssm-bbb-asimov-ggH-bbH-GGH-BBH-90 -o LIMITS150512-mssm/bbb-asimov-ggH-bbH/ -m '90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 380, 390, 400, 410, 420, 430, 440, 450, 460, 470, 480, 490, 500, 510, 520, 530, 540, 550, 560, 570, 580, 590, 600, 610, 620, 630, 640, 650, 660, 670, 680, 690, 700, 710, 720, 730, 740, 750, 760, 770, 780, 790, 800, 810, 820, 830, 840, 850, 860, 870, 880, 890, 900, 910, 920, 930, 940, 950, 960, 970, 980, 990, 1000'
+
+
+multidimfit (collection):
+-------------------------
+limit.py --collect --multidim-fit --physics-model="ggH-bbH" LIMITS150512-mssm/bbb-asimov-ggH-bbH/*
+
+multidimfit (plotting):
+-----------------------
+
+plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-bbH.py LIMITS150512-mssm/bbb-asimov-ggH-bbH

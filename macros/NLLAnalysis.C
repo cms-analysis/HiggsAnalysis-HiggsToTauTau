@@ -4,7 +4,7 @@ void NLLAnalysis(const char* filename="output.root"){
 std::ofstream xsfile;
 xsfile.open("xs_boundaries.txt");
 // Reading root file
-TFile* File = new TFile(filename, "READ");
+TFile* File = new TFile(filename, "UPDATE");
 TCanvas* c = new TCanvas("c", "c", 1300, 700);
 
 // Extracting 2D histograms from root file
@@ -34,10 +34,10 @@ TH2D* mhist1 = (TH2D*) File->Get("massDiffH");
 TH2D* mhist2 = (TH2D*) File->Get("massDiffh");
 
 // Defining range for the z axis
-hist2->GetZaxis()->SetRangeUser(0, 10000);
-hist3->GetZaxis()->SetRangeUser(0, 10000);
-hist5->GetZaxis()->SetRangeUser(0, 10000);
-hist6->GetZaxis()->SetRangeUser(0, 10000);
+hist2->GetZaxis()->SetRangeUser(0.001, 10000);
+hist3->GetZaxis()->SetRangeUser(0.001, 10000);
+hist5->GetZaxis()->SetRangeUser(0.001, 10000);
+hist6->GetZaxis()->SetRangeUser(0.001, 10000);
 
 // Plotting 2D histograms
 c->Divide(3,2);
@@ -258,7 +258,7 @@ TCanvas* d1 = new TCanvas("d1","d1", 1300, 700);
 // Filling the new 1D and 2D histograms 
 
 int massBins = hist1->GetNbinsX();
-int tanbBins = hist2->GetNbinsY();
+int tanbBins = hist1->GetNbinsY();
 
 // Bin numering convention: From 1 to Nbins !!!
 
@@ -303,9 +303,30 @@ for(int i=1;i<=massBins; i++)
 		}
 		ggcmb->SetBinContent(i,j,ggcmbXs);
 		bbcmb->SetBinContent(i,j,bbcmbXs);
+		
 		if (j==tanbBins)
 		{
-			xsfile << std::setprecision(4) << "    (\"ggH-bbH\", \""  << hist1->GetXaxis()->GetBinLowEdge(i)  << "\")  : (" <<  std::setprecision(3) << ggcmbXs << ", " << bbcmbXs << ")," << std::endl;
+			int current_mass = hist1->GetXaxis()->GetBinLowEdge(i);
+			if (current_mass>=400)
+			{
+				xsfile << std::setprecision(4) << "    (\"ggH-bbH\", \""  << current_mass  << "\")  : (" <<  std::setprecision(3) << ggcmbXs << ", " << bbcmbXs << ")," << std::endl;
+			}
+			else if (current_mass<400 && current_mass >= 300)
+			{
+				xsfile << std::setprecision(4) << "    (\"ggH-bbH\", \""  << current_mass  << "\")  : (" <<  std::setprecision(3) << ggcmbXs << ", " << bbcmbXs/3.0 << ")," << std::endl;
+			}
+			else if (current_mass<300 && current_mass >= 250)
+			{
+				xsfile << std::setprecision(4) << "    (\"ggH-bbH\", \""  << current_mass  << "\")  : (" <<  std::setprecision(3) << ggcmbXs/2.0 << ", " << bbcmbXs/6.0 << ")," << std::endl;
+			}
+			else if (current_mass<250 && current_mass >= 200)
+			{
+				xsfile << std::setprecision(4) << "    (\"ggH-bbH\", \""  << current_mass  << "\")  : (" <<  std::setprecision(3) << ggcmbXs/3.0 << ", " << bbcmbXs/10.0 << ")," << std::endl;
+			}
+			else if (current_mass<200)
+			{
+				xsfile << std::setprecision(4) << "    (\"ggH-bbH\", \""  << current_mass  << "\")  : (" <<  std::setprecision(3) << ggcmbXs/3.0 << ", " << bbcmbXs/5.0 << ")," << std::endl;
+			}
 		}
 	}
 }
@@ -361,4 +382,10 @@ bbcmb->Draw("Colz");
 
 d1->SaveAs("combinedXs.pdf");
 
+ggcmb->Write();
+bbcmb->Write();
+CLsdiff->Write();
+qAdiff->Write();
+qmudiff->Write();
+File->Close();
 }
