@@ -83,7 +83,8 @@ class CombineHarvester {
   CombineHarvester& PrintProcs();
   CombineHarvester& PrintSysts();
   CombineHarvester& PrintParams();
-  void SetVerbosity(unsigned verbosity) { verbosity_ = verbosity; }
+  inline void SetVerbosity(unsigned verbosity) { verbosity_ = verbosity; }
+  inline unsigned Verbosity() { return verbosity_; }
   /**@}*/
 
   /**
@@ -343,27 +344,51 @@ class CombineHarvester {
                     std::vector<std::string> procs,
                     ch::Categories bin, bool signal);
 
+  void AddSystFromProc(Process const& proc, std::string const& name,
+                       std::string const& type, bool asymm, double val_u,
+                       double val_d);
+
   template <class Map>
   void AddSyst(CombineHarvester & target, std::string const& name,
                std::string const& type, Map const& valmap);
 
   void ExtractShapes(std::string const& file, std::string const& rule,
                      std::string const& syst_rule);
-  void ExtractPdfs(std::string const& ws_name, std::string const& rule,
-                   CombineHarvester* other = nullptr);
+  void ExtractPdfs(CombineHarvester& target, std::string const& ws_name,
+                   std::string const& rule, std::string norm_rule = "");
   void ExtractData(std::string const& ws_name, std::string const& rule);
 
-  void AddWorkspace(RooWorkspace const* ws);
+  void AddWorkspace(RooWorkspace const& ws, bool can_rename = false);
+
+  void InsertObservation(ch::Observation const& obs);
+  void InsertProcess(ch::Process const& proc);
+  void InsertSystematic(ch::Systematic const& sys);
+  void CreateParameterIfEmpty(std::string const& name);
 
   /**
    * Create bin-by-bin uncertainties
    *
-   * \deprecated Please use the AddBinByBin(double, bool, CombineHarvester &)
-   * interface instead
+   * \deprecated Please use the standalone ch::BinByBinFactory tool, defined
+   * in CombineTools/interface/BinByBin.h
    */
   void AddBinByBin(double threshold, bool fixed_norm, CombineHarvester* other);
+
+
+  /**
+   * Create bin-by-bin uncertainties
+   *
+   * \deprecated Please use the standalone ch::BinByBinFactory tool, defined
+   * in CombineTools/interface/BinByBin.h
+   */
   void AddBinByBin(double threshold, bool fixed_norm, CombineHarvester & other);
 
+
+  /**
+   * Merge bin errors within a bin
+   *
+   * \deprecated Please use the standalone ch::BinByBinFactory tool, defined
+   * in CombineTools/interface/BinByBin.h
+   */
   void MergeBinErrors(double bbb_threshold, double merge_threshold);
   /**@}*/
 
@@ -414,8 +439,8 @@ class CombineHarvester {
   StrPairVec GenerateShapeMapAttempts(std::string process,
       std::string category);
 
-  StrPair SetupWorkspace(HistMapping const& mapping,
-                         std::string alt_mapping = "");
+  std::shared_ptr<RooWorkspace> SetupWorkspace(RooWorkspace const& ws,
+                                    bool can_rename = false);
 
   void ImportParameters(RooArgSet *vars);
 
@@ -463,8 +488,6 @@ void FillHistMappings(std::vector<HistMapping> & mappings);
                  TH1 const* high, bool linear);
   void ShapeDiff(double x, TH1F* target, RooDataHist const* nom,
                  RooDataHist const* low, RooDataHist const* high);
-
-  void CreateParameterIfEmpty(CombineHarvester *cmb, std::string const& name);
 };
 
 
@@ -576,33 +599,10 @@ void CombineHarvester::AddSyst(CombineHarvester& target,
     }
     tuples.erase(valmap.GetTuple(procs_[i].get()));
     added_procs.push_back(procs_[i].get());
-    std::string subbed_name = name;
-    boost::replace_all(subbed_name, "$BIN", procs_[i]->bin());
-    boost::replace_all(subbed_name, "$PROCESS", procs_[i]->process());
-    boost::replace_all(subbed_name, "$MASS", procs_[i]->mass());
-    boost::replace_all(subbed_name, "$ERA", procs_[i]->era());
-    boost::replace_all(subbed_name, "$CHANNEL", procs_[i]->channel());
-    boost::replace_all(subbed_name, "$ANALYSIS", procs_[i]->analysis());
-    auto sys = std::make_shared<Systematic>();
-    ch::SetProperties(sys.get(), procs_[i].get());
-    sys->set_name(subbed_name);
-    sys->set_type(type);
-    if (type == "lnN" || type == "lnU") {
-      sys->set_asymm(valmap.IsAsymm());
-      sys->set_value_u(valmap.ValU(procs_[i].get()));
-      sys->set_value_d(valmap.ValD(procs_[i].get()));
-    } else if (type == "shape" || type == "shapeN2") {
-      sys->set_asymm(true);
-      sys->set_value_u(1.0);
-      sys->set_value_d(1.0);
-      sys->set_scale(valmap.ValU(procs_[i].get()));
-    }
-    CombineHarvester::CreateParameterIfEmpty(&target, sys->name());
-    if (sys->type() == "lnU") {
-      params_.at(sys->name())->set_err_d(0.);
-      params_.at(sys->name())->set_err_u(0.);
-    }
-    target.systs_.push_back(sys);
+    double val_u = valmap.ValU(procs_[i].get());
+    double val_d = valmap.ValD(procs_[i].get());
+    target.AddSystFromProc(*(procs_[i]), name, type, valmap.IsAsymm(),
+                           val_u, val_d);
   }
   if (tuples.size() && verbosity_ >= 1) {
     log() << ">> Map keys that were not used to create a Systematic:\n";

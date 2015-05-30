@@ -10,6 +10,7 @@
 #include "CombineTools/interface/Process.h"
 #include "CombineTools/interface/Utilities.h"
 #include "CombineTools/interface/Systematics.h"
+#include "CombineTools/interface/BinByBin.h"
 
 using namespace std;
 
@@ -98,15 +99,19 @@ int main() {
       aux_shapes + "Imperial/htt_mt.inputs-sm-8TeV-hcg.root",
       "$BIN/$PROCESS$MASS",
       "$BIN/$PROCESS$MASS_$SYSTEMATIC");
+  //! [part7]
+
+  //! [part8]
+  auto bbb = ch::BinByBinFactory()
+    .SetAddThreshold(0.1)
+    .SetFixNorm(true);
+
+  bbb.AddBinByBin(cb.cp().backgrounds(), cb);
 
   // This function modifies every entry to have a standardised bin name of
   // the form: {analysis}_{channel}_{bin_id}_{era}
   // which is commonly used in the htt analyses
   ch::SetStandardBinNames(cb);
-  //! [part7]
-
-  //! [part8]
-  cb.cp().backgrounds().AddBinByBin(0.1, true, &cb);
   //! [part8]
 
   //! [part9]

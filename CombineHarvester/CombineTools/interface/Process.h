@@ -35,9 +35,6 @@ class Process : public Object {
    */
   double no_norm_rate() const { return rate_; }
 
-  void set_signal(bool const& signal) { signal_ = signal; }
-  bool signal() const { return signal_; }
-
   void set_shape(std::unique_ptr<TH1> shape, bool set_rate);
   TH1 const* shape() const { return shape_.get(); }
 
@@ -55,12 +52,11 @@ class Process : public Object {
   void set_norm(RooAbsReal* norm) { norm_ = norm; }
   RooAbsReal const* norm() const { return norm_; }
 
-  friend std::ostream& operator<< (std::ostream &out, Process &val);
+  friend std::ostream& operator<< (std::ostream &out, Process const& val);
   static std::ostream& PrintHeader(std::ostream &out);
 
  private:
   double rate_;
-  bool signal_;
   std::unique_ptr<TH1> shape_;
   RooAbsPdf* pdf_;
   RooAbsData* data_;

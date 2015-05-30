@@ -13,6 +13,8 @@
 #include "CombineTools/interface/Systematic.h"
 #include "CombineTools/interface/Parameter.h"
 #include "CombineTools/interface/Utilities.h"
+#include "CombineTools/interface/Logging.h"
+#include "CombineTools/interface/BinByBin.h"
 
 namespace ch {
 void CombineHarvester::AddObservations(
@@ -71,6 +73,39 @@ void CombineHarvester::AddProcesses(
   }
 }
 
+void CombineHarvester::AddSystFromProc(Process const& proc,
+                                       std::string const& name,
+                                       std::string const& type, bool asymm,
+                                       double val_u, double val_d) {
+  std::string subbed_name = name;
+  boost::replace_all(subbed_name, "$BIN", proc.bin());
+  boost::replace_all(subbed_name, "$PROCESS", proc.process());
+  boost::replace_all(subbed_name, "$MASS", proc.mass());
+  boost::replace_all(subbed_name, "$ERA", proc.era());
+  boost::replace_all(subbed_name, "$CHANNEL", proc.channel());
+  boost::replace_all(subbed_name, "$ANALYSIS", proc.analysis());
+  auto sys = std::make_shared<Systematic>();
+  ch::SetProperties(sys.get(), &proc);
+  sys->set_name(subbed_name);
+  sys->set_type(type);
+  if (type == "lnN" || type == "lnU") {
+    sys->set_asymm(asymm);
+    sys->set_value_u(val_u);
+    sys->set_value_d(val_d);
+  } else if (type == "shape" || type == "shapeN2") {
+    sys->set_asymm(true);
+    sys->set_value_u(1.0);
+    sys->set_value_d(1.0);
+    sys->set_scale(val_u);
+  }
+  CreateParameterIfEmpty(sys->name());
+  if (sys->type() == "lnU") {
+    params_.at(sys->name())->set_err_d(0.);
+    params_.at(sys->name())->set_err_u(0.);
+  }
+  systs_.push_back(sys);
+}
+
 void CombineHarvester::ExtractShapes(std::string const& file,
                                      std::string const& rule,
                                      std::string const& syst_rule) {
@@ -99,26 +134,25 @@ void CombineHarvester::ExtractShapes(std::string const& file,
   }
 }
 
-void CombineHarvester::AddWorkspace(RooWorkspace const *ws) {
-  if (wspaces_.count(ws->GetName())) return;
-  if (verbosity_ >= 1)
-    log() << "[AddWorkspace] Cloning workspace \"" << ws->GetName() << "\"\n";
-  wspaces_[ws->GetName()] = std::shared_ptr<RooWorkspace>(
-      reinterpret_cast<RooWorkspace *>(ws->Clone()));
+void CombineHarvester::AddWorkspace(RooWorkspace const& ws,
+                                    bool can_rename) {
+  SetupWorkspace(ws, can_rename);
 }
 
-void CombineHarvester::ExtractPdfs(std::string const &ws_name,
-                                   std::string const &rule,
-                                   CombineHarvester *other) {
-  CombineHarvester *target = other ? other : this;
+void CombineHarvester::ExtractPdfs(CombineHarvester& target,
+                                   std::string const& ws_name,
+                                   std::string const& rule,
+                                   std::string norm_rule) {
   std::vector<HistMapping> mapping(1);
   mapping[0].process = "*";
   mapping[0].category = "*";
   mapping[0].pattern = ws_name+":"+rule;
+  if (norm_rule != "") mapping[0].syst_pattern = ws_name + ":" + norm_rule;
   if (!wspaces_.count(ws_name)) return;
+  mapping[0].ws = wspaces_.at(ws_name);
   for (unsigned  i = 0; i < procs_.size(); ++i) {
     if (!procs_[i]->pdf()) {
-      target->LoadShapes(procs_[i].get(), mapping);
+      target.LoadShapes(procs_[i].get(), mapping);
     }
   }
 }
@@ -130,6 +164,7 @@ void CombineHarvester::ExtractData(std::string const &ws_name,
   mapping[0].category = "*";
   mapping[0].pattern = ws_name+":"+rule;
   if (!wspaces_.count(ws_name)) return;
+  mapping[0].ws = wspaces_.at(ws_name);
   for (unsigned  i = 0; i < obs_.size(); ++i) {
     if (!obs_[i]->data()) {
       LoadShapes(obs_[i].get(), mapping);
@@ -144,137 +179,39 @@ void CombineHarvester::AddBinByBin(double threshold, bool fixed_norm,
 
 void CombineHarvester::AddBinByBin(double threshold, bool fixed_norm,
                                    CombineHarvester *other) {
-  unsigned bbb_added = 0;
-  for (unsigned i = 0; i < procs_.size(); ++i) {
-    if (!procs_[i]->shape()) continue;
-    TH1 const* h = procs_[i]->shape();
-    unsigned n_pop_bins = 0;
-    for (int j = 1; j <= h->GetNbinsX(); ++j) {
-      if (h->GetBinContent(j) > 0.0) ++n_pop_bins;
-    }
-    if (n_pop_bins <= 1 && fixed_norm) {
-      if (verbosity_ >= 1) {
-        std::cout << "Requested fixed_norm but template has <= 1 populated "
-                     "bins, skipping\n";
-        std::cout << Process::PrintHeader << *(procs_[i]) << "\n";
-      }
-      continue;
-    }
-    for (int j = 1; j <= h->GetNbinsX(); ++j) {
-      bool do_bbb = false;
-      double val = h->GetBinContent(j);
-      double err = h->GetBinError(j);
-      if (val == 0. && err > 0.) do_bbb = true;
-      if (val > 0. && (err / val) > threshold) do_bbb = true;
-      // if (h->GetBinContent(j) <= 0.0) {
-      //   if (h->GetBinError(j) > 0.0) {
-      //     std::cout << *(procs_[i]) << "\n";
-      //     std::cout << "Bin with content <= 0 and error > 0 found, skipping\n";
-      //   }
-      //   continue;
-      // }
-      if (do_bbb) {
-        ++bbb_added;
-        auto sys = std::make_shared<Systematic>();
-        ch::SetProperties(sys.get(), procs_[i].get());
-        sys->set_type("shape");
-        // sys->set_name("CMS_" + sys->bin() + "_" + sys->process() + "_bin_" +
-        //               boost::lexical_cast<std::string>(j));
-        sys->set_name("CMS_" + sys->analysis() + "_" + sys->channel() + "_" +
-                      sys->bin() + "_" + sys->era() + "_" + sys->process() +
-                      "_bin_" + boost::lexical_cast<std::string>(j));
-        sys->set_asymm(true);
-        std::unique_ptr<TH1> h_d(static_cast<TH1 *>(h->Clone()));
-        std::unique_ptr<TH1> h_u(static_cast<TH1 *>(h->Clone()));
-        h_d->SetBinContent(j, val - err);
-        if (h_d->GetBinContent(j) < 0.) h_d->SetBinContent(j, 0.);
-        h_u->SetBinContent(j, val + err);
-        if (fixed_norm) {
-          sys->set_value_d(1.0);
-          sys->set_value_u(1.0);
-        } else {
-          sys->set_value_d(h_d->Integral()/h->Integral());
-          sys->set_value_u(h_u->Integral()/h->Integral());
-        }
-        sys->set_shapes(std::move(h_u), std::move(h_d), nullptr);
-        CombineHarvester::CreateParameterIfEmpty(other ? other : this,
-                                                 sys->name());
-        if (other) {
-          other->systs_.push_back(sys);
-        } else {
-          systs_.push_back(sys);
-        }
-      }
-    }
-  }
-  // std::cout << "bbb added: " << bbb_added << std::endl;
+  auto bbb_factory = ch::BinByBinFactory()
+      .SetAddThreshold(threshold)
+      .SetFixNorm(fixed_norm)
+      .SetVerbosity(verbosity_);
+  bbb_factory.AddBinByBin(*this, *other);
 }
 
-void CombineHarvester::CreateParameterIfEmpty(CombineHarvester *cmb,
-                                              std::string const &name) {
+void CombineHarvester::CreateParameterIfEmpty(std::string const &name) {
   if (!params_.count(name)) {
     auto param = std::make_shared<Parameter>(Parameter());
     param->set_name(name);
-    (*cmb).params_.insert({name, param});
+    params_.insert({name, param});
   }
 }
 
 void CombineHarvester::MergeBinErrors(double bbb_threshold,
                                       double merge_threshold) {
-  // Reduce merge_threshold very slightly to avoid numerical issues
-  // E.g. two backgrounds each with bin error 1.0. merge_threshold of
-  // 0.5 should not result in merging - but can do depending on
-  // machine and compiler
-  merge_threshold -= 1E-9 * merge_threshold;
-  auto bins = this->bin_set();
-  for (auto const& bin : bins) {
-    // unsigned bbb_added = 0;
-    // unsigned bbb_removed = 0;
-    CombineHarvester tmp = std::move(this->cp().bin({bin}).histograms());
-    if (tmp.procs_.size() == 0) continue;
+  auto bbb_factory = ch::BinByBinFactory()
+      .SetAddThreshold(bbb_threshold)
+      .SetMergeThreshold(merge_threshold)
+      .SetVerbosity(verbosity_);
+  bbb_factory.MergeBinErrors(*this);
+}
 
-    std::vector<std::unique_ptr<TH1>> h_copies(tmp.procs_.size());
-    for (unsigned i = 0; i < h_copies.size(); ++i) {
-      h_copies[i] = tmp.procs_[i]->ClonedScaledShape();
-    }
+void CombineHarvester::InsertObservation(ch::Observation const& obs) {
+  obs_.push_back(std::make_shared<ch::Observation>(obs));
+}
 
-    for (int i = 1; i <= h_copies[0]->GetNbinsX(); ++i) {
-      double tot_bbb_added = 0.0;
-      std::vector<std::pair<double, TH1 *>> result;
-      for (unsigned j = 0; j < h_copies.size(); ++j) {
-        double val = h_copies[j]->GetBinContent(i);
-        double err = h_copies[j]->GetBinError(i);
-        if (val == 0.0 &&  err == 0.0) continue;
-        if (val == 0 || (err/val) > bbb_threshold) {
-          // bbb_added += 1;
-          tot_bbb_added += (err * err);
-          result.push_back(std::make_pair(err*err, h_copies[j].get()));
-        }
-      }
-      if (tot_bbb_added == 0.0) continue;
-      std::sort(result.begin(), result.end());
-      double removed = 0.0;
-      for (unsigned r = 0; r < result.size(); ++r) {
-        if ((result[r].first + removed) < (merge_threshold * tot_bbb_added) &&
-            r < (result.size() - 1)) {
-          // bbb_removed += 1;
-          removed += result[r].first;
-          result[r].second->SetBinError(i, 0.0);
-        }
-      }
-      double expand = std::sqrt(1. / (1. - (removed / tot_bbb_added)));
-      for (unsigned r = 0; r < result.size(); ++r) {
-        result[r]
-            .second->SetBinError(i, result[r].second->GetBinError(i) * expand);
-      }
-    }
-    for (unsigned i = 0; i < h_copies.size(); ++i) {
-      tmp.procs_[i]->set_shape(std::move(h_copies[i]), false);
-    }
-    // std::cout << "BIN: " << bin << std::endl;
-    // std::cout << "Total bbb added:    " << bbb_added << "\n";
-    // std::cout << "Total bbb removed:  " << bbb_removed << "\n";
-    // std::cout << "Total bbb =======>: " << bbb_added-bbb_removed << "\n";
-  }
+void CombineHarvester::InsertProcess(ch::Process const& proc) {
+  procs_.push_back(std::make_shared<ch::Process>(proc));
+}
+
+void CombineHarvester::InsertSystematic(ch::Systematic const& sys) {
+  systs_.push_back(std::make_shared<ch::Systematic>(sys));
 }
 }

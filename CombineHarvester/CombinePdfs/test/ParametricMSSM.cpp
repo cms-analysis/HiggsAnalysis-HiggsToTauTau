@@ -101,9 +101,7 @@ int main() {
   cb.era({"8TeV"});
 
   std::cout << "Setting standardised bin names...";
-  cb.ForEachObs(ch::SetStandardBinName<ch::Observation>);
-  cb.ForEachProc(ch::SetStandardBinName<ch::Process>);
-  cb.ForEachSyst(ch::SetStandardBinName<ch::Systematic>);
+  ch::SetStandardBinNames(cb);
   std::cout << " done\n";
 
   // cb.era({"8TeV"}).bin_id({8});
@@ -219,8 +217,8 @@ int main() {
     }
     cb_hm.process({"ggH", "bbH", "bkg"});
 
-    cb_hm.AddWorkspace(&ws);
-    cb_hm.cp().backgrounds().ExtractPdfs("htt", "$CHANNEL_bkgpdf");
+    cb_hm.AddWorkspace(ws);
+    cb_hm.cp().backgrounds().ExtractPdfs(cb_hm, "htt", "$CHANNEL_bkgpdf");
     // cb_hm.PrintAll();
   } else {
     cb_hm.cp().bin_id({8}).VariableRebin(

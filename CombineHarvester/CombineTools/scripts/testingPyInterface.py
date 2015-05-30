@@ -1,94 +1,5 @@
 #!/usr/bin/env python
 
-import combineharvester as ch
-# import itertools
-import ROOT as R
-import glob
-
-cb = ch.CombineHarvester()
-
-chns = ['et', 'mt', 'em', 'ee', 'mm', 'tt']
-
-input_folders = {
-  'et' : 'Imperial',
-  'mt' : 'Imperial',
-  'em' : 'MIT',
-  'ee' : 'DESY-KIT',
-  'mm' : 'DESY-KIT',
-  'tt' : 'CERN'
-}
-
-bkg_procs = {
-  'et' : ['ZTT', 'W', 'QCD', 'ZL', 'ZJ', 'TT', 'VV'],
-  'mt' : ['ZTT', 'W', 'QCD', 'ZL', 'ZJ', 'TT', 'VV'],
-  'em' : ['Ztt', 'EWK', 'Fakes', 'ttbar', 'ggH_hww125', 'qqH_hww125'],
-  'ee' : ['ZTT', 'WJets', 'QCD', 'ZEE', 'TTJ', 'Dibosons', 'ggH_hww125', 'qqH_hww125'],
-  'mm' : ['ZTT', 'WJets', 'QCD', 'ZMM', 'TTJ', 'Dibosons', 'ggH_hww125', 'qqH_hww125'],
-  'tt' : ['ZTT', 'W', 'QCD', 'ZL', 'ZJ', 'TT', 'VV']
-}
-
-sig_procs = ['ggH', 'qqH', 'WH', 'ZH']
-
-cats = {
-  'et_7TeV' : [
-    (1, 'eleTau_0jet_medium'), (2, 'eleTau_0jet_high'),
-    (3, 'eleTau_1jet_medium'), (5, 'eleTau_1jet_high_mediumhiggs'),
-    (6, 'eleTau_vbf')
-  ],
-  'et_8TeV' : [
-    (1, 'eleTau_0jet_medium'), (2, 'eleTau_0jet_high'),
-    (3, 'eleTau_1jet_medium'), (5, 'eleTau_1jet_high_mediumhiggs'),
-    (6, 'eleTau_vbf_loose'), (7, 'eleTau_vbf_tight')
-  ],
-  'mt_7TeV' : [
-    (1, 'muTau_0jet_medium'), (2, 'muTau_0jet_high'),
-    (3, 'muTau_1jet_medium'), (4, 'muTau_1jet_high_lowhiggs'), (5, 'muTau_1jet_high_mediumhiggs'),
-    (6, 'muTau_vbf')
-  ],
-  'mt_8TeV' : [
-    (1, 'muTau_0jet_medium'), (2, 'muTau_0jet_high'),
-    (3, 'muTau_1jet_medium'), (4, 'muTau_1jet_high_lowhiggs'), (5, 'muTau_1jet_high_mediumhiggs'),
-    (6, 'muTau_vbf_loose'), (7, 'muTau_vbf_tight')
-  ],
-  'em_7TeV' : [
-    (0, 'emu_0jet_low'), (1, 'emu_0jet_high'),
-    (2, 'emu_1jet_low'), (3, 'emu_1jet_high'),
-    (4, 'emu_vbf_loose')
-  ],
-  'em_8TeV' : [
-    (0, 'emu_0jet_low'), (1, 'emu_0jet_high'),
-    (2, 'emu_1jet_low'), (3, 'emu_1jet_high'),
-    (4, 'emu_vbf_loose'), (5, 'emu_vbf_tight')
-  ],
-  'ee_7TeV' : [
-    (0, 'ee_0jet_low'), (1, 'ee_0jet_high'),
-    (2, 'ee_1jet_low'), (3, 'ee_1jet_high'),
-    (4, 'ee_vbf')
-  ],
-  'mm_7TeV' : [
-    (0, 'mumu_0jet_low'), (1, 'mumu_0jet_high'),
-    (2, 'mumu_1jet_low'), (3, 'mumu_1jet_high'),
-    (4, 'mumu_vbf')
-  ],
-  'tt_7TeV' : [],
-  'tt_8TeV' : [
-    (0, 'tauTau_1jet_high_mediumhiggs'), (1, 'tauTau_1jet_high_highhiggs'),
-    (2, 'tauTau_vbf')
-  ]
-}
-cats['ee_8TeV'] = cats['ee_7TeV']
-cats['mm_8TeV'] = cats['mm_7TeV']
-
-masses = ['110', '115', '120', '125', '130', '135', '140', '145']
-
-print ">> Creating processes and observations..."
-
-for era in ['7TeV', '8TeV']:
-  for chn in chns:
-    cb.AddObservations(['*'], ['htt'], [era], [chn], cats[chn+"_"+era])
-    cb.AddProcesses(['*'],  ['htt'], [era], [chn], bkg_procs[chn], cats[chn+"_"+era], False)
-    cb.AddProcesses(masses, ['htt'], [era], [chn], sig_procs,      cats[chn+"_"+era], True)
-
 # cb.FilterProcs(lambda x : x.process() in ['ggH', 'qqH'])
 # cb.FilterAll(lambda y : y.mass() == '110')
 
@@ -101,7 +12,20 @@ for era in ['7TeV', '8TeV']:
 # cb.ForEachProc(SwitchToSignal)
 # cb.VariableRebin([0., 50., 100., 150., 200., 250., 300.])
 
-cb.PrintAll()
+
+# The following is an example of duplicating existing objects and modifying
+# them in the process. Here we clone all mH=125 signals, adding "_SM125" to
+# the process name, switching it to background and giving it the generic mass
+# label. This would let us create a datacard for doing a second Higgs search
+
+# def Signal2Background(obj):
+#   obj.set_process(obj.process() + "_SM125")
+#   obj.set_signal(False)
+#   obj.set_mass("*")
+
+# ch.CloneProcs(cb.cp().signals().mass(['125']), cb, Signal2Background)
+
+# cb.PrintAll()
 
 
 
