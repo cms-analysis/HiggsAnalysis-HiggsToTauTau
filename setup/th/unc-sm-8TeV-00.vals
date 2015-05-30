@@ -1,0 +1,70 @@
+###########################################################################
+# unc.vals: specification of uncertainty values by category, sample, and uncertainty name
+# Example:
+# emu_vbf,emu_novbf,emu_boost     signal,EWK              lumi            1.045
+# background WZ,ZZ,ttW,ttZ,ttH,reducible
+
+## for all but the reducible, as the latter is taken from data
+emt     signal,simulated                lumi_8TeV                       1.026
+# emt     signal                          BR_Htotautau                    1.057
+
+## from former WH semiletponic analysis
+# emt     simulated                       CMS_th_trigger_emt_8TeV         1.05
+emt     signal                          CMS_th_sig_trigger_emt_8TeV     1.05
+
+emt     signal,simulated                CMS_th_eff_e_8TeV               1.051
+emt     signal,simulated                CMS_th_eff_m_8TeV               1.051
+emt     signal,simulated                CMS_th_eff_t_8TeV               1.06
+emt     signal,simulated                CMS_th_scale_t_8TeV             1.03
+
+## RM: at the moment this is uncorrelated wrt the rest of CMS. Should read CMS_scale_j
+# emt     signal                          CMS_th_scale_j_8TeV             1.01
+# emt     ttW                             CMS_th_scale_j_8TeV             1.01
+# emt     ttH                             CMS_th_scale_j_8TeV             1.01
+# emt     ZZ                              CMS_th_scale_j_8TeV             1.01
+# emt     WZ                              CMS_th_scale_j_8TeV             1.01
+
+emt     signal                          CMS_scale_j_8TeV                1.01
+emt     ttW                             CMS_scale_j_8TeV                1.01
+emt     ttH                             CMS_scale_j_8TeV                1.01
+emt     ZZ                              CMS_scale_j_8TeV                1.01
+emt     WZ                              CMS_scale_j_8TeV                1.01
+
+## limited MC statistics
+emt     ttZ                             CMS_th_mc_stats_ttZ_emt_8TeV    1.18
+emt     ttW                             CMS_th_mc_stats_ttW_emt_8TeV    1.14
+emt     ttH                             CMS_th_mc_stats_ttH_emt_8TeV    1.06
+emt     ZZ                              CMS_th_mc_stats_WZ_emt_8TeV     1.10
+emt     WZ                              CMS_th_mc_stats_ZZ_emt_8TeV     1.12
+
+## eff: average out from MSSM. fake: from WH
+# emt     signal                          CMS_th_eff_b_8TeV               1.05
+# emt     ttH,ttW,ttZ                     CMS_th_eff_b_8TeV               1.03
+# emt     WZ,ZZ                           CMS_th_fake_b_8TeV              1.20
+# #emt     signal,ttH,tt1l,tt2l,ttW,ttZ    CMS_th_eff_b_8TeV               1.05 ## from data
+emt     signal                          CMS_eff_b_8TeV                  1.05
+emt     ttH,ttW,ttZ                     CMS_eff_b_8TeV                  1.03
+emt     WZ,ZZ                           CMS_fake_b_8TeV                 1.20
+#emt     signal,ttH,tt1l,tt2l,ttW,ttZ    CMS_eff_b_8TeV               1.05 ## from data
+
+    
+## from the amount of non closure in f3    
+emt     reducible                       CMS_th_reducible_emt_8TeV       1.50
+
+## from ttH analysis https://svnweb.cern.ch/cern/wsvn/cmshcg/trunk/summer2013/couplings/tth/125/ttH_hbb_8TeV.txt
+emt     signal                          QCDscale_tHq                    1.019
+emt     ttH                             QCDscale_ttH                    1.067
+emt     ttW                             QCDscale_ttW                    1.105
+emt     ttZ                             QCDscale_ttZ                    1.116
+emt     WZ,ZZ                           QCDscale_VV                     1.036
+#emt     tt1l,tt2l                       QCDscale_ttbar                  1.03 ## from data
+    
+## from tHq WW analysis    
+emt     ttZ                             pdf_gg                          0.919
+emt     ttH                             pdf_gg                          0.926
+emt     tH_YtMinus                      pdf_qqbar                       1.048
+emt     ttW                             pdf_qqbar                       1.072
+emt     WZ,ZZ                           pdf_qqbar                       1.040
+emt     tHW                             pdf_qg                          1.048
+#emt     tt1l,tt2l                       pdf_gg                          0.974 ## from data
+

@@ -40,6 +40,8 @@ cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3
                  help="List et of event categories. [Default: \"0 1 2 4 3 5 6 7 \"]")
 cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1 2", type="string",
                  help="List of tt event categories. [Default: \"0 1 2\"]")
+cats1.add_option("--sm-categories-th", dest="th_sm_categories", default="0 1", type="string",
+                 help="List of th event categories. [Default: \"0 1\"]")
 cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1 2", type="string",
                  help="List of vhtt event categories. [Default: \"0 1 2\"]")
 cats1.add_option("--sm-categories-vhbb", dest="vhbb_sm_categories", default="0 1 2 3 4 5 6 7 8", type="string",
@@ -130,6 +132,7 @@ if options.analysis == "sm" :
         "mt"   : ( 90, 160),
         "et"   : ( 90, 160),
         "tt"   : ( 90, 160),
+        "th"   : (125, 125),
         "vhtt" : ( 90, 145),
         "vhbb" : (110, 145),
     }
@@ -195,6 +198,7 @@ if options.analysis == "sm" :
         "mt"   : "7TeV 8TeV 13TeV 14TeV",
         "et"   : "7TeV 8TeV 13TeV 14TeV",
         "tt"   :      "8TeV 13TeV 14TeV",
+        "th"   :      "8TeV 13TeV 14TeV",
         "vhtt" : "7TeV 8TeV 13TeV 14TeV",
         "vhbb" : "7TeV 8TeV 13TeV 14TeV",
         }
@@ -244,6 +248,7 @@ if options.analysis == "sm" :
         "mt"   : options.mt_sm_categories.split(),
         "et"   : options.et_sm_categories.split(),
         "tt"   : options.tt_sm_categories.split(),
+        "th"   : options.th_sm_categories.split(),
         "vhtt" : options.vhtt_sm_categories.split(),
         }
 
@@ -432,7 +437,7 @@ for channel in channels :
 if options.merge :
     for channel in channels :
         for period in periods :
-            if "tt" in channel :
+            if "tt" in channel or "th" in channel :
                 continue
             prefix = "" if (channel == "vhtt" or channel == "vhbb" or channel == "hmm" or channel == "hbb") else "htt_"
             os.chdir("{PWD}/{CHN}".format(CHN=prefix+channel, PWD=base))

@@ -31,6 +31,8 @@ cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3
                  help="List et of event categories. [Default: \"0 1 2 4 3 5 6 7 \"]")
 cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1 2", type="string",
                  help="List of tt event categories. [Default: \"0 1 2\"]")
+cats1.add_option("--sm-categories-th", dest="th_sm_categories", default="0 1", type="string",
+                 help="List of th event categories. [Default: \"0 1\"]")
 cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1 2", type="string",
                  help="List of vhtt event categories. [Default: \"0 1 2\"]")
 cats1.add_option("--sm-categories-vhbb", dest="vhbb_sm_categories", default="0 1 2 3 4 5 6 7 8 9", type="string",
@@ -119,6 +121,7 @@ if options.analysis == "sm" :
         "mt"   : options.mt_sm_categories.split(),
         "et"   : options.et_sm_categories.split(),
         "tt"   : options.tt_sm_categories.split(),
+        "th"   : options.tt_sm_categories.split(),
         "vhtt" : options.vhtt_sm_categories.split(),
         "vhbb" : options.vhbb_sm_categories.split(),
         }
@@ -163,6 +166,7 @@ if options.analysis == "sm" :
         "mt"   : ( 90, 145),
         "et"   : ( 90, 145),
         "tt"   : ( 90, 145),
+        "th"   : (125, 125),
         "vhtt" : ( 90, 145),
         "vhbb" : (110, 145),
     }
@@ -257,6 +261,7 @@ if options.analysis == "sm" :
         "mt"   : "7TeV 8TeV 13TeV 14TeV",
         "et"   : "7TeV 8TeV 13TeV 14TeV",
         "tt"   :      "8TeV 13TeV 14TeV",
+        "th"   :      "8TeV 13TeV 14TeV",
         "vhtt" : "7TeV 8TeV 13TeV 14TeV",
         "vhbb" : "7TeV 8TeV 13TeV 14TeV",
         }
@@ -396,4 +401,4 @@ for period in periods :
                             INPUT=input, CHN=channel, CAT=category, PERIOD=period, MASS='300' if options.model=='lowmH' or options.model=='2HDM' else mass, MASSDIR=massdir(mass), OUTPUT=options.out, PRE=prefix))
                         os.system("perl -pi -e 's/htt_{CHN}.inputs-{ANA}-{PERIOD}.root/..\/common\/{PRE}htt_{CHN}.input_{PERIOD}.root/g' {OUTPUT}/{MASSDIR}/{PRE}htt_{CHN}_{CAT}_{PERIOD}.txt".format(
                             CHN=channel, ANA=options.analysis, PRE=prefix, OUTPUT=options.out, MASS=mass, MASSDIR=massdir(mass), CAT=category, PERIOD=period))
-                        
+

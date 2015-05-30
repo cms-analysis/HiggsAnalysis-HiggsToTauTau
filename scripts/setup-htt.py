@@ -21,6 +21,7 @@ cats1.add_option("--sm-categories-em", dest="em_sm_categories", default="0 1 2 3
 cats1.add_option("--sm-categories-mt", dest="mt_sm_categories", default="0 1 2 3 4 5 6 7", type="string", help="List of mt event categories. [Default: \"0 1 2 3 4 5 6 7 \"]")
 cats1.add_option("--sm-categories-et", dest="et_sm_categories", default="0 1 2 3 4 5 6 7", type="string", help="List of et event categories. [Default: \"0 1 2 3 4 5 6 7 \"]")
 cats1.add_option("--sm-categories-tt", dest="tt_sm_categories", default="0 1 2", type="string", help="List of tt event categories. [Default: \"0 1 2\"]")
+cats1.add_option("--sm-categories-th", dest="th_sm_categories", default="0 1", type="string", help="List of th event categories. [Default: \"0 1\"]")
 cats1.add_option("--sm-categories-vhtt", dest="vhtt_sm_categories", default="0 1 2", type="string", help="List of vhtt event categories. [Default: \"0 1 2\"]")
 parser.add_option_group(cats1)
 cats2 = OptionGroup(parser, "MSSM EVENT CATEGORIES", "Event categories to be used for the MSSM analysis.")
@@ -57,6 +58,7 @@ if options.analysis == "sm" :
         "mt"   : options.mt_sm_categories.split(),
         "et"   : options.et_sm_categories.split(),
         "tt"   : options.tt_sm_categories.split(),
+        "th"   : options.th_sm_categories.split(),
         "vhtt" : options.vhtt_sm_categories.split(),
         }
 
@@ -127,6 +129,10 @@ directories_sm = {
     '1' : ['1jet', 'htt', 'cmb'],
     '2' : ['vbf' , 'htt', 'cmb'],
     },
+    'th' : {
+    '0' : ['emt', 'htt', 'cmb'],
+    '1' : ['mmt', 'htt', 'cmb'],
+    },
     'vhtt' :{
     '0' : ['vhtt_wh', 'vhtt', 'cmb'],
     '1' : ['vhtt_wh', 'vhtt', 'cmb'],
@@ -152,7 +158,7 @@ directories_mssm = {
     'em' : {
     '8'  : ['nobtag'       , 'nobtag-em'       ],
     '9'  : ['btag'         , 'btag-em'         ],
-    },    
+    },
     'et' : {
     '8'  : ['nobtag'       , 'nobtag-et'       ],
     '9'  : ['btag'         , 'btag-et'         ],
