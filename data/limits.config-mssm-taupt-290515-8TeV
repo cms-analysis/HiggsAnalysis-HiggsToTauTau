@@ -1,0 +1,167 @@
+[inputs]
+
+em = LLR
+et = LLR
+mt = LLR
+mm = LLR
+ee = LLR
+tt = LLR
+vhtt = VHTT
+mt_soft = LLR
+
+[sm]
+
+periods = 7TeV 8TeV
+channels = em et mt tt mm ee vhtt
+
+em_categories_7TeV = 0 1 2 3 4 
+et_categories_7TeV = 1 2 3 5 6
+mt_categories_7TeV = 1 2 3 4 5 6
+mm_categories_7TeV = 0 1 2 3 4
+ee_categories_7TeV = 0 1 2 3 4
+tt_categories_7TeV = 
+vhtt_categories_7TeV = 0 1 3 4 5 6 7 8
+mt_soft_categories_7TeV =
+
+em_categories_8TeV = 0 1 2 3 4 5
+et_categories_8TeV = 1 2 3 5 6 7
+mt_categories_8TeV = 1 2 3 4 5 6 7
+mm_categories_8TeV = 0 1 2 3 4
+ee_categories_8TeV = 0 1 2 3 4
+tt_categories_8TeV = 0 1 2
+vhtt_categories_8TeV = 0 1 3 4 5 6 7 8
+mt_soft_categories_8TeV = 11 12 13 15 16
+
+et_names_7TeV = 0jet_medium 0jet_high 1jet_medium 1jet_high_mediumhiggs vbf_loose vbf_tight
+mt_names_7TeV = 0jet_medium 0jet_high 1jet_medium 1jet_high_lowhiggs 1jet_high_mediumhiggs vbf_loose vbf_tight
+em_names_7TeV = 0jet_low 0jet_high 1jet_low 1jet_high vbf_loose vbf_tight
+ee_names_7TeV = 0jet_low 0jet_high 1jet_low 1jet_high vbf
+mm_names_7TeV = 0jet_low 0jet_high 1jet_low 1jet_high vbf 
+tt_names_7TeV = 1jet_high_mediumhiggs 1jet_high_highhiggs vbf
+vhtt_names_7TeV = mmtCatHigh,mmtCatLow emtCatHigh,emtCatLow mmme_zh,eeem_zh mmmt_zh,eemt_zh mmet_zh,eeet_zh mmtt_zh,eett_zh mtt ett
+mt_soft_names_7TeV = soft_0jet_medium soft_0jet_high soft_1jet_medium soft_1jet_high soft_vbf
+
+et_names_8TeV = 0jet_medium 0jet_high 1jet_medium 1jet_high_mediumhiggs vbf_loose vbf_tight
+mt_names_8TeV = 0jet_medium 0jet_high 1jet_medium 1jet_high_lowhiggs 1jet_high_mediumhiggs vbf_loose vbf_tight
+em_names_8TeV = 0jet_low 0jet_high 1jet_low 1jet_high vbf_loose vbf_tight
+ee_names_8TeV = 0jet_low 0jet_high 1jet_low 1jet_high vbf
+mm_names_8TeV = 0jet_low 0jet_high 1jet_low 1jet_high vbf
+tt_names_8TeV = 1jet_high_mediumhiggs 1jet_high_highhiggs vbf
+vhtt_names_8TeV = mmtCatHigh,mmtCatLow emtCatHigh,emtCatLow mmme_zh,eeem_zh mmmt_zh,eemt_zh mmet_zh,eeet_zh mmtt_zh,eett_zh mtt ett
+mt_soft_names_8TeV = soft_0jet_medium soft_0jet_high soft_1jet_medium soft_1jet_high soft_vbf
+
+[bbb-sm]
+
+et_threshold = 0.1
+mt_threshold = 0.1
+em_threshold = 0.1
+tt_threshold = 0.1
+mm_threshold = 0.0
+ee_threshold = 0.0
+vhtt_threshold = 0.1
+
+ee_categories_7TeV = 01,03,04
+mm_categories_7TeV = 01,03,04
+em_categories_7TeV = 01,03 04
+et_categories_7TeV = 01,02 03,04,05 06
+mt_categories_7TeV = 01,02,03,04 05 06
+tt_categories_7TeV =
+vhtt_categories_7TeV = 00,01 03,04,05,06 07,08
+mt_soft_categories_7TeV =
+
+ee_categories_8TeV = 01,03,04
+mm_categories_8TeV = 01,03,04
+em_categories_8TeV = 01,03 05 04
+et_categories_8TeV = 01,02 03,04,05 07 06
+mt_categories_8TeV = 01,02,03,04 05,06 07
+tt_categories_8TeV = 00,01,02
+vhtt_categories_8TeV = 00 03,04,05,06 07,08 01
+mt_soft_categories_8TeV = 10,11,12,13,15,16
+
+ee_processes = ZTT,ZEE,TTJ
+mm_processes = ZTT,ZMM,TTJ
+em_processes = Fakes Fakes,EWK,Ztt Fakes,EWK
+et_processes = ZL,ZJ,QCD>W W ZL,ZJ,W,ZTT ZL,ZJ,W
+mt_processes = QCD>W W W,ZTT
+tt_processes = ZTT,QCD
+vhtt_processes = fakes Zjets wz fakes,charge_fakes
+mt_soft_processes = ZL,ZJ,W>QCD
+
+
+[mssm]
+
+blind
+
+periods = 8TeV
+channels = em mm mt et tt
+
+em_categories_7TeV = 8 9
+et_categories_7TeV = 8 9
+mt_categories_7TeV = 8 9
+mm_categories_7TeV = 8 9
+ee_categories_7TeV = 8 9
+tt_categories_7TeV =
+
+em_categories_8TeV = 8 9
+et_categories_8TeV = 10 11 12 13 14
+mt_categories_8TeV = 10 11 12 13 14
+mm_categories_8TeV = 8 9
+ee_categories_8TeV = 8 9
+tt_categories_8TeV = 10 11 12 13 14
+
+em_names_7TeV = nobtag btag
+et_names_7TeV = nobtag btag  
+mt_names_7TeV = nobtag btag  
+mm_names_7TeV = nobtag btag
+ee_names_7TeV = nobtag btag
+tt_names_7TeV = nobtag btag  
+
+em_names_8TeV = nobtag btag
+et_names_8TeV = nobtag_low nobtag_medium nobtag_high btag_low btag_high
+mt_names_8TeV = nobtag_low nobtag_medium nobtag_high btag_low btag_high
+mm_names_8TeV = nobtag btag
+ee_names_8TeV = nobtag btag
+tt_names_8TeV = nobtag_low nobtag_medium nobtag_high btag_low btag_high
+
+
+[bbb-mssm]
+
+ee_threshold = 0.05
+mm_threshold = 0.05
+em_threshold = 0.05
+et_threshold = 0.05
+mt_threshold = 0.05
+tt_threshold = 0.05
+
+ee_categories_7TeV = 08,09
+mm_categories_7TeV = 08,09
+em_categories_7TeV = 08,09
+et_categories_7TeV = 08,09
+mt_categories_7TeV = 08,09
+tt_categories_7TeV =
+
+ee_categories_8TeV = 08,09
+mm_categories_8TeV = 08,09
+em_categories_8TeV = 08,09
+et_categories_8TeV = 10,11,12,13,14
+mt_categories_8TeV = 10,11,12,13,14
+tt_categories_8TeV = 10,11,12,13,14
+
+ee_processes = QCD,TTJ,ZTT,ZEE,WJets,Dibosons
+mm_processes = QCD,TTJ,ZTT,ZMM,WJets,Dibosons QCD,TTJ,ZTT,ZMM,Dibosons
+em_processes = Fakes,EWK,ttbar,Ztt
+et_processes = TT,QCD,ZTT,W,ZL,ZJ,VV
+mt_processes = TT,QCD,ZTT,W,ZL,ZJ,VV
+tt_processes = ZTT,TT,QCD,W,ZL,ZJ,VV
+
+
+[combination]
+
+periods = 7TeV_8TeV
+
+channels_sm = em et mt
+categories_sm = 0jet
+
+channels_mssm = em 
+categories_mssm = nobtag btag
+
