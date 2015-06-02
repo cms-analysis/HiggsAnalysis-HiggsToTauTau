@@ -1,10 +1,11 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 muTau_btag_low			signal,SM	            	lumi_8TeV            				1.026
-muTau_btag_low			signal,SM,ZTT,ZL,ZJ,TT,VV  	CMS_eff_m 					1.01
+#muTau_btag_low			signal,SM,ZTT,ZL,ZJ,TT,VV  	CMS_eff_m 					1.01
+muTau_btag_low			ZTT			  	CMS_eff_m 					1.01
 muTau_btag_low			signal,SM,ZTT,VV  		CMS_eff_t_mutau_8TeV				1.08
 muTau_btag_low			signal,SM 	          	CMS_eff_t_mssmHigh_mutau_8TeV			1.00
-muTau_btag_low			signal,SM,ZTT			CMS_scale_t_mutau_8TeV         			1.00
+muTau_btag_low			signal,SM,ZTT			CMS_scale_t_mutau_8TeV 				1.00
 muTau_btag_low      		ggH,ggH_SM125		  	CMS_scale_j_8TeV 				0.99	
 muTau_btag_low      		bbH			  	CMS_scale_j_8TeV 				1.01
 muTau_btag_low      		TT			  	CMS_scale_j_8TeV 				0.92
@@ -31,8 +32,8 @@ muTau_btag_low			W	          		CMS_htt_WNorm_mutau_btag_low_8TeV 		1.30
 muTau_btag_low          	QCD	          		CMS_htt_QCDSyst_mutau_btag_low_8TeV		1.20
 muTau_btag_low			QCD				CMS_htt_QCDfrShape_mutau_8TeV			1.00
 muTau_btag_low			ZJ				CMS_htt_ZJetFakeTau_mutau_8TeV    		1.20
-muTau_btag_low			ZL				CMS_htt_ZLeptonFakeTau_mutau_8TeV		1.30
-muTau_btag_low	        	ZL		       		CMS_htt_ZLScale_mutau_8TeV             	 	1.00
+muTau_btag_low			ZL				CMS_htt_ZLeptonFakeTau_mutau_low_pTtau_8TeV	1.30
+muTau_btag_low	        	ZL		       		CMS_htt_ZLScale_mutau_8TeV    	        	1.00
 muTau_btag_low	        	W				CMS_htt_WShape_mutau_btag_low_8TeV     		1.00
 #[tail]muTau_btag_low		W				tailShape					1.00
 muTau_btag_low	                SM	                        CMS_htt_SM125_mu                                1.30
