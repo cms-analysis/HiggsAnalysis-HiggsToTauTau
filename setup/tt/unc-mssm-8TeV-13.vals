@@ -12,7 +12,7 @@ tauTau_btag_low         	QCD				CMS_htt_QCDSyst_tautau_btag_low_8TeV			1.20
 tauTau_btag_low         	QCD				CMS_htt_QCDfrShape_tautau_8TeV        			1.00 
 tauTau_btag_low			W				CMS_htt_WNorm_tautau_btag_low_8TeV			1.30                  
 tauTau_btag_low			ZTT,ZL,ZJ		        CMS_htt_zttNorm_8TeV 					1.033           
-tauTau_btag_low			ZTT			        CMS_htt_extrap_ztt_tautau_btag_low_8TeV			1.050           
+tauTau_btag_low			ZTT			        CMS_htt_extrap_ztt_tautau_btag_low_8TeV			1.09           
 tauTau_btag_low			TT				CMS_htt_ttbarNorm_8TeV					1.10
 tauTau_btag_low			TT				CMS_htt_ttbarNorm_tautau_btag_low_8TeV			1.05
 tauTau_btag_low			TT				CMS_htt_ttbarPtReweight_8TeV				1.00

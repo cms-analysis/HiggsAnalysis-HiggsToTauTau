@@ -10,9 +10,9 @@ tauTau_btag_high		signal,SM,TT,VV,ZLL        	CMS_eff_b_8TeV                  		
 tauTau_btag_high		signal,SM,TT,VV,ZLL        	CMS_fake_b_8TeV                 			1.02
 tauTau_btag_high         	QCD				CMS_htt_QCDSyst_tautau_btag_high_8TeV			1.20
 tauTau_btag_high         	QCD				CMS_htt_QCDfrShape_tautau_8TeV        			1.00 
-tauTau_btag_high		W				CMS_htt_WNorm_tautau_btag_high_8TeV			1.30                  
+tauTau_btag_high		W				CMS_htt_WNorm_tautau_btag_high_8TeV			1.50                  
 tauTau_btag_high		ZTT,ZL,ZJ		        CMS_htt_zttNorm_8TeV 					1.033           
-tauTau_btag_high		ZTT			        CMS_htt_extrap_ztt_tautau_btag_high_8TeV		1.050           
+tauTau_btag_high		ZTT			        CMS_htt_extrap_ztt_tautau_btag_high_8TeV		1.18           
 tauTau_btag_high		TT				CMS_htt_ttbarNorm_8TeV					1.10
 tauTau_btag_high		TT				CMS_htt_ttbarNorm_tautau_btag_high_8TeV			1.05
 tauTau_btag_high		TT				CMS_htt_ttbarPtReweight_8TeV				1.00
