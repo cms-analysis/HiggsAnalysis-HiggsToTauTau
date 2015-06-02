@@ -1,7 +1,8 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 muTau_nobtag_medium			signal,SM 	            	lumi_8TeV            					1.026
-muTau_nobtag_medium		 	signal,SM,ZTT,ZJ,ZL,TT,VV	CMS_eff_m 						1.01
+#muTau_nobtag_medium		 	signal,SM,ZTT,ZJ,ZL,TT,VV	CMS_eff_m 						1.01
+muTau_nobtag_medium		 	ZTT 				CMS_eff_m 						1.01
 muTau_nobtag_medium		 	signal,SM,ZTT,TT,VV 		CMS_eff_t_mutau_8TeV					1.08
 muTau_nobtag_medium		 	signal,SM,ZTT			CMS_scale_t_mutau_8TeV 					1.00
 muTau_nobtag_medium		 	signal,SM           		CMS_eff_t_mssmHigh_mutau_8TeV		        	1.00
@@ -19,12 +20,12 @@ muTau_nobtag_medium   	            	ZTT                             CMS_htt_extr
 muTau_nobtag_medium			TT				CMS_htt_ttbarNorm_8TeV					1.10
 muTau_nobtag_medium			TT				CMS_htt_ttbarPtReweight_8TeV				1.00
 muTau_nobtag_medium			TT				CMS_htt_ttbarJetFake_8TeV				1.00
-muTau_nobtag_medium			W				CMS_htt_WNorm_mutau_nobtag_medium_8TeV 			1.10
+muTau_nobtag_medium			W				CMS_htt_WNorm_mutau_nobtag_medium_8TeV 			1.20
 muTau_nobtag_medium			VV				CMS_htt_DiBosonNorm_8TeV				1.15 
 muTau_nobtag_medium                  	QCD				CMS_htt_QCDSyst_mutau_nobtag_medium_8TeV		1.10
 muTau_nobtag_medium			QCD				CMS_htt_QCDfrShape_mutau_8TeV				1.00
 muTau_nobtag_medium			ZJ				CMS_htt_ZJetFakeTau_mutau_8TeV      			1.20
-muTau_nobtag_medium			ZL				CMS_htt_ZLeptonFakeTau_mutau_8TeV			1.30
+muTau_nobtag_medium			ZL				CMS_htt_ZLeptonFakeTau_mutau_medium_pTtau_8TeV		1.30
 muTau_nobtag_medium			ZL			        CMS_htt_ZLScale_mutau_8TeV       			1.00
 muTau_nobtag_medium			W			        CMS_htt_WShape_mutau_nobtag_medium_8TeV			1.00
 #[tail]muTau_nobtag_medium		W				tailShape						1.00
