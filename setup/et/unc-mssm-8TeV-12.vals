@@ -1,7 +1,8 @@
 ###########################################################################
 # unc.vals: specification of uncertainty values by category, sample, and uncertainty name
 eleTau_nobtag_high		signal,SM 	            	lumi_8TeV            				1.026
-eleTau_nobtag_high		signal,SM,ZTT,ZJ,ZL,TT,VV	CMS_eff_e 					1.02
+#eleTau_nobtag_high		signal,SM,ZTT,ZJ,ZL,TT,VV	CMS_eff_e 					1.02
+eleTau_nobtag_high		ZTT				CMS_eff_e 					1.02
 eleTau_nobtag_high		signal,SM,ZTT,TT,VV 		CMS_eff_t_etau_8TeV				1.08
 eleTau_nobtag_high		signal,SM  	               	CMS_eff_t_mssmHigh_etau_8TeV                    1.00
 eleTau_nobtag_high		signal,SM,ZTT			CMS_scale_t_etau_8TeV 				1.00
@@ -18,12 +19,12 @@ eleTau_nobtag_high		TT				CMS_htt_ttbarNorm_8TeV				1.10
 eleTau_nobtag_high		TT				CMS_htt_ttbarPtReweight_8TeV			1.00
 eleTau_nobtag_high		TT				CMS_htt_ttbarJetFake_8TeV			1.00
 eleTau_nobtag_high		VV				CMS_htt_DiBosonNorm_8TeV			1.15
-eleTau_nobtag_high		W				CMS_htt_WNorm_etau_nobtag_high_8TeV 		1.10
+eleTau_nobtag_high		W				CMS_htt_WNorm_etau_nobtag_high_8TeV 		1.20
 eleTau_nobtag_high              ZTT                             CMS_htt_extrap_ztt_etau_nobtag_high_8TeV        1.05
 eleTau_nobtag_high         	QCD				CMS_htt_QCDSyst_etau_nobtag_high_8TeV		1.10
 eleTau_nobtag_high		QCD				CMS_htt_QCDfrShape_etau_8TeV			1.00
 eleTau_nobtag_high		ZJ				CMS_htt_ZJetFakeTau_etau_8TeV    		1.20
-eleTau_nobtag_high		ZL				CMS_htt_ZLeptonFakeTau_etau_8TeV		1.20
+eleTau_nobtag_high		ZL				CMS_htt_ZLeptonFakeTau_etau_high_pTtau_8TeV	1.20
 eleTau_nobtag_high		ZL				CMS_htt_ZLScale_etau_8TeV			1.00
 eleTau_nobtag_high		W				CMS_htt_WShape_etau_nobtag_high_8TeV		1.00
 #[tail]eleTau_nobtag_high	W				tailShape					1.00

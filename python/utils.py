@@ -157,6 +157,7 @@ def get_channel_dirs(analysis, finalstate, category, period):
         'mm'  : 'mumu',
         'ee'  : 'ee',
         'tt'  : 'tauTau',
+        'th'  : '',
         'vhtt': '',
         'AZh': '',
         'bbA': '',
@@ -271,6 +272,10 @@ def get_channel_dirs(analysis, finalstate, category, period):
         '00' : ['1jet_high_mediumhiggs'],
         '01' : ['1jet_high_highhiggs'],
         '02' : ['vbf'   ],             
+        },
+        'th' : {
+        '00' : ['emt'],
+        '01' : ['mmt'],
         },
         'vhtt' : {
         '00' : ['mmtCatHigh', 'mmtCatLow'],

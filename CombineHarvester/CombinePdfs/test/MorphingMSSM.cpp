@@ -268,9 +268,7 @@ int main() {
   }
 
   cout << "Setting standardised bin names...";
-  cb.ForEachObs(ch::SetStandardBinName<ch::Observation>);
-  cb.ForEachProc(ch::SetStandardBinName<ch::Process>);
-  cb.ForEachSyst(ch::SetStandardBinName<ch::Systematic>);
+  ch::SetStandardBinNames(cb);
   cout << " done\n";
 
   RooWorkspace ws("htt", "htt");
@@ -300,8 +298,8 @@ int main() {
     }
   }
   demo.Close();
-  cb.AddWorkspace(&ws);
-  cb.cp().signals().ExtractPdfs("htt", "$BIN_$PROCESS_morph", &cb);
+  cb.AddWorkspace(ws);
+  cb.cp().signals().ExtractPdfs(cb, "htt", "$BIN_$PROCESS_morph");
   cb.PrintAll();
 
   // cout << "Adding bbb...\n";

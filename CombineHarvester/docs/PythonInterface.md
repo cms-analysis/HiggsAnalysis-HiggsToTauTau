@@ -3,7 +3,7 @@ Python Interface {#python-interface}
 
 [TOC]
 
-The python interface is embedded within the shared library (`CombineTools/lib/libCHCombineTools.so`) that is produced when the code is compiled. Add this directory to your `PYTHONPATH` environment variable so that it can be imported from anywhere. This can also be achieved by doing:
+The python interface is embedded within the shared library (`CombineTools/python/combineharvester/_combineharvester.so`) that is produced when the code is compiled. Add the directory `CombineTools/python` to your `PYTHONPATH` environment variable so that it can be imported from anywhere. This can also be achieved by doing:
 
     eval `make env`
 
@@ -33,6 +33,7 @@ C++:
     cb.PrintSysts();
     cb.PrintParams();
     cb.SetVerbosity(1);
+    cb.Verbosity();
 
 Python:
 
@@ -42,6 +43,7 @@ Python:
     cb.PrintSysts()
     cb.PrintParams()
     cb.SetVerbosity(1)
+    cb.Verbosity()
 
 Datacards {#py-datacards}
 =========================
@@ -125,7 +127,7 @@ Python:
     for p in cb.process_set():
         ...
 
-**NEW** The generic methods are now available too, and accept a generic function object.
+The generic methods are available too, and accept a generic function object.
 
 C++:
 
@@ -214,7 +216,7 @@ Python:
     ## or with default values:
     cb.AddProcesses(procs = ['ZTT', 'ZL', ZJ'], bin = [(0, "0jet"), (1, "1jet")], signal=False)
 
-As is bin-by-bin creating and merging.
+As is bin-by-bin creating and merging, but note that these methods have been deprecated in favour of the standalone ch::BinByBinFactory class (see below).
 
 C++:
 
@@ -226,7 +228,30 @@ Python:
     cb.MergeBinErrors(0.1, 0.5)
     cb.AddBinByBin(0.1, True, cb)
 
-The AddSyst ExtractPdfs, ExtractData and AddWorkspace methods are not currently supported. The creation of Systematic entries via the [AddSyst](\ref ch::CombineHarvester::AddSyst) method is not trivial to convert to python due to the heavy use of C++ templates. A python equivalent will be made available in a future release.
+The creation of Systematic entries with the `AddSyst` method is supported, though has a slightly different syntax due to the heavy template usage in the C++ version.
+
+C++:
+
+    cb.cp().process({"WH", "ZH"}).AddSyst(
+      cb, "QCDscale_VH", "lnN", SystMap<channel, era, bin_id>::init
+        ({"mt"}, {"7TeV", "8TeV"},  {1, 2},               1.010)
+        ({"mt"}, {"7TeV", "8TeV"},  {3, 4, 5, 6, 7},      1.040)
+        ({"et"}, {"7TeV"},          {1, 2, 3, 5, 6, 7},   1.040)
+        ({"et"}, {"8TeV"},          {1, 2},               1.010)
+        ({"et"}, {"8TeV"},          {3, 5, 6, 7},         1.040));
+
+Python:
+
+    cb.cp().process(['WH', 'ZH']).AddSyst(
+      cb, "QCDscale_VH", "lnN", ch.SystMap('channel', 'era', 'bin_id')
+        (['mt'], ['7TeV', '8TeV'],  [1, 2],               1.010)
+        (['mt'], ['7TeV', '8TeV'],  [3, 4, 5, 6, 7],      1.040)
+        (['et'], ['7TeV'],          [1, 2, 3, 5, 6, 7],   1.040)
+        (['et'], ['8TeV'],          [1, 2],               1.010)
+        (['et'], ['8TeV'],          [3, 5, 6, 7],         1.040))
+
+
+The ExtractPdfs, ExtractData and AddWorkspace methods are not currently supported.
 
 Class: CardWriter {#py-card-writer}
 ================================
@@ -243,3 +268,23 @@ Python:
     writer = ch.CardWriter('$TAG/$MASS/$ANALYSIS_$CHANNEL_$BINID_$ERA.txt',
                            '$TAG/common/$ANALYSIS_$CHANNEL.input_$ERA.root')
     writer.WriteCards('LIMITS/cmb', cb)
+
+Class: BinByBinFactory {#py-bbbfactory}
+=======================================
+The ch::BinByBinFactory class has an identical interface in python.
+
+C++:
+
+    auto bbb = ch::BinByBinFactory()
+        .SetAddThreshold(0.1)
+        .SetMergeThreshold(0.5)
+        .SetFixNorm(true);
+    bbb.MergeBinErrors(cb.cp().backgrounds());
+    bbb.AddBinByBin(cb.cp().backgrounds(), cb);
+
+Python:
+
+    bbb = ch.BinByBinFactory()
+    bbb.SetAddThreshold(0.1).SetMergeThreshold(0.5).SetFixNorm(True)
+    bbb.MergeBinErrors(cb.cp().backgrounds())
+    bbb.AddBinByBin(cb.cp().backgrounds(), cb)
