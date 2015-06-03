@@ -16,38 +16,23 @@ fulltanbpoints = len(fulltanblist)-1
 
 # histograms with asymptotic calculation
 
-CLsHist2D_as = r.TH2D('CLsHist2D_as', r'CL_{s} values for (m_{A}, tan#beta) plane (asymptotic); m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-CLsbHist2D_as = r.TH2D('CLsbHist2D_as', r'CL_{s+b} values for (m_{A}, tan#beta) plane (asymptotic); m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-CLbHist2D_as = r.TH2D('CLbHist2D_as', r'CL_{b} values for (m_{A}, tan#beta) plane (asymptotic); m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-qmuHist2D_as = r.TH2D('qmuHist2D_as', r'q_{#mu} values for (m_{A}, tan#beta) plane (asymptotic); m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-qAHist2D_as = r.TH2D('qAHist2D_as', r'q_{A} values for (m_{A}, tan#beta) plane (asymptotic); m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+CLsHist2D_as = r.TH2D('CLsHist2D_as', ';m_{A};tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+CLsbHist2D_as = r.TH2D('CLsbHist2D_as', ';m_{A};tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+CLbHist2D_as = r.TH2D('CLbHist2D_as', ';m_{A};tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+qmuHist2D_as = r.TH2D('qmuHist2D_as', ';m_{A};tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+qAHist2D_as = r.TH2D('qAHist2D_as', ';m_{A};tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
 
 # histograms with step by step calculation
-CLsHist2D = r.TH2D('CLsHist2D', r'CL_{s} values for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-CLsbHist2D = r.TH2D('CLsbHist2D', r'CL_{s+b} values for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-CLbHist2D = r.TH2D('CLbHist2D', r'CL_{b} values for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-qmuHist2D = r.TH2D('qmuHist2D', r'q_{#mu} values for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-qAHist2D = r.TH2D('qAHist2D', r'q_{A} values for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+CLsHist2D = r.TH2D('CLsHist2D', ';m_{A};tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+CLsbHist2D = r.TH2D('CLsbHist2D', ';m_{A};tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+CLbHist2D = r.TH2D('CLbHist2D', ';m_{A};tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+qmuHist2D = r.TH2D('qmuHist2D', ';m_{A};tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+qAHist2D = r.TH2D('qAHist2D', ';m_{A};tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
 
-NLLmuFixedforqmu = r.TH2D('NLLmuFixedforqmu', r'full NLL values of q_{#mu} with #mu fixed for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-NLLmuGlobalforqmu = r.TH2D('NLLmuGlobalforqmu', r'global fit NLL values of q_{#mu} for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-NLLmuFixedforqA = r.TH2D('NLLmuFixedforqA', r'full NLL values of q_{A} with #mu fixed for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-NLLmuGlobalforqA = r.TH2D('NLLmuGlobalforqA', r'global fit NLL values of q_{A} for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-
-# histograms with Crossection x BR values for ggH & bbH production mode and the Higgses A, H, h
-
-ggAXsBR = r.TH2D('ggAXsBR', r'#sigma(ggA)#upointBR(A#rightarrow#tau#tau) [pb] for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-ggHXsBR = r.TH2D('ggHXsBR', r'#sigma(ggH)#upointBR(H#rightarrow#tau#tau) [pb] for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-gghXsBR = r.TH2D('gghXsBR', r'#sigma(ggh)#upointBR(h#rightarrow#tau#tau) [pb] for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-
-bbAXsBR = r.TH2D('bbAXsBR', r'#sigma(bbA)#upointBR(A#rightarrow#tau#tau) [pb] for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-bbHXsBR = r.TH2D('bbHXsBR', r'#sigma(bbH)#upointBR(H#rightarrow#tau#tau) [pb] for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-bbhXsBR = r.TH2D('bbhXsBR', r'#sigma(bbh)#upointBR(h#rightarrow#tau#tau) [pb] for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-
-# histograms for mass differences between the scalar Higgses h, H and the pseudoscalar Higgs A
-
-massDiffh = r.TH2D('massDiffh', '|(m_{A}-m_{h})/m_{A}| for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
-massDiffH = r.TH2D('massDiffH', '|(m_{A}-m_{H})/m_{A}| for (m_{A}, tan#beta) plane; m_{A}; tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+NLLmuFixedforqmu = r.TH2D('NLLmuFixedforqmu', ';m_{A};tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+NLLmuGlobalforqmu = r.TH2D('NLLmuGlobalforqmu', ';m_{A};tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+NLLmuFixedforqA = r.TH2D('NLLmuFixedforqA', ';m_{A};tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
+NLLmuGlobalforqA = r.TH2D('NLLmuGlobalforqA', ';m_{A};tan#beta', masspoints, masslist, fulltanbpoints, fulltanblist)
 
 ### Searching for relevant files: batch_*.root
 filelist = g.glob('batch_*.root')
@@ -196,56 +181,6 @@ for i in range(len(tanblist)):
 	#if math.isnan(CL_S):
 		#logfile.write("NaN value for CLs at the point ({mass},{tanb})\n".format(mass=mass, tanb=tanb))
 
-	### Filling the Crossection x BR histograms
-	os.system("root -l -b -q '$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/macros/mssm_xs.C(\"$CMSSW_BASE/src/auxiliaries/models/out.mhmodp-8TeV-tanbHigh-nnlo.root\", {mass}, {tanb})' > XsBr.txt".format(mass=mass, tanb=tanb))
-	File2 = open('XsBr.txt', 'r')
-	xs_data = File2.readlines()
-
-	ggA_string = ''
-	ggH_string = ''
-	ggh_string = ''
-
-	bbA_string = ''
-	bbH_string = ''
-	bbh_string = ''
-	
-	massH_string = ''
-	massh_string = ''
-	
-	for line in xs_data:
-		if (line.find('-> xsec(ggA)(tautau): ') > -1): ggA_string = line
-		elif (line.find('-> xsec(ggH)(tautau): ') > -1): ggH_string = line
-		elif (line.find('-> xsec(ggh)(tautau): ') > -1): ggh_string = line
-		elif (line.find('-> xsec(bbA)(tautau): ') > -1): bbA_string = line
-		elif (line.find('-> xsec(bbH)(tautau): ') > -1): bbH_string = line
-		elif (line.find('-> xsec(bbh)(tautau): ') > -1): bbh_string = line
-		elif (line.find('Mass H: ') > -1): massH_string = line
-		elif (line.find('Mass h: ') > -1): massh_string = line
-
-	ggA = float(ggA_string.replace('-> xsec(ggA)(tautau): ', ''))
-	ggH = float(ggH_string.replace('-> xsec(ggH)(tautau): ', ''))
-	ggh = float(ggh_string.replace('-> xsec(ggh)(tautau): ', ''))
-
-	bbA = float(bbA_string.replace('-> xsec(bbA)(tautau): ', ''))
-	bbH = float(bbH_string.replace('-> xsec(bbH)(tautau): ', ''))
-	bbh = float(bbh_string.replace('-> xsec(bbh)(tautau): ', ''))
-	
-	massH = float(massH_string.replace('Mass H: ',''))
-	massh = float(massh_string.replace('Mass h: ',''))
-	
-	mdiffH = abs((float(mass)-massH)/float(mass))
-	mdiffh = abs((float(mass)-massh)/float(mass))
-
-	ggAXsBR.Fill(float(mass), float(tanb), ggA)
-	ggHXsBR.Fill(float(mass), float(tanb), ggH)
-	gghXsBR.Fill(float(mass), float(tanb), ggh)
-
-	bbAXsBR.Fill(float(mass), float(tanb), bbA)
-	bbHXsBR.Fill(float(mass), float(tanb), bbH)
-	bbhXsBR.Fill(float(mass), float(tanb), bbh)
-	
-	massDiffH.Fill(float(mass), float(tanb), mdiffH)
-	massDiffh.Fill(float(mass), float(tanb), mdiffh)
 ### Creating a file containing the 2-dim histograms
 histFile = r.TFile("NLLHistogram.mA{mass}.root".format(mass=mass), "RECREATE")
 
@@ -266,16 +201,4 @@ CLbHist2D_as.Write()
 qmuHist2D_as.Write()
 qAHist2D_as.Write()
 
-ggAXsBR.Write()
-ggHXsBR.Write()
-gghXsBR.Write()
-
-bbAXsBR.Write()
-bbHXsBR.Write()
-bbhXsBR.Write()
-
-massDiffH.Write()
-massDiffh.Write()
-
 histFile.Close()
-#logfile.close()

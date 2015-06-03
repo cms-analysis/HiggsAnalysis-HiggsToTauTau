@@ -108,7 +108,7 @@ rm LIMITS-150127-mssm-taupt/bbb-asimov-mhmodp-NLL/cmb/*0/higgsCombine*.root LIMI
 Xs & BR calculation (mA,tanb)=(900,30):
 ----------------
 root -l
-.x HiggsAnalysis/HiggsToTauTau/macros/mssm_xs.C("$CMSSW_BASE/src/auxiliaries/models/out.mhmodp-8TeV-tanbHigh-nnlo.root", 500, 30)
+.x HiggsAnalysis/HiggsToTauTau/macros/mssm_xs.C("$CMSSW_BASE/src/auxiliaries/models/out.mhmodp-8TeV-tanbHigh-nnlo.root", 900, 30)
 
 output:
 
@@ -166,6 +166,9 @@ rm LIMITS150421-mssm-taupt/bbb-asimov-mhmodp-NLL/mt/*/higgsCombine*.root LIMITS1
 ---------
 (500,30):
 ---------
+
+root -l -b -q 'HiggsAnalysis/HiggsToTauTau/macros/mssm_xs.C("$CMSSW_BASE/src/auxiliaries/models/out.mhmodp-8TeV-tanbHigh-nnlo.root", 500, 30)'
+
 python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM.py -a bbb --label='150428-mssm' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-131013-mssm.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-150425" --update-all --blind-datacards --extra-templates='0.007354608*ggH500, 1.166089265*ggH120, 0.080838097*bbH500, 0.016368334*bbH120' --fine-scan
 
 mA vs. tanb NLL (q_mu = Fit von L zu r=fixed zum Punkt (m_A, tanb)/ Global Fit von L zum Punkt (m_A, tanb)):
@@ -224,6 +227,14 @@ BG only
 
 python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM.py -a bbb --label='150512-mssm' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-131013-mssm.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-150425" --update-all --blind-datacards --fine-scan
 
+mA vs. tanb NLL (q_mu = Fit von L zu r=fixed zum Punkt (m_A, tanb)/ Global Fit von L zum Punkt (m_A, tanb)):
+----------------
+setup-htt.py -i aux150512-mssm/bbb-asimov -o LIMITS150512-mssm/bbb-asimov-mhmodp-NLL -a mssm -c 'mt' -p 8TeV --mssm-categories-mt="8 9" 90_1000:10
+
+lxb-xsec2tanb.py LIMITS150512-mssm/bbb-asimov-mhmodp-NLL/mt/* --model mhmodp --lxq --fineGrid
+
+submit.py --tanbNLL  LIMITS150512-mssm/bbb-asimov-mhmodp-NLL/mt/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null"
+
 multidimfit (directory setup):
 ------------------------------
 cvs2local.py -i aux150512-mssm/bbb-asimov -o LIMITS150512-mssm/bbb-asimov-ggH-bbH -p 8TeV -a mssm -c 'mt' --mssm-categories-mt="8 9" 90_1000:10
@@ -245,3 +256,88 @@ multidimfit (plotting):
 -----------------------
 
 plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-bbH.py LIMITS150512-mssm/bbb-asimov-ggH-bbH
+
+
+
+-------
+(500,5)
+-------
+
+root -l -b -q 'HiggsAnalysis/HiggsToTauTau/macros/mssm_xs.C("$CMSSW_BASE/src/auxiliaries/models/out.mhmodp-8TeV-tanbHigh-nnlo.root", 500, 5)'
+
+MSSM Cross Section [ggH](tautau) (pb):
+ -> xsec(ggA)(tautau): 0.000568077
+ -> xsec(ggH)(tautau): 0.000320046
+ -> xsec(ggh)(tautau): 1.36246
+MSSM Cross Section [bbH -Santander-](tautau) (pb):
+ -> xsec(bbA)(tautau): 8.77333e-05
+ -> xsec(bbH)(tautau): 8.17318e-05
+ -> xsec(bbh)(tautau): 0.019912
+ 
+ggPhi heavy: 0.000888123
+bbPhi heavy: 0.0001694651
+
+Mass H: 501.235
+Mass h: 120.907
+
+python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM.py -a bbb --label='150527-mssm' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-131013-mssm.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-150425" --update-all --blind-datacards --extra-templates='0.000888123*ggH500, 1.36246*ggH120, 0.0001694651*bbH500, 0.019912*bbH120' --fine-scan
+
+
+mA vs. tanb NLL (q_mu = Fit von L zu r=fixed zum Punkt (m_A, tanb)/ Global Fit von L zum Punkt (m_A, tanb)):
+----------------
+setup-htt.py -i aux150527-mssm/bbb-asimov -o LIMITS150527-mssm/bbb-asimov-mhmodp-NLL -a mssm -c 'mt' -p 8TeV --mssm-categories-mt="8 9" 90_1000:10
+
+lxb-xsec2tanb.py LIMITS150527-mssm/bbb-asimov-mhmodp-NLL/mt/* --model mhmodp --lxq --fineGrid
+
+submit.py --tanbNLL  LIMITS150527-mssm/bbb-asimov-mhmodp-NLL/mt/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null"
+
+rm LIMITS150527-mssm/bbb-asimov-mhmodp-NLL/mt/*/higgsCombine*.root LIMITS150527-mssm/bbb-asimov-mhmodp-NLL/mt/*/NLLHistogram*.root
+
+-----------------
+(500,30) 120 only
+-----------------
+
+python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM.py -a bbb --label='150526-mssm' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-131013-mssm.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-150425" --update-all --blind-datacards --extra-templates='1.166089265*ggH120, 0.016368334*bbH120' --fine-scan
+
+
+mA vs. tanb NLL (q_mu = Fit von L zu r=fixed zum Punkt (m_A, tanb)/ Global Fit von L zum Punkt (m_A, tanb)):
+----------------
+setup-htt.py -i aux150526-mssm/bbb-asimov -o LIMITS150526-mssm/bbb-asimov-mhmodp-NLL -a mssm -c 'mt' -p 8TeV --mssm-categories-mt="8 9" 90_1000:10
+
+lxb-xsec2tanb.py LIMITS150526-mssm/bbb-asimov-mhmodp-NLL/mt/* --model mhmodp --lxq --fineGrid
+
+submit.py --tanbNLL  LIMITS150526-mssm/bbb-asimov-mhmodp-NLL/mt/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null"
+
+rm LIMITS150526-mssm/bbb-asimov-mhmodp-NLL/mt/*/higgsCombine*.root LIMITS150526-mssm/bbb-asimov-mhmodp-NLL/mt/*/NLLHistogram*.root
+
+-----------------
+(500,30) 130 only
+-----------------
+
+python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM.py -a bbb --label='150525-mssm' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-131013-mssm.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-150425" --update-all --blind-datacards --extra-templates='1.166089265*ggH130, 0.016368334*bbH130' --fine-scan
+
+mA vs. tanb NLL (q_mu = Fit von L zu r=fixed zum Punkt (m_A, tanb)/ Global Fit von L zum Punkt (m_A, tanb)):
+----------------
+setup-htt.py -i aux150525-mssm/bbb-asimov -o LIMITS150525-mssm/bbb-asimov-mhmodp-NLL -a mssm -c 'mt' -p 8TeV --mssm-categories-mt="8 9" 90_1000:10
+
+lxb-xsec2tanb.py LIMITS150525-mssm/bbb-asimov-mhmodp-NLL/mt/* --model mhmodp --lxq --fineGrid
+
+submit.py --tanbNLL  LIMITS150525-mssm/bbb-asimov-mhmodp-NLL/mt/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null"
+
+rm LIMITS150525-mssm/bbb-asimov-mhmodp-NLL/mt/*/higgsCombine*.root LIMITS150525-mssm/bbb-asimov-mhmodp-NLL/mt/*/NLLHistogram*.root
+
+-----------------
+(500,30) 500 only
+-----------------
+
+python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM.py -a bbb --label='150524-mssm' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-131013-mssm.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-150425" --update-all --blind-datacards --extra-templates='0.007354608*ggH500, 0.080838097*bbH500' --fine-scan
+
+mA vs. tanb NLL (q_mu = Fit von L zu r=fixed zum Punkt (m_A, tanb)/ Global Fit von L zum Punkt (m_A, tanb)):
+----------------
+setup-htt.py -i aux150524-mssm/bbb-asimov -o LIMITS150524-mssm/bbb-asimov-mhmodp-NLL -a mssm -c 'mt' -p 8TeV --mssm-categories-mt="8 9" 90_1000:10
+
+lxb-xsec2tanb.py LIMITS150524-mssm/bbb-asimov-mhmodp-NLL/mt/* --model mhmodp --lxq --fineGrid
+
+submit.py --tanbNLL  LIMITS150524-mssm/bbb-asimov-mhmodp-NLL/mt/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null"
+
+rm LIMITS150524-mssm/bbb-asimov-mhmodp-NLL/mt/*/higgsCombine*.root LIMITS150524-mssm/bbb-asimov-mhmodp-NLL/mt/*/NLLHistogram*.root

@@ -1,5 +1,64 @@
-void NLLAnalysis(const char* filename="output.root"){
+void hist2Dbaseplot(TH2D* hist, const char* titlename, double zmin, double zmax, bool log=false, const char* ztitle=""){
 
+	gPad->SetRightMargin(0.20);
+	gPad->SetTopMargin(0.05);
+	hist->Draw("Colz");
+	hist->SetStats(false);
+	hist->GetXaxis()->SetTitleSize(0.05);
+	hist->GetYaxis()->SetTitleSize(0.05);
+	hist->GetZaxis()->SetTitleSize(0.05);
+	hist->GetZaxis()->SetLabelSize(0.05);
+	hist->GetZaxis()->SetTitle(ztitle);
+	hist->GetZaxis()->SetTitleOffset(1.1);
+
+	TLatex* histtitle = new TLatex(120, 50, titlename);
+	histtitle->SetTextSize(0.12);
+	histtitle->Draw("Same");
+	if(log)
+	{
+		gPad->SetLogz();
+		hist->GetZaxis()->SetRangeUser(zmin, zmax);
+	}
+	else
+	{
+		hist->GetZaxis()->SetRangeUser(zmin, zmax);
+	}
+	gPad->Update();
+
+}
+TGraph* exclusionObserved(TH2D* hist)
+{
+	TH2D* hist_copy = new TH2D();
+	hist->Copy(*hist_copy);
+	Double_t contours[1];
+	contours[0]=0.05;
+	hist_copy->SetContour(1,contours);
+	hist_copy->Draw("CONT LIST");
+	hist_copy->SetLineWidth(2);
+	gPad->Update();
+   TObjArray *conts = (TObjArray*)gROOT->GetListOfSpecials()->FindObject("contours");
+	TGraph* curve = (TGraph*)conts->First();
+	gPad->Clear();
+	return (TGraph*)curve->Clone();
+}
+
+void set_plot_style()
+{
+    const Int_t NRGBs = 5;
+    const Int_t NCont = 255;
+
+    Double_t stops[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
+    Double_t red[NRGBs]   = { 0.00, 0.00, 0.87, 1.00, 0.51 };
+    Double_t green[NRGBs] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
+    Double_t blue[NRGBs]  = { 0.51, 1.00, 0.12, 0.00, 0.00 };
+    TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+    gStyle->SetNumberContours(NCont);
+}
+
+
+void NLLAnalysis(const char* filename="output.root", std::string higgses="hHA", double tolerance=0.15){
+
+set_plot_style();
 // Creating output textfile for xs*BR
 std::ofstream xsfile;
 xsfile.open("xs_boundaries.txt");
@@ -33,85 +92,32 @@ TH2D* Xshist6 = (TH2D*) File->Get("bbhXsBR");
 TH2D* mhist1 = (TH2D*) File->Get("massDiffH");
 TH2D* mhist2 = (TH2D*) File->Get("massDiffh");
 
-// Defining range for the z axis
-hist2->GetZaxis()->SetRangeUser(0.001, 10000);
-hist3->GetZaxis()->SetRangeUser(0.001, 10000);
-hist5->GetZaxis()->SetRangeUser(0.001, 10000);
-hist6->GetZaxis()->SetRangeUser(0.001, 10000);
 
 // Plotting 2D histograms
 c->Divide(3,2);
 c->cd(1);
-hist1->Draw("Colz");
+TGraph* gc1 =  exclusionObserved(hist1);
+hist2Dbaseplot(hist1, "CL_{s}",0,1);
+gc1->Draw("C");
 gPad->Update();
-TPaveStats* statbox = (TPaveStats*) hist1->FindObject("stats");
-statbox->SetX1NDC(0.13);
-statbox->SetX2NDC(0.33);
-statbox->SetY1NDC(0.65);
-statbox->SetY2NDC(0.89);
-hist1->Draw("Colz");
 
 c->cd(2);
-hist2->Draw("Colz");
-gPad->SetLogz();
-gPad->Update();
-statbox = (TPaveStats*) hist2->FindObject("stats");
-statbox->SetX1NDC(0.69);
-statbox->SetX2NDC(0.89);
-statbox->SetY1NDC(0.65);
-statbox->SetY2NDC(0.89);
-hist2->GetZaxis()->SetLabelSize(0.03);
-hist2->GetZaxis()->SetLabelOffset(0.003);
-hist2->Draw("Colz");
+hist2Dbaseplot(hist2, "q_{#mu}",0.01,10000,true);
 
 c->cd(3);
-hist3->Draw("Colz");
-gPad->SetLogz();
-gPad->Update();
-statbox = (TPaveStats*) hist3->FindObject("stats");
-statbox->SetX1NDC(0.69);
-statbox->SetX2NDC(0.89);
-statbox->SetY1NDC(0.65);
-statbox->SetY2NDC(0.89);
-hist3->GetZaxis()->SetLabelSize(0.03);
-hist3->GetZaxis()->SetLabelOffset(0.003);
-hist3->Draw("Colz");
+hist2Dbaseplot(hist3, "q_{A}",0.01,10000,true);
 
 c->cd(4);
-hist4->Draw("Colz");
+TGraph* gc4 =  exclusionObserved(hist4);
+hist2Dbaseplot(hist4, "CL_{s}",0,1);
+gc4->Draw("C");
 gPad->Update();
-statbox = (TPaveStats*) hist4->FindObject("stats");
-statbox->SetX1NDC(0.13);
-statbox->SetX2NDC(0.33);
-statbox->SetY1NDC(0.65);
-statbox->SetY2NDC(0.89);
-hist4->Draw("Colz");
 
 c->cd(5);
-hist5->Draw("Colz");
-gPad->SetLogz();
-gPad->Update();
-statbox = (TPaveStats*) hist5->FindObject("stats");
-statbox->SetX1NDC(0.69);
-statbox->SetX2NDC(0.89);
-statbox->SetY1NDC(0.65);
-statbox->SetY2NDC(0.89);
-hist5->GetZaxis()->SetLabelSize(0.03);
-hist5->GetZaxis()->SetLabelOffset(0.003);
-hist5->Draw("Colz");
+hist2Dbaseplot(hist5, "q_{#mu}",0.01,10000,true);
 
 c->cd(6);
-hist6->Draw("Colz");
-gPad->SetLogz();
-gPad->Update();
-statbox = (TPaveStats*) hist6->FindObject("stats");
-statbox->SetX1NDC(0.69);
-statbox->SetX2NDC(0.89);
-statbox->SetY1NDC(0.65);
-statbox->SetY2NDC(0.89);
-hist6->GetZaxis()->SetLabelSize(0.03);
-hist6->GetZaxis()->SetLabelOffset(0.003);
-hist6->Draw("Colz");
+hist2Dbaseplot(hist6, "q_{A}",0.01,10000,true);
 
 c->SaveAs("plotted2Dhistos.pdf");
 
@@ -119,142 +125,30 @@ TCanvas* c1 = new TCanvas("c1", "c1", 1300, 700);
 c1->Divide(3,2);
 
 c1->cd(1);
-Xshist1->Draw("Colz");
-gPad->SetLogz();
-gPad->Update();
-statbox = (TPaveStats*) Xshist1->FindObject("stats");
-statbox->SetX1NDC(0.69);
-statbox->SetX2NDC(0.89);
-statbox->SetY1NDC(0.65);
-statbox->SetY2NDC(0.89);
-Xshist1->GetZaxis()->SetLabelSize(0.03);
-Xshist1->GetZaxis()->SetLabelOffset(0.003);
-Xshist1->Draw("Colz");
+hist2Dbaseplot(Xshist1, "#sigma_{ggA}#upointBR_{A#rightarrow#tau#tau}",0.000001,300,true,"[pb]");
 
 c1->cd(2);
-Xshist2->Draw("Colz");
-gPad->SetLogz();
-gPad->Update();
-statbox = (TPaveStats*) Xshist2->FindObject("stats");
-statbox->SetX1NDC(0.69);
-statbox->SetX2NDC(0.89);
-statbox->SetY1NDC(0.65);
-statbox->SetY2NDC(0.89);
-Xshist2->GetZaxis()->SetLabelSize(0.03);
-Xshist2->GetZaxis()->SetLabelOffset(0.003);
-Xshist2->Draw("Colz");
+hist2Dbaseplot(Xshist2, "#sigma_{ggH}#upointBR_{H#rightarrow#tau#tau}",0.000001,300,true,"[pb]");
 
 c1->cd(3);
-Xshist3->Draw("Colz");
-gPad->SetLogz();
-gPad->Update();
-statbox = (TPaveStats*) Xshist3->FindObject("stats");
-statbox->SetX1NDC(0.69);
-statbox->SetX2NDC(0.89);
-statbox->SetY1NDC(0.65);
-statbox->SetY2NDC(0.89);
-Xshist3->GetZaxis()->SetLabelSize(0.03);
-Xshist3->GetZaxis()->SetLabelOffset(0.003);
-Xshist3->Draw("Colz");
+hist2Dbaseplot(Xshist3, "#sigma_{ggh}#upointBR_{h#rightarrow#tau#tau}",0.000001,300,true,"[pb]");
 
 c1->cd(4);
-Xshist4->Draw("Colz");
-gPad->SetLogz();
-gPad->Update();
-statbox = (TPaveStats*) Xshist4->FindObject("stats");
-statbox->SetX1NDC(0.69);
-statbox->SetX2NDC(0.89);
-statbox->SetY1NDC(0.65);
-statbox->SetY2NDC(0.89);
-Xshist4->GetZaxis()->SetLabelSize(0.03);
-Xshist4->GetZaxis()->SetLabelOffset(0.003);
-Xshist4->Draw("Colz");
+hist2Dbaseplot(Xshist4, "#sigma_{bbA}#upointBR_{A#rightarrow#tau#tau}",0.000001,300,true,"[pb]");
 
 c1->cd(5);
-Xshist5->Draw("Colz");
-gPad->SetLogz();
-gPad->Update();
-statbox = (TPaveStats*) Xshist5->FindObject("stats");
-statbox->SetX1NDC(0.69);
-statbox->SetX2NDC(0.89);
-statbox->SetY1NDC(0.65);
-statbox->SetY2NDC(0.89);
-Xshist5->GetZaxis()->SetLabelSize(0.03);
-Xshist5->GetZaxis()->SetLabelOffset(0.003);
-Xshist5->Draw("Colz");
+hist2Dbaseplot(Xshist5, "#sigma_{bbH}#upointBR_{H#rightarrow#tau#tau}",0.000001,300,true,"[pb]");
 
 c1->cd(6);
-Xshist6->Draw("Colz");
-gPad->SetLogz();
-gPad->Update();
-statbox = (TPaveStats*) Xshist6->FindObject("stats");
-statbox->SetX1NDC(0.69);
-statbox->SetX2NDC(0.89);
-statbox->SetY1NDC(0.65);
-statbox->SetY2NDC(0.89);
-Xshist6->GetZaxis()->SetLabelSize(0.03);
-Xshist6->GetZaxis()->SetLabelOffset(0.003);
-Xshist6->Draw("Colz");
+hist2Dbaseplot(Xshist6, "#sigma_{bbh}#upointBR_{h#rightarrow#tau#tau}",0.000001,300,true,"[pb]");
 
 c1->SaveAs("plottedXsBr.pdf");
 
-TCanvas* c2 = new TCanvas("c2", "c2", 1300,700);
-c2->Divide(2,1);
+// Creating new 1D histograms with differences between the quantities computed own fit vs combine
+TH1D* CLsdiff = new TH1D("CLsdiff", ";CL_{s}^{own fit} - CL_{s}^{combine};Entries", 100, -0.1, 0.1);
+TH1D* qmudiff = new TH1D("qmudiff", ";q_{#mu}^{own fit} - q_{#mu}^{combine};Entries", 100, -10, 10);
+TH1D* qAdiff = new TH1D("qAdiff", ";q_{A}^{own fit} - q_{A}^{combine};Entries", 100, -10, 10);
 
-c2->cd(1);
-mhist1->GetZaxis()->SetRangeUser(-0.000001,1);
-mhist1->Draw("Colz");
-gPad->Update();
-statbox = (TPaveStats*) mhist1->FindObject("stats");
-statbox->SetX1NDC(0.69);
-statbox->SetX2NDC(0.89);
-statbox->SetY1NDC(0.65);
-statbox->SetY2NDC(0.89);
-mhist1->Draw("Colz");
-
-c2->cd(2);
-mhist2->Draw("Colz");
-gPad->Update();
-statbox = (TPaveStats*) mhist2->FindObject("stats");
-statbox->SetX1NDC(0.69);
-statbox->SetX2NDC(0.89);
-statbox->SetY1NDC(0.65);
-statbox->SetY2NDC(0.89);
-mhist2->GetZaxis()->SetRangeUser(-0.000001,1);
-mhist2->Draw("Colz");
-
-c2->SaveAs("massDifferences.pdf");
-
-// Creating new 1D histograms with differences between the quantities computed by hand vs asymptotic
-TH1D* CLsdiff = new TH1D("CLsdiff", "Difference of CL_{s}: by hand vs. asymptotic; CL_{s}^{by hand} - CL_{s}^{asymptotic}; Entries", 100, -0.2, 0.2);
-TH1D* qmudiff = new TH1D("qmudiff", "Difference of q_{#mu}: by hand vs. asymptotic; q_{#mu}^{by hand} - q_{#mu}^{asymptotic}; Entries", 100, -10, 10);
-TH1D* qAdiff = new TH1D("qAdiff", "Difference of q_{A}: by hand vs. asymptotic; q_{A}^{by hand} - q_{A}^{asymptotic}; Entries", 100, -10, 10);
-
-CLsdiff->GetYaxis()->SetTitleOffset(1.5);
-CLsdiff->GetYaxis()->SetLabelSize(0.03);
-qmudiff->GetYaxis()->SetTitleOffset(1.5);
-qmudiff->GetYaxis()->SetLabelSize(0.03);
-qAdiff->GetYaxis()->SetTitleOffset(1.5);
-qAdiff->GetYaxis()->SetLabelSize(0.03);
-
-//Creating new 2D histograms for combined Crosssection for the (mA, tanb) plane
-
-TH2D* ggcmb = new TH2D();
-TH2D* bbcmb = new TH2D();
-
-hist1->Copy(*ggcmb);
-hist1->Copy(*bbcmb);
-
-ggcmb->Reset();
-bbcmb->Reset();
-
-ggcmb->SetTitle("Combined #sigma(gg#phi)#upointBR(#phi#rightarrow#tau#tau) [pb] for (m_{A}, tan#beta) plane; m_{A}; tan#beta");
-ggcmb->SetName("ggcmb");
-bbcmb->SetTitle("Combined #sigma(bb#phi)#upointBR(#phi#rightarrow#tau#tau) [pb] for (m_{A}, tan#beta) plane; m_{A}; tan#beta");
-bbcmb->SetName("bbcmb");
-
-TCanvas* d = new TCanvas("d","d", 1300, 700);
-TCanvas* d1 = new TCanvas("d1","d1", 1300, 700);
 // Filling the new 1D and 2D histograms 
 
 int massBins = hist1->GetNbinsX();
@@ -287,23 +181,7 @@ for(int i=1;i<=massBins; i++)
 		if(qADifference>10) qAdiff->Fill(9);
 		else if(qADifference<-10) qAdiff->Fill(-10);
 		else qAdiff->Fill(qADifference);
-		
-		double ggcmbXs = Xshist1->GetBinContent(i,j);
-		double bbcmbXs = Xshist4->GetBinContent(i,j);
-		//if (mhist1->GetBinContent(i,j)==0.0) std::cout << "Point with no difference between mA ans mH: (" << mhist1->GetXaxis()->GetBinLowEdge(i) << "," << mhist1->GetYaxis()->GetBinLowEdge(j) <<  ")" << std::endl;
-		if (mhist1->GetBinContent(i,j) <= 0.15)
-		{
-			ggcmbXs += Xshist2->GetBinContent(i,j);
-			bbcmbXs += Xshist5->GetBinContent(i,j);
-		}
-		if (mhist2->GetBinContent(i,j) <= 0.15)
-		{
-			ggcmbXs += Xshist3->GetBinContent(i,j);
-			bbcmbXs += Xshist6->GetBinContent(i,j);
-		}
-		ggcmb->SetBinContent(i,j,ggcmbXs);
-		bbcmb->SetBinContent(i,j,bbcmbXs);
-		
+
 		if (j==tanbBins)
 		{
 			int current_mass = hist1->GetXaxis()->GetBinLowEdge(i);
@@ -332,53 +210,104 @@ for(int i=1;i<=massBins; i++)
 }
 xsfile << std::endl;
 xsfile.close();
-// Plotting the new 1D
 
+TCanvas* c2 = new TCanvas("c2", "c2", 1300,350);
+c2->Divide(3,1);
+
+c2->cd(1);
+hist2Dbaseplot(mhist1, "|m_{A}-m_{H}|/m_{A}",0,1);
+
+c2->cd(2);
+hist2Dbaseplot(mhist2, "|m_{A}-m_{h}|/m_{A}",0,1);
+
+c2->cd(3);
+gPad->SetRightMargin(0.20);
+gPad->SetTopMargin(0.05);
+cluster->Draw("Colz");
+cluster->SetStats(false);
+cluster->GetXaxis()->SetTitleSize(0.05);
+cluster->GetYaxis()->SetTitleSize(0.05);
+cluster->GetZaxis()->SetTitleSize(0.05);
+cluster->GetZaxis()->SetLabelSize(0.05);
+cluster->GetZaxis()->SetTitleOffset(1.1);
+cluster->GetZaxis()->SetRangeUser(0.,4.);
+
+TMarker* A = new TMarker();
+A->SetMarkerStyle(21);
+A->SetMarkerColor(kCyan+2);
+
+TMarker* hA = new TMarker();
+hA->SetMarkerStyle(21);
+hA->SetMarkerColor(kGreen-9);
+
+TMarker* HA = new TMarker();
+HA->SetMarkerStyle(21);
+HA->SetMarkerColor(kOrange+1);
+
+TMarker* hHA = new TMarker();
+hHA->SetMarkerStyle(21);
+hHA->SetMarkerColor(kRed+3);
+
+TLegend* l = new TLegend(0.38,0.52,0.78,0.92);
+l->SetHeader("Higgs contribution");
+l->AddEntry(A,"A","p");
+l->AddEntry(hA,"h+A","p");
+l->AddEntry(HA,"H+A","p");
+l->AddEntry(hHA,"h+H+A","p");
+l->Draw("Same");
+gPad->Update();
+//hist2Dbaseplot(cluster, "",0,4);
+c2->SaveAs("massDifferences.pdf");
+
+
+
+
+
+// Plotting the new 1D
+TCanvas* d = new TCanvas("d","d", 1300, 500);
 d->Divide(3,1);
 
 d->cd(1);
+gPad->SetLeftMargin(0.15);
+gPad->SetTopMargin(0.01);
+gPad->SetRightMargin(0.05);
 CLsdiff->Draw();
+CLsdiff->SetStats(false);
+CLsdiff->GetXaxis()->SetTitleSize(0.045);
+CLsdiff->GetYaxis()->SetTitleOffset(2);
 gPad->Update();
 
 d->cd(2);
+gPad->SetLeftMargin(0.15);
+gPad->SetTopMargin(0.01);
+gPad->SetRightMargin(0.05);
 qmudiff->Draw();
+qmudiff->SetStats(false);
+qmudiff->GetXaxis()->SetTitleSize(0.045);
+qmudiff->GetYaxis()->SetTitleOffset(2);
 gPad->Update();
 
 d->cd(3);
+gPad->SetLeftMargin(0.15);
+gPad->SetTopMargin(0.01);
+gPad->SetRightMargin(0.05);
 qAdiff->Draw();
+qAdiff->SetStats(false);
+qAdiff->GetXaxis()->SetTitleSize(0.045);
+qAdiff->GetYaxis()->SetTitleOffset(2);
 gPad->Update();
 
 d->SaveAs("quantitiesDifference.pdf");
 
 // Plotting the new 2D
-
+TCanvas* d1 = new TCanvas("d1","d1", 866, 350);
 d1->Divide(2,1);
 
 d1->cd(1);
-ggcmb->Draw("Colz");
-gPad->SetLogz();
-gPad->Update();
-statbox = (TPaveStats*) ggcmb->FindObject("stats");
-statbox->SetX1NDC(0.69);
-statbox->SetX2NDC(0.89);
-statbox->SetY1NDC(0.65);
-statbox->SetY2NDC(0.89);
-ggcmb->GetZaxis()->SetLabelSize(0.024);
-ggcmb->GetZaxis()->SetLabelOffset(0.001);
-ggcmb->Draw("Colz");
+hist2Dbaseplot(ggcmb, "#sigma_{gg#phi}#upointBR_{#phi#rightarrow#tau#tau}",0.000001,450,true,"[pb]");
 
 d1->cd(2);
-bbcmb->Draw("Colz");
-gPad->SetLogz();
-gPad->Update();
-statbox = (TPaveStats*) bbcmb->FindObject("stats");
-statbox->SetX1NDC(0.69);
-statbox->SetX2NDC(0.89);
-statbox->SetY1NDC(0.65);
-statbox->SetY2NDC(0.89);
-bbcmb->GetZaxis()->SetLabelSize(0.024);
-bbcmb->GetZaxis()->SetLabelOffset(0.001);
-bbcmb->Draw("Colz");
+hist2Dbaseplot(bbcmb, "#sigma_{bb#phi}#upointBR_{#phi#rightarrow#tau#tau}",0.000001,450,true,"[pb]");
 
 d1->SaveAs("combinedXs.pdf");
 

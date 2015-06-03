@@ -1,5 +1,64 @@
+void hist2Dbaseplot(TH2D* hist, const char* titlename, double zmin, double zmax, bool log=false, const char* ztitle="", double textsize=0.12){
+
+	gPad->SetRightMargin(0.20);
+	gPad->SetTopMargin(0.05);
+	hist->Draw("Colz");
+	hist->SetStats(false);
+	hist->GetXaxis()->SetTitleSize(0.05);
+	hist->GetYaxis()->SetTitleSize(0.05);
+	hist->GetZaxis()->SetTitleSize(0.05);
+	hist->GetZaxis()->SetLabelOffset(0.01);
+	hist->GetZaxis()->SetTitle(ztitle);
+	hist->GetZaxis()->SetTitleOffset(1.1);
+
+	TLatex* histtitle = new TLatex(120, 50, titlename);
+	histtitle->SetTextSize(textsize);
+	histtitle->Draw("Same");
+	if(log)
+	{
+		gPad->SetLogz();
+		hist->GetZaxis()->SetRangeUser(zmin, zmax);
+	}
+	else
+	{
+		hist->GetZaxis()->SetRangeUser(zmin, zmax);
+	}
+	gPad->Update();
+
+}
+
+TGraph* exclusionObserved(TH2D* hist)
+{
+	TH2D* hist_copy = new TH2D();
+	hist->Copy(*hist_copy);
+	Double_t contours[1];
+	contours[0]=0.05;
+	hist_copy->SetContour(1,contours);
+	hist_copy->Draw("CONT LIST");
+	hist_copy->SetLineWidth(2);
+	gPad->Update();
+   TObjArray *conts = (TObjArray*)gROOT->GetListOfSpecials()->FindObject("contours");
+	TGraph* curve = (TGraph*)conts->First();
+	gPad->Clear();
+	return (TGraph*)curve->Clone();
+}
+
+void set_plot_style()
+{
+    const Int_t NRGBs = 5;
+    const Int_t NCont = 255;
+
+    Double_t stops[NRGBs] = { 0.00, 0.34, 0.61, 0.84, 1.00 };
+    Double_t red[NRGBs]   = { 0.00, 0.00, 0.87, 1.00, 0.51 };
+    Double_t green[NRGBs] = { 0.00, 0.81, 1.00, 0.20, 0.00 };
+    Double_t blue[NRGBs]  = { 0.51, 1.00, 0.12, 0.00, 0.00 };
+    TColor::CreateGradientColorTable(NRGBs, stops, red, green, blue, NCont);
+    gStyle->SetNumberContours(NCont);
+}
+
 void NLLPlot(const char* filename="output.root", bool asimov=false)
 {
+	set_plot_style();
 	std::string qmu, as;
 	if (asimov)
 	{
@@ -12,9 +71,7 @@ void NLLPlot(const char* filename="output.root", bool asimov=false)
 		as = "";
 	}
 	TFile* File = new TFile(filename, "READ");
-	TCanvas* c = new TCanvas("c", "c", 1300, 700);
-	TCanvas* d = new TCanvas("d", "d", 1300, 700);
-	
+
 	const char* string1 = (char*) ("globalNLLhist"+as).c_str();
 	const char* string2 = (char*) ("fullNLLhist"+as).c_str();
 	const char* string3 = (char*) ("deltaNLLhist"+as).c_str();
@@ -35,8 +92,8 @@ void NLLPlot(const char* filename="output.root", bool asimov=false)
 	TH2D* NLLdiff2D = (TH2D*) File->Get(string8);
 	TH2D* rNLLdiff2D = (TH2D*) File->Get(string9);
 
-	TH1D* NLLdiff = new TH1D("NLLdiff", "Difference between the full NLL of the two approaches; NLL_{mia} - NLL_{mda}",100, -6,6);
-	TH1D* rNLLdiff = new TH1D("rNLLdiff", "rel. Difference between the full NLL of the two approaches; (NLL_{mia} - NLL_{mda})/NLL_{mda}",100, -1.5,1.5);
+	TH1D* NLLdiff = new TH1D("NLLdiff", ";NLL_{mia} - NLL_{mda}",100, -6,6);
+	TH1D* rNLLdiff = new TH1D("rNLLdiff", ";NLL_{mia} - NLL_{mda}/NLL_{mda}",100, -1.5,1.5);
 
 	int mAbins = fullNLLhist->GetNbinsX();
 	int tanbbins = fullNLLhist->GetNbinsY();
@@ -60,76 +117,65 @@ void NLLPlot(const char* filename="output.root", bool asimov=false)
 			//else std::cout << "relative: " << rdiff << " Bin: (" << fullNLLhist->GetXaxis()->GetBinLowEdge(i) << "," << fullNLLhist->GetYaxis()->GetBinLowEdge(j) << ")" << " Values: mia = " << fullNLLhist->GetBinContent(i,j) << " ,mda = " << NLLmuFixedforqmu->GetBinContent(i,j) << std::endl;
 		}
 	}
+	TCanvas* c = new TCanvas("c", "c", 1300, 700);
 	c->Divide(3,2);
 
 	c->cd(1);
-	globalNLLhist->Draw("Colz");
 	double min = globalNLLhist->GetMinimum();
-	globalNLLhist->GetZaxis()->SetRangeUser(min-0.1,min+3);
-	globalNLLhist->SetStats(false);
-	gPad->Update();
-	globalNLLhist->Draw("Colz");
+	//globalNLLhist->GetZaxis()->SetRangeUser(min-0.1,min+3);
+	globalNLLhist->GetZaxis()->SetLabelSize(0.035);
+	hist2Dbaseplot(globalNLLhist, "NLL^{glob}",-1039364.58, -1039364.56);
+	
 
 	c->cd(2);
-	fullNLLhist->Draw("Colz");
-	fullNLLhist->GetZaxis()->SetRangeUser(0.01,10000);
-	fullNLLhist->SetStats(false);
-	gPad->SetLogz();
-	gPad->Update();
-	fullNLLhist->Draw("Colz");
+	fullNLLhist->GetZaxis()->SetLabelSize(0.05);
+	hist2Dbaseplot(fullNLLhist, "full NLL",0.01,10000,true);
 
 	c->cd(3);
-	deltaNLLhist->Draw("Colz");
-	deltaNLLhist->GetZaxis()->SetRangeUser(0.001,10000);
-	deltaNLLhist->SetStats(false);
-	gPad->SetLogz();
-	gPad->Update();
-	deltaNLLhist->Draw("Colz");
+	deltaNLLhist->GetZaxis()->SetLabelSize(0.05);
+	hist2Dbaseplot(deltaNLLhist, "#DeltaNLL",0.001,10000,true);
 
 	c->cd(4);
-	NLLmuGlobalforqmu->Draw("Colz");
 	min = NLLmuGlobalforqmu->GetMinimum();
-	NLLmuGlobalforqmu->GetZaxis()->SetRangeUser(min-0.1, min+3);
-	NLLmuGlobalforqmu->SetStats(false);
-	NLLmuGlobalforqmu->GetZaxis()->SetLabelSize(0.024);
-	NLLmuGlobalforqmu->GetZaxis()->SetLabelOffset(0.001);
-	gPad->Update();
-	NLLmuGlobalforqmu->Draw("Colz");
+	NLLmuGlobalforqmu->GetZaxis()->SetLabelSize(0.035);
+	hist2Dbaseplot(NLLmuGlobalforqmu, "NLL^{glob}",-1039364.58, -1039364.56);
+
 
 	c->cd(5);
-	NLLmuFixedforqmu->Draw("Colz");
-	NLLmuFixedforqmu->GetZaxis()->SetRangeUser(0.01,10000);
-	NLLmuFixedforqmu->SetStats(false);
-	NLLmuFixedforqmu->GetZaxis()->SetLabelSize(0.024);
-	NLLmuFixedforqmu->GetZaxis()->SetLabelOffset(0.001);
-	gPad->SetLogz();
-	gPad->Update();
-	NLLmuFixedforqmu->Draw("Colz");
+	NLLmuFixedforqmu->GetZaxis()->SetLabelSize(0.05);
+	hist2Dbaseplot(NLLmuFixedforqmu, "full NLL",0.01,10000,true);
 
 	c->cd(6);
-	deltaNLLforqmu->Draw("Colz");
-	deltaNLLforqmu->GetZaxis()->SetRangeUser(0.001,10000);
-	deltaNLLforqmu->SetStats(false);
-	gPad->SetLogz();
-	gPad->Update();
-	deltaNLLforqmu->Draw("Colz");
+	deltaNLLforqmu->GetZaxis()->SetLabelSize(0.05);
+	hist2Dbaseplot(deltaNLLforqmu, "#DeltaNLL",0.001,10000,true);
 	
 	const char* plotnamec = (char*) ("deltaNLL"+as+".pdf").c_str();
 	c->SaveAs(plotnamec);
 	
+	
+	TCanvas* d = new TCanvas("d", "d", 1000, 700);
 	d->Divide(2,2);
 
 	d->cd(1);
+	gPad->SetRightMargin(0.20);
+	gPad->SetTopMargin(0.05);
 	NLLdiff->Draw();
+	NLLdiff->SetStats(false);
+	NLLdiff->GetXaxis()->SetTitleSize(0.05);
+	gPad->Update();
 	d->cd(2);
+	gPad->SetRightMargin(0.20);
+	gPad->SetTopMargin(0.05);
 	rNLLdiff->Draw();
+	rNLLdiff->SetStats(false);
+	rNLLdiff->GetXaxis()->SetTitleSize(0.05);
+	gPad->Update();
 	d->cd(3);
-	NLLdiff2D->SetStats(false);
-	NLLdiff2D->Draw("Colz");
+	NLLdiff2D->GetZaxis()->SetLabelSize(0.05);
+	hist2Dbaseplot(NLLdiff2D,"NLL_{mia}-NLL_{mda}",-6,6,false,"",0.08);
 	d->cd(4);
-	rNLLdiff2D->SetStats(false);
-	rNLLdiff2D->GetZaxis()->SetRangeUser(-0.2, 1);
-	rNLLdiff2D->Draw("Colz");
+	rNLLdiff2D->GetZaxis()->SetLabelSize(0.05);
+	hist2Dbaseplot(rNLLdiff2D,"NLL_{mia}-NLL_{mda}/NLL_{mda}",-0.3,0.3,false,"",0.08);
 	
 	const char* plotnamed = (char*) ("NLLdiff"+as+".pdf").c_str();
 	d->SaveAs(plotnamed);
@@ -138,7 +184,7 @@ void NLLPlot(const char* filename="output.root", bool asimov=false)
 	{
 		TH2D* CLsHist2D = (TH2D*) File->Get("CLsHist2D");
 		TH2D* CLshistNLL = (TH2D*) File->Get("CLshistNLL");
-		TCanvas* e = new TCanvas("e", "e", 1300, 700);
+		TCanvas* e = new TCanvas("e", "e", 866, 350);
 		e->Divide(2,1);
 		
 		e->cd(1);
