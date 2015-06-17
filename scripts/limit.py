@@ -528,7 +528,13 @@ for directory in args :
                     os.system("rm old_%s.root new_%s.root"%(collect_file, collect_file))
         else :
             ## prepare workspace
-            create_card_workspace(mass)
+            if "=" in options.fitModel :
+                model = options.fitModel.split('=')
+                create_card_workspace_with_physics_model(mass)
+            elif options.fitModel == "" :
+                create_card_workspace(mass)
+            else :
+                model = [options.fitModel]
             ## create sub-directory out from scratch
             if os.path.exists("out") :
                 os.system("rm -r out")
@@ -586,7 +592,13 @@ for directory in args :
         ## determine mass value from directory name
         mass  = get_mass(directory)
         ## prepare workspace
-        create_card_workspace(mass)
+        if "=" in options.fitModel :
+            model = options.fitModel.split('=')
+            create_card_workspace_with_physics_model(mass)
+        elif options.fitModel == "" :
+            create_card_workspace(mass)
+        else :
+            model = [options.fitModel]
         ## create sub-directory out from scratch
         if os.path.exists("out") :
             os.system("rm -r out")
