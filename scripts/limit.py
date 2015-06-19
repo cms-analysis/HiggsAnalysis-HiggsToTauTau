@@ -63,9 +63,9 @@ bgroup.add_option("--SplusB", dest="signal_plus_BG", default=False, action="stor
                   help="When using options --external-pulls, use the fit results with signal plus background. If 'False' the fit result of the background only hypothesis is used. [Default: False]")
 bgroup.add_option("--confidence-level", dest="confidenceLevel", default="0.95", type="string",
                   help="Choose the confidence level at which to calculate the limit. This option only applies to asymptotic limit calculations. It does not apply to toy based methods, which have to be configured accordingly in the submission step (using the script submit.py). [Default: '0.95']")
-bgroup.add_option("--rMin", dest="rMin", default="-5", type="string",
+bgroup.add_option("--rMin", dest="rMin", default="-999", type="string",
                   help="Set the minimum value of signal strenth used for fits and prior to the limit or significance calculation. [Default: -5]")
-bgroup.add_option("--rMax", dest="rMax", default= "5", type="string",
+bgroup.add_option("--rMax", dest="rMax", default= "-999", type="string",
                   help="Set the maximum value of signal strenth used for fits and prior to the limit or significance calculation. [Default: -5]")
 bgroup.add_option("--expectedOnly", dest="expectedOnly", default=False, action="store_true",
                   help="Calculate the expected limit only. This option applies to limit and significance calculations only. [Default: False]")
@@ -330,6 +330,7 @@ def create_card_workspace_with_physics_model(mass) :
                 opt = opt.replace("BBH-BOUND", str(bounds["ggH-bbH", mass][1]))
             ## add options to workspace
             wsopts.append(('--PO', opt))
+    #print options.fitModelOptions.split(';')[0].split("=")[1]
     return create_card_workspace(mass, inputs, output, wsopts)
 
 for directory in args :
@@ -529,12 +530,9 @@ for directory in args :
         else :
             ## prepare workspace
             if "=" in options.fitModel :
-                model = options.fitModel.split('=')
                 create_card_workspace_with_physics_model(mass)
             elif options.fitModel == "" :
                 create_card_workspace(mass)
-            else :
-                model = [options.fitModel]
             ## create sub-directory out from scratch
             if os.path.exists("out") :
                 os.system("rm -r out")
@@ -555,7 +553,8 @@ for directory in args :
                 stableopt = "--robustFit=1 --preFitValue=1. --X-rtd FITTER_NEW_CROSSING_ALGO --minimizerAlgoForMinos=Minuit2 --minimizerToleranceForMinos=0.1 --X-rtd FITTER_NEVER_GIVE_UP --X-rtd FITTER_BOUND --minimizerAlgo=Minuit2 --minimizerStrategy=0 --minimizerTolerance=0.1 --cminFallbackAlgo \"Minuit2,0:1.\"  "
             if options.mass_scan:
                 stableopt = "--robustFit=0 --minimizerAlgo=Minuit2 --minimizerStrategy=0 --minimizerTolerance=0.1 --cminPreScan --minos=none "
-            stableopt+= "--rMin {MIN} --rMax {MAX} ".format(MIN=options.rMin, MAX=options.rMax)
+            if options.fitModel=="" or (options.rMin!="-999" and options.rMax!="-999"):
+                stableopt+= "--rMin {MIN} --rMax {MAX} ".format(MIN=options.rMin, MAX=options.rMax)
             redirect = ""
             if options.hide_fitresult :
                 redirect = '> /tmp/'+''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(10))
@@ -1270,8 +1269,18 @@ for directory in args :
                 if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) : 
                     tanb_string = wsp[wsp.rfind("_")+1:]
                     if "point_{mass}_{tanb}".format(mass=mass, tanb=tanb_string) in directoryList :
-                        os.system("rm point_{mass}_{tanb}".format(mass=mass, tanb=tanb_string))
-                    os.system("hadd -k point_{mass}_{tanb} point_{tanb}_*".format(mass=mass, tanb=tanb_string))
+                        os.system("rm point_{mass}_{tanb}*".format(mass=mass, tanb=tanb_string))
+                        os.system("rm qmu.FixedMu_{tanb}".format(tanb=tanb_string))
+                    files=""
+                    k=0
+                    for i, f in enumerate(glob.glob("point_{tanb}_*".format(mass=mass, tanb=tanb_string))) :
+                        files += str(f)+" "
+                        if i%100==0 and i!=0:
+                            os.system("hadd -k point_{mass}_{tanb}_{k} {files}".format(mass=mass, tanb=tanb_string, k=k, files=files))
+                            files=""
+                            k=k+1
+                    os.system("hadd -k point_{mass}_{tanb} point_{mass}_{tanb}_*".format(mass=mass, tanb=tanb_string))
+
                     os.system(r'root -l -q -b point_{mass}_{tanb} "{CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/test/plotting/hypoTestResultTree.cxx(\"qmu.FixedMu_{tanb}\",{mass},1,\"x\")"'.format(CMSSW_BASE=os.environ["CMSSW_BASE"], mass=mass, tanb=tanb_string))
                     continue
             directoryList = os.listdir(".")
