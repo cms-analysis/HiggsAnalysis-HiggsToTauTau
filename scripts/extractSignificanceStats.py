@@ -131,8 +131,8 @@ else :
         if xup<staff.q :
             xup = staff.q    
 
-    hSM   = ROOT.TH1F("hSM  ;S = -2 #times ln(L_{1}/L_{2});Number of Toys","",nbins,xlow-xlow/100,xup+xup/100)
-    hMSSM = ROOT.TH1F("hMSSM;S = -2 #times ln(L_{1}/L_{2});Number of Toys","",nbins,xlow-xlow/100,xup+xup/100)
+    hSM   = ROOT.TH1F("hSM  ;q = -2 #times ln(L_{MSSM+b}/L_{SM+b});Number of Toys","",nbins,xlow-xlow/100,xup+xup/100)
+    hMSSM = ROOT.TH1F("hMSSM;q = -2 #times ln(L_{MSSM+b}/L_{SM+b});Number of Toys","",nbins,xlow-xlow/100,xup+xup/100)
     hObs  = ROOT.TH1F("hObserved"                                         ,"",nbins,xlow-xlow/100,xup+xup/100);
 
     if options.verbosity :
@@ -235,8 +235,8 @@ else :
 
 
     ### Rebinning needed for plotting and fitting
-    hSM.Rebin(100)
-    hMSSM.Rebin(100)
+    hSM.Rebin(1000)
+    hMSSM.Rebin(1000)
 
     ### caculation of CLs with gaus fit to binned histo
     ## hSM.Fit("gaus")
@@ -336,9 +336,9 @@ else :
     gStyle.SetOptStat(0)
     c2 = ROOT.TCanvas("c2","c2",800,800)
     c2.cd()
-    hSM.SetXTitle("S = -2 #times ln(L_{1}/L_{2})")
+    hSM.SetXTitle("q = -2 #times ln(L_{MSSM+b}/L_{SM+b})")
     hSM.SetYTitle("Generated experiments")
-    hMSSM.SetXTitle("S = -2 #times ln(L_{1}/L_{2})")
+    hMSSM.SetXTitle("q = -2 #times ln(L_{MSSM+b}/L_{SM+b})")
     hMSSM.SetYTitle("Generated experiments")
     hSM.SetLineColor(kMagenta-3)
     hSM.SetFillColor(kMagenta-3)
@@ -349,7 +349,7 @@ else :
     hMSSM.SetLineWidth(2)
     hMSSM.SetFillStyle(3695)
     hObs.SetLineColor(kBlack)
-    hObs.SetLineWidth(2)
+    hObs.SetLineWidth(3)
     hSM.Draw()
     hMSSM.Draw("sames")
     hObs.Draw("sames")
@@ -364,8 +364,8 @@ else :
     leg = ROOT.TLegend(0.12,0.7,0.3,0.88)
     leg.SetFillColor(0)
     leg.SetBorderSize(0)
-    leg.AddEntry(hSM,  "  SM","f")
-    leg.AddEntry(hMSSM,"  MSSM","f")
+    leg.AddEntry(hSM,  "  H_{\text{SM}+b}","f")
+    leg.AddEntry(hMSSM,"  H_{\text{MSSM}+b}","f")
     leg.Draw()
 
 
@@ -381,7 +381,7 @@ else :
     pt3.SetFillColor(0)
     pt3.AddText(" mA = {MASS} GeV,  tanb = {TANB},   ntoys = {NTOYS}".format(MASS=staff.mh, TANB=tanb, NTOYS=ntoysMSSM))
     pt3.SetBorderSize(0)
-    pt.Draw()
+    #pt.Draw()
     pt2.Draw()
     pt3.Draw()
     c2.SaveAs("sigsep_"+tanb+".png")
