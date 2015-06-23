@@ -42,11 +42,10 @@ for filename in filelist:
 	filename = (filename.replace('batch_', '')).replace('.root','')
 	tanblist.append(filename)
 
-#logfile = open('logfile.txt', 'w+')
-
 ### Determining mass from directory
 directory = os.getcwd()
 mass = get_mass(directory)
+
 for i in range(len(tanblist)):
 	tanb = tanblist[i]
 	rMax = "{tanb}".format(tanb=(float(tanb)+10))
@@ -60,9 +59,7 @@ for i in range(len(tanblist)):
 	quantities_line = ''
 	for line in as_data:
 		if (line.find('At r =') > -1): quantities_line = line
-	
-	#print "Current tanb value: ", tanb
-	#print quantities_line
+
 	if not (quantities_line.find('nan') > -1):
 		qmu_as_string = quantities_line[quantities_line.find('q_mu'):quantities_line.find('q_A')]
 		qA_as_string = quantities_line[quantities_line.find('q_A'):quantities_line.find('CLsb')]
@@ -77,20 +74,12 @@ for i in range(len(tanblist)):
 		CLb_as = float(CLb_as_string.replace(' ', '').split('=')[1])
 		CLs_as = float(CLs_as_string.replace(' ', '').split('=')[1])
 
-		#print qmu_as
-		#print qA_as
-		#print CLsb_as
-		#print CLb_as
-		#print CLs_as
-
 		qmuHist2D_as.Fill(float(mass), float(tanb), qmu_as)
 		qAHist2D_as.Fill(float(mass), float(tanb), qA_as)
 		CLsbHist2D_as.Fill(float(mass), float(tanb), CLsb_as)
 		CLbHist2D_as.Fill(float(mass), float(tanb), CLb_as)
 		CLsHist2D_as.Fill(float(mass), float(tanb), CLs_as)
-		#logfile.write("There are NaN values during asymptotic calculation at point ({mass},{tanb}). Skipping also the by hand calculation.#\n".format(mass=mass, tanb=tanb))
-	#else: 
-	#	continue
+
 	### Calculation of CLs by hand.
 
 	# First: CLsb calculation from data set
@@ -118,14 +107,11 @@ for i in range(len(tanblist)):
 		nll0_list_data.append(event.nll0)
 		r_list_data.append(event.r)
 
-	global_NLL_mu_data = nll0_list_data[1]
+	global_NLL_mu_data = nll0_list_data[-1]
 	if not math.isnan(global_NLL_mu_data): NLLmuGlobalforqmu.Fill(float(mass), float(tanb), global_NLL_mu_data)
-	#print "global NLL(mu): ", global_NLL_mu_data
 
-
-	NLL_mu1_data = nll_list_data[1]
+	NLL_mu1_data = nll_list_data[-1]
 	if not math.isnan(NLL_mu1_data): NLLmuFixedforqmu.Fill(float(mass), float(tanb), NLL_mu1_data)
-	#print "NLL(mu) for mu: ", NLL_mu1_data
 
 	# Asimov
 
@@ -138,48 +124,38 @@ for i in range(len(tanblist)):
 		nll0_list_asimov.append(event.nll0)
 		r_list_asimov.append(event.r)
 
-	global_NLL_mu_asimov = nll0_list_asimov[1]
+	global_NLL_mu_asimov = nll0_list_asimov[-1]
 	if not math.isnan(global_NLL_mu_asimov): NLLmuGlobalforqA.Fill(float(mass), float(tanb), global_NLL_mu_asimov)
-	#print "global NLL(mu) for asimov: ", global_NLL_mu_asimov
 
-
-	NLL_mu1_asimov = nll_list_asimov[1]
+	NLL_mu1_asimov = nll_list_asimov[-1]
 	if not math.isnan(NLL_mu1_asimov): NLLmuFixedforqA.Fill(float(mass), float(tanb), NLL_mu1_asimov)
-	#print "NLL(mu) for mu=1.0 for asimov: ", NLL_mu1_asimov
 
 	### Calculation of values for CLs
 
 	# q_mu for data
 	q_mu = 2*(NLL_mu1_data - global_NLL_mu_data)
-	if abs(q_mu) < 0.1 and q_mu < 0: q_mu = 0
-	#if q_mu < 0: q_mu = 0
-	#print "q_mu = ", q_mu
+	#if abs(q_mu) < 0.1 and q_mu < 0: q_mu = 0
+	if q_mu < 0: q_mu = 0
 	if not math.isnan(q_mu): qmuHist2D.Fill(float(mass), float(tanb), q_mu)
 	# CLsb for data using asymptotic formula
 	CL_SplusB = 1 - r.Math.normal_cdf(r.TMath.Sqrt(q_mu))
 	if not math.isnan(CL_SplusB): CLsbHist2D.Fill(float(mass), float(tanb), CL_SplusB)
-	#print "CLsb = ", CL_SplusB
 
 	#q_A for asimov
 	q_A = 2*(NLL_mu1_asimov - global_NLL_mu_asimov)
 	if abs(q_A) < 0.1 and q_A < 0: q_A = 0
-	#if q_A < 0: q_A = 0
-	#print "q_A = ", q_A
+	if abs(q_A) >= 0.1 and q_A < 0: q_A = 10**5 # wrongly calculated values: most likely on the unstable region -> set to a value recieved by wrong calculations anyway.
 	if not math.isnan(q_A): qAHist2D.Fill(float(mass), float(tanb), q_A)
 	# CLb for asimov using asymptotic formula
 	CL_B = r.Math.normal_cdf(r.TMath.Sqrt(q_A)-r.TMath.Sqrt(q_mu))
 	if not math.isnan(CL_B): CLbHist2D.Fill(float(mass), float(tanb), CL_B)
-	#print "CLb = ", CL_B
 
 	# CLs value
 	if CL_B == 0:
 		CL_S = 0
 	else:
 		CL_S = CL_SplusB/CL_B
-	#print "CLs = ", CL_S
 	if not math.isnan(CL_S): CLsHist2D.Fill(float(mass), float(tanb), CL_S)
-	#if math.isnan(CL_S):
-		#logfile.write("NaN value for CLs at the point ({mass},{tanb})\n".format(mass=mass, tanb=tanb))
 
 ### Creating a file containing the 2-dim histograms
 histFile = r.TFile("NLLHistogram.mA{mass}.root".format(mass=mass), "RECREATE")

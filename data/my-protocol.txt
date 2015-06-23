@@ -293,6 +293,29 @@ submit.py --tanbNLL  LIMITS150527-mssm/bbb-asimov-mhmodp-NLL/mt/* --lxq --queue=
 
 rm LIMITS150527-mssm/bbb-asimov-mhmodp-NLL/mt/*/higgsCombine*.root LIMITS150527-mssm/bbb-asimov-mhmodp-NLL/mt/*/NLLHistogram*.root
 
+multidimfit (directory setup):
+------------------------------
+cvs2local.py -i aux150527-mssm/bbb-asimov -o LIMITS150527-mssm/bbb-asimov-ggH-bbH -p 8TeV -a mssm -c 'mt' --mssm-categories-mt="8 9" 90_1000:10
+
+multidimfit (calculation):
+--------------------------
+submit.py --multidim-fit --stable --physics-model='ggH-bbH' LIMITS150527-mssm/bbb-asimov-ggH-bbH/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
+
+multidimfit (resubmission):
+---------------------------
+python HiggsAnalysis/HiggsToTauTau/python/lxb-multidimfit-resubmit.py LIMITS150527-mssm-bbb-asimov-ggH-bbH-GGH-BBH-90 -o LIMITS150527-mssm/bbb-asimov-ggH-bbH/ -m '90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 380, 390, 400, 410, 420, 430, 440, 450, 460, 470, 480, 490, 500, 510, 520, 530, 540, 550, 560, 570, 580, 590, 600, 610, 620, 630, 640, 650, 660, 670, 680, 690, 700, 710, 720, 730, 740, 750, 760, 770, 780, 790, 800, 810, 820, 830, 840, 850, 860, 870, 880, 890, 900, 910, 920, 930, 940, 950, 960, 970, 980, 990, 1000'
+
+
+multidimfit (collection):
+-------------------------
+limit.py --collect --multidim-fit --physics-model="ggH-bbH" LIMITS150527-mssm/bbb-asimov-ggH-bbH/*
+
+multidimfit (plotting):
+-----------------------
+
+plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-bbH.py LIMITS150527-mssm/bbb-asimov-ggH-bbH
+
+
 -----------------
 (500,30) 120 only
 -----------------
@@ -310,6 +333,29 @@ submit.py --tanbNLL  LIMITS150526-mssm/bbb-asimov-mhmodp-NLL/mt/* --lxq --queue=
 
 rm LIMITS150526-mssm/bbb-asimov-mhmodp-NLL/mt/*/higgsCombine*.root LIMITS150526-mssm/bbb-asimov-mhmodp-NLL/mt/*/NLLHistogram*.root
 
+
+multidimfit (directory setup):
+------------------------------
+cvs2local.py -i aux150526-mssm/bbb-asimov -o LIMITS150526-mssm/bbb-asimov-ggH-bbH -p 8TeV -a mssm -c 'mt' --mssm-categories-mt="8 9" 90_1000:10
+
+multidimfit (calculation):
+--------------------------
+submit.py --multidim-fit --stable --physics-model='ggH-bbH' LIMITS150526-mssm/bbb-asimov-ggH-bbH/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
+
+multidimfit (resubmission):
+---------------------------
+python HiggsAnalysis/HiggsToTauTau/python/lxb-multidimfit-resubmit.py LIMITS150526-mssm-bbb-asimov-ggH-bbH-GGH-BBH-90 -o LIMITS150526-mssm/bbb-asimov-ggH-bbH/ -m '90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 380, 390, 400, 410, 420, 430, 440, 450, 460, 470, 480, 490, 500, 510, 520, 530, 540, 550, 560, 570, 580, 590, 600, 610, 620, 630, 640, 650, 660, 670, 680, 690, 700, 710, 720, 730, 740, 750, 760, 770, 780, 790, 800, 810, 820, 830, 840, 850, 860, 870, 880, 890, 900, 910, 920, 930, 940, 950, 960, 970, 980, 990, 1000'
+
+
+multidimfit (collection):
+-------------------------
+limit.py --collect --multidim-fit --physics-model="ggH-bbH" LIMITS150526-mssm/bbb-asimov-ggH-bbH/*
+
+multidimfit (plotting):
+-----------------------
+
+plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-bbH.py LIMITS150526-mssm/bbb-asimov-ggH-bbH
+
 -----------------
 (500,30) 130 only
 -----------------
@@ -326,6 +372,29 @@ submit.py --tanbNLL  LIMITS150525-mssm/bbb-asimov-mhmodp-NLL/mt/* --lxq --queue=
 
 rm LIMITS150525-mssm/bbb-asimov-mhmodp-NLL/mt/*/higgsCombine*.root LIMITS150525-mssm/bbb-asimov-mhmodp-NLL/mt/*/NLLHistogram*.root
 
+
+multidimfit (directory setup):
+------------------------------
+cvs2local.py -i aux150525-mssm/bbb-asimov -o LIMITS150525-mssm/bbb-asimov-ggH-bbH -p 8TeV -a mssm -c 'mt' --mssm-categories-mt="8 9" 90_1000:10
+
+multidimfit (calculation):
+--------------------------
+submit.py --multidim-fit --stable --physics-model='ggH-bbH' LIMITS150525-mssm/bbb-asimov-ggH-bbH/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
+
+multidimfit (resubmission):
+---------------------------
+python HiggsAnalysis/HiggsToTauTau/python/lxb-multidimfit-resubmit.py LIMITS150525-mssm-bbb-asimov-ggH-bbH-GGH-BBH-90 -o LIMITS150525-mssm/bbb-asimov-ggH-bbH/ -m '90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 380, 390, 400, 410, 420, 430, 440, 450, 460, 470, 480, 490, 500, 510, 520, 530, 540, 550, 560, 570, 580, 590, 600, 610, 620, 630, 640, 650, 660, 670, 680, 690, 700, 710, 720, 730, 740, 750, 760, 770, 780, 790, 800, 810, 820, 830, 840, 850, 860, 870, 880, 890, 900, 910, 920, 930, 940, 950, 960, 970, 980, 990, 1000'
+
+
+multidimfit (collection):
+-------------------------
+limit.py --collect --multidim-fit --physics-model="ggH-bbH" LIMITS150525-mssm/bbb-asimov-ggH-bbH/*
+
+multidimfit (plotting):
+-----------------------
+
+plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-bbH.py LIMITS150525-mssm/bbb-asimov-ggH-bbH
+
 -----------------
 (500,30) 500 only
 -----------------
@@ -341,3 +410,77 @@ lxb-xsec2tanb.py LIMITS150524-mssm/bbb-asimov-mhmodp-NLL/mt/* --model mhmodp --l
 submit.py --tanbNLL  LIMITS150524-mssm/bbb-asimov-mhmodp-NLL/mt/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null"
 
 rm LIMITS150524-mssm/bbb-asimov-mhmodp-NLL/mt/*/higgsCombine*.root LIMITS150524-mssm/bbb-asimov-mhmodp-NLL/mt/*/NLLHistogram*.root
+
+multidimfit (directory setup):
+------------------------------
+cvs2local.py -i aux150524-mssm/bbb-asimov -o LIMITS150524-mssm/bbb-asimov-ggH-bbH -p 8TeV -a mssm -c 'mt' --mssm-categories-mt="8 9" 90_1000:10
+
+multidimfit (calculation):
+--------------------------
+submit.py --multidim-fit --stable --physics-model='ggH-bbH' LIMITS150524-mssm/bbb-asimov-ggH-bbH/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
+
+multidimfit (resubmission):
+---------------------------
+python HiggsAnalysis/HiggsToTauTau/python/lxb-multidimfit-resubmit.py LIMITS150524-mssm-bbb-asimov-ggH-bbH-GGH-BBH-90 -o LIMITS150524-mssm/bbb-asimov-ggH-bbH/ -m '90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 380, 390, 400, 410, 420, 430, 440, 450, 460, 470, 480, 490, 500, 510, 520, 530, 540, 550, 560, 570, 580, 590, 600, 610, 620, 630, 640, 650, 660, 670, 680, 690, 700, 710, 720, 730, 740, 750, 760, 770, 780, 790, 800, 810, 820, 830, 840, 850, 860, 870, 880, 890, 900, 910, 920, 930, 940, 950, 960, 970, 980, 990, 1000'
+
+
+multidimfit (collection):
+-------------------------
+limit.py --collect --multidim-fit --physics-model="ggH-bbH" LIMITS150524-mssm/bbb-asimov-ggH-bbH/*
+
+multidimfit (plotting):
+-----------------------
+
+plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-bbH.py LIMITS150524-mssm/bbb-asimov-ggH-bbH
+
+
+--------
+(130,15)
+--------
+
+root -l -b -q 'HiggsAnalysis/HiggsToTauTau/macros/mssm_xs.C("$CMSSW_BASE/src/auxiliaries/models/out.mhmodp-8TeV-tanbHigh-nnlo.root", 130, 15)'
+
+MSSM Cross Section [ggH](tautau) (pb):
+ -> xsec(ggA)(tautau): 2.18036
+ -> xsec(ggH)(tautau): 2.40375
+ -> xsec(ggh)(tautau): 1.62304
+MSSM Cross Section [bbH -Santander-](tautau) (pb):
+ -> xsec(bbA)(tautau): 3.9414
+ -> xsec(bbH)(tautau): 2.14559
+ -> xsec(bbh)(tautau): 1.92325
+Mass H: 135.259
+Mass h: 120.673
+
+python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM.py -a bbb --label='150608-mssm' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-131013-mssm.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-150425" --update-all --blind-datacards --extra-templates='4.58411*ggH130, 1.62304*ggH120, 6.08699*bbH130, 1.92325*bbH120' --fine-scan
+
+mA vs. tanb NLL (q_mu = Fit von L zu r=fixed zum Punkt (m_A, tanb)/ Global Fit von L zum Punkt (m_A, tanb)):
+----------------
+setup-htt.py -i aux150608-mssm/bbb-asimov -o LIMITS150608-mssm/bbb-asimov-mhmodp-NLL -a mssm -c 'mt' -p 8TeV --mssm-categories-mt="8 9" 90_1000:10
+
+lxb-xsec2tanb.py LIMITS150608-mssm/bbb-asimov-mhmodp-NLL/mt/* --model mhmodp --lxq --fineGrid
+
+submit.py --tanbNLL  LIMITS150608-mssm/bbb-asimov-mhmodp-NLL/mt/* --lxq --queue="-l h_vmem=4000M -l h_rt=48:00:00 -j y -o /dev/null"
+
+rm LIMITS150608-mssm/bbb-asimov-mhmodp-NLL/mt/*/higgsCombine*.root LIMITS150608-mssm/bbb-asimov-mhmodp-NLL/mt/*/NLLHistogram*.root
+
+multidimfit (directory setup):
+------------------------------
+cvs2local.py -i aux150608-mssm/bbb-asimov -o LIMITS150608-mssm/bbb-asimov-ggH-bbH -p 8TeV -a mssm -c 'mt' --mssm-categories-mt="8 9" 90_1000:10
+
+multidimfit (calculation):
+--------------------------
+submit.py --multidim-fit --stable --physics-model='ggH-bbH' LIMITS150608-mssm/bbb-asimov-ggH-bbH/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
+
+multidimfit (resubmission):
+---------------------------
+python HiggsAnalysis/HiggsToTauTau/python/lxb-multidimfit-resubmit.py LIMITS150608-mssm-bbb-asimov-ggH-bbH-GGH-BBH-90 -o LIMITS150608-mssm/bbb-asimov-ggH-bbH/ -m '90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320, 330, 340, 350, 360, 370, 380, 390, 400, 410, 420, 430, 440, 450, 460, 470, 480, 490, 500, 510, 520, 530, 540, 550, 560, 570, 580, 590, 600, 610, 620, 630, 640, 650, 660, 670, 680, 690, 700, 710, 720, 730, 740, 750, 760, 770, 780, 790, 800, 810, 820, 830, 840, 850, 860, 870, 880, 890, 900, 910, 920, 930, 940, 950, 960, 970, 980, 990, 1000'
+
+
+multidimfit (collection):
+-------------------------
+limit.py --collect --multidim-fit --physics-model="ggH-bbH" LIMITS150608-mssm/bbb-asimov-ggH-bbH/*
+
+multidimfit (plotting):
+-----------------------
+
+plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-bbH.py LIMITS150608-mssm/bbb-asimov-ggH-bbH

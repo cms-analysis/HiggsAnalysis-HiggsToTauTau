@@ -7,7 +7,10 @@ agroup.add_option("--log-mass",dest="logMass", default=False, action="store_true
 agroup.add_option("--model-file",dest="modelFile", default="$CMSSW_BASE/src/auxiliaries/models/out.mhmodp-8TeV-tanbHigh-nnlo.root", type="string", help="")
 agroup.add_option("--model", dest="model", default="mhmodp", type="string", help="")
 agroup.add_option("--mass-tolerance", dest="massTolerance", default=0.15, type="float", help="")
+agroup.add_option("--reference-mass", dest="referenceMass", default="A", type="string", help="")
 agroup.add_option("--higgs-contribution",dest="higgsContribution", default="hHA", type="string", help="")
+
+
 (options, args) = parser.parse_args()
 
 from array import array
@@ -42,16 +45,16 @@ else :
 	truemasslist = masslist
 os.system("mkdir -p $CMSSW_BASE/src/higgsContributions")
 for i in range(len(masslist)-1):
-	submit_name = "{dir}/higgsContributions/higgsContribution.model{model}.tolerance{tolerance}.contr{contr}.mass{mass}.sh".format(dir=os.getcwd(), model=options.model, tolerance=options.massTolerance, contr=options.higgsContribution, mass=truemasslist[i])
+	submit_name = "{dir}/higgsContributions/higgsContribution.model{model}.tolerance{tolerance}.reference{reference}.contr{contr}.mass{mass}.sh".format(dir=os.getcwd(), model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, mass=truemasslist[i])
 	with open(submit_name, 'w') as submit_script:
 		os.system("export cmssw_base=$CMSSW_BASE")
 		print "Generating submission script: {script}".format(script=submit_name)
 		submit_script.write(lxq_fragment)
 		submit_script.write("cd {dir}\n".format(dir=os.getcwd()))
 		submit_script.write("eval `scram runtime -sh`\n")
-		submit_script.write("python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/higgsContributions.py {log} --mass={mass}".format(mass=masslist[i], log = "--log-mass" if options.logMass else ""))
+		submit_script.write("python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/higgsContributions.py {log} --mass={mass} --model={model} --model-file={file} --mass-tolerance={tolerance} --reference-mass={reference} --higgs-contribution={contr}".format(mass=masslist[i], model=options.model, file=options.modelFile, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, log = "--log-mass" if options.logMass else ""))
 		submit_script.close()
 		os.system("chmod a+x {script}".format(script=submit_name))
 		os.system("qsub -l h_vmem=2000M -l h_rt=00:30:00 -j y -o /dev/null -l distro=sld6 -v cmssw_base {script}".format(script=submit_name))
 
-print "hadd $CMSSW_BASE/src/higgsContribution.model{model}.tolerance{tolerance}.contr{contr}.{log}root $CMSSW_BASE/src/higgsContribution.model{model}.tolerance{tolerance}.contr{contr}.mass*.{log}root".format(model=options.model, tolerance=options.massTolerance, contr=options.higgsContribution, log="logMass." if options.logMass else "")
+print "hadd $CMSSW_BASE/src/higgsContributions/higgsContribution.model{model}.tolerance{tolerance}.reference{reference}.contr{contr}.{log}root $CMSSW_BASE/src/higgsContributions/higgsContribution.model{model}.tolerance{tolerance}.reference{reference}.contr{contr}.mass*.{log}root".format(model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, log="logMass." if options.logMass else "")

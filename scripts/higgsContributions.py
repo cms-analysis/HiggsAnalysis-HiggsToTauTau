@@ -8,10 +8,10 @@ agroup.add_option("--mass", dest="mass", type="float", help="")
 agroup.add_option("--model-file",dest="modelFile", default="$CMSSW_BASE/src/auxiliaries/models/out.mhmodp-8TeV-tanbHigh-nnlo.root", type="string", help="")
 agroup.add_option("--model", dest="model", default="mhmodp", type="string", help="")
 agroup.add_option("--mass-tolerance", dest="massTolerance", default=0.15, type="float", help="")
+agroup.add_option("--reference-mass", dest="referenceMass", default="A", type="string", help="")
 agroup.add_option("--higgs-contribution",dest="higgsContribution", default="hHA", type="string", help="")
 (options, args) = parser.parse_args()
 
-from array import array
 import ROOT as r
 import os
 import numpy as np
@@ -34,8 +34,8 @@ else :
 masspoints = len(masslist)-1
 fulltanbpoints = len(fulltanblist)-1
 
-massDiffh = r.TH2D('massDiffh', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
-massDiffH = r.TH2D('massDiffH', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
+massDiff1 = r.TH2D('massDiff1', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
+massDiff2 = r.TH2D('massDiff2', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
 cluster = r.TH2D('cluster', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
 
 ggAXsBR = r.TH2D('ggAXsBR', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
@@ -73,12 +73,6 @@ for j in range(fulltanbpoints):
 	
 	os.system("rm XsBr{mass}.txt".format(mass=truemass))
 
-	mdiffH = abs((float(truemass)-massH)/float(truemass))
-	mdiffh = abs((float(truemass)-massh)/float(truemass))
-
-	massDiffH.Fill(float(mass), float(tanb), mdiffH)
-	massDiffh.Fill(float(mass), float(tanb), mdiffh)
-
 	ggAXsBR.Fill(float(mass), float(tanb), ggA)
 	ggHXsBR.Fill(float(mass), float(tanb), ggH)
 	gghXsBR.Fill(float(mass), float(tanb), ggh)
@@ -87,27 +81,74 @@ for j in range(fulltanbpoints):
 	bbHXsBR.Fill(float(mass), float(tanb), bbH)
 	bbhXsBR.Fill(float(mass), float(tanb), bbh)
 
+	mdiff1, mdiff2 = 0,0
+	contr1, contr2, refcontr = False, False, False
+	counter1, counter2, refcounter = 0,0,0
+	gg1, gg2, ggref = 0,0,0
+	bb1, bb2, bbref = 0,0,0
+
+	if options.referenceMass == "A":
+		mdiff1 = abs((float(truemass)-massh)/float(truemass))
+		mdiff2 = abs((float(truemass)-massH)/float(truemass))
+
+		contr1 = options.higgsContribution.find("h") != -1
+		contr2 = options.higgsContribution.find("H") != -1
+		refcontr = options.higgsContribution.find("A") != -1
+
+		counter1, counter2, refcounter = 1, 2, 4
+		gg1, gg2, ggref = ggh, ggH, ggA
+		bb1, bb2, bbref = bbh, bbH, bbA
+
+	if options.referenceMass == "H":
+		mdiff1 = abs((massH-massh)/massH)
+		mdiff2 = abs((massH-float(truemass))/massH)
+
+		contr1 = options.higgsContribution.find("h") != -1
+		contr2 = options.higgsContribution.find("A") != -1
+		refcontr = options.higgsContribution.find("H") != -1
+
+		counter1, counter2, refcounter = 1, 4, 2
+		gg1, gg2, ggref = ggh, ggA, ggH
+		bb1, bb2, bbref = bbh, bbA, bbH
+
+	if options.referenceMass == "h":
+		mdiff1 = abs((massh-float(truemass))/massh)
+		mdiff2 = abs((massh-massH)/massh)
+
+		contr1 = options.higgsContribution.find("A") != -1
+		contr2 = options.higgsContribution.find("H") != -1
+		refcontr = options.higgsContribution.find("h") != -1
+
+		counter1, counter2, refcounter = 4, 2, 1
+		gg1, gg2, ggref = ggA, ggH, ggh
+		bb1, bb2, bbref = bbA, bbH, bbh
+
+
+	massDiff1.Fill(float(mass), float(tanb), mdiff1)
+	massDiff2.Fill(float(mass), float(tanb), mdiff2)
+
 	contribution, ggcmbXs, bbcmbXs = 0,0,0
-	if mdiffh <= options.massTolerance and options.higgsContribution.find("h") != -1:
-		contribution += 1
-		ggcmbXs += ggh
-		bbcmbXs += bbh
-	if mdiffH <= options.massTolerance and options.higgsContribution.find("H")!= -1:
-		contribution += 2
-		ggcmbXs += ggH
-		bbcmbXs += bbH
-	if options.higgsContribution.find("A") != -1:
-		contribution += 4
-		ggcmbXs += ggA
-		bbcmbXs += bbA
+	if mdiff1 <= options.massTolerance and contr1:
+		contribution += counter1
+		ggcmbXs += gg1
+		bbcmbXs += bb1
+	if mdiff2 <= options.massTolerance and contr2:
+		contribution += counter2
+		ggcmbXs += gg2
+		bbcmbXs += bb2
+	if refcontr:
+		contribution += refcounter
+		ggcmbXs += ggref
+		bbcmbXs += bbref
+
 	cluster.Fill(float(mass), float(tanb), contribution)
 	ggcmb.Fill(float(mass), float(tanb), ggcmbXs)
 	bbcmb.Fill(float(mass), float(tanb), bbcmbXs)
 
-hisfile = r.TFile("$CMSSW_BASE/src/higgsContribution.model{model}.tolerance{tolerance}.contr{contr}.mass{mass}.{log}root".format(model=options.model, tolerance=options.massTolerance, contr=options.higgsContribution, mass=options.mass, log="logMass." if options.logMass else ""), "RECREATE")
+hisfile = r.TFile("$CMSSW_BASE/src/higgsContributions/higgsContribution.model{model}.tolerance{tolerance}.reference{reference}.contr{contr}.mass{mass}.{log}root".format(model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, mass=options.mass, log="logMass." if options.logMass else ""), "RECREATE")
 
-massDiffH.Write()
-massDiffh.Write()
+massDiff2.Write()
+massDiff1.Write()
 cluster.Write()
 
 ggAXsBR.Write()
