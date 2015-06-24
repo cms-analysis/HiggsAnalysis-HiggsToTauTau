@@ -147,10 +147,10 @@ else :
         if i==0 :
             if options.verbosity :
                 print "MASS in the TREE =", staff.mh, staff.type
-        if staff.type<0 : #SM Hypothesis ist eigentlicht <0 ?
+        if staff.type<0 :
             hSM.Fill(staff.q)
             v_SM.append(staff.q)
-        elif staff.type>0 : #MSSM Hypothesis ist eigentlic >0 ?
+        elif staff.type>0 :
             hMSSM.Fill(staff.q)
             v_MSSM.append(staff.q)
         else :
@@ -172,17 +172,57 @@ else :
     #    print "Please edit the code and change the sign of q when filling histos and vectors in the loop on tree entries"
     #    exit(1)
 
-    ### caculation of CLs with binned histo
+    ### calculation of median and StdDev of the histo to identify fit failures.
     medianSM=v_SM[int(ntoysSM/2)]
     medianMSSM=v_MSSM[int(ntoysMSSM/2)]
     medianObs=v_Obs[int(hObs.GetEntries()/2)]
-    if options.verbosity :
-        print "Toys generated for SM/MSSM:", ntoysSM, ntoysMSSM
-        print "Mean of SM/MSSM hypothesis:", hSM.GetMean(), hMSSM.GetMean()
-        print "RMS of SM/MSSM hypothesis:", hSM.GetRMS(), hMSSM.GetRMS()
-        print "Median of SM/MSSM hypotheses:", medianSM, medianMSSM
-        print "Median of observed", medianObs #, v_Obs[0]
+    StdDevSM=hSM.GetStdDev()
+    StdDevMSSM=hMSSM.GetStdDev()
+    StdDevObs=hObs.GetStdDev()
+    #if options.verbosity :
+    print "Toys generated for SM/MSSM before clearing of combine errors:", ntoysSM, ntoysMSSM
+    print "Mean of SM/MSSM hypothesis:", hSM.GetMean(), hMSSM.GetMean()
+    print "RMS of SM/MSSM hypothesis:", hSM.GetRMS(), hMSSM.GetRMS()
+    print "Median of SM/MSSM hypotheses:", medianSM, medianMSSM
+    print "Standard Deviation of SM/MSSM hypothesis:", hSM.GetStdDev(), hMSSM.GetStdDev()
+    print "Median of observed", medianObs #, v_Obs[0]
+    print "Standard Deviation of observed", StdDevObs #, v_Obs[0]
 
+    
+    ### dropping of the distributions values due to combine errors (+/-5sigma from median)
+    for i in range(hSM.GetNbinsX()) :
+        hSM.SetBinContent(i, 0)
+    for i in range(hMSSM.GetNbinsX()) :
+        hMSSM.SetBinContent(i, 0)
+    for i in range(hObs.GetNbinsX()) :
+        hObs.SetBinContent(i, 0)
+    hObs.ResetStats()
+    hMSSM.ResetStats()
+    hSM.ResetStats()
+
+    for i in range(tree.GetEntries()) :
+        tree.GetEntry(i);
+        if i==0 :
+            if options.verbosity :
+                print "MASS in the TREE =", staff.mh, staff.type
+        if staff.type<0 :
+            if (staff.q<medianSM+5*StdDevSM) and (staff.q>medianSM-5*StdDevSM) :
+                hSM.Fill(staff.q)
+        elif staff.type>0 :
+            if (staff.q<medianMSSM+5*StdDevMSSM) and (staff.q>medianMSSM-5*StdDevMSSM) :
+                hMSSM.Fill(staff.q)
+        else :
+            if options.verbosity :
+                print "observed:", staff.q
+            if (staff.q<medianObs+5*StdDevObs) and (staff.q>medianObs-5*StdDevObs) :
+                hObs.Fill(staff.q)      
+    ntoysSM=int(hSM.GetEntries());
+    ntoysMSSM=int(hMSSM.GetEntries());
+
+    #if options.verbosity :
+    print "Toys generated for SM/MSSM after clearing of combine errors:", ntoysSM, ntoysMSSM
+
+    ### calculation of CLs with binned histo
     integralSM=hSM.Integral()
     integralMSSM=hMSSM.Integral()
 
@@ -223,16 +263,19 @@ else :
     tailSMobs          =hSM.Integral  (1,hObs.FindBin(medianObs))
     tailMSSMobs        =hMSSM.Integral(1,hObs.FindBin(medianObs))
 
-    if options.verbosity :
-        print "RESULT WITH BINNED HISTO"
-        print "tailSMexp", tailSMexp, "  tailMSSMexp", tailMSSMexp, "  tailSMobs", tailSMobs, "  tailMSSMobs", tailMSSMobs
-        print "-2 sigma separation power", tailMSSMminus2sigma/tailSMminus2sigma
-        print "-1 sigma separation power", tailMSSMminus1sigma/tailSMminus1sigma
-        print "Expected separation power", tailMSSMexp/tailSMexp
-        print "+1 sigma separation power", tailMSSMplus1sigma/tailSMplus1sigma
-        print "+2 sigma separation power", tailMSSMplus2sigma/tailSMplus2sigma
-        print "Observed separation power", tailMSSMobs/tailSMobs
-
+    #if options.verbosity :
+    print "RESULT WITH BINNED HISTO"
+    print "tailSMobs", tailSMobs, "  tailMSSMobs", tailMSSMobs
+    print "tailSMm2s", tailSMminus2sigma, "  tailMSSMm2s", tailMSSMminus2sigma, "  tailSMm1s", tailSMminus1sigma, "  tailMSSMm1s", tailMSSMminus1sigma
+    print "tailSMexp", tailSMexp, "  tailMSSMexp", tailMSSMexp
+    print "tailSMp1s", tailSMplus1sigma, "  tailMSSMp1s", tailMSSMplus1sigma, "  tailSMp2s", tailSMplus2sigma, "  tailMSSMp2s", tailMSSMplus2sigma
+    print "-2 sigma separation power", tailMSSMminus2sigma/tailSMminus2sigma
+    print "-1 sigma separation power", tailMSSMminus1sigma/tailSMminus1sigma
+    print "Expected separation power", tailMSSMexp/tailSMexp
+    print "+1 sigma separation power", tailMSSMplus1sigma/tailSMplus1sigma
+    print "+2 sigma separation power", tailMSSMplus2sigma/tailSMplus2sigma
+    print "Observed separation power", tailMSSMobs/tailSMobs
+    
 
     ### Rebinning needed for plotting and fitting
     hSM.Rebin(1000)
@@ -364,8 +407,8 @@ else :
     leg = ROOT.TLegend(0.12,0.7,0.3,0.88)
     leg.SetFillColor(0)
     leg.SetBorderSize(0)
-    leg.AddEntry(hSM,  "  H_{\text{SM}+b}","f")
-    leg.AddEntry(hMSSM,"  H_{\text{MSSM}+b}","f")
+    leg.AddEntry(hSM,  "  H_{SM+b}","f")
+    leg.AddEntry(hMSSM,"  H_{MSSM+b}","f")
     leg.Draw()
 
 
