@@ -277,6 +277,8 @@ class Impacts(SpecialCombine):
         help=('Find the crossings of all the POIs. Must have the output from this before running with --doFits'))
     group.add_argument('--doFits', action='store_true',
         help=('Actually run the fits for the nuisance parameter impacts, otherwise just looks for the results'))
+    group.add_argument('--output', '-o',
+        help=('write output json to a file'))
   def run_method(self):
     offset      = self.args.offset
     advance     = self.args.advance
@@ -328,7 +330,11 @@ class Impacts(SpecialCombine):
           pres.update({p : paramScanRes[param][p], 'impact_'+p : (paramScanRes[param][p][2] - paramScanRes[param][p][0])/2.})
         res['params'].append(pres)
         counter = counter + advance
-    print json.dumps(res, sort_keys=True, indent=2, separators=(',', ': '))
+    jsondata = json.dumps(res, sort_keys=True, indent=2, separators=(',', ': '))
+    print jsondata
+    if args.output is not None:
+      with open(args.output, 'w') as out_file:
+        out_file.write(jsondata)
     if len(missing) > 0:
       print 'Missing inputs: ' + str(missing)
 
