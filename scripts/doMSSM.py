@@ -478,6 +478,7 @@ if options.update_setup :
                                 filename="{DIR}/{TARGET}-SMHbkg/{CHN}/cgs-mssm-{PERIOD}-0{CATEGORY}.conf".format(DIR=dir, TARGET=ana, CHN=chn, PERIOD=period, CATEGORY=category)
                                 print 'processing file:', filename
                                 cgs_adaptor.cgs_processes(filename,None,['ggH_SM125','qqH_SM125','VH_SM125'],None,None)
+                                #cgs_adaptor.cgs_processes(filename,['ggH_SM','qqH_SM','VH_SM'],None,['ggH','bbH'],None)
                 analysesv2.append(ana)                
                 analysesv2.append(ana+'-SMHbkg')
             analyses=analysesv2
