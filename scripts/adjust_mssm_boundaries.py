@@ -6,6 +6,7 @@ agroup.add_option("--xs-path",dest="xsPath", default="$CMSSW_BASE/src/higgsContr
 agroup.add_option("--nll-path",dest="nllPath", default="$CMSSW_BASE/src/LIMITS150428-mssm/bbb-asimov-mhmodp-NLL/mt/", type="string", help="")
 agroup.add_option("--model", dest="model", default="mhmodp",type="string", help="")
 agroup.add_option("--mass-tolerance", dest="massTolerance", default=0.15, type="float", help="")
+agroup.add_option("--tolerance-denumerator-max", dest="toleranceDenumeratorMax", default=False, action="store_true", help="")
 agroup.add_option("--reference-mass", dest="referenceMass", default="A", type="string", help="")
 agroup.add_option("--higgs-contribution",dest="higgsContribution", default="hHA", type="string", help="")
 agroup.add_option("--forbidden-region-level", dest="forbiddenRegionLevel", default=100, type="float", help="")
@@ -18,8 +19,8 @@ import ROOT as r
 import os
 
 # constructing the cross-section file, that determines the contributions of the Higgs bosons to (mA,tanb) points
-os.system("rm {xspath}higgsContribution.model{model}.tolerance{tolerance}.reference{reference}.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution))
-os.system("hadd {xspath}higgsContribution.model{model}.tolerance{tolerance}.reference{reference}.contr{contr}.root {xspath}higgsContribution.model{model}.tolerance{tolerance}.reference{reference}.contr{contr}.mass*.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution))
+os.system("rm {xspath}higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
+os.system("hadd {xspath}higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root {xspath}higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.mass*.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
 
 # constructing the file with CLs histograms
 os.system("rm {nllpath}NLLHistogram.Full.root".format(nllpath=options.nllPath))
@@ -28,7 +29,7 @@ os.system("hadd {nllpath}NLLHistogram.Full.root {nllpath}*/NLL*.root".format(nll
 # extracting contour of forbidden region.
 
 nllfile = r.TFile("{nllpath}NLLHistogram.Full.root".format(nllpath=options.nllPath), "READ")
-xsfile = r.TFile("{xspath}higgsContribution.model{model}.tolerance{tolerance}.reference{reference}.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution), "READ")
+xsfile = r.TFile("{xspath}higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""), "READ")
 
 xsboundaries = open("mssm_multidim_fit_boundaries.py", "w")
 xsboundaries.write("mssm_multidim_fit_boundaries = {\n")

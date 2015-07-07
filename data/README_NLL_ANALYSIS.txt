@@ -31,4 +31,4 @@
 	-> python HiggsAnalysis/HiggsToTauTau/scripts/NLLWorkflow.py (NEUER Script)
 		hierfür muss 2), 3) und 4) ausgeführt worden sein
 		hierfür ist ein NEUER Script dabei: HiggsAnalysis/HiggsToTauTau/scripts/multidimNLL.py
-		hierfür sind zwei NEUE Macros dabei: HiggsAnalysis/HiggsToTauTau/macros/NLLAnalysis.C, HiggsAnalysis/HiggsToTauTau/macros/NLLPlot.C
+		hierfür ist ein NEUES Macro dabei: HiggsAnalysis/HiggsToTauTau/macros/NLLPlot.C

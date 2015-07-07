@@ -8,6 +8,7 @@ agroup.add_option("--mass", dest="mass", type="float", help="")
 agroup.add_option("--model-file",dest="modelFile", default="$CMSSW_BASE/src/auxiliaries/models/out.mhmodp-8TeV-tanbHigh-nnlo.root", type="string", help="")
 agroup.add_option("--model", dest="model", default="mhmodp", type="string", help="")
 agroup.add_option("--mass-tolerance", dest="massTolerance", default=0.15, type="float", help="")
+agroup.add_option("--tolerance-denumerator-max", dest="toleranceDenumeratorMax", default=False, action="store_true", help="")
 agroup.add_option("--reference-mass", dest="referenceMass", default="A", type="string", help="")
 agroup.add_option("--higgs-contribution",dest="higgsContribution", default="hHA", type="string", help="")
 (options, args) = parser.parse_args()
@@ -49,6 +50,9 @@ bbhXsBR = r.TH2D('bbhXsBR', ";{massname}; tan#beta".format(massname=massaxisname
 ggcmb = r.TH2D('ggcmb', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
 bbcmb = r.TH2D('bbcmb', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
 
+masshhist = r.TH2D('massh',";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
+massHhist = r.TH2D('massH',";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
+
 for j in range(fulltanbpoints):
 	mass = options.mass
 	tanb = fulltanblist[j]
@@ -80,6 +84,9 @@ for j in range(fulltanbpoints):
 	bbAXsBR.Fill(float(mass), float(tanb), bbA)
 	bbHXsBR.Fill(float(mass), float(tanb), bbH)
 	bbhXsBR.Fill(float(mass), float(tanb), bbh)
+	
+	masshhist.Fill(float(mass), float(tanb), massh)
+	massHhist.Fill(float(mass), float(tanb), massH)
 
 	mdiff1, mdiff2 = 0,0
 	contr1, contr2, refcontr = False, False, False
@@ -145,7 +152,7 @@ for j in range(fulltanbpoints):
 	ggcmb.Fill(float(mass), float(tanb), ggcmbXs)
 	bbcmb.Fill(float(mass), float(tanb), bbcmbXs)
 
-hisfile = r.TFile("$CMSSW_BASE/src/higgsContributions/higgsContribution.model{model}.tolerance{tolerance}.reference{reference}.contr{contr}.mass{mass}.{log}root".format(model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, mass=options.mass, log="logMass." if options.logMass else ""), "RECREATE")
+hisfile = r.TFile("$CMSSW_BASE/src/higgsContributions/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.mass{mass}.{log}root".format(model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, mass=options.mass, log="logMass." if options.logMass else "", Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""), "RECREATE")
 
 massDiff2.Write()
 massDiff1.Write()
@@ -161,5 +168,8 @@ bbhXsBR.Write()
 
 ggcmb.Write()
 bbcmb.Write()
+
+masshhist.Write()
+massHhist.Write()
 
 hisfile.Close()

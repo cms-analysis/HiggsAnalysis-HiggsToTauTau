@@ -1,4 +1,4 @@
-void hist2Dbaseplot(TH2D* hist, const char* titlename, double zmin, double zmax, bool log=false, const char* ztitle="", double textsize=0.12){
+void hist2Dbaseplot(TH2D* hist, const char* titlename, double zmin, double zmax, bool log=false, const char* ztitle="", double textsize=0.12, Color_t latexcolor=1){
 
 	gPad->SetRightMargin(0.20);
 	gPad->SetTopMargin(0.05);
@@ -13,6 +13,7 @@ void hist2Dbaseplot(TH2D* hist, const char* titlename, double zmin, double zmax,
 	hist->GetZaxis()->SetTitleOffset(1.1);
 
 	TLatex* histtitle = new TLatex(120, 50, titlename);
+	histtitle->SetTextColor(latexcolor);
 	histtitle->SetTextSize(textsize);
 	histtitle->Draw("Same");
 	if(log)
@@ -98,6 +99,7 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 
 	TH2D* ggcmb = (TH2D*) XsFile->Get("ggcmb");
 	TH2D* bbcmb = (TH2D*) XsFile->Get("bbcmb");
+	TH2D* cluster = (TH2D*) XsFile->Get("cluster");
 
 	TH2D* globalNLLhist = (TH2D*) File->Get("globalNLLhist");
 	TH2D* fullNLLhist = (TH2D*) File->Get("fullNLLhist");
@@ -108,6 +110,9 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	TH2D* deltaNLLforqmu = (TH2D*) File->Get("deltaNLLforqmu");
 	TH2D* NLLdiff2D = (TH2D*) File->Get("NLLdiff2D");
 	TH2D* rNLLdiff2D = (TH2D*) File->Get("rNLLdiff2D");
+
+	TH2D* deltaNLLhist_heavy = (TH2D*) File->Get("deltaNLLhist_heavy");
+	TH2D* deltaNLLhist_light = (TH2D*) File->Get("deltaNLLhist_light");
 
 	TH1D* NLLdiff = new TH1D("NLLdiff", ";NLL_{mia} - NLL_{mda}",100, -6,6);
 	TH1D* rNLLdiff = new TH1D("rNLLdiff", ";NLL_{mia} - NLL_{mda}/NLL_{mda}",100, -1.5,1.5);
@@ -122,18 +127,32 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	TMultiGraph* gc1 =  exclusionObserved(hist1);
 	hist2Dbaseplot(hist1, "CL_{s}",0,1);
 	gc1->Draw("C");
+	TLegend* L = new TLegend(0.55,0.15,0.8,0.4);
+	TLine* CLsObs = new TLine();
+	CLsObs->SetLineColor(1);
+	CLsObs->SetLineWidth(2);
+	L->AddEntry(CLsObs,"CL_{s}^{obs}=0.05 ","l");
+	L->SetFillStyle(0);
+	L->SetBorderSize(0);
+	L->Draw("Same");
 	gPad->Update();
 
 	c1->cd(2);
 	TMultiGraph* gc2 = new TMultiGraph();
-	gc2 = exclusionObserved(hist5, 1, forbiddenRegionLevel);
+	gc2 = exclusionObserved(hist5, 2, forbiddenRegionLevel);
 	gc2->SetName("forbiddenRegion");
-	hist2Dbaseplot(hist2, "q_{#mu}",0.01,10000,true);
+	TList* gc2list = gc2->GetListOfGraphs();
+	for(int i=0;i<gc2list->GetSize();i++)
+	{
+		((TGraph*)gc2list->At(i))->SetLineWidth(-603);
+		((TGraph*)gc2list->At(i))->SetFillStyle(3005);
+	}
+	hist2Dbaseplot(hist2, "q_{#mu}",0.01,10000,true,"",0.12,kGray);
 	gc2->Draw("C");
 	gPad->Update();
 
 	c1->cd(3);
-	hist2Dbaseplot(hist3, "q_{A}",0.01,10000,true);
+	hist2Dbaseplot(hist3, "q_{A}",0.01,10000,true,"",0.12,kGray);
 	gc2->Draw("C");
 	gPad->Update();
 
@@ -141,6 +160,7 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	TMultiGraph* gc4 =  exclusionObserved(hist4);
 	hist2Dbaseplot(hist4, "CL_{s}",0,1);
 	gc4->Draw("C");
+	L->Draw("Same");
 	gPad->Update();
 
 	c1->cd(5);
@@ -193,10 +213,10 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	c3->Divide(3,1);
 
 	c3->cd(1);
-	hist2Dbaseplot(mhist1, "|m_{A}-m_{h}|/m_{A}",0,1);
+	hist2Dbaseplot(mhist1, "|m_{A}-m_{h}|/m_{A}",0,1,false,"",0.12,kGray+2);
 
 	c3->cd(2);
-	hist2Dbaseplot(mhist2, "|m_{A}-m_{H}|/m_{A}",0,1);
+	hist2Dbaseplot(mhist2, "|m_{A}-m_{H}|/m_{A}",0,1,false,"",0.12,kGray);
 
 	c3->cd(3);
 	gPad->SetRightMargin(0.20);
@@ -210,29 +230,18 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	cluster->GetZaxis()->SetTitleOffset(1.1);
 	cluster->GetZaxis()->SetRangeUser(0.,7.);
 
-	/*TMarker* A = new TMarker();
-	A->SetMarkerStyle(21);
-	A->SetMarkerColor(kCyan+2);
-
-	TMarker* hA = new TMarker();
-	hA->SetMarkerStyle(21);
-	hA->SetMarkerColor(kGreen-9);
-
-	TMarker* HA = new TMarker();
-	HA->SetMarkerStyle(21);
-	HA->SetMarkerColor(kOrange+1);
-
-	TMarker* hHA = new TMarker();
-	hHA->SetMarkerStyle(21);
-	hHA->SetMarkerColor(kRed+3);
-
-	TLegend* l = new TLegend(0.38,0.52,0.78,0.92);
-	l->SetHeader("Higgs contribution");
-	l->AddEntry(A,"A","p");
-	l->AddEntry(hA,"h+A","p");
-	l->AddEntry(HA,"H+A","p");
-	l->AddEntry(hHA,"h+H+A","p");
-	l->Draw("Same");*/
+	TPaveText* pt = new TPaveText(630,28,980,58);
+	pt->AddText("Contributions");
+	pt->AddText("1: h");
+	pt->AddText("2: H");
+	pt->AddText("3: h+H");
+	pt->AddText("4: A");
+	pt->AddText("5: h+A");
+	pt->AddText("6: H+A");
+	pt->AddText("7: h+H+A");
+	pt->SetFillStyle(0);
+	pt->SetBorderSize(0);
+	pt->Draw("Same");
 	gPad->Update();
 
 	c3->SaveAs("massDifferences.pdf");
@@ -322,29 +331,29 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	double max = globalNLLhist->GetMaximum();
 	double delta = max - min;
 	globalNLLhist->GetZaxis()->SetLabelSize(0.035);
-	hist2Dbaseplot(globalNLLhist, "NLL^{glob}",min, min + delta*1.01);
+	hist2Dbaseplot(globalNLLhist, "NLL^{glob}",min, min + delta*1.01,false,"",0.12,kGray+1);
 	
 
 	c->cd(2);
-	fullNLLhist->GetZaxis()->SetLabelSize(0.05);
-	hist2Dbaseplot(fullNLLhist, "full NLL",0.01,10000,true);
+	deltaNLLhist->GetZaxis()->SetLabelSize(0.05);
+	hist2Dbaseplot(deltaNLLhist, "#DeltaNLL",0.001,10000,true,"",0.12,kGray+2);
 
 	c->cd(3);
-	deltaNLLhist->GetZaxis()->SetLabelSize(0.05);
-	hist2Dbaseplot(deltaNLLhist, "#DeltaNLL",0.001,10000,true);
+	fullNLLhist->GetZaxis()->SetLabelSize(0.05);
+	hist2Dbaseplot(fullNLLhist, "full NLL",0.01,10000,true,"",0.12,kGray+2);
 
 	c->cd(4);
 	NLLmuGlobalforqmu->GetZaxis()->SetLabelSize(0.035);
-	hist2Dbaseplot(NLLmuGlobalforqmu, "NLL^{glob}",min, min + delta*1.01);
+	hist2Dbaseplot(NLLmuGlobalforqmu, "NLL^{glob}",min, min + delta*1.01,false,"",0.12,kGray+1);
 
 
 	c->cd(5);
-	NLLmuFixedforqmu->GetZaxis()->SetLabelSize(0.05);
-	hist2Dbaseplot(NLLmuFixedforqmu, "full NLL",0.01,10000,true);
+	deltaNLLforqmu->GetZaxis()->SetLabelSize(0.05);
+	hist2Dbaseplot(deltaNLLforqmu, "#DeltaNLL",0.001,10000,true,"",0.12,kGray+2);
 
 	c->cd(6);
-	deltaNLLforqmu->GetZaxis()->SetLabelSize(0.05);
-	hist2Dbaseplot(deltaNLLforqmu, "#DeltaNLL",0.001,10000,true);
+	NLLmuFixedforqmu->GetZaxis()->SetLabelSize(0.05);
+	hist2Dbaseplot(NLLmuFixedforqmu, "full NLL",0.01,10000,true,"",0.12,kGray+2);
 	
 	c->SaveAs("deltaNLL.pdf");
 	
@@ -402,16 +411,46 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	gPad->SetTopMargin(0.05);
 	TMultiGraph* excl2Dcompare = new TMultiGraph();
 	TMultiGraph* exclNLLcompare = new TMultiGraph();
+	TMultiGraph* CLscompare = new TMultiGraph();
 
 	excl2Dcompare = exclusionObserved(CLsbHist2D,1);
 	exclNLLcompare = exclusionObserved(CLsbhistNLL,2);
+	CLscompare = exclusionObserved(hist4,3);
 
 	excl2Dcompare->Draw("C");
 	exclNLLcompare->Draw("C");
+	CLscompare->Draw("C");
+
+	TLegend* l = new TLegend(0.15,0.6,0.35,0.9);
+	TLine* md = new TLine();
+	md->SetLineColor(1);
+	md->SetLineWidth(2);
+	TLine* mi = new TLine();
+	mi->SetLineColor(2);
+	mi->SetLineWidth(2);
+	TLine* cl = new TLine();
+	cl->SetLineColor(3);
+	cl->SetLineWidth(2);
+	l->AddEntry(md, "CL_{s+b} mda","l");
+	l->AddEntry(mi, "CL_{s+b} mia","l");
+	l->AddEntry(cl, "CL_{s} mda","l");
+	l->SetFillStyle(0);
+	l->SetBorderSize(0);
+	l->Draw("Same");
 
 	gPad->Update();
 
 	e->SaveAs("CLsbComparison.pdf");
+
+	TCanvas* f = new TCanvas("f","f", 866, 350);
+	f->Divide(2,1);
+	f->cd(1);
+	deltaNLLhist_heavy->GetZaxis()->SetLabelSize(0.05);
+	hist2Dbaseplot(deltaNLLhist_heavy, "#DeltaNLL_{heavy}",0.001,10000,true,"",0.12,kGray+2);
+	f->cd(2);
+	deltaNLLhist_light->GetZaxis()->SetLabelSize(0.05);
+	hist2Dbaseplot(deltaNLLhist_light, "#DeltaNLL_{light}",0.001,10000,true,"",0.12,kGray+2);
+	f->SaveAs("lightvsheavy.pdf");
 
 	File->WriteTObject(CLsdiff,"");
 	File->WriteTObject(qAdiff,"");
