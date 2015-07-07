@@ -54,9 +54,9 @@ bgroup.add_option("--cycles", dest="cycles", default="1-1", type="string",
                   help="Number of submission cycles for crab job submission. The options constitutes of two integers seperated by a minus sign, e.g. '7-10'. This would mean the script would run cycles 10, 9, 8, and 7. It makes combining toys easier '--HypothesisTest'. in The option only applies to the main options --CLs, --tanb and --HypothesisTest. For all other main options it has no effect. One submission cycle consists of 50 crab jobs. [Default: 1]")
 bgroup.add_option("--collect", dest="optCollect", default=False, action="store_true",
                   help="Collect toys for HypothesisTest/significance/limit/p-value/feldman-cousins and calculate observed using lxb (lxq). To run with this options the toys have to be produced beforehand. [Default: False]")
-bgroup.add_option("--rMin", dest="rMin", default="-5", type="string",
+bgroup.add_option("--rMin", dest="rMin", default="-999", type="string",
                   help="Set the minimum value of signal strenth used for fits and prior to the limit or significance calculation. [Default: -5]")
-bgroup.add_option("--rMax", dest="rMax", default= "5", type="string",
+bgroup.add_option("--rMax", dest="rMax", default= "999", type="string",
                   help="Set the maximum value of signal strenth used for fits and prior to the limit or significance calculation. [Default: -5]")
 bgroup.add_option("--options", dest="opt", default="", type="string",
                   help="You can use this string for additional options that can be passed on to the scripts that are executed within this script. NB: these options should be enclosed by \"...\". [Default: \"\"]")
@@ -235,14 +235,14 @@ def model_config(model_name) :
         opts  = "--physics-model-options 'modes=ggH;ggHRange=0:GGH-BOUND'"
     elif model_name=="ggH-mlfit" :
         model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
-        opts  = "--physics-model-options 'modes=ggH;ggHRange=-GGH-BOUND:GGH-BOUND'"
+        opts  = "--physics-model-options 'modes=ggH;ggHRange=-GGH-BOUND:GGH-BOUND;bbHRange=-BBH-BOUND:BBH-BOUND'"
     ## MSSM bbH while ggH is profiled (BBH-BOUND will be resolved in limit.create_card_workspace_with_physics_model)
     elif model_name=="bbH" :
         model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
         opts  = "--physics-model-options 'modes=bbH;bbHRange=0:BBH-BOUND'"
     elif model_name=="bbH-mlfit" :
         model = "--physics-model 'tmp=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
-        opts  = "--physics-model-options 'modes=bbH;bbHRange=-BBH-BOUND:BBH-BOUND'"   
+        opts  = "--physics-model-options 'modes=bbH;bbHRange=-BBH-BOUND:BBH-BOUND;ggRange=-GGH-BOUND:GGH-BOUND'"   
     ## Hhh while others are profiled  
     elif model_name=="Hhh" :
         model = "--physics-model 'tmp=HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel'"             
@@ -386,7 +386,7 @@ if options.optMLFit :
             if mass == 'common' :
                 continue
             if options.printOnly :
-                print"limit.py --max-likelihood {MODEL} {OPTS} {STABLE} --rMin {RMIN} --rMax {RMAX} {HIDE} {DIR}".format(DIR=dir, MODEL=model, OPTS=opts, STABLE=stable, RMIN=options.rMin, RMAX=options.rMax,HIDE=hidefit)
+                print "limit.py --max-likelihood {MODEL} {OPTS} {STABLE} --rMin {RMIN} --rMax {RMAX} {HIDE} {DIR}".format(DIR=dir, MODEL=model, OPTS=opts, STABLE=stable, RMIN=options.rMin, RMAX=options.rMax,HIDE=hidefit)
             else :
                 os.system("limit.py --max-likelihood {STABLE} {MODEL} {OPTS} --rMin {RMIN} --rMax {RMAX} {HIDE} {USER} {DIR}".format(
                     STABLE=stable, RMIN=options.rMin, RMAX=options.rMax, HIDE=hidefit, USER=options.opt, DIR=dir, MODEL=model, OPTS=opts))
