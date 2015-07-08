@@ -28,51 +28,51 @@ layout = cms.PSet(
     ## define output label
     outputLabel = cms.string("scan"),
     ## define masspoints for limit plot
-    masspoints = cms.vdouble(90+10*m for m in range(92)
-    #90
-   #,100
+    masspoints = cms.vdouble(
+    90
+   ,100
    #,110
-   #,120
-   #,125
-   #,130
-   #,140
+   ,120
+   ,125
+   ,130
+   ,140
    #,150
-   #,160
+   ,160
    #,170
-   #,180
+   ,180
    #,190
-   #,200
+   ,200
    #,210
    #,220
    #,230
    #,240
-   #,250
+   ,250
    #,275
-   #,300
+   ,300
    #,325
-   #,350
+   ,350
    #,375
-   #,400
+   ,400
    #,425
-   #,450
+   ,450
    #,475
-   #,500
+   ,500
    #,550
-   #,600
+   ,600
    #,650
-   #,700
+   ,700
    #,750
-   #,800
+   ,800
    #,850
-   #,900
+   ,900
    #,950
-   #,1000
+   ,1000
     ),
     #masspoints = cms.vdouble(140),
     ## is this mssm?
     mssm = cms.bool(True),
     ## make a temperature plot?
-    temp = cms.bool(True),
+    temp = cms.bool(False),
     ## draw the SM expectation
     drawSM = cms.bool(False),
     ## apply smoothing before plotting?
