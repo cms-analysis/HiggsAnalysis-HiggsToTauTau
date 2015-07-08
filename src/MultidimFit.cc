@@ -100,14 +100,9 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory, std::string typ)
       std::cout << "open file: " << fullpath << std::endl;
       TFile* file_ = TFile::Open(fullpath); if(!file_){ std::cout << "--> TFile is corrupt: skipping masspoint." << std::endl; continue; }
       TTree* limit = (TTree*) file_->Get("limit"); if(!limit){ std::cout << "--> TTree is corrupt: skipping masspoint." << std::endl; continue; }
-      float deltaNLL, x, y;
-		double prefitNLL, postfitNLL;
-      TH2F* scan2D_delta = new TH2F("scan2D_delta", "", nbins, xmin, xmax, nbins, ymin, ymax);
-
-      limit->SetBranchAddress("deltaNLL", &deltaNLL );
-		limit->SetBranchAddress("nll", &prefitNLL);
-		limit->SetBranchAddress("nll0", &postfitNLL);
-
+      float nll, x, y;
+      TH2F* scan2D = new TH2F("scan2D", "", nbins, xmin, xmax, nbins, ymin, ymax);
+      limit->SetBranchAddress("deltaNLL", &nll );  
       std::string xbranch = (CVCF || RVRF || CBCTAU || CLCQ) ? xval.c_str() : (std::string("r_")+xval).c_str();
       std::string ybranch = (CVCF || RVRF || CBCTAU || CLCQ) ? yval.c_str() : (std::string("r_")+yval).c_str();
       limit->SetBranchAddress(xbranch.c_str() , &x);  
@@ -117,20 +112,16 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory, std::string typ)
       database.open(TString::Format("%s/%d/database_%d.out", directory, (int)mass, (int)mass)); 
       for(int i=0; i<nevent; ++i){
 	limit->GetEvent(i);
-	if(i==0)
-	{
-		database << "Absolute value at minimum (best fit): " << std::setprecision(12) << prefitNLL + postfitNLL << std::endl;
-	}
-	if(scan2D_delta->GetBinContent(scan2D_delta->FindBin(x,y))==0){
-	  scan2D_delta->Fill(x, y, deltaNLL);
-	  database << x << " " << y << " " << deltaNLL << std::endl;
+	if(scan2D->GetBinContent(scan2D->FindBin(x,y))==0){
+	  // catch small negative values that might occure due to rounding
+	  scan2D->Fill(x, y, fabs(nll));
+	  database << x << " " << y << " " << fabs(nll) << std::endl; 
 	}
       }
       plot_rootname =TString::Format("%s/%d/%s-%s-%s-%d.root", directory, (int)mass, output_.c_str(), label_.c_str(), model_.c_str(), (int)mass);
       Fout = new TFile(plot_rootname.c_str(), "RECREATE");
       gFile = file_;
-      contour2D(xbranch.c_str(), nbins, xmin, xmax, ybranch.c_str(), nbins, ymin, ymax, 1.0, 1.0, Fout);
-		Fout->WriteTObject(scan2D_delta,0);
+      contour2D(xbranch.c_str(), nbins, xmin, xmax, ybranch.c_str(), nbins, ymin, ymax, 1.0, 1.0, Fout);  
       file_->Close();
     }
     else if(typ=="feldman-cousins"){
