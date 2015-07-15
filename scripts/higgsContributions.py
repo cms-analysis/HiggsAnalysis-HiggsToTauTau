@@ -53,6 +53,8 @@ bbcmb = r.TH2D('bbcmb', ";{massname}; tan#beta".format(massname=massaxisname), m
 masshhist = r.TH2D('massh',";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
 massHhist = r.TH2D('massH',";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
 
+massclusterhist = r.TH2D('masscluster',";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
+
 for j in range(fulltanbpoints):
 	mass = options.mass
 	tanb = fulltanblist[j]
@@ -93,10 +95,15 @@ for j in range(fulltanbpoints):
 	counter1, counter2, refcounter = 0,0,0
 	gg1, gg2, ggref = 0,0,0
 	bb1, bb2, bbref = 0,0,0
+	mass1, mass2, massref = 0,0,0
 
 	if options.referenceMass == "A":
-		mdiff1 = abs((float(truemass)-massh)/float(truemass))
-		mdiff2 = abs((float(truemass)-massH)/float(truemass))
+		if options.toleranceDenumeratorMax:
+			mdiff1 = abs((float(truemass)-massh)/max(massh,float(truemass)))
+			mdiff2 = abs((float(truemass)-massH)/max(massH,float(truemass)))
+		else:
+			mdiff1 = abs((float(truemass)-massh)/float(truemass))
+			mdiff2 = abs((float(truemass)-massH)/float(truemass))
 
 		contr1 = options.higgsContribution.find("h") != -1
 		contr2 = options.higgsContribution.find("H") != -1
@@ -105,10 +112,15 @@ for j in range(fulltanbpoints):
 		counter1, counter2, refcounter = 1, 2, 4
 		gg1, gg2, ggref = ggh, ggH, ggA
 		bb1, bb2, bbref = bbh, bbH, bbA
+		mass1, mass2, massref = massh, massH, float(truemass)
 
 	if options.referenceMass == "H":
-		mdiff1 = abs((massH-massh)/massH)
-		mdiff2 = abs((massH-float(truemass))/massH)
+		if options.toleranceDenumeratorMax:
+			mdiff1 = abs((massH-massh)/max(massh,massH))
+			mdiff2 = abs((massH-float(truemass))/max(float(truemass),massH))
+		else:
+			mdiff1 = abs((massH-massh)/massH)
+			mdiff2 = abs((massH-float(truemass))/massH)
 
 		contr1 = options.higgsContribution.find("h") != -1
 		contr2 = options.higgsContribution.find("A") != -1
@@ -117,10 +129,15 @@ for j in range(fulltanbpoints):
 		counter1, counter2, refcounter = 1, 4, 2
 		gg1, gg2, ggref = ggh, ggA, ggH
 		bb1, bb2, bbref = bbh, bbA, bbH
+		mass1, mass2, massref = massh, float(truemass), massH
 
 	if options.referenceMass == "h":
-		mdiff1 = abs((massh-float(truemass))/massh)
-		mdiff2 = abs((massh-massH)/massh)
+		if options.toleranceDenumeratorMax:
+			mdiff1 = abs((massh-float(truemass))/max(float(truemass),massh))
+			mdiff2 = abs((massh-massH)/max(massH,massh))
+		else:
+			mdiff1 = abs((massh-float(truemass))/massh)
+			mdiff2 = abs((massh-massH)/massh)
 
 		contr1 = options.higgsContribution.find("A") != -1
 		contr2 = options.higgsContribution.find("H") != -1
@@ -129,28 +146,33 @@ for j in range(fulltanbpoints):
 		counter1, counter2, refcounter = 4, 2, 1
 		gg1, gg2, ggref = ggA, ggH, ggh
 		bb1, bb2, bbref = bbA, bbH, bbh
-
+		mass1, mass2, massref = float(truemass), massH, massh
 
 	massDiff1.Fill(float(mass), float(tanb), mdiff1)
 	massDiff2.Fill(float(mass), float(tanb), mdiff2)
 
-	contribution, ggcmbXs, bbcmbXs = 0,0,0
+	contribution, ggcmbXs, bbcmbXs, masscluster = 0,0,0,0
 	if mdiff1 <= options.massTolerance and contr1:
 		contribution += counter1
 		ggcmbXs += gg1
 		bbcmbXs += bb1
+		masscluster += (gg1+bb1)*mass1
 	if mdiff2 <= options.massTolerance and contr2:
 		contribution += counter2
 		ggcmbXs += gg2
 		bbcmbXs += bb2
+		masscluster += (gg2+bb2)*mass2
 	if refcontr:
 		contribution += refcounter
 		ggcmbXs += ggref
 		bbcmbXs += bbref
+		masscluster += (ggref+bbref)*massref
+	masscluster /= (ggcmbXs+bbcmbXs)
 
 	cluster.Fill(float(mass), float(tanb), contribution)
 	ggcmb.Fill(float(mass), float(tanb), ggcmbXs)
 	bbcmb.Fill(float(mass), float(tanb), bbcmbXs)
+	massclusterhist.Fill(float(mass), float(tanb), masscluster)
 
 hisfile = r.TFile("$CMSSW_BASE/src/higgsContributions/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.mass{mass}.{log}root".format(model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, mass=options.mass, log="logMass." if options.logMass else "", Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""), "RECREATE")
 
@@ -171,5 +193,7 @@ bbcmb.Write()
 
 masshhist.Write()
 massHhist.Write()
+
+massclusterhist.Write()
 
 hisfile.Close()

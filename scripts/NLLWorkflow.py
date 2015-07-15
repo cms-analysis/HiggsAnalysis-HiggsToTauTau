@@ -12,7 +12,9 @@ agroup.add_option("--tolerance-denumerator-max", dest="toleranceDenumeratorMax",
 agroup.add_option("--reference-mass", dest="referenceMass", default="A", type="string", help="")
 agroup.add_option("--higgs-contribution", dest="higgsContribution", default="hHA", type="string", help="")
 agroup.add_option("--forbidden-region-level", dest="forbiddenRegionLevel", default=100, type="float", help="")
+agroup.add_option("--analysis", dest="analysis", default="plain", type="string", help="")
 agroup.add_option("--light-vs-heavy", dest="lightVsHeavy", default=False, action="store_true", help="")
+agroup.add_option("--higgs-bounds", dest="higgsBounds", default=False, action="store_true", help="")
 
 parser.add_option_group(agroup)
 
@@ -20,23 +22,35 @@ parser.add_option_group(agroup)
 
 import ROOT as r
 import os
+if options.higgsBounds:
+	for higgs in ["h", "A", "H"]:
+		# constructing the cross-section file, that determines the contributions of the Higgs bosons to (mA,tanb) points
+		os.system("rm {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=higgs, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
+		os.system("hadd {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.mass*.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=higgs, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
 
-# constructing the cross-section file, that determines the contributions of the Higgs bosons to (mA,tanb) points
-os.system("rm {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
-os.system("hadd {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.mass*.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
+	os.system("rm {nllpath}/NLLHistogram.Full.root".format(nllpath=options.nllPath))
+	os.system("hadd {nllpath}/NLLHistogram.Full.root {nllpath}/*/NLL*.root".format(nllpath=options.nllPath))
 
-# constructing the file with CLs histograms
-os.system("rm {nllpath}/NLLHistogram.Full.root".format(nllpath=options.nllPath))
-os.system("hadd {nllpath}/NLLHistogram.Full.root {nllpath}/*/NLL*.root".format(nllpath=options.nllPath))
+	# creating model independent histograms from 2d fits
+
+	os.system('python HiggsAnalysis/HiggsToTauTau/scripts/multidimNLL_HiggsBounds.py --nll-path="{nllpath}/NLLHistogram.Full.root" --ggH-bbH-path="{gghbbhpath}/" --xs-path={xspath} --model={model} --mass-tolerance={tolerance} {Max} --higgs-contribution={contr} --forbidden-region-level={frlevel} --analysis={analysis} {lightVsHeavy}'.format(nllpath=options.nllPath, gghbbhpath=options.ggHbbHPath, xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, contr=options.higgsContribution, Max = "--tolerance-denumerator-max" if options.toleranceDenumeratorMax else "", frlevel=options.forbiddenRegionLevel, analysis=options.analysis, lightVsHeavy="--light-vs-heavy" if options.lightVsHeavy else ""))
+else:
+	# constructing the cross-section file, that determines the contributions of the Higgs bosons to (mA,tanb) points
+	os.system("rm {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
+	os.system("hadd {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.mass*.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
+
+	# constructing the file with CLs histograms
+	os.system("rm {nllpath}/NLLHistogram.Full.root".format(nllpath=options.nllPath))
+	os.system("hadd {nllpath}/NLLHistogram.Full.root {nllpath}/*/NLL*.root".format(nllpath=options.nllPath))
 
 
-# creating model independent histograms from 2d fits
+	# creating model independent histograms from 2d fits
 
-os.system('python HiggsAnalysis/HiggsToTauTau/scripts/multidimNLL.py --nll-path="{nllpath}/NLLHistogram.Full.root" --ggH-bbH-path="{gghbbhpath}/" --xs-path={xspath} --model={model} --mass-tolerance={tolerance} {Max} --reference-mass={reference} --higgs-contribution={contr} --forbidden-region-level={frlevel} {lightVsHeavy}'.format(nllpath=options.nllPath, gghbbhpath=options.ggHbbHPath, xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max = "--tolerance-denumerator-max" if options.toleranceDenumeratorMax else "", frlevel=options.forbiddenRegionLevel, lightVsHeavy="--light-vs-heavy" if options.lightVsHeavy else ""))
+	os.system('python HiggsAnalysis/HiggsToTauTau/scripts/multidimNLL.py --nll-path="{nllpath}/NLLHistogram.Full.root" --ggH-bbH-path="{gghbbhpath}/" --xs-path={xspath} --model={model} --mass-tolerance={tolerance} {Max} --reference-mass={reference} --higgs-contribution={contr} --forbidden-region-level={frlevel} --analysis={analysis} {lightVsHeavy}'.format(nllpath=options.nllPath, gghbbhpath=options.ggHbbHPath, xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max = "--tolerance-denumerator-max" if options.toleranceDenumeratorMax else "", frlevel=options.forbiddenRegionLevel, analysis=options.analysis, lightVsHeavy="--light-vs-heavy" if options.lightVsHeavy else ""))
 
 # starting analysis of CLs file
 
-os.system("""root -l -b -q '$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/macros/NLLPlot.C("{nllpath}/NLLHistogram.Full.root", "{xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root", {frlevel})'""".format(nllpath=options.nllPath, xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else "", frlevel=options.forbiddenRegionLevel))
+os.system("""root -l -b -q '$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/macros/NLLPlot.C("{nllpath}/NLLHistogram.Full.root", "{xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root", {frlevel},{higgsBounds})'""".format(nllpath=options.nllPath, xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else "", frlevel=options.forbiddenRegionLevel, higgsBounds=1 if options.higgsBounds else 0))
 
 # copying produced plotfiles into the right folder
 

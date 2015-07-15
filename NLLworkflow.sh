@@ -1,5 +1,5 @@
 #!/bin/zsh
-python HiggsAnalysis/HiggsToTauTau/scripts/NLLWorkflow.py
+python HiggsAnalysis/HiggsToTauTau/scripts/NLLWorkflow.py --nll-path="$CMSSW_BASE/src/LIMITS-150707-mssm-500-30-30fb/plain-asimov-mhmodp-NLL/mt/" --mass-tolerance=0.2 --tolerance-denumerator-max --ggH-bbH-path="$CMSSW_BASE/src/LIMITS-150707-mssm-500-30-30fb/plain-asimov-ggH-bbH/" --higgs-bounds
 #python HiggsAnalysis/HiggsToTauTau/scripts/NLLWorkflow.py --nll-path="$CMSSW_BASE/src/LIMITS150512-mssm/bbb-asimov-mhmodp-NLL/mt/" --ggH-bbH-path="$CMSSW_BASE/src/LIMITS150512-mssm/bbb-asimov-ggH-bbH/" --model-masspoint="BG_only" --light-vs-heavy
 #python HiggsAnalysis/HiggsToTauTau/scripts/NLLWorkflow.py --nll-path="$CMSSW_BASE/src/LIMITS150527-mssm/bbb-asimov-mhmodp-NLL/mt/" --ggH-bbH-path="$CMSSW_BASE/src/LIMITS150527-mssm/bbb-asimov-ggH-bbH/" --model-masspoint="500_5" --light-vs-heavy
 #python HiggsAnalysis/HiggsToTauTau/scripts/NLLWorkflow.py --nll-path="$CMSSW_BASE/src/LIMITS150526-mssm/bbb-asimov-mhmodp-NLL/mt/" --ggH-bbH-path="$CMSSW_BASE/src/LIMITS150526-mssm/bbb-asimov-ggH-bbH/" --model-masspoint="500_30_120_only" --forbidden-region-level=95 --light-vs-heavy

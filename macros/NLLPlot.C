@@ -64,7 +64,7 @@ void set_plot_style()
     gStyle->SetNumberContours(NCont);
 }
 
-void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_BASE/src/higgsContributions/higgsContribution.modelmhmodp.tolerance0.15.referenceA.contrhHA.root", double forbiddenRegionLevel = 100.0)
+void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_BASE/src/higgsContributions/higgsContribution.modelmhmodp.tolerance0.15.referenceA.contrhHA.root", double forbiddenRegionLevel = 100.0, bool higgsBounds)
 {
 	set_plot_style();
 
@@ -99,7 +99,7 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 
 	TH2D* ggcmb = (TH2D*) XsFile->Get("ggcmb");
 	TH2D* bbcmb = (TH2D*) XsFile->Get("bbcmb");
-	TH2D* cluster = (TH2D*) XsFile->Get("cluster");
+	TH2D* cluster = (TH2D*) File->Get("combinedCluster");
 
 	TH2D* globalNLLhist = (TH2D*) File->Get("globalNLLhist");
 	TH2D* fullNLLhist = (TH2D*) File->Get("fullNLLhist");
@@ -221,6 +221,7 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	c3->cd(3);
 	gPad->SetRightMargin(0.20);
 	gPad->SetTopMargin(0.05);
+	std::cout << cluster << std::endl;
 	cluster->Draw("Colz");
 	cluster->SetStats(false);
 	cluster->GetXaxis()->SetTitleSize(0.05);
@@ -437,20 +438,21 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	l->SetFillStyle(0);
 	l->SetBorderSize(0);
 	l->Draw("Same");
-
 	gPad->Update();
-
 	e->SaveAs("CLsbComparison.pdf");
 
-	TCanvas* f = new TCanvas("f","f", 866, 350);
-	f->Divide(2,1);
-	f->cd(1);
-	deltaNLLhist_heavy->GetZaxis()->SetLabelSize(0.05);
-	hist2Dbaseplot(deltaNLLhist_heavy, "#DeltaNLL_{heavy}",0.001,10000,true,"",0.12,kGray+2);
-	f->cd(2);
-	deltaNLLhist_light->GetZaxis()->SetLabelSize(0.05);
-	hist2Dbaseplot(deltaNLLhist_light, "#DeltaNLL_{light}",0.001,10000,true,"",0.12,kGray+2);
-	f->SaveAs("lightvsheavy.pdf");
+	if(!higgsBounds)
+	{
+		TCanvas* f = new TCanvas("f","f", 866, 350);
+		f->Divide(2,1);
+		f->cd(1);
+		deltaNLLhist_heavy->GetZaxis()->SetLabelSize(0.05);
+		hist2Dbaseplot(deltaNLLhist_heavy, "#DeltaNLL_{heavy}",0.001,10000,true,"",0.12,kGray+2);
+		f->cd(2);
+		deltaNLLhist_light->GetZaxis()->SetLabelSize(0.05);
+		hist2Dbaseplot(deltaNLLhist_light, "#DeltaNLL_{light}",0.001,10000,true,"",0.12,kGray+2);
+		f->SaveAs("lightvsheavy.pdf");
+	}
 
 	File->WriteTObject(CLsdiff,"");
 	File->WriteTObject(qAdiff,"");

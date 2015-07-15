@@ -523,7 +523,7 @@ if options.optMDFit :
           stable = ' --limit-options=\"--userOpt=\\\" --minimizerStrategy=0 --minimizerTolerance=0.1 --cminPreScan --cminFallbackAlgo \\\\\\\"Minuit2,0:1.0\\\\\\\" --cminFallbackAlgo \\\\\\\"Minuit2,0:10.0\\\\\\\" --cminFallbackAlgo \\\\\\\"Minuit2,0:50.0\\\\\\\"\\\"\"'
         ## MSSM ggH versus bbH
         if "ggH-bbH" in options.fitModel :
-            cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-BBH-{MASS} --njob 2 --npoints 20000".format(PRE=prefix, MASS=mass)
+            cmd   = "lxb-multidim-fit.py --name {PRE}-GGH-BBH-{MASS} --njob 4 --npoints 10000".format(PRE=prefix, MASS=mass)
         ## MSSM cb versus ctau
         if "cb-ctau" in options.fitModel :
             cmd   = "lxb-multidim-fit.py --name {PRE}-CB-CTAU-{MASS} --njob 50 --npoints 800".format(PRE=prefix, MASS=mass)
