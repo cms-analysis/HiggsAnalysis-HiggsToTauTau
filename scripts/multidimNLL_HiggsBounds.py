@@ -34,6 +34,7 @@ import math
 r.gROOT.SetBatch(True)
 
 nllfile = r.TFile(options.nllPath, "UPDATE")
+bgfile = 0
 if not options.expected: bgfile = r.TFile(options.BGPath, "READ")
 xsfileA = r.TFile("{xspath}higgsContribution.model{model}.tolerance{tolerance}{Max}.referenceA.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""), "READ")
 xsfileH = r.TFile("{xspath}higgsContribution.model{model}.tolerance{tolerance}{Max}.referenceH.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""), "READ")
@@ -219,16 +220,21 @@ def histcreation(path):
 				deltaNLLhisth.SetBinContent(massbin, tanbbin, deltaNLLh)
 				
 				masslist = [massclusterA, massclusterH, massclusterh]
-				deltaNLLlist = []
+				deltaNLLlist = [deltaNLLA, deltaNLLH, deltaNLLh]
+				deltaNLLbest = 0
+				deltaNLLbestIndex = 0
 				if options.expected:
-					deltaNLLlist = [deltaNLLA, deltaNLLH, deltaNLLh]
-				else:
+                                        deltaNLLbest = max(deltaNLLlist)
+                                        deltaNLLbestIndex = deltaNLLlist.index(deltaNLLbest)
+                                else:
 					bg_deltaNLLhistA = bgfile.Get("deltaNLLhistA")
 					bg_deltaNLLhistH = bgfile.Get("deltaNLLhistH")
 					bg_deltaNLLhisth = bgfile.Get("deltaNLLhisth")
-					deltaNLLlist = [bg_deltaNLLhistA.GetBinContent(massbin, tanbbin),bg_deltaNLLhistH.GetBinContent(massbin, tanbbin),bg_deltaNLLhisth.GetBinContent(massbin, tanbbin)]
-				deltaNLLbest = max(deltaNLLlist)
-				deltaNLLbestIndex = deltaNLLlist.index(deltaNLLbest)
+					bg_deltaNLLlist = [bg_deltaNLLhistA.GetBinContent(massbin, tanbbin),bg_deltaNLLhistH.GetBinContent(massbin, tanbbin),bg_deltaNLLhisth.GetBinContent(massbin, tanbbin)]
+                                        bg_deltaNLLbest = max(bg_deltaNLLlist)
+                                        deltaNLLbestIndex = bg_deltaNLLlist.index(bg_deltaNLLbest)
+                                        deltaNLLbest = deltaNLLlist[deltaNLLbestIndex]
+				
 				globalNLLbest = globalNLLlist[deltaNLLbestIndex]
 				
 				clusterlist = [clusterA, clusterH, clusterh]
