@@ -4,6 +4,7 @@ parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...", descrip
 agroup = OptionGroup(parser,"MAIN OPTIONS", "")
 agroup.add_option("--nll-path",dest="nllPath", default="", type="string", help="")
 agroup.add_option("--ggH-bbH-path",dest="ggHbbHPath", default="", type="string", help="")
+agroup.add_option("--bg-path",dest="BGPath", default="", type="string", help="")
 agroup.add_option("--nll-offset", dest="nllOffSet", default="", type="string", help="")
 agroup.add_option("--xs-path",dest="xsPath", default="$CMSSW_BASE/src/higgsContributions/", type="string", help="")
 agroup.add_option("--model", dest="model", default="mhmodp",type="string", help="")
@@ -12,6 +13,7 @@ agroup.add_option("--tolerance-denumerator-max", dest="toleranceDenumeratorMax",
 agroup.add_option("--higgs-contribution",dest="higgsContribution", default="hHA", type="string", help="")
 agroup.add_option("--forbidden-region-level", dest="forbiddenRegionLevel", default=100, type="float", help="")
 agroup.add_option("--analysis", dest="analysis", default="plain", type="string", help="")
+agroup.add_option("--expected", dest="expected", default=False, action="store_true", help="")
 parser.add_option_group(agroup)
 
 (options, args) = parser.parse_args()
@@ -32,6 +34,7 @@ import math
 r.gROOT.SetBatch(True)
 
 nllfile = r.TFile(options.nllPath, "UPDATE")
+if not options.expected: bgfile = r.TFile(options.BGPath, "READ")
 xsfileA = r.TFile("{xspath}higgsContribution.model{model}.tolerance{tolerance}{Max}.referenceA.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""), "READ")
 xsfileH = r.TFile("{xspath}higgsContribution.model{model}.tolerance{tolerance}{Max}.referenceH.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""), "READ")
 xsfileh = r.TFile("{xspath}higgsContribution.model{model}.tolerance{tolerance}{Max}.referenceh.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""), "READ")
@@ -216,7 +219,14 @@ def histcreation(path):
 				deltaNLLhisth.SetBinContent(massbin, tanbbin, deltaNLLh)
 				
 				masslist = [massclusterA, massclusterH, massclusterh]
-				deltaNLLlist = [deltaNLLA, deltaNLLH, deltaNLLh]
+				deltaNLLlist = []
+				if options.expected:
+					deltaNLLlist = [deltaNLLA, deltaNLLH, deltaNLLh]
+				else:
+					bg_deltaNLLhistA = bgfile.Get("deltaNLLhistA")
+					bg_deltaNLLhistH = bgfile.Get("deltaNLLhistH")
+					bg_deltaNLLhisth = bgfile.Get("deltaNLLhisth")
+					deltaNLLlist = [bg_deltaNLLhistA.GetBinContent(massbin, tanbbin),bg_deltaNLLhistH.GetBinContent(massbin, tanbbin),bg_deltaNLLhisth.GetBinContent(massbin, tanbbin)]
 				deltaNLLbest = max(deltaNLLlist)
 				deltaNLLbestIndex = deltaNLLlist.index(deltaNLLbest)
 				globalNLLbest = globalNLLlist[deltaNLLbestIndex]
