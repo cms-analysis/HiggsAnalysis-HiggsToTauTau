@@ -31,6 +31,7 @@ import sys as s
 import os
 import glob as g
 import math
+r.gROOT.SetBatch(True)
 
 nllfile = r.TFile(options.nllPath, "UPDATE")
 xsfile = r.TFile("{xspath}higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""), "READ")
@@ -60,6 +61,8 @@ CLsbhistNLL.Reset()
 CLsbhistNLL.SetName("CLsbhistNLL")
 
 def histcreation(path):
+	canvas = r.TCanvas("c","c",400,400)
+	canvas.cd()
 	hist_copy = r.TH2D()
 	qmuHist2D_as.Copy(hist_copy)
 	hist_copy.SetContour(1)

@@ -37,6 +37,11 @@ fulltanbpoints = len(fulltanblist)-1
 
 massDiff1 = r.TH2D('massDiff1', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
 massDiff2 = r.TH2D('massDiff2', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
+
+massDiffAh = r.TH2D('massDiffAh', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
+massDiffAH = r.TH2D('massDiffAH', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
+massDiffHh = r.TH2D('massDiffHh', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
+
 cluster = r.TH2D('cluster', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
 
 ggAXsBR = r.TH2D('ggAXsBR', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
@@ -90,6 +95,16 @@ for j in range(fulltanbpoints):
 	masshhist.Fill(float(mass), float(tanb), massh)
 	massHhist.Fill(float(mass), float(tanb), massH)
 
+	mdiffAh, mdiffAH, mdiffHh = 0,0,0
+	if options.toleranceDenumeratorMax:
+		mdiffAh = abs((float(truemass)-massh)/max(massh,float(truemass)))
+		mdiffAH = abs((float(truemass)-massH)/max(massH,float(truemass)))
+		mdiffHh = abs((massH-massh)/max(massh,massH))
+
+	massDiffAh.Fill(float(mass), float(tanb), mdiffAh)
+	massDiffAH.Fill(float(mass), float(tanb), mdiffAH)
+	massDiffHh.Fill(float(mass), float(tanb), mdiffHh)
+
 	mdiff1, mdiff2 = 0,0
 	contr1, contr2, refcontr = False, False, False
 	counter1, counter2, refcounter = 0,0,0
@@ -99,8 +114,8 @@ for j in range(fulltanbpoints):
 
 	if options.referenceMass == "A":
 		if options.toleranceDenumeratorMax:
-			mdiff1 = abs((float(truemass)-massh)/max(massh,float(truemass)))
-			mdiff2 = abs((float(truemass)-massH)/max(massH,float(truemass)))
+			mdiff1 = mdiffAh
+			mdiff2 = mdiffAH
 		else:
 			mdiff1 = abs((float(truemass)-massh)/float(truemass))
 			mdiff2 = abs((float(truemass)-massH)/float(truemass))
@@ -116,8 +131,8 @@ for j in range(fulltanbpoints):
 
 	if options.referenceMass == "H":
 		if options.toleranceDenumeratorMax:
-			mdiff1 = abs((massH-massh)/max(massh,massH))
-			mdiff2 = abs((massH-float(truemass))/max(float(truemass),massH))
+			mdiff1 = mdiffHh
+			mdiff2 = mdiffAH
 		else:
 			mdiff1 = abs((massH-massh)/massH)
 			mdiff2 = abs((massH-float(truemass))/massH)
@@ -133,8 +148,8 @@ for j in range(fulltanbpoints):
 
 	if options.referenceMass == "h":
 		if options.toleranceDenumeratorMax:
-			mdiff1 = abs((massh-float(truemass))/max(float(truemass),massh))
-			mdiff2 = abs((massh-massH)/max(massH,massh))
+			mdiff1 = mdiffAh
+			mdiff2 = mdiffHh
 		else:
 			mdiff1 = abs((massh-float(truemass))/massh)
 			mdiff2 = abs((massh-massH)/massh)
@@ -176,9 +191,13 @@ for j in range(fulltanbpoints):
 
 hisfile = r.TFile("$CMSSW_BASE/src/higgsContributions/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.mass{mass}.{log}root".format(model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, mass=options.mass, log="logMass." if options.logMass else "", Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""), "RECREATE")
 
-massDiff2.Write()
 massDiff1.Write()
+massDiff2.Write()
 cluster.Write()
+
+massDiffAh.Write()
+massDiffAH.Write()
+massDiffHh.Write()
 
 ggAXsBR.Write()
 ggHXsBR.Write()

@@ -99,7 +99,7 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 
 	TH2D* ggcmb = (TH2D*) XsFile->Get("ggcmb");
 	TH2D* bbcmb = (TH2D*) XsFile->Get("bbcmb");
-	TH2D* cluster = (TH2D*) File->Get("combinedCluster");
+	TH2D* cluster = (TH2D*) XsFile->Get("cluster");
 
 	TH2D* globalNLLhist = (TH2D*) File->Get("globalNLLhist");
 	TH2D* fullNLLhist = (TH2D*) File->Get("fullNLLhist");
@@ -221,7 +221,6 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	c3->cd(3);
 	gPad->SetRightMargin(0.20);
 	gPad->SetTopMargin(0.05);
-	std::cout << cluster << std::endl;
 	cluster->Draw("Colz");
 	cluster->SetStats(false);
 	cluster->GetXaxis()->SetTitleSize(0.05);
@@ -452,6 +451,58 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 		deltaNLLhist_light->GetZaxis()->SetLabelSize(0.05);
 		hist2Dbaseplot(deltaNLLhist_light, "#DeltaNLL_{light}",0.001,10000,true,"",0.12,kGray+2);
 		f->SaveAs("lightvsheavy.pdf");
+	}
+	else
+	{
+		TH2D* combinedCluster = (TH2D*) File->Get("combinedCluster");
+		TH2D* combinedClusterMass = (TH2D*) File->Get("combinedClusterMass");
+		TH2D* deltaNLLhistA = (TH2D*) File->Get("deltaNLLhistA");
+		TH2D* deltaNLLhistH = (TH2D*) File->Get("deltaNLLhistH");
+		TH2D* deltaNLLhisth = (TH2D*) File->Get("deltaNLLhisth");
+
+		TCanvas* f = new TCanvas("f","f", 866, 350);
+		f->Divide(2,1);
+		f->cd(1);
+		hist2Dbaseplot(combinedClusterMass, "m_{cluster}^{combined}",50,1000,true,"[GeV]");
+		f->cd(2);
+		gPad->SetRightMargin(0.20);
+		gPad->SetTopMargin(0.05);
+		combinedCluster->Draw("Colz");
+		combinedCluster->SetStats(false);
+		combinedCluster->GetXaxis()->SetTitleSize(0.05);
+		combinedCluster->GetYaxis()->SetTitleSize(0.05);
+		combinedCluster->GetZaxis()->SetTitleSize(0.05);
+		combinedCluster->GetZaxis()->SetLabelSize(0.05);
+		combinedCluster->GetZaxis()->SetTitleOffset(1.1);
+		combinedCluster->GetZaxis()->SetRangeUser(0.,7.);
+
+		TPaveText* pt = new TPaveText(630,28,980,58);
+		pt->AddText("Contributions");
+		pt->AddText("1: h");
+		pt->AddText("2: H");
+		pt->AddText("3: h+H");
+		pt->AddText("4: A");
+		pt->AddText("5: h+A");
+		pt->AddText("6: H+A");
+		pt->AddText("7: h+H+A");
+		pt->SetFillStyle(0);
+		pt->SetBorderSize(0);
+		pt->Draw("Same");
+		gPad->Update();
+		f->SaveAs("combinedCluster.pdf");
+
+		TCanvas* f1 = new TCanvas("f1","f1",1300,350);
+		f1->Divide(3,1);
+		f1->cd(1);
+		deltaNLLhistA->GetZaxis()->SetLabelSize(0.05);
+		hist2Dbaseplot(deltaNLLhistA, "#DeltaNLL_{cluster(A)}",0.001,10000,true,"",0.12,kGray+2);
+		f1->cd(2);
+		deltaNLLhistH->GetZaxis()->SetLabelSize(0.05);
+		hist2Dbaseplot(deltaNLLhistH, "#DeltaNLL_{cluster(H)}",0.001,10000,true,"",0.12,kGray+2);
+		f1->cd(3);
+		deltaNLLhisth->GetZaxis()->SetLabelSize(0.05);
+		hist2Dbaseplot(deltaNLLhisth, "#DeltaNLL_{cluster(h)}",0.001,10000,true,"",0.12,kGray+2);
+		f1->SaveAs("higgsBoundsDeltaNLL.pdf");
 	}
 
 	File->WriteTObject(CLsdiff,"");

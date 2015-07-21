@@ -29,6 +29,7 @@ import sys as s
 import os
 import glob as g
 import math
+r.gROOT.SetBatch(True)
 
 nllfile = r.TFile(options.nllPath, "UPDATE")
 xsfileA = r.TFile("{xspath}higgsContribution.model{model}.tolerance{tolerance}{Max}.referenceA.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""), "READ")
@@ -63,6 +64,8 @@ CLsbhistNLL.Reset()
 CLsbhistNLL.SetName("CLsbhistNLL")
 
 def histcreation(path):
+	canvas = r.TCanvas("c","c",400,400)
+	canvas.cd()
 	hist_copy = r.TH2D()
 	qmuHist2D_as.Copy(hist_copy)
 	hist_copy.SetContour(1)
@@ -104,6 +107,7 @@ def histcreation(path):
 	fullNLLhist = r.TH2D()
 	globalNLLhist = r.TH2D()
 	combinedCluster = r.TH2D()
+	combinedClusterMass = r.TH2D()
 	NLLdiff2D = r.TH2D()
 	rNLLdiff2D = r.TH2D()
 
@@ -112,6 +116,7 @@ def histcreation(path):
 	ggcmbA.Copy(fullNLLhist)
 	ggcmbA.Copy(globalNLLhist)
 	ggcmbA.Copy(combinedCluster)
+	ggcmbA.Copy(combinedClusterMass)
 	ggcmbA.Copy(NLLdiff2D)
 	ggcmbA.Copy(rNLLdiff2D)
 
@@ -120,6 +125,7 @@ def histcreation(path):
 	fullNLLhist.Reset()
 	globalNLLhist.Reset()
 	combinedCluster.Reset()
+	combinedClusterMass.Reset()
 	NLLdiff2D.Reset()
 	rNLLdiff2D.Reset()
 
@@ -127,9 +133,26 @@ def histcreation(path):
 	deltaNLLhist.SetName("deltaNLLhist")
 	globalNLLhist.SetName("globalNLLhist")
 	combinedCluster.SetName("combinedCluster")
+	combinedClusterMass.SetName("combinedClusterMass")
 	fullNLLhist.SetName("fullNLLhist")
 	NLLdiff2D.SetName("NLLdiff2D")
 	rNLLdiff2D.SetName("rNLLdiff2D")
+
+	deltaNLLhistA = r.TH2D()
+	deltaNLLhistH = r.TH2D()
+	deltaNLLhisth = r.TH2D()
+
+	ggcmbA.Copy(deltaNLLhistA)
+	ggcmbA.Copy(deltaNLLhistH)
+	ggcmbA.Copy(deltaNLLhisth)
+
+	deltaNLLhistA.Reset()
+	deltaNLLhistH.Reset()
+	deltaNLLhisth.Reset()
+
+	deltaNLLhistA.SetName("deltaNLLhistA")
+	deltaNLLhistH.SetName("deltaNLLhistH")
+	deltaNLLhisth.SetName("deltaNLLhisth")
 
 	globalminformass = []
 	for mass in listofcompletedmasses:
@@ -174,6 +197,7 @@ def histcreation(path):
 				bbXsA = bbcmbA.GetBinContent(massbin, tanbbin)
 				xsBinA = scan2D_deltaA.FindBin(ggXsA,bbXsA) if scan2D_deltaA.FindBin(ggXsA,bbXsA) <= 40000 else 40000
 				deltaNLLA = scan2D_deltaA.GetBinContent(xsBinA)
+				deltaNLLhistA.SetBinContent(massbin, tanbbin, deltaNLLA)
 
 				ggHbbHfileH = r.TFile(ggHbbHmasspathH, "READ")
 				scan2D_deltaH = ggHbbHfileH.Get("scan2D_delta")
@@ -181,6 +205,7 @@ def histcreation(path):
 				bbXsH = bbcmbH.GetBinContent(massbin, tanbbin)
 				xsBinH = scan2D_deltaH.FindBin(ggXsH,bbXsH) if scan2D_deltaH.FindBin(ggXsH,bbXsH) <= 40000 else 40000
 				deltaNLLH = scan2D_deltaH.GetBinContent(xsBinH)
+				deltaNLLhistH.SetBinContent(massbin, tanbbin, deltaNLLH)
 
 				ggHbbHfileh = r.TFile(ggHbbHmasspathh, "READ")
 				scan2D_deltah = ggHbbHfileh.Get("scan2D_delta")
@@ -188,7 +213,9 @@ def histcreation(path):
 				bbXsh = bbcmbh.GetBinContent(massbin, tanbbin)
 				xsBinh = scan2D_deltah.FindBin(ggXsh,bbXsh) if scan2D_deltah.FindBin(ggXsh,bbXsh) <= 40000 else 40000
 				deltaNLLh = scan2D_deltah.GetBinContent(xsBinh)
-
+				deltaNLLhisth.SetBinContent(massbin, tanbbin, deltaNLLh)
+				
+				masslist = [massclusterA, massclusterH, massclusterh]
 				deltaNLLlist = [deltaNLLA, deltaNLLH, deltaNLLh]
 				deltaNLLbest = max(deltaNLLlist)
 				deltaNLLbestIndex = deltaNLLlist.index(deltaNLLbest)
@@ -196,6 +223,7 @@ def histcreation(path):
 				
 				clusterlist = [clusterA, clusterH, clusterh]
 				clusterbest = clusterlist[deltaNLLbestIndex]
+				massbest = masslist[deltaNLLbestIndex]
 
 				NLLmu = NLLmuFixedforqmu.GetBinContent(massbin,tanbbin)
 				DeltaNLLmu = qmuHist2D.GetBinContent(massbin, tanbbin)/2.0
@@ -207,6 +235,7 @@ def histcreation(path):
 				deltaNLLhist.SetBinContent(massbin,tanbbin, deltaNLLbest)
 				fullNLLhist.SetBinContent(massbin,tanbbin, deltaNLLbest + globalNLLbest - min(globalminformass))
 				combinedCluster.SetBinContent(massbin, tanbbin, clusterbest.GetBinContent(massbin, tanbbin))
+				combinedClusterMass.SetBinContent(massbin, tanbbin, massbest)
 			else:
 				globalNLLhist.SetBinContent(massbin, tanbbin, min(globalminformass))
 				NLLmuGlobalforqmu.SetBinContent(massbin, tanbbin, min(globalminformass))
@@ -214,7 +243,11 @@ def histcreation(path):
 				deltaNLLforqmu.SetBinContent(massbin, tanbbin, 100000)
 				deltaNLLhist.SetBinContent(massbin,tanbbin, 100000)
 				fullNLLhist.SetBinContent(massbin,tanbbin, 100000)
-				combinedCluster.SetBinContent(massbin, tanbbin, clusterA.GetBinContent(massbin, tanbbin))
+				combinedCluster.SetBinContent(massbin, tanbbin, 0)
+				combinedClusterMass.SetBinContent(massbin, tanbbin, 0)
+				deltaNLLhistA.SetBinContent(massbin, tanbbin, 100000)
+				deltaNLLhistH.SetBinContent(massbin, tanbbin, 100000)
+				deltaNLLhisth.SetBinContent(massbin, tanbbin, 100000)
 
 	nllfile.WriteTObject(NLLmuFixedforqmu,'')
 	nllfile.WriteTObject(NLLmuGlobalforqmu,'')
@@ -227,6 +260,11 @@ def histcreation(path):
 	nllfile.WriteTObject(rNLLdiff2D,'')
 
 	nllfile.WriteTObject(combinedCluster,'')
+	nllfile.WriteTObject(combinedClusterMass,'')
+
+	nllfile.WriteTObject(deltaNLLhistA,'')
+	nllfile.WriteTObject(deltaNLLhistH,'')
+	nllfile.WriteTObject(deltaNLLhisth,'')
 
 	ggHbbHfileA.Close()
 	ggHbbHfileH.Close()

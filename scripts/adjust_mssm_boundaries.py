@@ -17,6 +17,7 @@ parser.add_option_group(agroup)
 
 import ROOT as r
 import os
+r.gROOT.SetBatch(True)
 
 # constructing the cross-section file, that determines the contributions of the Higgs bosons to (mA,tanb) points
 os.system("rm {xspath}higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
