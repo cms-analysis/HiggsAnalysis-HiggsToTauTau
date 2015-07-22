@@ -14,6 +14,7 @@ agroup.add_option("--higgs-contribution",dest="higgsContribution", default="hHA"
 agroup.add_option("--forbidden-region-level", dest="forbiddenRegionLevel", default=100, type="float", help="")
 agroup.add_option("--analysis", dest="analysis", default="plain", type="string", help="")
 agroup.add_option("--expected", dest="expected", default=False, action="store_true", help="")
+agroup.add_option("--weighted-hb", dest="weightedHB", default=False, action="store_true", help="")
 parser.add_option_group(agroup)
 
 (options, args) = parser.parse_args()
@@ -223,19 +224,34 @@ def histcreation(path):
 				deltaNLLlist = [deltaNLLA, deltaNLLH, deltaNLLh]
 				deltaNLLbest = 0
 				deltaNLLbestIndex = 0
+				globalNLLbest = 0
 				if options.expected:
-                                        deltaNLLbest = max(deltaNLLlist)
-                                        deltaNLLbestIndex = deltaNLLlist.index(deltaNLLbest)
-                                else:
+					deltaNLLbest = max(deltaNLLlist)
+					deltaNLLbestIndex = deltaNLLlist.index(deltaNLLbest)
+					globalNLLbest = globalNLLlist[deltaNLLbestIndex]
+				else:
 					bg_deltaNLLhistA = bgfile.Get("deltaNLLhistA")
 					bg_deltaNLLhistH = bgfile.Get("deltaNLLhistH")
 					bg_deltaNLLhisth = bgfile.Get("deltaNLLhisth")
-					bg_deltaNLLlist = [bg_deltaNLLhistA.GetBinContent(massbin, tanbbin),bg_deltaNLLhistH.GetBinContent(massbin, tanbbin),bg_deltaNLLhisth.GetBinContent(massbin, tanbbin)]
-                                        bg_deltaNLLbest = max(bg_deltaNLLlist)
-                                        deltaNLLbestIndex = bg_deltaNLLlist.index(bg_deltaNLLbest)
-                                        deltaNLLbest = deltaNLLlist[deltaNLLbestIndex]
-				
-				globalNLLbest = globalNLLlist[deltaNLLbestIndex]
+
+					bg_deltaNLLA = bg_deltaNLLhistA.GetBinContent(massbin, tanbbin)
+					bg_deltaNLLH = bg_deltaNLLhistH.GetBinContent(massbin, tanbbin)
+					bg_deltaNLLh = bg_deltaNLLhisth.GetBinContent(massbin, tanbbin)
+					bg_deltaNLLlist = [bg_deltaNLLA,bg_deltaNLLH,bg_deltaNLLh]
+					if options.weightedHB:
+						bg_sum = (bg_deltaNLLA+bg_deltaNLLH+bg_deltaNLLh)
+						if abs(bg_sum) <= 0.001: 
+                                                        bg_sum = 0.001
+                                                        globalNLLbest = min(globalminformass)
+                                                else: 
+                                                        globalNLLbest = (globalNLLA*bg_deltaNLLA+globalNLLH*bg_deltaNLLH+globalNLLh*bg_deltaNLLh)/bg_sum
+                                                deltaNLLbest = (deltaNLLA*bg_deltaNLLA+deltaNLLH*bg_deltaNLLH+deltaNLLh*bg_deltaNLLh)/bg_sum
+                                                if globalNLLbest >= 0: globalNLLbest = min(globalminformass)
+					else:
+						bg_deltaNLLbest = max(bg_deltaNLLlist)
+						deltaNLLbestIndex = bg_deltaNLLlist.index(bg_deltaNLLbest)
+						deltaNLLbest = deltaNLLlist[deltaNLLbestIndex]
+						globalNLLbest = globalNLLlist[deltaNLLbestIndex]
 				
 				clusterlist = [clusterA, clusterH, clusterh]
 				clusterbest = clusterlist[deltaNLLbestIndex]
