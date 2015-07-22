@@ -38,6 +38,13 @@ fulltanbpoints = len(fulltanblist)-1
 massDiff1 = r.TH2D('massDiff1', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
 massDiff2 = r.TH2D('massDiff2', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
 
+massDiffhrefA = r.TH2D('massDiffhrefA', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
+massDiffHrefA = r.TH2D('massDiffHrefA', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
+massDiffhrefH = r.TH2D('massDiffhrefH', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
+massDiffArefH = r.TH2D('massDiffArefH', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
+massDiffArefh = r.TH2D('massDiffArefh', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
+massDiffHrefh = r.TH2D('massDiffHrefh', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
+
 massDiffAh = r.TH2D('massDiffAh', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
 massDiffAH = r.TH2D('massDiffAH', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
 massDiffHh = r.TH2D('massDiffHh', ";{massname}; tan#beta".format(massname=massaxisname), masspoints, masslist, fulltanbpoints, fulltanblist)
@@ -95,15 +102,27 @@ for j in range(fulltanbpoints):
 	masshhist.Fill(float(mass), float(tanb), massh)
 	massHhist.Fill(float(mass), float(tanb), massH)
 
-	mdiffAh, mdiffAH, mdiffHh = 0,0,0
-	if options.toleranceDenumeratorMax:
-		mdiffAh = abs((float(truemass)-massh)/max(massh,float(truemass)))
-		mdiffAH = abs((float(truemass)-massH)/max(massH,float(truemass)))
-		mdiffHh = abs((massH-massh)/max(massh,massH))
+	mdiffAh = abs((float(truemass)-massh)/max(massh,float(truemass)))
+	mdiffAH = abs((float(truemass)-massH)/max(massH,float(truemass)))
+	mdiffHh = abs((massH-massh)/max(massh,massH))
+
+	mdiffhrefA = abs((float(truemass)-massh)/float(truemass))
+	mdiffHrefA = abs((float(truemass)-massH)/float(truemass))
+	mdiffhrefH = abs((massH - massh)/massH)
+	mdiffArefH = abs((massH-float(truemass))/massH)
+	mdiffArefh = abs((massh-float(truemass))/massh)
+	mdiffHrefh = abs((massh-massH)/massh)
 
 	massDiffAh.Fill(float(mass), float(tanb), mdiffAh)
 	massDiffAH.Fill(float(mass), float(tanb), mdiffAH)
 	massDiffHh.Fill(float(mass), float(tanb), mdiffHh)
+
+	massDiffhrefA.Fill(float(mass), float(tanb), mdiffhrefA)
+	massDiffHrefA.Fill(float(mass), float(tanb), mdiffHrefA)
+	massDiffhrefH.Fill(float(mass), float(tanb), mdiffhrefH)
+	massDiffArefH.Fill(float(mass), float(tanb), mdiffArefH)
+	massDiffArefh.Fill(float(mass), float(tanb), mdiffArefh)
+	massDiffHrefh.Fill(float(mass), float(tanb), mdiffHrefh)
 
 	mdiff1, mdiff2 = 0,0
 	contr1, contr2, refcontr = False, False, False
@@ -117,8 +136,8 @@ for j in range(fulltanbpoints):
 			mdiff1 = mdiffAh
 			mdiff2 = mdiffAH
 		else:
-			mdiff1 = abs((float(truemass)-massh)/float(truemass))
-			mdiff2 = abs((float(truemass)-massH)/float(truemass))
+			mdiff1 = mdiffhrefA
+			mdiff2 = mdiffHrefA
 
 		contr1 = options.higgsContribution.find("h") != -1
 		contr2 = options.higgsContribution.find("H") != -1
@@ -134,8 +153,8 @@ for j in range(fulltanbpoints):
 			mdiff1 = mdiffHh
 			mdiff2 = mdiffAH
 		else:
-			mdiff1 = abs((massH-massh)/massH)
-			mdiff2 = abs((massH-float(truemass))/massH)
+			mdiff1 = mdiffhrefH
+			mdiff2 = mdiffArefH
 
 		contr1 = options.higgsContribution.find("h") != -1
 		contr2 = options.higgsContribution.find("A") != -1
@@ -151,8 +170,8 @@ for j in range(fulltanbpoints):
 			mdiff1 = mdiffAh
 			mdiff2 = mdiffHh
 		else:
-			mdiff1 = abs((massh-float(truemass))/massh)
-			mdiff2 = abs((massh-massH)/massh)
+			mdiff1 = mdiffArefh
+			mdiff2 = mdiffHrefh
 
 		contr1 = options.higgsContribution.find("A") != -1
 		contr2 = options.higgsContribution.find("H") != -1
@@ -198,6 +217,13 @@ cluster.Write()
 massDiffAh.Write()
 massDiffAH.Write()
 massDiffHh.Write()
+
+massDiffhrefA.Write()
+massDiffHrefA.Write()
+massDiffhrefH.Write()
+massDiffArefH.Write()
+massDiffArefh.Write()
+massDiffHrefh.Write()
 
 ggAXsBR.Write()
 ggHXsBR.Write()
