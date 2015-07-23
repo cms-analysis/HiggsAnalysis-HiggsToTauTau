@@ -1273,7 +1273,6 @@ for directory in args :
                         os.system("rm qmu.FixedMu_{tanb}".format(tanb=tanb_string))
                     files=""
                     k=0
-                    print "helloe", len(glob.glob("point_{tanb}_*".format(mass=mass, tanb=tanb_string)))
                     for i, f in enumerate(glob.glob("point_{tanb}_*".format(mass=mass, tanb=tanb_string))) :
                         files += str(f)+" "
                         if i%500==0 and i!=0:
