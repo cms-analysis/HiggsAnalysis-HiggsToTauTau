@@ -105,14 +105,13 @@ if len(args) < 1 :
 
 import os
 import re
-import ROOT # needed for ana_type=Hhh to recalculate mH into mA
-from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools # needed for ana_type=Hhh to recalculate mH into mA
+#import ROOT # needed for ana_type=Hhh to recalculate mH into mA
+#from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools # needed for ana_type=Hhh to recalculate mH into mA
 
 
 ## define root path (to allow for direcotry
 ## structure of arbitrary depth)
 ROOTPATH = os.getcwd()
-
 for directory in args :
     if directory.find("common")>-1 :
         print "> skipping directory common"

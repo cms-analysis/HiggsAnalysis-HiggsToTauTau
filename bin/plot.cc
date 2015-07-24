@@ -180,7 +180,7 @@ int main(int argc, char* argv[])
   if( std::string(argv[1]) == std::string("--tanb") ){
     // make the plot
     SetStyle();
-    TCanvas* canv = new TCanvas("canv", "Limits", 600, 800);
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600); //600/800
     plot.plotTanb(*canv, directory, std::string(""));
   }
   // -----------------------------------------------------------------------------------------------------------------------
