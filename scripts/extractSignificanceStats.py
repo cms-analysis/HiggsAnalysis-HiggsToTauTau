@@ -214,7 +214,7 @@ else :
         else :
             if options.verbosity :
                 print "observed:", staff.q
-            if (staff.q<medianObs+5*StdDevObs) and (staff.q>medianObs-5*StdDevObs) :
+            if (staff.q<=medianObs+5*StdDevObs) and (staff.q>=medianObs-5*StdDevObs) :
                 hObs.Fill(staff.q)      
     ntoysSM=int(hSM.GetEntries());
     ntoysMSSM=int(hMSSM.GetEntries());
