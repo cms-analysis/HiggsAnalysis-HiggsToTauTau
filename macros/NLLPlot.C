@@ -29,6 +29,38 @@ void hist2Dbaseplot(TH2D* hist, const char* titlename, double zmin, double zmax,
 
 }
 
+void clusterplot(TH2D* clusterhist, const char* titlename, double textsize=0.12, Color_t latexcolor=1){
+	gPad->SetRightMargin(0.20);
+	gPad->SetTopMargin(0.05);
+	clusterhist->Draw("Colz");
+	clusterhist->SetStats(false);
+	clusterhist->GetXaxis()->SetTitleSize(0.05);
+	clusterhist->GetYaxis()->SetTitleSize(0.05);
+	clusterhist->GetZaxis()->SetTitleSize(0.05);
+	clusterhist->GetZaxis()->SetLabelSize(0.05);
+	clusterhist->GetZaxis()->SetTitleOffset(1.1);
+	clusterhist->GetZaxis()->SetRangeUser(0.,7.);
+
+	TPaveText* pt = new TPaveText(630,28,980,58);
+	pt->AddText("Contributions");
+	pt->AddText("1: h");
+	pt->AddText("2: H");
+	pt->AddText("3: h+H");
+	pt->AddText("4: A");
+	pt->AddText("5: h+A");
+	pt->AddText("6: H+A");
+	pt->AddText("7: h+H+A");
+	pt->SetFillStyle(0);
+	pt->SetBorderSize(0);
+	pt->Draw("Same");
+
+	TLatex* histtitle = new TLatex(120, 50, titlename);
+	histtitle->SetTextColor(latexcolor);
+	histtitle->SetTextSize(textsize);
+	histtitle->Draw("Same");
+	gPad->Update();
+}
+
 TMultiGraph* exclusionObserved(TH2D* hist, int color=1, double level=0.05)
 {
 	TH2D* hist_copy = new TH2D();
@@ -470,30 +502,7 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 		f->cd(1);
 		hist2Dbaseplot(combinedClusterMass, "m_{cluster}^{combined}",50,1000,true,"[GeV]");
 		f->cd(2);
-		gPad->SetRightMargin(0.20);
-		gPad->SetTopMargin(0.05);
-		combinedCluster->Draw("Colz");
-		combinedCluster->SetStats(false);
-		combinedCluster->GetXaxis()->SetTitleSize(0.05);
-		combinedCluster->GetYaxis()->SetTitleSize(0.05);
-		combinedCluster->GetZaxis()->SetTitleSize(0.05);
-		combinedCluster->GetZaxis()->SetLabelSize(0.05);
-		combinedCluster->GetZaxis()->SetTitleOffset(1.1);
-		combinedCluster->GetZaxis()->SetRangeUser(0.,7.);
-
-		TPaveText* pt = new TPaveText(630,28,980,58);
-		pt->AddText("Contributions");
-		pt->AddText("1: h");
-		pt->AddText("2: H");
-		pt->AddText("3: h+H");
-		pt->AddText("4: A");
-		pt->AddText("5: h+A");
-		pt->AddText("6: H+A");
-		pt->AddText("7: h+H+A");
-		pt->SetFillStyle(0);
-		pt->SetBorderSize(0);
-		pt->Draw("Same");
-		gPad->Update();
+		clusterplot(combinedCluster, "cluster(comb)",0.08);
 		f->SaveAs("combinedCluster.pdf");
 
 		TCanvas* f1 = new TCanvas("f1","f1",1300,350);

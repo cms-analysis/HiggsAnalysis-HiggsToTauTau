@@ -18,7 +18,7 @@ agroup.add_option("--expected", dest="expected", default=False, action="store_tr
 agroup.add_option("--light-vs-heavy", dest="lightVsHeavy", default=False, action="store_true", help="")
 agroup.add_option("--higgs-bounds", dest="higgsBounds", default=False, action="store_true", help="")
 agroup.add_option("--weighted-hb", dest="weightedHB", default=False, action="store_true", help="")
-
+agroup.add_option("--full-nll-subtracted", dest="fullNLLSubtracted", default=False, action="store_true", help="")
 parser.add_option_group(agroup)
 
 (options, args) = parser.parse_args()
@@ -36,7 +36,7 @@ if options.higgsBounds:
 
 	# creating model independent histograms from 2d fits
 
-	os.system('python HiggsAnalysis/HiggsToTauTau/scripts/multidimNLL_HiggsBounds.py --nll-path="{nllpath}/NLLHistogram.Full.root" --ggH-bbH-path="{gghbbhpath}/" --xs-path={xspath} --model={model} --mass-tolerance={tolerance} {Max} --higgs-contribution={contr} --forbidden-region-level={frlevel} --analysis={analysis} {lightVsHeavy} {expected} {weightedHB} --bg-path={BGPath}/NLLHistogram.Full.root'.format(nllpath=options.nllPath, gghbbhpath=options.ggHbbHPath, xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, contr=options.higgsContribution, Max = "--tolerance-denumerator-max" if options.toleranceDenumeratorMax else "", frlevel=options.forbiddenRegionLevel, analysis=options.analysis, lightVsHeavy="--light-vs-heavy" if options.lightVsHeavy else "", expected="--expected" if options.expected else "", weightedHB="--weighted-hb" if options.weightedHB else "", BGPath=options.BGPath))
+	os.system('python HiggsAnalysis/HiggsToTauTau/scripts/multidimNLL_HiggsBounds.py --nll-path="{nllpath}/NLLHistogram.Full.root" --ggH-bbH-path="{gghbbhpath}/" --xs-path={xspath} --model={model} --mass-tolerance={tolerance} {Max} --higgs-contribution={contr} --forbidden-region-level={frlevel} --analysis={analysis} {lightVsHeavy} {expected} {weightedHB} {fullNLLSubtracted} --bg-path={BGPath}/NLLHistogram.Full.root'.format(nllpath=options.nllPath, gghbbhpath=options.ggHbbHPath, xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, contr=options.higgsContribution, Max = "--tolerance-denumerator-max" if options.toleranceDenumeratorMax else "", frlevel=options.forbiddenRegionLevel, analysis=options.analysis, lightVsHeavy="--light-vs-heavy" if options.lightVsHeavy else "", expected="--expected" if options.expected else "", weightedHB="--weighted-hb" if options.weightedHB else "", fullNLLSubtracted="--full-nll-subtracted" if options.fullNLLSubtracted else "", BGPath=options.BGPath))
 else:
 	# constructing the cross-section file, that determines the contributions of the Higgs bosons to (mA,tanb) points
 	os.system("rm {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
