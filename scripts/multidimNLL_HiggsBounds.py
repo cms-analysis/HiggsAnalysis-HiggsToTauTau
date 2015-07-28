@@ -4,7 +4,7 @@ parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...", descrip
 agroup = OptionGroup(parser,"MAIN OPTIONS", "")
 agroup.add_option("--nll-path",dest="nllPath", default="", type="string", help="")
 agroup.add_option("--ggH-bbH-path",dest="ggHbbHPath", default="", type="string", help="")
-agroup.add_option("--nll-offset", dest="nllOffSet", default="", type="string", help="")
+agroup.add_option("--bg-path",dest="BGPath", default="", type="string", help="")
 agroup.add_option("--xs-path",dest="xsPath", default="$CMSSW_BASE/src/higgsContributions/", type="string", help="")
 agroup.add_option("--model", dest="model", default="mhmodp",type="string", help="")
 agroup.add_option("--mass-tolerance", dest="massTolerance", default=0.15, type="float", help="")
@@ -12,6 +12,9 @@ agroup.add_option("--tolerance-denumerator-max", dest="toleranceDenumeratorMax",
 agroup.add_option("--higgs-contribution",dest="higgsContribution", default="hHA", type="string", help="")
 agroup.add_option("--forbidden-region-level", dest="forbiddenRegionLevel", default=100, type="float", help="")
 agroup.add_option("--analysis", dest="analysis", default="plain", type="string", help="")
+agroup.add_option("--expected", dest="expected", default=False, action="store_true", help="")
+agroup.add_option("--weighted-hb", dest="weightedHB", default=False, action="store_true", help="")
+agroup.add_option("--full-nll-subtracted", dest="fullNLLSubtracted", default=False, action="store_true", help="")
 parser.add_option_group(agroup)
 
 (options, args) = parser.parse_args()
@@ -32,6 +35,8 @@ import math
 r.gROOT.SetBatch(True)
 
 nllfile = r.TFile(options.nllPath, "UPDATE")
+bgfile = 0
+if not options.expected: bgfile = r.TFile(options.BGPath, "READ")
 xsfileA = r.TFile("{xspath}higgsContribution.model{model}.tolerance{tolerance}{Max}.referenceA.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""), "READ")
 xsfileH = r.TFile("{xspath}higgsContribution.model{model}.tolerance{tolerance}{Max}.referenceH.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""), "READ")
 xsfileh = r.TFile("{xspath}higgsContribution.model{model}.tolerance{tolerance}{Max}.referenceh.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""), "READ")
@@ -217,9 +222,50 @@ def histcreation(path):
 				
 				masslist = [massclusterA, massclusterH, massclusterh]
 				deltaNLLlist = [deltaNLLA, deltaNLLH, deltaNLLh]
-				deltaNLLbest = max(deltaNLLlist)
-				deltaNLLbestIndex = deltaNLLlist.index(deltaNLLbest)
-				globalNLLbest = globalNLLlist[deltaNLLbestIndex]
+				fullNLLlist = [deltaNLLA+globalNLLA, deltaNLLH+globalNLLH, deltaNLLh+globalNLLh]
+				deltaNLLbest = 0
+				fullNLLbest = 0
+				deltaNLLbestIndex = 0
+				globalNLLbest = 0
+				if options.expected:
+					deltaNLLbest = max(deltaNLLlist)
+					deltaNLLbestIndex = deltaNLLlist.index(deltaNLLbest)
+					globalNLLbest = globalNLLlist[deltaNLLbestIndex]
+					fulNLLbest = fullNLLlist[deltaNLLbestIndex]
+				else:
+					bg_deltaNLLhistA = bgfile.Get("deltaNLLhistA")
+					bg_deltaNLLhistH = bgfile.Get("deltaNLLhistH")
+					bg_deltaNLLhisth = bgfile.Get("deltaNLLhisth")
+
+					bg_deltaNLLA = bg_deltaNLLhistA.GetBinContent(massbin, tanbbin)
+					bg_deltaNLLH = bg_deltaNLLhistH.GetBinContent(massbin, tanbbin)
+					bg_deltaNLLh = bg_deltaNLLhisth.GetBinContent(massbin, tanbbin)
+					bg_deltaNLLlist = [bg_deltaNLLA,bg_deltaNLLH,bg_deltaNLLh]
+					if options.weightedHB:
+						bg_sum = (bg_deltaNLLA+bg_deltaNLLH+bg_deltaNLLh)
+						if abs(bg_sum) <= 0.001:
+							bg_sum = 0.001
+							globalNLLbest = min(globalminformass)
+						else:
+							globalNLLbest = (globalNLLA*bg_deltaNLLA+globalNLLH*bg_deltaNLLH+globalNLLh*bg_deltaNLLh)/bg_sum
+							deltaNLLbest = (deltaNLLA*bg_deltaNLLA+deltaNLLH*bg_deltaNLLH+deltaNLLh*bg_deltaNLLh)/bg_sum
+							if globalNLLbest >= 0: globalNLLbest = min(globalminformass)
+							fullNLLbest = deltaNLLbest + globalNLLbest
+					elif options.fullNLLSubtracted:
+						bg_sum = (bg_deltaNLLA+bg_deltaNLLH+bg_deltaNLLh)
+						if abs(bg_sum) <= 0.001:
+							bg_sum = 0.001
+							globalNLLbest = min(globalminformass)
+						else:
+							globalNLLbest = (globalNLLA*bg_deltaNLLA+globalNLLH*bg_deltaNLLH+globalNLLh*bg_deltaNLLh)/bg_sum
+							fullNLLbest = fullNLLlist[0]
+							deltaNLLbest = fullNLLbest - globalNLLbest
+					else:
+						bg_deltaNLLbest = max(bg_deltaNLLlist)
+						deltaNLLbestIndex = bg_deltaNLLlist.index(bg_deltaNLLbest)
+						deltaNLLbest = deltaNLLlist[deltaNLLbestIndex]
+						globalNLLbest = globalNLLlist[deltaNLLbestIndex]
+						fullNLLbest = fullNLLlist[deltaNLLbestIndex]
 				
 				clusterlist = [clusterA, clusterH, clusterh]
 				clusterbest = clusterlist[deltaNLLbestIndex]
@@ -233,7 +279,7 @@ def histcreation(path):
 
 				globalNLLhist.SetBinContent(massbin, tanbbin, globalNLLbest)
 				deltaNLLhist.SetBinContent(massbin,tanbbin, deltaNLLbest)
-				fullNLLhist.SetBinContent(massbin,tanbbin, deltaNLLbest + globalNLLbest - min(globalminformass))
+				fullNLLhist.SetBinContent(massbin,tanbbin, fullNLLbest - min(globalminformass))
 				combinedCluster.SetBinContent(massbin, tanbbin, clusterbest.GetBinContent(massbin, tanbbin))
 				combinedClusterMass.SetBinContent(massbin, tanbbin, massbest)
 			else:

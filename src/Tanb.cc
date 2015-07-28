@@ -218,7 +218,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 	}
 
 	// Fill TH2D with calculated limit points
-	if(FitMethod_==0 || FitMethod_==1){ //linear fit=0; spline=1
+	if(FitMethod_==0 || FitMethod_==1 || FitMethod_==3 || FitMethod_==4){ //linear fit=0; spline=1; spline+linear=3; linear+spline=4
 	  plane_minus2sigma->SetBinContent(plane_minus2sigma->GetXaxis()->FindBin(mass), plane_minus2sigma->GetYaxis()->FindBin(tanb), TMath::Log(minus2sigma/exclusion_));
 	  plane_minus1sigma->SetBinContent(plane_minus1sigma->GetXaxis()->FindBin(mass), plane_minus1sigma->GetYaxis()->FindBin(tanb), TMath::Log(minus1sigma/exclusion_));
 	  plane_expected   ->SetBinContent(plane_expected   ->GetXaxis()->FindBin(mass), plane_expected   ->GetYaxis()->FindBin(tanb), TMath::Log(exp/exclusion_));
@@ -265,14 +265,14 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       masses[imass]=mass;
      
       // Interpolation along the y-axis for filling everything in between
-      if(FitMethod_==0 || FitMethod_==1){ //linear fit=0; spline=1
+      if(FitMethod_==0 || FitMethod_==1 || FitMethod_==3 || FitMethod_==4){ //linear fit=0; spline=1; spline+linear=3; linear+spline=4
 	limit->GetEntry(index[0]);
 	float tbmin=tanb; 
 	limit->GetEntry(index[nevent-1]);
 	float tbmax=tanb; 
 	for(int idy=1; idy<plane_minus2sigma->GetNbinsY()+1; idy++){
 	  if (plane_minus2sigma->GetYaxis()->GetBinCenter(idy) > tbmin && plane_minus2sigma->GetYaxis()->GetBinCenter(idy) < tbmax ){
-	    if(FitMethod_==0){
+	    if(FitMethod_==0 || FitMethod_==4 ){
 	      plane_minus2sigma->SetBinContent(plane_minus2sigma->GetXaxis()->FindBin(mass), idy, graph_minus2sigma_log->Eval(plane_minus2sigma->GetYaxis()->GetBinLowEdge(idy)));
 	      plane_minus1sigma->SetBinContent(plane_minus1sigma->GetXaxis()->FindBin(mass), idy, graph_minus1sigma_log->Eval(plane_minus1sigma->GetYaxis()->GetBinLowEdge(idy)));
 	      plane_expected   ->SetBinContent(plane_expected   ->GetXaxis()->FindBin(mass), idy, graph_expected_log   ->Eval(plane_expected   ->GetYaxis()->GetBinLowEdge(idy)));
@@ -280,7 +280,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 	      plane_plus2sigma ->SetBinContent(plane_plus2sigma ->GetXaxis()->FindBin(mass), idy, graph_plus2sigma_log ->Eval(plane_plus2sigma ->GetYaxis()->GetBinLowEdge(idy)));
 	      plane_observed   ->SetBinContent(plane_observed   ->GetXaxis()->FindBin(mass), idy, graph_observed_log   ->Eval(plane_observed   ->GetYaxis()->GetBinLowEdge(idy)));
 	    }
-	    else if(FitMethod_==1){
+	    else if(FitMethod_==1 || FitMethod_==3){
 	      plane_minus2sigma->SetBinContent(plane_minus2sigma->GetXaxis()->FindBin(mass), idy, graph_minus2sigma_log->Eval(plane_minus2sigma->GetYaxis()->GetBinLowEdge(idy), 0, "S"));
 	      plane_minus1sigma->SetBinContent(plane_minus1sigma->GetXaxis()->FindBin(mass), idy, graph_minus1sigma_log->Eval(plane_minus1sigma->GetYaxis()->GetBinLowEdge(idy), 0, "S"));
 	      plane_expected   ->SetBinContent(plane_expected   ->GetXaxis()->FindBin(mass), idy, graph_expected_log   ->Eval(plane_expected   ->GetYaxis()->GetBinLowEdge(idy), 0, "S"));
@@ -311,7 +311,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   }	
 
   // Interpolation along the x-axis for filling everything in between
-  if(FitMethod_==0 || FitMethod_==1){ //linear fit=0; spline=1
+  if(FitMethod_==0 || FitMethod_==1 || FitMethod_==3){ //linear fit=0; spline=1; spline+linear=3; linear+spline=4
     for(int idy=0; idy<plane_minus2sigma->GetNbinsY()+1; idy++){
       TGraph* graph_minus2sigma_tanb = new TGraph();
       TGraph* graph_minus1sigma_tanb = new TGraph();
@@ -331,7 +331,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       }
       //graph_observed_tanb->SaveAs("graph.root");
       for(int idx=0; idx<plane_minus2sigma->GetNbinsX()+1; idx++){
-	if(FitMethod_==0){
+	if(FitMethod_==0 || FitMethod_==3){
 	  plane_minus2sigma->SetBinContent(idx, idy, graph_minus2sigma_tanb->Eval(plane_minus2sigma->GetXaxis()->GetBinLowEdge(idx)));
 	  plane_minus1sigma->SetBinContent(idx, idy, graph_minus1sigma_tanb->Eval(plane_minus1sigma->GetXaxis()->GetBinLowEdge(idx)));
 	  plane_expected   ->SetBinContent(idx, idy, graph_expected_tanb   ->Eval(plane_expected   ->GetXaxis()->GetBinLowEdge(idx)));
@@ -339,7 +339,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 	  plane_plus2sigma ->SetBinContent(idx, idy, graph_plus2sigma_tanb ->Eval(plane_plus2sigma ->GetXaxis()->GetBinLowEdge(idx)));
 	  plane_observed   ->SetBinContent(idx, idy, graph_observed_tanb   ->Eval(plane_observed   ->GetXaxis()->GetBinLowEdge(idx)));
 	}
-	else if(FitMethod_==1){
+	else if(FitMethod_==1 || FitMethod_==4){
 	  plane_minus2sigma->SetBinContent(idx, idy, graph_minus2sigma_tanb->Eval(plane_minus2sigma->GetXaxis()->GetBinLowEdge(idx), 0, "S"));
 	  plane_minus1sigma->SetBinContent(idx, idy, graph_minus1sigma_tanb->Eval(plane_minus1sigma->GetXaxis()->GetBinLowEdge(idx), 0, "S"));
 	  plane_expected   ->SetBinContent(idx, idy, graph_expected_tanb   ->Eval(plane_expected   ->GetXaxis()->GetBinLowEdge(idx), 0, "S"));
@@ -386,7 +386,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   gr_injected.push_back(0);
     
   int n_m2s, n_m1s, n_exp, n_p1s, n_p2s, n_obs;
-  if(FitMethod_==0 || FitMethod_==1){ //linear fit=0; spline=1
+  if(FitMethod_==0 || FitMethod_==1 || FitMethod_==3 || FitMethod_==4){ //linear fit=0; spline=1; spline+linear=3; linear+spline=4
     TIter iterm2s((TList *)contourFromTH2(plane_minus2sigma, 1.0, 20, false));
     STestFunctor m2s = std::for_each( iterm2s.Begin(), TIter::End(), STestFunctor() );
     n_m2s=m2s.sum; 
@@ -581,6 +581,7 @@ void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGrap
     graph_minus2sigma->GetYaxis()->SetTitleFont(62);
     graph_minus2sigma->GetYaxis()->SetTitleOffset(1.05);
     graph_minus2sigma->GetYaxis()->SetLabelSize(0.03);
+    //graph_minus2sigma->GetYaxis()->SetRangeUser(0,2);
     graph_minus2sigma->SetMarkerStyle(20);
     graph_minus2sigma->SetMarkerSize(1.3);
     ymax=0; ymax=0;
@@ -607,6 +608,7 @@ void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGrap
     graph_minus1sigma->GetYaxis()->SetTitleFont(62);
     graph_minus1sigma->GetYaxis()->SetTitleOffset(1.05);
     graph_minus1sigma->GetYaxis()->SetLabelSize(0.03);
+    //graph_minus1sigma->GetYaxis()->SetRangeUser(0,2);
     graph_minus1sigma->SetMarkerStyle(20);
     graph_minus1sigma->SetMarkerSize(1.3);
     ymax=0; ymax=0;
@@ -633,6 +635,7 @@ void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGrap
     graph_expected->GetYaxis()->SetTitleFont(62);
     graph_expected->GetYaxis()->SetTitleOffset(1.05);
     graph_expected->GetYaxis()->SetLabelSize(0.03);
+    //graph_expected->GetYaxis()->SetRangeUser(0,2);
     graph_expected->SetMarkerStyle(20);
     graph_expected->SetMarkerSize(1.3);
     ymax=0; ymax=0;
@@ -659,6 +662,7 @@ void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGrap
     graph_plus1sigma->GetYaxis()->SetTitleFont(62);
     graph_plus1sigma->GetYaxis()->SetTitleOffset(1.05);
     graph_plus1sigma->GetYaxis()->SetLabelSize(0.03);
+    //graph_plus1sigma->GetYaxis()->SetRangeUser(0,2);
     graph_plus1sigma->SetMarkerStyle(20);
     graph_plus1sigma->SetMarkerSize(1.3);
     ymax=0; ymax=0;
@@ -685,6 +689,7 @@ void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGrap
     graph_plus2sigma->GetYaxis()->SetTitleFont(62);
     graph_plus2sigma->GetYaxis()->SetTitleOffset(1.05);
     graph_plus2sigma->GetYaxis()->SetLabelSize(0.03);
+    //graph_plus2sigma->GetYaxis()->SetRangeUser(0,2);
     graph_plus2sigma->SetMarkerStyle(20);
     graph_plus2sigma->SetMarkerSize(1.3);
     ymax=0; ymax=0;
@@ -711,6 +716,7 @@ void CLsControlPlots(TGraph* graph_minus2sigma, TGraph* graph_minus1sigma, TGrap
     graph_observed->GetYaxis()->SetTitleFont(62);
     graph_observed->GetYaxis()->SetTitleOffset(1.05);
     graph_observed->GetYaxis()->SetLabelSize(0.03);
+    //graph_observed->GetYaxis()->SetRangeUser(0,2);
     graph_observed->SetMarkerStyle(20);
     graph_observed->SetMarkerSize(1.3);
     ymax=0; ymax=0;

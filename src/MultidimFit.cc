@@ -92,6 +92,7 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory, std::string typ)
 		<< std::endl;
     }
     float nbins = TMath::Sqrt(points);
+    TH2D* scan2D_delta = new TH2D("scan2D_delta", "", nbins, xmin, xmax, nbins, ymin, ymax);
     if(typ=="multidim-fit"){
       // tree scan
       char* label = (char*)model_.c_str(); int i=0;
@@ -101,8 +102,8 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory, std::string typ)
       TFile* file_ = TFile::Open(fullpath); if(!file_){ std::cout << "--> TFile is corrupt: skipping masspoint." << std::endl; continue; }
       TTree* limit = (TTree*) file_->Get("limit"); if(!limit){ std::cout << "--> TTree is corrupt: skipping masspoint." << std::endl; continue; }
       float deltaNLL, x, y;
-		double prefitNLL, postfitNLL;
-      TH2F* scan2D_delta = new TH2F("scan2D_delta", "", nbins, xmin, xmax, nbins, ymin, ymax);
+      double prefitNLL, postfitNLL;
+      //TH2F* scan2D_delta = new TH2F("scan2D_delta", "", nbins, xmin, xmax, nbins, ymin, ymax);
 
       limit->SetBranchAddress("deltaNLL", &deltaNLL );
 		limit->SetBranchAddress("nll", &prefitNLL);
@@ -118,19 +119,20 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory, std::string typ)
       for(int i=0; i<nevent; ++i){
 	limit->GetEvent(i);
 	if(i==0)
-	{
-		database << "Absolute value at minimum (best fit): " << std::setprecision(12) << prefitNLL + postfitNLL << std::endl;
-	}
+	  {
+	    database << "Absolute value at minimum (best fit): " << std::setprecision(12) << prefitNLL + postfitNLL << std::endl;
+	  }
 	if(scan2D_delta->GetBinContent(scan2D_delta->FindBin(x,y))==0){
-	  scan2D_delta->Fill(x, y, deltaNLL);
+	  if(deltaNLL>50) scan2D_delta->Fill(x, y, 50);
+	  else scan2D_delta->Fill(x, y, deltaNLL);
 	  database << x << " " << y << " " << deltaNLL << std::endl;
 	}
       }
       plot_rootname =TString::Format("%s/%d/%s-%s-%s-%d.root", directory, (int)mass, output_.c_str(), label_.c_str(), model_.c_str(), (int)mass);
       Fout = new TFile(plot_rootname.c_str(), "RECREATE");
       gFile = file_;
-      contour2D(xbranch.c_str(), nbins, xmin, xmax, ybranch.c_str(), nbins, ymin, ymax, 1.0, 1.0, Fout);
-		Fout->WriteTObject(scan2D_delta,0);
+      //contour2D(xbranch.c_str(), nbins, xmin, xmax, ybranch.c_str(), nbins, ymin, ymax, 1.0, 1.0, Fout);
+      Fout->WriteTObject(scan2D_delta,0);
       file_->Close();
     }
     else if(typ=="feldman-cousins"){
@@ -143,11 +145,16 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory, std::string typ)
     TGraph *bestfit = 0;
     TGraph *c68 = 0;
     TGraph *c95 = 0;
-    if(typ=="multidim-fit"){
-      plot2D = (TH2D *)gDirectory->Get("contour2D_h2d")->Clone();
-      bestfit = (TGraph *)gDirectory->Get("contour2D_best")->Clone();
-      c68 = (TGraph *)((TList *)gDirectory->Get("contour2D_c68"))->At(0)->Clone();
-      c95 = (TGraph *)((TList *)gDirectory->Get("contour2D_c95"))->At(0)->Clone();
+    if(typ=="multidim-fit"){ 
+      plot2D=scan2D_delta;
+      bestfit=(TGraph *)((TList *)contourFromTH2(scan2D_delta, 0.001, 0, false))->At(0);
+      c68=(TGraph *)((TList *)contourFromTH2(scan2D_delta, 2.30, 20, false))->At(0);
+      c95=(TGraph *)((TList *)contourFromTH2(scan2D_delta, 5.99, 20, false))->At(0);
+
+      // plot2D = (TH2D *)gDirectory->Get("contour2D_h2d")->Clone();
+//       bestfit = (TGraph *)gDirectory->Get("contour2D_best")->Clone();
+//       c68 = (TGraph *)((TList *)gDirectory->Get("contour2D_c68"))->At(0)->Clone();
+//       c95 = (TGraph *)((TList *)gDirectory->Get("contour2D_c95"))->At(0)->Clone();
     }
     else if(typ=="feldman-cousins"){
       plot2D = (TH2D *)gDirectory->Get("h2_cl")->Clone();
@@ -161,6 +168,7 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory, std::string typ)
       //       c68 = (TGraph *)gDirectory->Get("h2_confcontour_68")->Clone(); //can not used for plotting since TGraph2D and not contour list
       //       c95 = (TGraph *)gDirectory->Get("h2_confcontour_95")->Clone(); //can not used for plotting since TGraph2D and not contour list
     }
+    std::cout << "hello1" << std::endl;
     //Draw SM expectation?
     //To make official style diamond, it is necessary to use the deadful hack of overlaying one marker on top of another slightly larger marker
     TMarker* SMexpected = 0;
@@ -175,17 +183,20 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory, std::string typ)
       SMexpectedLayer->SetMarkerSize(1.8); SMexpectedLayer->SetMarkerColor(89); SMexpectedLayer->SetMarkerStyle(33);
     }
     std::string masslabel = mssm_ ? std::string("m_{#phi}") : std::string("m_{H}");    
+    std::cout << "hello2" << std::endl;
     plottingScan2D(canv, plot2D, bestfit, c68, c95, plot_rootname, SMexpected, SMexpectedLayer, xaxis_, yaxis_, masslabel, (int)mass, xmin, xmax, ymin, ymax, temp_, log_);
+    std::cout << "hello3" << std::endl;
     // add the CMS Preliminary stamp
     CMSPrelim(dataset_.c_str(), "", 0.135, 0.835);
     //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
       
     // print 1d band
-    ofstream scanOut;  
-    scanOut.open(TString::Format("%s/%d/signal-strength.output", directory, (int)mass));
-    scanOut << " --- MultiDimFit ---" << std::endl;
-    scanOut << "best fit parameter values and uncertainties from NLL scan:" << std::endl;
-    band1D(scanOut, xval, yval, bestfit, c68, (xmax-xmin)/nbins/2, (ymax-ymin)/nbins/2, "(68%)");
+  //   ofstream scanOut;  
+//     scanOut.open(TString::Format("%s/%d/signal-strength.output", directory, (int)mass));
+//     scanOut << " --- MultiDimFit ---" << std::endl;
+//     scanOut << "best fit parameter values and uncertainties from NLL scan:" << std::endl;
+//     band1D(scanOut, xval, yval, bestfit, c68, (xmax-xmin)/nbins/2, (ymax-ymin)/nbins/2, "(68%)");
+//     std::cout << "hello4" << std::endl;
     
     if(png_){
       canv.Print(TString::Format("%s-%s-%s-%d.png", output_.c_str(), label_.c_str(), model_.c_str(), (int)mass));
@@ -210,11 +221,12 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory, std::string typ)
       }
       c68    ->Write(TString::Format("graph68_%d"  , (int)mass)); 
       c95    ->Write(TString::Format("graph95_%d"  , (int)mass)); 
-      bestfit->Write(TString::Format("bestfit_%d"  , (int)mass));
+      //bestfit->Write(TString::Format("bestfit_%d"  , (int)mass));
       plot2D ->Write(TString::Format("plot2D_%d"   , (int)mass));
 
       output->Close();
     }
+    std::cout << "hello5" << std::endl;
   }
   return;
 }

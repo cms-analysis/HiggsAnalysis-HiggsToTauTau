@@ -29,6 +29,38 @@ void hist2Dbaseplot(TH2D* hist, const char* titlename, double zmin, double zmax,
 
 }
 
+void clusterplot(TH2D* clusterhist, const char* titlename, double textsize=0.12, Color_t latexcolor=1){
+	gPad->SetRightMargin(0.20);
+	gPad->SetTopMargin(0.05);
+	clusterhist->Draw("Colz");
+	clusterhist->SetStats(false);
+	clusterhist->GetXaxis()->SetTitleSize(0.05);
+	clusterhist->GetYaxis()->SetTitleSize(0.05);
+	clusterhist->GetZaxis()->SetTitleSize(0.05);
+	clusterhist->GetZaxis()->SetLabelSize(0.05);
+	clusterhist->GetZaxis()->SetTitleOffset(1.1);
+	clusterhist->GetZaxis()->SetRangeUser(0.,7.);
+
+	TPaveText* pt = new TPaveText(630,28,980,58);
+	pt->AddText("Contributions");
+	pt->AddText("1: h");
+	pt->AddText("2: H");
+	pt->AddText("3: h+H");
+	pt->AddText("4: A");
+	pt->AddText("5: h+A");
+	pt->AddText("6: H+A");
+	pt->AddText("7: h+H+A");
+	pt->SetFillStyle(0);
+	pt->SetBorderSize(0);
+	pt->Draw("Same");
+
+	TLatex* histtitle = new TLatex(120, 50, titlename);
+	histtitle->SetTextColor(latexcolor);
+	histtitle->SetTextSize(textsize);
+	histtitle->Draw("Same");
+	gPad->Update();
+}
+
 TMultiGraph* exclusionObserved(TH2D* hist, int color=1, double level=0.05)
 {
 	TH2D* hist_copy = new TH2D();
@@ -94,12 +126,19 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	TH2D* Xshist5 = (TH2D*) XsFile->Get("bbHXsBR");
 	TH2D* Xshist6 = (TH2D*) XsFile->Get("bbhXsBR");
 
-	TH2D* mhist1 = (TH2D*) XsFile->Get("massDiff1");
-	TH2D* mhist2 = (TH2D*) XsFile->Get("massDiff2");
+	TH2D* mdiffAh = (TH2D*) XsFile->Get("massDiffAh");
+	TH2D* mdiffAH = (TH2D*) XsFile->Get("massDiffAH");
+	TH2D* mdiffHh = (TH2D*) XsFile->Get("massDiffHh");
+
+	TH2D* mdiffhrefA = (TH2D*) XsFile->Get("massDiffhrefA");
+	TH2D* mdiffHrefA = (TH2D*) XsFile->Get("massDiffHrefA");
+	TH2D* mdiffhrefH = (TH2D*) XsFile->Get("massDiffhrefH");
+	TH2D* mdiffArefH = (TH2D*) XsFile->Get("massDiffArefH");
+	TH2D* mdiffArefh = (TH2D*) XsFile->Get("massDiffArefh");
+	TH2D* mdiffHrefh = (TH2D*) XsFile->Get("massDiffHrefh");
 
 	TH2D* ggcmb = (TH2D*) XsFile->Get("ggcmb");
 	TH2D* bbcmb = (TH2D*) XsFile->Get("bbcmb");
-	TH2D* cluster = (TH2D*) XsFile->Get("cluster");
 
 	TH2D* globalNLLhist = (TH2D*) File->Get("globalNLLhist");
 	TH2D* fullNLLhist = (TH2D*) File->Get("fullNLLhist");
@@ -213,38 +252,36 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	c3->Divide(3,1);
 
 	c3->cd(1);
-	hist2Dbaseplot(mhist1, "|m_{A}-m_{h}|/m_{A}",0,1,false,"",0.12,kGray+2);
+	hist2Dbaseplot(mdiffAh, "|m_{A}-m_{h}|/max(m_{A},m_{h})",0,1,false,"",0.08,kGray+2);
 
 	c3->cd(2);
-	hist2Dbaseplot(mhist2, "|m_{A}-m_{H}|/m_{A}",0,1,false,"",0.12,kGray);
+	hist2Dbaseplot(mdiffAH, "|m_{A}-m_{H}|/max(m_{A},m_{H})",0,1,false,"",0.08,kGray);
 
 	c3->cd(3);
-	gPad->SetRightMargin(0.20);
-	gPad->SetTopMargin(0.05);
-	cluster->Draw("Colz");
-	cluster->SetStats(false);
-	cluster->GetXaxis()->SetTitleSize(0.05);
-	cluster->GetYaxis()->SetTitleSize(0.05);
-	cluster->GetZaxis()->SetTitleSize(0.05);
-	cluster->GetZaxis()->SetLabelSize(0.05);
-	cluster->GetZaxis()->SetTitleOffset(1.1);
-	cluster->GetZaxis()->SetRangeUser(0.,7.);
+	hist2Dbaseplot(mdiffHh, "|m_{H}-m_{h}|/max(m_{H},m_{h})",0,1,false,"",0.08,kGray+2);
 
-	TPaveText* pt = new TPaveText(630,28,980,58);
-	pt->AddText("Contributions");
-	pt->AddText("1: h");
-	pt->AddText("2: H");
-	pt->AddText("3: h+H");
-	pt->AddText("4: A");
-	pt->AddText("5: h+A");
-	pt->AddText("6: H+A");
-	pt->AddText("7: h+H+A");
-	pt->SetFillStyle(0);
-	pt->SetBorderSize(0);
-	pt->Draw("Same");
-	gPad->Update();
+	c3->SaveAs("massDifferencesMax.pdf");
 
-	c3->SaveAs("massDifferences.pdf");
+	TCanvas* c4 = new TCanvas("c4", "c4", 1300,700);
+	c4->Divide(3,2);
+
+	c4->cd(1);
+	hist2Dbaseplot(mdiffhrefA, "|m_{A}-m_{h}|/(m_{A}",0,1,false,"",0.12,kGray+2);
+
+	c4->cd(4);
+	hist2Dbaseplot(mdiffHrefA, "|m_{A}-m_{H}|/m_{A}",0,1,false,"",0.12,kGray);
+
+	c4->cd(2);
+	hist2Dbaseplot(mdiffhrefH, "|m_{H}-m_{h}|/m_{H}",0,1,false,"",0.12,kGray+2);
+	c4->cd(5);
+	hist2Dbaseplot(mdiffArefH, "|m_{H}-m_{A}|/m_{H}",0,1,false,"",0.12,kGray);
+
+	c4->cd(3);
+	hist2Dbaseplot(mdiffArefh, "|m_{h}-m_{A}|/m_{h}",0,1,false,"",0.12,kGray+1);
+	c4->cd(6);
+	hist2Dbaseplot(mdiffHrefh, "|m_{h}-m_{H}|/m_{H}",0,1,false,"",0.12,kGray+1);
+
+	c4->SaveAs("massDifferencesRef.pdf");
 
 	int massBins = hist1->GetNbinsX();
 	int tanbBins = hist1->GetNbinsY();
@@ -465,30 +502,7 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 		f->cd(1);
 		hist2Dbaseplot(combinedClusterMass, "m_{cluster}^{combined}",50,1000,true,"[GeV]");
 		f->cd(2);
-		gPad->SetRightMargin(0.20);
-		gPad->SetTopMargin(0.05);
-		combinedCluster->Draw("Colz");
-		combinedCluster->SetStats(false);
-		combinedCluster->GetXaxis()->SetTitleSize(0.05);
-		combinedCluster->GetYaxis()->SetTitleSize(0.05);
-		combinedCluster->GetZaxis()->SetTitleSize(0.05);
-		combinedCluster->GetZaxis()->SetLabelSize(0.05);
-		combinedCluster->GetZaxis()->SetTitleOffset(1.1);
-		combinedCluster->GetZaxis()->SetRangeUser(0.,7.);
-
-		TPaveText* pt = new TPaveText(630,28,980,58);
-		pt->AddText("Contributions");
-		pt->AddText("1: h");
-		pt->AddText("2: H");
-		pt->AddText("3: h+H");
-		pt->AddText("4: A");
-		pt->AddText("5: h+A");
-		pt->AddText("6: H+A");
-		pt->AddText("7: h+H+A");
-		pt->SetFillStyle(0);
-		pt->SetBorderSize(0);
-		pt->Draw("Same");
-		gPad->Update();
+		clusterplot(combinedCluster, "cluster(comb)",0.08);
 		f->SaveAs("combinedCluster.pdf");
 
 		TCanvas* f1 = new TCanvas("f1","f1",1300,350);

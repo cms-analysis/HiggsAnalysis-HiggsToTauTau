@@ -4,7 +4,6 @@ parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...", descrip
 agroup = OptionGroup(parser,"MAIN OPTIONS", "")
 agroup.add_option("--nll-path",dest="nllPath", default="", type="string", help="")
 agroup.add_option("--ggH-bbH-path",dest="ggHbbHPath", default="", type="string", help="")
-agroup.add_option("--nll-offset", dest="nllOffSet", default="", type="string", help="")
 agroup.add_option("--xs-path",dest="xsPath", default="$CMSSW_BASE/src/higgsContributions/", type="string", help="")
 agroup.add_option("--model", dest="model", default="mhmodp",type="string", help="")
 agroup.add_option("--mass-tolerance", dest="massTolerance", default=0.15, type="float", help="")
@@ -157,9 +156,6 @@ def histcreation(path):
 		globalNLL = float(globalNLLstring.replace("Absolute value at minimum (best fit): ",""))
 		globalminformass_A.append(globalNLL)
 
-	if options.nllOffSet == "":  nllOffSet = min(globalminformass_A)
-	else: nllOffSet = -1*float(options.nllOffSet)
-
 	for i in range(len(listofcompletedmasses)):
 		mass = listofcompletedmasses[i]
 		tanbmax = listofmaxtanb[i]
@@ -217,7 +213,7 @@ def histcreation(path):
 				NLLmu = NLLmuFixedforqmu.GetBinContent(massbin,tanbbin)
 				DeltaNLLmu = qmuHist2D.GetBinContent(massbin, tanbbin)/2.0
 			
-				NLLmuFixedforqmu.SetBinContent(massbin, tanbbin, NLLmu - nllOffSet)
+				NLLmuFixedforqmu.SetBinContent(massbin, tanbbin, NLLmu - min(globalminformass_A))
 				deltaNLLforqmu.SetBinContent(massbin, tanbbin, DeltaNLLmu)
 				xsBin = scan2D_delta.FindBin(ggHxs, bbHxs)
 				if xsBin > 40000: xsBin = 40000 # needed to avoid overflow bins, where no NLL values are found -> Set to the last value at that mass.
@@ -237,7 +233,7 @@ def histcreation(path):
 					combinedCluster.SetBinContent(massbin, tanbbin, cluster.GetBinContent(massbin, tanbbin))
 
 				deltaNLLhist.SetBinContent(massbin,tanbbin, deltaNLL)
-				fullNLLhist.SetBinContent(massbin,tanbbin, deltaNLL + globalNLL -nllOffSet)
+				fullNLLhist.SetBinContent(massbin,tanbbin, deltaNLL + globalNLL - min(globalminformass_A))
 			else:
 				globalNLLhist.SetBinContent(massbin, tanbbin, min(globalminformass_A))
 				NLLmuGlobalforqmu.SetBinContent(massbin, tanbbin, min(globalminformass_A))

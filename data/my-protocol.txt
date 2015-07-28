@@ -484,3 +484,16 @@ multidimfit (plotting):
 -----------------------
 
 plot --multidim-fit HiggsAnalysis/HiggsToTauTau/python/layouts/multidim-fit-ggH-bbH.py LIMITS150608-mssm/bbb-asimov-ggH-bbH
+
+
+
+
+NEW DATACARDS without bin by bin:
+
+500,30:
+
+doMSSM.py -a plain --label='-150707-mssm-500-30-30fb' --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-131013-v2" --update-all --blind-datacards --extra-templates='0.007354608*ggH500, 1.166089265*ggH120, 0.080838097*bbH500, 0.016368334*bbH120' --fine-scan 90_1000:10
+
+BG only:
+
+doMSSM.py -a plain --label='-150707-mssm-BG-Only-30fb' --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-131013-v2" --update-all --blind-datacards --fine-scan 90_1000:10

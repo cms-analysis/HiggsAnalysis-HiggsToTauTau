@@ -1286,6 +1286,9 @@ for directory in args :
                             os.system("hadd -k point_{mass}_{tanb}_{k} {files}".format(mass=mass, tanb=tanb_string, k=k, files=files))
                             files=""
                             k=k+1
+                    os.system("hadd -k point_{mass}_{tanb}_{k} {files}".format(mass=mass, tanb=tanb_string, k=k, files=files))
+                    files=""
+                    k=k+1                        
                     os.system("hadd -k point_{mass}_{tanb} point_{mass}_{tanb}_*".format(mass=mass, tanb=tanb_string))
                     os.system(r'root -l -q -b point_{mass}_{tanb} "{CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/test/plotting/hypoTestResultTree.cxx(\"qmu.FixedMu_{tanb}\",{mass},1,\"x\")"'.format(CMSSW_BASE=os.environ["CMSSW_BASE"], mass=mass, tanb=tanb_string))
                     continue

@@ -216,7 +216,7 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
         elif "fineGrid" in opt :
             dirs = ""
             for dir in args :
-					dirs +=dir+" "
+                dirs +=dir+" "
             opt = opt.replace('fineGrid','')
             grid = ["{CMD} -n 60 --min 1.0 --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)]
         else :  #for all other MSSM scenarios except lowmH, lightstopmod and tauphobic
