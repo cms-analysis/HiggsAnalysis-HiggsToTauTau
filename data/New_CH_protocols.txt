@@ -1,0 +1,49 @@
+#This file is a first set of instructions for reproducing Run 1 results using the new Combine Harvester code.
+
+################### SM Legacy Results ########################
+
+# Old datacard format:
+cd HiggsAnalysis/HiggsToTauTau/CombineHarvester/CombineTools
+./bin/SMLegacyExample
+# OR use the existing python version:
+python scripts/SMLegacyExample.py
+
+# This produces datacards in the usual format. The old scripts
+# limit.py --asymptotic or limit.py --max-likelihood could be used to
+# calculate asymptotic limit or maximum likelihood. 
+
+# New datacard format using morphing:
+cd HiggsAnalysis/HiggsToTauTau/CombineHarvester/CombinePdfs
+./bin/SMLegacyMorphing
+cd output/sm_cards_morphed/cmb/
+text2workspace.py -b combinedCard.txt -o combinedCard.root --default-morphing shape2
+combine -M MaxLikelihoodFit --freezeNuisances MH -m 125 combinedCard.root
+# or can use combineTool.py, which also supports ranges of masses to test e.g:
+combineTool.py -M MaxLikelihoodFit -m "110:145:5" --freezeNuisances MH --opts='vanilla' combinedCard.root
+
+################### MSSM Legacy Results ######################
+
+# So far this is only setup for mutau channel, and no bbb uncertainties are
+# added
+
+# Old datacard format:
+cd HiggsAnalysis/HiggsToTauTau/CombineHarvester/CombineTools
+./bin/MSSMExample
+
+# This produces datacards in the usual format. The old scripts
+# lxb-xsec2tanb.py and limit.py --tanb+ could then be run to produce limits
+# scaled by tanb (see old mssm_protocol.txt script)
+
+# New datacard format using morphing:
+cd HiggsAnalysis/HiggsToTauTau/CombineHarvester/CombinePdfs
+./bin/MorphingMSSM
+cd output/mssm_test
+text2workspace.py -b htt_mt_mssm.txt -o combinedCard.root --default-morphing shape2
+# for e.g. mA=160, tanb=9:
+combine -M Asymptotic -n .tanb9.00.mA160 --run both -C 0.95   --minimizerStrategy 2 combinedCard.root --freezeNuisances tanb,mA --setPhysicsModelParameters mA=160,tanb=9 -m 0 combinedCard.root
+# Or:
+combineTool.py -M Asymptotic -m 0 --freezeNuisances tanb,mA --setPhysicsModelParameters mA=160,tanb=9 --opts='vanilla' combinedCard.root
+# The -n is to ensure the tanb and mA values are stored in the name of the
+# output file from combine. The -m option is required by combine and sticks an mH value
+# on the end of the filename also, so we just set this to 0. 
+
