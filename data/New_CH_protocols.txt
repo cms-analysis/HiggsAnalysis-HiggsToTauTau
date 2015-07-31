@@ -40,7 +40,7 @@ cd HiggsAnalysis/HiggsToTauTau/CombineHarvester/CombinePdfs
 cd output/mssm_test
 text2workspace.py -b htt_mt_mssm.txt -o combinedCard.root --default-morphing shape2
 # for e.g. mA=160, tanb=9:
-combine -M Asymptotic -n .tanb9.00.mA160 --run both -C 0.95   --minimizerStrategy 2 combinedCard.root --freezeNuisances tanb,mA --setPhysicsModelParameters mA=160,tanb=9 -m 0 combinedCard.root
+combine -M Asymptotic -n .tanb9.00.mA160 --freezeNuisances tanb,mA --setPhysicsModelParameters mA=160,tanb=9 -m 0 combinedCard.root
 # Or:
 combineTool.py -M Asymptotic -m 0 --freezeNuisances tanb,mA --setPhysicsModelParameters mA=160,tanb=9 --opts='vanilla' combinedCard.root
 # The -n is to ensure the tanb and mA values are stored in the name of the
