@@ -42,7 +42,7 @@ void hist2Dbaseplot(TCanvas* c, TH2D* hist, const char* titlename, double zmin, 
 	c->SetBorderSize     (10);
 	// Set margins to reasonable defaults
 	c->SetLeftMargin     (0.14);
-	c->SetRightMargin    (0.18);
+	c->SetRightMargin    (0.20);
 	//c->SetTopMargin      (0.08);
 	c->SetBottomMargin   (0.13);
 	// Setup a frame which makes sense
@@ -57,6 +57,8 @@ void hist2Dbaseplot(TCanvas* c, TH2D* hist, const char* titlename, double zmin, 
   
 	hist->Draw("Colz");
 	hist->SetStats(false);
+
+	hist->GetXaxis()->SetTitle("m_{A} [GeV]");
 	hist->GetXaxis()->SetLabelFont(62);
 	hist->GetXaxis()->SetLabelOffset(0.018);
 	hist->GetXaxis()->SetTitleColor(1);
@@ -64,6 +66,7 @@ void hist2Dbaseplot(TCanvas* c, TH2D* hist, const char* titlename, double zmin, 
 	hist->GetXaxis()->SetTitleFont(62);
 	hist->GetXaxis()->SetTitleSize(0.055);
 
+	hist->GetYaxis()->SetTitle("tan#beta");
 	hist->GetYaxis()->SetLabelFont(62);
 	hist->GetYaxis()->SetLabelOffset(0.023);
 	hist->GetYaxis()->SetTitleSize(0.055);
@@ -100,34 +103,78 @@ void hist2Dbaseplot(TCanvas* c, TH2D* hist, const char* titlename, double zmin, 
 
 
 void clusterplot(TH2D* clusterhist, const char* titlename, double textsize=0.12, Color_t latexcolor=1){
-	gPad->SetRightMargin(0.20);
-	gPad->SetTopMargin(0.05);
-	clusterhist->Draw("Colz");
+  	gPad->SetFillColor      (0);
+	gPad->SetBorderMode     (0);
+	gPad->SetBorderSize     (10);
+	// Set margins to reasonable defaults
+	gPad->SetLeftMargin     (0.14);
+	//gPad->SetRightMargin    (0.20);
+	//gPad->SetTopMargin      (0.08);
+	gPad->SetBottomMargin   (0.13);
+
+	clusterhist->Draw("Col");
 	clusterhist->SetStats(false);
-	clusterhist->GetXaxis()->SetTitleSize(0.05);
-	clusterhist->GetYaxis()->SetTitleSize(0.05);
+	clusterhist->GetXaxis()->SetTitle("m_{A} [GeV]");
+	clusterhist->GetXaxis()->SetLabelFont(62);
+	clusterhist->GetXaxis()->SetLabelOffset(0.018);
+	clusterhist->GetXaxis()->SetTitleColor(1);
+	clusterhist->GetXaxis()->SetTitleOffset(1.05);
+	clusterhist->GetXaxis()->SetTitleFont(62);
+	clusterhist->GetXaxis()->SetTitleSize(0.055);
+
+	clusterhist->GetYaxis()->SetTitle("tan#beta");
+	clusterhist->GetYaxis()->SetLabelFont(62);
+	clusterhist->GetYaxis()->SetLabelOffset(0.023);
+	clusterhist->GetYaxis()->SetTitleSize(0.055);
+	clusterhist->GetYaxis()->SetTitleOffset(1.15);
+	clusterhist->GetYaxis()->SetTitleFont(62);
+	clusterhist->GetYaxis()->SetLabelSize(0.04);
+
 	clusterhist->GetZaxis()->SetTitleSize(0.05);
 	clusterhist->GetZaxis()->SetLabelSize(0.05);
 	clusterhist->GetZaxis()->SetTitleOffset(1.1);
 	clusterhist->GetZaxis()->SetRangeUser(0.,7.);
 
-	TPaveText* pt = new TPaveText(630,28,980,58);
-	pt->AddText("Contributions");
-	pt->AddText("1: h");
-	pt->AddText("2: H");
-	pt->AddText("3: h+H");
-	pt->AddText("4: A");
-	pt->AddText("5: h+A");
-	pt->AddText("6: H+A");
-	pt->AddText("7: h+H+A");
-	pt->SetFillStyle(0);
-	pt->SetBorderSize(0);
-	pt->Draw("Same");
+	//Int_t colors[] = {0, 1, 2, 3, 4, 5, 6, 7}; // #colors >= #levels - 1
+	Int_t colors[] = {0, kRed+3, 2, 3, 4, kOrange+1, 8, 7};
+	gStyle->SetPalette((sizeof(colors)/sizeof(Int_t)), colors);
 
-	TLatex* histtitle = new TLatex(120, 63, titlename);
-	histtitle->SetTextColor(latexcolor);
-	histtitle->SetTextSize(textsize);
-	histtitle->Draw("Same");
+	TH2D* h = new TH2D();
+	h->SetFillColor(kRed+3);
+	TH2D* H = new TH2D();
+	H->SetFillColor(2);
+	// TH2D* h_H = new TH2D();
+// 	h_H->SetFillColor(kBlue);
+	TH2D* A = new TH2D();
+	A->SetFillColor(4);
+	TH2D* h_A = new TH2D();
+	h_A->SetFillColor(kOrange+1);
+	TH2D* H_A = new TH2D();
+	H_A->SetFillColor(8);
+	TH2D* h_H_A = new TH2D();
+	h_H_A->SetFillColor(7);
+	
+	TLegend* leg2 = new TLegend(0.15, 0.57, 0.35, 0.88);
+	leg2->SetBorderSize( 0  );
+	leg2->SetFillStyle (1001);
+	leg2->SetTextSize  (0.03);
+	leg2->SetTextFont  ( 62 ); 
+	leg2->SetFillColor (kWhite);
+	leg2->SetLineWidth (2);
+	leg2->SetLineColor (kBlack);
+	leg2->SetHeader("Contributions:");
+	leg2->AddEntry(h,"h","F");
+	leg2->AddEntry(H,"H","F");
+	leg2->AddEntry(A,"A","F");
+	leg2->AddEntry(h_A,"h+A","F");
+	leg2->AddEntry(H_A,"A+H","F");
+	leg2->AddEntry(h_H_A,"h+A+H","F");
+	leg2->Draw("same");
+	 
+	// TLatex* histtitle = new TLatex(120, 63, titlename);
+// 	histtitle->SetTextColor(latexcolor);
+// 	histtitle->SetTextSize(textsize);
+// 	histtitle->Draw("Same");
 	gPad->Update();
 }
 
@@ -146,9 +193,9 @@ TMultiGraph* exclusionObserved(TH2D* hist, int color=1, double level=0.05)
 	TMultiGraph* contoursGraph = new TMultiGraph();
 	for (int i=0; i<contLevel->GetSize(); i++)
 	{
-		TGraph* curve = (TGraph*)contLevel->At(i);
-		curve->SetLineColor(color);
-		contoursGraph->Add((TGraph*)curve->Clone());
+	  TGraph* curve = (TGraph*)contLevel->At(i);
+	  curve->SetLineColor(color);
+	  contoursGraph->Add((TGraph*)curve->Clone());
 	}
 	return contoursGraph;
 }
@@ -236,7 +283,7 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 
 	TCanvas* c1 = new TCanvas("c1", "c1", 600, 600);
 	TMultiGraph* gc1 =  exclusionObserved(hist1);
-	hist2Dbaseplot(c1, hist1, "", 0,1, false, "CL_{s}");
+	hist2Dbaseplot(c1, hist1, "", 0,1, false, "CL_{s}",0.06);
 	gc1->Draw("C");
 	TLegend* L = new TLegend(0.55,0.15,0.8,0.4);
 	TLine* CLsObs = new TLine();
@@ -257,40 +304,48 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	TList* gc2list = gc2->GetListOfGraphs();
 	for(int i=0;i<gc2list->GetSize();i++)
 	{
-	  std::cout << i << " " << ((TGraph*)gc2list->At(i))->GetX()[((TGraph*)gc2list->At(i))->GetN()-1] << " " << ((TGraph*)gc2list->At(i))->GetX()[0] << " " << ((TGraph*)gc2list->At(i))->GetY()[((TGraph*)gc2list->At(i))->GetN()-1] << " " << ((TGraph*)gc2list->At(i))->GetY()[0] << std::endl; 
+	  for(int j=0;j<((TGraph*)gc2list->At(i))->GetN();j++){
+	    ((TGraph*)gc2list->At(i))->SetPoint( j, ((TGraph*)gc2list->At(i))->GetX()[j], ((TGraph*)gc2list->At(i))->GetY()[j]-0.5 );
+	  }
 
-	  //0 95 746.664 19.729 60.5
-
-	  //  ende 95/19.729
-	  //  anfang 746.664/60.5
-	   
-	  int zahl = ((TGraph*)gc2list->At(i))->GetN()-1;
 	  ((TGraph*)gc2list->At(i))->SetFillColor(kGray);
 	  ((TGraph*)gc2list->At(i))->SetLineColor(kGray);
-	  ((TGraph*)gc2list->At(i))->SetLineWidth(-16003);
-	  ((TGraph*)gc2list->At(i))->SetFillStyle(3005);
-	  //((TGraph*)gc2list->At(i))->SetPoint( ((TGraph*)gc2list->At(i))->GetN(), 89, ((TGraph*)gc2list->At(i))->GetX()[((TGraph*)gc2list->At(i))->GetN()-1] );
-	  //((TGraph*)gc2list->At(i))->SetPoint( ((TGraph*)gc2list->At(i))->GetN()+1, 89, 65);
-	  //((TGraph*)gc2list->At(i))->SetPoint( ((TGraph*)gc2list->At(i))->GetN()+2, ((TGraph*)gc2list->At(i))->GetX()[0], 65);
-	  //((TGraph*)gc2list->At(i))->SetPoint( ((TGraph*)gc2list->At(i))->GetN()+3, ((TGraph*)gc2list->At(i))->GetX()[0], ((TGraph*)gc2list->At(i))->GetY()[0]);
+	  ((TGraph*)gc2list->At(i))->SetLineWidth(3);
+	  ((TGraph*)gc2list->At(i))->SetFillStyle(1001);
+	  ((TGraph*)gc2list->At(i))->SetPoint( ((TGraph*)gc2list->At(i))->GetN(), 89, ((TGraph*)gc2list->At(i))->GetY()[((TGraph*)gc2list->At(i))->GetN()-1] );
+	  ((TGraph*)gc2list->At(i))->SetPoint( ((TGraph*)gc2list->At(i))->GetN(), 89, 80);
+	  ((TGraph*)gc2list->At(i))->SetPoint( ((TGraph*)gc2list->At(i))->GetN(), ((TGraph*)gc2list->At(i))->GetX()[0], 80);
+	  ((TGraph*)gc2list->At(i))->SetPoint( ((TGraph*)gc2list->At(i))->GetN(), ((TGraph*)gc2list->At(i))->GetX()[0], ((TGraph*)gc2list->At(i))->GetY()[0]);
 	  //((TGraph*)gc2list->At(i))->SaveAs("graph.root");
 	}
-	hist2Dbaseplot(c2, hist2, "",0.01,10000,true,"q_{#mu}",0.12,kGray);
-	gc2->Draw("C");
+	TGraph * outer2= (TGraph*)gc2list->At(0)->Clone();
+	outer2->SetLineWidth(3);
+	outer2->SetLineColor(kBlack);
+	TGraph * outer= (TGraph*)gc2list->At(0)->Clone();
+	outer->SetFillStyle(3005);
+	outer->SetFillColor(kBlack);
+	hist2Dbaseplot(c2, hist2, "",0.01,10000,true,"q_{#mu}",0.06);
+	gc2->Draw("CF");
+	outer->Draw("CFsame");
+	outer2->Draw("Csame");
+	gPad->RedrawAxis();
 	gPad->Update();
 	c2->Print("mia_qMu.png");
 	c2->Print("mia_qMu.pdf");
 
 	TCanvas* c3 = new TCanvas("c3", "c3", 600, 600);
-	hist2Dbaseplot(c3, hist3, "",0.01,10000,true,"q_{A}",0.12,kGray);
-	gc2->Draw("C");
+	hist2Dbaseplot(c3, hist3, "",0.01,10000,true,"q_{A}",0.06);
+	gc2->Draw("CF");
+	outer->Draw("CFsame");
+	outer2->Draw("Csame");
+	gPad->RedrawAxis();
 	gPad->Update();
 	c3->Print("mia_qA.png");
 	c3->Print("mia_qA.pdf");
 
 	TCanvas* c4 = new TCanvas("c4", "c4", 600, 600);
 	TMultiGraph* gc4 =  exclusionObserved(hist4);
-	hist2Dbaseplot(c4, hist4, "", 0,1, false, "CL_{s}");
+	hist2Dbaseplot(c4, hist4, "", 0,1, false, "CL_{s}",0.06);
 	gc4->Draw("C");
 	L->Draw("Same");
 	gPad->Update();
@@ -298,15 +353,21 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	c4->Print("mda_CLs_obs.pdf");
 
 	TCanvas* c5 = new TCanvas("c5", "c5", 600, 600);
-	hist2Dbaseplot(c5, hist5, "", 0.01,10000,true, "q_{#mu}");
-	gc2->Draw("C");
+	hist2Dbaseplot(c5, hist5, "", 0.01,10000,true, "q_{#mu}",0.06);
+	gc2->Draw("CF");
+	outer->Draw("CFsame");
+	outer2->Draw("Csame");
+	gPad->RedrawAxis();
 	gPad->Update();
 	c5->Print("mda_qMu.png");
 	c5->Print("mda_qMu.pdf");
 
 	TCanvas* c6 = new TCanvas("c6", "c6", 600, 600);
-	hist2Dbaseplot(c6, hist6, "", 0.01,10000,true,"q_{A}");
-	gc2->Draw("C");
+	hist2Dbaseplot(c6, hist6, "", 0.01,10000,true,"q_{A}",0.06);
+	gc2->Draw("CF");
+	outer->Draw("CFsame");
+	outer2->Draw("Csame");
+	gPad->RedrawAxis();
 	gPad->Update();
 	c6->Print("mda_qA.png");
 	c6->Print("mda_qA.pdf");
@@ -314,93 +375,93 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 
 	///-----------------------------
 	TCanvas* a1 = new TCanvas("a1", "a1", 600, 600);
-	hist2Dbaseplot(a1, Xshist1, "",0.000001,300,true,"#sigma#font[42]{(ggA)}#upoint#font[52]{B}#font[42]{(A#rightarrow#tau#tau)} [pb]");
+	hist2Dbaseplot(a1, Xshist1, "",0.000001,300,true,"#sigma#font[42]{(ggA)}#upoint#font[52]{B}#font[42]{(A#rightarrow#tau#tau)} [pb]",0.06);
 	a1->Print("ggA.png");
 	a1->Print("ggA.pdf");
 
 	TCanvas* a2 = new TCanvas("a2", "a2", 600, 600);
-	hist2Dbaseplot(a2, Xshist2, "",0.000001,300,true,"#sigma#font[42]{(ggH)}#upoint#font[52]{B}#font[42]{(H#rightarrow#tau#tau)} [pb]");
-	a2->Print("ggH.png");
-	a2->Print("ggH.pdf");
+	hist2Dbaseplot(a2, Xshist2, "",0.000001,300,true,"#sigma#font[42]{(ggH)}#upoint#font[52]{B}#font[42]{(H#rightarrow#tau#tau)} [pb]",0.06);
+	a2->Print("ggHH.png");
+	a2->Print("ggHH.pdf");
 
 	TCanvas* a3 = new TCanvas("a3", "a3", 600, 600);
-	hist2Dbaseplot(a3, Xshist3, "",0.000001,300,true,"#sigma#font[42]{(ggh)}#upoint#font[52]{B}#font[42]{(h#rightarrow#tau#tau)} [pb]");
+	hist2Dbaseplot(a3, Xshist3, "",0.000001,300,true,"#sigma#font[42]{(ggh)}#upoint#font[52]{B}#font[42]{(h#rightarrow#tau#tau)} [pb]",0.06);
 	a3->Print("ggh.png");
 	a3->Print("ggh.pdf");
 
 	TCanvas* a4 = new TCanvas("a4", "a4", 600, 600);
-	hist2Dbaseplot(a4, Xshist4, "",0.000001,300,true,"#sigma#font[42]{(bbA)}#upoint#font[52]{B}#font[42]{(A#rightarrow#tau#tau)} [pb]");
-	a4->Print("bbH.png");
-	a4->Print("bbH.pdf");
+	hist2Dbaseplot(a4, Xshist4, "",0.000001,300,true,"#sigma#font[42]{(bbA)}#upoint#font[52]{B}#font[42]{(A#rightarrow#tau#tau)} [pb]",0.06);
+	a4->Print("bbA.png");
+	a4->Print("bbA.pdf");
 
 	TCanvas* a5 = new TCanvas("a5", "a5", 600, 600);
-	hist2Dbaseplot(a5, Xshist5, "",0.000001,300,true,"#sigma#font[42]{(bbH)}#upoint#font[52]{B}#font[42]{(H#rightarrow#tau#tau)} [pb]");
-	a5->Print("bbH.png");
-	a5->Print("bbH.pdf");
+	hist2Dbaseplot(a5, Xshist5, "",0.000001,300,true,"#sigma#font[42]{(bbH)}#upoint#font[52]{B}#font[42]{(H#rightarrow#tau#tau)} [pb]",0.06);
+	a5->Print("bbHH.png");
+	a5->Print("bbHH.pdf");
 
 	TCanvas* a6 = new TCanvas("a6", "a6", 600, 600);
-	hist2Dbaseplot(a6, Xshist6, "",0.000001,300,true,"#sigma#font[42]{(bbh)}#upoint#font[52]{B}#font[42]{(h#rightarrow#tau#tau)} [pb]");
+	hist2Dbaseplot(a6, Xshist6, "",0.000001,300,true,"#sigma#font[42]{(bbh)}#upoint#font[52]{B}#font[42]{(h#rightarrow#tau#tau)} [pb]",0.06);
 	a6->Print("bbh.png");
 	a6->Print("bbh.pdf");
 
 	///-----------------------------
 
 	TCanvas* d1 = new TCanvas("d1","d1", 600, 600);
-	hist2Dbaseplot(d1, ggcmb, "",0.000001,450,true,"#sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]");
+	hist2Dbaseplot(d1, ggcmb, "",0.000001,450,true,"#sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]",0.06);
 	d1->Print("ggPhi.png");
 	d1->Print("ggPhi.pdf");
 
 	TCanvas* d2 = new TCanvas("d2","d2", 600, 600);
-	hist2Dbaseplot(d2, bbcmb, "",0.000001,450,true,"#sigma#font[42]{(bb#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]");
+	hist2Dbaseplot(d2, bbcmb, "",0.000001,450,true,"#sigma#font[42]{(bb#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]",0.06);
 	d2->Print("bbPhi.png");
 	d2->Print("bbPhi.pdf");
 
 	///-----------------------------
 
 	TCanvas* b1 = new TCanvas("b1", "b1", 600, 600);
-	hist2Dbaseplot(b1, mdiffAh, "",0,1,false,"|m_{A}-m_{h}|/max(m_{A},m_{h})",0.08,kGray+2);
+	hist2Dbaseplot(b1, mdiffAh, "",0,1,false,"|m_{A}-m_{h}|/max(m_{A},m_{h})",0.06);
 	b1->Print("m_diffmaxAh.png");
 	b1->Print("m_diffmaxAh.pdf");
 
 	TCanvas* b2 = new TCanvas("b2", "b2", 600, 600);
-	hist2Dbaseplot(b2, mdiffAH, "",0,1,false,"|m_{A}-m_{H}|/max(m_{A},m_{H})",0.08,kGray);
+	hist2Dbaseplot(b2, mdiffAH, "",0,1,false,"|m_{A}-m_{H}|/max(m_{A},m_{H})",0.06);
 	b2->Print("m_diffmaxAH.png");
 	b2->Print("m_diffmaxAH.pdf");
 
         TCanvas* b3 = new TCanvas("b3", "b3", 600, 600);
-	hist2Dbaseplot(b3, mdiffHh, "",0,1,false,"|m_{H}-m_{h}|/max(m_{H},m_{h})",0.08,kGray+2);
+	hist2Dbaseplot(b3, mdiffHh, "",0,1,false,"|m_{H}-m_{h}|/max(m_{H},m_{h})",0.06);
 	b3->Print("m_diffmaxHh.png");
 	b3->Print("m_diffmaxHh.pdf");
 
 	///-----------------------------
 
 	TCanvas* e1 = new TCanvas("e1", "e1", 600,600);
-	hist2Dbaseplot(e1, mdiffhrefA, "",0,1,false,"|m_{A}-m_{h}|/(m_{A}",0.12,kGray+2);
+	hist2Dbaseplot(e1, mdiffhrefA, "",0,1,false,"|m_{A}-m_{h}|/(m_{A}",0.06);
 	b3->Print("m_diffhrefA.png");
 	b3->Print("m_diffhrefA.pdf");
 
 	TCanvas* e2 = new TCanvas("e2", "e2", 600,600);
-	hist2Dbaseplot(e2, mdiffHrefA, "",0,1,false,"|m_{A}-m_{H}|/m_{A}",0.12,kGray);
+	hist2Dbaseplot(e2, mdiffHrefA, "",0,1,false,"|m_{A}-m_{H}|/m_{A}",0.06);
 	b3->Print("m_diffHrefA.png");
 	b3->Print("m_diffHrefA.pdf");
 
 	TCanvas* e3 = new TCanvas("e3", "e3", 600,600);
-	hist2Dbaseplot(e3, mdiffhrefH, "",0,1,false,"|m_{H}-m_{h}|/m_{H}",0.12,kGray+2);
+	hist2Dbaseplot(e3, mdiffhrefH, "",0,1,false,"|m_{H}-m_{h}|/m_{H}",0.06);
 	b3->Print("m_diffhrefH.png");
 	b3->Print("m_diffhrefH.pdf");
 
 	TCanvas* e4 = new TCanvas("e4", "e4", 600,600);
-	hist2Dbaseplot(e4, mdiffArefH, "",0,1,false,"|m_{H}-m_{A}|/m_{H}",0.12,kGray);
+	hist2Dbaseplot(e4, mdiffArefH, "",0,1,false,"|m_{H}-m_{A}|/m_{H}",0.06);
 	b3->Print("m_diffArefH.png");
 	b3->Print("m_diffArefH.pdf");
 
 	TCanvas* e5 = new TCanvas("e5", "e5", 600,600);
-	hist2Dbaseplot(e5, mdiffArefh, "",0,1,false,"|m_{h}-m_{A}|/m_{h}",0.12,kGray+1);
+	hist2Dbaseplot(e5, mdiffArefh, "",0,1,false,"|m_{h}-m_{A}|/m_{h}",0.06);
 	b3->Print("m_diffArefh.png");
 	b3->Print("m_diffArefh.pdf");
 
 	TCanvas* e6 = new TCanvas("e6", "e6", 600,600);
-	hist2Dbaseplot(e6, mdiffHrefh, "",0,1,false,"|m_{h}-m_{H}|/m_{h}",0.12,kGray+1);
+	hist2Dbaseplot(e6, mdiffHrefh, "",0,1,false,"|m_{h}-m_{H}|/m_{h}",0.06);
 	b3->Print("m_diffHrefh.png");
 	b3->Print("m_diffHrefh.pdf");
 
@@ -472,37 +533,90 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	double max = globalNLLhist->GetMaximum();
 	double delta = max - min;
 	//globalNLLhist->GetZaxis()->SetLabelSize(0.035);
-	hist2Dbaseplot(g1, globalNLLhist, "NLL^{glob}",min, min + delta*1.01,false,"",0.06);//,kGray+1);
+	for(int i=0; i<globalNLLhist->GetNbinsX(); i++){
+	  for(int j=0; j<globalNLLhist->GetNbinsY(); j++){
+	    double save=globalNLLhist->GetBinContent(i, j);
+	    globalNLLhist->SetBinContent(i, j, save-min);
+	  }
+	}
+	hist2Dbaseplot(g1, globalNLLhist, "", 0, delta*1.01,false,"#DeltaNLL_{mA}^{*, tan#beta}",0.06);//,kGray+1);
+	gc2->Draw("CF");
+	outer->Draw("CFsame");
+	outer2->Draw("Csame");
+	gPad->RedrawAxis();
 	g1->Print("mia_NLLglob.pdf");
 	g1->Print("mia_NLLglob.png");
 	
+	TCanvas* g1_log = new TCanvas("g1_log", "g1_log", 600, 600);
+	hist2Dbaseplot(g1_log, globalNLLhist, "", 0.001, 100,true,"#DeltaNLL_{mA}^{*, tan#beta}",0.06);//,kGray+1);
+	gc2->Draw("CF");
+	outer->Draw("CFsame");
+	gPad->RedrawAxis();
+	g1_log->Print("mia_NLLglob_log.pdf");
+	g1_log->Print("mia_NLLglob_log.png");
+
 	TCanvas* g2 = new TCanvas("g2", "g2", 600, 600);
 	//deltaNLLhist->GetZaxis()->SetLabelSize(0.05);
-	hist2Dbaseplot(g2, deltaNLLhist, "#DeltaNLL",0.001,10000,true,"",0.06);//,kGray+2);
+	hist2Dbaseplot(g2, deltaNLLhist, "",0.001,1000,true,"#DeltaNLL",0.06);//,kGray+2);
+	gc2->Draw("CF");
+	outer->Draw("CFsame");
+	outer2->Draw("Csame");
+	gPad->RedrawAxis();
 	g2->Print("mia_DeltaNLL.pdf");
 	g2->Print("mia_DeltaNLL.png");
 
 	TCanvas* g3 = new TCanvas("g3", "g3", 600, 600);
 	//fullNLLhist->GetZaxis()->SetLabelSize(0.05);
-	hist2Dbaseplot(g3, fullNLLhist, "full NLL",0.01,10000,true,"",0.06);//,kGray+2);
+	hist2Dbaseplot(g3, fullNLLhist, "",0.001,1000,true,"#DeltaNLL_{mA}^{tanb}",0.06);//,kGray+2);
+	gc2->Draw("CF");
+	outer->Draw("CFsame");
+	outer2->Draw("Csame");
+	gPad->RedrawAxis();
 	g3->Print("mia_fullNLL.pdf");
 	g3->Print("mia_fullNLL.png");
 
 	TCanvas* g4 = new TCanvas("g4", "g4", 600, 600);
 	//NLLmuGlobalforqmu->GetZaxis()->SetLabelSize(0.035);
-	hist2Dbaseplot(g4, NLLmuGlobalforqmu, "NLL^{glob}",min, min + delta*1.01,false,"",0.06);//, kGray+1);
+	for(int i=0; i<NLLmuGlobalforqmu->GetNbinsX(); i++){
+	  for(int j=0; j<NLLmuGlobalforqmu->GetNbinsY(); j++){
+	    double save=NLLmuGlobalforqmu->GetBinContent(i, j);
+	    NLLmuGlobalforqmu->SetBinContent(i, j, save-min);
+	  }
+	}
+	hist2Dbaseplot(g4, NLLmuGlobalforqmu, "", 0, delta*1.01,false,"#DeltaNLL_{mA}^{*, tan#beta}",0.06);//, kGray+1);
+	gc2->Draw("CF");
+	outer->Draw("CFsame");
+	outer2->Draw("Csame");
+	gPad->RedrawAxis();
 	g4->Print("mda_NLLglob.pdf");
 	g4->Print("mda_NLLglob.png");
 
+	TCanvas* g4_log = new TCanvas("g4_log", "g4_log", 600, 600);
+	hist2Dbaseplot(g4_log, NLLmuGlobalforqmu, "", 0.001, 100, true,"#DeltaNLL_{mA}^{*, tan#beta}",0.06);//, kGray+1);
+	gc2->Draw("CF");
+	outer->Draw("CFsame");
+	outer2->Draw("Csame");
+	gPad->RedrawAxis();
+	g4_log->Print("mda_NLLglob_log.pdf");
+	g4_log->Print("mda_NLLglob_log.png");
+
 	TCanvas* g5 = new TCanvas("g5", "g5", 600, 600);
 	//deltaNLLforqmu->GetZaxis()->SetLabelSize(0.05);
-	hist2Dbaseplot(g5, deltaNLLforqmu, "#DeltaNLL",0.001,10000,true,"",0.06);// ,kGray+2);
+	hist2Dbaseplot(g5, deltaNLLforqmu, "",0.001,1000,true,"#DeltaNLL",0.06);// ,kGray+2);
+	gc2->Draw("CF");
+	outer->Draw("CFsame");
+	outer2->Draw("Csame");
+	gPad->RedrawAxis();
 	g5->Print("mda_DeltaNLL.pdf");
 	g5->Print("mda_DeltaNLL.png");
 
 	TCanvas* g6 = new TCanvas("g6", "g6", 600, 600);
 	//NLLmuFixedforqmu->GetZaxis()->SetLabelSize(0.05);
-	hist2Dbaseplot(g6, NLLmuFixedforqmu, "full NLL",0.01,10000,true,"",0.06);//kGray+2);
+	hist2Dbaseplot(g6, NLLmuFixedforqmu, "",0.001,1000,true,"#DeltaNLL_{mA}^{tanb}",0.06);//kGray+2);
+	gc2->Draw("CF");
+	outer->Draw("CFsame");
+	outer2->Draw("Csame");
+	gPad->RedrawAxis();
 	g6->Print("mda_fullNLL.pdf");
 	g6->Print("mda_fullNLL.png");
 
@@ -551,13 +665,13 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 
 	TCanvas* h3 = new TCanvas("h3", "h3", 600, 600);
 	NLLdiff2D->GetZaxis()->SetLabelSize(0.05);
-	hist2Dbaseplot(h3, NLLdiff2D,"NLL_{mia}-NLL_{mda}",-6,6,false,"",0.06);
+	hist2Dbaseplot(h3, NLLdiff2D,"",-6,6,false,"NLL_{mia}-NLL_{mda}",0.06);
 	h2->Print("NLLdiff_mia-mda.pdf");
 	h2->Print("NLLdiff_mia-mda.png");
 
 	TCanvas* h4 = new TCanvas("h4", "h4", 600, 600);
 	rNLLdiff2D->GetZaxis()->SetLabelSize(0.05);
-	hist2Dbaseplot(h4, rNLLdiff2D,"NLL_{mia}-NLL_{mda}/NLL_{mda}",-0.3,0.3,false,"",0.06);
+	hist2Dbaseplot(h4, rNLLdiff2D,"",-0.3,0.3,false,"NLL_{mia}-NLL_{mda}/NLL_{mda}",0.06);
 	h2->Print("NLLdiff_mia-mda_ref_mda.pdf");
 	h2->Print("NLLdiff_mia-mda_ref_mda.png");
 
@@ -573,8 +687,8 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	hist2Dbaseplot(i1, CLsbHist2D, "",0,1,false,"CL_{s+b}",0.06);
 	excl2D->Draw("C");
 	gPad->Update();
-	i1->Print("CLsbHist2D_mia.pdf");
-	i1->Print("CLsbHist2D_mia.png");
+	i1->Print("CLsb_mda.pdf");
+	i1->Print("CLsb_mda.png");
 
 	TCanvas* i2 = new TCanvas("i2", "i2", 600, 600);
 	CLsbhistNLL->Draw("Colz");
@@ -583,12 +697,16 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	hist2Dbaseplot(i2, CLsbhistNLL, "",0,1,false,"CL_{s+b}",0.06);
 	exclNLL->Draw("C");
 	gPad->Update();
-	i2->Print("CLsbhistNLL_mda.pdf");
-	i2->Print("CLsbhistNLL_mda.png");
+	i2->Print("CLsb_mia.pdf");
+	i2->Print("CLsb_mia.png");
 	
 	TCanvas* i3 = new TCanvas("i3", "i3", 600, 600);
-	gPad->SetRightMargin(0.20);
-	gPad->SetTopMargin(0.05);
+	i3->SetLeftMargin     (0.14);
+	//i3->SetRightMargin    (0.20);
+	//c->SetTopMargin      (0.08);
+	i3->SetBottomMargin   (0.13);
+// 	i3->SetRightMargin(0.20);
+// 	i3->SetTopMargin(0.05);
 	TMultiGraph* excl2Dcompare = new TMultiGraph();
 	TMultiGraph* exclNLLcompare = new TMultiGraph();
 	TMultiGraph* CLscompare = new TMultiGraph();
@@ -596,14 +714,20 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	excl2Dcompare = exclusionObserved(CLsbHist2D,1);
 	exclNLLcompare = exclusionObserved(CLsbhistNLL,2);
 	CLscompare = exclusionObserved(hist4,3);
+	excl2Dcompare->SaveAs("mia.root");
+	exclNLLcompare->SaveAs("mda.root");
+	CLscompare->SaveAs("CLs.root");
 
 	excl2Dcompare->Draw("C");
 	exclNLLcompare->Draw("C");
 	CLscompare->Draw("C");
+	gc2->Draw("CF");
+	outer2->Draw("C");
+	outer->Draw("CF");
 
 	TLegend* l = new TLegend(0.15,0.6,0.35,0.9);
 	TLine* md = new TLine();
-	md->SetLineColor(1);
+	md->SetLineColor(3);
 	md->SetLineWidth(2);
 	TLine* mi = new TLine();
 	mi->SetLineColor(2);
@@ -611,31 +735,35 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	TLine* cl = new TLine();
 	cl->SetLineColor(3);
 	cl->SetLineWidth(2);
-	l->AddEntry(md, "CL_{s+b} mda","l");
 	l->AddEntry(mi, "CL_{s+b} mia","l");
+	l->AddEntry(md, "CL_{s+b} mda","l");
 	l->AddEntry(cl, "CL_{s} mda","l");
 	l->SetFillStyle(0);
 	l->SetBorderSize(0);
 	l->Draw("Same");
-	gPad->Update();
-	i1->Print("CLsbComparison.pdf");
-	i1->Print("CLsbComparison.png");
+	i3->Update();
+	//gPad->RedrawAxis();
+	i3->Print("CLsbComparison.pdf");
+	i3->Print("CLsbComparison.png");
 
-	if(!higgsBounds)
-	{
-		TCanvas* j1 = new TCanvas("j1","j1", 600, 600);
-		deltaNLLhist_heavy->GetZaxis()->SetLabelSize(0.05);
-		hist2Dbaseplot(j1, deltaNLLhist_heavy, "#DeltaNLL_{heavy}",0.001,10000,true,"",0.06,kBlack);
-		j1->Print("DeltaNLL_heavy.pdf");
-		j1->Print("DeltaNLL_heavy.pdf");
+// 	if(!higgsBounds)
+// 	{
+// 		TCanvas* j1 = new TCanvas("j1","j1", 600, 600);
+// 		deltaNLLhist_heavy->GetZaxis()->SetLabelSize(0.05);
+// 		hist2Dbaseplot(j1, deltaNLLhist_heavy, "#DeltaNLL_{heavy}",0.001,10000,true,"a.u.",0.06,kBlack);
+// 		gc2->Draw("CF");
+// 		j1->Print("DeltaNLL_heavy.pdf");
+// 		j1->Print("DeltaNLL_heavy.pdf");
 
-		TCanvas* j2 = new TCanvas("j2","j2", 600, 600);
-		deltaNLLhist_light->GetZaxis()->SetLabelSize(0.05);
-		hist2Dbaseplot(j2, deltaNLLhist_light, "#DeltaNLL_{light}",0.001,10000,true,"",0.06,kBlack);
-		j2->Print("DeltaNLL_light.pdf");
-		j2->Print("DeltaNLL_light.pdf");
-	}
-	else
+// 		TCanvas* j2 = new TCanvas("j2","j2", 600, 600);
+// 		deltaNLLhist_light->GetZaxis()->SetLabelSize(0.05);
+// 		hist2Dbaseplot(j2, deltaNLLhist_light, "#DeltaNLL_{light}",0.001,10000,true,"a.u.",0.06,kBlack);
+// 		gc2->Draw("CF");
+// 		j2->Print("DeltaNLL_light.pdf");
+// 		j2->Print("DeltaNLL_light.pdf");
+// 	}
+// 	else
+	if(higgsBounds)
 	{
 		TH2D* combinedCluster = (TH2D*) File->Get("combinedCluster");
 		TH2D* combinedClusterMass = (TH2D*) File->Get("combinedClusterMass");
@@ -644,30 +772,43 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 		TH2D* deltaNLLhisth = (TH2D*) File->Get("deltaNLLhisth");
 
 		TCanvas* k1 = new TCanvas("k1","k1", 600, 600);
-		hist2Dbaseplot(k1, combinedClusterMass, "m_{cluster}^{combined}",50,1000,true,"[GeV]",0.06,kBlack);
+		hist2Dbaseplot(k1, combinedClusterMass, "",50,1000,true,"m_{cluster}^{combined} [GeV]",0.06,kBlack);
 		k1->Print("HB_combinedCluster_mass.pdf");
 		k1->Print("HB_combinedCluster_mass.png");
 
 		TCanvas* k2 = new TCanvas("k2","k2", 600, 600);
-		clusterplot(k2, combinedCluster, "cluster(comb)",0.06);
+		clusterplot(combinedCluster, "",0.06);
 		k2->Print("HB_combinedCluster_higgs.pdf");
 		k2->Print("HB_combinedCluster_higgs.png");
 
+		set_plot_style();
 		TCanvas* k3 = new TCanvas("k3","k3", 600, 600);
 		deltaNLLhistA->GetZaxis()->SetLabelSize(0.05);
-		hist2Dbaseplot(k3, deltaNLLhistA, "#DeltaNLL_{cluster(A)}",0.001,10000,true,"",0.06,kBlack);
+		hist2Dbaseplot(k3, deltaNLLhistA, "",0.001,10000,true,"#DeltaNLL_{mA}^{*, tan#beta} cluster(A)",0.06,kBlack);
+		gc2->Draw("CF");
+		outer->Draw("CFsame");
+		outer2->Draw("Csame");
+		gPad->RedrawAxis();
 		k3->Print("HB_DeltaNLL_A.pdf");
 		k3->Print("HB_DeltaNLL_A.png");
 
 		TCanvas* k4 = new TCanvas("k4","k4", 600, 600);
 		deltaNLLhistH->GetZaxis()->SetLabelSize(0.05);
-		hist2Dbaseplot(k4, deltaNLLhistH, "#DeltaNLL_{cluster(H)}",0.001,10000,true,"",0.06,kBlack);
-		k4->Print("HB_DeltaNLL_H.pdf");
-		k4->Print("HB_DeltaNLL_H.png");
+		hist2Dbaseplot(k4, deltaNLLhistH, "",0.001,10000,true,"#DeltaNLL_{mA}^{*, tan#beta} cluster(H)",0.06,kBlack);
+		gc2->Draw("CF");
+		outer->Draw("CFsame");
+		outer2->Draw("Csame");
+		gPad->RedrawAxis();
+		k4->Print("HB_DeltaNLL_HH.pdf");
+		k4->Print("HB_DeltaNLL_HH.png");
 
 		TCanvas* k5 = new TCanvas("k5","k5", 600, 600);
 		deltaNLLhisth->GetZaxis()->SetLabelSize(0.05);
-		hist2Dbaseplot(k5, deltaNLLhisth, "#DeltaNLL_{cluster(h)}",0.001,10000,true,"",0.06,kBlack);
+		hist2Dbaseplot(k5, deltaNLLhisth, "",0.001,10000,true,"#DeltaNLL_{mA}^{*, tan#beta} cluster(h)",0.06,kBlack);
+		gc2->Draw("CF");
+		outer->Draw("CFsame");
+		outer2->Draw("Csame");
+		gPad->RedrawAxis();
 		k5->Print("HB_DeltaNLL_h.pdf");
 		k5->Print("HB_DeltaNLL_h.png");
 	}

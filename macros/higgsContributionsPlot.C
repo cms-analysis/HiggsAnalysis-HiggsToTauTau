@@ -2,13 +2,9 @@
 #include "HiggsAnalysis/HiggsToTauTau/interface/HttStyles.h"
 
 void hist2Dbaseplot(TH2D* hist, const char* titlename, double zmin, double zmax, bool log=false, const char* ztitle="", std::string name, std::string reference, double textsize=0.12, Color_t latexcolor=1){  
-	TCanvas* c = new TCanvas("c", "c", 600,600);
-	//SetStyle();
+        set_plot_style();
 
-	// c->SetRightMargin(0.23);
-// 	c->SetLeftMargin(0.1);
-// 	c->SetTopMargin(0.05);
-	
+	TCanvas* c = new TCanvas("c", "c", 600,600);
 	c->SetFillColor      (0);
 	c->SetBorderMode     (0);
 	c->SetBorderSize     (10);
@@ -65,6 +61,7 @@ void hist2Dbaseplot(TH2D* hist, const char* titlename, double zmin, double zmax,
 	}
 	c->Update();
 
+	if(reference=="H") reference="HH";
  	c->Print(std::string(name).append("_").append(reference).append(".png").c_str());
         c->Print(std::string(name).append("_").append(reference).append(".pdf").c_str());
 } 
@@ -85,23 +82,23 @@ void set_plot_style()
 void clusterPlot(TFile* file, std::string reference)
 {
 	TH2D* masscluster = (TH2D*) file->Get("masscluster");
-	TH2D* ggcmb = (TH2D*) file->Get("ggcmb");
-	TH2D* bbcmb = (TH2D*) file->Get("bbcmb");
+	//TH2D* ggcmb = (TH2D*) file->Get("ggcmb");
+	//TH2D* bbcmb = (TH2D*) file->Get("bbcmb");
 	TH2D* cluster = (TH2D*) file->Get("cluster");
    
 	//hist2Dbaseplot(ggcmb, "#sigma_{gg#phi}#upoint#font[52]{B}_{#phi#rightarrow#tau#tau}",0.000001,450,true,"[pb]", "xs_gg", reference);
-	hist2Dbaseplot(ggcmb, "",0.000001,450,true,"#sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]", "xs_gg", reference, 0.06);
+	//hist2Dbaseplot(ggcmb, "",0.000001,450,true,"#sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]", "xs_gg", reference, 0.06);
 	//hist2Dbaseplot(bbcmb, "#sigma_{bb#phi}#upoint#font[52]{B}_{#phi#rightarrow#tau#tau}",0.000001,450,true,"[pb]", "xs_bb", reference);
-	hist2Dbaseplot(bbcmb, "",0.000001,450,true,"#sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]", "xs_bb", reference, 0.06);
-	hist2Dbaseplot(masscluster, "cluster mass",50,1000,true,"[GeV]", "clusterMass", reference,0 .06);
+	//hist2Dbaseplot(bbcmb, "",0.000001,450,true,"#sigma#font[42]{(gg#phi)}#upoint#font[52]{B}#font[42]{(#phi#rightarrow#tau#tau)} [pb]", "xs_bb", reference, 0.06);
+	hist2Dbaseplot(masscluster, "",50,1000,true,"cluster mass [GeV]", "clusterMass", reference,0 .06);
 
 	TCanvas* c1 = new TCanvas("c1", "c1", 600,600);	
 	c1->SetFillColor      (0);
 	c1->SetBorderMode     (0);
 	c1->SetBorderSize     (10);
-	// Set margins to reasonable defaults
-	c1->SetLeftMargin     (0.13);
-	c1->SetRightMargin    (0.18);
+	// Set margins to reasonable defaults  
+	c1->SetLeftMargin     (0.14);
+	//c1->SetRightMargin    (0.18);
 	//c->SetTopMargin      (0.08);
 	c1->SetBottomMargin   (0.13);
 	// Setup a frame which makes sense
@@ -114,7 +111,7 @@ void clusterPlot(TFile* file, std::string reference)
 	c1->SetFrameBorderMode(0);
 	c1->SetFrameBorderSize(10);
   
-	cluster->Draw("Colz");
+	cluster->Draw("Col");
 	cluster->SetStats(false);
 	cluster->GetXaxis()->SetLabelFont(62);
 	cluster->GetXaxis()->SetLabelOffset(0.018);
@@ -137,19 +134,44 @@ void clusterPlot(TFile* file, std::string reference)
 	cluster->GetZaxis()->SetLabelSize(0.04);
 	cluster->GetZaxis()->SetRangeUser(0.,7.);
 
+	//Int_t colors[] = {0, 1, 2, 3, 4, 5, 6, 7}; // #colors >= #levels - 1
+	//Int_t colors[] = {0, kRed+3, 2, 3, 4, kOrange+1, 8, 7};
+	Int_t colors[] = {0, 8, 2, 3, 4, kOrange+1, kRed+3, 7};
+	gStyle->SetPalette((sizeof(colors)/sizeof(Int_t)), colors);
 
-	TPaveText* pt = new TPaveText(630,28,980,58);
-	pt->AddText("Contributions");
-	pt->AddText("1: h");
-	pt->AddText("2: H");
-	pt->AddText("3: h+H");
-	pt->AddText("4: A");
-	pt->AddText("5: h+A");
-	pt->AddText("6: H+A");
-	pt->AddText("7: h+H+A");
-	pt->SetFillStyle(0);
-	pt->SetBorderSize(0);
-	pt->Draw("Same");
+	TH2D* h = new TH2D();
+	h->SetFillColor(kRed+3);
+	TH2D* H = new TH2D();
+	H->SetFillColor(2);
+	// TH2D* h_H = new TH2D();
+// 	h_H->SetFillColor(kBlue);
+	TH2D* A = new TH2D();
+	A->SetFillColor(4);
+	TH2D* h_A = new TH2D();
+	h_A->SetFillColor(kOrange+1);
+	TH2D* H_A = new TH2D();
+	H_A->SetFillColor(8);
+	TH2D* h_H_A = new TH2D();
+	h_H_A->SetFillColor(7);
+	
+	TLegend* leg2 = new TLegend(0.15, 0.57, 0.35, 0.88);
+	leg2->SetBorderSize( 0  );
+	leg2->SetFillStyle (1001);
+	leg2->SetTextSize  (0.03);
+	leg2->SetTextFont  ( 62 ); 
+	leg2->SetFillColor (kWhite);
+	leg2->SetLineWidth (2);
+	leg2->SetLineColor (kBlack);
+	leg2->SetHeader("Contributions:");
+	leg2->AddEntry(h,"h","F");
+	leg2->AddEntry(H,"H","F");
+	leg2->AddEntry(A,"A","F");
+	leg2->AddEntry(h_A,"h+A","F");
+	leg2->AddEntry(H_A,"A+H","F");
+	leg2->AddEntry(h_H_A,"h+A+H","F");
+	leg2->Draw("same");
+	 
+	
 	c1->Update();
 
 	c1->SaveAs("cluster.pdf");
