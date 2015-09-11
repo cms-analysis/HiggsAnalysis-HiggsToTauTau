@@ -8,6 +8,7 @@ import json
 import math
 import itertools
 import stat
+import HiggsAnalysis.HiggsToTauTau.combine.utils as utils
 
 OPTS = {
   'vanilla' : '--minimizerStrategy 0 --minimizerTolerance 0.1 --cminOldRobustMinimize 0',
@@ -39,57 +40,67 @@ def run(command):
   print command
   if not DRY_RUN: return os.system(command)
 
-def split_vals(vals):
-  res = set()
-  first = vals.split(',')
-  for f in first:
-    second = re.split('[:|]', f)
-    print second
-    if len(second) == 1: res.add(second[0])
-    if len(second) == 3:
-      x1 = float(second[0])
-      ndigs = '0'
-      split_step = second[2].split('.')
-      if len(split_step) == 2:
-        ndigs = len(split_step[1])
-      fmt = '%.'+str(ndigs)+'f'
-      while x1 < float(second[1]) + 0.001:
-        res.add(fmt % x1)
-        x1 += float(second[2])
-  return sorted([x for x in res], key = lambda x : float(x))
+class CombineBase:
+  description = 'Just passes options through to combine'
+  requires_root = False
+  def __init__(self):
+    pass
+  def attach_intercept_args(self, group):
+    pass
+  def attach_args(self, group):
+    group.add_argument('--opts', nargs='+', default=[], help='Add preset combine option groups')
+    group.add_argument('--coalesce', '-c', type=int, default=1, help='comine this many jobs')
+    group.add_argument('--split-points', type=int, default=0, help='If > 0 splits --algo grid jobs')
+  def set_args(self, known, unknown):
+    self.args = known
+    self.passthru = unknown
+    if hasattr(args, 'opts'):
+      for opt in args.opts:
+        self.passthru.append(OPTS[opt])
+  def run(self, command, name=None):
+    print command
+    if self.args.gen_job:
+      assert name is not None
+      fname = 'job'+name+'.sh'
+      with open(fname, "w") as text_file:
+            text_file.write(JOB_PREFIX + 'eval ' + command)
+      st = os.stat(fname)
+      os.chmod(fname, st.st_mode | stat.S_IEXEC)
+      #print JOB_PREFIX + command
+    else:
+      if not DRY_RUN: return os.system(command)
+  def run_method(self):
+    ## Put the method back in because we always take it out
+    if hasattr(self.args, 'method'):
+      self.passthru = ['-M', self.args.method] + self.passthru
+      del self.args.method
 
-def list_from_workspace(file, workspace, set):
-  res = []
-  wsFile = ROOT.TFile(file)
-  argSet = wsFile.Get(workspace).set(set)
-  it = argSet.createIterator()
-  var = it.Next()
-  while var:
-    #var.Print()
-    res.append(var.GetName())
-    var = it.Next()
-  return res
+    cmd_queue = []
+    subbed_vars = {}
 
-def prefit_from_workspace(file, workspace, params):
-  res = { }
-  wsFile = ROOT.TFile(file)
-  ws = wsFile.Get(workspace)
-  for p in params:
-    var = ws.var(p)
-    res[p] = [var.getVal()+var.getErrorLo(), var.getVal(), var.getVal()+var.getErrorHi()]
-  return res
+    if self.args.mass is not None:
+      mass_vals = utils.split_vals(self.args.mass)
+      subbed_vars['MASS'] = mass_vals
 
-def get_singles_results(file, scanned, columns):
-  res = { }
-  f = ROOT.TFile(file)
-  if f is None or f.IsZombie(): return None
-  t = f.Get("limit")
-  for i,param in enumerate(scanned): 
-    res[param] = { }
-    for col in columns:
-      allvals = [getattr(evt, col) for evt in t]
-      res[param][col] = [allvals[i*2+2], allvals[0], allvals[i*2+1]]
-  return res
+    if self.args.points is not None: self.passthru.extend(['--points', self.args.points])
+    if (self.args.split_points is not None and
+        self.args.split_points > 0 and
+        self.args.points is not None):
+      points = int(args.points)
+      split = self.args.split_points
+      start = 0
+      ranges = [ ]
+      while (start + (split-1)) <= points:
+        ranges.append((start, start + (split-1)))
+        start += split
+      if start < points:
+        ranges.append((start, points - 1))
+      point_ranges = ['--firstPoint %i --lastPoint %i' % (r[0], r[1]) for r in ranges]
+      subbed_vars['POINTS'] = point_ranges
+
+    for i in itertools.product(*subbed_vars.values()): print i
+
+
 
 class BasicCombine:
   description = 'Just passes options through to combine with special treatment for a few args'
@@ -127,20 +138,16 @@ class BasicCombine:
     if hasattr(self.args, 'method'):
       self.passthru = ['-M', self.args.method] + self.passthru
       del self.args.method
-    
-    if self.args.points is not None: self.passthru.extend(['--points', self.args.points])
-    taskqueue = []
-    namequeue = []
-    ## Now split the mass values
-    if self.args.mass is not None:
-      mass_vals = split_vals(self.args.mass)
-      for m in mass_vals:
-        taskqueue.append('combine %s -m %s' % (' '.join(self.passthru), m))
-        namequeue.append(args.name)
-    else:
-      taskqueue.append('combine %s' % (' '.join(self.passthru)))
-      namequeue.append(args.name)
 
+    cmd_queue = []
+    subbed_vars = {}
+
+    if self.args.mass is not None:
+      mass_vals = utils.split_vals(self.args.mass)
+      subbed_vars['MASS'] = mass_vals
+      self.passthru.extend(['-m', '%(MASS)s'])
+
+    if self.args.points is not None: self.passthru.extend(['--points', self.args.points])
     if (self.args.split_points is not None and
         self.args.split_points > 0 and
         self.args.points is not None):
@@ -153,18 +160,63 @@ class BasicCombine:
         start += split
       if start < points:
         ranges.append((start, points - 1))
-      newqueue = [ ]
-      newnamequeue = [ ]
-      for name, task in itertools.izip(namequeue, taskqueue):
-        for r in ranges:
-          newqueue.append(task + ' --firstPoint %i --lastPoint %i' % (r[0], r[1]))
-          newnamequeue.append(name + '_POINTS_%i_%i' % (r[0], r[1]))
-      taskqueue = newqueue
-      namequeue = newnamequeue
-    # add the name back
-    for name, task in itertools.izip(namequeue, taskqueue):
-      task += ' -n %s' % name
-      self.run(task, 'job'+name)
+      point_ranges = ['--firstPoint %i --lastPoint %i' % (r[0], r[1]) for r in ranges]
+      subbed_vars['POINTS'] = point_ranges
+      self.passthru.extend(['%(POINTS)s', '-n', '.POINTS.%(POINTST)s.%(POINTEN)s'])
+
+
+    proto = 'combine '+(' '.join(self.passthru))
+    # print proto
+    jobs = []
+    for it in itertools.product(*subbed_vars.values()):
+      keys = subbed_vars.keys()
+      dict = {}
+      for i, k in enumerate(keys): dict[k] = it[i]
+      if 'POINTS' in dict:
+        pointsplit = dict['POINTS'].split()
+        dict['POINTST'] = pointsplit[1]
+        dict['POINTEN'] = pointsplit[3]
+      jobs.append(proto % dict)
+
+    print jobs
+
+    # if self.args.points is not None: self.passthru.extend(['--points', self.args.points])
+    # taskqueue = []
+    # namequeue = []
+    # ## Now split the mass values
+    # if self.args.mass is not None:
+    #   mass_vals = utils.split_vals(self.args.mass)
+    #   for m in mass_vals:
+    #     taskqueue.append('combine %s -m %s' % (' '.join(self.passthru), m))
+    #     namequeue.append(args.name)
+    # else:
+    #   taskqueue.append('combine %s' % (' '.join(self.passthru)))
+    #   namequeue.append(args.name)
+
+    # if (self.args.split_points is not None and
+    #     self.args.split_points > 0 and
+    #     self.args.points is not None):
+    #   points = int(args.points)
+    #   split = self.args.split_points
+    #   start = 0
+    #   ranges = [ ]
+    #   while (start + (split-1)) <= points:
+    #     ranges.append((start, start + (split-1)))
+    #     start += split
+    #   if start < points:
+    #     ranges.append((start, points - 1))
+    #   newqueue = [ ]
+    #   newnamequeue = [ ]
+    #   for name, task in itertools.izip(namequeue, taskqueue):
+    #     for r in ranges:
+    #       newqueue.append(task + ' --firstPoint %i --lastPoint %i' % (r[0], r[1]))
+    #       newnamequeue.append(name + '_POINTS_%i_%i' % (r[0], r[1]))
+    #   taskqueue = newqueue
+    #   namequeue = newnamequeue
+    # # add the name back
+    # for name, task in itertools.izip(namequeue, taskqueue):
+    #   task += ' -n %s' % name
+    #   self.run(task, 'job'+name)
 
 
 class SpecialCombine(BasicCombine):
