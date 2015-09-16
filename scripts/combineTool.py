@@ -8,6 +8,8 @@ import json
 import math
 import itertools
 import stat
+import glob
+from array import array
 import HiggsAnalysis.HiggsToTauTau.combine.utils as utils
 
 OPTS = {
@@ -21,7 +23,7 @@ OPTS = {
   'MLHesse': '--minimizerTolerance 0.1 --minimizerAlgo Minuit2 --minimizerStrategy 0 --cminFallbackAlgo "Minuit2,0:0.1" --cminFallbackAlgo "Minuit2,Minimize,0:0.1" --cminOldRobustMinimize 0 --out ./ --minos none --skipBOnlyFit --noMCbonly 1 --cminPreScan'
 }
 
-DRY_RUN=False
+DRY_RUN=True
 
 JOB_PREFIX="""#!/bin/sh
 ulimit -s unlimited
@@ -309,34 +311,34 @@ class CovMatrix(SpecialCombine):
       ws_in = args.POIs_from_set.split(':')
       print ws_in
       POIs = list_from_workspace(ws_in[0], ws_in[1], ws_in[2])
-    res = { }
-    if len(args.input) == 1:
-      res.update(get_singles_results(args.input, POIs, POIs))
-    elif len(args.input) > 1:
-      assert len(args.input) == len(POIs)
-      for i in range(len(POIs)):
-        res.update(get_singles_results(args.input[i], [POIs[i]], POIs))
-    for p in POIs:
-      val = res[p][p]
-      print '%s = %.3f -%.3f/+%.3f' % (p, val[1], val[1] - val[0], val[2] - val[1])
-    print res
-    cor = ROOT.TMatrixDSym(len(POIs))
-    cov = ROOT.TMatrixDSym(len(POIs))
-    for i,p in enumerate(POIs):
-      cor[i][i] = ROOT.Double(1.) # diagonal correlation is 1 
-      cov[i][i] = ROOT.Double(pow((res[p][p][2] - res[p][p][0])/2.,2.)) # symmetrized error
-    for i,ip in enumerate(POIs):
-      for j,jp in enumerate(POIs):
-        if i == j: continue
-        val_i = ((res[ip][jp][2] - res[ip][jp][0])/2.)/math.sqrt(cov[j][j])
-        val_j = ((res[jp][ip][2] - res[jp][ip][0])/2.)/math.sqrt(cov[i][i])
-        correlation = (val_i+val_j)/2. # take average correlation?
-        #correlation = min(val_i,val_j, key=abs) # take the max?
-        cor[i][j] = correlation
-        cor[j][i] = correlation
-        covariance = correlation * math.sqrt(cov[i][i]) * math.sqrt(cov[j][j])
-        cov[i][j] = covariance
-        cov[j][i] = covariance
+    # res = { }
+    # if len(args.input) == 1:
+    #   res.update(get_singles_results(args.input, POIs, POIs))
+    # elif len(args.input) > 1:
+    #   assert len(args.input) == len(POIs)
+    #   for i in range(len(POIs)):
+    #     res.update(get_singles_results(args.input[i], [POIs[i]], POIs))
+    # for p in POIs:
+    #   val = res[p][p]
+    #   print '%s = %.3f -%.3f/+%.3f' % (p, val[1], val[1] - val[0], val[2] - val[1])
+    # print res
+    # cor = ROOT.TMatrixDSym(len(POIs))
+    # cov = ROOT.TMatrixDSym(len(POIs))
+    # for i,p in enumerate(POIs):
+    #   cor[i][i] = ROOT.Double(1.) # diagonal correlation is 1 
+    #   cov[i][i] = ROOT.Double(pow((res[p][p][2] - res[p][p][0])/2.,2.)) # symmetrized error
+    # for i,ip in enumerate(POIs):
+    #   for j,jp in enumerate(POIs):
+    #     if i == j: continue
+    #     val_i = ((res[ip][jp][2] - res[ip][jp][0])/2.)/math.sqrt(cov[j][j])
+    #     val_j = ((res[jp][ip][2] - res[jp][ip][0])/2.)/math.sqrt(cov[i][i])
+    #     correlation = (val_i+val_j)/2. # take average correlation?
+    #     #correlation = min(val_i,val_j, key=abs) # take the max?
+    #     cor[i][j] = correlation
+    #     cor[j][i] = correlation
+    #     covariance = correlation * math.sqrt(cov[i][i]) * math.sqrt(cov[j][j])
+    #     cov[i][j] = covariance
+    #     cov[j][i] = covariance
     compare = args.compare is not None
     if compare:
       f_in = args.compare.split(':')
@@ -353,13 +355,13 @@ class CovMatrix(SpecialCombine):
         for j,jp in enumerate(POIs):
           fitres_cor[i][j] = ROOT.Double(fitres_cor_src[ipos[i]][ipos[j]])
           fitres_cov[i][j] = ROOT.Double(fitres_cov_src[ipos[i]][ipos[j]])
-    print 'My correlation matrix:'
-    cor.Print()
+    # print 'My correlation matrix:'
+    # cor.Print()
     if compare:
       print 'RooFitResult correlation matrix:'
       fitres_cor.Print()
-    print 'My covariance matrix:'
-    cov.Print()
+    # print 'My covariance matrix:'
+    # cov.Print()
     if compare:
       print 'RooFitResult covariance matrix:'
       fitres_cov.Print()
@@ -367,12 +369,12 @@ class CovMatrix(SpecialCombine):
       out = args.output.split(':')
       fout = ROOT.TFile(out[0], 'RECREATE')
       prefix = out[1]
-      fout.WriteTObject(cor, prefix+'_cor')
-      h_cor = self.fix_TH2(ROOT.TH2D(cor), POIs)
-      fout.WriteTObject(h_cor, prefix+'_h_cor')
-      fout.WriteTObject(cov, prefix+'_cov')
-      h_cov = self.fix_TH2(ROOT.TH2D(cov), POIs)
-      fout.WriteTObject(h_cov, prefix+'_h_cov')
+      # fout.WriteTObject(cor, prefix+'_cor')
+      # h_cor = self.fix_TH2(ROOT.TH2D(cor), POIs)
+      # fout.WriteTObject(h_cor, prefix+'_h_cor')
+      # fout.WriteTObject(cov, prefix+'_cov')
+      # h_cov = self.fix_TH2(ROOT.TH2D(cov), POIs)
+      # fout.WriteTObject(h_cov, prefix+'_h_cov')
       if compare:
         fout.WriteTObject(fitres_cor, prefix+'_comp_cor')
         h_cor_compare = self.fix_TH2(ROOT.TH2D(fitres_cor), POIs)
@@ -482,8 +484,6 @@ class Impacts(SpecialCombine):
           pres.update({p : paramScanRes[param][p], 'impact_'+p : (paramScanRes[param][p][2] - paramScanRes[param][p][0])/2.})
         res['params'].append(pres)
         counter = counter + advance
-        
-    
     jsondata = json.dumps(res, sort_keys=True, indent=2, separators=(',', ': '))
     print jsondata
     if args.output is not None:
@@ -491,6 +491,80 @@ class Impacts(SpecialCombine):
         out_file.write(jsondata)
     if len(missing) > 0:
       print 'Missing inputs: ' + str(missing)
+
+
+class AsymptoticGrid(SpecialCombine):
+  description = 'Calculate asymptotic limits on parameter grids' 
+  requires_root = True
+  def __init__(self):
+    SpecialCombine.__init__(self)
+  def attach_intercept_args(self, group):
+    pass
+    # group.add_argument('config', help='json config file')
+    # group.add_argument('-d', '--datacard', required=True)
+    # group.add_argument('--redefineSignalPOIs')
+    # group.add_argument('--name', '-n', default='Test')
+  def attach_args(self, group):
+    SpecialCombine.attach_args(self, group)
+    group.add_argument('config', help='json config file')
+  def run_method(self):
+    # Step 1 - open the json config file
+    with open(self.args.config) as json_file:    
+        cfg = json.load(json_file)
+    # to do - have to handle the case where it doesn't exist
+    points = []
+    for igrid in cfg['grids']:
+      assert(len(igrid) == 2)
+      points.extend(itertools.product(utils.split_vals(igrid[0]), utils.split_vals(igrid[1])))
+    POIs = cfg['POIs']
+
+    file_dict = { }
+    for p in points:
+      file_dict[p] = []
+
+    for f in glob.glob('higgsCombine.%s.*.%s.*.Asymptotic.mH*.root' % (POIs[0], POIs[1])):
+      print f
+      rgx = re.compile('higgsCombine\.%s\.(?P<p1>.*)\.%s\.(?P<p2>.*)\.Asymptotic\.mH.*\.root' % (POIs[0], POIs[1]))
+      matches = rgx.search(f)
+      p = (matches.group('p1'), matches.group('p2'))
+      if p in file_dict:
+        file_dict[p].append(f)
+
+    for key,val in file_dict.iteritems():
+      name = '%s.%s.%s.%s' % (POIs[0], key[0], POIs[1], key[1])
+      print '>> Point %s' % name
+      if len(val) == 0:
+        print 'Going to run limit for point %s' % (key,)
+        point_args = '-n .%s --setPhysicsModelParameters %s=%s,%s=%s --freezeNuisances %s,%s' % (name, POIs[0], key[0], POIs[1], key[1], POIs[0], POIs[1])
+        cmd = ' '.join(['combine -M Asymptotic', cfg['opts'], point_args])
+        run(cmd)
+
+    xvals = []
+    yvals = []
+    zvals = []
+    for key,val in file_dict.iteritems():
+      for filename in val:
+        fin = ROOT.TFile(filename)
+        if fin.IsZombie(): continue
+        tree = fin.Get('limit')
+        for evt in tree:
+          if evt.quantileExpected == -1:
+            print 'At point %s have observed CLs = %f' % (key, evt.limit)
+            xvals.append(float(key[0]))
+            yvals.append(float(key[1]))
+            zvals.append(float(evt.limit))
+    graph = ROOT.TGraph2D(len(zvals), array('d', xvals), array('d', yvals), array('d', zvals))
+    h_bins = cfg['hist_binning']
+    hist = ROOT.TH2F('h_observed', '', h_bins[0], h_bins[1], h_bins[2], h_bins[3], h_bins[4], h_bins[5])
+    for i in xrange(1, hist.GetNbinsX()+1):
+      for j in xrange(1, hist.GetNbinsY()+1):
+        hist.SetBinContent(i, j, graph.Interpolate(hist.GetXaxis().GetBinCenter(i), hist.GetYaxis().GetBinCenter(j)))
+    fout = ROOT.TFile('asymptotic_grid.root', 'RECREATE')
+    fout.WriteTObject(graph, 'observed')
+    fout.WriteTObject(hist)
+    fout.Close()
+    # Next step: open output files
+    # Fill TGraph2D with CLs, CLs+b
 
 def register_method(parser, method_dict, method_class):
   class_name = method_class.__name__
@@ -511,6 +585,7 @@ register_method(parser, methods, RenameDataSet)
 register_method(parser, methods, Impacts)
 register_method(parser, methods, CovMatrix)
 register_method(parser, methods, PrintSingles)
+register_method(parser, methods, AsymptoticGrid)
 
 parser.add_argument('-M', '--method')
 parser.add_argument('--dry-run', action='store_true', help='Commands are echoed to the screen but not run')
