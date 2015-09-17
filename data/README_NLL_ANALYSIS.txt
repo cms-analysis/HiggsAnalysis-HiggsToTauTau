@@ -19,7 +19,7 @@
 	-> rm bbb-asimov-ggH-bbH?scan?GGH-BBH*
 
 5) Plotting:
-	-> python HiggsAnalysis/HiggsToTauTau/scripts/NLLWorkflow.py 
+	-> source HiggsAnalysis/HiggsToTauTau/NLLworkflow.sh (look into and chose or edit the ones you need)
 
 General remark:
 	-> Please run step after step since some calculations dependent on each other
