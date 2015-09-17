@@ -80,7 +80,7 @@ parser.add_option_group(cgroup)
 ## MODEL OPTIONS
 ##
 dgroup = OptionGroup(parser, "MODEL OPTIONS", "These are the command line options that can be used to configure the submission of multi-dimensional fits or asymptotic limits that do require specific models. Specific models can be used for option --multidim-fit and for option --asymptotic. Possible model options for option --multidim-fit are: ggH-bbH (MSSM), ggH-qqH (SM), rV-rF (SM) and cV-cF (SM). Possible model options for option --asymptotic are: \"\" (SM), ggH (MSSM) and bbH (MSSM).")
-dgroup.add_option("--physics-model", dest="fitModel", default="", type="choice", choices=["cb-ctau", "cl-cq", "ggH-bbH", "ggH-qqH", "rV-rF", "cV-cF", "ggH", "bbH", "ggH-mlfit", "bbH-mlfit", "", "Hhh"],
+dgroup.add_option("--physics-model", dest="fitModel", default="", type="choice", choices=["cb-ctau", "cl-cq", "ggH-bbH", "ggH-bbH-SMH", "ggH-qqH", "rV-rF", "cV-cF", "ggH", "bbH", "ggH-mlfit", "bbH-mlfit", "", "Hhh"],
                   help="Define the model for which you want to submit the process with option --multidim-fit ('ggH-bbH' (MSSM), 'ggH-qqH' (SM) and 'cV-cF' (SM)) or option --asymptotic ('ggH' (MSSM), 'bbH' (MSSM) and '' (SM)) or option --max-likelihood ('ggH-mlfit' (MSSM), 'bbH-mlfit' (MSSM) and '' (SM)). [Default: \"\"]")
 parser.add_option_group(dgroup)
 ##
@@ -104,6 +104,8 @@ parser.add_option_group(egroup)
 jgroup = OptionGroup(parser, "MULTIDIM-FIT OPTIONS", "These are the command line options that can be used to configure the submission of multi-dimensional maximum likelihood fits. You can configure whether you want to run with option --fastScan or not.")
 jgroup.add_option("--fastScan", dest="fastScan", default=False, action="store_true",
                   help="In general the central values of all nuisance parameters are re-evaluated at each scan point of the maximum likelihood function. Choose this option if you want the central values of the nuisance parameters only evaluated in the minimum of the likelihood fit. [Default: False]")
+jgroup.add_option("--SMHscale", dest="SMHscale", default="1", type="string",
+                  help="Scale factor for the SM Higgs in the ggH-bbH scans. Only makes sense when the used physic model is ggH-bbH-SMH. [Default: 1]")
 parser.add_option_group(jgroup)
 ##
 ## SIGNIFICANCE OPTIONS
@@ -207,6 +209,11 @@ def model_config(model_name) :
         from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
         model = "--physics-model 'ggH-bbH=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
         opts  = "--physics-model-options 'modes=ggH,bbH;ggHRange=0:{GGH};bbHRange=0:{BBH}'".format(GGH=bounds["ggH-bbH",mass][0], BBH=bounds["ggH-bbH",mass][1])
+    ## MSSM ggH versus bbH with SMH125 in signal (MSSMvsSM datacatds)
+    elif model_name=="ggH-bbH-SMH" :
+        from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
+        model = "--physics-model 'ggH-bbH=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
+        opts  = "--physics-model-options 'modes=ggH,bbH,ggH_SM125,qqH_SM125,VH_SM125;ggHRange=0:{GGH};bbHRange=0:{BBH};SMHRange={SCALESMH}:{SCALESMH}'".format(GGH=bounds["ggH-bbH",mass][0], BBH=bounds["ggH-bbH",mass][1], SCALESMH=options.SMHscale)
     ## MSSM cb versus ctau
     elif model_name=="cb-ctau" :
         from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
