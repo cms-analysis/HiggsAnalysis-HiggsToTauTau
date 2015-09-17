@@ -13,7 +13,6 @@ void plottingScan2D(TCanvas& canv, TH2D* h2d, TGraph* bestfit, TGraph* c68, TGra
   canv.cd();
   SetStyle();
   TFile infile(file);
-  std::cout << "hi" << std::endl;
 
   h2d->GetXaxis()->SetTitle(xaxis.c_str());  
   if(xmax>0){
@@ -46,7 +45,6 @@ void plottingScan2D(TCanvas& canv, TH2D* h2d, TGraph* bestfit, TGraph* c68, TGra
   h2d->SetNameTitle("","");
   h2d->Draw("AXIS");
   if(temp) h2d->Draw("COLZ");
-  std::cout << "hi1" << std::endl;
   
   c95->SetLineStyle(1);
   c95->SetLineColor(kBlack);
@@ -60,7 +58,6 @@ void plottingScan2D(TCanvas& canv, TH2D* h2d, TGraph* bestfit, TGraph* c68, TGra
   if(!temp) c68->Draw("F SAME");
   c95->Draw("CONT SAME");
   c68->Draw("CONT SAME");
-  std::cout << "hi2" << std::endl;
   
   TLegend* leg;
   if(SMexpected && masslabel=="m_{#phi}") leg = new TLegend(0.60, 0.60, 0.90, 0.90);
@@ -94,7 +91,6 @@ void plottingScan2D(TCanvas& canv, TH2D* h2d, TGraph* bestfit, TGraph* c68, TGra
     if(SMexpected && masslabel=="m_{#phi}"){ leg1->AddEntry((TObject*)0, " ", ""); }                                                                                          
     leg1->Draw("SAME");
   }
-  std::cout << "hi3" << std::endl;
 
   TMarker* MSSMexpected = 0;
   MSSMexpected = new TMarker();
@@ -122,7 +118,6 @@ void plottingScan2D(TCanvas& canv, TH2D* h2d, TGraph* bestfit, TGraph* c68, TGra
   leg3->AddEntry(MSSMexpectedLayer, " ", "P");  
   leg3->AddEntry((TObject*)0, "", "");    
   //leg3->Draw("SAME");
-  std::cout << "hi4" << std::endl;
 
   TString label = TString::Format("%s = %d GeV", masslabel.c_str(), mass);
   TPaveText* textlabel = new TPaveText(0.18, 0.81, 0.50, 0.90, "NDC");
@@ -141,7 +136,6 @@ void plottingScan2D(TCanvas& canv, TH2D* h2d, TGraph* bestfit, TGraph* c68, TGra
   bestfit->SetMarkerSize(3.0);
   bestfit->SetMarkerColor(kBlack);
   bestfit->Draw("P SAME");
-  std::cout << "hi5" << std::endl;
   
   if(SMexpected && SMexpectedLayer){
     //Hardcoded positions of the SM expectation. Fixed for the 2 diamonds. Must be done after RedrawAxis
@@ -166,7 +160,6 @@ void plottingScan2D(TCanvas& canv, TH2D* h2d, TGraph* bestfit, TGraph* c68, TGra
     if((int)mass==900 ) {SMexpected->DrawMarker(0,0);SMexpectedLayer->DrawMarker(0,0);}
     if((int)mass==1000) {SMexpected->DrawMarker(0,0);SMexpectedLayer->DrawMarker(0,0);}         
   }
-  std::cout << "hi6" << std::endl;
 
     //Hardcoded positions of the MSSM mhmodp mA=500GeV tanb=30 expectation. Fixed for the 2 diamonds. Must be done after RedrawAxis
   //   if((int)mass==90  ) {MSSMexpected->DrawMarker(0,0); MSSMexpectedLayer->DrawMarker(0,0);}

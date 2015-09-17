@@ -168,7 +168,6 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory, std::string typ)
       //       c68 = (TGraph *)gDirectory->Get("h2_confcontour_68")->Clone(); //can not used for plotting since TGraph2D and not contour list
       //       c95 = (TGraph *)gDirectory->Get("h2_confcontour_95")->Clone(); //can not used for plotting since TGraph2D and not contour list
     }
-    std::cout << "hello1" << std::endl;
     //Draw SM expectation?
     //To make official style diamond, it is necessary to use the deadful hack of overlaying one marker on top of another slightly larger marker
     TMarker* SMexpected = 0;
@@ -182,10 +181,8 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory, std::string typ)
       SMexpected->SetMarkerSize(3.0); SMexpected->SetMarkerColor(1); SMexpected->SetMarkerStyle(33);
       SMexpectedLayer->SetMarkerSize(1.8); SMexpectedLayer->SetMarkerColor(89); SMexpectedLayer->SetMarkerStyle(33);
     }
-    std::string masslabel = mssm_ ? std::string("m_{#phi}") : std::string("m_{H}");    
-    std::cout << "hello2" << std::endl;
+    std::string masslabel = mssm_ ? std::string("m_{#phi}") : std::string("m_{H}");   
     plottingScan2D(canv, plot2D, bestfit, c68, c95, plot_rootname, SMexpected, SMexpectedLayer, xaxis_, yaxis_, masslabel, (int)mass, xmin, xmax, ymin, ymax, temp_, log_);
-    std::cout << "hello3" << std::endl;
     // add the CMS Preliminary stamp
     CMSPrelim(dataset_.c_str(), "", 0.135, 0.835);
     //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
@@ -226,7 +223,6 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory, std::string typ)
 
       output->Close();
     }
-    std::cout << "hello5" << std::endl;
   }
   return;
 }
