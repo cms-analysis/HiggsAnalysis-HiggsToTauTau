@@ -1,5 +1,11 @@
-
 #!/bin/zsh
+python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/adjust_mssm_boundaries.py --nll-path="$CMSSW_BASE/src/LIMITS-150707-mssm-500-30-300fb/plain-asimov-mhmodp-NLL/mt/" && submit.py --multidim-fit --stable --physics-model='ggH-bbH-SMH' --SMHscale="1" LIMITS-150707-mssm-500-30-300fb/plain-MSSMvsSM-asimov-ggH-bbH/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null" 
+#--options='--limit-options=\"--userOpt=\\\"-P r_bbH -P r_ggH --floatOtherPOIs=0\\\" \" ' 
+
+#python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/adjust_mssm_boundaries.py --nll-path="$CMSSW_BASE/src/LIMITS-150707-mssm-500-30-300fb/plain-asimov-mhmodp-NLL/mt/" && submit.py --multidim-fit --stable --physics-model='ggH-bbH' LIMITS-150707-mssm-500-30-300fb/plain-asimov-ggH-bbH-2/100 --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
+
+#python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/adjust_mssm_boundaries.py --nll-path="$CMSSW_BASE/src/LIMITS-150707-mssm-bg-only-30fb/plain-asimov-mhmodp-NLL/mt/" && submit.py --multidim-fit --stable --physics-model='ggH-bbH' LIMITS-150707-mssm-bg-only-30fb/plain-asimov-ggH-bbH/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
+
 #python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/adjust_mssm_boundaries.py --nll-path="$CMSSW_BASE/src/LIMITS-150707-mssm-500-30-30fb/plain-asimov-mhmodp-NLL/mt/" && submit.py --multidim-fit --stable --physics-model='ggH-bbH' LIMITS-150707-mssm-500-30-30fb/plain-asimov-ggH-bbH/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
 
 #python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/adjust_mssm_boundaries.py --nll-path="$CMSSW_BASE/src/LIMITS-150707-mssm-500-30-300fb/plain-asimov-mhmodp-NLL/mt/" && submit.py --multidim-fit --stable --physics-model='ggH-bbH' LIMITS-150707-mssm-500-30-300fb/plain-asimov-ggH-bbH/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
@@ -36,7 +42,7 @@
 
 #python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/adjust_mssm_boundaries.py --nll-path="$CMSSW_BASE/src/LIMITS-150707-mssm-500-30-30fb/plain-SMHbkg-asimov-mhmodp-NLL/mt/" && submit.py --multidim-fit --stable --physics-model='ggH-bbH' LIMITS-150707-mssm-500-30-30fb/plain-SMHbkg-asimov-ggH-bbH/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
 
-python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/adjust_mssm_boundaries.py --nll-path="$CMSSW_BASE/src/LIMITS-150707-mssm-500-30-300fb/plain-SMHbkg-asimov-mhmodp-NLL/mt/" && submit.py --multidim-fit --stable --physics-model='ggH-bbH' LIMITS-150707-mssm-500-30-300fb/plain-SMHbkg-asimov-ggH-bbH/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
+#python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/adjust_mssm_boundaries.py --nll-path="$CMSSW_BASE/src/LIMITS-150707-mssm-500-30-300fb/plain-SMHbkg-asimov-mhmodp-NLL/mt/" && submit.py --multidim-fit --stable --physics-model='ggH-bbH' LIMITS-150707-mssm-500-30-300fb/plain-SMHbkg-asimov-ggH-bbH/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
 
 #python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/adjust_mssm_boundaries.py --nll-path="$CMSSW_BASE/src/LIMITS-150707-mssm-500-05-300fb/plain-asimov-mhmodp-NLL/mt/" && submit.py --multidim-fit --stable --physics-model='ggH-bbH' LIMITS-150707-mssm-500-05-300fb/plain-asimov-ggH-bbH/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
 
@@ -54,4 +60,4 @@ python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/adjust_mssm_boundarie
 
 #python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/adjust_mssm_boundaries.py --nll-path="$CMSSW_BASE/src/LIMITS-150707-mssm-500-05-30fb/plain-asimov-mhmodp-NLL/mt/" --mass-tolerance=0.2 --tolerance-denumerator-max && submit.py --multidim-fit --stable --physics-model='ggH-bbH' LIMITS-150707-mssm-500-05-30fb/plain-asimov-ggH-bbH/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
 #python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/adjust_mssm_boundaries.py --nll-path="$CMSSW_BASE/src/LIMITS-150707-mssm-130-15-30fb/plain-asimov-mhmodp-NLL/mt/" --mass-tolerance=0.2 --tolerance-denumerator-max && submit.py --multidim-fit --stable --physics-model='ggH-bbH' LIMITS-150707-mssm-130-15-30fb/plain-asimov-ggH-bbH/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
-python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/adjust_mssm_boundaries.py --nll-path="$CMSSW_BASE/src/LIMITS-150707-mssm-BG-Only-30fb/plain-asimov-mhmodp-NLL/mt/" --mass-tolerance=0.2 --tolerance-denumerator-max && submit.py --multidim-fit --stable --physics-model='ggH-bbH' LIMITS-150707-mssm-BG-Only-30fb/plain-asimov-ggH-bbH/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
+#python $CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/scripts/adjust_mssm_boundaries.py --nll-path="$CMSSW_BASE/src/LIMITS-150707-mssm-BG-Only-30fb/plain-asimov-mhmodp-NLL/mt/" --mass-tolerance=0.2 --tolerance-denumerator-max && submit.py --multidim-fit --stable --physics-model='ggH-bbH' LIMITS-150707-mssm-BG-Only-30fb/plain-asimov-ggH-bbH/* --lxq --queue="-l h_vmem=2000M -l h_rt=12:00:00 -j y -o /dev/null"
