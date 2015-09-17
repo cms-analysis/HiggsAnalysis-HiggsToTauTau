@@ -766,7 +766,7 @@ for directory in args :
             print "combine -M MultiDimFit --saveNLL -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} {wdir}/{input}.root {result}".format(
                 mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt,
                 wdir=options.workingdir, input=model[0], result=fitresults)
-            os.system("combine -M MultiDimFit --saveNLL -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} {wdir}/{input}.root {result}".format(
+            os.system("combine -M MultiDimFit --saveNLL -m {mass} --algo={algo} -n {name} --cl {CL} {points} {minuit} {stable} {user} -P r_bbH -P r_ggH --floatOtherPOIs=0 {wdir}/{input}.root {result}".format(
                 mass=mass, algo=options.fitAlgo, name=options.name, CL=options.confidenceLevel, points=gridpoints, minuit=minuitopt, stable=stableopt, user=options.userOpt,
                 wdir=options.workingdir, input=model[0], result=fitresults))
             if not options.firstPoint == "":
