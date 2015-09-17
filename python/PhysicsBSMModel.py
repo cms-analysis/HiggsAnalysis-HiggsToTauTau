@@ -32,11 +32,12 @@ class MSSMLikeHiggsModel(PhysicsModel):
         """
         Split in production and decay channels. Call getHiggsSignalYieldScale. Return 1 for backgrounds.
         """
+        #print bin, process
         if not self.DC.isSignal[process]: return 1
         processSource = process
         decaySource   = self.options.fileName+":"+bin # by default, decay comes from the datacard name or bin label
-        if "_" in process: (processSource, decaySource) = process.split("_")
-        if processSource not in ["ggH", "bbH" ]:
+        #if "_" in process: (processSource, decaySource) = process.split("_") #needs do be commented out for SMH125 processes
+        if processSource not in ["ggH", "bbH", "ggH_SM125", "VH_SM125", "qqH_SM125" ]:
             raise RuntimeError, "Validation Error: signal process %s not among the allowed ones." % processSource
         foundDecay = None
         for D in [ "hbb", "htt", "hmm" ]:
@@ -63,8 +64,9 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
     def __init__(self):
         MSSMLikeHiggsModel.__init__(self) # not using 'super(x,self).__init__' since I don't understand it
         #self.tanb   = None
-        self.modes    = [ "ggH", "bbH" ]
+        self.modes    = [ "ggH", "bbH"] #, "ggH_SM125", "VH_SM125", "qqH_SM125" ]
         self.mARange  = []
+        self.SMHRange = []
         self.ggHRange = ['0','20']
         self.bbHRange = ['0','20']
     def setPhysicsOptions(self,physOptions):
@@ -80,6 +82,14 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
                     raise RuntimeError, "Definition of mA range requires two extrema, separated by ':'"
                 elif float(self.mARange[0]) >= float(self.mARange[1]):
                     raise RuntimeError, "Extrema for mA range defined with inverterd order. Second element must be larger than first element"
+                
+            if po.startswith("SMHRange="):
+                self.SMHRange = po.replace("SMHRange=","").split(":")
+                if len(self.SMHRange) != 2:
+                    raise RuntimeError, "Definition of SMH range requires two extrema, separated by ':'"
+                elif float(self.SMHRange[0]) > float(self.SMHRange[1]):
+                    raise RuntimeError, "Extrema for SMH range defined with inverterd order. Second element must be larger than or equal to the first element"
+                
             if po.startswith("ggHRange="):
                 self.ggHRange = po.replace("ggHRange=","").split(":")
                 if len(self.ggHRange) != 2:
@@ -108,6 +118,22 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
         ## Define signal strengths on ggH and bbH as POI, NOTE: the range of the POIs is defined here
         self.modelBuilder.doVar("r_ggH[%s,%s,%s]" % (str((float(self.ggHRange[0])+float(self.ggHRange[1]))/2.), self.ggHRange[0], self.ggHRange[1]));
         self.modelBuilder.doVar("r_bbH[%s,%s,%s]" % (str((float(self.bbHRange[0])+float(self.bbHRange[1]))/2.), self.bbHRange[0], self.bbHRange[1]));
+        if len(self.SMHRange):
+            if float(self.SMHRange[0]) < float(self.SMHRange[1]):
+                print 'SMH will be left floating within', self.SMHRange[0], 'and', self.SMHRange[1]
+                self.modelBuilder.doVar("r_ggH_SM125[%s,%s,%s]" % (str((float(self.SMHRange[0])+float(self.SMHRange[1]))/2.), self.SMHRange[0], self.SMHRange[1]));
+                self.modelBuilder.doVar("r_qqH_SM125[%s,%s,%s]" % (str((float(self.SMHRange[0])+float(self.SMHRange[1]))/2.), self.SMHRange[0], self.SMHRange[1]));
+                self.modelBuilder.doVar("r_VH_SM125[%s,%s,%s]"  % (str((float(self.SMHRange[0])+float(self.SMHRange[1]))/2.), self.SMHRange[0], self.SMHRange[1]));
+            elif float(self.SMHRange[0]) == float(self.SMHRange[1]):
+                print 'SMH will be set to', self.SMHRange[0]
+                self.modelBuilder.doVar("r_ggH_SM125[%s]" % self.SMHRange[0])
+                self.modelBuilder.doVar("r_qqH_SM125[%s]" % self.SMHRange[0])
+                self.modelBuilder.doVar("r_VH_SM125[%s]"  % self.SMHRange[0])
+        else:
+            print 'SMH (not there before) will be assumed to be 0'
+            self.modelBuilder.doVar("r_ggH_SM125[0]")
+            self.modelBuilder.doVar("r_qqH_SM125[0]")
+            self.modelBuilder.doVar("r_VH_SM125[0]")        
         poi = ",".join(["r_"+m for m in self.modes])
         ## Define Higgs boson mass as another parameter. It will be floating if mARange is set otherwise it will be treated
         ## as fixed. NOTE: this is only left here as an extended example. It's not useful to have mA floating at the moment.
@@ -128,11 +154,11 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
                 poi+=',MH'
             else:
                 print 'MH (not there before) will be assumed to be', self.options.mass
-                self.modelBuilder.doVar("MH[%g]" % self.options.mass)
+                self.modelBuilder.doVar("MH[%g]" % self.options.mass)                
         ## define set of POIs
         self.modelBuilder.doSet("POI",poi)
     def getHiggsSignalYieldScale(self,production,decay, energy):
-        if production == "ggH" or production == "bbH":
+        if production == "ggH" or production == "bbH" or production == "VH_SM125" or production == "qqH_SM125" or production == "ggH_SM125" :
             ## This is an example how to multiply the yields r_ggH and r_bbH with the roofit variables ggH_xsec and bbH_xsec
             ## that have been defined above, with the help of a roofit expression.
             #
