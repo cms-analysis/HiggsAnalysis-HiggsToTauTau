@@ -6,9 +6,10 @@ layout = cms.PSet(
     #dataset = cms.string("#scale[1.5]{CMS} (unpublished), h,H,A#rightarrow#tau#tau, 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)")
     #dataset = cms.string("#scale[1.5]{CMS} Preliminary, h,H,A#rightarrow#tau#tau, 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
     #dataset = cms.string("#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                                           18.3 fb^{-1} (8 TeV)"),
-    dataset = cms.string("h,H,A#rightarrow#tau#tau                                19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
+    #dataset = cms.string("h,H,A#rightarrow#tau#tau                                19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
+    dataset = cms.string("Combination                          19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
     ## x-axis title
-    xaxis = cms.string("m_A [GeV]"),
+    xaxis = cms.string("m_{A} [GeV]"),
     ## y-axis title
     yaxis = cms.string("#bf{tan#beta}"),
     ## theory label 

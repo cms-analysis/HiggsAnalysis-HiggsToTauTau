@@ -10,10 +10,10 @@ tt = MIT
 
 [mssm]
 
-unblind
+blind
 
-periods = 7TeV 8TeV
-channels = em et mm mt tt
+periods = 8TeV
+channels = mt
 
 em_categories_7TeV = 8 9
 et_categories_7TeV = 8 9
@@ -81,5 +81,5 @@ periods = 7TeV 8TeV 7TeV_8TeV
 channels_sm = em et mt
 categories_sm = 0jet
 
-channels_mssm = mm em mt et
+channels_mssm = em et mt mm tt
 categories_mssm = nobtag btag
