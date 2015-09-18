@@ -277,6 +277,7 @@ def create_card_workspace(mass, card_glob='*.txt', output='tmp.root', extra_opti
     Create a tmp.root combining data cards in the CWD
     '''
     ws_options = [
+        #('-v', 3),
         ('-m', mass),
         ('--default-morphing', options.shape),
     ]
