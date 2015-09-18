@@ -2,6 +2,7 @@ from ctypes import cdll
 from ctypes import c_bool
 from ctypes import c_uint
 from ctypes import c_double
+import os
 
 class mssm_xs_tools(object):
     """
@@ -13,7 +14,7 @@ class mssm_xs_tools(object):
     """
     def __init__(self, filename, kINTERPOLATION, verbosity):
         ## pointer to the shared library containing the C wrapper functions
-        self.lib = cdll.LoadLibrary('./mssm_xs_tools_C.so')
+        self.lib = cdll.LoadLibrary(os.getenv("CMSSW_BASE")+'/src/HiggsAnalysis/HiggsToTauTau/python/tools/mssm_xs_tools_C.so')
         ## pointer to the C++ object
         self.obj = self.lib.mssm_xs_tools_new(filename, c_bool(kINTERPOLATION), c_uint(verbosity))
         ## pointer to function mass
