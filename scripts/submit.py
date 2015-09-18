@@ -213,7 +213,7 @@ def model_config(model_name) :
     elif model_name=="ggH-bbH-SMH" :
         from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
         model = "--physics-model 'ggH-bbH=HiggsAnalysis.HiggsToTauTau.PhysicsBSMModel:floatingMSSMXSHiggs'"
-        opts  = "--physics-model-options 'modes=ggH,bbH,ggH_SM125,qqH_SM125,VH_SM125;ggHRange=0:{GGH};bbHRange=0:{BBH};SMHRange={SCALESMH}:{SCALESMH}'".format(GGH=bounds["ggH-bbH",mass][0], BBH=bounds["ggH-bbH",mass][1], SCALESMH=options.SMHscale)
+        opts  = "--physics-model-options 'modes=ggH,bbH,ggH_SM125,qqH_SM125,VH_SM125;ggHRange=0:{GGH};bbHRange=0:{BBH};SMHRange=0:8;SMHscale={SCALESMH}'".format(GGH=bounds["ggH-bbH",mass][0], BBH=bounds["ggH-bbH",mass][1], SCALESMH=options.SMHscale)#SMHRange=0:{GGH}
     ## MSSM cb versus ctau
     elif model_name=="cb-ctau" :
         from HiggsAnalysis.HiggsToTauTau.mssm_multidim_fit_boundaries import mssm_multidim_fit_boundaries as bounds
