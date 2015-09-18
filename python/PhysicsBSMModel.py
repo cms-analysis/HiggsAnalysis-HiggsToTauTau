@@ -66,6 +66,7 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
         #self.tanb   = None
         self.modes    = [ "ggH", "bbH"] #, "ggH_SM125", "VH_SM125", "qqH_SM125" ]
         self.mARange  = []
+        self.SMHscale = '1'
         self.SMHRange = []
         self.ggHRange = ['0','20']
         self.bbHRange = ['0','20']
@@ -75,6 +76,9 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
         """
         for po in physOptions:
             #if po.startswith("tanb="): self.tanb = po.replace("tanb=", "")
+            print self.SMHscale
+            if po.startswith("SMHscale="): self.SMHscale = po.replace("SMHscale=", "")
+            print self.SMHscale
             if po.startswith("modes="): self.modes = po.replace("modes=","").split(",")
             if po.startswith("mARange="):
                 self.mARange = po.replace("mARange=","").split(":")
@@ -121,19 +125,27 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
         if len(self.SMHRange):
             if float(self.SMHRange[0]) < float(self.SMHRange[1]):
                 print 'SMH will be left floating within', self.SMHRange[0], 'and', self.SMHRange[1]
-                self.modelBuilder.doVar("r_ggH_SM125[%s,%s,%s]" % (str((float(self.SMHRange[0])+float(self.SMHRange[1]))/2.), self.SMHRange[0], self.SMHRange[1]));
-                self.modelBuilder.doVar("r_qqH_SM125[%s,%s,%s]" % (str((float(self.SMHRange[0])+float(self.SMHRange[1]))/2.), self.SMHRange[0], self.SMHRange[1]));
-                self.modelBuilder.doVar("r_VH_SM125[%s,%s,%s]"  % (str((float(self.SMHRange[0])+float(self.SMHRange[1]))/2.), self.SMHRange[0], self.SMHRange[1]));
-            elif float(self.SMHRange[0]) == float(self.SMHRange[1]):
-                print 'SMH will be set to', self.SMHRange[0]
-                self.modelBuilder.doVar("r_ggH_SM125[%s]" % self.SMHRange[0])
-                self.modelBuilder.doVar("r_qqH_SM125[%s]" % self.SMHRange[0])
-                self.modelBuilder.doVar("r_VH_SM125[%s]"  % self.SMHRange[0])
+                print self.SMHscale, self.SMHRange[0], self.SMHRange[1]
+                self.modelBuilder.doVar("r_ggH_SM125[%s,%s,%s]" % (self.SMHscale, self.SMHRange[0], self.SMHRange[1]));
+                self.modelBuilder.doVar("r_qqH_SM125[%s,%s,%s]" % (self.SMHscale, self.SMHRange[0], self.SMHRange[1]));
+                self.modelBuilder.doVar("r_VH_SM125[%s,%s,%s]"  % (self.SMHscale, self.SMHRange[0], self.SMHRange[1]));
+            #elif float(self.SMHRange[0]) == float(self.SMHRange[1]):
+            #    print 'SMH will be set to', self.SMHRange[0]
+            #    self.modelBuilder.doVar("r_ggH_SM125[%s]" % self.SMHscale[0])
+            #    self.modelBuilder.doVar("r_qqH_SM125[%s]" % self.SMHscale[0])
+            #    self.modelBuilder.doVar("r_VH_SM125[%s]"  % self.SMHscale[0])
+            #    self.modelBuilder.out.var("r_ggH_SM125").removeRange()
+            #    self.modelBuilder.out.var("r_ggH_SM125").setConstant(True)
+                #self.modelBuilder.out.var("r_qqH_SM125").setConstant(True)
+                #self.modelBuilder.out.var("r_VH_SM125").setConstant(True)
         else:
             print 'SMH (not there before) will be assumed to be 0'
             self.modelBuilder.doVar("r_ggH_SM125[0]")
             self.modelBuilder.doVar("r_qqH_SM125[0]")
-            self.modelBuilder.doVar("r_VH_SM125[0]")        
+            self.modelBuilder.doVar("r_VH_SM125[0]")     
+            #self.modelBuilder.out.var("r_ggH_SM125").setConstant(True)
+            #self.modelBuilder.out.var("r_qqH_SM125").setConstant(True)
+            #self.modelBuilder.out.var("r_VH_SM125").setConstant(True)   
         poi = ",".join(["r_"+m for m in self.modes])
         ## Define Higgs boson mass as another parameter. It will be floating if mARange is set otherwise it will be treated
         ## as fixed. NOTE: this is only left here as an extended example. It's not useful to have mA floating at the moment.
