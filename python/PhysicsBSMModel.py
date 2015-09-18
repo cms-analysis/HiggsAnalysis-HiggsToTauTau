@@ -76,9 +76,7 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
         """
         for po in physOptions:
             #if po.startswith("tanb="): self.tanb = po.replace("tanb=", "")
-            print self.SMHscale
             if po.startswith("SMHscale="): self.SMHscale = po.replace("SMHscale=", "")
-            print self.SMHscale
             if po.startswith("modes="): self.modes = po.replace("modes=","").split(",")
             if po.startswith("mARange="):
                 self.mARange = po.replace("mARange=","").split(":")
@@ -125,7 +123,6 @@ class FloatingMSSMXSHiggs(MSSMLikeHiggsModel):
         if len(self.SMHRange):
             if float(self.SMHRange[0]) < float(self.SMHRange[1]):
                 print 'SMH will be left floating within', self.SMHRange[0], 'and', self.SMHRange[1]
-                print self.SMHscale, self.SMHRange[0], self.SMHRange[1]
                 self.modelBuilder.doVar("r_ggH_SM125[%s,%s,%s]" % (self.SMHscale, self.SMHRange[0], self.SMHRange[1]));
                 self.modelBuilder.doVar("r_qqH_SM125[%s,%s,%s]" % (self.SMHscale, self.SMHRange[0], self.SMHRange[1]));
                 self.modelBuilder.doVar("r_VH_SM125[%s,%s,%s]"  % (self.SMHscale, self.SMHRange[0], self.SMHRange[1]));
