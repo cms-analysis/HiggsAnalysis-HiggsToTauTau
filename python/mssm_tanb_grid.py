@@ -6,8 +6,7 @@ import os
 def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
 
     #if "lowmH" in opt :  #smartGrid can't be used for lowmH since some parameter regions are corrupted and shall not be touched
-    #    smartGrid=False
-        
+    #    smartGrid=False      
     limits = []
     reduced_grid = [] 
     grid = []
@@ -214,6 +213,12 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
                 ,"{CMD} -n  4 --min  4.0  --max  7.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs) 
                 ,"{CMD} -n  3 --min  8.0  --max 10.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                 ]
+        elif "fineGrid" in opt :
+            dirs = ""
+            for dir in args :
+                dirs +=dir+" "
+            opt = opt.replace('fineGrid','')
+            grid = ["{CMD} -n 60 --min 1.0 --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)]
         else :  #for all other MSSM scenarios except lowmH, lightstopmod and tauphobic
             if len(subvec(args,  90, 249))>0 :
                 dirs = vec2str(subvec(args,  90,  249))
