@@ -14,7 +14,7 @@ parser.add_option("--batch-options", dest="batch", default="", type="string",
 parser.add_option("--model", dest="modelname", default="mhmax-mu+200", type="string",
                   help="The model which should be used (choices are: mhmax-mu+200, mhmodp, mhmodm). Default: \"mhmax-mu+200\"]")
 parser.add_option("--ana-type", dest="ana_type", default="NeutralMSSM", type="string",
-                  help="The model which should be used (choices are: NeutralMSSM, Hhh, Hplus). Default: \"NeutralMSSM\"]")
+                  help="The model which should be used (choices are: NeutralMSSM, Hhh, AZh, Htaunu). Default: \"NeutralMSSM\"]")
 parser.add_option("--MSSMvsSM", dest="MSSMvsSM", default=False, action="store_true",
                   help="Do a signal hypothesis separation test MSSM vs SM. [Default: False]")
 parser.add_option("--smartGrid", dest="smartGrid", default=False, action="store_true",
