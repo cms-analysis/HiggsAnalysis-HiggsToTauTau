@@ -113,6 +113,7 @@ class CombineToolBase:
         self.dry_run = self.args.dry_run
         self.passthru.extend(unknown)
         self.bopts = self.args.sub_opts
+        self.custom_crab = self.args.custom_crab
 
     def put_back_arg(self, arg_name, target_name):
         if hasattr(self.args, arg_name):
@@ -187,10 +188,12 @@ class CombineToolBase:
             wsp_files = set()
             for line in self.job_queue:
                 jobs += 1
-                wsp = self.extract_workspace_arg(line.split())
+                newline = line
+                if line.startswith('combine'): newline = line.replace('combine', './combine', 1)
+                wsp = self.extract_workspace_arg(newline.split())
                 wsp_files.add(wsp)
                 outscript.write('\nif [ $1 -eq %i ]; then\n' % jobs)
-                outscript.write('  ' + line.replace(wsp, os.path.basename(wsp)) + '\n')
+                outscript.write('  ' + newline.replace(wsp, os.path.basename(wsp)) + '\n')
                 outscript.write('fi')
             outscript.write(CRAB_POSTFIX)
             outscript.close()
