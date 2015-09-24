@@ -14,7 +14,7 @@ from multiprocessing import Pool
 import HiggsAnalysis.HiggsToTauTau.combine.utils as utils
 from HiggsAnalysis.HiggsToTauTau.combine.opts import OPTS
 
-from HiggsAnalysis.HiggsToTauTau.combine.base import CombineToolBase
+from HiggsAnalysis.HiggsToTauTau.combine.CombineToolBase import CombineToolBase
 
 class Impacts(CombineToolBase):
   description = 'Calculate nuisance parameter impacts' 
