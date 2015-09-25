@@ -192,6 +192,8 @@ class PlotLimits {
   std::string yaxis_;
   /// string for theory title used in tanb plots
   std::string theory_;
+  /// string for analysis type used in tanb plots needed for mass constraints
+  std::string ana_type_;
   /// minimum on y axis for plotting
   double min_;
   /// maximum on y axis for plotting

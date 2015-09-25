@@ -8,7 +8,7 @@
 
 /// This is the core plotting routine that can also be used within
 /// root macros. It is therefore not element of the PlotLimits class.
-void plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, std::vector<TGraph*> injected, std::vector<std::vector<TGraph*>> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool MSSMvsSM=true, std::string HIG="", bool Brazilian=false, bool azh=false);
+void plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, std::vector<TGraph*> injected, std::vector<std::vector<TGraph*>> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool MSSMvsSM=true, std::string HIG="", bool Brazilian=false, std::string ana_type="");
 void contour2D(TString xvar, int xbins, float xmin, float xmax, TString yvar, int ybins, float ymin, float ymax, float smx=1.0, float smy=1.0, TFile *fOut=0, TString name="contour2D");
 TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool require_minPoints=true, double multip=1);
 
@@ -38,7 +38,7 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   tanbHigh=tanbLow+tanbLowHigh;
   if(theory_=="MSSM m_{h}^{max} scenario") {extralabel_= "mhmax-"; model = "mhmax-mu+200"; tanbHigh=60; tanbLow=0.5; tanbLowHigh=2;}
   if(theory_=="MSSM m_{h}^{mod-} scenario") {extralabel_= "mhmodm-"; model = "mhmodm"; tanbHigh=60; tanbLow=0.5; tanbLowHigh=2;}
-  if(theory_=="MSSM m_{h}^{mod+} scenario") {extralabel_= "mhmodp-"; model = "mhmodp"; tanbHigh=30; tanbLow=2; tanbLowHigh=2;}
+  if(theory_=="MSSM m_{h}^{mod+} scenario") {extralabel_= "mhmodp-"; model = "mhmodp"; tanbHigh=60; tanbLow=0.5; tanbLowHigh=2;}
   if(theory_=="MSSM low-m_{H} scenario") {extralabel_= "lowmH-"; model = "lowmH"; tanbHigh=9.5; tanbLow=1.5; tanbLowHigh=2;}
   if(theory_=="MSSM light-stau scenario") {extralabel_= "lightstau1-"; model = "lightstau1"; tanbHigh=60; tanbLow=0.5; tanbLowHigh=3;}
   if(theory_=="MSSM #scale[1.3]{#bf{#tau}}-phobic scenario") {extralabel_= "tauphobic-"; model = "tauphobic"; tanbHigh=50; tanbLow=1.0; tanbLowHigh=2;}
@@ -113,7 +113,6 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     plane_observed    = new TH2D("observed","observed",       29, 300, 3100, (int)((tanbHigh-tanbLow)*10-1), tanbLow, tanbHigh);
   }
 
-
   // for(int idx=1; idx<plane_minus2sigma->GetNbinsX()+1; idx++){
   //   for(int idy=1; idy<plane_minus2sigma->GetNbinsY()+1; idy++){
   //     plane_minus2sigma->SetBinContent(idx, idy, 1.1);
@@ -131,12 +130,18 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   TGraph2D* graph_plus1sigma_2d = 0;
   TGraph2D* graph_plus2sigma_2d = 0;
   TGraph2D* graph_observed_2d =0;
-  TH2D *minus2sigma_th2d =new TH2D("minus2sigma_th2d","minus2sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
-  TH2D *minus1sigma_th2d =new TH2D("minus1sigma_th2d","minus1sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
-  TH2D *expected_th2d =new TH2D("expected_th2d","expected_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
-  TH2D *plus1sigma_th2d =new TH2D("plus1sigma_th2d","plus1sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
-  TH2D *plus2sigma_th2d =new TH2D("plus2sigma_th2d","plus2sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
-  TH2D *observed_th2d =new TH2D("observed_th2d","observed_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
+  // TH2D *minus2sigma_th2d =new TH2D("minus2sigma_th2d","minus2sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
+  // TH2D *minus1sigma_th2d =new TH2D("minus1sigma_th2d","minus1sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
+  // TH2D *expected_th2d =new TH2D("expected_th2d","expected_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
+  // TH2D *plus1sigma_th2d =new TH2D("plus1sigma_th2d","plus1sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
+  // TH2D *plus2sigma_th2d =new TH2D("plus2sigma_th2d","plus2sigma_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
+  // TH2D *observed_th2d =new TH2D("observed_th2d","observed_th2d",4*nxbins,xbins[0],xbins[nxbins-1],(int)((tanbHigh-tanbLow)*10-1),tanbLow,tanbHigh);
+  TH2D *minus2sigma_th2d = 0;
+  TH2D *minus1sigma_th2d = 0;
+  TH2D *expected_th2d = 0;
+  TH2D *plus1sigma_th2d = 0;
+  TH2D *plus2sigma_th2d = 0;
+  TH2D *observed_th2d = 0;
   
   if(HIG != ""){
     std::cout << "NO LONGER SUPPORTED" << std::endl;
@@ -225,26 +230,26 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
 
 	// Fill TH2D with calculated limit points
 	if(FitMethod_==0 || FitMethod_==1 || FitMethod_==3 || FitMethod_==4){ //linear fit=0; spline=1; spline+linear=3; linear+spline=4
-	  // plane_minus2sigma->SetBinContent(plane_minus2sigma->GetXaxis()->FindBin(mass), plane_minus2sigma->GetYaxis()->FindBin(tanb), TMath::Log(minus2sigma/exclusion_));
-	  // plane_minus1sigma->SetBinContent(plane_minus1sigma->GetXaxis()->FindBin(mass), plane_minus1sigma->GetYaxis()->FindBin(tanb), TMath::Log(minus1sigma/exclusion_));
-	  // plane_expected   ->SetBinContent(plane_expected   ->GetXaxis()->FindBin(mass), plane_expected   ->GetYaxis()->FindBin(tanb), TMath::Log(exp/exclusion_));
-	  // plane_plus1sigma ->SetBinContent(plane_plus1sigma ->GetXaxis()->FindBin(mass), plane_plus1sigma ->GetYaxis()->FindBin(tanb), TMath::Log(plus1sigma/exclusion_));
-	  // plane_plus2sigma ->SetBinContent(plane_plus2sigma ->GetXaxis()->FindBin(mass), plane_plus2sigma ->GetYaxis()->FindBin(tanb), TMath::Log(plus2sigma/exclusion_));
-	  // plane_observed   ->SetBinContent(plane_observed   ->GetXaxis()->FindBin(mass), plane_observed   ->GetYaxis()->FindBin(tanb), TMath::Log(obs/exclusion_));
-	  plane_minus2sigma->SetBinContent(plane_minus2sigma->GetXaxis()->FindBin(mass), plane_minus2sigma->GetYaxis()->FindBin(tanb), minus2sigma/exclusion_);
-	  plane_minus1sigma->SetBinContent(plane_minus1sigma->GetXaxis()->FindBin(mass), plane_minus1sigma->GetYaxis()->FindBin(tanb), minus1sigma/exclusion_);
-	  plane_expected   ->SetBinContent(plane_expected   ->GetXaxis()->FindBin(mass), plane_expected   ->GetYaxis()->FindBin(tanb), exp/exclusion_);
-	  plane_plus1sigma ->SetBinContent(plane_plus1sigma ->GetXaxis()->FindBin(mass), plane_plus1sigma ->GetYaxis()->FindBin(tanb), plus1sigma/exclusion_);
-	  plane_plus2sigma ->SetBinContent(plane_plus2sigma ->GetXaxis()->FindBin(mass), plane_plus2sigma ->GetYaxis()->FindBin(tanb), plus2sigma/exclusion_);
-	  plane_observed   ->SetBinContent(plane_observed   ->GetXaxis()->FindBin(mass), plane_observed   ->GetYaxis()->FindBin(tanb), obs/exclusion_);
+	  plane_minus2sigma->SetBinContent(plane_minus2sigma->GetXaxis()->FindBin(mass), plane_minus2sigma->GetYaxis()->FindBin(tanb), TMath::Log(minus2sigma/exclusion_));
+	  plane_minus1sigma->SetBinContent(plane_minus1sigma->GetXaxis()->FindBin(mass), plane_minus1sigma->GetYaxis()->FindBin(tanb), TMath::Log(minus1sigma/exclusion_));
+	  plane_expected   ->SetBinContent(plane_expected   ->GetXaxis()->FindBin(mass), plane_expected   ->GetYaxis()->FindBin(tanb), TMath::Log(exp/exclusion_));
+	  plane_plus1sigma ->SetBinContent(plane_plus1sigma ->GetXaxis()->FindBin(mass), plane_plus1sigma ->GetYaxis()->FindBin(tanb), TMath::Log(plus1sigma/exclusion_));
+	  plane_plus2sigma ->SetBinContent(plane_plus2sigma ->GetXaxis()->FindBin(mass), plane_plus2sigma ->GetYaxis()->FindBin(tanb), TMath::Log(plus2sigma/exclusion_));
+	  plane_observed   ->SetBinContent(plane_observed   ->GetXaxis()->FindBin(mass), plane_observed   ->GetYaxis()->FindBin(tanb), TMath::Log(obs/exclusion_));
+	  // plane_minus2sigma->SetBinContent(plane_minus2sigma->GetXaxis()->FindBin(mass), plane_minus2sigma->GetYaxis()->FindBin(tanb), minus2sigma/exclusion_);
+	  // plane_minus1sigma->SetBinContent(plane_minus1sigma->GetXaxis()->FindBin(mass), plane_minus1sigma->GetYaxis()->FindBin(tanb), minus1sigma/exclusion_);
+	  // plane_expected   ->SetBinContent(plane_expected   ->GetXaxis()->FindBin(mass), plane_expected   ->GetYaxis()->FindBin(tanb), exp/exclusion_);
+	  // plane_plus1sigma ->SetBinContent(plane_plus1sigma ->GetXaxis()->FindBin(mass), plane_plus1sigma ->GetYaxis()->FindBin(tanb), plus1sigma/exclusion_);
+	  // plane_plus2sigma ->SetBinContent(plane_plus2sigma ->GetXaxis()->FindBin(mass), plane_plus2sigma ->GetYaxis()->FindBin(tanb), plus2sigma/exclusion_);
+	  // plane_observed   ->SetBinContent(plane_observed   ->GetXaxis()->FindBin(mass), plane_observed   ->GetYaxis()->FindBin(tanb), obs/exclusion_);
 	}
 	else if(FitMethod_==2){ //TGraph2D interpolation
-	  graph_minus2sigma_2d->SetPoint(kTwod,mass,tanb,minus2sigma/exclusion_*1000);
-	  graph_minus1sigma_2d->SetPoint(kTwod,mass,tanb,minus1sigma/exclusion_*1000);
-	  graph_expected_2d->SetPoint(kTwod,mass,tanb,exp/exclusion_*1000);
-	  graph_plus1sigma_2d->SetPoint(kTwod,mass,tanb,plus1sigma/exclusion_*1000);
-	  graph_plus2sigma_2d->SetPoint(kTwod,mass,tanb,plus2sigma/exclusion_*1000);
-	  graph_observed_2d->SetPoint(kTwod,mass,tanb,obs/exclusion_*1000);
+	  graph_minus2sigma_2d->SetPoint(kTwod,mass,tanb,minus2sigma/exclusion_);
+	  graph_minus1sigma_2d->SetPoint(kTwod,mass,tanb,minus1sigma/exclusion_);
+	  graph_expected_2d->SetPoint(kTwod,mass,tanb,exp/exclusion_);
+	  graph_plus1sigma_2d->SetPoint(kTwod,mass,tanb,plus1sigma/exclusion_);
+	  graph_plus2sigma_2d->SetPoint(kTwod,mass,tanb,plus2sigma/exclusion_);
+	  graph_observed_2d->SetPoint(kTwod,mass,tanb,obs/exclusion_);
 	  kTwod++;
 	}	
       }
@@ -255,14 +260,6 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       // 	    graph_expected->Draw("AP*");
       // 	    spline->Draw("SAME");
       // 	    c5->Print("c2.png");
-      // 	  }
-      //  if(mass==140) {
-      // 	    TCanvas *c5 = new TCanvas("c5", "c5", 600, 600);
-      // 	    TSpline3 *spline = new TSpline3("spline", graph_observed);
-      // 	    //spline->SaveAs("spline.root");
-      // 	    graph_expected->Draw("AP*");
-      // 	    spline->Draw("SAME");
-      // 	    c5->Print("c3.png");
       // 	  }
 
       //control plot plotting
@@ -276,57 +273,51 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       v_graph_observed.push_back(graph_observed);
       masses[imass]=mass;
      
-      // Interpolation along the y-axis for filling everything in between
-      // if(FitMethod_==0 || FitMethod_==1 || FitMethod_==3 || FitMethod_==4){ //linear fit=0; spline=1; spline+linear=3; linear+spline=4
-      // 	limit->GetEntry(index[0]);
-      // 	float tbmin=tanb; 
-      // 	limit->GetEntry(index[nevent-1]);
-      // 	float tbmax=tanb; 
-      // 	for(int idy=1; idy<plane_minus2sigma->GetNbinsY()+1; idy++){
-      // 	  if (plane_minus2sigma->GetYaxis()->GetBinCenter(idy) > tbmin && plane_minus2sigma->GetYaxis()->GetBinCenter(idy) < tbmax ){
-      // 	    if(FitMethod_==0 || FitMethod_==4 ){
-      // 	      plane_minus2sigma->SetBinContent(plane_minus2sigma->GetXaxis()->FindBin(mass), idy, graph_minus2sigma_log->Eval(plane_minus2sigma->GetYaxis()->GetBinLowEdge(idy)));
-      // 	      plane_minus1sigma->SetBinContent(plane_minus1sigma->GetXaxis()->FindBin(mass), idy, graph_minus1sigma_log->Eval(plane_minus1sigma->GetYaxis()->GetBinLowEdge(idy)));
-      // 	      plane_expected   ->SetBinContent(plane_expected   ->GetXaxis()->FindBin(mass), idy, graph_expected_log   ->Eval(plane_expected   ->GetYaxis()->GetBinLowEdge(idy)));
-      // 	      plane_plus1sigma ->SetBinContent(plane_plus1sigma ->GetXaxis()->FindBin(mass), idy, graph_plus1sigma_log ->Eval(plane_plus1sigma ->GetYaxis()->GetBinLowEdge(idy)));
-      // 	      plane_plus2sigma ->SetBinContent(plane_plus2sigma ->GetXaxis()->FindBin(mass), idy, graph_plus2sigma_log ->Eval(plane_plus2sigma ->GetYaxis()->GetBinLowEdge(idy)));
-      // 	      plane_observed   ->SetBinContent(plane_observed   ->GetXaxis()->FindBin(mass), idy, graph_observed_log   ->Eval(plane_observed   ->GetYaxis()->GetBinLowEdge(idy)));
-      // 	    }
-      // 	    else if(FitMethod_==1 || FitMethod_==3){
-      // 	      plane_minus2sigma->SetBinContent(plane_minus2sigma->GetXaxis()->FindBin(mass), idy, graph_minus2sigma_log->Eval(plane_minus2sigma->GetYaxis()->GetBinLowEdge(idy), 0, "S"));
-      // 	      plane_minus1sigma->SetBinContent(plane_minus1sigma->GetXaxis()->FindBin(mass), idy, graph_minus1sigma_log->Eval(plane_minus1sigma->GetYaxis()->GetBinLowEdge(idy), 0, "S"));
-      // 	      plane_expected   ->SetBinContent(plane_expected   ->GetXaxis()->FindBin(mass), idy, graph_expected_log   ->Eval(plane_expected   ->GetYaxis()->GetBinLowEdge(idy), 0, "S"));
-      // 	      plane_plus1sigma ->SetBinContent(plane_plus1sigma ->GetXaxis()->FindBin(mass), idy, graph_plus1sigma_log ->Eval(plane_plus1sigma ->GetYaxis()->GetBinLowEdge(idy), 0, "S"));
-      // 	      plane_plus2sigma ->SetBinContent(plane_plus2sigma ->GetXaxis()->FindBin(mass), idy, graph_plus2sigma_log ->Eval(plane_plus2sigma ->GetYaxis()->GetBinLowEdge(idy), 0, "S"));
-      // 	      plane_observed   ->SetBinContent(plane_observed   ->GetXaxis()->FindBin(mass), idy, graph_observed_log   ->Eval(plane_observed   ->GetYaxis()->GetBinLowEdge(idy), 0, "S"));
-      // 	    }
-      // 	  }
-      // 	  else if(plane_minus2sigma->GetYaxis()->GetBinCenter(idy) < tbmin){
-      // 	    plane_minus2sigma->SetBinContent(plane_minus2sigma->GetXaxis()->FindBin(mass), idy, graph_minus2sigma_log->GetY()[0]);
-      // 	    plane_minus1sigma->SetBinContent(plane_minus1sigma->GetXaxis()->FindBin(mass), idy, graph_minus1sigma_log->GetY()[0]);
-      // 	    plane_expected   ->SetBinContent(plane_expected   ->GetXaxis()->FindBin(mass), idy, graph_expected_log   ->GetY()[0]);
-      // 	    plane_plus1sigma ->SetBinContent(plane_plus1sigma ->GetXaxis()->FindBin(mass), idy, graph_plus1sigma_log ->GetY()[0]);
-      // 	    plane_plus2sigma ->SetBinContent(plane_plus2sigma ->GetXaxis()->FindBin(mass), idy, graph_plus2sigma_log ->GetY()[0]);
-      // 	    plane_observed   ->SetBinContent(plane_observed   ->GetXaxis()->FindBin(mass), idy, graph_observed_log   ->GetY()[0]);
-      // 	  }
-      // 	  else if(plane_minus2sigma->GetYaxis()->GetBinCenter(idy) > tbmax){
-      // 	    plane_minus2sigma->SetBinContent(plane_minus2sigma->GetXaxis()->FindBin(mass), idy, graph_minus2sigma_log->GetY()[graph_minus2sigma_log->GetN()-1]);
-      // 	    plane_minus1sigma->SetBinContent(plane_minus1sigma->GetXaxis()->FindBin(mass), idy, graph_minus1sigma_log->GetY()[graph_minus1sigma_log->GetN()-1]);
-      // 	    plane_expected   ->SetBinContent(plane_expected   ->GetXaxis()->FindBin(mass), idy, graph_expected_log   ->GetY()[graph_expected_log   ->GetN()-1]);
-      // 	    plane_plus1sigma ->SetBinContent(plane_plus1sigma ->GetXaxis()->FindBin(mass), idy, graph_plus1sigma_log ->GetY()[graph_plus1sigma_log ->GetN()-1]);
-      // 	    plane_plus2sigma ->SetBinContent(plane_plus2sigma ->GetXaxis()->FindBin(mass), idy, graph_plus2sigma_log ->GetY()[graph_plus2sigma_log ->GetN()-1]);
-      // 	    plane_observed   ->SetBinContent(plane_observed   ->GetXaxis()->FindBin(mass), idy, graph_observed_log   ->GetY()[graph_observed_log   ->GetN()-1]);
-      // 	  }
-      // 	}
-      //}
+      //Interpolation along the y-axis for filling everything in between
+      if(FitMethod_==0 || FitMethod_==1 || FitMethod_==3 || FitMethod_==4){ //linear fit=0; spline=1; spline+linear=3; linear+spline=4
+      	limit->GetEntry(index[0]);
+      	float tbmin=tanb; 
+      	limit->GetEntry(index[nevent-1]);
+      	float tbmax=tanb; 
+      	for(int idy=0; idy<plane_minus2sigma->GetNbinsY()+1; idy++){
+      	  if (plane_minus2sigma->GetYaxis()->GetBinCenter(idy) > tbmin && plane_minus2sigma->GetYaxis()->GetBinCenter(idy) < tbmax ){
+      	    if(FitMethod_==0 || FitMethod_==4 ){
+      	      plane_minus2sigma->SetBinContent(plane_minus2sigma->GetXaxis()->FindBin(mass), idy, graph_minus2sigma_log->Eval(plane_minus2sigma->GetYaxis()->GetBinLowEdge(idy)));
+      	      plane_minus1sigma->SetBinContent(plane_minus1sigma->GetXaxis()->FindBin(mass), idy, graph_minus1sigma_log->Eval(plane_minus1sigma->GetYaxis()->GetBinLowEdge(idy)));
+      	      plane_expected   ->SetBinContent(plane_expected   ->GetXaxis()->FindBin(mass), idy, graph_expected_log   ->Eval(plane_expected   ->GetYaxis()->GetBinLowEdge(idy)));
+      	      plane_plus1sigma ->SetBinContent(plane_plus1sigma ->GetXaxis()->FindBin(mass), idy, graph_plus1sigma_log ->Eval(plane_plus1sigma ->GetYaxis()->GetBinLowEdge(idy)));
+      	      plane_plus2sigma ->SetBinContent(plane_plus2sigma ->GetXaxis()->FindBin(mass), idy, graph_plus2sigma_log ->Eval(plane_plus2sigma ->GetYaxis()->GetBinLowEdge(idy)));
+      	      plane_observed   ->SetBinContent(plane_observed   ->GetXaxis()->FindBin(mass), idy, graph_observed_log   ->Eval(plane_observed   ->GetYaxis()->GetBinLowEdge(idy)));
+      	    }
+      	    else if(FitMethod_==1 || FitMethod_==3){
+      	      plane_minus2sigma->SetBinContent(plane_minus2sigma->GetXaxis()->FindBin(mass), idy, graph_minus2sigma_log->Eval(plane_minus2sigma->GetYaxis()->GetBinLowEdge(idy), 0, "S"));
+      	      plane_minus1sigma->SetBinContent(plane_minus1sigma->GetXaxis()->FindBin(mass), idy, graph_minus1sigma_log->Eval(plane_minus1sigma->GetYaxis()->GetBinLowEdge(idy), 0, "S"));
+      	      plane_expected   ->SetBinContent(plane_expected   ->GetXaxis()->FindBin(mass), idy, graph_expected_log   ->Eval(plane_expected   ->GetYaxis()->GetBinLowEdge(idy), 0, "S"));
+      	      plane_plus1sigma ->SetBinContent(plane_plus1sigma ->GetXaxis()->FindBin(mass), idy, graph_plus1sigma_log ->Eval(plane_plus1sigma ->GetYaxis()->GetBinLowEdge(idy), 0, "S"));
+      	      plane_plus2sigma ->SetBinContent(plane_plus2sigma ->GetXaxis()->FindBin(mass), idy, graph_plus2sigma_log ->Eval(plane_plus2sigma ->GetYaxis()->GetBinLowEdge(idy), 0, "S"));
+      	      plane_observed   ->SetBinContent(plane_observed   ->GetXaxis()->FindBin(mass), idy, graph_observed_log   ->Eval(plane_observed   ->GetYaxis()->GetBinLowEdge(idy), 0, "S"));
+      	    }
+      	  }
+      	  else if(plane_minus2sigma->GetYaxis()->GetBinCenter(idy) < tbmin){
+      	    plane_minus2sigma->SetBinContent(plane_minus2sigma->GetXaxis()->FindBin(mass), idy, graph_minus2sigma_log->GetY()[0]);
+      	    plane_minus1sigma->SetBinContent(plane_minus1sigma->GetXaxis()->FindBin(mass), idy, graph_minus1sigma_log->GetY()[0]);
+      	    plane_expected   ->SetBinContent(plane_expected   ->GetXaxis()->FindBin(mass), idy, graph_expected_log   ->GetY()[0]);
+      	    plane_plus1sigma ->SetBinContent(plane_plus1sigma ->GetXaxis()->FindBin(mass), idy, graph_plus1sigma_log ->GetY()[0]);
+      	    plane_plus2sigma ->SetBinContent(plane_plus2sigma ->GetXaxis()->FindBin(mass), idy, graph_plus2sigma_log ->GetY()[0]);
+      	    plane_observed   ->SetBinContent(plane_observed   ->GetXaxis()->FindBin(mass), idy, graph_observed_log   ->GetY()[0]);
+      	  }
+      	  else if(plane_minus2sigma->GetYaxis()->GetBinCenter(idy) > tbmax){
+      	    plane_minus2sigma->SetBinContent(plane_minus2sigma->GetXaxis()->FindBin(mass), idy, graph_minus2sigma_log->GetY()[graph_minus2sigma_log->GetN()-1]);
+      	    plane_minus1sigma->SetBinContent(plane_minus1sigma->GetXaxis()->FindBin(mass), idy, graph_minus1sigma_log->GetY()[graph_minus1sigma_log->GetN()-1]);
+      	    plane_expected   ->SetBinContent(plane_expected   ->GetXaxis()->FindBin(mass), idy, graph_expected_log   ->GetY()[graph_expected_log   ->GetN()-1]);
+      	    plane_plus1sigma ->SetBinContent(plane_plus1sigma ->GetXaxis()->FindBin(mass), idy, graph_plus1sigma_log ->GetY()[graph_plus1sigma_log ->GetN()-1]);
+      	    plane_plus2sigma ->SetBinContent(plane_plus2sigma ->GetXaxis()->FindBin(mass), idy, graph_plus2sigma_log ->GetY()[graph_plus2sigma_log ->GetN()-1]);
+      	    plane_observed   ->SetBinContent(plane_observed   ->GetXaxis()->FindBin(mass), idy, graph_observed_log   ->GetY()[graph_observed_log   ->GetN()-1]);
+      	  }
+      	}
+      }
     }
   }	
-      plane_minus2sigma->SaveAs("plane_minus2sigma.root");
-      plane_minus1sigma->SaveAs("plane_minus1sigma.root");
-      plane_expected   ->SaveAs("plane_expected.root");
-      plane_plus1sigma ->SaveAs("plane_plus1sigma.root");
-      plane_plus2sigma ->SaveAs("plane_plus2sigma.root");
-      plane_observed   ->SaveAs("plane_observed.root");
 
   // Interpolation along the x-axis for filling everything in between
   if(FitMethod_==0 || FitMethod_==1 || FitMethod_==3){ //linear fit=0; spline=1; spline+linear=3; linear+spline=4
@@ -382,31 +373,30 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   }
   
   if(FitMethod_==2){ //TGrah2D interpolation
-    for(int i=0; i<=expected_th2d->GetXaxis()->GetNbins();i++){
-      for(int j=0; j<=expected_th2d->GetYaxis()->GetNbins();j++){
-	minus2sigma_th2d->SetBinContent(i,j,graph_minus2sigma_2d->Interpolate(minus2sigma_th2d->GetXaxis()->GetBinCenter(i),minus2sigma_th2d->GetYaxis()->GetBinCenter(j)));
-	minus1sigma_th2d->SetBinContent(i,j,graph_minus1sigma_2d->Interpolate(minus1sigma_th2d->GetXaxis()->GetBinCenter(i),minus1sigma_th2d->GetYaxis()->GetBinCenter(j)));
-	expected_th2d->SetBinContent(i,j,graph_expected_2d->Interpolate(expected_th2d->GetXaxis()->GetBinCenter(i),expected_th2d->GetYaxis()->GetBinCenter(j)));
-	plus1sigma_th2d->SetBinContent(i,j,graph_plus1sigma_2d->Interpolate(plus1sigma_th2d->GetXaxis()->GetBinCenter(i),plus1sigma_th2d->GetYaxis()->GetBinCenter(j)));
-	plus2sigma_th2d->SetBinContent(i,j,graph_plus2sigma_2d->Interpolate(plus2sigma_th2d->GetXaxis()->GetBinCenter(i),plus2sigma_th2d->GetYaxis()->GetBinCenter(j)));
-	observed_th2d->SetBinContent(i,j,graph_observed_2d->Interpolate(observed_th2d->GetXaxis()->GetBinCenter(i),observed_th2d->GetYaxis()->GetBinCenter(j)));
-      }
-    }
+    // for(int i=0; i<=expected_th2d->GetXaxis()->GetNbins();i++){
+    //   for(int j=0; j<=expected_th2d->GetYaxis()->GetNbins();j++){
+    // 	minus2sigma_th2d->SetBinContent(i,j,graph_minus2sigma_2d->Interpolate(minus2sigma_th2d->GetXaxis()->GetBinCenter(i),minus2sigma_th2d->GetYaxis()->GetBinCenter(j)));
+    // 	minus1sigma_th2d->SetBinContent(i,j,graph_minus1sigma_2d->Interpolate(minus1sigma_th2d->GetXaxis()->GetBinCenter(i),minus1sigma_th2d->GetYaxis()->GetBinCenter(j)));
+    // 	expected_th2d->SetBinContent(i,j,graph_expected_2d->Interpolate(expected_th2d->GetXaxis()->GetBinCenter(i),expected_th2d->GetYaxis()->GetBinCenter(j)));
+    // 	plus1sigma_th2d->SetBinContent(i,j,graph_plus1sigma_2d->Interpolate(plus1sigma_th2d->GetXaxis()->GetBinCenter(i),plus1sigma_th2d->GetYaxis()->GetBinCenter(j)));
+    // 	plus2sigma_th2d->SetBinContent(i,j,graph_plus2sigma_2d->Interpolate(plus2sigma_th2d->GetXaxis()->GetBinCenter(i),plus2sigma_th2d->GetYaxis()->GetBinCenter(j)));
+    // 	observed_th2d->SetBinContent(i,j,graph_observed_2d->Interpolate(observed_th2d->GetXaxis()->GetBinCenter(i),observed_th2d->GetYaxis()->GetBinCenter(j)));
+    //   }
+    // }
+    minus2sigma_th2d = graph_minus2sigma_2d->GetHistogram();
+    minus1sigma_th2d = graph_minus1sigma_2d->GetHistogram();
+    expected_th2d    = graph_expected_2d   ->GetHistogram();
+    plus1sigma_th2d  = graph_plus1sigma_2d ->GetHistogram();
+    plus2sigma_th2d  = graph_plus2sigma_2d ->GetHistogram();
+    observed_th2d    = graph_observed_2d   ->GetHistogram();
+    // minus2sigma_th2d->Smooth(1);
+    // minus1sigma_th2d->Smooth(1);
+    // expected_th2d   ->Smooth(1);
+    // plus1sigma_th2d ->Smooth(1);
+    // plus2sigma_th2d ->Smooth(1);
+    // observed_th2d   ->Smooth(1);
   }
-  graph_minus2sigma_2d->SaveAs("graph_minus2sigma_2d.root");
-  graph_minus1sigma_2d->SaveAs("graph_minus1sigma_2d.root");
-  graph_expected_2d   ->SaveAs("graph_expected_2d.root");
-  graph_plus1sigma_2d ->SaveAs("graph_plus1sigma_2d.root");
-  graph_plus2sigma_2d ->SaveAs("graph_plus2sigma_2d.root");
-  graph_observed_2d   ->SaveAs("graph_observed_2d.root");
-  
-  minus2sigma_th2d->SaveAs("plane_minus2sigma_th2d.root");
-  minus1sigma_th2d->SaveAs("plane_minus1sigma_th2d.root");
-  expected_th2d   ->SaveAs("plane_expected_th2d.root");
-  plus1sigma_th2d ->SaveAs("plane_plus1sigma_th2d.root");
-  plus2sigma_th2d ->SaveAs("plane_plus2sigma_th2d.root");
-  observed_th2d   ->SaveAs("plane_observed_th2d.root");
-  
+
   // Grabbing contours
   std::vector<TGraph*> gr_minus2sigma;
   std::vector<TGraph*> gr_minus1sigma;
@@ -463,14 +453,14 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     TIter iterobs((TList *)contourFromTH2(observed_th2d, 1.0, 20, false,5));
     STestFunctor obs = std::for_each( iterobs.Begin(), TIter::End(), STestFunctor() );
     n_obs=obs.sum;
-    for(int i=0; i<n_m2s; i++) {gr_minus2sigma.push_back((TGraph *)((TList *)contourFromTH2(minus2sigma_th2d, 1000.0, 20, false, 5))->At(i));}
-    for(int i=0; i<n_m1s; i++) {gr_minus1sigma.push_back((TGraph *)((TList *)contourFromTH2(minus1sigma_th2d, 1000.0, 20, false, 5))->At(i));}
-    for(int i=0; i<n_exp; i++) {gr_expected.push_back((TGraph *)((TList *)contourFromTH2(expected_th2d, 1000.0, 20, false, 5))->At(i));}
-    for(int i=0; i<n_p1s; i++) {gr_plus1sigma.push_back((TGraph *)((TList *)contourFromTH2(plus1sigma_th2d, 1000.0, 20, false, 5))->At(i));}
-    for(int i=0; i<n_p2s; i++) {gr_plus2sigma.push_back((TGraph *)((TList *)contourFromTH2(plus2sigma_th2d, 1000.0, 20, false, 5))->At(i));}
-    for(int i=0; i<n_obs; i++) {gr_observed.push_back((TGraph *)((TList *)contourFromTH2(observed_th2d, 1000.0, 20, false, 5))->At(i));}
+    for(int i=0; i<n_m2s; i++) {gr_minus2sigma.push_back((TGraph *)((TList *)contourFromTH2(minus2sigma_th2d, 1.0, 20, false, 5))->At(i));}
+    for(int i=0; i<n_m1s; i++) {gr_minus1sigma.push_back((TGraph *)((TList *)contourFromTH2(minus1sigma_th2d, 1.0, 20, false, 5))->At(i));}
+    for(int i=0; i<n_exp; i++) {gr_expected.push_back((TGraph *)((TList *)contourFromTH2(expected_th2d, 1.0, 20, false, 5))->At(i));}
+    for(int i=0; i<n_p1s; i++) {gr_plus1sigma.push_back((TGraph *)((TList *)contourFromTH2(plus1sigma_th2d, 1.0, 20, false, 5))->At(i));}
+    for(int i=0; i<n_p2s; i++) {gr_plus2sigma.push_back((TGraph *)((TList *)contourFromTH2(plus2sigma_th2d, 1.0, 20, false, 5))->At(i));}
+    for(int i=0; i<n_obs; i++) {gr_observed.push_back((TGraph *)((TList *)contourFromTH2(observed_th2d, 1.0, 20, false, 5))->At(i));}
   }
-  
+
   // create plots for additional comparisons
   std::map<std::string, TGraph*> comparisons; TGraph* comp=0;
   if(arXiv_1211_6956_){ comp = new TGraph(), arXiv_1211_6956 (comp); comp->SetName("arXiv_1211_6956" ); comparisons[std::string("ATLAS H#rightarrow#tau#tau (4.8/fb)")] = comp;}
@@ -483,12 +473,18 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
   // setup contratins from Higgs mass
   std::vector<TGraph*> gr_higgslow;
   std::vector<TGraph*> gr_higgshigh;
+  std::vector<TGraph*> gr_higgs125;
+  std::vector<TGraph*> gr_Hplow;
+  //gr_Hplow.push_back(0);
+  std::vector<TGraph*> gr_Hphigh;
+  //gr_Hplow.push_back(0);
   std::vector<TGraph*> gr_higgsHlow;
-  gr_higgsHlow.push_back(0);
+  //gr_higgsHlow.push_back(0);
   std::vector<TGraph*> gr_higgsHhigh;
-  gr_higgsHhigh.push_back(0);
+  //gr_higgsHhigh.push_back(0);
   std::vector<std::vector<TGraph*>> gr_higgsBands; 
   std::vector<TH2D*> plane_higgsBands;
+
   if(higgs125_){
     TH2D* plane_higgsBand = higgsConstraint(model, "h");
     plane_higgsBands.push_back(plane_higgsBand);
@@ -502,11 +498,29 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
     STestFunctor higgsband1 = std::for_each( iter_higgshigh.Begin(), TIter::End(), STestFunctor() );
     for(int i=0; i<higgsband1.sum; i++) {gr_higgshigh.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[0], 128, 20, false, 200))->At(i));} 
     gr_higgsBands.push_back(gr_higgshigh);
+    //line at 125 entry 2
+    TIter iter_higgs125((TList *)contourFromTH2(plane_higgsBands[0], 125, 20, false));
+    STestFunctor higgs125band = std::for_each( iter_higgs125.Begin(), TIter::End(), STestFunctor() );
+    for(int i=0; i<higgs125band.sum; i++) {gr_higgs125.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[0], 125, 20, false, 200))->At(i));}
+    gr_higgsBands.push_back(gr_higgs125);
+  }
+  if(ana_type_=="Hplus") {
+    TH2D* plane_HpBand = higgsConstraint(model, "H+");
+    plane_higgsBands.push_back(plane_HpBand);
+    //lower edge entry 2
+    TIter iter_Hplow((TList *)contourFromTH2(plane_higgsBands[1], 160.1, 20, false));
+    STestFunctor Hpband0 = std::for_each( iter_Hplow.Begin(), TIter::End(), STestFunctor() );
+    for(int i=0; i<Hpband0.sum; i++) {gr_Hplow.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[1], 160.1, 20, false, 200))->At(i));}
+    gr_higgsBands.push_back(gr_Hplow);
+    //upper edge entry 3
+    TIter iter_Hphigh((TList *)contourFromTH2(plane_higgsBands[1], 199.9, 20, false));
+    STestFunctor Hpband1 = std::for_each( iter_Hphigh.Begin(), TIter::End(), STestFunctor() );
+    for(int i=0; i<Hpband1.sum; i++) {gr_Hphigh.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[1], 199.9, 20, false, 200))->At(i));} 
+    gr_higgsBands.push_back(gr_Hphigh);
+  }
+  if(ana_type_=="Hhh") {
     // possible to push back more curves to gr_higgsBands for Hhh need to call different higgsConstraint with model "H" 
-    gr_higgsBands.push_back(gr_higgsHhigh);
-    gr_higgsBands.push_back(gr_higgsHhigh);
     if(TString::Format(model)=="low-tb-high"){
-      gr_higgsHlow.pop_back();  gr_higgsHlow.pop_back(); gr_higgsBands.pop_back(); gr_higgsBands.pop_back(); 
       TH2D* plane_higgsHBand = higgsConstraint(model, "H");
       plane_higgsBands.push_back(plane_higgsHBand);
       //lower edge entry 2
@@ -520,10 +534,11 @@ PlotLimits::plotTanb(TCanvas& canv, const char* directory, std::string HIG)
       for(int i=0; i<higgsHband1.sum; i++) {gr_higgsHhigh.push_back((TGraph *)((TList *)contourFromTH2(plane_higgsBands[1], 350, 20, false, 200))->At(i));} 
       gr_higgsBands.push_back(gr_higgsHhigh);
     }
-  }  
+  }
+     
 
   // do the plotting
-  plottingTanb(canv, plane_expected, gr_minus2sigma, gr_minus1sigma, gr_expected, gr_plus1sigma, gr_plus2sigma, gr_observed, gr_injected, gr_higgsBands, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, expectedOnly_, MSSMvsSM_, HIG, Brazilian_, azh_); 
+  plottingTanb(canv, plane_expected, gr_minus2sigma, gr_minus1sigma, gr_expected, gr_plus1sigma, gr_plus2sigma, gr_observed, gr_injected, gr_higgsBands, comparisons, xaxis_, yaxis_, theory_, min_, max_, log_, transparent_, expectedOnly_, MSSMvsSM_, HIG, Brazilian_, ana_type_); 
   /// setup the CMS Preliminary
   //TPaveText* cmsprel = new TPaveText(0.145, 0.835+0.06, 0.145+0.30, 0.835+0.16, "NDC");
   TPaveText* cmsprel = new TPaveText(0.135, 0.735, 0.145+0.30, 0.785, "NDC"); // for "unpublished" in header

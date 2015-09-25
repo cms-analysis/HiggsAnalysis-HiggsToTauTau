@@ -1,4 +1,3 @@
- 
 #include <map>
 #include <vector>
 #include "TH1F.h"
@@ -17,7 +16,7 @@
 #include <iostream>
 
 void
-plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, std::vector<TGraph*> injected, std::vector<std::vector<TGraph*>> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool MSSMvsSM=true, std::string HIG="", bool Brazilian=false, bool azh=false)
+plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::vector<TGraph*> minus1sigma, std::vector<TGraph*> expected, std::vector<TGraph*> plus1sigma, std::vector<TGraph*> plus2sigma, std::vector<TGraph*> observed, std::vector<TGraph*> injected, std::vector<std::vector<TGraph*>> higgsBands, std::map<std::string, TGraph*> comparisons, std::string& xaxis, std::string& yaxis, std::string& theory, double min=0., double max=50., bool log=false, bool transparent=false, bool expectedOnly=false, bool MSSMvsSM=true, std::string HIG="", bool Brazilian=false, std::string ana_type="")
 {
   // set up styles
   canv.cd();
@@ -25,7 +24,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     canv.SetLogy(1); 
    //  canv.SetLogx(1); 
   }
-  // canv.SetTopMargin(0.25);//Olivier
+  canv.SetTopMargin(0.25);
   // setup the CMS colors
   TColor* obs = new TColor(1501, 0.463, 0.867, 0.957);
   if(transparent && !Brazilian) obs->SetAlpha(0.5); 
@@ -40,7 +39,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
 
   h2d->GetXaxis()->SetTitle(xaxis.c_str()); 
   //h2d->GetXaxis()->SetRange(expected[0]->GetX()[0]-shift_label*.01, expected[0]->GetX()[expected[0]->GetN()-1]+.01);
-  h2d->GetXaxis()->SetRangeUser(h2d->GetXaxis()->GetBinLowEdge(1), h2d->GetXaxis()->GetBinLowEdge(h2d->GetNbinsX()-1)+h2d->GetXaxis()->GetBinWidth(h2d->GetNbinsX()-1));
+  h2d->GetXaxis()->SetRangeUser(h2d->GetXaxis()->GetBinLowEdge(1), h2d->GetXaxis()->GetBinLowEdge(h2d->GetNbinsX()-2)+h2d->GetXaxis()->GetBinWidth(h2d->GetNbinsX()-2));
   h2d->GetXaxis()->SetLabelFont(62);
   h2d->GetXaxis()->SetTitleColor(1);
   h2d->GetXaxis()->SetTitleOffset(1.05);
@@ -56,9 +55,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   h2d->GetZaxis()->SetTitleSize(0.04);
   h2d->GetZaxis()->SetTitleOffset(1.03);
   h2d->GetZaxis()->SetLabelSize(0.04);
-//   h2d->SetMinimum(0.);
   h2d->SetNameTitle("","");
-  h2d->SetTitle("");//Olivier
   h2d->Draw("AXIS");
 
   //mass constraint (background color)
@@ -80,6 +77,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   emptybackground->SetFillColor(kWhite);
   emptybackground->SetLineColor(kWhite);
   
+  
   //exclusion graphs
   for(unsigned int i=0; i<minus2sigma.size(); i++){
     minus2sigma[i]->SetFillStyle(1001);
@@ -87,8 +85,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     minus2sigma[i]->SetLineColor(kWhite);
     if(Brazilian) minus2sigma[i]->SetFillColor(TColor::GetColor(252,241,15));
     minus2sigma[i]->SetLineWidth(1);
-    minus2sigma[i]->SetTitle("");//Olivier
-    //minus2sigma[i]->Draw("F SAME");    
+    minus2sigma[i]->Draw("F SAME");    
   }
   for(unsigned int i=0; i<minus1sigma.size(); i++){
     minus1sigma[i]->SetFillStyle(1001);
@@ -96,7 +93,6 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     minus1sigma[i]->SetLineColor(kWhite); 
     if(Brazilian) minus1sigma[i]->SetFillColor(kGreen);
     minus1sigma[i]->SetLineWidth(1);
-    minus1sigma[i]->SetTitle("");//Olivier
     minus1sigma[i]->Draw("F SAME");  
   }
   for(unsigned int i=0; i<plus1sigma.size(); i++){
@@ -104,9 +100,7 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     plus1sigma[i]->SetFillColor(twosigma->GetNumber()); 
     plus1sigma[i]->SetLineColor(kWhite);
     if(Brazilian) plus1sigma[i]->SetFillColor(TColor::GetColor(252,241,15));
-    plus1sigma[i]->SetFillColor(kWhite);
     plus1sigma[i]->SetLineWidth(1);
-    plus1sigma[i]->SetTitle("");//Olivier
     plus1sigma[i]->Draw("F SAME"); 
   }
   for(unsigned int i=0; i<plus2sigma.size(); i++){
@@ -114,7 +108,6 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     plus2sigma[i]->SetFillColor(kWhite); 
     plus2sigma[i]->SetLineColor(kWhite);
     plus2sigma[i]->SetLineWidth(1);
-    plus2sigma[i]->SetTitle("");//Olivier
     plus2sigma[i]->Draw("F SAME"); 
   }
       
@@ -122,25 +115,22 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     expected[i]->SetLineColor(kBlack); 
     expected[i]->SetLineWidth(2);
     expected[i]->SetLineStyle(2); 
-    expected[i]->SetTitle("");//Olivier
     expected[i]->Draw("L SAME"); //CONT
   }  
 
-  // if(injected[0]){
-  //   for(unsigned int i=0; i<injected.size(); i++){
-  //     injected[i]->SetLineColor(kBlue);
-  //     injected[i]->SetLineWidth(2);
-  //     injected[i]->SetLineStyle(1);
-  //     injected[i]->SetTitle("");//Olivier
-  //     injected[i]->Draw("Lsame");
-  //   }
-  // }
+  if(injected[0]){
+    for(unsigned int i=0; i<injected.size(); i++){
+      injected[i]->SetLineColor(kBlue);
+      injected[i]->SetLineWidth(2);
+      injected[i]->SetLineStyle(1);
+      injected[i]->Draw("Lsame");
+    }
+  }
 
-  if(!expectedOnly){
+   if(!expectedOnly){
     for(unsigned int i=0; i<observed.size(); i++){
       observed[i]->SetFillColor(obs->GetNumber());
-      //observed[i]->SetFillStyle(1001);
-      observed[i]->SetFillStyle(10001);
+      observed[i]->SetFillStyle(1001);
       observed[i]->SetMarkerStyle(20);
       observed[i]->SetMarkerSize(1.0);
       observed[i]->SetMarkerColor(kBlack);
@@ -148,52 +138,77 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
       observed[i]->SetLineColor(kBlack); 
       if(Brazilian) observed[i]->SetFillColor(kBlack); 
       if(Brazilian) observed[i]->SetFillStyle(3004);  
-      observed[i]->SetTitle("");//Olivier
       observed[i]->Draw("F SAME"); 
       observed[i]->Draw("L SAME");  //CONT
     } 
   }
 
-  // //Constraint for Hhh
-   if(theory!="2HDM type-I" && theory!="2HDM type-II"){
-  //   if(!azh && higgsBands[2][0]!=0 && higgsBands[3][0]!=0){
-  //     for(unsigned int i=0; i<higgsBands[2].size(); i++){
-  // 	higgsBands[2][i]->SetLineWidth(9902);
-  // 	higgsBands[2][i]->SetFillStyle(1001);
-  // 	higgsBands[2][i]->SetFillColor(kWhite); 
-  // 	higgsBands[2][i]->SetLineColor(kGreen+3);
-  // 	higgsBands[2][i]->SetLineStyle(3);
-  // 	higgsBands[2][i]->SetTitle("");//Olivier
-  // 	higgsBands[2][i]->Draw("L SAME"); 
-  //     }
-  //     for(unsigned int i=0; i<higgsBands[3].size(); i++){
-  // 	higgsBands[3][i]->SetLineWidth(-9902);
-  // 	higgsBands[3][i]->SetFillStyle(1001);
-  // 	higgsBands[3][i]->SetFillColor(kWhite);
-  // 	higgsBands[3][i]->SetLineColor(kGreen+3);
-  // 	higgsBands[3][i]->SetLineStyle(3);
-  // 	higgsBands[3][i]->SetTitle("");//Olivier
-  // 	higgsBands[3][i]->Draw("L SAME");
-  //     }
-  //   }
-    //Mass constraint
-    for(unsigned int i=0; i<higgsBands[0].size(); i++){
-      higgsBands[0][i]->SetLineWidth(402);
-      higgsBands[0][i]->SetFillStyle(3005);
-      higgsBands[0][i]->SetFillColor(backgroundColor->GetNumber()); 
-      higgsBands[0][i]->SetLineColor(backgroundColor->GetNumber());
-      higgsBands[0][i]->SetTitle("");//Olivier
-      higgsBands[0][i]->Draw("L SAME"); 
+  //Constraint for Hhh
+  if(ana_type=="Hhh"){
+    if(theory!="2HDM type-I" && theory!="2HDM type-II"){
+      if(higgsBands[2][0]!=0 && higgsBands[3][0]!=0){
+	for(unsigned int i=0; i<higgsBands[2].size(); i++){
+	  higgsBands[2][i]->SetLineWidth(9902);
+	  higgsBands[2][i]->SetFillStyle(1001);
+	  higgsBands[2][i]->SetFillColor(kWhite); 
+	  higgsBands[2][i]->SetLineColor(kGreen+3);
+	  higgsBands[2][i]->SetLineStyle(3);
+	  higgsBands[2][i]->Draw("L SAME"); 
+	}
+	for(unsigned int i=0; i<higgsBands[3].size(); i++){
+	  higgsBands[3][i]->SetLineWidth(-9902);
+	  higgsBands[3][i]->SetFillStyle(1001);
+	  higgsBands[3][i]->SetFillColor(kWhite);
+	  higgsBands[3][i]->SetLineColor(kGreen+3);
+	  higgsBands[3][i]->SetLineStyle(3);
+	  higgsBands[3][i]->Draw("L SAME");
+	}
+      }
     }
-    for(unsigned int i=0; i<higgsBands[1].size(); i++){
-      higgsBands[1][i]->SetLineWidth(-402);
-      higgsBands[1][i]->SetFillStyle(3005);
-      higgsBands[1][i]->SetFillColor(backgroundColor->GetNumber()); 
-      higgsBands[1][i]->SetLineColor(backgroundColor->GetNumber());
-      higgsBands[1][i]->SetTitle("");//Olivier
-      higgsBands[1][i]->Draw("L SAME");
+  }
+  //Hp mass constraint \if ana=Hplus
+  if(ana_type=="Hplus"){
+    if(theory!="2HDM type-I" && theory!="2HDM type-II"){
+      for(unsigned int i=0; i<higgsBands[2].size(); i++){
+	higgsBands[3][i]->SetLineWidth(-9902);
+	higgsBands[3][i]->SetFillStyle(1001);
+	higgsBands[3][i]->SetFillColor(kWhite); 
+	higgsBands[3][i]->SetLineColor(kGreen+3);
+	higgsBands[3][i]->SetLineStyle(3);
+	higgsBands[3][i]->Draw("L SAME"); 
+      }
+      for(unsigned int i=0; i<higgsBands[4].size(); i++){
+	higgsBands[4][i]->SetLineWidth(9902);
+	higgsBands[4][i]->SetFillStyle(1001);
+	higgsBands[4][i]->SetFillColor(kWhite);
+	higgsBands[4][i]->SetLineColor(kGreen+3);
+	higgsBands[4][i]->SetLineStyle(3);
+	higgsBands[4][i]->Draw("L SAME");
+      }
     }
- }
+  }
+  //little h mass constraint
+  for(unsigned int i=0; i<higgsBands[0].size(); i++){
+    higgsBands[0][i]->SetLineWidth(402);
+    higgsBands[0][i]->SetFillStyle(3005);
+    higgsBands[0][i]->SetFillColor(backgroundColor->GetNumber()); 
+    higgsBands[0][i]->SetLineColor(backgroundColor->GetNumber());
+    higgsBands[0][i]->Draw("L SAME"); 
+  }
+  for(unsigned int i=0; i<higgsBands[1].size(); i++){
+    higgsBands[1][i]->SetLineWidth(-402);
+    higgsBands[1][i]->SetFillStyle(3005);
+    higgsBands[1][i]->SetFillColor(backgroundColor->GetNumber()); 
+    higgsBands[1][i]->SetLineColor(backgroundColor->GetNumber());
+    higgsBands[1][i]->Draw("L SAME");
+  }
+  for(unsigned int i=0; i<higgsBands[1].size(); i++){
+    higgsBands[2][i]->SetLineWidth(2);
+    higgsBands[2][i]->SetLineColor(backgroundColor->GetNumber());
+    higgsBands[2][i]->SetLineStyle(7);
+    higgsBands[2][i]->Draw("L SAME");
+  }
+  
 
   int idx=0;
   std::map<std::string,int> coloredComps;
@@ -214,7 +229,6 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
       comp->second->SetFillStyle(3005);
       comp->second->SetLineWidth(+702);
     }
-    comp->second->SetTitle("");//Olivier
     comp->second->Draw("same");
   }
   
@@ -226,14 +240,12 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   theory1->SetTextSize ( 0.04);
   theory1->SetTextColor(    1 );
   theory1->SetTextFont (   62 );
-  // theory1->AddText(theory.c_str());
+  theory1->AddText(theory.c_str());
 
   /// add the proper legend
-  TLegend* leg = new TLegend(0.22, 0.60, 0.52, 0.855);
-  // TLegend* leg = new TLegend(0.08, 0.79, 0.61, 0.945);
-  leg->SetNColumns(1);//Olivier
-  // leg->SetNColumns(2);
-  leg->SetBorderSize(  1 );
+  TLegend* leg = new TLegend(0.08, 0.79, 0.61, 0.945);
+  leg->SetNColumns(2);
+  leg->SetBorderSize(  0 );
   leg->SetFillStyle (1001);
   leg->SetTextSize  (0.03);
   leg->SetTextFont  ( 62 ); 
@@ -245,13 +257,13 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
     if(!Brazilian) {
       if(observed[0]) observed[0]->SetFillColor(obs->GetNumber());
     }
-    if(observed[0]) leg->AddEntry(observed[0], "Observed", "FL");
+    if(observed[0]) leg->AddEntry(observed[0], "Observed", "F");
   }
   else leg->AddEntry(emptybackground,"","F");
-  if(expected[0]) leg->AddEntry(expected[0], "Expected", "L");
   if(minus1sigma[0]) leg->AddEntry(minus1sigma[0], "#pm 1#sigma Expected","F");
-  //if(minus2sigma[0]) leg->AddEntry(minus2sigma[0], "#pm 2#sigma Expected", "F"); 
-  //if(injected[0]) leg->AddEntry(injected[0], "h_{SM} injected", "L");
+  if(expected[0]) leg->AddEntry(expected[0], "Expected", "L");
+  if(minus2sigma[0]) leg->AddEntry(minus2sigma[0], "#pm 2#sigma Expected", "F"); 
+  if(injected[0]) leg->AddEntry(injected[0], "h_{SM} injected", "L");
   for(std::map<std::string,TGraph*>::const_iterator comp = comparisons.begin(); comp!=comparisons.end(); ++comp){
     if(std::string(comp->first) == std::string("EMPTY")) { continue; }
     else if(std::string(comp->first) == std::string("HIG-12-050 exp")) {
@@ -261,55 +273,9 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
       leg->AddEntry(comp->second, (comp->first).c_str(), "FL");
     }
   }
-  leg->Draw("same");//Olivier
+  leg->Draw("same");
 
-  //new
-  TLegend* leg2;
-  if(log){
-    //if(theory=="MSSM light-stop scenario") leg2 = new TLegend(0.55, 0.15, 0.92, 0.20); //for loglog
-    if(theory=="MSSM light-stop scenario") leg2 = new TLegend(0.57, 0.47, 0.92, 0.52); //for log
-    //else leg2 = new TLegend(0.31, 0.79, 0.65, 0.84); //for loglog
-    else leg2 = new TLegend(0.57, 0.40, 0.92, 0.65);//Olivier
-    // else leg2 = new TLegend(0.57, 0.60, 0.92, 0.65);
-  }
-  else{ 
-    if(theory=="MSSM low-m_{H} scenario") leg2 = new TLegend(0.57, 0.78, 0.92, 0.83);
-    else leg2 = new TLegend(0.57, 0.25, 0.92, 0.35);//Olivier
-    // else leg2 = new TLegend(0.57, 0.26, 0.92, 0.31);
-  }  
-  leg2->SetHeader(theory.c_str());
-  leg2->SetBorderSize( 1  );
-  leg2->SetBorderSize(0);//Olivier
-  leg2->SetFillStyle (1001);
-  leg2->SetTextSize  (0.03);
-  leg2->SetTextFont  ( 62 ); 
-  leg2->SetFillColor (kWhite);
-  leg2->SetLineWidth (2);
-  leg2->SetLineColor (kBlack);
-  if(log) {
-    if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
-    else leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
-  }
-  else {
-    if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
-    else leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
-  }
-  leg2->Draw("same");
-  //end new
-
-  TLine* legline;
-  legline = new TLine(605, 13, 680, 13);
-  legline->SetLineWidth(3);
-  legline->SetLineColor(backgroundColor->GetNumber());
-  // if(theory!="2HDM type-I" && theory!="2HDM type-II") legline->DrawLineNDC(leg2->GetX1()+0.015, leg2->GetY2()-0.01, leg2->GetX1()+0.072, leg2->GetY2()-0.01);
-  if(theory!="2HDM type-I" && theory!="2HDM type-II") legline->DrawLineNDC(leg2->GetX1()+0.015, leg2->GetY2()-0.055, leg2->GetX1()+0.072, leg2->GetY2()-0.055);//Olivier
-
-  theory1->Draw("same");//Olivier
-
-
-  /*
   TLegend* leg2 = new TLegend(0.60, 0.79, 0.95, 0.945);
-  // TLegend* leg2 = new TLegend(0.60, 0.79, 0.95, 0.945);
   leg2->SetBorderSize( 0  );
   leg2->SetFillStyle (1001);
   leg2->SetTextSize  (0.03);
@@ -318,31 +284,29 @@ plottingTanb(TCanvas& canv, TH2D* h2d, std::vector<TGraph*> minus2sigma, std::ve
   leg2->SetLineWidth (2);
   leg2->SetLineColor (kBlack);
   leg2->SetHeader("Mass constraint:");
-  if(log) {
-    if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
-    else leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
-    if(theory=="MSSM low-tan#beta-high scenario"&&!azh) leg2->AddEntry(mHconstraint," m^{MSSM}_{H} #notin [260,350] GeV","F");
-    else leg2->AddEntry(emptybackground,"","F");
+  if(theory=="MSSM low-m_{H} scenario") {
+    leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
+    leg2->AddEntry(higgsBands[2][0], "m^{MSSM}_{H}  #scale[1.7]{#bf{=}} 125 GeV", "L");
   }
   else {
-    if(theory=="MSSM low-m_{H} scenario") leg2->AddEntry(background, "m^{MSSM}_{H} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
-    else leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{ #neq}} 125#pm3 GeV", "FL");
-    if(theory=="MSSM low-tan#beta-high scenario"&&!azh) leg2->AddEntry(mHconstraint," m^{MSSM}_{H} #notin [260,350] GeV","F");
-    else leg2->AddEntry(emptybackground,"","F");
+    leg2->AddEntry(background, "m^{MSSM}_{h} #scale[1.7]{#bf{#neq}} 125#pm3 GeV", "F");
+    leg2->AddEntry(higgsBands[2][0], "m^{MSSM}_{h}  #scale[1.7]{#bf{=}} 125 GeV", "L");
   }
-  // if(theory!="2HDM type-I" && theory!="2HDM type-II") leg2->Draw("same");//Olivier
-/
+  //if(theory=="MSSM low-tan#beta-high scenario"&&!azh&&higgsBands[2][0]!=0&&higgsBands[3][0]!=0) leg2->AddEntry(mHconstraint," m^{MSSM}_{H} #notin [260,350] GeV","F");
+  //else 
+  //leg2->AddEntry(emptybackground,"","F");
+  if(theory!="2HDM type-I" && theory!="2HDM type-II") leg2->Draw("same");
 
   TLine* legline;
   legline = new TLine(605, 13, 680, 13);
   legline->SetLineWidth(3);
   legline->SetLineColor(backgroundColor->GetNumber());
   //if(theory!="2HDM type-I" && theory!="2HDM type-II") legline->DrawLineNDC(leg2->GetX1()+0.015, leg2->GetY2()-0.01, leg2->GetX1()+0.072, leg2->GetY2()-0.01);
-  // if(theory!="2HDM type-I" && theory!="2HDM type-II") legline->DrawLineNDC(leg2->GetX1()+0.015, leg2->GetY2()-0.055, leg2->GetX1()+0.072, leg2->GetY2()-0.055);//Olivier
+  if(theory!="2HDM type-I" && theory!="2HDM type-II") legline->DrawLineNDC(leg2->GetX1()+0.015, leg2->GetY2()-0.055, leg2->GetX1()+0.072, leg2->GetY2()-0.055);
 
-  // theory1->Draw("same");//Olivier
-  */
+  theory1->Draw("same");
 
   canv.RedrawAxis();
+  canv.Update();
   return;
 }
