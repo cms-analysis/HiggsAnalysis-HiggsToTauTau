@@ -84,7 +84,8 @@ PlotLimits::PlotLimits(const char* output, const edm::ParameterSet& cfg) :
   expectedOnly_    =cfg.existsAs<bool>("expectedOnly"    ) ? cfg.getParameter<bool>("expectedOnly"    ) : false;
   MSSMvsSM_        =cfg.existsAs<bool>("MSSMvsSM"        ) ? cfg.getParameter<bool>("MSSMvsSM"        ) : false;
   Brazilian_       =cfg.existsAs<bool>("Brazilian"       ) ? cfg.getParameter<bool>("Brazilian"       ) : false;
-  azh_             =cfg.existsAs<bool>("azh"             ) ? cfg.getParameter<bool>("azh"             ) : false;
+  //azh_             =cfg.existsAs<bool>("azh"             ) ? cfg.getParameter<bool>("azh"             ) : false;
+  ana_type_ = cfg.existsAs<std::string>("ana_type") ? cfg.getParameter<std::string>("ana_type") : std::string();
 }
 
 
@@ -368,7 +369,7 @@ PlotLimits::higgsConstraint(const char* model, const char* type)
   double massstep, masslow, masshigh, tanblow, tanbhigh;
   if (TString::Format(model)=="lowmH") {massstep=20, masslow=300; masshigh=3100; nmass=int((masshigh-masslow)/massstep-1); tanblow=1.5; tanbhigh=9.5; ntanb=(int)((tanbhigh-tanblow)*10-1);}
   else if (TString::Format(model)=="low-tb-high") {massstep=10, masslow=150; masshigh=500; nmass=int((masshigh-masslow)/massstep-1); tanblow=0.5; tanbhigh=9.5; ntanb=(int)((tanbhigh-tanblow)*10-1);}
-  else {massstep=10, masslow=90; masshigh=1000; nmass=int((masshigh-masslow)/massstep-1); tanblow=0.5; tanbhigh=60; ntanb=(int)((tanbhigh-tanblow));}//ntanb=(int)((tanbhigh-tanblow)*10-1);}
+  else {massstep=1, masslow=90; masshigh=1000; nmass=int((masshigh-masslow)/massstep-1); tanblow=0.5; tanbhigh=60; ntanb=(int)((tanbhigh-tanblow));}//ntanb=(int)((tanbhigh-tanblow)*10-1);}
 
   TH2D* higgsBand= new TH2D("higgsBand", "higgsBand", nmass, masslow, masshigh, ntanb, tanblow, tanbhigh);
   for(double mass=masslow; mass<masshigh+1; mass=mass+massstep){
