@@ -38,7 +38,9 @@ agroup.add_option("--tanb", dest="optTanb", default=False, action="store_true",
                   help="Calculate the observed and expected limits directly in the MSSM mA-tanb plane based on full CLs limits. This method is completely toy based. It requires that the toys have been run beforehand using the script submit.py with option --tanb. This script will submit toys to a batch system or to the grid via crab. This action will require a grid certificate. You can monitor and receive the results of your jobs once finished using the command options explained in section COMMON CRAB COMMAND OPTIONS of this parameter description. [Default: False]")
 agroup.add_option("--tanb+", dest="optTanbPlus", default=False, action="store_true",
                   help="Calculate the observed and expected limits directly in the MSSM mA-tanb plane based on asymptotic CLs limits. This method requires that the directory structure to calculate these limits has been set up beforehand using the script submit.py with option --tanb+. [Default: False]")
-agroup.add_option("--tanbNLL", dest="optTanbNLL", default=False, action="store_true", help="")
+agroup.add_option("--tanbML", dest="optTanbML", default=False, action="store_true",
+                  help="Calculate the maximum likelihood fit directly in the MSSM mA-tanb plane. This method requires that the directory structure to calculate these limits has been set up beforehand using the script submit.py with option --tanb+. [Default: False]")
+agroup.add_option("--tanbNLL", dest="optTanbNLL", default=False, action="store_true", help="Calculate likelihood directly in the MSSM mA-tanb plane. This method requires that the directory structure to calculate these limits has been set up beforehand using the script submit.py with option --tanb+. [Default: False]")
 agroup.add_option("--HypothesisTest", dest="optHypothesisTest", default=False, action="store_true",
                   help="Calculate the Signal Hypothesis separation test for two hypothesis based on the CLs with a tevatron test statistic. This method requires that the directory structure to calculate these limits has been set up beforehand using the script submit.py with option --tanb+. [Default: False]")
 ## agroup.add_option("--injected-internal", dest="optInject", default=False, action="store_true",
@@ -1177,6 +1179,59 @@ for directory in args :
                 tanb_string = wsp[wsp.rfind("_")+1:]
                 os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/extractSignificanceStats.py --MSSMvsBG --filename point_{TANB}".format(CMSSW_BASE=os.environ["CMSSW_BASE"], TANB=tanb_string))
         os.system("hadd HypothesisTest.root HypothesisTest_*.root")
+    ##
+    ## TANBML
+    ##
+    if options.optTanbML :
+        ## determine mass value from directory name
+        mass  = get_mass(directory)
+        ## prepare prefit option
+        prefitopt = ""
+        if options.noprefit :
+            prefitopt = "-t -1"
+        ## prepare fit option
+        minuitopt = ""
+        if options.minuit :
+            minuitopt = "--minimizerAlgo minuit"
+        qtildeopt = ""
+        if options.qtilde :
+            qtildeopt = "--qtilde 0"
+        ## prepare mass argument for limit calculation if configured such
+        idx = directory.rfind("/")
+        if idx == (len(directory) - 1):
+            idx = directory[:idx - 1].rfind("/")
+        ## list of all elements in the current directory
+        tasks = []
+        ## string for tanb inputfiles
+        tanb_inputfiles = ""
+        ## fetch workspace for each tanb point
+        directoryList = os.listdir(".")
+        for wsp in directoryList :
+            if re.match(r"batch_\d+(.\d\d)?.root", wsp) :
+                tanb_inputfiles += wsp.replace("batch", "point")+","
+                tanb_string = wsp[wsp.rfind("_")+1:]
+                if not options.refit :
+                    tasks.append(
+                        ["combine -M MaxLikelihoodFit -n .tanb{tanb} --rMin -5 --rMax 5 --robustFit=1 --preFitValue=1. --X-rtd FITTER_NEW_CROSSING_ALGO --minimizerAlgoForMinos=Minuit2 --minimizerToleranceForMinos=0.1 --X-rtd FITTER_NEVER_GIVE_UP --X-rtd FITTER_BOUND --minimizerAlgo=Minuit2 --minimizerStrategy=0 --minimizerTolerance=0.1 --cminFallbackAlgo \"Minuit2,0:1.\" -m {mass} {user} {wsp}".format(
+                        mass=mass, wsp=wsp, user=options.userOpt, tanb=tanb_string),
+                         #this replace(".0","") very ugly but needed for 2HDM because e.g. combine stores the -M Asymptotic output for mass=1.0 under higgsCombine.tanb{tanb}.Asymptotic.mH1.root and NOT higgsCombine.tanb{tanb}.Asymptotic.mH1.0.root therefore the renaming gets screwed u
+                         "mv higgsCombine.tanb{tanb}.MaxLikelihoodFit.mH{mass}.root  point_{tanb}".format(mass=mass.replace(".0",""), tanb=tanb_string)
+                         ]
+                        )
+        if options.tanbMultiCore == -1:
+            for task in tasks:
+                for subtask in task:
+                    os.system(subtask)
+        else:
+            ## run in parallel using multiple cores
+            parallelize(tasks, options.tanbMultiCore)
+        if "MLFit.root" in directoryList :
+            os.system("rm MLFit*")
+        for wsp in directoryList :
+            if re.match(r"batch_\d+(.\d\d)?.root", wsp) :
+                tanb_string = wsp[wsp.rfind("_")+1:]
+                os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/extractSignificanceStats.py --mlfit --filename point_{TANB}".format(CMSSW_BASE=os.environ["CMSSW_BASE"], TANB=tanb_string))
+        os.system("hadd MLFit.root MLFit_*.root")
     ##
     ## TANBNLL
     ##

@@ -37,10 +37,11 @@ agroup.add_option("--bayesian", dest="optBayes", default=False, action="store_tr
 agroup.add_option("--tanb", dest="optTanb", default=False, action="store_true",
                   help="Calculate the observed and expected limits directly in the MSSM mA-tanb plane based on full CLs limits. This method is completely toy based. This script will prepare the directory structure to do these calculations and submit toys to the grid using crab. This action will require a grid certificate. As this operation is very computing intensive there is no pre-defined option to submit to lxb (lxq). You can monitor and receive the results of your jobs once finished using the script limit.py using the CRAB OPTIONS as explained in the parameter description, there. [Default: False]")
 agroup.add_option("--tanb+", dest="optTanbPlus", default=False, action="store_true",
-                  help="Calculate the observed and expected limits directly in the MSSM mA-tanb plane based on asymptotic CLs limits. This script will prepare the directory structure to do these calculations and submit and submit the required asymptotic limit calculation for each corresponding point in mA to lxb (lxq). The process will be executed via lxb (lxq), split by each single mass point that is part of ARGs or as a single interactive job when using the option --interactive. When submitting to lxb (lxq) you can configure the queue to which the jobs will be submitted as described in section BATCH OPTIONS of this parameter description. When running in batch mode you can go one level up in the expected directory structure as described in the head of this section. [Default: False]")
+                  help="Calculate the observed and expected limits directly in the MSSM mA-tanb plane based on asymptotic CLs limits. This script will prepare the directory structure to do these calculations and submit the required asymptotic limit calculation for each corresponding point in mA to lxb (lxq). The process will be executed via lxb (lxq), split by each single mass point that is part of ARGs or as a single interactive job when using the option --interactive. When submitting to lxb (lxq) you can configure the queue to which the jobs will be submitted as described in section BATCH OPTIONS of this parameter description. When running in batch mode you can go one level up in the expected directory structure as described in the head of this section. [Default: False]")
+agroup.add_option("--tanbML", dest="optTanbML", default=False, action="store_true", help="Calculate the maximum likelihood fit directly in the MSSM mA-tanb plane. This script will prepare the directory structure to do these calculations and submit the required limit calculation for each corresponding point in mA to lxb (lxq). The process will be executed via lxb (lxq), split by each single mass point that is part of ARGs or as a single interactive job when using the option --interactive. When submitting to lxb (lxq) you can configure the queue to which the jobs will be submitted as described in section BATCH OPTIONS of this parameter description. When running in batch mode you can go one level up in the expected directory structure as described in the head of this section. [Default: False]")
 agroup.add_option("--tanbNLL", dest="optTanbNLL", default=False, action="store_true", help="")
 agroup.add_option("--HypothesisTest", dest="optHypothesisTest", default=False, action="store_true",
-                  help="Calculate the Signal separation for two hypothesis based on the CLs with a Tevatron test statistic. This script will prepare the directory structure to do these calculations and submit and submit the required asymptotic limit calculation for each corresponding point in mA to lxb (lxq). The process will be executed via lxb (lxq), split by each single mass point that is part of ARGs or as a single interactive job when using the option --interactive. When submitting to lxb (lxq) you can configure the queue to which the jobs will be submitted as described in section BATCH OPTIONS of this parameter description. When running in batch mode you can go one level up in the expected directory structure as described in the head of this section. [Default: False]")
+                  help="Calculate the Signal separation for two hypothesis based on the CLs with a Tevatron test statistic. This script will prepare the directory structure to do these calculations and submit the required asymptotic limit calculation for each corresponding point in mA to lxb (lxq). The process will be executed via lxb (lxq), split by each single mass point that is part of ARGs or as a single interactive job when using the option --interactive. When submitting to lxb (lxq) you can configure the queue to which the jobs will be submitted as described in section BATCH OPTIONS of this parameter description. When running in batch mode you can go one level up in the expected directory structure as described in the head of this section. [Default: False]")
 agroup.add_option("--injected", dest="optInject", default=False, action="store_true",
                   help="Calculate expected asymptotic CLs limits, frequentist significance or p-value with a SM signal injected from the datacards in the directory/ies corresponding to ARGs. You can determine what calculations should be applied by the option --injected-method. These calculations are fully toy based and will require a large number of toys, which will be submitted via lxb (lxq). For each toy a pseudo-dataset will be created and an observed limit, observed frequentist significance or p-value will be calculated. It is possible to give an input file from which the pulls of the nuisance parameters will be taken, when running the calculations. The median and quantiles of the tossed toys define the expected limit with signal injected and the uncertainties. This script internally calls the script lxb-injected.py. [Default: False]")
 parser.add_option_group(agroup)
@@ -760,7 +761,7 @@ if options.optBayes :
 ##
 ## TANB MSSMvsBG
 ##
-if options.optTanb or options.optTanbPlus or options.optTanbNLL :
+if options.optTanb or options.optTanbPlus or options.optTanbNLL or options.optTanbML :
     cycle_begin, cycle_end = options.cycles.split("-")
     cycle=int(cycle_end)
     while cycle>=int(cycle_begin) :
@@ -777,7 +778,7 @@ if options.optTanb or options.optTanbPlus or options.optTanbNLL :
                 cmd = "submit-slave.py --bin combine --method tanb"
         if not cmd == "" :
             grid= []
-            sub = "--interactive" if options.optTanbPlus or options.optTanbNLL else "--toysH 100 -t 200 -j 100 --random --server --priority"
+            sub = "--interactive" if options.optTanbPlus or options.optTanbNLL or options.optTanbML else "--toysH 100 -t 200 -j 100 --random --server --priority"
             grid = tanb_grid(args, cmd, sub, options.opt, options.smartGrid, options.customTanb)
             for point in grid :
                 if options.printOnly :
@@ -791,11 +792,13 @@ if options.optTanb or options.optTanbPlus or options.optTanbNLL :
                     if mass == 'common' :
                         continue
                     if options.printOnly :
-								if options.optTanbPlus : print "limit.py --tanb+ {OPTS} {DIR}".format(OPTS=options.opt, DIR=dir)
-								if options.optTanbNLL : print "limit.py --tanbNLL {DIR}".format(DIR=dir)
+                        if options.optTanbPlus : print "limit.py --tanb+ {OPTS} {DIR}".format(OPTS=options.opt, DIR=dir)
+                        if options.optTanbNLL  : print "limit.py --tanbNLL {DIR}".format(DIR=dir)
+                        if options.optTanbNLL  : print "limit.py --tanbML {OPTS}  {DIR}".format(OPTS=options.opt, DIR=dir)
                     else :
-								if options.optTanbPlus : os.system("limit.py --tanb+ {OPTS} {DIR}".format(OPTS=options.opt, DIR=dir))
-								if options.optTanbNLL :  os.system("limit.py --tanbNLL {DIR}".format(DIR=dir))
+                        if options.optTanbPlus : os.system("limit.py --tanb+ {OPTS} {DIR}".format(OPTS=options.opt, DIR=dir))
+                        if options.optTanbNLL  : os.system("limit.py --tanbNLL {DIR}".format(DIR=dir))
+                        if options.optTanbML   : os.system("limit.py --tanbML {OPTS}  {DIR}".format(OPTS=options.opt, DIR=dir))
             else :
                 dirs = []
                 for dir in args :
@@ -807,7 +810,8 @@ if options.optTanb or options.optTanbPlus or options.optTanbNLL :
                 ## directories and masses per directory
                 struct = directories(args)
                 if options.optTanbPlus : lxb_submit(struct[0], struct[1], "--tanb+", options.opt)
-                if options.optTanbNLL : lxb_submit(struct[0], struct[1], "--tanbNLL")
+                if options.optTanbML   : lxb_submit(struct[0], struct[1], "--tanbML", options.opt)
+                if options.optTanbNLL  : lxb_submit(struct[0], struct[1], "--tanbNLL")
         cycle = cycle-1
 ##
 ## TANB MSSMvsSM
