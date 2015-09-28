@@ -103,6 +103,8 @@ class PlotLimits {
   void plotLimit(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraphAsymmErrors* outerBand, TGraph* expected, TGraph* observed=0);
   /// plot limits for tanb on canvas, print out png, pdf, txt, root formats if desired
   void plotTanb(TCanvas& canv, const char* directory="", std::string HIG="");
+  /// plot maximum likelihood fit for tanb on canvas, print out png, pdf, txt, root formats if desired
+  void plotTanbML(TCanvas& canv, const char* directory="");
   /// plot bestfit values for different parameters dependend on mass on canvas, print out png, pdf, txt, root formats if desired 
   void plotSignalStrength(TCanvas& canv, TGraphAsymmErrors* innerBand, TGraph* central, const char* directory="");
   /// plot significance on canvas, print out png, pdf, txt, root formats if desired  
