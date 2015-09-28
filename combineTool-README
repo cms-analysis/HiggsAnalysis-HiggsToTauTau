@@ -1,0 +1,33 @@
+By default, combineTool.py passes through all its options to combine, but with special treatment in a few cases. For example, with a workspace in which the signal mass hypothesis floats with MH, we may want to calculate a set of Asymptotic limits:
+
+   combineTool.py -M Asymptotic -d combined.root -m 110:145:5 --freezeNuisances MH -n .SMTest --dry-run
+
+Here the mass (set with "-m") is given as an expression that will be expanded to multiple combine calls from 110 to 145 in steps of 5, e.g. producing:
+
+  [DRY-RUN]: combine -d combined.root --freezeNuisances MH -M Asymptotic -m 110 -n .SMTest
+  [DRY-RUN]: combine -d combined.root --freezeNuisances MH -M Asymptotic -m 115 -n .SMTest
+  [DRY-RUN]: combine -d combined.root --freezeNuisances MH -M Asymptotic -m 120 -n .SMTest
+  [DRY-RUN]: combine -d combined.root --freezeNuisances MH -M Asymptotic -m 125 -n .SMTest
+  [DRY-RUN]: combine -d combined.root --freezeNuisances MH -M Asymptotic -m 130 -n .SMTest
+  [DRY-RUN]: combine -d combined.root --freezeNuisances MH -M Asymptotic -m 135 -n .SMTest
+  [DRY-RUN]: combine -d combined.root --freezeNuisances MH -M Asymptotic -m 140 -n .SMTest
+  [DRY-RUN]: combine -d combined.root --freezeNuisances MH -M Asymptotic -m 145 -n .SMTest
+
+Note that with the option "--dry-run" the commands are printed to the screen but not executed. If we remove this option, each command will run sequentially. To run these a bit faster, we can add "--parallel NUM_CORES" to run up to NUM_CORES jobs in parallel:
+   
+   combineTool.py -M Asymptotic -d combined.root -m 110:145:5 --freezeNuisances MH -n .SMTest --parallel 4
+
+TO-DO: the outputs overlap on the screen, we should buffer them or write them to disk
+
+Submission to lxbatch is also possible:
+
+  combineTool.py -M Asymptotic -d combined.root -m 110:145:5 --freezeNuisances MH -n .SMTest --job-mode lxbatch --task-name sm-test --sub-opts '-q 1nh'
+ 
+Here we explicitly change the job-mode to "lxbatch" (default is "interactive), add a --task-name option to label the job scripts that will be produced and add the submission options we want to pass to bsub, here just the job queue.
+
+Going one step further, we can submit to the grid using the crab3 python interface. Note, you must have sourced the crab environment first, then sourced the local CMSSW environment again.
+   
+   combineTool.py -M Asymptotic -d combined.root -m 110:145:5 --freezeNuisances MH -n .SMTest --job-mode crab3 --task-name sm-test --custom-crab scripts/custom_crab.py 
+
+A single crab3 task will created in which each job runs one combine command. Unless --dry-run is specified, the job will be created and submitted immediately. The option --task-name is also used here to refer to the crab3 task name that will be produced. Note that crab3 submission relies on identifying the input workspaces in each command, and as such it must be given explicitly with the -d or --datacard option. These workspaces will then be added to the input sandbox automatically. The default crab configuration can be found in python/combine/crab.py. Typically you will want to change a few of these settings, for example to set the output storage site, or add a blacklist, and this can be done by passing a python file to "--custom-crab" which should contain a single python function that modifies the crab3 config object. See the example in "scripts/custom_crab.py". After the jobs have been created you should interact with crab in the normal way to check the progress and retrieve the outputs. Note that the output from each job in the task will be contained within a combine_output_X.tar file, where X is the job number in the task.
+
