@@ -57,6 +57,8 @@ int main(int argc, char* argv[])
   types.push_back(std::string("--CLs"));
   // show limits in mA-tanb (from full CLs or from asymptotic) in MSSM vs BG or MSSM vs SM
   types.push_back(std::string("--tanb"));
+  // show maximum likelihood fit in mA-tanb
+  types.push_back(std::string("--tanbML"));
   // show bayesian cross section limits
   types.push_back(std::string("--bayesian"));
   // show asymptotic cross section limits with signal injected
@@ -182,6 +184,13 @@ int main(int argc, char* argv[])
     SetStyle();
     TCanvas* canv = new TCanvas("canv", "Limits", 600, 800);
     plot.plotTanb(*canv, directory, std::string(""));
+  }
+  // -----------------------------------------------------------------------------------------------------------------------
+  if( std::string(argv[1]) == std::string("--tanbML") ){
+    // make the plot
+    SetStyle();
+    TCanvas* canv = new TCanvas("canv", "Limits", 600, 600);
+    plot.plotTanbML(*canv, directory);
   }
   // -----------------------------------------------------------------------------------------------------------------------
   if( std::string(argv[1]) == std::string("--bayesian") ){
