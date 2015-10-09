@@ -41,12 +41,13 @@ plottingTanbML(TCanvas& canv, TH2D* h2d, std::string& xaxis, std::string& yaxis,
   h2d->GetXaxis()->SetTitleOffset(1.05);
   h2d->GetXaxis()->SetTitleFont(62);
   h2d->GetYaxis()->SetTitle(yaxis.c_str()); 
-  h2d->GetYaxis()->SetRangeUser(min, max);
+  //h2d->GetYaxis()->SetRangeUser(min, max);
   h2d->GetYaxis()->SetLabelFont(62);
   h2d->GetYaxis()->SetTitleSize(0.05);
   h2d->GetYaxis()->SetTitleOffset(1.30); //1.12
   h2d->GetYaxis()->SetLabelSize(0.05);
   h2d->GetZaxis()->SetTitle("Best Fit (#mu)");
+  h2d->GetZaxis()->SetRangeUser(min, max);
   h2d->GetZaxis()->SetLabelFont(62);
   h2d->GetZaxis()->SetTitleSize(0.04);
   h2d->GetZaxis()->SetTitleOffset(1.03);

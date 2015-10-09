@@ -1207,12 +1207,12 @@ for directory in args :
         ## fetch workspace for each tanb point
         directoryList = os.listdir(".")
         for wsp in directoryList :
-            if re.match(r"batch_\d+(.\d\d)?.root", wsp) :
-                tanb_inputfiles += wsp.replace("batch", "point")+","
+            if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) :
+                tanb_inputfiles += wsp.replace("fixedMu", "point")+","
                 tanb_string = wsp[wsp.rfind("_")+1:]
                 if not options.refit :
                     tasks.append(
-                        ["combine -M MaxLikelihoodFit -n .tanb{tanb} --rMin -5 --rMax 5 --robustFit=1 --preFitValue=1. --X-rtd FITTER_NEW_CROSSING_ALGO --minimizerAlgoForMinos=Minuit2 --minimizerToleranceForMinos=0.1 --X-rtd FITTER_NEVER_GIVE_UP --X-rtd FITTER_BOUND --minimizerAlgo=Minuit2 --minimizerStrategy=0 --minimizerTolerance=0.1 --cminFallbackAlgo \"Minuit2,0:1.\" -m {mass} {user} {wsp}".format(
+                        ["combine -M MaxLikelihoodFit -n .tanb{tanb} --rMin -1 --rMax 5 --robustFit=1 --preFitValue=1. --X-rtd FITTER_NEW_CROSSING_ALGO --minimizerAlgoForMinos=Minuit2 --minimizerToleranceForMinos=0.1 --X-rtd FITTER_NEVER_GIVE_UP --X-rtd FITTER_BOUND --minimizerAlgo=Minuit2 --minimizerStrategy=0 --minimizerTolerance=0.1 --cminFallbackAlgo \"Minuit2,0:1.\" -m {mass} {user} {wsp}".format(
                         mass=mass, wsp=wsp, user=options.userOpt, tanb=tanb_string),
                          #this replace(".0","") very ugly but needed for 2HDM because e.g. combine stores the -M Asymptotic output for mass=1.0 under higgsCombine.tanb{tanb}.Asymptotic.mH1.root and NOT higgsCombine.tanb{tanb}.Asymptotic.mH1.0.root therefore the renaming gets screwed u
                          "mv higgsCombine.tanb{tanb}.MaxLikelihoodFit.mH{mass}.root  point_{tanb}".format(mass=mass.replace(".0",""), tanb=tanb_string)
@@ -1228,7 +1228,7 @@ for directory in args :
         if "MLFit.root" in directoryList :
             os.system("rm MLFit*")
         for wsp in directoryList :
-            if re.match(r"batch_\d+(.\d\d)?.root", wsp) :
+            if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) :
                 tanb_string = wsp[wsp.rfind("_")+1:]
                 os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/extractSignificanceStats.py --mlfit --filename point_{TANB}".format(CMSSW_BASE=os.environ["CMSSW_BASE"], TANB=tanb_string))
         os.system("hadd MLFit.root MLFit_*.root")

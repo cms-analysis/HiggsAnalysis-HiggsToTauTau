@@ -23,7 +23,9 @@ agroup.add_option("-v", "--verbosity", dest="verbosity", default=False, action="
 agroup.add_option("--filename", dest="filename", default="", type="string",
                   help="Name of the file to be inspected. [Default: ""] ")
 agroup.add_option("--MSSMvsBG", dest="MSSMvsBG", default=False, action="store_true",
-                  help="Caculations for MSSMvsBG. Default is MSSMvsSM [Default: false")
+                  help="Calculations for MSSMvsBG. Default is MSSMvsSM [Default: false]")
+agroup.add_option("--mlfit", dest="mlfit", default=False, action="store_true",
+                  help="Calculations for mlfit [Default: false]")
 parser.add_option_group(agroup)
 
 ## check number of arguments; in case print usage
@@ -95,6 +97,62 @@ if options.MSSMvsBG :
             obs[0]=staff.limit/float(tanb)           
     tanbeta[0]=float(tanb)
     print tanbeta[0], minus2sigma[0], minus1sigma[0], exp[0], plus1sigma[0], plus2sigma[0], obs[0]
+    t.Fill()
+    f.Write()
+    f.Close()
+
+
+elif options.mlfit :
+    
+    gROOT.ProcessLine(
+        "struct staff_t {\
+        Float_t quantileExpected;\
+        Float_t mh;\
+        Double_t limit;\
+        }" )
+
+    tanb=options.filename.lstrip("point_").rstrip(".root")
+    print tanb
+    file = ROOT.TFile(options.filename, 'r')
+    #file.ls()
+    tree = file.Get("limit")
+    staff = staff_t()
+    tree.SetBranchAddress("quantileExpected",AddressOf(staff,"quantileExpected"));
+    tree.SetBranchAddress("mh",AddressOf(staff,"mh"));
+    tree.SetBranchAddress("limit",AddressOf(staff,"limit"));
+
+    ###for mA-tanb plotting save everything in a root file
+    f = ROOT.TFile("MLFit_{TANB}.root".format(TANB=tanb), "recreate")
+    t = ROOT.TTree("tree", "MLFit")
+    tanbeta    = n.zeros(1, dtype=float) 
+    minus1sigma= n.zeros(1, dtype=float)
+    exp        = n.zeros(1, dtype=float)
+    plus1sigma = n.zeros(1, dtype=float)
+    obs        = n.zeros(1, dtype=float)
+    minus1sigma[0]=999
+    exp[0]=999
+    plus1sigma[0]=999
+    obs[0]=999
+    
+    t.Branch('tanb',        tanbeta,     'tanb/D')
+    t.Branch('minus1sigma', minus1sigma, 'minus1sigma/D')
+    t.Branch('expected',    exp,         'expected/D')
+    t.Branch('plus1sigma',  plus1sigma,  'plus1sigma/D')
+    t.Branch('observed',    obs,         'observed/D')
+    
+    for i in range(tree.GetEntries()) :
+        tree.GetEntry(i);
+        #print i, staff.limit, staff.quantileExpected
+        if abs(staff.quantileExpected-0.160) < 0.01  :
+            minus1sigma[0]=staff.limit
+        if abs(staff.quantileExpected-0.500) < 0.01  :
+            exp[0]=staff.limit
+        if abs(staff.quantileExpected-0.840) < 0.01  :
+            plus1sigma[0]=staff.limit
+        if abs(staff.quantileExpected+1.000) < 0.01  :
+            obs[0]=staff.limit          
+    tanbeta[0]=float(tanb)
+    #print tanbeta[0], minus1sigma[0], exp[0], plus1sigma[0], obs[0]
     t.Fill()
     f.Write()
     f.Close()
