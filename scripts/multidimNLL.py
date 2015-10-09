@@ -156,6 +156,8 @@ def histcreation(path):
 		globalNLL = float(globalNLLstring.replace("Absolute value at minimum (best fit): ",""))
 		globalminformass_A.append(globalNLL)
 
+	print "min:", min(globalminformass_A)
+	
 	for i in range(len(listofcompletedmasses)):
 		mass = listofcompletedmasses[i]
 		tanbmax = listofmaxtanb[i]
@@ -165,6 +167,8 @@ def histcreation(path):
 		database = open(ggHbbHdatapath, 'r')
 		globalNLLstring = database.readline()
 		globalNLL = float(globalNLLstring.replace("Absolute value at minimum (best fit): ",""))
+
+		#print mass, tanbmax,  "globalNLL", globalNLL
 
 		ggHbbHfile = r.TFile(ggHbbHmasspath, "READ")
 		scan2D_delta = ggHbbHfile.Get("scan2D_delta")
@@ -234,6 +238,11 @@ def histcreation(path):
 
 				deltaNLLhist.SetBinContent(massbin,tanbbin, deltaNLL)
 				fullNLLhist.SetBinContent(massbin,tanbbin, deltaNLL + globalNLL - min(globalminformass_A))
+
+				if mass==700 and tanb==20 :
+					print deltaNLL,   globalNLL,      min(globalminformass_A), deltaNLL + globalNLL - min(globalminformass_A)
+					print DeltaNLLmu, NLLmu,          min(globalminformass_A), NLLmu - min(globalminformass_A)
+				#print massbin, tanbbin, deltaNLL, globalNLL, min(globalminformass_A), deltaNLL + globalNLL - min(globalminformass_A)
 			else:
 				globalNLLhist.SetBinContent(massbin, tanbbin, min(globalminformass_A))
 				NLLmuGlobalforqmu.SetBinContent(massbin, tanbbin, min(globalminformass_A))
