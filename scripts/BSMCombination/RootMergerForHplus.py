@@ -38,29 +38,110 @@ for arg in args :
         
         if hist.GetName() in hists :
             continue
+        #print hist
 
         outputfile.cd()
         newname=""
-        if "CMS_ttHpHp_signal" in name.GetName() :
-            newnames=name.GetName().split("signal")
+
+        if "HH{MASS}_a".format(MASS=mass) in name.GetName() :
+            #print name.GetName()
+            newname=name.GetName().replace("HH{MASS}_a".format(MASS=mass), "CMS_ttHpHp_signal")
+            newnames=newname.split("signal")
             newname=newnames[0]+"signal"+mass+newnames[-1]
             if "statBin" in name.GetName() :
                 newname=newnames[0]+"signal"+mass+"_"+newnames[0]+"signal"+newnames[-1]
+            newname=newname.replace("tau_ID_shape", "CMS_eff_t")                      
+            newname=newname.replace("tau_ID_eToTauBarrel_shape","CMS_fake_eToTauBarrel")      
+            newname=newname.replace("tau_ID_muToTau_shape","CMS_fake_muToTau")           
+            newname=newname.replace("tau_ID_jetToTau_shape","CMS_fake_jetToTau")          
+            newname=newname.replace("ES_taus","CMS_scale_t")      
+            newname=newname.replace("b_tag","CMS_btag_CSVT")                        
+            newname=newname.replace("top_pt","CMS_Hptntj_topPtReweighting")  
+            newname=newname.replace("QCD_metshape","CMS_Hptntj_QCDbkg_metshape")                    
+            newname=newname.replace("Emb_reweighting","CMS_Hptntj_taubkg_Reweighting")
             #print newname
             hist.SetTitle(newname)
             hist.SetName(newname)
-        if "CMS_ttHpW_signal" in name.GetName() :
-            newnames=name.GetName().split("signal")
+        if "HW{MASS}_a".format(MASS=mass) in name.GetName() :
+            #print name.GetName()
+            newname=name.GetName().replace("HW{MASS}_a".format(MASS=mass), "CMS_ttHpW_signal")
+            newnames=newname.split("signal")
             newname=newnames[0]+"signal"+mass+newnames[-1]
             if "statBin" in name.GetName() :
                 newname=newnames[0]+"signal"+mass+"_"+newnames[0]+"signal"+newnames[-1]
+            newname=newname.replace("tau_ID_shape", "CMS_eff_t")                      
+            newname=newname.replace("tau_ID_eToTauBarrel_shape","CMS_fake_eToTauBarrel")      
+            newname=newname.replace("tau_ID_muToTau_shape","CMS_fake_muToTau")           
+            newname=newname.replace("tau_ID_jetToTau_shape","CMS_fake_jetToTau")          
+            newname=newname.replace("ES_taus","CMS_scale_t")      
+            newname=newname.replace("b_tag","CMS_btag_CSVT")                        
+            newname=newname.replace("top_pt","CMS_Hptntj_topPtReweighting")  
+            newname=newname.replace("QCD_metshape","CMS_Hptntj_QCDbkg_metshape")                    
+            newname=newname.replace("Emb_reweighting","CMS_Hptntj_taubkg_Reweighting")
+            #print newname
+            hist.SetTitle(newname)
+            hist.SetName(newname)   
+        if "EWK_Tau" in name.GetName() : 
+            #print name.GetName()
+            newname=name.GetName().replace("EWK_Tau", "CMS_Hptntj_taubkg")
+            newname=newname.replace("tau_ID_shape", "CMS_eff_t")                      
+            newname=newname.replace("tau_ID_eToTauBarrel_shape","CMS_fake_eToTauBarrel")      
+            newname=newname.replace("tau_ID_muToTau_shape","CMS_fake_muToTau")           
+            newname=newname.replace("tau_ID_jetToTau_shape","CMS_fake_jetToTau")          
+            newname=newname.replace("ES_taus","CMS_scale_t")      
+            newname=newname.replace("b_tag","CMS_btag_CSVT")                        
+            newname=newname.replace("top_pt","CMS_Hptntj_topPtReweighting")  
+            newname=newname.replace("QCD_metshape","CMS_Hptntj_QCDbkg_metshape")                    
+            newname=newname.replace("Emb_reweighting","CMS_Hptntj_taubkg_Reweighting")
             #print newname
             hist.SetTitle(newname)
             hist.SetName(newname)
-        if newname!="":
-            hist.Write(newname)
-        else :
-            hist.Write()
+        if "QCDinv" in name.GetName() : 
+            #print name.GetName()
+            newname=name.GetName().replace("QCDinv", "CMS_Hptntj_QCDbkg")
+            newname=newname.replace("tau_ID_shape", "CMS_eff_t")                      
+            newname=newname.replace("tau_ID_eToTauBarrel_shape","CMS_fake_eToTauBarrel")      
+            newname=newname.replace("tau_ID_muToTau_shape","CMS_fake_muToTau")           
+            newname=newname.replace("tau_ID_jetToTau_shape","CMS_fake_jetToTau")          
+            newname=newname.replace("ES_taus","CMS_scale_t")      
+            newname=newname.replace("b_tag","CMS_btag_CSVT")                        
+            newname=newname.replace("top_pt","CMS_Hptntj_topPtReweighting")  
+            newname=newname.replace("QCD_metshape","CMS_Hptntj_QCDbkg_metshape")                    
+            newname=newname.replace("Emb_reweighting","CMS_Hptntj_taubkg_Reweighting")
+            #print "hallo", newname
+            hist.SetTitle(newname)
+            hist.SetName(newname)
+        if "EWKnontt_faketau" in name.GetName() : 
+            #print name.GetName()
+            newname=name.GetName().replace("EWKnontt_faketau", "CMS_Hptntj_fakebkg")
+            newname=newname.replace("tau_ID_shape", "CMS_eff_t")                      
+            newname=newname.replace("tau_ID_eToTauBarrel_shape","CMS_fake_eToTauBarrel")      
+            newname=newname.replace("tau_ID_muToTau_shape","CMS_fake_muToTau")           
+            newname=newname.replace("tau_ID_jetToTau_shape","CMS_fake_jetToTau")          
+            newname=newname.replace("ES_taus","CMS_scale_t")      
+            newname=newname.replace("b_tag","CMS_btag_CSVT")                        
+            newname=newname.replace("top_pt","CMS_Hptntj_topPtReweighting")  
+            newname=newname.replace("QCD_metshape","CMS_Hptntj_QCDbkg_metshape")                    
+            newname=newname.replace("Emb_reweighting","CMS_Hptntj_taubkg_Reweighting")
+            #print newname
+            hist.SetTitle(newname)
+            hist.SetName(newname)   
+        if "tt_EWK_faketau" in name.GetName() : 
+            #print name.GetName()
+            newname=name.GetName().replace("tau_ID_shape", "CMS_eff_t")                      
+            newname=newname.replace("tau_ID_eToTauBarrel_shape","CMS_fake_eToTauBarrel")      
+            newname=newname.replace("tau_ID_muToTau_shape","CMS_fake_muToTau")           
+            newname=newname.replace("tau_ID_jetToTau_shape","CMS_fake_jetToTau")          
+            newname=newname.replace("ES_taus","CMS_scale_t")      
+            newname=newname.replace("b_tag","CMS_btag_CSVT")                        
+            newname=newname.replace("top_pt","CMS_Hptntj_topPtReweighting")  
+            newname=newname.replace("QCD_metshape","CMS_Hptntj_QCDbkg_metshape")                    
+            newname=newname.replace("Emb_reweighting","CMS_Hptntj_taubkg_Reweighting")
+            #print newname
+            hist.SetTitle(newname)
+            hist.SetName(newname)  
+
+        hist.Write()
             
         hists.append(hist.GetName())
         
