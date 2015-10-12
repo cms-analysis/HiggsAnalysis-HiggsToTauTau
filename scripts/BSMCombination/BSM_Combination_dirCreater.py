@@ -198,8 +198,8 @@ NEWNAME="Hhh_"+str(tanb)+".txt"))
 ### mhmax, mhmod, lightstau1, lightstopmod, tauphobic
 else :
     print "model", options.model
-    for mass in (90, 100, 120, 130, 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000) :
-    #for mass in (250, 300, 350) :    
+    #for mass in (90, 100, 120, 130, 140, 160, 180, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 900, 1000) :
+    for mass in (130, 140, 160) :    
         os.system("mkdir LIMITS{LABEL}-BSMCombination/{MASS}".format(LABEL="" if options.label=="" else "-"+options.label, MASS=str(mass)))
         if options.path_htt != "" :
             for file in glob.glob("{HTT}/{MASS}/debug/*0.txt".format(HTT=options.path_htt, MASS=str(mass))) :

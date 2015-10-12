@@ -204,6 +204,21 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
                     ,"{CMD} -n 4 --min  1.5 --max 4.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs) 
                     ,"{CMD} -n 5 --min  5.5 --max 9.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     ]
+         elif "hMSSM" in opt :
+            if len(subvec(args,  120, 349))>0 :
+                dirs = vec2str(subvec(args, 120, 349))
+                grid = [
+                    "{CMD}  -n 5 --min  1.0 --max  9.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ,"{CMD} -n 5 --min 12.0 --max 24.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs) 
+                    ,"{CMD} -n 3 --min 30.0 --max 40.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ]
+            if len(subvec(args,  450, 1001))>0 :
+                dirs = vec2str(subvec(args, 350, 1001))
+                grid = [
+                    "{CMD} -n  4 --min  3.0 --max 12.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ,"{CMD} -n 5 --min 15.0 --max 35.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs) 
+                    ,"{CMD} -n 5 --min 40.0 --max 60.0 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
+                    ]
         elif "2HDM" in opt :
             dirs = ""
             for dir in args :

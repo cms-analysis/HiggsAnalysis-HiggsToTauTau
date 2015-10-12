@@ -1251,7 +1251,8 @@ for directory in args :
                             continue
                     if not options.refit :
                         tasks.append(
-                            ["combine -m {mass} -M HybridNew -n Test{cycle} --testStat=TEV --generateExt=1 --generateNuis=0 {wsp} --singlePoint 1 --saveHybridResult --fork 4 -T {toys} -i 1 --clsAcc 0 --fullBToys -s {seed} {user}".format(mass=mass, cycle=options.cycle, wsp=wsp, toys=options.toys, seed=seedNR, user=options.userOpt), #fork down from 40
+                            ["combine -m {mass} -M HybridNew -n Test{cycle} --testStat=TEV --generateExt=1 --generateNuis=0 {wsp} --singlePoint 1 --saveHybridResult --fork 4 -T {toys} -i 1 --clsAcc 0 --fullBToys -s {seed} {user}".format(mass=mass, cycle=options.cycle, wsp=wsp, toys=options.toys, seed=seedNR, user=options.userOpt),
+                            #["combine -m {mass} -M HybridNew -n Test{cycle} --testStat=TEV --generateExt=1 --generateNuis=0 {wsp} --singlePoint 1 --saveHybridResult --fork 0 -T {toys} -i 1 --clsAcc 0 --fullBToys -s {seed} --debug_saveTree 1 --debug_saveData 1 --debug_q_min=-20 --debug_q_max=5 --debug_onlyAltToys 1 {user}".format(mass=mass, cycle=options.cycle, wsp=wsp, toys=options.toys, seed=seedNR, user=options.userOpt), 
                              "mv higgsCombineTest{cycle}.HybridNew.mH{mass}.{seed}.root point_{tanb}_{cycle}".format(mass=mass, seed=seedNR, tanb=tanb_string, cycle=options.cycle)
                              ]
                             )
@@ -1266,7 +1267,7 @@ for directory in args :
         ## collect toys and produce CLs limits
         else :
             for wsp in directoryList :
-                if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) : 
+                if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) :
                     tanb_string = wsp[wsp.rfind("_")+1:]
                     if "point_{mass}_{tanb}".format(mass=mass, tanb=tanb_string) in directoryList :
                         os.system("rm point_{mass}_{tanb}*".format(mass=mass, tanb=tanb_string))
@@ -1288,7 +1289,7 @@ for directory in args :
             directoryList = os.listdir(".")
             if "HypothesisTest.root" in directoryList :
                 os.system("rm HypothesisTest*")
-            for wsp in directoryList :
+            for wsp in directoryList : 
                 if re.match(r"fixedMu_\d+(.\d\d)?.root", wsp) :
                     tanb_string = wsp[wsp.rfind("_")+1:]
                     os.system("python {CMSSW_BASE}/src/HiggsAnalysis/HiggsToTauTau/scripts/extractSignificanceStats.py --filename qmu.FixedMu_{TANB}".format(CMSSW_BASE=os.environ["CMSSW_BASE"], TANB=tanb_string))

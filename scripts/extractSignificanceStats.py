@@ -209,7 +209,7 @@ else :
             if (staff.q<medianSM+5*StdDevSM) and (staff.q>medianSM-5*StdDevSM) :
                 hSM.Fill(staff.q)
         elif staff.type>0 :
-            if (staff.q<medianMSSM+5*StdDevMSSM) and (staff.q>medianMSSM-5*StdDevMSSM) :
+            if (staff.q<medianMSSM+5*StdDevMSSM) and (staff.q>medianMSSM-5*StdDevMSSM):
                 hMSSM.Fill(staff.q)
         else :
             if options.verbosity :
