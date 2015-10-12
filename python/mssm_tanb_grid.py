@@ -204,7 +204,7 @@ def tanb_grid(args, cmd, sub, opt, smartGrid=False, customTanb="") :
                     ,"{CMD} -n 4 --min  1.5 --max 4.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs) 
                     ,"{CMD} -n 5 --min  5.5 --max 9.5 {SUB} {OPTS} {USER} {DIRS}".format(CMD=cmd, SUB=sub, OPTS=opt, USER=opt, DIRS=dirs)
                     ]
-         elif "hMSSM" in opt :
+        elif "hMSSM" in opt :
             if len(subvec(args,  120, 349))>0 :
                 dirs = vec2str(subvec(args, 120, 349))
                 grid = [
