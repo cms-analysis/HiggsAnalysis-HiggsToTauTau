@@ -534,13 +534,6 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	double min = globalNLLhist->GetMinimum();
 	double max = globalNLLhist->GetMaximum();
 	double delta = max - min;
-	//globalNLLhist->GetZaxis()->SetLabelSize(0.035);
-	for(int i=0; i<globalNLLhist->GetNbinsX(); i++){
-	  for(int j=0; j<globalNLLhist->GetNbinsY(); j++){
-	    double save=globalNLLhist->GetBinContent(i, j);
-	    globalNLLhist->SetBinContent(i, j, save-min);
-	  }
-	}
 	hist2Dbaseplot(g1, globalNLLhist, "", -0.001, delta*1.01,false,"#DeltaNLL_{mA}^{*, tan#beta}",0.06);//,kGray+1);
 	gc2->Draw("CF");
 	outer->Draw("CFsame");
@@ -587,14 +580,12 @@ void NLLPlot(const char* filename="output.root", const char* xsfilename="$CMSSW_
 	g35->Print("mia_fullNLL_lin.pdf");
 	g35->Print("mia_fullNLL_lin.png");
 
+
+	
+	min = NLLmuGlobalforqmu->GetMinimum();
+	max = NLLmuGlobalforqmu->GetMaximum();
+	delta = max - min;
 	TCanvas* g4 = new TCanvas("g4", "g4", 600, 600);
-	//NLLmuGlobalforqmu->GetZaxis()->SetLabelSize(0.035);
-	for(int i=0; i<NLLmuGlobalforqmu->GetNbinsX(); i++){
-	  for(int j=0; j<NLLmuGlobalforqmu->GetNbinsY(); j++){
-	    double save=NLLmuGlobalforqmu->GetBinContent(i, j);
-	    NLLmuGlobalforqmu->SetBinContent(i, j, save-min);
-	  }
-	}
 	hist2Dbaseplot(g4, NLLmuGlobalforqmu, "", 0, delta*1.01,false,"#DeltaNLL_{mA}^{*, tan#beta}",0.06);//, kGray+1);
 	gc2->Draw("CF");
 	outer->Draw("CFsame");
