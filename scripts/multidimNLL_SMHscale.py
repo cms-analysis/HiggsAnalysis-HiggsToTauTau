@@ -12,7 +12,7 @@ agroup.add_option("--reference-mass", dest="referenceMass", default="A", type="s
 agroup.add_option("--higgs-contribution",dest="higgsContribution", default="hHA", type="string", help="")
 agroup.add_option("--forbidden-region-level", dest="forbiddenRegionLevel", default=100, type="float", help="")
 agroup.add_option("--analysis", dest="analysis", default="plain", type="string", help="")
-agroup.add_option("--light-vs-heavy", dest="lightVsHeavy", default=False, action="store_true", help="")
+#group.add_option("--light-vs-heavy", dest="lightVsHeavy", default=False, action="store_true", help="")
 parser.add_option_group(agroup)
 
 (options, args) = parser.parse_args()
@@ -114,7 +114,8 @@ def histcreation(path):
 	combinedCluster.Reset()
 	combinedCluster.SetName("combinedCluster")
 
-	globalminformass_A = []
+	globalNLL_MIA = []
+	globalNLL_MDA = []
 
 	### find global minium for all mA tanb	
 	for mass in originalmasslist :
@@ -136,10 +137,16 @@ def histcreation(path):
 			ggHbbHdatapath = path.replace("-00-", "-{SCALE}-".format(SCALE=str(save_scale).replace(".",""))) + "{mass}/database_{mass}.out".format(mass=mass)		
 			database = open(ggHbbHdatapath, 'r')
 			globalNLLstring = database.readline()
-			globalNLL = float(globalNLLstring.replace("Absolute value at minimum (best fit): ",""))
-			globalminformass_A.append(globalNLL)
+			globalNLL_MIA_fixedmass = float(globalNLLstring.replace("Absolute value at minimum (best fit): ",""))
+			globalNLL_MIA.append(globalNLL_MIA_fixedmass)
 
-	print "min:", min(globalminformass_A)
+			massbin = NLLmuFixedforqmu.GetXaxis().FindBin(float(mass))
+                        tanbbin = NLLmuFixedforqmu.GetYaxis().FindBin(float(tanb))
+			#print globalNLL_MIA_fixedmass, NLLmuFixedforqmu.GetBinContent(massbin,tanbbin)
+			globalNLL_MDA.append(NLLmuFixedforqmu.GetBinContent(massbin,tanbbin))
+
+	print "min MIA:", min(globalNLL_MIA)
+	print "min MDA:", min(globalNLL_MDA)
 
         ### loop over all mA tanb and fill histograms
         for mass in originalmasslist:
@@ -161,12 +168,12 @@ def histcreation(path):
 					diff=abs(float(SMHscale)/10-scale)
 					save_scale=float(SMHscale)/10 
 			if mass_h < 119 : save_scale = 0.0
+			
                     	ggHbbHmasspath = path.replace("-00-", "-{SCALE}-".format(SCALE=str(save_scale).replace(".","")))+ "{MASS}/{analysis}-MSSMvsSM-{SMHscale}-asimov-ggH-bbH-scan-GGH-BBH-{MASS}.root".format(MASS=mass, SMHscale=str(save_scale).replace(".",""), analysis=options.analysis)
 			ggHbbHdatapath = path.replace("-00-", "-{SCALE}-".format(SCALE=str(save_scale).replace(".",""))) + "{MASS}/database_{MASS}.out".format(MASS=mass)
 			database = open(ggHbbHdatapath, 'r')
-			globalNLL_mass = float((database.readline()).replace("Absolute value at minimum (best fit): ",""))
-
-			#print mass, tanb, "globalNLL", globalNLL
+			
+			globalNLL_MIA_fixedmass = float((database.readline()).replace("Absolute value at minimum (best fit): ",""))
                     
                         ggHbbHfile = r.TFile(ggHbbHmasspath, "READ")
                         scan2D_delta = ggHbbHfile.Get("scan2D_delta")
@@ -176,37 +183,6 @@ def histcreation(path):
                     
                         ggHxs = ggcmb.GetBinContent(massbin,tanbbin)
                         bbHxs = bbcmb.GetBinContent(massbin,tanbbin)
-                        
-                        #gluAXs = ggAXsBR.GetBinContent(massbin, tanbbin)
-                        #gluHXs = ggHXsBR.GetBinContent(massbin, tanbbin)
-                        #gluhXs = gghXsBR.GetBinContent(massbin, tanbbin)
-                        
-                        #botAXs = bbAXsBR.GetBinContent(massbin, tanbbin)
-                        #botHXs = bbHXsBR.GetBinContent(massbin, tanbbin)
-                        #bothXs = bbhXsBR.GetBinContent(massbin, tanbbin)
-                        
-                        #massh = int(masshhist.GetBinContent(massbin, tanbbin))/10*10 if (masshhist.GetBinContent(massbin, tanbbin) >= 90) else 90
-                        #massH = int(massHhist.GetBinContent(massbin, tanbbin))/10*10 if (massHhist.GetBinContent(massbin, tanbbin) >= 90) else 90
-
-                        #ggHbbHfile_forA = r.TFile(path.replace("-00-", "-{SCALE}-".format(SCALE=str(save_scale).replace(".",""))) + "{massA}/{analysis}-MSSMvsSM-{SMHscale}-asimov-ggH-bbH-scan-GGH-BBH-{massA}.root".format(massA=mass, SMHscale=str(save_scale).replace(".",""), analysis=options.analysis), "READ")
-                        #ggHbbHfile_forH = r.TFile(path.replace("-00-", "-{SCALE}-".format(SCALE=str(save_scale).replace(".",""))) + "{massH}/{analysis}-MSSMvsSM-{SMHscale}-asimov-ggH-bbH-scan-GGH-BBH-{massH}.root".format(massH=massH, SMHscale=str(save_scale).replace(".",""), analysis=options.analysis), "READ")
-                        #ggHbbHfile_forh = r.TFile(path.replace("-00-", "-{SCALE}-".format(SCALE=str(save_scale).replace(".",""))) + "{massh}/{analysis}-MSSMvsSM-{SMHscale}-asimov-ggH-bbH-scan-GGH-BBH-{massh}.root".format(massh=massh, SMHscale=str(save_scale).replace(".",""), analysis=options.analysis), "READ")
-                 
-                        #scan2D_delta_forA = ggHbbHfile_forA.Get("scan2D_delta")
-                        #scan2D_delta_forH = ggHbbHfile_forH.Get("scan2D_delta")
-                        #scan2D_delta_forh = ggHbbHfile_forh.Get("scan2D_delta")
-                        
-                        #xsBin_forA = scan2D_delta_forA.FindBin(gluAXs, botAXs)
-                        #xsBin_forH = scan2D_delta_forH.FindBin(gluHXs, botHXs)
-                        #xsBin_forh = scan2D_delta_forh.FindBin(gluhXs, bothXs)
-                        
-                        #if xsBin_forA > 40000: xsBin_forA = 40000
-                        #if xsBin_forH > 40000: xsBin_forH = 40000
-                        #if xsBin_forh > 40000: xsBin_forh = 40000
-                        #deltaNLL_forA = scan2D_delta_forA.GetBinContent(xsBin_forA)
-                        #deltaNLL_forH = scan2D_delta_forH.GetBinContent(xsBin_forH)
-                        #deltaNLL_forh = scan2D_delta_forh.GetBinContent(xsBin_forh)
-
                         
 			xsBin = scan2D_delta.FindBin(ggHxs, bbHxs)
 			if xsBin > 40000: xsBin = 40000 # needed to avoid overflow bins, where no NLL values are found -> Set to the last value at that mass.
@@ -219,22 +195,21 @@ def histcreation(path):
 			
 
 			### mda
+			NLLmuGlobalforqmu.SetBinContent(massbin, tanbbin, NLLmu-min(globalNLL_MDA))
+			deltaNLLforqmu.SetBinContent(massbin, tanbbin, DeltaNLLmu)
+			NLLmuFixedforqmu.SetBinContent(massbin, tanbbin, NLLmu - min(globalNLL_MDA) + DeltaNLLmu)
 			
-                        NLLmuFixedforqmu.SetBinContent(massbin, tanbbin, NLLmu - min(globalminformass_A))
-                        deltaNLLforqmu.SetBinContent(massbin, tanbbin, DeltaNLLmu)
-
-			### mia
-                        globalNLLhist.SetBinContent(massbin, tanbbin, globalNLL_mass)
-			
-                        fullNLLhist.SetBinContent(massbin,tanbbin, deltaNLL + globalNLL_mass - min(globalminformass_A))
-                        deltaNLLhist.SetBinContent(massbin,tanbbin, deltaNLL)
-
+		        ### mia
+			globalNLLhist.SetBinContent(massbin, tanbbin, globalNLL_MIA_fixedmass-min(globalNLL_MIA))
+			deltaNLLhist.SetBinContent(massbin,tanbbin, deltaNLL)				
+			fullNLLhist.SetBinContent(massbin,tanbbin, deltaNLL + globalNLL_MIA_fixedmass - min(globalNLL_MIA))
+						
 			if mass==700 and tanb==20 :
-				print save_scale 
-				print deltaNLL,   globalNLL_mass, min(globalminformass_A), deltaNLL + globalNLL_mass - min(globalminformass_A)
-				print DeltaNLLmu, NLLmu,          min(globalminformass_A), NLLmu - min(globalminformass_A)
-			#print massbin, tanbbin, deltaNLL, globalNLL, min(globalminformass_A), deltaNLL + globalNLL - min(globalminformass_A)
-
+				print "LocalNLL_abs"         , "GlobalNLL_abs"   , "GlobalNLL",                                "DeltaNLL", "FullNLL"
+				print globalNLL_MIA_fixedmass, min(globalNLL_MIA), globalNLL_MIA_fixedmass-min(globalNLL_MIA), deltaNLL,   deltaNLL + globalNLL_MIA_fixedmass - min(globalNLL_MIA)
+				print NLLmu,                   min(globalNLL_MDA), NLLmu-min(globalNLL_MDA),                   DeltaNLLmu, NLLmu - min(globalNLL_MDA) + DeltaNLLmu
+			
+			
 			### cluster
                         combinedCluster.SetBinContent(massbin, tanbbin, cluster.GetBinContent(massbin, tanbbin))
 			

@@ -12,7 +12,7 @@ agroup.add_option("--reference-mass", dest="referenceMass", default="A", type="s
 agroup.add_option("--higgs-contribution",dest="higgsContribution", default="hHA", type="string", help="")
 agroup.add_option("--forbidden-region-level", dest="forbiddenRegionLevel", default=100, type="float", help="")
 agroup.add_option("--analysis", dest="analysis", default="plain", type="string", help="")
-agroup.add_option("--light-vs-heavy", dest="lightVsHeavy", default=False, action="store_true", help="")
+#agroup.add_option("--light-vs-heavy", dest="lightVsHeavy", default=False, action="store_true", help="")
 parser.add_option_group(agroup)
 
 (options, args) = parser.parse_args()
@@ -145,7 +145,8 @@ def histcreation(path):
 
 	tanbbins = ggcmb.GetNbinsY()
 
-	globalminformass_A = []
+	globalNLL_MIA = []
+	globalNLL_MDA = []
 
 	for i in range(len(listofcompletedmasses)):
 		mass = listofcompletedmasses[i]
@@ -153,10 +154,19 @@ def histcreation(path):
 
 		database = open(ggHbbHdatapath, 'r')
 		globalNLLstring = database.readline()
-		globalNLL = float(globalNLLstring.replace("Absolute value at minimum (best fit): ",""))
-		globalminformass_A.append(globalNLL)
+		globalNLL_MIA_fixedmass = float(globalNLLstring.replace("Absolute value at minimum (best fit): ",""))
+		globalNLL_MIA.append(globalNLL_MIA_fixedmass)
 
-	print "min:", min(globalminformass_A)
+		for tanb in originaltanblist:
+			if tanb <= listofmaxtanb[i]:
+				massbin = NLLmuFixedforqmu.GetXaxis().FindBin(float(mass))
+				tanbbin = NLLmuFixedforqmu.GetYaxis().FindBin(float(tanb))
+		                #print globalNLL_MIA_fixedmass, NLLmuFixedforqmu.GetBinContent(massbin,tanbbin)
+			        globalNLL_MDA.append(NLLmuFixedforqmu.GetBinContent(massbin,tanbbin))
+		
+	print "min MIA:", min(globalNLL_MIA)
+	print "min MDA:", min(globalNLL_MDA)
+	
 	
 	for i in range(len(listofcompletedmasses)):
 		mass = listofcompletedmasses[i]
@@ -166,9 +176,8 @@ def histcreation(path):
 
 		database = open(ggHbbHdatapath, 'r')
 		globalNLLstring = database.readline()
-		globalNLL = float(globalNLLstring.replace("Absolute value at minimum (best fit): ",""))
 
-		#print mass, tanbmax,  "globalNLL", globalNLL
+		globalNLL_MIA_fixedmass = float(globalNLLstring.replace("Absolute value at minimum (best fit): ",""))
 
 		ggHbbHfile = r.TFile(ggHbbHmasspath, "READ")
 		scan2D_delta = ggHbbHfile.Get("scan2D_delta")
@@ -177,7 +186,7 @@ def histcreation(path):
 		for tanb in originaltanblist:
 			tanbbin = ggcmb.GetYaxis().FindBin(float(tanb)) 
 			if tanb <= tanbmax:
-				globalNLLhist.SetBinContent(massbin, tanbbin, globalNLL)
+				globalNLLhist.SetBinContent(massbin, tanbbin, globalNLL_MIA_fixedmass)
 				ggHxs = ggcmb.GetBinContent(massbin,tanbbin)
 				bbHxs = bbcmb.GetBinContent(massbin,tanbbin)
 				
@@ -211,47 +220,40 @@ def histcreation(path):
 				deltaNLL_forH = scan2D_delta_forH.GetBinContent(xsBin_forH)
 				deltaNLL_forh = scan2D_delta_forh.GetBinContent(xsBin_forh)
 
-				deltaNLLhist_heavy.SetBinContent(massbin, tanbbin, deltaNLL_forA + deltaNLL_forH)
-				deltaNLLhist_light.SetBinContent(massbin, tanbbin, deltaNLL_forh)
-
 				NLLmu = NLLmuFixedforqmu.GetBinContent(massbin,tanbbin)
 				DeltaNLLmu = qmuHist2D.GetBinContent(massbin, tanbbin)/2.0
 			
-				NLLmuFixedforqmu.SetBinContent(massbin, tanbbin, NLLmu - min(globalminformass_A))
-				deltaNLLforqmu.SetBinContent(massbin, tanbbin, DeltaNLLmu)
 				xsBin = scan2D_delta.FindBin(ggHxs, bbHxs)
 				if xsBin > 40000: xsBin = 40000 # needed to avoid overflow bins, where no NLL values are found -> Set to the last value at that mass.
-				if options.lightVsHeavy:
-					lightVsHeavy = ((scan2D_delta.GetBinContent(xsBin) < deltaNLL_forh) and cluster.GetBinContent(massbin, tanbbin) == 6)
-					deltaNLL = deltaNLL_forh if lightVsHeavy else scan2D_delta.GetBinContent(xsBin)
-					combinedCluster.SetBinContent(massbin, tanbbin, 1 if lightVsHeavy else 6)
-
-					database2 = open(path + "{massh}/database_{massh}.out".format(massh=massh), 'r')
-					globalNLLstring2 = database2.readline()
-					globalNLL2 = float(globalNLLstring2.replace("Absolute value at minimum (best fit): ","")) 
-					globalNLL = globalNLL2 if lightVsHeavy else globalNLL
-					globalNLLhist.SetBinContent(massbin, tanbbin, globalNLL)
+				deltaNLL = scan2D_delta.GetBinContent(xsBin)
+				
+				combinedCluster.SetBinContent(massbin, tanbbin, cluster.GetBinContent(massbin, tanbbin))
 					
-				else:	
-					deltaNLL = scan2D_delta.GetBinContent(xsBin)
-					combinedCluster.SetBinContent(massbin, tanbbin, cluster.GetBinContent(massbin, tanbbin))
+			        ### mda
+				NLLmuGlobalforqmu.SetBinContent(massbin, tanbbin, NLLmu-min(globalNLL_MDA))
+				deltaNLLforqmu.SetBinContent(massbin, tanbbin, DeltaNLLmu)
+				NLLmuFixedforqmu.SetBinContent(massbin, tanbbin, NLLmu-min(globalNLL_MDA) + DeltaNLLmu)
+				
+			        ### mia
+				globalNLLhist.SetBinContent(massbin, tanbbin, globalNLL_MIA_fixedmass-min(globalNLL_MIA))
+				deltaNLLhist.SetBinContent(massbin,tanbbin, deltaNLL)				
+				fullNLLhist.SetBinContent(massbin,tanbbin, globalNLL_MIA_fixedmass-min(globalNLL_MIA) + deltaNLL)
 
-				deltaNLLhist.SetBinContent(massbin,tanbbin, deltaNLL)
-				fullNLLhist.SetBinContent(massbin,tanbbin, deltaNLL + globalNLL - min(globalminformass_A))
 
 				if mass==700 and tanb==20 :
-					print deltaNLL,   globalNLL,      min(globalminformass_A), deltaNLL + globalNLL - min(globalminformass_A)
-					print DeltaNLLmu, NLLmu,          min(globalminformass_A), NLLmu - min(globalminformass_A)
-				#print massbin, tanbbin, deltaNLL, globalNLL, min(globalminformass_A), deltaNLL + globalNLL - min(globalminformass_A)
+					print "LocalNLL_abs"         , "GlobalNLL_abs"   , "GlobalNLL",                                "DeltaNLL", "FullNLL"
+					print globalNLL_MIA_fixedmass, min(globalNLL_MIA), globalNLL_MIA_fixedmass-min(globalNLL_MIA), deltaNLL,   deltaNLL + globalNLL_MIA_fixedmass - min(globalNLL_MIA)
+					print NLLmu,                   min(globalNLL_MDA), NLLmu-min(globalNLL_MDA),                   DeltaNLLmu, NLLmu - min(globalNLL_MDA) + DeltaNLLmu
+				
 			else:
-				globalNLLhist.SetBinContent(massbin, tanbbin, min(globalminformass_A))
-				NLLmuGlobalforqmu.SetBinContent(massbin, tanbbin, min(globalminformass_A))
+				globalNLLhist.SetBinContent(massbin, tanbbin, min(globalNLL_MIA))
+				NLLmuGlobalforqmu.SetBinContent(massbin, tanbbin, min(globalNLL_MDA))
 				NLLmuFixedforqmu.SetBinContent(massbin, tanbbin, 100000)
 				deltaNLLforqmu.SetBinContent(massbin, tanbbin, 100000)
 				deltaNLLhist.SetBinContent(massbin,tanbbin, 100000)
 				fullNLLhist.SetBinContent(massbin,tanbbin, 100000)
-				deltaNLLhist_heavy.SetBinContent(massbin, tanbbin, 100000)
-				deltaNLLhist_light.SetBinContent(massbin, tanbbin, 100000)
+				#deltaNLLhist_heavy.SetBinContent(massbin, tanbbin, 100000)
+				#deltaNLLhist_light.SetBinContent(massbin, tanbbin, 100000)
 				combinedCluster.SetBinContent(massbin, tanbbin, cluster.GetBinContent(massbin, tanbbin))
 
 	nllfile.WriteTObject(NLLmuFixedforqmu,'')
@@ -264,8 +266,8 @@ def histcreation(path):
 	nllfile.WriteTObject(NLLdiff2D,'')
 	nllfile.WriteTObject(rNLLdiff2D,'')
 
-	nllfile.WriteTObject(deltaNLLhist_heavy,'')
-	nllfile.WriteTObject(deltaNLLhist_light,'')
+	#nllfile.WriteTObject(deltaNLLhist_heavy,'')
+	#nllfile.WriteTObject(deltaNLLhist_light,'')
 	nllfile.WriteTObject(combinedCluster,'')
 
 	ggHbbHfile.Close()
