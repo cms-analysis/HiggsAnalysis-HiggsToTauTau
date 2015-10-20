@@ -32,7 +32,7 @@ PlotLimits::plotSignalStrength(TCanvas& canv, TGraphAsymmErrors* innerBand, TGra
     std::string fullpath;
     float bestfit, bestfitDown, bestfitUp;
     fullpath = TString::Format("%s/%d/signal-strength.output", directory, (int)mass);
-    ifstream multidim (fullpath.c_str());
+    std::ifstream multidim (fullpath.c_str());
     if(multidim.is_open()){
       while( multidim.good() ){
 	getline (multidim,line);

@@ -96,7 +96,7 @@ class PlotLimits {
   /// Sort the points of graph clockwise around minimum
   TGraph* sortedGraph(TGraph* graph, double minX, double minY);
   /// print 1d uncertainties for a given CL to file (used by scan-2d)
-  void band1D(ostream& out, std::string& xval, std::string& yval, TGraph* bestFit, TGraph* band, float xoffset, float yoffset, std::string CL);
+  void band1D(std::ostream& out, std::string& xval, std::string& yval, TGraph* bestFit, TGraph* band, float xoffset, float yoffset, std::string CL);
   /// fill a graph for the contraints of the H(125) resonance in the mA-tanb exclusion plane (used for option tanb)
   TH2D* higgsConstraint(const char* model="mhmax-mu+200", const char* type="h");
   /// plot limits on canvas, print out png, pdf, txt, root formats if desired

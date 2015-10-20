@@ -6,7 +6,7 @@ void plotting1DScan(TCanvas& canv, TH1F* plot1D, std::string& xaxis, std::string
 
 /*
 void 
-PlotLimits::band1D(ostream& out, std::string& xval, std::string& yval, TGraph* bestFit, TGraph* band, float xoffset, float yoffset, std::string CL)
+PlotLimits::band1D(std::ostream& out, std::string& xval, std::string& yval, TGraph* bestFit, TGraph* band, float xoffset, float yoffset, std::string CL)
 {
   float xmin = -1, xmax = -1.;
   float ymin = -1, ymax = -1.; 
@@ -56,7 +56,7 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
     float mass = bins_[imass];
     if(verbosity_>2){ std::cout << mass << std::endl; }
     std::string line; 
-    ifstream file(TString::Format("%s/%d/.scan", directory, (int)mass));
+    std::ifstream file(TString::Format("%s/%d/.scan", directory, (int)mass));
     if(file.is_open()){
       while( file.good() ){
 	getline(file,line);
@@ -239,7 +239,7 @@ PlotLimits::plot1DScan(TCanvas& canv, const char* directory)
     CMSPrelim(dataset_.c_str(), "", 0.160, 0.835);
     //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
     // print 1d band
-    //ofstream scanOut;  
+    //std::ofstream scanOut;  
     //scanOut.open(TString::Format("%s/%d/multi-dim.fitresult", directory, (int)mass));
     //scanOut << " --- MultiDimFit ---" << std::endl;
     //scanOut << "best fit parameter values and uncertainties from NLL scan:" << std::endl;
