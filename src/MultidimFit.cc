@@ -7,7 +7,7 @@ TList* contourFromTH2(TH2 *h2in, double threshold, int minPoints=20, bool requir
 void plottingScan2D(TCanvas& canv, TH2D* plot2D, TGraph* bestfit, TGraph* c68, TGraph* c95, TString file, TMarker* SMexpected, TMarker* SMexpectedLayer, std::string& xaxis, std::string& yaxis, std::string& masslabel, int mass, double xmin, double xmax, double ymin, double ymax, bool temp, bool log);
 
 void 
-PlotLimits::band1D(ostream& out, std::string& xval, std::string& yval, TGraph* bestFit, TGraph* band, float xoffset, float yoffset, std::string CL)
+PlotLimits::band1D(std::ostream& out, std::string& xval, std::string& yval, TGraph* bestFit, TGraph* band, float xoffset, float yoffset, std::string CL)
 {
   float xmin = -1, xmax = -1.;
   float ymin = -1, ymax = -1.; 
@@ -74,7 +74,7 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory, std::string typ)
     float mass = bins_[imass];
     if(verbosity_>2){ std::cout << mass << std::endl; }
     std::string line; 
-    ifstream file(TString::Format("%s/%d/.scan", directory, (int)mass));
+    std::ifstream file(TString::Format("%s/%d/.scan", directory, (int)mass));
     if(file.is_open()){
       while( file.good() ){
 	getline(file,line);
@@ -108,7 +108,7 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory, std::string typ)
       limit->SetBranchAddress(xbranch.c_str() , &x);  
       limit->SetBranchAddress(ybranch.c_str() , &y);
       int nevent = limit->GetEntries();
-      ofstream database;  
+      std::ofstream database;  
       database.open(TString::Format("%s/%d/database_%d.out", directory, (int)mass, (int)mass)); 
       for(int i=0; i<nevent; ++i){
 	limit->GetEvent(i);
@@ -172,7 +172,7 @@ PlotLimits::plot2DScan(TCanvas& canv, const char* directory, std::string typ)
     //CMSPrelim(dataset_.c_str(), "", 0.145, 0.835);
       
     // print 1d band
-    ofstream scanOut;  
+    std::ofstream scanOut;  
     scanOut.open(TString::Format("%s/%d/signal-strength.output", directory, (int)mass));
     scanOut << " --- MultiDimFit ---" << std::endl;
     scanOut << "best fit parameter values and uncertainties from NLL scan:" << std::endl;
