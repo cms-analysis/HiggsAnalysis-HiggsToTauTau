@@ -1,7 +1,6 @@
 from HiggsAnalysis.HiggsToTauTau.tools.mssm_xsec_tools import mssm_xsec_tools
 from HiggsAnalysis.HiggsToTauTau.tools.hplus_xsec_tools import hplus_xsec_tools
 from HiggsAnalysis.HiggsToTauTau.tools.twohdm_xsec_tools import twohdm_xsec_tools
-from HiggsAnalysis.HiggsToTauTau.tools.feyn_higgs_mssm import feyn_higgs_mssm
 from HiggsAnalysis.HiggsToTauTau.MODEL_PARAMS import MODEL_PARAMS
 from os import getenv, path
 from sys import exit
@@ -27,9 +26,8 @@ class ModelParams_BASE:
         arguments as period, modelpath and modeltype
         periode is one of '7TeV', '8TeV'
         modelpath corresponds to the file to be used for the model specified in modeltype
-          - feyn_higgs_mssm : modelpath is the name of the model to be used (e.g. mhmax)
           - mssm_xsec_tools : modelpath is the name of the model to be used including uncerts (e.g mhmax-mu+200)
-        modeltype can be 'mssm_xsec' or 'feyn_higgs'
+        modeltype can be 'mssm_xsec' or 'twohdm_xsec'
         """
         self.model = modeltype
         if modeltype == 'mssm_xsec':
@@ -40,6 +38,8 @@ class ModelParams_BASE:
             twohdm_xsec_tools_path = getenv('CMSSW_BASE')+'/src/auxiliaries/models/'+modelpath+'.root'
             scan = twohdm_xsec_tools(twohdm_xsec_tools_path)
             self.htt_query = scan.query(self.parameter1, self.tanb)
+        else :
+            exit('ERROR: modeltype \'%s\' not supported'%modeltype)
 
     def create_model_params(self, period, channel, decay, uncert=''):
         """
@@ -54,9 +54,7 @@ class ModelParams_BASE:
         """
         self.uncert = uncert
         model_params = MODEL_PARAMS(self.ana_type)
-        if self.model == 'feyn_higgs':
-            self.use_feyn_higgs(modelpath, period, channel, decay, model_params)
-        elif self.model == 'mssm_xsec':
+        if self.model == 'mssm_xsec':
             self.use_mssm_xsec(self.htt_query, channel, decay, model_params)
         elif self.model == 'hplus_xsec':
             self.use_hplus_xsec(self.htt_query, channel, decay, model_params)
@@ -65,21 +63,6 @@ class ModelParams_BASE:
         else:
             exit('ERROR: modeltype \'%s\' not supported'%modeltype)
         return model_params
-
-    def use_feyn_higgs(self, path, period, channel, decay, model_params):
-        """
-        This functions takes the input from create_model_params and uses feyn_higgs_mssm to determine the masses, cross-sections
-        and branchingratios for the given production and decay channels
-        """
-        scan = feyn_higgs_mssm(self.parameter1, self.tanb, 'sm', path, period) #consider using variable for 'sm', 'mssm'
-        for higgs in model_params.list_of_higgses:
-            if higgs == 'A': model_params.masses[higgs] = self.parameter1
-            if higgs == 'h': model_params.masses[higgs] = scan.get_mh()
-            if higgs == 'H': model_params.masses[higgs] = scan.get_mH()
-            xsecs = scan.get_xs(channel[:-1]+higgs)
-            model_params.xsecs[higgs] = xsecs
-            brs = scan.get_br(higgs+decay[1:])
-            model_params.brs[higgs] = brs
 
     def use_mssm_xsec(self, query, channel, decay, model_params):
         """
