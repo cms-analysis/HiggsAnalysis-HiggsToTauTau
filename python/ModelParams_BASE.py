@@ -113,7 +113,7 @@ class ModelParams_BASE:
         For Hhh currently only 'ggAToZhToLLTauTau', 'ggHTohhTo2Tau2B' and 'ggAToZhToLLBB' are supported.
         For Hplus currently only 'HH' and 'HW' are supported.
         """
-        channels = {'ggH':'gg', 'bbH':'bbSantander', 'ggAToZhToLLBB':'ggF','ggAToZhToLLTauTau':'ggF', 'ggHTohhTo2Tau2B':'ggF', 'AZh':'ggF', 'CMS_ttHpHp_signal':'HpHp', 'CMS_ttHpW_signal':'HpW'}
+        channels = {'ggH':'gg', 'bbH':'bbSantander', 'ggAToZhToLLBB':'gg','ggAToZhToLLTauTau':'gg', 'ggHTohhTo2Tau2B':'gg', 'AZh':'gg', 'CMS_ttHpHp_signal':'HpHp', 'CMS_ttHpW_signal':'HpW'}
         print "channel", channel
         if channel not in channels:
             exit('ERROR: Production channel \'%s\' not supported'%channel)
