@@ -128,18 +128,24 @@ class mssm_xsec_tools():
         type, type_info = input
         type_info.setdefault('pdf', {})
         type_info['pdf']['bb5F'] = {               
-            -1 : self.mssm.xsec ("bb5F->%s::pdfasDown" % type, parameter1, tan_beta),
-             +1 : self.mssm.xsec ("bb5F->%s::pdfasUp" % type, parameter1, tan_beta),
+            -1 : (self.mssm.xsec ("bb5F->%s::pdfasDown" % type, parameter1, tan_beta) -
+                  self.mssm.xsec("bb5F->%s" % type, parameter1, tan_beta))*self.unit_pb,
+            +1 : (self.mssm.xsec ("bb5F->%s::pdfasUp" % type, parameter1, tan_beta)- 
+                  self.mssm.xsec("bb5F->%s" % type, parameter1, tan_beta))*self.unit_pb,
              0 : 0,
              }
         type_info['pdf']['gg'] = {
-            -1 : self.mssm.xsec ("gg->%s::pdfasDown" % type, parameter1, tan_beta),
-             +1 : self.mssm.xsec ("gg->%s::pdfasUp" % type, parameter1, tan_beta),
+            -1 : (self.mssm.xsec ("gg->%s::pdfasDown" % type, parameter1, tan_beta) -
+                  self.mssm.xsec("gg->%s" % type, parameter1, tan_beta))*self.unit_pb,
+            +1 : (self.mssm.xsec ("gg->%s::pdfasUp" % type, parameter1, tan_beta) -
+                  self.mssm.xsec("gg->%s" % type, parameter1, tan_beta))*self.unit_pb,
              0 : 0,
              }
         type_info['pdf']['bbSantander'] = {
-            -1 : self.mssm.xsec ("bbSantander->%s::pdfasDown" % type, parameter1, tan_beta),
-             +1 : self.mssm.xsec ("bbSantander->%s::pdfasUp" % type, parameter1, tan_beta),
+            -1 : (self.mssm.xsec ("bbSantander->%s::pdfasDown" % type, parameter1, tan_beta) -
+                  self.mssm.xsec("bbSantander->%s" % type, parameter1, tan_beta))*self.unit_pb,
+            +1 : (self.mssm.xsec ("bbSantander->%s::pdfasUp" % type, parameter1, tan_beta) -
+                  self.mssm.xsec("bbSantander->%s" % type, parameter1, tan_beta))*self.unit_pb,
              0 : 0,
              }
         # Supposedly negligble compared to scale
