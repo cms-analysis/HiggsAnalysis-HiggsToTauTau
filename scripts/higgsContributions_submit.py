@@ -3,13 +3,13 @@
 from optparse import OptionParser, OptionGroup
 parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...", description="")
 agroup = OptionGroup(parser,"MAIN OPTIONS", "")
-agroup.add_option("--log-mass",dest="logMass", default=False, action="store_true", help="")
-agroup.add_option("--model-file",dest="modelFile", default="$CMSSW_BASE/src/auxiliaries/models/out.mhmodp-8TeV-tanbHigh-nnlo.root", type="string", help="")
-agroup.add_option("--model", dest="model", default="mhmodp", type="string", help="")
-agroup.add_option("--mass-tolerance", dest="massTolerance", default=0.15, type="float", help="")
-agroup.add_option("--tolerance-denumerator-max", dest="toleranceDenumeratorMax", default=False, action="store_true", help="")
-agroup.add_option("--reference-mass", dest="referenceMass", default="A", type="string", help="")
-agroup.add_option("--higgs-contribution",dest="higgsContribution", default="hHA", type="string", help="")
+agroup.add_option("--log-mass",dest="logMass", default=False, action="store_true", help="Scan the mass range optimized for a logarithmic mass scale.")
+agroup.add_option("--model-file",dest="modelFile", default="$CMSSW_BASE/src/auxiliaries/models/out.mhmodp-8TeV-tanbHigh-nnlo.root", type="string", help="Path to the model file which should be used.")
+agroup.add_option("--model", dest="model", default="mhmodp", type="string", help="Used in naming of the files. Should be chosen dependent on the model-file.")
+agroup.add_option("--mass-tolerance", dest="massTolerance", default=0.15, type="float", help="Mass tolerance window for which different Higgs bosons are clustered.")
+agroup.add_option("--tolerance-denumerator-max", dest="toleranceDenumeratorMax", default=False, action="store_true", help="Instead of calculating the mass tolerance in respect to the higgs boson specified by referenceMass the max(higgs1, higgs2) is used.")
+agroup.add_option("--reference-mass", dest="referenceMass", default="A", type="string", help="Chose the Higgs boson for which the cluster should be built. Also used for the calculation of the mass tolerance.")
+agroup.add_option("--higgs-contribution",dest="higgsContribution", default="hHA", type="string", help="Define which Higgs bosons are considered in the creation of the mass clusters.")
 
 
 (options, args) = parser.parse_args()
