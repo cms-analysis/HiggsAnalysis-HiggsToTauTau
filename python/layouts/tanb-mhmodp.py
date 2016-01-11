@@ -6,7 +6,7 @@ layout = cms.PSet(
     #dataset = cms.string("#scale[1.5]{CMS} (unpublished), h,H,A#rightarrow#tau#tau, 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
     #dataset = cms.string("#scale[1.5]{CMS} Preliminary, h,H,A#rightarrow#tau#tau, 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
     #dataset = cms.string("#scale[1.5]{CMS}   h,H,A#rightarrow#tau#tau                                           18.3 fb^{-1} (8 TeV)"),
-    dataset = cms.string("h,H,A#rightarrow#tau#tau                                 19.7 fb^{-1} (8 TeV) + 4.9 fb^{-1} (7 TeV)"),
+    dataset = cms.string("h,H,A#rightarrow#tau#tau#rightarrow#mu#tau, 30 fb^{-1} (8 TeV), signal: m_{A}=300GeV / tan#beta=15"),
     ## x-axis title
     xaxis = cms.string("m_{A} [GeV]"),
     ## x-axis title
@@ -30,7 +30,7 @@ layout = cms.PSet(
     ## define verbosity level
     verbosity = cms.uint32(3),
     ## define output label
-    outputLabel = cms.string("mA-tanb") ,
+    outputLabel = cms.string("300-15-30") ,
     ## define masspoints for limit plot
     masspoints = cms.vdouble(
      90.
