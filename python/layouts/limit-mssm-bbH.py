@@ -7,7 +7,7 @@ layout = cms.PSet(
     #dataset = cms.string("#scale[1.5]{CMS} Preliminary   #phi#rightarrow#tau#tau                 19.7 fb^{-1} (8 TeV)"),
     #dataset = cms.string("#scale[1.5]{CMS}   Projection       #phi#rightarrow#tau#tau                 300 fb^{-1} (14 TeV)"),
     #dataset = cms.string("#scale[1.5]{CMS}   #phi#rightarrow#tau#tau                                          18.3 fb^{-1} (8 TeV)"),
-    dataset = cms.string("#phi#rightarrow#tau#tau                 19.7 fb^{-1} (8 TeV)"),
+    dataset = cms.string("#phi#rightarrow#tau#tau                 30 fb^{-1} (8 TeV)"),
     ## extra labels (below legend)
     #extra = cms.string("gg#phi profiled"),
     extra = cms.string("bb#phi"),
@@ -34,34 +34,34 @@ layout = cms.PSet(
     ## define output label
     outputLabel = cms.string("bbH-limit"), 
     ## define masspoints for limit plot
-    masspoints = cms.vdouble(
-    90.
-   ,100.
+    masspoints = cms.vdouble(90+10*m for m in range(92)
+   # 90.
+   #,100.
    #,110.
-   ,120.
-   ,130.
-   ,140.
+   #,120.
+   #,130.
+   #,140.
    #,150.
-   ,160.
+   #,160.
    #,170.
-   ,180.
+   #,180.
    #,190.
-   ,200.
+   #,200.
    #,210.
    #,220.
    #,230.
    #,240.
-   ,250.
-   ,300.
-   ,350.
-   ,400.
-   ,450.
-   ,500.
-   ,600.
-   ,700.
-   ,800.
-   ,900.
-   ,1000.
+   #,250.
+   #,300.
+   #,350.
+   #,400.
+   #,450.
+   #,500.
+   #,600.
+   #,700.
+   #,800.
+   #,900.
+   #,1000.
     ),
     ## is this mssm?
     mssm = cms.bool(True),
