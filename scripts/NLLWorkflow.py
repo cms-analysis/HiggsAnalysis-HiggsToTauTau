@@ -35,9 +35,11 @@ if options.higgsBounds:
 		os.system("rm {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=higgs, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
 		os.system("hadd {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.mass*.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=higgs, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
 
+	#os.system("rm {nllpath}/NLLHistogram.Full.root".format(nllpath=options.BGPath))
+	#os.system("hadd {nllpath}/NLLHistogram.Full.root {nllpath}/*/NLL*.root".format(nllpath=options.BGPath))
 	os.system("rm {nllpath}/NLLHistogram.Full.root".format(nllpath=options.nllPath))
 	os.system("hadd {nllpath}/NLLHistogram.Full.root {nllpath}/*/NLL*.root".format(nllpath=options.nllPath))
-
+	
 	# creating model independent histograms from 2d fits
 
 	os.system('python HiggsAnalysis/HiggsToTauTau/scripts/multidimNLL_HiggsBounds.py --nll-path="{nllpath}/NLLHistogram.Full.root" --ggH-bbH-path="{gghbbhpath}/" --xs-path={xspath} --model={model} --mass-tolerance={tolerance} {Max} --higgs-contribution={contr} --forbidden-region-level={frlevel} --analysis={analysis} {lightVsHeavy} {expected} {weightedHB} {fullNLLSubtracted} --bg-path={BGPath}/NLLHistogram.Full.root'.format(nllpath=options.nllPath, gghbbhpath=options.ggHbbHPath, xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, contr=options.higgsContribution, Max = "--tolerance-denumerator-max" if options.toleranceDenumeratorMax else "", frlevel=options.forbiddenRegionLevel, analysis=options.analysis, lightVsHeavy="--light-vs-heavy" if options.lightVsHeavy else "", expected="--expected" if options.expected else "", weightedHB="--weighted-hb" if options.weightedHB else "", fullNLLSubtracted="--full-nll-subtracted" if options.fullNLLSubtracted else "", BGPath=options.BGPath))
