@@ -4,6 +4,7 @@ from optparse import OptionParser, OptionGroup
 parser = OptionParser(usage="usage: %prog [options] ARG1 ARG2 ARG3 ...", description="")
 agroup = OptionGroup(parser,"MAIN OPTIONS", "")
 agroup.add_option("--log-mass",dest="logMass", default=False, action="store_true", help="Scan the mass range optimized for a logarithmic mass scale.")
+agroup.add_option("--mass", dest="mass", type="float", help="Mass point for which the cluster should be calculated.")
 agroup.add_option("--model-file",dest="modelFile", default="$CMSSW_BASE/src/auxiliaries/models/out.mhmodp-8TeV-tanbHigh-nnlo.root", type="string", help="Path to the model file which should be used.")
 agroup.add_option("--model", dest="model", default="mhmodp", type="string", help="Used in naming of the files. Should be chosen dependent on the model-file.")
 agroup.add_option("--mass-tolerance", dest="massTolerance", default=0.15, type="float", help="Mass tolerance window for which different Higgs bosons are clustered.")

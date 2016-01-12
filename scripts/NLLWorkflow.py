@@ -29,26 +29,23 @@ import os
 import sys
 
 
-if options.higgsBounds:
-	for higgs in ["h", "A", "H"]:
-		# constructing the cross-section file, that determines the contributions of the Higgs bosons to (mA,tanb) points
-		os.system("rm {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=higgs, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
-		os.system("hadd {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.mass*.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=higgs, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
+	# constructing the cross-section file, that determines the contributions of the Higgs bosons to (mA,tanb) points
+for higgs in ["h", "A", "H"]:
+	os.system("rm {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=higgs, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
+	os.system("hadd {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.mass*.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=higgs, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
 
-	#os.system("rm {nllpath}/NLLHistogram.Full.root".format(nllpath=options.BGPath))
-	#os.system("hadd {nllpath}/NLLHistogram.Full.root {nllpath}/*/NLL*.root".format(nllpath=options.BGPath))
+
+if options.higgsBounds:
+	print "HiggsBounds method"
 	os.system("rm {nllpath}/NLLHistogram.Full.root".format(nllpath=options.nllPath))
 	os.system("hadd {nllpath}/NLLHistogram.Full.root {nllpath}/*/NLL*.root".format(nllpath=options.nllPath))
 	
 	# creating model independent histograms from 2d fits
-
 	os.system('python HiggsAnalysis/HiggsToTauTau/scripts/multidimNLL_HiggsBounds.py --nll-path="{nllpath}/NLLHistogram.Full.root" --ggH-bbH-path="{gghbbhpath}/" --xs-path={xspath} --model={model} --mass-tolerance={tolerance} {Max} --higgs-contribution={contr} --forbidden-region-level={frlevel} --analysis={analysis} {lightVsHeavy} {expected} {weightedHB} {fullNLLSubtracted} --bg-path={BGPath}/NLLHistogram.Full.root'.format(nllpath=options.nllPath, gghbbhpath=options.ggHbbHPath, xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, contr=options.higgsContribution, Max = "--tolerance-denumerator-max" if options.toleranceDenumeratorMax else "", frlevel=options.forbiddenRegionLevel, analysis=options.analysis, lightVsHeavy="--light-vs-heavy" if options.lightVsHeavy else "", expected="--expected" if options.expected else "", weightedHB="--weighted-hb" if options.weightedHB else "", fullNLLSubtracted="--full-nll-subtracted" if options.fullNLLSubtracted else "", BGPath=options.BGPath))
 
-elif options.SMHscale:
-	# constructing the cross-section file, that determines the contributions of the Higgs bosons to (mA,tanb) points
-	os.system("rm {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
-	os.system("hadd {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.mass*.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
 
+elif options.SMHscale:
+	print "Naive approach with SMHscale - NOT YET FULLY TESTED"
 	# constructing the file with CLs histograms
 	os.system("rm {nllpath}/NLLHistogram.Full.root".format(nllpath=options.nllPath))
 	os.system("hadd {nllpath}/NLLHistogram.Full.root {nllpath}/*/NLL*.root".format(nllpath=options.nllPath))
@@ -58,10 +55,7 @@ elif options.SMHscale:
 	
 	
 else:
-	# constructing the cross-section file, that determines the contributions of the Higgs bosons to (mA,tanb) points
-	os.system("rm {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
-	os.system("hadd {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root {xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.mass*.root".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
-
+	print "naive approach"
 	# constructing the file with CLs histograms
 	os.system("rm {nllpath}/NLLHistogram.Full.root".format(nllpath=options.nllPath))
 	os.system("hadd {nllpath}/NLLHistogram.Full.root {nllpath}/*/NLL*.root".format(nllpath=options.nllPath))
@@ -74,10 +68,9 @@ else:
 
 # starting analysis of CLs file
 os.system("""root -l -b -q '$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/macros/NLLPlot.C("{nllpath}/NLLHistogram.Full.root", "{xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.reference{reference}.contr{contr}.root", {frlevel},{higgsBounds})'""".format(nllpath=options.nllPath, xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else "", frlevel=options.forbiddenRegionLevel, higgsBounds=1 if options.higgsBounds else 0))
-print "---------------- break -----------------------"
+print "---------------- first plotting script finished -----------------------"
 os.system("""root -l -b -q '$CMSSW_BASE/src/HiggsAnalysis/HiggsToTauTau/macros/higgsContributionsPlot.C("{xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.referenceA.contr{contr}.root", "{xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.referenceH.contr{contr}.root", "{xspath}/higgsContribution.model{model}.tolerance{tolerance}{Max}.referenceh.contr{contr}.root")'""".format(xspath=options.xsPath, model=options.model, tolerance=options.massTolerance, contr=options.higgsContribution, Max=".MaxDenumerator" if options.toleranceDenumeratorMax else ""))
-print "---------------- break -----------------------"
-
+print "---------------- second ploptting script finished -----------------------"
 
 # copying produced plotfiles into the right folder
 os.system("rm PLOTS-model{model}{SMHscale}-masspoint{masspoint}-tolerance{tolerance}{Max}-reference{reference}-contr{contr} -r".format(model=options.model, SMHscale="-SMHscale" if options.SMHscale else "", masspoint=options.modelMasspoint, tolerance=options.massTolerance, reference=options.referenceMass, contr=options.higgsContribution, Max="-MaxDenumerator" if options.toleranceDenumeratorMax else ""))
