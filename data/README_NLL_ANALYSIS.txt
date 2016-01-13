@@ -17,9 +17,10 @@ scram b -j 12
 
 Run:
 
-1) create your model directories - here for an injected model of mhmod+ tanb=30 mA=500GeV
-	-> python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM.py -a plain --label='150428-mssm' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-131013-mssm.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-150425" --update-all --blind-datacards --extra-templates='0.007354608*ggH500, 1.166089265*ggH120, 0.080838097*bbH500, 0.016368334*bbH120' --fine-scan
-	-> Mark that the light scalar mass mh is taken as 120GeV and the heavy higgs scalar and pseudoscalar H and A are taken with mass 500GeV. The numbers in the extra-templates string are the xs*Br calculated at the desired injected model point. The xs*Br of A+H have to be added beforehand if they have they have the same mass. Here masses of the Higgs boson are approximately. If the correct mass of the desired model point are taken the signal templates bbH$MASS and ggH$MASS have to be generated using horizontol template morphing with the central histograms as input.
+1) create your model directories - here for an injected model of mhmod+ tanb=30 mA=500GeV with 30/fb
+	-> go to directory auxiliaries/shapes/Imperial/NLL-Studies and remove the surfix "_30fb" at the chosen shape file
+	-> python HiggsAnalysis/HiggsToTauTau/scripts/doMSSM.py -a plain --label='-500-30-30fb' --tail-fitting --drop-list="$PWD/auxiliaries/pruning/uncertainty-pruning-drop-131013-mssm.txt" --config="HiggsAnalysis/HiggsToTauTau/data/limits.config-mssm-150425" --update-all --blind-datacards --extra-templates='0.007354608*ggH500, 1.166089265*ggH120, 0.080838097*bbH500, 0.016368334*bbH120' --fine-scan
+	-> Mark that the light scalar mass mh is taken as 120GeV and the heavy higgs scalar and pseudoscalar H and A are taken with mass 500GeV. The numbers in the extra-templates string are the xs*Br calculated at the desired injected model point. The xs*Br of A+H have to be added beforehand if they have they have the same mass. Here masses of the Higgs boson are approximately. If the correct mass of the desired model point are taken the signal templates bbH$MASS and ggH$MASS have to be generated using horizontol template morphing with the central histograms as input. Currently the doMSSM.py morphs templates from 90 to 1000 in steps of 1GeV.
 	
 
 2) Model independent Limits:
@@ -54,5 +55,6 @@ Run:
 General remark:
         -> Please run step after step since some calculations dependent on each other
 	-> -h does always help
+	-> The code has been written quick and dirty. It works as it should but, code styling wise there is a lot of room for improvements. Feel free to do so. 
 
 
