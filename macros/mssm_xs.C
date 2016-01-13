@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "/nfs/dust/cms/user/aakhmets/CMSSW_6_1_1/src/HiggsAnalysis/HiggsToTauTau/macros/mssm_xs_tools.h"
-#include "/nfs/dust/cms/user/aakhmets/CMSSW_6_1_1/src/HiggsAnalysis/HiggsToTauTau/macros/mssm_xs_tools.C"
+#include "HiggsAnalysis/HiggsToTauTau/macros/mssm_xs_tools.h"
+#include "HiggsAnalysis/HiggsToTauTau/macros/mssm_xs_tools.C"
 
 void 
 mssm_xs(char* path, double mA, double tanb)
